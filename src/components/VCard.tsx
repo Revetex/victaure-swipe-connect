@@ -164,12 +164,35 @@ END:VCARD`;
     }
   };
 
-  const handleApplyChanges = () => {
-    if (tempProfile) {
+  const handleApplyChanges = async () => {
+    if (!tempProfile) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No authenticated user");
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: tempProfile.name,
+          role: tempProfile.title,
+          skills: tempProfile.skills,
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
       setProfile(tempProfile);
       toast({
         title: "Success",
         description: "Changes applied successfully",
+      });
+    } catch (error) {
+      console.error('Error applying changes:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to apply changes",
       });
     }
   };
