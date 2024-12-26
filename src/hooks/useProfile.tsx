@@ -28,7 +28,6 @@ export function useProfile() {
           throw error;
         }
 
-        // Si aucun profil n'existe, on en crée un nouveau
         if (!existingProfile) {
           const { error: insertError } = await supabase
             .from('profiles')
@@ -40,7 +39,6 @@ export function useProfile() {
 
           if (insertError) throw insertError;
 
-          // Récupérer le profil nouvellement créé
           const { data: newProfile, error: fetchError } = await supabase
             .from('profiles')
             .select('*')
@@ -60,6 +58,9 @@ export function useProfile() {
           title: finalProfileData.role || 'professional',
           email: finalProfileData.email || '',
           phone: finalProfileData.phone || '',
+          city: finalProfileData.city || '',
+          state: finalProfileData.state || '',
+          country: finalProfileData.country || 'Canada',
           skills: finalProfileData.skills || [],
           experiences: [],
           certifications: [],

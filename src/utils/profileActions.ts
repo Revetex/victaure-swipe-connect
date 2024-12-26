@@ -8,6 +8,7 @@ FN:${profile.name}
 TITLE:${profile.title}
 TEL:${profile.phone}
 EMAIL:${profile.email}
+ADR;TYPE=WORK:;;${profile.city};${profile.state};${profile.country}
 NOTE:Skills: ${profile.skills.join(", ")}
 END:VCARD`;
   return vcard;
@@ -23,8 +24,12 @@ export const updateProfile = async (tempProfile: UserProfile) => {
     .from('profiles')
     .update({
       full_name: tempProfile.name,
-      role: 'professional', // On force le rôle 'professional' pour l'instant
+      role: 'professional',
       email: tempProfile.email,
+      phone: tempProfile.phone,
+      city: tempProfile.city,
+      state: tempProfile.state,
+      country: tempProfile.country,
       skills: tempProfile.skills,
     })
     .eq('id', user.id);
