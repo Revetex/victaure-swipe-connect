@@ -4,7 +4,7 @@ let textGenerator: any = null;
 
 const initializeGenerator = async () => {
   if (!textGenerator) {
-    textGenerator = await pipeline('text-generation', 'Geotrend/distilbert-base-fr-cased', {
+    textGenerator = await pipeline('text-generation', 'bigscience/bloom-560m', {
       revision: 'main'
     });
   }
