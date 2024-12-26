@@ -1,12 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Share2, Download, Copy, Save } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
 import { VCardHeader } from "./VCardHeader";
 import { VCardContact } from "./VCardContact";
 import { VCardSkills } from "./VCardSkills";
 import { VCardCertifications } from "./VCardCertifications";
+import { VCardActions } from "./VCardActions";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/data/mockProfile";
 
@@ -16,6 +15,7 @@ export function VCard() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [newSkill, setNewSkill] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -35,18 +35,18 @@ export function VCard() {
           throw error;
         }
 
-        // Transform the profile data to match the UserProfile type
         const transformedProfile: UserProfile = {
           name: profileData.full_name || '',
           title: profileData.role || '',
           email: profileData.email || '',
-          phone: '', // Add phone field to profiles table if needed
+          phone: '',
           skills: profileData.skills || [],
-          experiences: [], // Add experiences field to profiles table if needed
-          certifications: [], // Add certifications field to profiles table if needed
+          experiences: [],
+          certifications: [],
         };
 
         setProfile(transformedProfile);
+        setTempProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast({
@@ -131,7 +131,7 @@ END:VCARD`;
   };
 
   const handleSave = async () => {
-    if (!profile) return;
+    if (!tempProfile) return;
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -140,14 +140,15 @@ END:VCARD`;
       const { error } = await supabase
         .from('profiles')
         .update({
-          full_name: profile.name,
-          role: profile.title,
-          skills: profile.skills,
+          full_name: tempProfile.name,
+          role: tempProfile.title,
+          skills: tempProfile.skills,
         })
         .eq('id', user.id);
 
       if (error) throw error;
 
+      setProfile(tempProfile);
       setIsEditing(false);
       toast({
         title: "Success",
@@ -163,6 +164,16 @@ END:VCARD`;
     }
   };
 
+  const handleApplyChanges = () => {
+    if (tempProfile) {
+      setProfile(tempProfile);
+      toast({
+        title: "Success",
+        description: "Changes applied successfully",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="w-full max-w-2xl mx-auto glass-card">
@@ -173,7 +184,7 @@ END:VCARD`;
     );
   }
 
-  if (!profile) {
+  if (!profile || !tempProfile) {
     return (
       <Card className="w-full max-w-2xl mx-auto glass-card">
         <CardContent className="p-6">
@@ -187,71 +198,57 @@ END:VCARD`;
     <Card className="w-full max-w-2xl mx-auto glass-card">
       <CardContent className="p-6 space-y-6">
         <VCardHeader
-          profile={profile}
+          profile={tempProfile}
           isEditing={isEditing}
-          setProfile={setProfile}
+          setProfile={setTempProfile}
           setIsEditing={setIsEditing}
         />
 
         <div className="grid gap-6 md:grid-cols-2">
           <VCardContact
-            profile={profile}
+            profile={tempProfile}
             isEditing={isEditing}
-            setProfile={setProfile}
+            setProfile={setTempProfile}
           />
 
           <VCardSkills
-            profile={profile}
+            profile={tempProfile}
             isEditing={isEditing}
-            setProfile={setProfile}
+            setProfile={setTempProfile}
             newSkill={newSkill}
             setNewSkill={setNewSkill}
             handleAddSkill={() => {
-              if (newSkill && !profile.skills.includes(newSkill)) {
-                setProfile({
-                  ...profile,
-                  skills: [...profile.skills, newSkill],
+              if (newSkill && !tempProfile.skills.includes(newSkill)) {
+                setTempProfile({
+                  ...tempProfile,
+                  skills: [...tempProfile.skills, newSkill],
                 });
                 setNewSkill("");
               }
             }}
             handleRemoveSkill={(skillToRemove: string) => {
-              setProfile({
-                ...profile,
-                skills: profile.skills.filter((skill) => skill !== skillToRemove),
+              setTempProfile({
+                ...tempProfile,
+                skills: tempProfile.skills.filter((skill) => skill !== skillToRemove),
               });
             }}
           />
         </div>
 
         <VCardCertifications
-          profile={profile}
+          profile={tempProfile}
           isEditing={isEditing}
-          setProfile={setProfile}
+          setProfile={setTempProfile}
         />
 
-        <div className="flex gap-3 pt-4 border-t">
-          {isEditing ? (
-            <Button onClick={handleSave} className="flex-1 bg-primary hover:bg-primary/90">
-              <Save className="mr-2 h-4 w-4" />
-              Save
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleShare} className="flex-1">
-                <Share2 className="mr-2 h-4 w-4" />
-                Share
-              </Button>
-              <Button onClick={handleDownloadVCard} variant="outline" className="flex-1">
-                <Download className="mr-2 h-4 w-4" />
-                Download VCard
-              </Button>
-              <Button onClick={handleCopyLink} variant="outline">
-                <Copy className="h-4 w-4" />
-              </Button>
-            </>
-          )}
-        </div>
+        <VCardActions
+          isEditing={isEditing}
+          onShare={handleShare}
+          onDownload={handleDownloadVCard}
+          onCopyLink={handleCopyLink}
+          onSave={handleSave}
+          onApplyChanges={handleApplyChanges}
+        />
       </CardContent>
     </Card>
   );
