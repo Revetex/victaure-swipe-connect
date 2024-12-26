@@ -10,14 +10,14 @@ export async function generateAIResponse(message: string) {
       throw new Error('API key not configured');
     }
 
-    const response = await fetch('https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill', {
+    const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: message,
+        inputs: `Tu es un assistant professionnel spécialisé dans la recherche d'emploi et le développement de carrière. Réponds de manière professionnelle et pertinente à cette question : ${message}`,
         wait_for_model: true
       }),
     });
