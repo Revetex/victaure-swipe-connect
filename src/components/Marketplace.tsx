@@ -11,7 +11,7 @@ import { Slider } from "@/components/ui/slider";
 import {
   Building2,
   Clock,
-  EuroSign,
+  Euro,
   SlidersHorizontal,
 } from "lucide-react";
 
