@@ -1,50 +1,62 @@
 import { useState } from "react";
-import { JobCard } from "./JobCard";
+import { JobCard } from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 
-const DUMMY_JOBS = [
+const mockJobs = [
   {
-    id: 1,
-    title: "Développeur Frontend Senior",
-    company: "Tech Corp",
+    title: "Développeur Frontend React",
+    company: "Tech Solutions SA",
     location: "Paris, France",
-    salary: "65 000€ - 85 000€",
-    duration: "CDI",
-    skills: ["React", "TypeScript", "Tailwind CSS"],
+    salary: "€500-600/jour",
+    duration: "3 mois",
+    skills: ["React", "TypeScript", "Tailwind"],
   },
   {
-    id: 2,
-    title: "UX Designer",
+    title: "UX Designer Senior",
     company: "Design Studio",
     location: "Lyon, France",
-    salary: "45 000€ - 60 000€",
-    duration: "Freelance",
-    skills: ["Figma", "User Research", "Prototyping"],
+    salary: "€450-550/jour",
+    duration: "6 mois",
+    skills: ["Figma", "Adobe XD", "Prototyping"],
+  },
+  {
+    title: "DevOps Engineer",
+    company: "Cloud Services",
+    location: "Remote",
+    salary: "€600-700/jour",
+    duration: "CDI",
+    skills: ["AWS", "Docker", "Kubernetes"],
   },
 ];
 
 export function SwipeMatch() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentJobIndex, setCurrentJobIndex] = useState(0);
 
   const handleSwipe = (direction: "left" | "right") => {
-    if (currentIndex < DUMMY_JOBS.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    if (direction === "right") {
+      console.log("Liked job:", mockJobs[currentJobIndex].title);
+    } else {
+      console.log("Passed on job:", mockJobs[currentJobIndex].title);
+    }
+    
+    if (currentJobIndex < mockJobs.length - 1) {
+      setCurrentJobIndex(prev => prev + 1);
     }
   };
 
-  if (currentIndex >= DUMMY_JOBS.length) {
+  if (currentJobIndex >= mockJobs.length) {
     return (
-      <div className="flex flex-col items-center justify-center h-[500px] text-center p-4">
-        <h3 className="text-2xl font-semibold text-victaure-gray-dark mb-4">
-          Plus d'offres à afficher
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+          Vous avez vu toutes les opportunités !
         </h3>
         <p className="text-victaure-gray-dark mb-6">
-          Revenez plus tard pour découvrir de nouvelles opportunités
+          Revenez plus tard pour découvrir de nouvelles missions.
         </p>
         <Button
-          onClick={() => setCurrentIndex(0)}
-          className="bg-victaure-blue hover:bg-blue-600"
+          onClick={() => setCurrentJobIndex(0)}
+          className="bg-victaure-blue hover:bg-blue-600 text-white"
         >
           Recommencer
         </Button>
@@ -53,26 +65,26 @@ export function SwipeMatch() {
   }
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
-      <div className="relative">
-        <JobCard {...DUMMY_JOBS[currentIndex]} />
+    <div className="flex flex-col items-center gap-8">
+      <div className="relative w-full max-w-md">
+        <JobCard {...mockJobs[currentJobIndex]} />
       </div>
-      <div className="flex justify-center gap-4 mt-6">
+      
+      <div className="flex gap-4">
         <Button
-          size="icon"
           variant="outline"
-          className="h-12 w-12 rounded-full border-2 border-victaure-red hover:bg-victaure-red hover:text-white"
+          size="lg"
+          className="border-victaure-red text-victaure-red hover:bg-victaure-red/10"
           onClick={() => handleSwipe("left")}
         >
-          <X className="h-6 w-6" />
+          <ThumbsDown className="h-5 w-5" />
         </Button>
         <Button
-          size="icon"
-          variant="outline"
-          className="h-12 w-12 rounded-full border-2 border-victaure-green hover:bg-victaure-green hover:text-white"
+          size="lg"
+          className="bg-victaure-green hover:bg-green-600 text-white"
           onClick={() => handleSwipe("right")}
         >
-          <Check className="h-6 w-6" />
+          <ThumbsUp className="h-5 w-5" />
         </Button>
       </div>
     </div>
