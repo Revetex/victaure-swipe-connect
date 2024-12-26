@@ -1,11 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { QRCodeSVG } from "qrcode.react";
-import { Share2, Download, Copy, Edit2, Save, X } from "lucide-react";
+import { Share2, Download, Copy, Save } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { VCardHeader } from "./VCardHeader";
+import { VCardContact } from "./VCardContact";
+import { VCardSkills } from "./VCardSkills";
+import { VCardCertifications } from "./VCardCertifications";
 
 interface UserProfile {
   name: string;
@@ -17,6 +18,11 @@ interface UserProfile {
     company: string;
     position: string;
     duration: string;
+  }[];
+  certifications: {
+    title: string;
+    institution: string;
+    year: string;
   }[];
 }
 
@@ -38,6 +44,18 @@ const mockProfile: UserProfile = {
       duration: "2018 - 2020",
     },
   ],
+  certifications: [
+    {
+      title: "AWS Certified Solutions Architect",
+      institution: "Amazon Web Services",
+      year: "2023",
+    },
+    {
+      title: "Master en Informatique",
+      institution: "Université de Paris",
+      year: "2018",
+    },
+  ],
 };
 
 export function VCard() {
@@ -45,7 +63,7 @@ export function VCard() {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile>(mockProfile);
   const [newSkill, setNewSkill] = useState("");
-  
+
   const generateVCardData = () => {
     const vcard = `BEGIN:VCARD
 VERSION:3.0
@@ -135,147 +153,36 @@ END:VCARD`;
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-2xl font-bold">
-            {isEditing ? (
-              <Input
-                value={profile.name}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className="text-2xl font-bold"
-              />
-            ) : (
-              profile.name
-            )}
-          </CardTitle>
-          <p className="text-victaure-gray-dark">
-            {isEditing ? (
-              <Input
-                value={profile.title}
-                onChange={(e) => setProfile({ ...profile, title: e.target.value })}
-              />
-            ) : (
-              profile.title
-            )}
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
-        </Button>
+      <CardHeader>
+        <VCardHeader
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+          setIsEditing={setIsEditing}
+        />
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex justify-between items-start">
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-victaure-gray-dark">Email</p>
-              {isEditing ? (
-                <Input
-                  value={profile.email}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                />
-              ) : (
-                <p>{profile.email}</p>
-              )}
-            </div>
-            <div>
-              <p className="text-sm text-victaure-gray-dark">Téléphone</p>
-              {isEditing ? (
-                <Input
-                  value={profile.phone}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                />
-              ) : (
-                <p>{profile.phone}</p>
-              )}
-            </div>
-          </div>
-          <div className="bg-white p-2 rounded-lg shadow-sm">
-            <QRCodeSVG
-              value={window.location.href}
-              size={120}
-              level="H"
-              includeMargin={true}
-            />
-          </div>
-        </div>
+        <VCardContact
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
 
-        <div>
-          <h3 className="font-semibold mb-2">Compétences</h3>
-          <div className="flex flex-wrap gap-2">
-            {profile.skills.map((skill) => (
-              <Badge key={skill} variant="secondary" className="flex items-center gap-1">
-                {skill}
-                {isEditing && (
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => handleRemoveSkill(skill)}
-                  />
-                )}
-              </Badge>
-            ))}
-          </div>
-          {isEditing && (
-            <div className="flex gap-2 mt-2">
-              <Input
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                placeholder="Nouvelle compétence"
-                onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
-              />
-              <Button onClick={handleAddSkill}>Ajouter</Button>
-            </div>
-          )}
-        </div>
+        <VCardSkills
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+          newSkill={newSkill}
+          setNewSkill={setNewSkill}
+          handleAddSkill={handleAddSkill}
+          handleRemoveSkill={handleRemoveSkill}
+        />
 
-        <div>
-          <h3 className="font-semibold mb-2">Expériences</h3>
-          <div className="space-y-3">
-            {profile.experiences.map((exp, index) => (
-              <div key={index} className="border-l-2 border-victaure-blue pl-4">
-                {isEditing ? (
-                  <>
-                    <Input
-                      value={exp.position}
-                      onChange={(e) => {
-                        const newExperiences = [...profile.experiences];
-                        newExperiences[index].position = e.target.value;
-                        setProfile({ ...profile, experiences: newExperiences });
-                      }}
-                      className="mb-1"
-                    />
-                    <Input
-                      value={exp.company}
-                      onChange={(e) => {
-                        const newExperiences = [...profile.experiences];
-                        newExperiences[index].company = e.target.value;
-                        setProfile({ ...profile, experiences: newExperiences });
-                      }}
-                      className="mb-1"
-                    />
-                    <Input
-                      value={exp.duration}
-                      onChange={(e) => {
-                        const newExperiences = [...profile.experiences];
-                        newExperiences[index].duration = e.target.value;
-                        setProfile({ ...profile, experiences: newExperiences });
-                      }}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <p className="font-medium">{exp.position}</p>
-                    <p className="text-sm text-victaure-gray-dark">{exp.company}</p>
-                    <p className="text-sm text-victaure-gray-dark">{exp.duration}</p>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <VCardCertifications
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
 
         <div className="flex gap-3 pt-4">
           {isEditing ? (
