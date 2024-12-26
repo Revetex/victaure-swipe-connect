@@ -1,7 +1,8 @@
 import jsPDF from 'jspdf';
+import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from '@/data/mockProfile';
 
-export const generateVCardPDF = (profile: UserProfile): string => {
+export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
   const doc = new jsPDF();
   
   // Add content to PDF
@@ -21,7 +22,31 @@ export const generateVCardPDF = (profile: UserProfile): string => {
   const skills = profile.skills.join(', ');
   doc.text(skills, 25, 100);
   
-  // Generate PDF as base64
-  const pdfOutput = doc.output('datauristring');
-  return pdfOutput;
+  // Generate PDF as blob
+  const pdfBlob = doc.output('blob');
+  
+  // Create a unique filename
+  const filename = `${profile.id}_${Date.now()}.pdf`;
+  
+  // Upload to Supabase Storage
+  const { data, error } = await supabase
+    .storage
+    .from('vcards')
+    .upload(filename, pdfBlob, {
+      contentType: 'application/pdf',
+      upsert: true
+    });
+    
+  if (error) {
+    console.error('Error uploading PDF:', error);
+    throw error;
+  }
+  
+  // Get public URL
+  const { data: { publicUrl } } = supabase
+    .storage
+    .from('vcards')
+    .getPublicUrl(filename);
+    
+  return publicUrl;
 };

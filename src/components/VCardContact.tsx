@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { QRCodeSVG } from "qrcode.react";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
@@ -18,6 +19,9 @@ interface VCardContactProps {
 }
 
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
+  const [pdfUrl, setPdfUrl] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(true);
+  
   const provinces = [
     "Alberta",
     "Colombie-Britannique",
@@ -31,8 +35,21 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     "Saskatchewan",
   ];
 
-  // Generate PDF URL for QR Code
-  const pdfUrl = generateVCardPDF(profile);
+  useEffect(() => {
+    const generatePDF = async () => {
+      try {
+        setIsGenerating(true);
+        const url = await generateVCardPDF(profile);
+        setPdfUrl(url);
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+    generatePDF();
+  }, [profile]);
 
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
@@ -105,12 +122,16 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
         </VCardSection>
       </div>
       <div className="bg-card p-3 rounded-lg shadow-sm border">
-        <QRCodeSVG
-          value={pdfUrl}
-          size={120}
-          level="H"
-          includeMargin={true}
-        />
+        {isGenerating ? (
+          <div className="w-[120px] h-[120px] animate-pulse bg-muted" />
+        ) : (
+          <QRCodeSVG
+            value={pdfUrl}
+            size={120}
+            level="H"
+            includeMargin={true}
+          />
+        )}
       </div>
     </div>
   );
