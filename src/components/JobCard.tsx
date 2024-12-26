@@ -1,13 +1,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Building2, MapPin, Calendar } from "lucide-react";
+import { Building2, MapPin, Calendar, Briefcase, GraduationCap } from "lucide-react";
 
 interface JobCardProps {
   title: string;
   company: string;
   location: string;
   salary: string;
-  duration: string;
+  category: string;
+  contract_type: string;
+  experience_level: string;
   skills: string[];
 }
 
@@ -16,7 +18,9 @@ export function JobCard({
   company,
   location,
   salary,
-  duration,
+  category,
+  contract_type,
+  experience_level,
   skills,
 }: JobCardProps) {
   return (
@@ -33,15 +37,22 @@ export function JobCard({
             <span>{location}</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>{duration}</span>
+            <Briefcase className="h-4 w-4" />
+            <span>{contract_type}</span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <GraduationCap className="h-4 w-4" />
+            <span>{experience_level}</span>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div>
+          <div className="flex flex-col gap-2">
             <p className="text-lg font-semibold text-victaure-green">{salary}</p>
+            <Badge variant="secondary" className="w-fit">
+              {category}
+            </Badge>
           </div>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill) => (

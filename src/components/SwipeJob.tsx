@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { SwipeMatch } from "./SwipeMatch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,8 +17,38 @@ export function SwipeJob() {
     title: "",
     description: "",
     budget: "",
-    location: ""
+    location: "",
+    category: "Technology",
+    contract_type: "Full-time",
+    experience_level: "Mid-Level"
   });
+
+  const categories = [
+    "Technology",
+    "Finance",
+    "Healthcare",
+    "Product",
+    "Marketing",
+    "Construction",
+    "Manual Labor",
+    "Other"
+  ];
+
+  const contractTypes = [
+    "Full-time",
+    "Part-time",
+    "Contract",
+    "Freelance",
+    "Internship",
+    "Temporary"
+  ];
+
+  const experienceLevels = [
+    "Entry-Level",
+    "Mid-Level",
+    "Senior",
+    "Expert"
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +65,6 @@ export function SwipeJob() {
         return;
       }
 
-      // Get the user's profile to verify they exist and get their role
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
@@ -50,7 +80,6 @@ export function SwipeJob() {
         return;
       }
 
-      // Verify the user is an employer
       if (profile.role !== 'employer') {
         toast({
           title: "Erreur",
@@ -66,7 +95,10 @@ export function SwipeJob() {
         budget: parseFloat(formData.budget),
         location: formData.location,
         employer_id: user.id,
-        status: 'open'
+        status: 'open',
+        category: formData.category,
+        contract_type: formData.contract_type,
+        experience_level: formData.experience_level
       });
 
       if (insertError) throw insertError;
@@ -81,7 +113,10 @@ export function SwipeJob() {
         title: "",
         description: "",
         budget: "",
-        location: ""
+        location: "",
+        category: "Technology",
+        contract_type: "Full-time",
+        experience_level: "Mid-Level"
       });
     } catch (error) {
       console.error("Error creating job:", error);
@@ -126,6 +161,63 @@ export function SwipeJob() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">Catégorie</Label>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez une catégorie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contract_type">Type de contrat</Label>
+                <Select
+                  value={formData.contract_type}
+                  onValueChange={(value) => setFormData({ ...formData, contract_type: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un type de contrat" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {contractTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="experience_level">Niveau d'expérience</Label>
+                <Select
+                  value={formData.experience_level}
+                  onValueChange={(value) => setFormData({ ...formData, experience_level: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez un niveau d'expérience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {experienceLevels.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="budget">Budget</Label>

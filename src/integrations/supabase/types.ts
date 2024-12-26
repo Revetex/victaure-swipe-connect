@@ -100,9 +100,12 @@ export type Database = {
       jobs: {
         Row: {
           budget: number
+          category: string
+          contract_type: string
           created_at: string | null
           description: string
           employer_id: string | null
+          experience_level: string
           id: string
           location: string
           status: string | null
@@ -111,9 +114,12 @@ export type Database = {
         }
         Insert: {
           budget: number
+          category?: string
+          contract_type?: string
           created_at?: string | null
           description: string
           employer_id?: string | null
+          experience_level?: string
           id?: string
           location: string
           status?: string | null
@@ -122,9 +128,12 @@ export type Database = {
         }
         Update: {
           budget?: number
+          category?: string
+          contract_type?: string
           created_at?: string | null
           description?: string
           employer_id?: string | null
+          experience_level?: string
           id?: string
           location?: string
           status?: string | null
