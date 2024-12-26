@@ -25,8 +25,8 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   // Generate PDF as blob
   const pdfBlob = doc.output('blob');
   
-  // Create a unique filename
-  const filename = `${profile.id}_${Date.now()}.pdf`;
+  // Create a unique filename using crypto.randomUUID()
+  const filename = `${crypto.randomUUID()}_${Date.now()}.pdf`;
   
   // Upload to Supabase Storage
   const { data, error } = await supabase
