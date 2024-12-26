@@ -5,6 +5,7 @@ import { SwipeMatch } from "@/components/SwipeMatch";
 import { Stats } from "@/components/Stats";
 import { Dashboard } from "@/components/Dashboard";
 import { Marketplace } from "@/components/Marketplace";
+import { VCard } from "@/components/VCard";
 
 const Index = () => {
   return (
@@ -16,6 +17,14 @@ const Index = () => {
         <Dashboard />
         <Features />
         <Marketplace />
+        <section className="py-16 bg-white">
+          <div className="max-w-4xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+              Votre Profil Professionnel
+            </h2>
+            <VCard />
+          </div>
+        </section>
         <section className="py-16 bg-white">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
