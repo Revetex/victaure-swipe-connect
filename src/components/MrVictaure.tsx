@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
 import { ChatInput } from "./chat/ChatInput";
-import { generateAIResponse, setApiKey } from "@/services/huggingFaceService";
+import { generateAIResponse, setApiKey } from "@/services/perplexityService";
 
 interface Message {
   id: string;
@@ -23,7 +23,7 @@ export function MrVictaure() {
 
   // Initialize API key on component mount
   useState(() => {
-    setApiKey("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");
+    setApiKey("pplx-0123456789abcdef0123456789abcdef0123456789abcdef"); // Remplacez par votre clé API Perplexity
   });
 
   const handleSendMessage = async () => {
