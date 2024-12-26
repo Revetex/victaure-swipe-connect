@@ -32,14 +32,14 @@ export async function generateAIResponse(message: string) {
     console.error('Erreur lors de la génération:', error);
     
     const predefinedResponses = [
-      "Je suis votre assistant professionnel Victaure. Comment puis-je vous aider dans votre recherche d'emploi aujourd'hui ?",
-      "Je peux vous aider à optimiser votre CV pour maximiser vos chances d'être remarqué par les recruteurs.",
-      "Souhaitez-vous des conseils pour préparer vos entretiens d'embauche ? Je peux vous donner des techniques éprouvées.",
-      "Je peux vous aider à identifier et mettre en valeur vos compétences clés pour votre secteur d'activité.",
-      "Avez-vous des questions sur la négociation salariale ? Je peux vous conseiller sur les meilleures pratiques.",
-      "Je peux vous aider à rédiger une lettre de motivation percutante qui se démarque.",
-      "Parlons de votre projet professionnel. Quels sont vos objectifs à court et moyen terme ?",
-      "Je peux vous donner des conseils pour développer votre présence professionnelle sur LinkedIn et autres réseaux.",
+      "Je suis votre assistant professionnel spécialisé dans la recherche d'emploi. Je reste concentré sur votre carrière et votre développement professionnel. Comment puis-je vous aider ?",
+      "En tant qu'assistant professionnel, je me concentre sur votre carrière. Souhaitez-vous des conseils sur votre CV, votre recherche d'emploi ou vos entretiens ?",
+      "Je suis là pour vous accompagner dans votre parcours professionnel. Que puis-je faire pour vous aider à atteindre vos objectifs de carrière ?",
+      "Mon rôle est de vous assister dans votre développement professionnel. Parlons de vos ambitions et de la façon dont je peux vous aider à les réaliser.",
+      "En tant qu'assistant carrière, je peux vous conseiller sur votre stratégie de recherche d'emploi. Sur quel aspect souhaitez-vous travailler ?",
+      "Je suis spécialisé dans le conseil en développement de carrière. Comment puis-je vous aider à progresser professionnellement aujourd'hui ?",
+      "Mon expertise porte sur l'accompagnement professionnel. Que puis-je faire pour vous aider dans votre parcours de carrière ?",
+      "Je suis votre conseiller en développement professionnel. Concentrons-nous sur vos objectifs de carrière. Que souhaitez-vous améliorer ?",
     ];
     return predefinedResponses[Math.floor(Math.random() * predefinedResponses.length)];
   }
