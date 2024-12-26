@@ -58,5 +58,61 @@ export const jobTitles = [
   "Expert en Réalité Virtuelle",
   "Architecte Big Data",
   "Expert en Automatisation",
-  "Ingénieur Robotique"
+  "Ingénieur Robotique",
+
+  // Construction & BTP
+  "Chef de Chantier",
+  "Conducteur de Travaux",
+  "Architecte",
+  "Maître d'Œuvre",
+  "Ingénieur Structure",
+  "Ingénieur BTP",
+  "Géomètre",
+  "Dessinateur BTP",
+  "Coordinateur de Sécurité",
+  "Expert en Construction Durable",
+  
+  // Métiers Manuels & Artisanat
+  "Maçon",
+  "Charpentier",
+  "Menuisier",
+  "Plombier",
+  "Électricien",
+  "Couvreur",
+  "Carreleur",
+  "Peintre en Bâtiment",
+  "Plaquiste",
+  "Serrurier",
+  "Vitrier",
+  "Façadier",
+  "Ferronnier",
+  "Chauffagiste",
+  "Isolation Thermique",
+  "Étanchéiste",
+  
+  // Opérateurs & Conducteurs
+  "Conducteur d'Engins",
+  "Grutier",
+  "Conducteur de Pelleteuse",
+  "Conducteur de Bulldozer",
+  "Opérateur de Centrale à Béton",
+  
+  // Finitions & Décoration
+  "Décorateur d'Intérieur",
+  "Agenceur",
+  "Poseur de Revêtements",
+  "Marbrier",
+  "Staffeur-Ornemaniste",
+  
+  // Maintenance & Réparation
+  "Technicien de Maintenance",
+  "Ascensoriste",
+  "Frigoriste",
+  "Dépanneur",
+  
+  // Espaces Verts & Paysage
+  "Paysagiste",
+  "Jardinier",
+  "Élagueur",
+  "Horticulteur"
 ];

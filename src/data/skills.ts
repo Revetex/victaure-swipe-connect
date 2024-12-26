@@ -58,5 +58,61 @@ export const predefinedSkills = [
   
   // Outils de Productivité
   "JIRA", "Confluence", "Trello", "Notion", "Slack", "Microsoft Teams",
-  "Asana", "Monday.com"
+  "Asana", "Monday.com",
+
+  // Construction & BTP
+  "Lecture de Plans",
+  "AutoCAD",
+  "Revit",
+  "SketchUp",
+  "BIM",
+  "Coordination de Chantier",
+  "Gestion de la Sécurité",
+  "Normes de Construction",
+  "RT 2020",
+  "HQE",
+  "Calcul de Structures",
+  "Topographie",
+  "Métrés",
+  "Estimation de Coûts",
+  
+  // Techniques Manuelles
+  "Maçonnerie",
+  "Charpente",
+  "Menuiserie",
+  "Plomberie",
+  "Électricité",
+  "Couverture",
+  "Carrelage",
+  "Peinture",
+  "Plâtrerie",
+  "Serrurerie",
+  "Vitrerie",
+  "Façades",
+  "Ferronnerie",
+  "Chauffage",
+  "Isolation",
+  "Étanchéité",
+  
+  // Machines & Équipements
+  "Conduite d'Engins",
+  "Grue",
+  "Pelleteuse",
+  "Bulldozer",
+  "Centrale à Béton",
+  "Outils Électroportatifs",
+  "Échafaudages",
+  
+  // Maintenance
+  "Maintenance Préventive",
+  "Maintenance Corrective",
+  "Diagnostic Technique",
+  "Réparation",
+  
+  // Espaces Verts
+  "Aménagement Paysager",
+  "Jardinage",
+  "Élagage",
+  "Horticulture",
+  "Systèmes d'Irrigation"
 ];
