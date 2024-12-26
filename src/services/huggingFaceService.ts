@@ -32,14 +32,14 @@ export async function generateAIResponse(message: string) {
     console.error('Erreur lors de la génération:', error);
     
     const predefinedResponses = [
-      "Je suis là pour vous aider dans votre recherche d'emploi. Que puis-je faire pour vous ?",
-      "Je peux vous donner des conseils sur la rédaction de votre CV.",
-      "N'hésitez pas à me poser des questions sur les entretiens d'embauche.",
-      "Je peux vous aider à identifier vos compétences clés.",
-      "Voulez-vous des conseils pour votre recherche d'emploi ?",
-      "Je peux vous aider à préparer votre lettre de motivation.",
-      "Avez-vous besoin d'aide pour définir votre projet professionnel ?",
-      "Je peux vous donner des astuces pour développer votre réseau professionnel.",
+      "Je suis votre assistant professionnel Victaure. Comment puis-je vous aider dans votre recherche d'emploi aujourd'hui ?",
+      "Je peux vous aider à optimiser votre CV pour maximiser vos chances d'être remarqué par les recruteurs.",
+      "Souhaitez-vous des conseils pour préparer vos entretiens d'embauche ? Je peux vous donner des techniques éprouvées.",
+      "Je peux vous aider à identifier et mettre en valeur vos compétences clés pour votre secteur d'activité.",
+      "Avez-vous des questions sur la négociation salariale ? Je peux vous conseiller sur les meilleures pratiques.",
+      "Je peux vous aider à rédiger une lettre de motivation percutante qui se démarque.",
+      "Parlons de votre projet professionnel. Quels sont vos objectifs à court et moyen terme ?",
+      "Je peux vous donner des conseils pour développer votre présence professionnelle sur LinkedIn et autres réseaux.",
     ];
     return predefinedResponses[Math.floor(Math.random() * predefinedResponses.length)];
   }
