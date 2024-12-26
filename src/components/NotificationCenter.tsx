@@ -1,7 +1,8 @@
-import { Bell } from "lucide-react";
+import { Bell, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Notification {
   id: string;
@@ -13,6 +14,7 @@ interface Notification {
 
 export function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -70,6 +72,30 @@ export function NotificationCenter() {
     return `Il y a ${days}j`;
   };
 
+  const deleteNotification = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setNotifications(notifications.filter(n => n.id !== id));
+      toast({
+        title: "Notification supprimée",
+        description: "La notification a été supprimée avec succès.",
+      });
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de supprimer la notification.",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -87,13 +113,20 @@ export function NotificationCenter() {
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className={`p-3 rounded ${
+              className={`p-3 rounded relative group ${
                 notification.read
                   ? "bg-muted"
                   : "bg-primary/10 border-l-2 border-primary"
               }`}
             >
-              <div className="flex justify-between items-start">
+              <button
+                onClick={() => deleteNotification(notification.id)}
+                className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Supprimer la notification"
+              >
+                <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+              </button>
+              <div className="flex justify-between items-start pr-6">
                 <h3 className="font-medium">{notification.title}</h3>
                 <span className="text-xs text-muted-foreground">
                   {formatTime(notification.created_at)}
