@@ -1,11 +1,26 @@
-import { Menu } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function Navigation() {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success("Déconnexion réussie");
+      navigate("/auth");
+    } catch (error) {
+      toast.error("Erreur lors de la déconnexion");
+      console.error("Erreur de déconnexion:", error);
+    }
+  };
 
   const NavLinks = () => (
     <nav className="flex gap-6 items-center">
@@ -22,9 +37,13 @@ export function Navigation() {
         <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <ThemeToggle />
-      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground relative overflow-hidden group">
-        <span className="relative z-10">Commencer</span>
-        <span className="absolute inset-0 bg-gradient-radial from-primary-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <Button 
+        variant="ghost" 
+        size="icon"
+        onClick={handleLogout}
+        className="text-foreground hover:text-primary transition-colors"
+      >
+        <LogOut className="h-5 w-5" />
       </Button>
     </nav>
   );
