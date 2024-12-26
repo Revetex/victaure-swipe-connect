@@ -15,6 +15,7 @@ import { Sparkles } from "lucide-react";
 interface VCardSkillsProps {
   profile: any;
   isEditing: boolean;
+  setProfile: (profile: any) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   handleAddSkill: () => void;
@@ -24,6 +25,7 @@ interface VCardSkillsProps {
 export function VCardSkills({
   profile,
   isEditing,
+  setProfile,
   newSkill,
   setNewSkill,
   handleAddSkill,
