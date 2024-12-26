@@ -58,20 +58,20 @@ export function Marketplace() {
   const durations = ["3-6 mois", "6-12 mois", "12+ mois"];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center gap-2 mb-8">
           <SlidersHorizontal className="h-6 w-6 text-victaure-blue" />
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-foreground">
             Explorer les missions
           </h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1 space-y-6 bg-white p-6 rounded-lg shadow-sm">
+          <div className="lg:col-span-1 space-y-6 bg-card p-6 rounded-lg shadow-sm border">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Secteur
                 </label>
                 <Select value={sector} onValueChange={setSector}>
@@ -89,7 +89,7 @@ export function Marketplace() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Durée
                 </label>
                 <Select value={duration} onValueChange={setDuration}>
@@ -107,7 +107,7 @@ export function Marketplace() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-4">
+                <label className="block text-sm font-medium text-foreground mb-4">
                   Rémunération (CAD/jour)
                 </label>
                 <Slider
@@ -118,7 +118,7 @@ export function Marketplace() {
                   onValueChange={setSalaryRange}
                   className="mt-2"
                 />
-                <div className="flex justify-between mt-2 text-sm text-gray-600">
+                <div className="flex justify-between mt-2 text-sm text-muted-foreground">
                   <span>{salaryRange[0]} CAD</span>
                   <span>{salaryRange[1]} CAD</span>
                 </div>

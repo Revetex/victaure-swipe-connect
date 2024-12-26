@@ -20,19 +20,19 @@ export function JobCard({
   skills,
 }: JobCardProps) {
   return (
-    <Card className="w-full max-w-md mx-auto bg-white shadow-lg hover:shadow-xl transition-shadow">
+    <Card className="w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-shadow">
       <CardHeader>
         <div className="space-y-2">
-          <h3 className="font-semibold text-xl text-gray-900">{title}</h3>
-          <div className="flex items-center gap-2 text-victaure-gray-dark">
+          <h3 className="font-semibold text-xl text-foreground">{title}</h3>
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Building2 className="h-4 w-4" />
             <span>{company}</span>
           </div>
-          <div className="flex items-center gap-2 text-victaure-gray-dark">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <MapPin className="h-4 w-4" />
             <span>{location}</span>
           </div>
-          <div className="flex items-center gap-2 text-victaure-gray-dark">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="h-4 w-4" />
             <span>{duration}</span>
           </div>
@@ -48,7 +48,7 @@ export function JobCard({
               <Badge
                 key={skill}
                 variant="secondary"
-                className="bg-victaure-gray-light text-victaure-gray-dark"
+                className="bg-muted text-muted-foreground"
               >
                 {skill}
               </Badge>
