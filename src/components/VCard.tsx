@@ -1,80 +1,19 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { VCardHeader } from "./VCardHeader";
 import { VCardContact } from "./VCardContact";
 import { VCardSkills } from "./VCardSkills";
 import { VCardCertifications } from "./VCardCertifications";
 import { VCardActions } from "./VCardActions";
-import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile } from "@/data/mockProfile";
+import { useProfile } from "@/hooks/useProfile";
+import { generateVCardData, updateProfile } from "@/utils/profileActions";
 
 export function VCard() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [newSkill, setNewSkill] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
-
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          throw new Error("No authenticated user");
-        }
-
-        const { data: profileData, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
-        const transformedProfile: UserProfile = {
-          name: profileData.full_name || '',
-          title: profileData.role || 'professional', // Set a default role
-          email: profileData.email || '',
-          phone: '',
-          skills: profileData.skills || [],
-          experiences: [],
-          certifications: [],
-        };
-
-        setProfile(transformedProfile);
-        setTempProfile(transformedProfile);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load profile data",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchProfile();
-  }, [toast]);
-
-  const generateVCardData = () => {
-    if (!profile) return '';
-    
-    const vcard = `BEGIN:VCARD
-VERSION:3.0
-FN:${profile.name}
-TITLE:${profile.title}
-TEL:${profile.phone}
-EMAIL:${profile.email}
-NOTE:Skills: ${profile.skills.join(", ")}
-END:VCARD`;
-    return vcard;
-  };
+  const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
 
   const handleShare = async () => {
     if (!profile) return;
@@ -105,7 +44,7 @@ END:VCARD`;
   const handleDownloadVCard = () => {
     if (!profile) return;
     
-    const vCardData = generateVCardData();
+    const vCardData = generateVCardData(profile);
     const blob = new Blob([vCardData], { type: "text/vcard" });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -134,20 +73,7 @@ END:VCARD`;
     if (!tempProfile) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No authenticated user");
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: tempProfile.name,
-          role: 'professional', // Always set role as 'professional' for now
-          skills: tempProfile.skills,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
+      await updateProfile(tempProfile);
       setProfile(tempProfile);
       setIsEditing(false);
       toast({
@@ -168,21 +94,9 @@ END:VCARD`;
     if (!tempProfile) return;
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No authenticated user");
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: tempProfile.name,
-          role: 'professional', // Always set role as 'professional' for now
-          skills: tempProfile.skills,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
+      await updateProfile(tempProfile);
       setProfile(tempProfile);
+      setIsEditing(false); // Close edit mode after successful update
       toast({
         title: "Success",
         description: "Changes applied successfully",
