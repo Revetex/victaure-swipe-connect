@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ListTodo, Plus } from "lucide-react";
+import { ListTodo, Plus, Trash2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Todo {
   id: number;
@@ -13,11 +14,16 @@ interface Todo {
 export function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
+  const { toast } = useToast();
 
   const addTodo = () => {
     if (newTodo.trim()) {
       setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
       setNewTodo("");
+      toast({
+        title: "Tâche ajoutée",
+        description: "Votre nouvelle tâche a été ajoutée avec succès.",
+      });
     }
   };
 
@@ -27,9 +33,18 @@ export function TodoList() {
     ));
   };
 
+  const deleteTodo = (id: number) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+    toast({
+      title: "Tâche supprimée",
+      description: "La tâche a été supprimée avec succès.",
+      variant: "destructive",
+    });
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-victaure-blue">
+      <div className="flex items-center gap-2 text-primary">
         <ListTodo className="h-5 w-5 animate-bounce" />
         <h2 className="text-lg font-semibold">Tâches</h2>
       </div>
@@ -39,13 +54,14 @@ export function TodoList() {
           value={newTodo}
           onChange={(e) => setNewTodo(e.target.value)}
           placeholder="Nouvelle tâche..."
-          className="bg-victaure-dark/50 focus:ring-victaure-blue/50"
+          className="glass-card"
           onKeyPress={(e) => e.key === 'Enter' && addTodo()}
         />
         <Button 
           onClick={addTodo} 
           size="icon"
-          className="hover:bg-victaure-blue hover:text-white transition-colors"
+          variant="outline"
+          className="glass-card hover:bg-primary hover:text-white transition-colors"
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -55,20 +71,28 @@ export function TodoList() {
         {todos.map((todo) => (
           <div
             key={todo.id}
-            className="flex items-center gap-2 p-3 rounded-lg bg-victaure-dark/30 hover:bg-victaure-dark/40 transition-all duration-200 group"
+            className="flex items-center gap-3 p-3 rounded-lg glass-card group animate-in slide-in-from-left duration-300"
           >
             <Checkbox
               checked={todo.completed}
               onCheckedChange={() => toggleTodo(todo.id)}
-              className="data-[state=checked]:bg-victaure-blue"
+              className="data-[state=checked]:bg-primary"
             />
-            <span className={`${
+            <span className={`flex-grow ${
               todo.completed 
-                ? "line-through text-victaure-gray" 
-                : "group-hover:text-victaure-blue transition-colors"
+                ? "line-through text-muted-foreground" 
+                : "group-hover:text-primary transition-colors"
             }`}>
               {todo.text}
             </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => deleteTodo(todo.id)}
+              className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         ))}
       </div>
