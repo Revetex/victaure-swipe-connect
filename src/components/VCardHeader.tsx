@@ -1,7 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Edit2, X } from "lucide-react";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { jobTitles } from "@/data/jobTitles";
 
 interface VCardHeaderProps {
@@ -32,11 +38,16 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
               value={profile.title}
               onValueChange={(value) => setProfile({ ...profile, title: value })}
             >
-              {jobTitles.map((title) => (
-                <Select.Option key={title} value={title}>
-                  {title}
-                </Select.Option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez un titre" />
+              </SelectTrigger>
+              <SelectContent>
+                {jobTitles.map((title) => (
+                  <SelectItem key={title} value={title}>
+                    {title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           ) : (
             profile.title

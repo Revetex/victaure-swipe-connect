@@ -2,7 +2,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { predefinedSkills } from "@/data/skills";
 
 interface VCardSkillsProps {
@@ -45,15 +51,19 @@ export function VCardSkills({
           <Select
             value={newSkill}
             onValueChange={setNewSkill}
-            placeholder="Sélectionnez une compétence"
           >
-            {predefinedSkills
-              .filter((skill) => !profile.skills.includes(skill))
-              .map((skill) => (
-                <Select.Option key={skill} value={skill}>
-                  {skill}
-                </Select.Option>
-              ))}
+            <SelectTrigger>
+              <SelectValue placeholder="Sélectionnez une compétence" />
+            </SelectTrigger>
+            <SelectContent>
+              {predefinedSkills
+                .filter((skill) => !profile.skills.includes(skill))
+                .map((skill) => (
+                  <SelectItem key={skill} value={skill}>
+                    {skill}
+                  </SelectItem>
+                ))}
+            </SelectContent>
           </Select>
           <Button onClick={handleAddSkill}>Ajouter</Button>
         </div>
