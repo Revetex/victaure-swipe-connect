@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { SwipeMatch } from "@/components/SwipeMatch";
 import { Stats } from "@/components/Stats";
+import { Dashboard } from "@/components/Dashboard";
 
 const Index = () => {
   return (
@@ -11,6 +12,7 @@ const Index = () => {
       <main className="pt-16">
         <Hero />
         <Stats />
+        <Dashboard />
         <Features />
         <section className="py-16 bg-white">
           <div className="max-w-4xl mx-auto px-4">
