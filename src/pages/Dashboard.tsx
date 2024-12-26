@@ -17,12 +17,12 @@ export default function DashboardPage() {
         return;
       }
 
-      // Check if user has a profile
+      // Check if user has a profile using maybeSingle() instead of single()
       const { data: profile } = await supabase
         .from("profiles")
         .select("id")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
       setHasProfile(!!profile);
     };

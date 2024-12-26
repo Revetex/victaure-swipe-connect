@@ -26,7 +26,6 @@ import * as z from "zod";
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  title: z.string().min(2, "Le titre doit contenir au moins 2 caractères"),
   bio: z.string().optional(),
   phone: z.string().optional(),
   skills: z.array(z.string()).default([]),
@@ -41,7 +40,6 @@ export function VCardCreationForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       full_name: "",
-      title: "",
       bio: "",
       phone: "",
       skills: [],
@@ -62,10 +60,10 @@ export function VCardCreationForm() {
         .upsert({
           id: user.id,
           full_name: values.full_name,
-          title: values.title,
           bio: values.bio,
-          phone: values.phone,
           skills: values.skills,
+          role: "professional", // Setting a default role for new profiles
+          email: user.email || "", // Required field from the database
         });
 
       if (error) throw error;
@@ -115,20 +113,6 @@ export function VCardCreationForm() {
 
             <FormField
               control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Titre professionnel</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Développeur Full Stack" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="bio"
               render={({ field }) => (
                 <FormItem>
@@ -138,20 +122,6 @@ export function VCardCreationForm() {
                       placeholder="Parlez-nous de vous et de votre expérience..."
                       {...field}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Téléphone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+33 6 12 34 56 78" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
