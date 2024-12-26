@@ -1,18 +1,38 @@
-const predefinedResponses = [
-  "Je peux vous aider à trouver des missions intéressantes au Canada.",
-  "Je vous suggère de mettre à jour votre profil pour augmenter vos chances de trouver des missions.",
-  "Je peux vous aider à naviguer sur la plateforme et à utiliser toutes ses fonctionnalités.",
-  "N'hésitez pas à consulter les nouvelles missions disponibles dans le marketplace.",
-  "Je peux vous aider à optimiser votre VCard pour attirer plus d'opportunités.",
-  "Avez-vous pensé à mettre en avant vos certifications canadiennes ?",
-  "Je peux vous aider à préparer vos entretiens avec les entreprises canadiennes.",
-];
+import { pipeline } from '@huggingface/transformers';
+
+let model: any = null;
+
+const initModel = async () => {
+  if (!model) {
+    try {
+      model = await pipeline(
+        'text-generation',
+        'Xenova/distilgpt2-fr',
+        { device: 'cpu' }
+      );
+    } catch (error) {
+      console.error('Erreur lors de l\'initialisation du modèle:', error);
+      return null;
+    }
+  }
+  return model;
+};
 
 export async function generateAIResponse(message: string) {
-  // Simulation d'un délai de réponse pour plus de réalisme
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Sélection aléatoire d'une réponse
-  const randomIndex = Math.floor(Math.random() * predefinedResponses.length);
-  return predefinedResponses[randomIndex];
+  try {
+    const modelInstance = await initModel();
+    if (!modelInstance) {
+      return "Je suis désolé, je ne peux pas répondre pour le moment. Essayez de recharger la page.";
+    }
+
+    const result = await modelInstance(message, {
+      max_length: 50,
+      temperature: 0.7,
+    });
+
+    return result[0].generated_text || "Je suis désolé, je n'ai pas compris. Pouvez-vous reformuler ?";
+  } catch (error) {
+    console.error('Erreur lors de la génération de la réponse:', error);
+    return "Une erreur est survenue. Veuillez réessayer.";
+  }
 }
