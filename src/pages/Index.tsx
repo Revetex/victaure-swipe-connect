@@ -4,6 +4,7 @@ import { Features } from "@/components/Features";
 import { SwipeMatch } from "@/components/SwipeMatch";
 import { Stats } from "@/components/Stats";
 import { Dashboard } from "@/components/Dashboard";
+import { Marketplace } from "@/components/Marketplace";
 
 const Index = () => {
   return (
@@ -14,6 +15,7 @@ const Index = () => {
         <Stats />
         <Dashboard />
         <Features />
+        <Marketplace />
         <section className="py-16 bg-white">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
