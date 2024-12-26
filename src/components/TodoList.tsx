@@ -23,7 +23,7 @@ export function TodoList() {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const { toast } = useToast();
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (newTodo.trim()) {
       const todo = {
         id: Date.now(),
@@ -41,12 +41,30 @@ export function TodoList() {
         description: "Votre nouvelle tâche a été ajoutée avec succès.",
       });
 
-      // Add notification
-      addNotification(`Nouvelle tâche: ${newTodo}`, selectedDate ? `À faire pour le ${format(selectedDate, 'dd/MM/yyyy')}` : "");
+      // Add notification to database
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        await supabase
+          .from('notifications')
+          .insert([
+            {
+              user_id: user.id,
+              title: "Nouvelle tâche",
+              message: selectedDate 
+                ? `${newTodo} - À faire pour le ${format(selectedDate, 'dd/MM/yyyy')}`
+                : newTodo,
+              read: false
+            }
+          ]);
+      } catch (error) {
+        console.error('Error adding notification:', error);
+      }
     }
   };
 
-  const toggleTodo = (id: number) => {
+  const toggleTodo = async (id: number) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
         const completed = !todo.completed;
@@ -55,7 +73,28 @@ export function TodoList() {
             title: "Tâche terminée",
             description: "Bravo ! La tâche a été marquée comme terminée.",
           });
-          addNotification("Tâche terminée", todo.text);
+          
+          // Add completion notification
+          const addCompletionNotification = async () => {
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (!user) return;
+
+              await supabase
+                .from('notifications')
+                .insert([
+                  {
+                    user_id: user.id,
+                    title: "Tâche terminée",
+                    message: todo.text,
+                    read: false
+                  }
+                ]);
+            } catch (error) {
+              console.error('Error adding completion notification:', error);
+            }
+          };
+          addCompletionNotification();
         }
         return { ...todo, completed };
       }
@@ -70,28 +109,6 @@ export function TodoList() {
       description: "La tâche a été supprimée avec succès.",
       variant: "destructive",
     });
-  };
-
-  const addNotification = async (title: string, message: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('notifications')
-        .insert([
-          {
-            user_id: user.id,
-            title,
-            message,
-            read: false
-          }
-        ]);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error adding notification:', error);
-    }
   };
 
   return (
