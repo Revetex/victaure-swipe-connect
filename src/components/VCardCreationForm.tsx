@@ -55,15 +55,16 @@ export function VCardCreationForm() {
         throw new Error("Utilisateur non connecté");
       }
 
+      // Create the profile with the exact structure expected by the database
       const { error } = await supabase
         .from("profiles")
-        .upsert({
-          id: user.id,
+        .insert({
+          id: user.id, // Explicitly set the id to match auth.uid()
           full_name: values.full_name,
-          bio: values.bio,
+          bio: values.bio || null,
+          email: user.email || "", // Required field
+          role: "professional", // Default role
           skills: values.skills,
-          role: "professional", // Setting a default role for new profiles
-          email: user.email || "", // Required field from the database
         });
 
       if (error) throw error;
