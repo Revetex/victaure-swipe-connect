@@ -11,6 +11,7 @@ export default function AuthPage() {
   useEffect(() => {
     // Check if user is already authenticated
     supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
       if (session) {
         toast.success("Connexion réussie");
         navigate("/dashboard");
@@ -20,6 +21,7 @@ export default function AuthPage() {
     // Check current session on mount
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log("Current session:", session);
       if (session) {
         navigate("/dashboard");
       }
@@ -29,15 +31,15 @@ export default function AuthPage() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 glass-card p-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-foreground">Bienvenue</h2>
-          <p className="mt-2 text-muted-foreground">
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-sm">
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-bold">Bienvenue</h1>
+          <p className="text-muted-foreground">
             Connectez-vous ou créez un compte pour continuer
           </p>
         </div>
-        
+
         <Auth
           supabaseClient={supabase}
           appearance={{
@@ -45,14 +47,14 @@ export default function AuthPage() {
             variables: {
               default: {
                 colors: {
-                  brand: 'hsl(var(--primary))',
-                  brandAccent: 'hsl(var(--primary))',
-                }
-              }
-            }
+                  brand: '#0369a1',
+                  brandAccent: '#0284c7',
+                },
+              },
+            },
           }}
           providers={[]}
-          redirectTo={window.location.origin}
+          redirectTo={`${window.location.origin}/dashboard`}
           localization={{
             variables: {
               sign_in: {
