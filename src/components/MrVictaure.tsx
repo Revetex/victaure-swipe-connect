@@ -32,8 +32,8 @@ export function MrVictaure() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setIsThinking(true);
     setInputMessage("");
+    setIsThinking(true);
 
     const thinkingMessage: Message = {
       id: (Date.now() + 1).toString(),
@@ -59,9 +59,11 @@ export function MrVictaure() {
       
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
+      setMessages((prev) => prev.filter(m => !m.thinking));
+      
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la génération de la réponse.",
+        description: "Je ne peux pas répondre pour le moment. Veuillez réessayer dans quelques instants.",
         variant: "destructive",
       });
     } finally {
