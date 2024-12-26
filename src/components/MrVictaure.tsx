@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
 import { ChatInput } from "./chat/ChatInput";
-import { generateAIResponse, setApiKey } from "@/services/perplexityService";
+import { generateAIResponse, setApiKey } from "@/services/huggingFaceService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -26,10 +26,11 @@ export function MrVictaure() {
   const { toast } = useToast();
 
   const handleApiKeySubmit = () => {
+    setApiKey(apiKeyInput);
     setIsConfigured(true);
     toast({
       title: "Configuration réussie",
-      description: "L'assistant est prêt à être utilisé.",
+      description: "L'assistant est prêt à être utilisé. Vous utilisez maintenant l'API Hugging Face (gratuite).",
     });
   };
 
