@@ -1,32 +1,48 @@
-import { pipeline } from '@huggingface/transformers';
-
-let textGenerator: any = null;
-
-const initializeGenerator = async () => {
-  if (!textGenerator) {
-    textGenerator = await pipeline('text-generation', 'mistralai/Mistral-7B-v0.1', {
-      revision: 'main'
-    });
-  }
-  return textGenerator;
-};
+let apiKey: string | null = null;
 
 export const setApiKey = (key: string) => {
-  // Cette fonction est gardée pour maintenir la compatibilité
-  console.log('API key not needed anymore');
+  apiKey = key;
 };
 
 export async function generateAIResponse(message: string) {
   try {
-    const generator = await initializeGenerator();
-    const result = await generator(message, {
-      max_length: 100,
-      num_return_sequences: 1
+    if (!apiKey) {
+      throw new Error('API key not configured');
+    }
+
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'Tu es un assistant professionnel qui aide les utilisateurs dans leur recherche d\'emploi. Sois précis et concis dans tes réponses.'
+          },
+          {
+            role: 'user',
+            content: message
+          }
+        ],
+        temperature: 0.2,
+        max_tokens: 1000,
+      }),
     });
-    return result[0].generated_text;
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
   } catch (error) {
     console.error('Erreur lors de la génération:', error);
-    // Fallback sur des réponses prédéfinies en cas d'erreur
+    
+    // Fallback responses in case of error
     const predefinedResponses = [
       "Je suis là pour vous aider dans votre recherche d'emploi. Que puis-je faire pour vous ?",
       "Je peux vous donner des conseils sur la rédaction de votre CV.",
@@ -37,7 +53,6 @@ export async function generateAIResponse(message: string) {
       "Avez-vous besoin d'aide pour définir votre projet professionnel ?",
       "Je peux vous donner des astuces pour développer votre réseau professionnel.",
     ];
-    const randomIndex = Math.floor(Math.random() * predefinedResponses.length);
-    return predefinedResponses[randomIndex];
+    return predefinedResponses[Math.floor(Math.random() * predefinedResponses.length)];
   }
 }
