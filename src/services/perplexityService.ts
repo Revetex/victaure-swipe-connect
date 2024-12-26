@@ -9,8 +9,7 @@ const initModel = async () => {
         'text-generation',
         'onnx-community/gpt2-french',
         { 
-          device: 'cpu',
-          quantized: true // Reduce model size and improve performance
+          device: 'cpu'
         }
       );
     } catch (error) {
