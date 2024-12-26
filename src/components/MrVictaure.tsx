@@ -21,7 +21,7 @@ export function MrVictaure() {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [apiKeyInput, setApiKeyInput] = useState("hf_VXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxx");
   const [isConfigured, setIsConfigured] = useState(false);
   const { toast } = useToast();
 
@@ -30,7 +30,7 @@ export function MrVictaure() {
     setIsConfigured(true);
     toast({
       title: "Configuration réussie",
-      description: "L'assistant est prêt à être utilisé. Vous utilisez maintenant l'API Hugging Face (gratuite).",
+      description: "L'assistant est prêt à être utilisé avec votre clé API Hugging Face.",
     });
   };
 
@@ -143,15 +143,15 @@ export function MrVictaure() {
         <div className="flex flex-col gap-4 p-4">
           <h2 className="text-lg font-semibold">Configuration requise</h2>
           <p className="text-sm text-gray-600">
-            Pour utiliser l'assistant, veuillez configurer votre clé API Perplexity.
+            Pour utiliser l'assistant, veuillez configurer votre clé API Hugging Face.
             Vous pouvez obtenir une clé sur{" "}
             <a
-              href="https://www.perplexity.ai/settings/api"
+              href="https://huggingface.co/settings/tokens"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline"
             >
-              perplexity.ai
+              huggingface.co
             </a>
           </p>
           <div className="flex gap-2">
