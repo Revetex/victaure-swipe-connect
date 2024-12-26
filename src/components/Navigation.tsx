@@ -13,12 +13,14 @@ export function Navigation() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       toast.success("Déconnexion réussie");
-      navigate("/auth");
+      navigate("/auth", { replace: true });
     } catch (error) {
-      toast.error("Erreur lors de la déconnexion");
       console.error("Erreur de déconnexion:", error);
+      toast.error("Erreur lors de la déconnexion");
     }
   };
 
