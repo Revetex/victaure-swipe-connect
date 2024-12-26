@@ -17,7 +17,8 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        const { data: profileData, error } = await supabase
+        let finalProfileData;
+        const { data: existingProfile, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
@@ -28,7 +29,7 @@ export function useProfile() {
         }
 
         // Si aucun profil n'existe, on en crée un nouveau
-        if (!profileData) {
+        if (!existingProfile) {
           const { error: insertError } = await supabase
             .from('profiles')
             .insert({
@@ -49,15 +50,17 @@ export function useProfile() {
           if (fetchError) throw fetchError;
           if (!newProfile) throw new Error("Failed to create profile");
 
-          profileData = newProfile;
+          finalProfileData = newProfile;
+        } else {
+          finalProfileData = existingProfile;
         }
 
         const transformedProfile: UserProfile = {
-          name: profileData.full_name || '',
-          title: profileData.role || 'professional',
-          email: profileData.email || '',
+          name: finalProfileData.full_name || '',
+          title: finalProfileData.role || 'professional',
+          email: finalProfileData.email || '',
           phone: '',
-          skills: profileData.skills || [],
+          skills: finalProfileData.skills || [],
           experiences: [],
           certifications: [],
         };
