@@ -34,6 +34,36 @@
 
     --radius: 0.5rem;
   }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 100%;
+
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 199 76% 46%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 24 92% 51%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 10% 8%;
+    --muted-foreground: 0 0% 78%;
+
+    --accent: 199 76% 46%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 199 76% 46%;
+    --input: 240 10% 8%;
+    --ring: 199 76% 46%;
+  }
 }
 
 @layer base {
@@ -45,7 +75,6 @@
     @apply bg-victaure-dark text-victaure-gray-light;
   }
 
-  /* Ajout d'effets de survol globaux */
   .hover-glow {
     @apply relative;
   }
@@ -58,7 +87,6 @@
     @apply opacity-100;
   }
 
-  /* Effet de bordure lumineux */
   .border-glow {
     @apply border border-victaure-blue/20 shadow-[0_0_15px_rgba(30,174,219,0.3)];
   }

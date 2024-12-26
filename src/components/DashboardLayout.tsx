@@ -10,25 +10,25 @@ import { Marketplace } from "@/components/Marketplace";
 
 export function DashboardLayout() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="container mx-auto px-2 py-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {/* Agent Mr-Victaure */}
         <div className="lg:col-span-2 xl:col-span-1">
           <MrVictaure />
         </div>
 
         {/* Calendar */}
-        <div className="bg-victaure-metal/20 rounded-lg p-6 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
+        <div className="bg-victaure-metal/20 rounded-lg p-4 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
           <Calendar />
         </div>
 
         {/* Todo List */}
-        <div className="bg-victaure-metal/20 rounded-lg p-6 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
+        <div className="bg-victaure-metal/20 rounded-lg p-4 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
           <TodoList />
         </div>
 
         {/* Notifications */}
-        <div className="bg-victaure-metal/20 rounded-lg p-6 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
+        <div className="bg-victaure-metal/20 rounded-lg p-4 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
           <NotificationCenter />
         </div>
 
@@ -43,12 +43,12 @@ export function DashboardLayout() {
         </div>
 
         {/* Messages */}
-        <div className="bg-victaure-metal/20 rounded-lg p-6 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
+        <div className="bg-victaure-metal/20 rounded-lg p-4 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
           <Messages />
         </div>
 
         {/* Settings */}
-        <div className="bg-victaure-metal/20 rounded-lg p-6 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
+        <div className="bg-victaure-metal/20 rounded-lg p-4 border border-victaure-blue/20 shadow-lg backdrop-blur-sm">
           <Settings />
         </div>
 
