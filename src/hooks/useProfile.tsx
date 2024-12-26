@@ -59,7 +59,7 @@ export function useProfile() {
           name: finalProfileData.full_name || '',
           title: finalProfileData.role || 'professional',
           email: finalProfileData.email || '',
-          phone: '',
+          phone: finalProfileData.phone || '',
           skills: finalProfileData.skills || [],
           experiences: [],
           certifications: [],

@@ -31,10 +31,11 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
             {isEditing ? (
               <Input
-                value={profile.phone}
+                value={profile.phone || ""}
                 onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                 className="flex-1"
                 placeholder="Votre téléphone"
+                type="tel"
               />
             ) : (
               <span className="text-sm">{profile.phone || "Téléphone non défini"}</span>
