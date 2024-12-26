@@ -26,14 +26,11 @@ export function MrVictaure() {
   const { toast } = useToast();
 
   const handleApiKeySubmit = () => {
-    if (apiKeyInput.trim()) {
-      setApiKey(apiKeyInput.trim());
-      setIsConfigured(true);
-      toast({
-        title: "Configuration réussie",
-        description: "Votre clé API a été configurée avec succès.",
-      });
-    }
+    setIsConfigured(true);
+    toast({
+      title: "Configuration réussie",
+      description: "L'assistant est prêt à être utilisé.",
+    });
   };
 
   const handleSendMessage = async () => {
