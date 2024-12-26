@@ -23,7 +23,7 @@ export function MrVictaure() {
 
   // Initialize API key on component mount
   useState(() => {
-    setApiKey("hf_votreCléAPI"); // Remplacez par votre clé API HuggingFace
+    setApiKey("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");
   });
 
   const handleSendMessage = async () => {
