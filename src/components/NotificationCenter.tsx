@@ -1,8 +1,9 @@
-import { Bell, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { NotificationHeader } from "./notifications/NotificationHeader";
+import { NotificationItem } from "./notifications/NotificationItem";
 
 interface Notification {
   id: string;
@@ -37,7 +38,6 @@ export function NotificationCenter() {
 
     fetchNotifications();
 
-    // Subscribe to new notifications
     const channel = supabase
       .channel('notifications')
       .on(
@@ -57,20 +57,6 @@ export function NotificationCenter() {
       supabase.removeChannel(channel);
     };
   }, []);
-
-  const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (minutes < 60) return `Il y a ${minutes} min`;
-    if (hours < 24) return `Il y a ${hours}h`;
-    return `Il y a ${days}j`;
-  };
 
   const deleteNotification = async (id: string) => {
     try {
@@ -98,42 +84,18 @@ export function NotificationCenter() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-primary">
-          <Bell className="h-5 w-5" />
-          <h2 className="text-lg font-semibold">Notifications</h2>
-        </div>
-        <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full">
-          {notifications.filter(n => !n.read).length} nouvelles
-        </span>
-      </div>
+      <NotificationHeader 
+        unreadCount={notifications.filter(n => !n.read).length} 
+      />
 
       <ScrollArea className="h-[300px] pr-4">
         <div className="space-y-2">
           {notifications.map((notification) => (
-            <div
+            <NotificationItem
               key={notification.id}
-              className={`p-3 rounded relative group ${
-                notification.read
-                  ? "bg-muted"
-                  : "bg-primary/10 border-l-2 border-primary"
-              }`}
-            >
-              <button
-                onClick={() => deleteNotification(notification.id)}
-                className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                aria-label="Supprimer la notification"
-              >
-                <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-              </button>
-              <div className="flex justify-between items-start pr-6">
-                <h3 className="font-medium">{notification.title}</h3>
-                <span className="text-xs text-muted-foreground">
-                  {formatTime(notification.created_at)}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
-            </div>
+              {...notification}
+              onDelete={deleteNotification}
+            />
           ))}
         </div>
       </ScrollArea>
