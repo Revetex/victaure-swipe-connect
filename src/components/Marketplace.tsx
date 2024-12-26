@@ -31,8 +31,8 @@ const mockJobs: Job[] = [
     id: "1",
     title: "Lead Developer Frontend",
     company: "Tech Solutions",
-    location: "Paris",
-    salary: "600-800€ / jour",
+    location: "Toronto",
+    salary: "600-800 CAD / jour",
     duration: "12 mois",
     sector: "Technology",
     skills: ["React", "TypeScript", "Node.js"],
@@ -41,8 +41,8 @@ const mockJobs: Job[] = [
     id: "2",
     title: "Product Manager",
     company: "Innovation Corp",
-    location: "Lyon",
-    salary: "550-700€ / jour",
+    location: "Vancouver",
+    salary: "550-700 CAD / jour",
     duration: "6 mois",
     sector: "Product",
     skills: ["Agile", "Scrum", "Product Strategy"],
@@ -108,7 +108,7 @@ export function Marketplace() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-4">
-                  Rémunération (€/jour)
+                  Rémunération (CAD/jour)
                 </label>
                 <Slider
                   defaultValue={salaryRange}
@@ -119,8 +119,8 @@ export function Marketplace() {
                   className="mt-2"
                 />
                 <div className="flex justify-between mt-2 text-sm text-gray-600">
-                  <span>{salaryRange[0]}€</span>
-                  <span>{salaryRange[1]}€</span>
+                  <span>{salaryRange[0]} CAD</span>
+                  <span>{salaryRange[1]} CAD</span>
                 </div>
               </div>
             </div>

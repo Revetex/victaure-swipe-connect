@@ -19,7 +19,7 @@ const quickActions = [
   },
   {
     title: "Paiements en attente",
-    value: "2 500€",
+    value: "CAD 2,500",
     icon: DollarSign,
     color: "text-victaure-red",
     bgColor: "bg-victaure-red/10",

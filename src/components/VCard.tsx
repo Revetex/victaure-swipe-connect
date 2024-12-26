@@ -30,7 +30,7 @@ const mockProfile: UserProfile = {
   name: "Jean Dupont",
   title: "Développeur Full Stack Senior",
   email: "jean.dupont@example.com",
-  phone: "+33 6 12 34 56 78",
+  phone: "+1 (514) 555-0123",
   skills: ["React", "Node.js", "TypeScript", "AWS", "Docker"],
   experiences: [
     {
@@ -52,7 +52,7 @@ const mockProfile: UserProfile = {
     },
     {
       title: "Master en Informatique",
-      institution: "Université de Paris",
+      institution: "Université de Montréal",
       year: "2018",
     },
   ],
