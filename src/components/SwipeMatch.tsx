@@ -34,16 +34,22 @@ const mockJobs = [
 export function SwipeMatch() {
   const [currentJobIndex, setCurrentJobIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [direction, setDirection] = useState<"left" | "right" | null>(null);
 
-  const handleSwipe = (direction: "left" | "right") => {
+  const handleSwipe = (swipeDirection: "left" | "right") => {
     if (isAnimating) return;
     
     setIsAnimating(true);
+    setDirection(swipeDirection);
     
-    if (direction === "right") {
-      toast.success(`Vous avez liké "${mockJobs[currentJobIndex].title}"`);
+    if (swipeDirection === "right") {
+      toast.success(`Vous avez liké "${mockJobs[currentJobIndex].title}"`, {
+        duration: 2000,
+      });
     } else {
-      toast.info(`Vous avez passé "${mockJobs[currentJobIndex].title}"`);
+      toast.info(`Vous avez passé "${mockJobs[currentJobIndex].title}"`, {
+        duration: 2000,
+      });
     }
     
     setTimeout(() => {
@@ -51,6 +57,7 @@ export function SwipeMatch() {
         setCurrentJobIndex(prev => prev + 1);
       }
       setIsAnimating(false);
+      setDirection(null);
     }, 300);
   };
 
@@ -64,8 +71,11 @@ export function SwipeMatch() {
           Revenez plus tard pour découvrir de nouvelles missions.
         </p>
         <Button
-          onClick={() => setCurrentJobIndex(0)}
-          className="bg-victaure-blue hover:bg-blue-600 text-white transition-colors"
+          onClick={() => {
+            setCurrentJobIndex(0);
+            setDirection(null);
+          }}
+          className="bg-victaure-blue hover:bg-blue-600 text-white transition-colors duration-200"
         >
           Recommencer
         </Button>
@@ -75,9 +85,15 @@ export function SwipeMatch() {
 
   return (
     <div className="flex flex-col items-center gap-8">
-      <div className={`relative w-full max-w-md transition-transform duration-300 ${
-        isAnimating ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
-      }`}>
+      <div 
+        className={`relative w-full max-w-md transition-all duration-300 ${
+          isAnimating 
+            ? direction === "right"
+              ? "translate-x-full opacity-0 scale-95"
+              : "-translate-x-full opacity-0 scale-95"
+            : "translate-x-0 opacity-100 scale-100"
+        }`}
+      >
         <JobCard {...mockJobs[currentJobIndex]} />
       </div>
       
@@ -85,7 +101,7 @@ export function SwipeMatch() {
         <Button
           variant="outline"
           size="lg"
-          className="border-victaure-red text-victaure-red hover:bg-victaure-red/10 transition-colors"
+          className="border-victaure-red text-victaure-red hover:bg-victaure-red/10 transition-all duration-200 active:scale-95"
           onClick={() => handleSwipe("left")}
           disabled={isAnimating}
         >
@@ -93,7 +109,7 @@ export function SwipeMatch() {
         </Button>
         <Button
           size="lg"
-          className="bg-victaure-green hover:bg-green-600 text-white transition-colors"
+          className="bg-victaure-green hover:bg-green-600 text-white transition-all duration-200 active:scale-95"
           onClick={() => handleSwipe("right")}
           disabled={isAnimating}
         >
