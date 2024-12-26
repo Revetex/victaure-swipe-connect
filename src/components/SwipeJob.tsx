@@ -23,9 +23,9 @@ export function SwipeJob() {
     e.preventDefault();
     
     try {
-      const { data: profile } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
-      if (!profile.user) {
+      if (authError || !user) {
         toast({
           title: "Erreur",
           description: "Vous devez être connecté pour créer une offre",
@@ -34,15 +34,42 @@ export function SwipeJob() {
         return;
       }
 
-      const { error } = await supabase.from("jobs").insert({
+      // Get the user's profile to verify they exist and get their role
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profile) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de vérifier votre profil",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Verify the user is an employer
+      if (profile.role !== 'employer') {
+        toast({
+          title: "Erreur",
+          description: "Seuls les employeurs peuvent créer des offres",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { error: insertError } = await supabase.from("jobs").insert({
         title: formData.title,
         description: formData.description,
         budget: parseFloat(formData.budget),
         location: formData.location,
-        employer_id: profile.user.id
+        employer_id: user.id,
+        status: 'open'
       });
 
-      if (error) throw error;
+      if (insertError) throw insertError;
 
       toast({
         title: "Succès",
@@ -57,6 +84,7 @@ export function SwipeJob() {
         location: ""
       });
     } catch (error) {
+      console.error("Error creating job:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la création de l'offre",
