@@ -49,24 +49,35 @@ export function VCardCreationForm() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
+      if (authError) {
+        console.error("Auth error:", authError);
+        throw new Error("Erreur d'authentification");
+      }
+
       if (!user) {
+        console.error("No user found");
         throw new Error("Utilisateur non connecté");
       }
 
-      const { error } = await supabase
+      console.log("Creating profile for user:", user.id);
+      
+      const { error: insertError } = await supabase
         .from("profiles")
         .insert({
           id: user.id,
           full_name: values.full_name,
           bio: values.bio || null,
-          email: user.email || "",
+          email: user.email,
           role: "professional",
           skills: values.skills,
         });
 
-      if (error) throw error;
+      if (insertError) {
+        console.error("Insert error:", insertError);
+        throw insertError;
+      }
 
       toast({
         title: "Profil créé avec succès",
