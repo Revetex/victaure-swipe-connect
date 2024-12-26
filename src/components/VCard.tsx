@@ -37,7 +37,7 @@ export function VCard() {
 
         const transformedProfile: UserProfile = {
           name: profileData.full_name || '',
-          title: profileData.role || '',
+          title: profileData.role || 'professional', // Set a default role
           email: profileData.email || '',
           phone: '',
           skills: profileData.skills || [],
@@ -141,7 +141,7 @@ END:VCARD`;
         .from('profiles')
         .update({
           full_name: tempProfile.name,
-          role: tempProfile.title,
+          role: 'professional', // Always set role as 'professional' for now
           skills: tempProfile.skills,
         })
         .eq('id', user.id);
@@ -175,7 +175,7 @@ END:VCARD`;
         .from('profiles')
         .update({
           full_name: tempProfile.name,
-          role: tempProfile.title,
+          role: 'professional', // Always set role as 'professional' for now
           skills: tempProfile.skills,
         })
         .eq('id', user.id);
