@@ -1,42 +1,46 @@
-import { pipeline } from '@huggingface/transformers';
+let apiKey = '';
 
-let model: any = null;
-
-const initModel = async () => {
-  if (!model) {
-    try {
-      model = await pipeline(
-        'text-generation',
-        'onnx-community/gpt2-french',
-        { 
-          device: 'cpu'
-        }
-      );
-    } catch (error) {
-      console.error('Erreur lors de l\'initialisation du modèle:', error);
-      return null;
-    }
-  }
-  return model;
+export const setApiKey = (key: string) => {
+  apiKey = key;
 };
 
 export async function generateAIResponse(message: string) {
   try {
-    const modelInstance = await initModel();
-    if (!modelInstance) {
-      return "Je suis désolé, je ne peux pas répondre pour le moment. Essayez de recharger la page.";
+    if (!apiKey) {
+      return "Veuillez configurer votre clé API Perplexity pour continuer.";
     }
 
-    const result = await modelInstance(message, {
-      max_length: 100,
-      temperature: 0.7,
-      do_sample: true,
-      top_k: 50,
-      top_p: 0.95,
-      no_repeat_ngram_size: 2
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'Tu es un assistant professionnel et amical qui aide les utilisateurs dans leur recherche d\'emploi. Réponds toujours en français de manière concise et pertinente.'
+          },
+          {
+            role: 'user',
+            content: message
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
     });
 
-    return result[0].generated_text || "Je suis désolé, je n'ai pas compris. Pouvez-vous reformuler ?";
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Erreur API Perplexity:', error);
+      return "Désolé, une erreur est survenue. Veuillez réessayer.";
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse:', error);
     return "Une erreur est survenue. Veuillez réessayer.";

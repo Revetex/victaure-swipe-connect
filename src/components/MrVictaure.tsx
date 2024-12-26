@@ -4,7 +4,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
 import { ChatInput } from "./chat/ChatInput";
-import { generateAIResponse } from "@/services/perplexityService";
+import { generateAIResponse, setApiKey } from "@/services/perplexityService";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface Message {
   id: string;
@@ -19,7 +21,20 @@ export function MrVictaure() {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [isConfigured, setIsConfigured] = useState(false);
   const { toast } = useToast();
+
+  const handleApiKeySubmit = () => {
+    if (apiKeyInput.trim()) {
+      setApiKey(apiKeyInput.trim());
+      setIsConfigured(true);
+      toast({
+        title: "Configuration réussie",
+        description: "Votre clé API a été configurée avec succès.",
+      });
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -126,28 +141,57 @@ export function MrVictaure() {
     <div className="bg-victaure-metal/20 rounded-lg p-4 border border-victaure-blue/20 shadow-lg backdrop-blur-sm hover:shadow-xl transition-all duration-300 h-[500px] flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-victaure-blue/5 to-transparent pointer-events-none" />
       
-      <ChatHeader onClearChat={clearChat} />
-
-      <ScrollArea className="flex-grow mb-4 pr-4 relative">
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              content={message.content}
-              sender={message.sender}
-              thinking={message.thinking}
+      {!isConfigured ? (
+        <div className="flex flex-col gap-4 p-4">
+          <h2 className="text-lg font-semibold">Configuration requise</h2>
+          <p className="text-sm text-gray-600">
+            Pour utiliser l'assistant, veuillez configurer votre clé API Perplexity.
+            Vous pouvez obtenir une clé sur{" "}
+            <a
+              href="https://www.perplexity.ai/settings/api"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              perplexity.ai
+            </a>
+          </p>
+          <div className="flex gap-2">
+            <Input
+              type="password"
+              placeholder="Entrez votre clé API"
+              value={apiKeyInput}
+              onChange={(e) => setApiKeyInput(e.target.value)}
             />
-          ))}
+            <Button onClick={handleApiKeySubmit}>Configurer</Button>
+          </div>
         </div>
-      </ScrollArea>
+      ) : (
+        <>
+          <ChatHeader onClearChat={clearChat} />
 
-      <ChatInput
-        value={inputMessage}
-        onChange={setInputMessage}
-        onSend={handleSendMessage}
-        onVoiceInput={handleVoiceInput}
-        isListening={isListening}
-      />
+          <ScrollArea className="flex-grow mb-4 pr-4 relative">
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <ChatMessage
+                  key={message.id}
+                  content={message.content}
+                  sender={message.sender}
+                  thinking={message.thinking}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+
+          <ChatInput
+            value={inputMessage}
+            onChange={setInputMessage}
+            onSend={handleSendMessage}
+            onVoiceInput={handleVoiceInput}
+            isListening={isListening}
+          />
+        </>
+      )}
     </div>
   );
 }
