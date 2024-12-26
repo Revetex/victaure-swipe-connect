@@ -24,6 +24,9 @@ interface Job {
   duration: string;
   sector: string;
   skills: string[];
+  category: string;
+  contract_type: string;
+  experience_level: string;
 }
 
 const mockJobs: Job[] = [
@@ -36,6 +39,9 @@ const mockJobs: Job[] = [
     duration: "12 mois",
     sector: "Technology",
     skills: ["React", "TypeScript", "Node.js"],
+    category: "Technology",
+    contract_type: "Full-time",
+    experience_level: "Senior"
   },
   {
     id: "2",
@@ -46,6 +52,9 @@ const mockJobs: Job[] = [
     duration: "6 mois",
     sector: "Product",
     skills: ["Agile", "Scrum", "Product Strategy"],
+    category: "Product",
+    contract_type: "Full-time",
+    experience_level: "Mid-Level"
   },
 ];
 

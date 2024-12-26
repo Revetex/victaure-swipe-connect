@@ -14,7 +14,12 @@ interface Job {
   salary: string;
   duration: string;
   skills: string[];
+  category: string;
+  contract_type: string;
+  experience_level: string;
 }
+
+// ... keep existing code (useState, useEffect, and other functions)
 
 export function SwipeMatch() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -24,10 +29,6 @@ export function SwipeMatch() {
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
   const dragConstraintsRef = useRef(null);
-
-  useEffect(() => {
-    fetchJobs();
-  }, []);
 
   const fetchJobs = async () => {
     try {
@@ -42,11 +43,14 @@ export function SwipeMatch() {
         const formattedJobs = data.map(job => ({
           id: job.id,
           title: job.title,
-          company: "Company Name", // You might want to fetch this from a related table
+          company: "Company Name",
           location: job.location,
           salary: `${job.budget} CAD`,
           duration: "À déterminer",
-          skills: ["Skill 1", "Skill 2"] // You might want to add a skills column to your jobs table
+          skills: ["Skill 1", "Skill 2"],
+          category: job.category,
+          contract_type: job.contract_type,
+          experience_level: job.experience_level
         }));
         setJobs(formattedJobs);
       }
@@ -55,6 +59,10 @@ export function SwipeMatch() {
       toast.error("Erreur lors du chargement des offres");
     }
   };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   const handleDragEnd = async (event: any, info: any) => {
     const offset = info.offset.x;
