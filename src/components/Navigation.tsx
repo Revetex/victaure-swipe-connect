@@ -40,11 +40,11 @@ export function Navigation() {
       </a>
       <ThemeToggle />
       <Button 
-        variant="ghost" 
-        size="icon"
+        variant="ghost"
         onClick={handleLogout}
-        className="text-foreground hover:text-primary transition-colors"
+        className="text-foreground hover:text-primary transition-colors flex items-center gap-2"
       >
+        <span>Déconnexion</span>
         <LogOut className="h-5 w-5" />
       </Button>
     </nav>
