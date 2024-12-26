@@ -26,14 +26,14 @@ export function VCard() {
           url: window.location.href,
         });
         toast({
-          title: "Success",
-          description: "Profile shared successfully",
+          title: "Succès",
+          description: "Profil partagé avec succès",
         });
       } catch (error) {
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Unable to share profile",
+          title: "Erreur",
+          description: "Impossible de partager le profil",
         });
       }
     } else {
@@ -56,16 +56,16 @@ export function VCard() {
     window.URL.revokeObjectURL(url);
     
     toast({
-      title: "Success",
-      description: "VCard downloaded successfully",
+      title: "Succès",
+      description: "VCard téléchargée avec succès",
     });
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({
-      title: "Success",
-      description: "Link copied to clipboard",
+      title: "Succès",
+      description: "Lien copié dans le presse-papier",
     });
   };
 
@@ -77,15 +77,15 @@ export function VCard() {
       setProfile(tempProfile);
       setIsEditing(false);
       toast({
-        title: "Success",
-        description: "Profile updated successfully",
+        title: "Succès",
+        description: "Profil mis à jour avec succès",
       });
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to update profile",
+        title: "Erreur",
+        description: "Impossible de mettre à jour le profil",
       });
     }
   };
@@ -96,17 +96,17 @@ export function VCard() {
     try {
       await updateProfile(tempProfile);
       setProfile(tempProfile);
-      setIsEditing(false); // Close edit mode after successful update
+      setIsEditing(false);
       toast({
-        title: "Success",
-        description: "Changes applied successfully",
+        title: "Succès",
+        description: "Changements appliqués avec succès",
       });
     } catch (error) {
       console.error('Error applying changes:', error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to apply changes",
+        title: "Erreur",
+        description: "Impossible d'appliquer les changements",
       });
     }
   };
@@ -115,7 +115,7 @@ export function VCard() {
     return (
       <Card className="w-full max-w-2xl mx-auto glass-card">
         <CardContent className="p-6">
-          Loading profile...
+          Chargement du profil...
         </CardContent>
       </Card>
     );
@@ -125,7 +125,7 @@ export function VCard() {
     return (
       <Card className="w-full max-w-2xl mx-auto glass-card">
         <CardContent className="p-6">
-          No profile data available
+          Aucune donnée de profil disponible
         </CardContent>
       </Card>
     );
@@ -133,7 +133,7 @@ export function VCard() {
 
   return (
     <Card className="w-full max-w-2xl mx-auto glass-card">
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="p-6 space-y-8">
         <VCardHeader
           profile={tempProfile}
           isEditing={isEditing}
@@ -141,7 +141,7 @@ export function VCard() {
           setIsEditing={setIsEditing}
         />
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-8">
           <VCardContact
             profile={tempProfile}
             isEditing={isEditing}
@@ -170,13 +170,13 @@ export function VCard() {
               });
             }}
           />
-        </div>
 
-        <VCardCertifications
-          profile={tempProfile}
-          isEditing={isEditing}
-          setProfile={setTempProfile}
-        />
+          <VCardCertifications
+            profile={tempProfile}
+            isEditing={isEditing}
+            setProfile={setTempProfile}
+          />
+        </div>
 
         <VCardActions
           isEditing={isEditing}

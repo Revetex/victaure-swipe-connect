@@ -10,11 +10,11 @@ import {
 import { predefinedSkills } from "@/data/skills";
 import { VCardSection } from "./VCardSection";
 import { VCardBadge } from "./VCardBadge";
+import { Sparkles } from "lucide-react";
 
 interface VCardSkillsProps {
   profile: any;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   handleAddSkill: () => void;
@@ -30,7 +30,11 @@ export function VCardSkills({
   handleRemoveSkill,
 }: VCardSkillsProps) {
   return (
-    <VCardSection title="Compétences" className="space-y-3">
+    <VCardSection 
+      title="Compétences" 
+      icon={<Sparkles className="h-4 w-4 text-muted-foreground" />}
+      className="space-y-3"
+    >
       <div className="flex flex-wrap gap-2">
         {profile.skills.map((skill: string) => (
           <VCardBadge

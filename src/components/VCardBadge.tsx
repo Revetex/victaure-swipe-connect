@@ -11,12 +11,12 @@ export function VCardBadge({ text, onRemove, isEditing }: VCardBadgeProps) {
   return (
     <Badge 
       variant="secondary" 
-      className="flex items-center gap-1 bg-muted text-muted-foreground hover:bg-muted/80"
+      className="flex items-center gap-1 bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
     >
       {text}
       {isEditing && onRemove && (
         <X
-          className="h-3 w-3 cursor-pointer hover:text-destructive"
+          className="h-3 w-3 cursor-pointer hover:text-destructive transition-colors"
           onClick={onRemove}
         />
       )}
