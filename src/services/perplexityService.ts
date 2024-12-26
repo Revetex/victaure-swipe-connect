@@ -1,32 +1,18 @@
-export async function generateAIResponse(message: string, apiKey: string) {
-  try {
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
-        messages: [
-          {
-            role: 'system',
-            content: 'Tu es un assistant professionnel canadien nommé Mr. Victaure. Tu dois répondre de manière précise, utile et bienveillante. Tu dois toujours répondre en français.'
-          },
-          {
-            role: 'user',
-            content: message
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-      }),
-    });
+const predefinedResponses = [
+  "Je peux vous aider à trouver des missions intéressantes au Canada.",
+  "Je vous suggère de mettre à jour votre profil pour augmenter vos chances de trouver des missions.",
+  "Je peux vous aider à naviguer sur la plateforme et à utiliser toutes ses fonctionnalités.",
+  "N'hésitez pas à consulter les nouvelles missions disponibles dans le marketplace.",
+  "Je peux vous aider à optimiser votre VCard pour attirer plus d'opportunités.",
+  "Avez-vous pensé à mettre en avant vos certifications canadiennes ?",
+  "Je peux vous aider à préparer vos entretiens avec les entreprises canadiennes.",
+];
 
-    const data = await response.json();
-    return data.choices[0].message.content;
-  } catch (error) {
-    console.error('Erreur lors de la génération de la réponse:', error);
-    return "Désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler votre question ?";
-  }
+export async function generateAIResponse(message: string) {
+  // Simulation d'un délai de réponse pour plus de réalisme
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  // Sélection aléatoire d'une réponse
+  const randomIndex = Math.floor(Math.random() * predefinedResponses.length);
+  return predefinedResponses[randomIndex];
 }

@@ -19,20 +19,10 @@ export function MrVictaure() {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
-  const [apiKey, setApiKey] = useState("");
   const { toast } = useToast();
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
-
-    if (!apiKey) {
-      toast({
-        title: "Clé API manquante",
-        description: "Veuillez entrer votre clé API Perplexity dans les paramètres.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -56,7 +46,7 @@ export function MrVictaure() {
     setMessages((prev) => [...prev, thinkingMessage]);
 
     try {
-      const aiResponse = await generateAIResponse(inputMessage, apiKey);
+      const aiResponse = await generateAIResponse(inputMessage);
       
       setMessages((prev) => prev.filter(m => !m.thinking));
       
@@ -158,12 +148,6 @@ export function MrVictaure() {
         onVoiceInput={handleVoiceInput}
         isListening={isListening}
       />
-
-      {!apiKey && (
-        <div className="absolute top-0 left-0 right-0 p-2 bg-victaure-blue/10 text-sm text-center">
-          Entrez votre clé API Perplexity dans les paramètres pour activer l'assistant intelligent
-        </div>
-      )}
     </div>
   );
 }
