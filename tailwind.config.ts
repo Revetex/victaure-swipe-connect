@@ -20,12 +20,22 @@ export default {
     extend: {
       colors: {
         victaure: {
-          blue: "#1A73E8",
-          green: "#34A853",
-          red: "#EA4335",
+          dark: "#1A1F2C",
+          metal: "#403E43",
+          blue: {
+            light: "#33C3F0",
+            DEFAULT: "#1EAEDB",
+            dark: "#0FA0CE",
+          },
+          orange: {
+            light: "#F97316",
+            DEFAULT: "#EA580C",
+            dark: "#C2410C",
+          },
           gray: {
-            light: "#F1F3F4",
-            dark: "#5F6368",
+            light: "#F1F1F1",
+            DEFAULT: "#C8C8C9",
+            dark: "#555555",
           },
         },
         border: "hsl(var(--border))",
@@ -62,14 +72,6 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
-      fontFamily: {
-        roboto: ["Roboto", "sans-serif"],
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -87,12 +89,31 @@ export default {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-100%)" },
         },
+        glow: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+        pulse: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.05)" },
+        },
+        rotate: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "slide-in": "slide-in 0.3s ease-out",
         "slide-out": "slide-out 0.3s ease-out",
+        glow: "glow 2s ease-in-out infinite",
+        pulse: "pulse 2s ease-in-out infinite",
+        rotate: "rotate 10s linear infinite",
+      },
+      backgroundImage: {
+        'cyber-pattern': "url('/lovable-uploads/a1c77b1c-dd3c-45fc-b11c-70785ef9c63c.png')",
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
     },
   },
