@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Building2, MapPin, Timer } from "lucide-react";
+import { Building2, MapPin, Calendar } from "lucide-react";
 
 interface JobCardProps {
   title: string;
@@ -20,9 +20,9 @@ export function JobCard({
   skills,
 }: JobCardProps) {
   return (
-    <Card className="w-full max-w-md mx-auto bg-white shadow-lg">
+    <Card className="w-full max-w-md mx-auto bg-white shadow-lg hover:shadow-xl transition-shadow">
       <CardHeader>
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h3 className="font-semibold text-xl text-gray-900">{title}</h3>
           <div className="flex items-center gap-2 text-victaure-gray-dark">
             <Building2 className="h-4 w-4" />
@@ -33,7 +33,7 @@ export function JobCard({
             <span>{location}</span>
           </div>
           <div className="flex items-center gap-2 text-victaure-gray-dark">
-            <Timer className="h-4 w-4" />
+            <Calendar className="h-4 w-4" />
             <span>{duration}</span>
           </div>
         </div>

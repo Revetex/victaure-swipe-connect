@@ -6,11 +6,11 @@ import { Check, X } from "lucide-react";
 const DUMMY_JOBS = [
   {
     id: 1,
-    title: "Senior Frontend Developer",
+    title: "Développeur Frontend Senior",
     company: "Tech Corp",
     location: "Paris, France",
-    salary: "€65,000 - €85,000",
-    duration: "Full-time",
+    salary: "65 000€ - 85 000€",
+    duration: "CDI",
     skills: ["React", "TypeScript", "Tailwind CSS"],
   },
   {
@@ -18,8 +18,8 @@ const DUMMY_JOBS = [
     title: "UX Designer",
     company: "Design Studio",
     location: "Lyon, France",
-    salary: "€45,000 - €60,000",
-    duration: "Contract",
+    salary: "45 000€ - 60 000€",
+    duration: "Freelance",
     skills: ["Figma", "User Research", "Prototyping"],
   },
 ];
@@ -37,16 +37,16 @@ export function SwipeMatch() {
     return (
       <div className="flex flex-col items-center justify-center h-[500px] text-center p-4">
         <h3 className="text-2xl font-semibold text-victaure-gray-dark mb-4">
-          No more jobs to show
+          Plus d'offres à afficher
         </h3>
         <p className="text-victaure-gray-dark mb-6">
-          Check back later for new opportunities
+          Revenez plus tard pour découvrir de nouvelles opportunités
         </p>
         <Button
           onClick={() => setCurrentIndex(0)}
           className="bg-victaure-blue hover:bg-blue-600"
         >
-          Start Over
+          Recommencer
         </Button>
       </div>
     );
