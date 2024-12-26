@@ -30,7 +30,7 @@ export function TodoList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-victaure-blue">
-        <ListTodo className="h-5 w-5" />
+        <ListTodo className="h-5 w-5 animate-bounce" />
         <h2 className="text-lg font-semibold">Tâches</h2>
       </div>
       
@@ -39,25 +39,34 @@ export function TodoList() {
           value={newTodo}
           onChange={(e) => setNewTodo(e.target.value)}
           placeholder="Nouvelle tâche..."
-          className="bg-victaure-dark/50"
+          className="bg-victaure-dark/50 focus:ring-victaure-blue/50"
           onKeyPress={(e) => e.key === 'Enter' && addTodo()}
         />
-        <Button onClick={addTodo} size="icon">
+        <Button 
+          onClick={addTodo} 
+          size="icon"
+          className="hover:bg-victaure-blue hover:text-white transition-colors"
+        >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
         {todos.map((todo) => (
           <div
             key={todo.id}
-            className="flex items-center gap-2 p-2 rounded bg-victaure-dark/30 hover:bg-victaure-dark/50 transition-colors"
+            className="flex items-center gap-2 p-3 rounded-lg bg-victaure-dark/30 hover:bg-victaure-dark/40 transition-all duration-200 group"
           >
             <Checkbox
               checked={todo.completed}
               onCheckedChange={() => toggleTodo(todo.id)}
+              className="data-[state=checked]:bg-victaure-blue"
             />
-            <span className={todo.completed ? "line-through text-victaure-gray" : ""}>
+            <span className={`${
+              todo.completed 
+                ? "line-through text-victaure-gray" 
+                : "group-hover:text-victaure-blue transition-colors"
+            }`}>
               {todo.text}
             </span>
           </div>

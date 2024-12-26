@@ -28,9 +28,9 @@ const mockMessages: Message[] = [
 
 export function Messages() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full">
       <div className="flex items-center gap-2 text-victaure-blue">
-        <MessageSquare className="h-5 w-5" />
+        <MessageSquare className="h-5 w-5 animate-pulse" />
         <h2 className="text-lg font-semibold">Messages</h2>
       </div>
 
@@ -39,8 +39,10 @@ export function Messages() {
           {mockMessages.map((message) => (
             <div
               key={message.id}
-              className={`p-3 rounded cursor-pointer hover:bg-victaure-dark/50 transition-colors ${
-                message.unread ? "bg-victaure-blue/10" : "bg-victaure-dark/30"
+              className={`p-3 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
+                message.unread 
+                  ? "bg-victaure-blue/10 border-l-2 border-victaure-blue" 
+                  : "bg-victaure-dark/30 hover:bg-victaure-dark/40"
               }`}
             >
               <div className="flex justify-between items-start">
