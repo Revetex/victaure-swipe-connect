@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { SwipeMatch } from "./SwipeMatch";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,39 +126,8 @@ export function SwipeJob() {
         </Dialog>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="glass-card p-4">
-          <h3 className="text-lg font-semibold mb-2">Développeur Frontend React</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Nous recherchons un développeur React expérimenté pour rejoindre notre équipe...
-          </p>
-          <div className="flex justify-between items-center">
-            <span className="text-primary font-medium">5000€/mois</span>
-            <span className="text-sm text-gray-500">Paris, France</span>
-          </div>
-        </div>
-
-        <div className="glass-card p-4">
-          <h3 className="text-lg font-semibold mb-2">UX/UI Designer Senior</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Recherche designer expérimenté pour concevoir des interfaces innovantes...
-          </p>
-          <div className="flex justify-between items-center">
-            <span className="text-primary font-medium">4500€/mois</span>
-            <span className="text-sm text-gray-500">Lyon, France</span>
-          </div>
-        </div>
-
-        <div className="glass-card p-4">
-          <h3 className="text-lg font-semibold mb-2">DevOps Engineer</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Nous cherchons un DevOps pour gérer notre infrastructure cloud...
-          </p>
-          <div className="flex justify-between items-center">
-            <span className="text-primary font-medium">6000€/mois</span>
-            <span className="text-sm text-gray-500">Remote</span>
-          </div>
-        </div>
+      <div className="flex justify-center">
+        <SwipeMatch />
       </div>
     </div>
   );

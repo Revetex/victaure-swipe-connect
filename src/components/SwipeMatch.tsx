@@ -1,81 +1,133 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { JobCard } from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "sonner";
+import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
-const mockJobs = [
-  {
-    title: "Développeur Frontend React",
-    company: "Tech Solutions SA",
-    location: "Paris, France",
-    salary: "€500-600/jour",
-    duration: "3 mois",
-    skills: ["React", "TypeScript", "Tailwind"],
-  },
-  {
-    title: "UX Designer Senior",
-    company: "Design Studio",
-    location: "Lyon, France",
-    salary: "€450-550/jour",
-    duration: "6 mois",
-    skills: ["Figma", "Adobe XD", "Prototyping"],
-  },
-  {
-    title: "DevOps Engineer",
-    company: "Cloud Services",
-    location: "Remote",
-    salary: "€600-700/jour",
-    duration: "CDI",
-    skills: ["AWS", "Docker", "Kubernetes"],
-  },
-];
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  duration: string;
+  skills: string[];
+}
 
 export function SwipeMatch() {
-  const [currentJobIndex, setCurrentJobIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [direction, setDirection] = useState<"left" | "right" | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const controls = useAnimation();
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-30, 30]);
+  const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
+  const dragConstraintsRef = useRef(null);
 
-  const handleSwipe = (swipeDirection: "left" | "right") => {
-    if (isAnimating) return;
-    
-    setIsAnimating(true);
-    setDirection(swipeDirection);
-    
-    if (swipeDirection === "right") {
-      toast.success(`Vous avez liké "${mockJobs[currentJobIndex].title}"`, {
-        duration: 2000,
-      });
-    } else {
-      toast.info(`Vous avez passé "${mockJobs[currentJobIndex].title}"`, {
-        duration: 2000,
-      });
-    }
-    
-    setTimeout(() => {
-      if (currentJobIndex < mockJobs.length - 1) {
-        setCurrentJobIndex(prev => prev + 1);
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const fetchJobs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      if (data) {
+        const formattedJobs = data.map(job => ({
+          id: job.id,
+          title: job.title,
+          company: "Company Name", // You might want to fetch this from a related table
+          location: job.location,
+          salary: `${job.budget} CAD`,
+          duration: "À déterminer",
+          skills: ["Skill 1", "Skill 2"] // You might want to add a skills column to your jobs table
+        }));
+        setJobs(formattedJobs);
       }
-      setIsAnimating(false);
-      setDirection(null);
-    }, 300);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      toast.error("Erreur lors du chargement des offres");
+    }
   };
 
-  if (currentJobIndex >= mockJobs.length) {
+  const handleDragEnd = async (event: any, info: any) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+
+    if (offset > 100 || velocity > 800) {
+      await controls.start({ x: 200, opacity: 0 });
+      handleSwipe("right");
+    } else if (offset < -100 || velocity < -800) {
+      await controls.start({ x: -200, opacity: 0 });
+      handleSwipe("left");
+    } else {
+      controls.start({ x: 0, opacity: 1 });
+    }
+  };
+
+  const handleSwipe = async (direction: "left" | "right") => {
+    if (direction === "right") {
+      // Handle match
+      try {
+        const { data: profile } = await supabase.auth.getUser();
+        if (profile.user) {
+          const { error } = await supabase.from("matches").insert({
+            job_id: jobs[currentIndex].id,
+            professional_id: profile.user.id,
+            status: "pending"
+          });
+
+          if (error) throw error;
+          toast.success("Match! Vous avez liké cette offre");
+        }
+      } catch (error) {
+        console.error("Error creating match:", error);
+        toast.error("Erreur lors de la création du match");
+      }
+    }
+
+    // Move to next card
+    if (currentIndex < jobs.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+      controls.set({ x: 0, opacity: 1 });
+    } else {
+      toast.info("Plus d'offres disponibles pour le moment");
+    }
+  };
+
+  if (jobs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">
-          Vous avez vu toutes les opportunités !
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <h3 className="text-xl font-semibold mb-4">
+          Aucune offre disponible pour le moment
         </h3>
-        <p className="text-victaure-gray-dark mb-6">
+        <p className="text-muted-foreground">
+          Revenez plus tard pour découvrir de nouvelles missions.
+        </p>
+      </div>
+    );
+  }
+
+  if (currentIndex >= jobs.length) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <h3 className="text-xl font-semibold mb-4">
+          Vous avez vu toutes les offres !
+        </h3>
+        <p className="text-muted-foreground mb-6">
           Revenez plus tard pour découvrir de nouvelles missions.
         </p>
         <Button
           onClick={() => {
-            setCurrentJobIndex(0);
-            setDirection(null);
+            setCurrentIndex(0);
+            fetchJobs();
           }}
-          className="bg-victaure-blue hover:bg-blue-600 text-white transition-colors duration-200"
         >
           Recommencer
         </Button>
@@ -84,34 +136,31 @@ export function SwipeMatch() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      <div 
-        className={`relative w-full max-w-md transition-all duration-300 ${
-          isAnimating 
-            ? direction === "right"
-              ? "translate-x-full opacity-0 scale-95"
-              : "-translate-x-full opacity-0 scale-95"
-            : "translate-x-0 opacity-100 scale-100"
-        }`}
+    <div className="relative w-full max-w-md mx-auto" ref={dragConstraintsRef}>
+      <motion.div
+        drag="x"
+        dragConstraints={dragConstraintsRef}
+        onDragEnd={handleDragEnd}
+        animate={controls}
+        style={{ x, rotate, opacity }}
+        className="cursor-grab active:cursor-grabbing"
       >
-        <JobCard {...mockJobs[currentJobIndex]} />
-      </div>
+        <JobCard {...jobs[currentIndex]} />
+      </motion.div>
       
-      <div className="flex gap-4">
+      <div className="flex justify-center gap-4 mt-4">
         <Button
           variant="outline"
           size="lg"
-          className="border-victaure-red text-victaure-red hover:bg-victaure-red/10 transition-all duration-200 active:scale-95"
+          className="border-destructive text-destructive hover:bg-destructive/10 transition-all duration-200"
           onClick={() => handleSwipe("left")}
-          disabled={isAnimating}
         >
           <ThumbsDown className="h-5 w-5" />
         </Button>
         <Button
           size="lg"
-          className="bg-victaure-green hover:bg-green-600 text-white transition-all duration-200 active:scale-95"
+          className="bg-green-500 hover:bg-green-600 text-white transition-all duration-200"
           onClick={() => handleSwipe("right")}
-          disabled={isAnimating}
         >
           <ThumbsUp className="h-5 w-5" />
         </Button>
