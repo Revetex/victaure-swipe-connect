@@ -61,22 +61,47 @@ export function VCardCreationForm() {
         throw new Error("Utilisateur non connecté");
       }
 
-      console.log("Creating profile for user:", user.id);
-      
-      const { error: insertError } = await supabase
-        .from("profiles")
-        .insert({
-          id: user.id,
-          full_name: values.full_name,
-          bio: values.bio || null,
-          email: user.email,
-          role: "professional",
-          skills: values.skills,
-        });
+      // First, check if profile already exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
 
-      if (insertError) {
-        console.error("Insert error:", insertError);
-        throw insertError;
+      if (existingProfile) {
+        // If profile exists, update it instead
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            full_name: values.full_name,
+            bio: values.bio || null,
+            email: user.email,
+            role: "professional",
+            skills: values.skills,
+          })
+          .eq('id', user.id);
+
+        if (updateError) {
+          console.error("Update error:", updateError);
+          throw updateError;
+        }
+      } else {
+        // If no profile exists, create a new one
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            full_name: values.full_name,
+            bio: values.bio || null,
+            email: user.email,
+            role: "professional",
+            skills: values.skills,
+          });
+
+        if (insertError) {
+          console.error("Insert error:", insertError);
+          throw insertError;
+        }
       }
 
       toast({
