@@ -23,7 +23,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
     .from('profiles')
     .update({
       full_name: tempProfile.name,
-      role: tempProfile.title || 'professional',
+      role: 'professional', // On force le rôle 'professional' pour l'instant
       email: tempProfile.email,
       skills: tempProfile.skills,
     })

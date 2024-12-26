@@ -27,14 +27,34 @@ export function useProfile() {
           throw error;
         }
 
+        // Si aucun profil n'existe, on en crée un nouveau
         if (!profileData) {
-          console.log("No profile data found");
-          return;
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert({
+              id: user.id,
+              email: user.email,
+              role: 'professional',
+            });
+
+          if (insertError) throw insertError;
+
+          // Récupérer le profil nouvellement créé
+          const { data: newProfile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (fetchError) throw fetchError;
+          if (!newProfile) throw new Error("Failed to create profile");
+
+          profileData = newProfile;
         }
 
         const transformedProfile: UserProfile = {
           name: profileData.full_name || '',
-          title: profileData.role || '',
+          title: profileData.role || 'professional',
           email: profileData.email || '',
           phone: '',
           skills: profileData.skills || [],
