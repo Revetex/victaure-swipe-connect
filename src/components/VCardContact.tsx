@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { QRCodeSVG } from "qrcode.react";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { VCardSection } from "./VCardSection";
+import { generateVCardPDF } from "@/utils/pdfGenerator";
 import {
   Select,
   SelectContent,
@@ -29,6 +30,9 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     "Québec",
     "Saskatchewan",
   ];
+
+  // Generate PDF URL for QR Code
+  const pdfUrl = generateVCardPDF(profile);
 
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
@@ -102,7 +106,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
       </div>
       <div className="bg-card p-3 rounded-lg shadow-sm border">
         <QRCodeSVG
-          value={window.location.href}
+          value={pdfUrl}
           size={120}
           level="H"
           includeMargin={true}
