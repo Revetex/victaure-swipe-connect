@@ -56,10 +56,11 @@ export function MrVictaure() {
 
     try {
       setIsListening(true);
-      const recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
       recognition.lang = "fr-FR";
       
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
         setInputMessage(transcript);
       };
