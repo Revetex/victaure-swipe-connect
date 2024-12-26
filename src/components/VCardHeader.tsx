@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Edit2, X } from "lucide-react";
+import { Edit2, X, Briefcase } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -19,9 +19,9 @@ interface VCardHeaderProps {
 
 export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VCardHeaderProps) {
   return (
-    <div className="flex flex-row items-center justify-between">
-      <div>
-        <div className="text-2xl font-bold">
+    <div className="flex flex-row items-start justify-between">
+      <div className="space-y-2">
+        <div className="text-2xl font-bold text-foreground">
           {isEditing ? (
             <Input
               value={profile.name}
@@ -32,13 +32,14 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
             profile.name
           )}
         </div>
-        <div className="text-victaure-gray-dark">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Briefcase className="h-4 w-4" />
           {isEditing ? (
             <Select
               value={profile.title}
               onValueChange={(value) => setProfile({ ...profile, title: value })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-[250px]">
                 <SelectValue placeholder="Sélectionnez un titre" />
               </SelectTrigger>
               <SelectContent>
@@ -50,7 +51,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
               </SelectContent>
             </Select>
           ) : (
-            profile.title
+            <span>{profile.title}</span>
           )}
         </div>
       </div>
@@ -58,6 +59,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         variant="ghost"
         size="icon"
         onClick={() => setIsEditing(!isEditing)}
+        className="text-muted-foreground hover:text-foreground"
       >
         {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
       </Button>

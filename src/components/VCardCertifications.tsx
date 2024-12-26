@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Award, Building2 } from "lucide-react";
+import { VCardSection } from "./VCardSection";
 
 interface Certification {
   title: string;
@@ -36,33 +37,38 @@ export function VCardCertifications({
   };
 
   return (
-    <div>
-      <h3 className="font-semibold mb-2">Certifications et Diplômes</h3>
-      <div className="space-y-3">
+    <VCardSection title="Certifications et Diplômes">
+      <div className="space-y-4">
         {profile.certifications.map((cert: Certification, index: number) => (
-          <div key={index} className="border-l-2 border-victaure-blue pl-4">
+          <div key={index} className="border-l-2 border-primary/30 pl-4 space-y-2">
             {isEditing ? (
               <>
-                <Input
-                  value={cert.title}
-                  onChange={(e) => {
-                    const newCertifications = [...profile.certifications];
-                    newCertifications[index].title = e.target.value;
-                    setProfile({ ...profile, certifications: newCertifications });
-                  }}
-                  placeholder="Titre du diplôme/certification"
-                  className="mb-1"
-                />
-                <Input
-                  value={cert.institution}
-                  onChange={(e) => {
-                    const newCertifications = [...profile.certifications];
-                    newCertifications[index].institution = e.target.value;
-                    setProfile({ ...profile, certifications: newCertifications });
-                  }}
-                  placeholder="Institution"
-                  className="mb-1"
-                />
+                <div className="flex items-center gap-2">
+                  <Award className="h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={cert.title}
+                    onChange={(e) => {
+                      const newCertifications = [...profile.certifications];
+                      newCertifications[index].title = e.target.value;
+                      setProfile({ ...profile, certifications: newCertifications });
+                    }}
+                    placeholder="Titre du diplôme/certification"
+                    className="flex-1"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={cert.institution}
+                    onChange={(e) => {
+                      const newCertifications = [...profile.certifications];
+                      newCertifications[index].institution = e.target.value;
+                      setProfile({ ...profile, certifications: newCertifications });
+                    }}
+                    placeholder="Institution"
+                    className="flex-1"
+                  />
+                </div>
                 <div className="flex gap-2">
                   <Input
                     value={cert.year}
@@ -72,11 +78,13 @@ export function VCardCertifications({
                       setProfile({ ...profile, certifications: newCertifications });
                     }}
                     placeholder="Année"
+                    className="w-32"
                   />
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveCertification(index)}
+                    className="text-muted-foreground hover:text-destructive"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -84,19 +92,29 @@ export function VCardCertifications({
               </>
             ) : (
               <>
-                <p className="font-medium">{cert.title}</p>
-                <p className="text-sm text-victaure-gray-dark">{cert.institution}</p>
-                <p className="text-sm text-victaure-gray-dark">{cert.year}</p>
+                <div className="flex items-center gap-2">
+                  <Award className="h-4 w-4 text-muted-foreground" />
+                  <p className="font-medium">{cert.title}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">{cert.institution}</p>
+                </div>
+                <p className="text-sm text-muted-foreground">{cert.year}</p>
               </>
             )}
           </div>
         ))}
         {isEditing && (
-          <Button onClick={handleAddCertification} variant="outline" className="w-full">
+          <Button 
+            onClick={handleAddCertification} 
+            variant="outline" 
+            className="w-full mt-4"
+          >
             Ajouter une certification/diplôme
           </Button>
         )}
       </div>
-    </div>
+    </VCardSection>
   );
 }

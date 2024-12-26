@@ -1,7 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -10,6 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { predefinedSkills } from "@/data/skills";
+import { VCardSection } from "./VCardSection";
+import { VCardBadge } from "./VCardBadge";
 
 interface VCardSkillsProps {
   profile: any;
@@ -24,26 +24,21 @@ interface VCardSkillsProps {
 export function VCardSkills({
   profile,
   isEditing,
-  setProfile,
   newSkill,
   setNewSkill,
   handleAddSkill,
   handleRemoveSkill,
 }: VCardSkillsProps) {
   return (
-    <div>
-      <h3 className="font-semibold mb-2">Compétences</h3>
+    <VCardSection title="Compétences" className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {profile.skills.map((skill: string) => (
-          <Badge key={skill} variant="secondary" className="flex items-center gap-1">
-            {skill}
-            {isEditing && (
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => handleRemoveSkill(skill)}
-              />
-            )}
-          </Badge>
+          <VCardBadge
+            key={skill}
+            text={skill}
+            isEditing={isEditing}
+            onRemove={() => handleRemoveSkill(skill)}
+          />
         ))}
       </div>
       {isEditing && (
@@ -52,7 +47,7 @@ export function VCardSkills({
             value={newSkill}
             onValueChange={setNewSkill}
           >
-            <SelectTrigger>
+            <SelectTrigger className="flex-1">
               <SelectValue placeholder="Sélectionnez une compétence" />
             </SelectTrigger>
             <SelectContent>
@@ -65,9 +60,11 @@ export function VCardSkills({
                 ))}
             </SelectContent>
           </Select>
-          <Button onClick={handleAddSkill}>Ajouter</Button>
+          <Button onClick={handleAddSkill} variant="secondary">
+            Ajouter
+          </Button>
         </div>
       )}
-    </div>
+    </VCardSection>
   );
 }
