@@ -30,11 +30,11 @@ export function NotificationCenter() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-victaure-blue">
+        <div className="flex items-center gap-2 text-primary">
           <Bell className="h-5 w-5" />
           <h2 className="text-lg font-semibold">Notifications</h2>
         </div>
-        <span className="text-xs bg-victaure-blue text-white px-2 py-1 rounded-full">
+        <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full">
           {mockNotifications.filter(n => !n.read).length} nouvelles
         </span>
       </div>
@@ -46,15 +46,15 @@ export function NotificationCenter() {
               key={notification.id}
               className={`p-3 rounded ${
                 notification.read
-                  ? "bg-victaure-dark/30"
-                  : "bg-victaure-blue/10 border-l-2 border-victaure-blue"
+                  ? "bg-muted"
+                  : "bg-primary/10 border-l-2 border-primary"
               }`}
             >
               <div className="flex justify-between items-start">
                 <h3 className="font-medium">{notification.title}</h3>
-                <span className="text-xs text-victaure-gray">{notification.time}</span>
+                <span className="text-xs text-muted-foreground">{notification.time}</span>
               </div>
-              <p className="text-sm text-victaure-gray mt-1">{notification.message}</p>
+              <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
             </div>
           ))}
         </div>

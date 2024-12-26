@@ -29,7 +29,7 @@ const mockMessages: Message[] = [
 export function Messages() {
   return (
     <div className="space-y-4 h-full">
-      <div className="flex items-center gap-2 text-victaure-blue">
+      <div className="flex items-center gap-2 text-primary">
         <MessageSquare className="h-5 w-5 animate-pulse" />
         <h2 className="text-lg font-semibold">Messages</h2>
       </div>
@@ -41,15 +41,15 @@ export function Messages() {
               key={message.id}
               className={`p-3 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
                 message.unread 
-                  ? "bg-victaure-blue/10 border-l-2 border-victaure-blue" 
-                  : "bg-victaure-dark/30 hover:bg-victaure-dark/40"
+                  ? "bg-primary/10 border-l-2 border-primary" 
+                  : "bg-muted hover:bg-muted/80"
               }`}
             >
               <div className="flex justify-between items-start">
                 <h3 className="font-medium">{message.sender}</h3>
-                <span className="text-xs text-victaure-gray">{message.time}</span>
+                <span className="text-xs text-muted-foreground">{message.time}</span>
               </div>
-              <p className="text-sm text-victaure-gray mt-1 truncate">
+              <p className="text-sm text-muted-foreground mt-1 truncate">
                 {message.content}
               </p>
             </div>
