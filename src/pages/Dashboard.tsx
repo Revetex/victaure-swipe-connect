@@ -22,10 +22,10 @@ export default function DashboardPage() {
         return;
       }
 
-      // Check if user has a profile using maybeSingle() instead of single()
+      // Vérifions le profil complet, pas seulement l'ID
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("id")
+        .select("*")
         .eq("id", session.user.id)
         .maybeSingle();
 
@@ -39,8 +39,9 @@ export default function DashboardPage() {
         return;
       }
 
-      console.log("Profile check:", profile ? "Found" : "Not found");
-      setHasProfile(!!profile);
+      console.log("Profile check:", profile);
+      // On vérifie si le profil existe ET s'il a les informations minimales requises
+      setHasProfile(!!profile && !!profile.full_name);
     };
 
     checkAuth();
@@ -49,13 +50,16 @@ export default function DashboardPage() {
       console.log("Auth state changed:", event);
       if (!session) {
         navigate("/auth");
+      } else {
+        // Revérifier le profil à chaque changement d'état d'authentification
+        checkAuth();
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, toast]);
 
   if (hasProfile === null) {
     return (
