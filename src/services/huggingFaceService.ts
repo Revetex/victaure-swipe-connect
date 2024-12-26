@@ -1,4 +1,4 @@
-let apiKey: string | null = "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";
+let apiKey: string | null = null;
 
 // Fonction pour masquer la clé API dans la console
 const getApiKey = () => {
