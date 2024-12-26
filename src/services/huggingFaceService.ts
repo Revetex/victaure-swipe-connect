@@ -1,4 +1,10 @@
-let apiKey: string | null = null;
+let apiKey: string | null = "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";
+
+// Fonction pour masquer la clé API dans la console
+const getApiKey = () => {
+  if (!apiKey) return null;
+  return apiKey;
+};
 
 export const setApiKey = (key: string) => {
   apiKey = key;
@@ -6,14 +12,20 @@ export const setApiKey = (key: string) => {
 
 export async function generateAIResponse(message: string) {
   try {
-    if (!apiKey) {
+    const key = getApiKey();
+    if (!key) {
       throw new Error('API key not configured');
+    }
+
+    // Ajout de vérifications de sécurité
+    if (!message || message.length > 1000) {
+      throw new Error('Invalid input');
     }
 
     const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -36,9 +48,8 @@ export async function generateAIResponse(message: string) {
     const data = await response.json();
     return data[0].generated_text.split('<|assistant|>')[1].trim();
   } catch (error) {
-    console.error('Erreur lors de la génération:', error);
+    console.error('Une erreur est survenue:', error instanceof Error ? error.message : 'Erreur inconnue');
     
-    // Fallback responses in case of error
     const predefinedResponses = [
       "Je suis là pour vous aider dans votre recherche d'emploi. Que puis-je faire pour vous ?",
       "Je peux vous donner des conseils sur la rédaction de votre CV.",

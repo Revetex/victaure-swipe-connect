@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
 import { ChatInput } from "./chat/ChatInput";
-import { generateAIResponse, setApiKey } from "@/services/huggingFaceService";
+import { generateAIResponse } from "@/services/huggingFaceService";
 
 interface Message {
   id: string;
@@ -20,11 +20,6 @@ export function MrVictaure() {
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const { toast } = useToast();
-
-  // Initialize API key on component mount
-  useState(() => {
-    setApiKey("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");
-  });
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
