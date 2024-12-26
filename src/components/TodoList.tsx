@@ -1,36 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ListTodo, Plus, Trash2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { ListTodo, Plus, Trash2, Calendar as CalendarIcon } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Todo {
   id: number;
   text: string;
   completed: boolean;
+  dueDate?: Date;
 }
 
 export function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const { toast } = useToast();
 
   const addTodo = () => {
     if (newTodo.trim()) {
-      setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
+      const todo = {
+        id: Date.now(),
+        text: newTodo,
+        completed: false,
+        dueDate: selectedDate,
+      };
+      setTodos([...todos, todo]);
       setNewTodo("");
+      setSelectedDate(undefined);
+      
+      // Show notification
       toast({
         title: "Tâche ajoutée",
         description: "Votre nouvelle tâche a été ajoutée avec succès.",
       });
+
+      // Add notification
+      addNotification(`Nouvelle tâche: ${newTodo}`, selectedDate ? `À faire pour le ${format(selectedDate, 'dd/MM/yyyy')}` : "");
     }
   };
 
   const toggleTodo = (id: number) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+    setTodos(todos.map(todo => {
+      if (todo.id === id) {
+        const completed = !todo.completed;
+        if (completed) {
+          toast({
+            title: "Tâche terminée",
+            description: "Bravo ! La tâche a été marquée comme terminée.",
+          });
+          addNotification("Tâche terminée", todo.text);
+        }
+        return { ...todo, completed };
+      }
+      return todo;
+    }));
   };
 
   const deleteTodo = (id: number) => {
@@ -42,21 +72,64 @@ export function TodoList() {
     });
   };
 
+  const addNotification = async (title: string, message: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .insert([
+          {
+            user_id: user.id,
+            title,
+            message,
+            read: false
+          }
+        ]);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error adding notification:', error);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-primary">
-        <ListTodo className="h-5 w-5 animate-bounce" />
+        <ListTodo className="h-5 w-5" />
         <h2 className="text-lg font-semibold">Tâches</h2>
       </div>
       
       <div className="flex gap-2">
-        <Input
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Nouvelle tâche..."
-          className="glass-card"
-          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
-        />
+        <div className="flex-1 flex gap-2">
+          <Input
+            value={newTodo}
+            onChange={(e) => setNewTodo(e.target.value)}
+            placeholder="Nouvelle tâche..."
+            className="glass-card flex-1"
+            onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className={`glass-card ${selectedDate ? 'text-primary' : ''}`}
+              >
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                locale={fr}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
         <Button 
           onClick={addTodo} 
           size="icon"
@@ -78,13 +151,20 @@ export function TodoList() {
               onCheckedChange={() => toggleTodo(todo.id)}
               className="data-[state=checked]:bg-primary"
             />
-            <span className={`flex-grow ${
-              todo.completed 
-                ? "line-through text-muted-foreground" 
-                : "group-hover:text-primary transition-colors"
-            }`}>
-              {todo.text}
-            </span>
+            <div className="flex-1">
+              <span className={`block ${
+                todo.completed 
+                  ? "line-through text-muted-foreground" 
+                  : "group-hover:text-primary transition-colors"
+              }`}>
+                {todo.text}
+              </span>
+              {todo.dueDate && (
+                <span className="text-xs text-muted-foreground">
+                  Pour le {format(todo.dueDate, 'dd/MM/yyyy', { locale: fr })}
+                </span>
+              )}
+            </div>
             <Button
               variant="ghost"
               size="icon"

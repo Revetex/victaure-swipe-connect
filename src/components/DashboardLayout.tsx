@@ -17,11 +17,6 @@ export function DashboardLayout() {
           <MrVictaure />
         </div>
 
-        {/* Calendar */}
-        <div className="glass-card rounded-lg p-3 sm:p-4">
-          <Calendar />
-        </div>
-
         {/* Todo List */}
         <div className="glass-card rounded-lg p-3 sm:p-4">
           <TodoList />
