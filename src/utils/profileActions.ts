@@ -17,14 +17,22 @@ export const updateProfile = async (tempProfile: UserProfile) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("No authenticated user");
 
+  console.log("Updating profile with data:", tempProfile);
+
   const { error } = await supabase
     .from('profiles')
     .update({
       full_name: tempProfile.name,
-      role: 'professional',
+      role: tempProfile.title || 'professional',
+      email: tempProfile.email,
       skills: tempProfile.skills,
     })
     .eq('id', user.id);
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error updating profile:", error);
+    throw error;
+  }
+
+  console.log("Profile updated successfully");
 };

@@ -21,15 +21,20 @@ export function useProfile() {
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           throw error;
         }
 
+        if (!profileData) {
+          console.log("No profile data found");
+          return;
+        }
+
         const transformedProfile: UserProfile = {
           name: profileData.full_name || '',
-          title: profileData.role || 'professional',
+          title: profileData.role || '',
           email: profileData.email || '',
           phone: '',
           skills: profileData.skills || [],
@@ -37,14 +42,15 @@ export function useProfile() {
           certifications: [],
         };
 
+        console.log("Profile loaded:", transformedProfile);
         setProfile(transformedProfile);
         setTempProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to load profile data",
+          title: "Erreur",
+          description: "Impossible de charger votre profil",
         });
       } finally {
         setIsLoading(false);
