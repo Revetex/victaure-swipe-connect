@@ -43,7 +43,7 @@ export default function AuthPage() {
       
       if (event === 'SIGNED_IN' && session) {
         toast.success("Connexion réussie");
-        navigate("/dashboard", { replace: true });
+        navigate("/dashboard");
       } else if (event === 'SIGNED_OUT') {
         console.log("User signed out");
       }
@@ -74,8 +74,21 @@ export default function AuthPage() {
       if (credential) {
         // Here you would typically validate the credential with your backend
         // For demo purposes, we'll simulate a successful authentication
-        toast.success("Authentification biométrique réussie");
-        navigate("/dashboard", { replace: true });
+        const { data: { session }, error } = await supabase.auth.signInWithPassword({
+          email: "demo@example.com", // This is just for demo purposes
+          password: "demopassword",
+        });
+
+        if (error) {
+          console.error("Auth error:", error);
+          toast.error("Erreur d'authentification");
+          return;
+        }
+
+        if (session) {
+          toast.success("Authentification biométrique réussie");
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       console.error("Biometric auth error:", error);
