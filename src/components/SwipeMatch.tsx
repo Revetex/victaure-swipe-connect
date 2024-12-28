@@ -19,7 +19,15 @@ interface Job {
   experience_level: string;
 }
 
-export function SwipeMatch() {
+interface SwipeMatchProps {
+  filters: {
+    category: string;
+    duration: string;
+    salaryRange: number[];
+  };
+}
+
+export function SwipeMatch({ filters }: SwipeMatchProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const controls = useAnimation();
@@ -30,10 +38,26 @@ export function SwipeMatch() {
 
   const fetchJobs = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("jobs")
         .select("*")
         .order("created_at", { ascending: false });
+
+      if (filters.category) {
+        query = query.eq("category", filters.category);
+      }
+
+      if (filters.duration) {
+        query = query.eq("contract_type", filters.duration);
+      }
+
+      if (filters.salaryRange) {
+        query = query
+          .gte("budget", filters.salaryRange[0])
+          .lte("budget", filters.salaryRange[1]);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -61,7 +85,7 @@ export function SwipeMatch() {
 
   useEffect(() => {
     fetchJobs();
-  }, []); // No more filter dependencies
+  }, [filters]); // Add filters as dependency
 
   const handleDragEnd = async (event: any, info: any) => {
     const offset = info.offset.x;
