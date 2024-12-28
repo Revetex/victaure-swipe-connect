@@ -68,7 +68,7 @@ export function VCardSkills({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
-            prefix={<Filter className="h-4 w-4 text-muted-foreground" />}
+            startAdornment={<Filter className="h-4 w-4 text-muted-foreground" />}
           />
         </div>
       )}
