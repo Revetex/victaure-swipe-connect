@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { missionCategories } from "@/types/job";
+import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
+import { JobCategoryFields } from "./form/JobCategoryFields";
+import { JobTypeFields } from "./form/JobTypeFields";
 
 interface CreateJobFormProps {
   onSuccess: () => void;
@@ -20,25 +18,14 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     budget: "",
     location: "",
     category: "Technologie",
+    subcategory: "",
     contract_type: "Full-time",
     experience_level: "Mid-Level"
   });
 
-  const contractTypes = [
-    "Full-time",
-    "Part-time",
-    "Contract",
-    "Freelance",
-    "Internship",
-    "Temporary"
-  ];
-
-  const experienceLevels = [
-    "Entry-Level",
-    "Mid-Level",
-    "Senior",
-    "Expert"
-  ];
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,6 +74,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         employer_id: user.id,
         status: 'open',
         category: formData.category,
+        subcategory: formData.subcategory,
         contract_type: formData.contract_type,
         experience_level: formData.experience_level
       });
@@ -105,6 +93,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         budget: "",
         location: "",
         category: "Technologie",
+        subcategory: "",
         contract_type: "Full-time",
         experience_level: "Mid-Level"
       });
@@ -120,97 +109,23 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Titre</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="category">Catégorie</Label>
-        <Select
-          value={formData.category}
-          onValueChange={(value) => setFormData({ ...formData, category: value })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez une catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(missionCategories).map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="contract_type">Type de contrat</Label>
-        <Select
-          value={formData.contract_type}
-          onValueChange={(value) => setFormData({ ...formData, contract_type: value })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez un type de contrat" />
-          </SelectTrigger>
-          <SelectContent>
-            {contractTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="experience_level">Niveau d'expérience</Label>
-        <Select
-          value={formData.experience_level}
-          onValueChange={(value) => setFormData({ ...formData, experience_level: value })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez un niveau d'expérience" />
-          </SelectTrigger>
-          <SelectContent>
-            {experienceLevels.map((level) => (
-              <SelectItem key={level} value={level}>
-                {level}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="budget">Budget</Label>
-        <Input
-          id="budget"
-          type="number"
-          value={formData.budget}
-          onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-          required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="location">Localisation</Label>
-        <Input
-          id="location"
-          value={formData.location}
-          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-          required
-        />
-      </div>
+      <JobBasicInfoFields
+        title={formData.title}
+        description={formData.description}
+        budget={formData.budget}
+        location={formData.location}
+        onChange={handleChange}
+      />
+      <JobCategoryFields
+        category={formData.category}
+        subcategory={formData.subcategory}
+        onChange={handleChange}
+      />
+      <JobTypeFields
+        contractType={formData.contract_type}
+        experienceLevel={formData.experience_level}
+        onChange={handleChange}
+      />
       <Button type="submit" className="w-full">
         Créer l'offre
       </Button>
