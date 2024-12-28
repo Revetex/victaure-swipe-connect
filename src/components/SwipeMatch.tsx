@@ -19,9 +19,16 @@ interface Job {
   experience_level: string;
 }
 
-// ... keep existing code (useState, useEffect, and other functions)
+interface SwipeMatchProps {
+  filters: {
+    category: string;
+    subcategory: string;
+    duration: string;
+    salaryRange: number[];
+  };
+}
 
-export function SwipeMatch() {
+export function SwipeMatch({ filters }: SwipeMatchProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const controls = useAnimation();
@@ -32,10 +39,23 @@ export function SwipeMatch() {
 
   const fetchJobs = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("jobs")
         .select("*")
         .order("created_at", { ascending: false });
+
+      if (filters.category) {
+        query = query.eq("category", filters.category);
+      }
+
+      // Add salary range filter
+      if (filters.salaryRange) {
+        query = query
+          .gte("budget", filters.salaryRange[0])
+          .lte("budget", filters.salaryRange[1]);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -46,13 +66,14 @@ export function SwipeMatch() {
           company: "Company Name",
           location: job.location,
           salary: `${job.budget} CAD`,
-          duration: "À déterminer",
+          duration: job.contract_type,
           skills: ["Skill 1", "Skill 2"],
           category: job.category,
           contract_type: job.contract_type,
           experience_level: job.experience_level
         }));
         setJobs(formattedJobs);
+        setCurrentIndex(0); // Reset index when new jobs are fetched
       }
     } catch (error) {
       console.error("Error fetching jobs:", error);
@@ -62,7 +83,7 @@ export function SwipeMatch() {
 
   useEffect(() => {
     fetchJobs();
-  }, []);
+  }, [filters]); // Re-fetch when filters change
 
   const handleDragEnd = async (event: any, info: any) => {
     const offset = info.offset.x;
@@ -116,7 +137,7 @@ export function SwipeMatch() {
           Aucune offre disponible pour le moment
         </h3>
         <p className="text-muted-foreground">
-          Revenez plus tard pour découvrir de nouvelles missions.
+          Essayez de modifier vos filtres ou revenez plus tard.
         </p>
       </div>
     );
@@ -129,7 +150,7 @@ export function SwipeMatch() {
           Vous avez vu toutes les offres !
         </h3>
         <p className="text-muted-foreground mb-6">
-          Revenez plus tard pour découvrir de nouvelles missions.
+          Modifiez vos filtres ou revenez plus tard pour découvrir de nouvelles missions.
         </p>
         <Button
           onClick={() => {
