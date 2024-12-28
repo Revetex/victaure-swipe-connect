@@ -1,14 +1,13 @@
-import { Bot, Brain, Sparkles, Wand2, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Bot, Brain, Sparkles, Wand2 } from "lucide-react";
 
 interface ChatHeaderProps {
   onClearChat: () => void;
   isThinking: boolean;
 }
 
-export function ChatHeader({ onClearChat, isThinking }: ChatHeaderProps) {
+export function ChatHeader({ isThinking }: ChatHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-4 relative border-b border-victaure-blue/10">
+    <div className="flex items-center p-4 relative border-b border-victaure-blue/10">
       <div className="flex items-center gap-4">
         <div className="relative">
           <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
@@ -29,14 +28,6 @@ export function ChatHeader({ onClearChat, isThinking }: ChatHeaderProps) {
           </p>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onClearChat}
-        className="hover:bg-victaure-blue/10"
-      >
-        <X className="h-4 w-4" />
-      </Button>
     </div>
   );
 }
