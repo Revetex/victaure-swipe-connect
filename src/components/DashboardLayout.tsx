@@ -24,11 +24,6 @@ export function DashboardLayout() {
           <SwipeJob />
         </div>
 
-        {/* VCard - Pleine largeur sur mobile */}
-        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}>
-          <VCard />
-        </div>
-
         {/* Composants secondaires - Empilés sur mobile */}
         <div className="glass-card rounded-lg p-3 sm:p-4">
           <TodoList />
@@ -44,6 +39,11 @@ export function DashboardLayout() {
 
         <div className="glass-card rounded-lg p-3 sm:p-4">
           <Settings />
+        </div>
+
+        {/* VCard - Pleine largeur en bas */}
+        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-3 2xl:col-span-4"}`}>
+          <VCard />
         </div>
       </div>
     </div>
