@@ -3,19 +3,20 @@ import { Code, Briefcase, PaintBucket, HardHat, Wrench, Brain } from "lucide-rea
 export interface Job {
   id: string;
   title: string;
-  company: string;
+  company?: string;
   location: string;
-  salary: string;
+  salary?: string;
   category: string;
   contract_type: string;
   experience_level: string;
-  skills: string[];
+  skills?: string[];
   budget?: number;
   description?: string;
   employer_id?: string;
   status?: string;
   created_at?: string;
   updated_at?: string;
+  subcategory?: string;
 }
 
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {

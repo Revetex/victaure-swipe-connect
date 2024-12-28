@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JobList } from "./jobs/JobList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Job } from "@/types/job";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +41,12 @@ export function SwipeJob() {
         return [];
       }
       
-      return data;
+      return data?.map(job => ({
+        ...job,
+        company: "Votre entreprise",
+        salary: `${job.budget} CAD`,
+        skills: [] // Initialize with empty array to prevent undefined
+      })) as Job[];
     }
   });
 

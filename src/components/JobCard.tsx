@@ -5,26 +5,26 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface JobCardProps {
   title: string;
-  company: string;
+  company?: string;
   location: string;
-  salary: string;
+  salary?: string;
   category: string;
   subcategory?: string;
   contract_type: string;
   experience_level: string;
-  skills: string[];
+  skills?: string[];
 }
 
 export function JobCard({
   title,
-  company,
+  company = "Entreprise",
   location,
   salary,
   category,
   subcategory,
   contract_type,
   experience_level,
-  skills,
+  skills = [],
 }: JobCardProps) {
   const isMobile = useIsMobile();
 
@@ -69,17 +69,11 @@ export function JobCard({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex flex-col gap-2">
-            <p className="text-lg font-semibold text-victaure-green">{salary}</p>
-            <Badge variant="secondary" className="w-fit">
-              {category}
-            </Badge>
-            {subcategory && (
-              <Badge variant="outline" className="w-fit">
-                {subcategory}
-              </Badge>
-            )}
-          </div>
+          {salary && (
+            <div className="flex flex-col gap-2">
+              <p className="text-lg font-semibold text-victaure-green">{salary}</p>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             {skills.slice(0, isMobile ? 3 : 5).map((skill) => (
               <Badge
