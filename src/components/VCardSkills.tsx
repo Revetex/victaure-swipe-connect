@@ -10,8 +10,9 @@ import {
 import { predefinedSkills } from "@/data/skills";
 import { VCardSection } from "./VCardSection";
 import { VCardBadge } from "./VCardBadge";
-import { Sparkles, Code, Briefcase, Wrench, PaintBucket, Brain } from "lucide-react";
+import { Code, Wrench, PaintBucket, Briefcase, Brain } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
 
 const skillCategories = {
   "Développement": ["JavaScript", "TypeScript", "Python", "React", "Node.js"],
@@ -22,13 +23,23 @@ const skillCategories = {
   "Manuel": ["Peinture", "Carrelage", "Menuiserie", "Serrurerie"]
 };
 
-const categoryIcons: Record<string, any> = {
-  "Développement": Code,
-  "DevOps": Wrench,
-  "Design": PaintBucket,
-  "Gestion": Briefcase,
-  "Construction": Wrench,
-  "Manuel": Brain
+const CategoryIcon = ({ category }: { category: string }) => {
+  switch (category) {
+    case "Développement":
+      return <Code className="h-4 w-4" />;
+    case "DevOps":
+      return <Wrench className="h-4 w-4" />;
+    case "Design":
+      return <PaintBucket className="h-4 w-4" />;
+    case "Gestion":
+      return <Briefcase className="h-4 w-4" />;
+    case "Construction":
+      return <Wrench className="h-4 w-4" />;
+    case "Manuel":
+      return <Brain className="h-4 w-4" />;
+    default:
+      return null;
+  }
 };
 
 interface VCardSkillsProps {
@@ -71,15 +82,13 @@ export function VCardSkills({
   return (
     <VCardSection 
       title="Compétences" 
-      icon={<Sparkles className="h-4 w-4 text-muted-foreground" />}
+      icon={<Brain className="h-4 w-4 text-muted-foreground" />}
       className="space-y-3"
     >
       {Object.entries(groupedSkills).map(([category, skills]) => (
         <div key={category} className="space-y-2">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {categoryIcons[category] && (
-              <categoryIcons[category] className="h-4 w-4" />
-            )}
+            <CategoryIcon category={category} />
             <span>{category}</span>
           </div>
           <div className="flex flex-wrap gap-2">
