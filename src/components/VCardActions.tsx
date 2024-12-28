@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Share2, Download, Copy, Save, FilePdf } from "lucide-react";
+import { Share2, Download, Copy, Save, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface VCardActionsProps {
@@ -67,7 +67,7 @@ export function VCardActions({
             variant="outline" 
             className="flex-1 transition-colors"
           >
-            <FilePdf className="mr-2 h-4 w-4" />
+            <FileText className="mr-2 h-4 w-4" />
             PDF
           </Button>
           <Button 
