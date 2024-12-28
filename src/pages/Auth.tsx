@@ -57,18 +57,23 @@ export default function AuthPage() {
 
   const handleBiometricAuth = async () => {
     try {
+      // Create a random challenge
+      const challenge = new Uint8Array(32);
+      window.crypto.getRandomValues(challenge);
+
       // Request biometric authentication
       const credential = await navigator.credentials.get({
         publicKey: {
-          challenge: new Uint8Array(32),
+          challenge,
           rpId: window.location.hostname,
           userVerification: "required",
+          timeout: 60000, // 1 minute timeout
         },
       });
 
       if (credential) {
         // Here you would typically validate the credential with your backend
-        // For demo purposes, we'll just show a success message
+        // For demo purposes, we'll simulate a successful authentication
         toast.success("Authentification biométrique réussie");
         navigate("/dashboard", { replace: true });
       }
@@ -122,8 +127,6 @@ export default function AuthPage() {
               },
             },
           }}
-          providers={["google"]}
-          redirectTo={`${window.location.origin}/dashboard`}
           localization={{
             variables: {
               sign_in: {
@@ -132,7 +135,6 @@ export default function AuthPage() {
                 button_label: "Se connecter",
                 email_input_placeholder: "Votre adresse email",
                 password_input_placeholder: "Votre mot de passe",
-                social_provider_text: "Continuer avec {{provider}}",
               },
               sign_up: {
                 email_label: "Email",
@@ -140,7 +142,6 @@ export default function AuthPage() {
                 button_label: "S'inscrire",
                 email_input_placeholder: "Votre adresse email",
                 password_input_placeholder: "Choisissez un mot de passe",
-                social_provider_text: "Continuer avec {{provider}}",
               },
             },
           }}
