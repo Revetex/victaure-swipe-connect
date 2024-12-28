@@ -2,29 +2,23 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface JobFilters {
   category: string;
+  subcategory: string;
   duration: string;
-  salaryRange: number[];
   experienceLevel: string;
   location: string;
   searchTerm: string;
 }
 
 export const applyJobFilters = (query: any, filters: JobFilters) => {
-  if (filters.category) {
+  if (filters.category && filters.category !== "all") {
     query = query.eq("category", filters.category);
   }
 
-  if (filters.duration) {
+  if (filters.duration && filters.duration !== "all") {
     query = query.eq("contract_type", filters.duration);
   }
 
-  if (filters.salaryRange) {
-    query = query
-      .gte("budget", filters.salaryRange[0])
-      .lte("budget", filters.salaryRange[1]);
-  }
-
-  if (filters.experienceLevel) {
+  if (filters.experienceLevel && filters.experienceLevel !== "all") {
     query = query.eq("experience_level", filters.experienceLevel);
   }
 

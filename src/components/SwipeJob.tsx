@@ -5,24 +5,31 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { SwipeMatch } from "./SwipeMatch";
 import { CreateJobForm } from "./jobs/CreateJobForm";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { JobFilters } from "./jobs/JobFilterUtils";
+import { missionCategories } from "@/types/job";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState<JobFilters>({
     category: "all",
+    subcategory: "all",
     duration: "all",
-    salaryRange: [300, 1000],
     experienceLevel: "all",
     location: "",
     searchTerm: ""
   });
 
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    if (key === "category" && value !== filters.category) {
+      // Reset subcategory when category changes
+      setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
+    } else {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }
   };
+
+  const subcategories = filters.category !== "all" ? missionCategories[filters.category]?.subcategories : [];
 
   return (
     <div className="glass-card p-4 space-y-4">
@@ -79,14 +86,38 @@ export function SwipeJob() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes les catégories</SelectItem>
-                <SelectItem value="Technology">Technologie</SelectItem>
-                <SelectItem value="Design">Design</SelectItem>
-                <SelectItem value="Marketing">Marketing</SelectItem>
-                <SelectItem value="Construction">Construction</SelectItem>
-                <SelectItem value="Manual">Manuel</SelectItem>
+                {Object.keys(missionCategories).map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
+
+          {filters.category !== "all" && (
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Sous-catégorie
+              </label>
+              <Select
+                value={filters.subcategory}
+                onValueChange={(value) => handleFilterChange("subcategory", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Toutes les sous-catégories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les sous-catégories</SelectItem>
+                  {subcategories?.map((subcat) => (
+                    <SelectItem key={subcat} value={subcat}>
+                      {subcat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
@@ -138,24 +169,6 @@ export function SwipeJob() {
               value={filters.location}
               onChange={(e) => handleFilterChange("location", e.target.value)}
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-4">
-              Rémunération (CAD/jour)
-            </label>
-            <Slider
-              defaultValue={filters.salaryRange}
-              max={1000}
-              min={300}
-              step={50}
-              onValueChange={(value) => handleFilterChange("salaryRange", value)}
-              className="mt-2"
-            />
-            <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-              <span>{filters.salaryRange[0]} CAD</span>
-              <span>{filters.salaryRange[1]} CAD</span>
-            </div>
           </div>
         </div>
       </div>
