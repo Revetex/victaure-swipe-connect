@@ -11,7 +11,7 @@ export function Dashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      const [jobsResponse, messagesResponse, paymentsResponse] = await Promise.all([
+      const [jobsResponse, messagesResponse] = await Promise.all([
         supabase
           .from('jobs')
           .select('*', { count: 'exact' })
@@ -22,20 +22,23 @@ export function Dashboard() {
           .select('*', { count: 'exact' })
           .eq('receiver_id', user.id)
           .eq('read', false),
-        supabase
-          .from('payments')
-          .select('amount')
-          .eq('status', 'pending')
-          .in('match_id', 
-            supabase
-              .from('matches')
-              .select('id')
-              .eq('employer_id', user.id)
-              .eq('status', 'accepted')
-          )
       ]);
 
-      const pendingAmount = paymentsResponse.data?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
+      // First get the matches
+      const { data: matches } = await supabase
+        .from('matches')
+        .select('id')
+        .eq('employer_id', user.id)
+        .eq('status', 'accepted');
+
+      // Then get payments using the match IDs
+      const { data: payments } = await supabase
+        .from('payments')
+        .select('amount')
+        .eq('status', 'pending')
+        .in('match_id', matches?.map(match => match.id) || []);
+
+      const pendingAmount = payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
 
       return {
         activeJobs: jobsResponse.count || 0,
