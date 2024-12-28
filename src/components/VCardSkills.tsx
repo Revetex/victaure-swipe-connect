@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { predefinedSkills } from "@/data/skills";
 import { VCardSection } from "./VCardSection";
-import { Code, Wrench, PaintBucket, Briefcase, Brain, Filter } from "lucide-react";
+import { Brain, Filter } from "lucide-react";
 import { useState } from "react";
 import { SkillCategory } from "./skills/SkillCategory";
 import { SkillEditor } from "./skills/SkillEditor";
@@ -13,25 +13,6 @@ const skillCategories: Record<string, string[]> = {
   "Gestion": ["Agile", "Scrum", "Leadership", "Communication"],
   "Construction": ["Maçonnerie", "Charpente", "Plomberie", "Électricité"],
   "Manuel": ["Peinture", "Carrelage", "Menuiserie", "Serrurerie"]
-};
-
-const CategoryIcon = ({ category }: { category: string }) => {
-  switch (category) {
-    case "Développement":
-      return <Code className="h-4 w-4" />;
-    case "DevOps":
-      return <Wrench className="h-4 w-4" />;
-    case "Design":
-      return <PaintBucket className="h-4 w-4" />;
-    case "Gestion":
-      return <Briefcase className="h-4 w-4" />;
-    case "Construction":
-      return <Wrench className="h-4 w-4" />;
-    case "Manuel":
-      return <Brain className="h-4 w-4" />;
-    default:
-      return null;
-  }
 };
 
 interface VCardSkillsProps {
@@ -98,7 +79,6 @@ export function VCardSkills({
             key={category}
             category={category}
             skills={skills}
-            icon={<CategoryIcon category={category} />}
             isEditing={isEditing}
             searchTerm={searchTerm}
             onRemoveSkill={handleRemoveSkill}

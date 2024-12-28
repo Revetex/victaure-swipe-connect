@@ -1,10 +1,9 @@
-import { ReactNode } from "react";
 import { VCardBadge } from "../VCardBadge";
+import { CategoryIcon } from "./CategoryIcon";
 
 interface SkillCategoryProps {
   category: string;
   skills: string[];
-  icon: ReactNode;
   isEditing: boolean;
   searchTerm: string;
   onRemoveSkill?: (skill: string) => void;
@@ -13,7 +12,6 @@ interface SkillCategoryProps {
 export function SkillCategory({
   category,
   skills,
-  icon,
   isEditing,
   searchTerm,
   onRemoveSkill,
@@ -27,7 +25,7 @@ export function SkillCategory({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2 text-sm text-indigo-700 dark:text-indigo-400 font-medium">
-        {icon}
+        <CategoryIcon category={category} />
         <span>{category}</span>
       </div>
       <div className="flex flex-wrap gap-2">
