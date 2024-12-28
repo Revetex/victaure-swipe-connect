@@ -13,7 +13,41 @@ import {
   Clock,
   Euro,
   SlidersHorizontal,
+  Code,
+  Briefcase,
+  PaintBucket,
+  Wrench,
+  Brain,
+  HardHat
 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+const missionCategories = {
+  "Technologie": {
+    icon: Code,
+    subcategories: ["Développement Web", "DevOps", "Mobile", "Data"]
+  },
+  "Gestion": {
+    icon: Briefcase,
+    subcategories: ["Product Management", "Agile", "Conseil"]
+  },
+  "Design": {
+    icon: PaintBucket,
+    subcategories: ["UI/UX", "Graphisme", "Motion"]
+  },
+  "Construction": {
+    icon: HardHat,
+    subcategories: ["Gros œuvre", "Second œuvre", "Finitions"]
+  },
+  "Manuel": {
+    icon: Wrench,
+    subcategories: ["Rénovation", "Installation", "Maintenance"]
+  },
+  "Expertise": {
+    icon: Brain,
+    subcategories: ["Formation", "Audit", "Conseil"]
+  }
+};
 
 interface Job {
   id: string;
@@ -59,43 +93,73 @@ const mockJobs: Job[] = [
 ];
 
 export function Marketplace() {
-  const [sector, setSector] = useState<string>("");
+  const isMobile = useIsMobile();
+  const [category, setCategory] = useState<string>("");
+  const [subcategory, setSubcategory] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
   const [salaryRange, setSalaryRange] = useState<number[]>([300, 1000]);
 
-  const sectors = ["Technology", "Finance", "Healthcare", "Product", "Marketing"];
-  const durations = ["3-6 mois", "6-12 mois", "12+ mois"];
+  const selectedCategoryIcon = category ? missionCategories[category as keyof typeof missionCategories]?.icon : null;
+  const subcategories = category ? missionCategories[category as keyof typeof missionCategories]?.subcategories : [];
 
   return (
-    <section className="py-16 bg-background">
+    <section className="py-8 sm:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center gap-2 mb-8">
           <SlidersHorizontal className="h-6 w-6 text-victaure-blue" />
-          <h2 className="text-2xl font-bold text-foreground">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">
             Explorer les missions
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1 space-y-6 bg-card p-6 rounded-lg shadow-sm border">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
+          <div className={`lg:col-span-1 space-y-6 bg-card p-4 sm:p-6 rounded-lg shadow-sm border ${
+            isMobile ? "sticky top-0 z-10 bg-opacity-95 backdrop-blur-sm" : ""
+          }`}>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Secteur
+                  Catégorie
                 </label>
-                <Select value={sector} onValueChange={setSector}>
+                <Select value={category} onValueChange={setCategory}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tous les secteurs" />
+                    <SelectValue placeholder="Toutes les catégories" />
                   </SelectTrigger>
                   <SelectContent>
-                    {sectors.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
+                    {Object.keys(missionCategories).map((cat) => {
+                      const CategoryIcon = missionCategories[cat as keyof typeof missionCategories].icon;
+                      return (
+                        <SelectItem key={cat} value={cat}>
+                          <div className="flex items-center gap-2">
+                            <CategoryIcon className="h-4 w-4" />
+                            <span>{cat}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
+
+              {category && subcategories && (
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Sous-catégorie
+                  </label>
+                  <Select value={subcategory} onValueChange={setSubcategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Toutes les sous-catégories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subcategories.map((subcat) => (
+                        <SelectItem key={subcat} value={subcat}>
+                          {subcat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
@@ -106,7 +170,7 @@ export function Marketplace() {
                     <SelectValue placeholder="Toutes les durées" />
                   </SelectTrigger>
                   <SelectContent>
-                    {durations.map((d) => (
+                    {["3-6 mois", "6-12 mois", "12+ mois"].map((d) => (
                       <SelectItem key={d} value={d}>
                         {d}
                       </SelectItem>
@@ -135,7 +199,7 @@ export function Marketplace() {
             </div>
           </div>
 
-          <div className="lg:col-span-3 grid gap-6">
+          <div className="lg:col-span-3 grid gap-4 sm:gap-6">
             {mockJobs.map((job) => (
               <JobCard key={job.id} {...job} />
             ))}
