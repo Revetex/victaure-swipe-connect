@@ -29,7 +29,7 @@ export function SwipeJob() {
       </div>
       
       <div className="flex justify-center">
-        <SwipeMatch filters={{}} />
+        <SwipeMatch />
       </div>
     </div>
   );
