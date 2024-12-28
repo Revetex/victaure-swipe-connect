@@ -41,7 +41,7 @@ export function Messages() {
           content,
           created_at,
           read,
-          sender:sender_id (
+          sender:profiles!messages_sender_id_fkey (
             id,
             full_name,
             avatar_url
