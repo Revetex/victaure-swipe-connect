@@ -7,12 +7,12 @@ interface VCardSectionProps {
   className?: string;
 }
 
-export function VCardSection({ title, icon, children, className }: VCardSectionProps) {
+export function VCardSection({ title, icon, children, className = "" }: VCardSectionProps) {
   return (
-    <div className={`space-y-4 ${className || ''}`}>
+    <div className={`space-y-4 ${className}`}>
       <div className="flex items-center gap-2">
         {icon}
-        <h3 className="font-semibold">{title}</h3>
+        <h3 className="text-lg font-semibold">{title}</h3>
       </div>
       {children}
     </div>
