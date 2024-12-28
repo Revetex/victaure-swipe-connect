@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import type { Message } from "@/hooks/useChat";
 
 export function MrVictaure() {
   const {
@@ -14,6 +15,7 @@ export function MrVictaure() {
     inputMessage,
     isListening,
     isThinking,
+    setMessages,
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,
@@ -42,7 +44,7 @@ export function MrVictaure() {
       };
       setMessages([welcomeMessage]);
     }
-  }, []);
+  }, [messages.length, setMessages]);
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);
@@ -57,7 +59,7 @@ export function MrVictaure() {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-victaure-blue/5 to-transparent pointer-events-none" />
       
-      <ChatHeader isThinking={isThinking} />
+      <ChatHeader isThinking={isThinking} onClearChat={clearChat} />
 
       <div 
         ref={scrollAreaRef}
