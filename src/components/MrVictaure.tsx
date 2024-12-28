@@ -2,14 +2,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
 import { ChatInput } from "./chat/ChatInput";
-import { useChat } from "@/hooks/useChat";
+import { useChat, Message } from "@/hooks/useChat";
 import { useState, useRef, useEffect } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
-import type { Message } from "@/hooks/useChat";
+import { supabase } from "@/integrations/supabase/client";
 
 export function MrVictaure() {
   const {
@@ -39,7 +39,7 @@ export function MrVictaure() {
     if (messages.length === 0) {
       const welcomeMessage: Message = {
         id: "welcome",
-        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux directement modifier votre VCard pour vous aider à créer un profil professionnel optimal. Souhaitez-vous que je regarde votre profil actuel et vous suggère des améliorations ? Ou préférez-vous que nous commencions par ajouter de nouvelles compétences ?",
+        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
         sender: "assistant",
         timestamp: new Date(),
       };
@@ -63,16 +63,44 @@ export function MrVictaure() {
             const newProfile = { ...profile, ...updateData.changes };
             setTempProfile(newProfile);
             setProfile(newProfile);
-            
             toast.success("Profil mis à jour avec succès");
           }
         } catch (error) {
           console.error("Error parsing VCard update:", error);
         }
       }
+      
+      // Check if the response contains a job creation action
+      if (response.includes('"action":"CREATE_JOB"')) {
+        try {
+          const jsonStartIndex = response.indexOf('{');
+          const jsonEndIndex = response.lastIndexOf('}') + 1;
+          const jsonStr = response.substring(jsonStartIndex, jsonEndIndex);
+          const jobData = JSON.parse(jsonStr);
+
+          if (jobData.action === "CREATE_JOB" && jobData.job) {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("User not authenticated");
+
+            const { error: jobError } = await supabase
+              .from('jobs')
+              .insert({
+                ...jobData.job,
+                employer_id: user.id,
+                status: 'open'
+              });
+
+            if (jobError) throw jobError;
+            toast.success("Mission créée avec succès");
+          }
+        } catch (error) {
+          console.error("Error creating job:", error);
+          toast.error("Erreur lors de la création de la mission");
+        }
+      }
     } catch (error) {
       console.error("Error in handleSendMessage:", error);
-      toast.error("Une erreur est survenue lors de la mise à jour du profil");
+      toast.error("Une erreur est survenue");
     }
   };
 
@@ -117,7 +145,7 @@ export function MrVictaure() {
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
-          onSend={handleSendMessage}
+          onSend={() => handleSendMessage(inputMessage)}
           onVoiceInput={handleVoiceInput}
           isListening={isListening}
           isThinking={isThinking}
