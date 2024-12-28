@@ -1,3 +1,5 @@
+import { Code, Briefcase, PaintBucket, HardHat, Wrench, Brain } from "lucide-react";
+
 export interface Job {
   id: string;
   title: string;
@@ -8,6 +10,12 @@ export interface Job {
   contract_type: string;
   experience_level: string;
   skills: string[];
+  budget?: number;
+  description?: string;
+  employer_id?: string;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const missionCategories = {
@@ -35,4 +43,4 @@ export const missionCategories = {
     icon: Brain,
     subcategories: ["Formation", "Audit", "Conseil"]
   }
-} as const;
+};

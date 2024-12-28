@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { JobFilters } from "./jobs/JobFilters";
 import { JobList } from "./jobs/JobList";
-import { missionCategories } from "@/types/job";
+import { missionCategories, Job } from "@/types/job";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -29,9 +29,10 @@ export function Marketplace() {
 
       return data.map(job => ({
         ...job,
-        company: "Company Name", // À remplacer par la vraie donnée
-        skills: ["Skill 1", "Skill 2"] // À remplacer par les vraies compétences
-      }));
+        company: "Company Name",
+        skills: ["Skill 1", "Skill 2"],
+        salary: `${job.budget} CAD`
+      })) as Job[];
     }
   });
 
