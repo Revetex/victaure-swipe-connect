@@ -14,6 +14,7 @@ import { Job } from "@/types/job";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
+  const [openLocation, setOpenLocation] = useState(false);
   const [filters, setFilters] = useState<JobFilters>({
     category: "all",
     subcategory: "all",
@@ -98,6 +99,8 @@ export function SwipeJob() {
           <JobFiltersPanel 
             filters={filters}
             onFilterChange={handleFilterChange}
+            openLocation={openLocation}
+            setOpenLocation={setOpenLocation}
           />
           
           <div className="flex justify-center">
