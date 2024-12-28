@@ -1,6 +1,7 @@
-import { motion, useAnimation, MotionValue } from "framer-motion";
+import { motion, MotionValue } from "framer-motion";
 import { JobCard } from "@/components/JobCard";
 import { Job } from "@/types/job";
+import { JobActions } from "./JobActions";
 
 interface AnimatedJobCardProps {
   job: Job;
@@ -9,6 +10,8 @@ interface AnimatedJobCardProps {
   opacity: MotionValue<number>;
   onDragEnd: (event: any, info: any) => void;
   dragConstraints: React.RefObject<Element>;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 export function AnimatedJobCard({
@@ -17,7 +20,9 @@ export function AnimatedJobCard({
   rotate,
   opacity,
   onDragEnd,
-  dragConstraints
+  dragConstraints,
+  onDelete,
+  onEdit
 }: AnimatedJobCardProps) {
   return (
     <motion.div
@@ -27,7 +32,15 @@ export function AnimatedJobCard({
       style={{ x, rotate, opacity }}
       className="cursor-grab active:cursor-grabbing"
     >
-      <JobCard {...job} />
+      <div className="relative">
+        <JobCard {...job} />
+        <JobActions 
+          jobId={job.id} 
+          employerId={job.employer_id}
+          onDelete={onDelete || (() => {})}
+          onEdit={onEdit || (() => {})}
+        />
+      </div>
     </motion.div>
   );
 }
