@@ -1,7 +1,7 @@
 import { Plus, SlidersHorizontal, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { SwipeMatch } from "./SwipeMatch";
 import { CreateJobForm } from "./jobs/CreateJobForm";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -22,7 +22,6 @@ export function SwipeJob() {
 
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
     if (key === "category" && value !== filters.category) {
-      // Reset subcategory when category changes
       setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
     } else {
       setFilters(prev => ({ ...prev, [key]: value }));
@@ -37,16 +36,24 @@ export function SwipeJob() {
         <h2 className="text-2xl font-bold">Offres disponibles</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="button-enhanced" size="sm">
+            <Button className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" size="sm">
               <Plus className="mr-2 h-4 w-4" />
-              Ajouter une offre
+              Ajouter une mission
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[600px] p-6">
             <DialogHeader>
-              <DialogTitle>Créer une nouvelle offre</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-victaure-blue">
+                Ajouter une mission
+              </DialogTitle>
+              <DialogDescription className="text-victaure-gray-dark">
+                Créez une nouvelle mission en remplissant les informations ci-dessous.
+                Les professionnels pourront la consulter et y postuler.
+              </DialogDescription>
             </DialogHeader>
-            <CreateJobForm onSuccess={() => setIsOpen(false)} />
+            <div className="mt-6">
+              <CreateJobForm onSuccess={() => setIsOpen(false)} />
+            </div>
           </DialogContent>
         </Dialog>
       </div>

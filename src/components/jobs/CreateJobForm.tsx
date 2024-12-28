@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
 import { JobCategoryFields } from "./form/JobCategoryFields";
 import { JobTypeFields } from "./form/JobTypeFields";
+import { Loader2 } from "lucide-react";
 
 interface CreateJobFormProps {
   onSuccess: () => void;
@@ -12,6 +13,7 @@ interface CreateJobFormProps {
 
 export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -29,6 +31,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -36,7 +39,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       if (authError || !user) {
         toast({
           title: "Erreur",
-          description: "Vous devez être connecté pour créer une offre",
+          description: "Vous devez être connecté pour créer une mission",
           variant: "destructive"
         });
         return;
@@ -60,7 +63,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       if (profile.role !== 'employer') {
         toast({
           title: "Erreur",
-          description: "Seuls les employeurs peuvent créer des offres",
+          description: "Seuls les employeurs peuvent créer des missions",
           variant: "destructive"
         });
         return;
@@ -83,7 +86,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
 
       toast({
         title: "Succès",
-        description: "Votre offre a été créée avec succès"
+        description: "Votre mission a été créée avec succès"
       });
 
       onSuccess();
@@ -101,33 +104,55 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       console.error("Error creating job:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la création de l'offre",
+        description: "Une erreur est survenue lors de la création de la mission",
         variant: "destructive"
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <JobBasicInfoFields
-        title={formData.title}
-        description={formData.description}
-        budget={formData.budget}
-        location={formData.location}
-        onChange={handleChange}
-      />
-      <JobCategoryFields
-        category={formData.category}
-        subcategory={formData.subcategory}
-        onChange={handleChange}
-      />
-      <JobTypeFields
-        contractType={formData.contract_type}
-        experienceLevel={formData.experience_level}
-        onChange={handleChange}
-      />
-      <Button type="submit" className="w-full">
-        Créer l'offre
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-6 bg-gray-50 p-4 rounded-lg">
+        <JobBasicInfoFields
+          title={formData.title}
+          description={formData.description}
+          budget={formData.budget}
+          location={formData.location}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="space-y-6 bg-gray-50 p-4 rounded-lg">
+        <JobCategoryFields
+          category={formData.category}
+          subcategory={formData.subcategory}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="space-y-6 bg-gray-50 p-4 rounded-lg">
+        <JobTypeFields
+          contractType={formData.contract_type}
+          experienceLevel={formData.experience_level}
+          onChange={handleChange}
+        />
+      </div>
+
+      <Button 
+        type="submit" 
+        className="w-full bg-victaure-blue hover:bg-victaure-blue/90"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Création en cours...
+          </>
+        ) : (
+          "Créer la mission"
+        )}
       </Button>
     </form>
   );
