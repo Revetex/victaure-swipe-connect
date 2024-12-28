@@ -4,7 +4,6 @@ import { QRCodeSVG } from "qrcode.react";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 import { VCardSection } from "./VCardSection";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
-import { LocationMap } from "./map/LocationMap";
 import {
   Select,
   SelectContent,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { quebecCities } from "@/data/cities";
 
 interface VCardContactProps {
   profile: any;
@@ -52,14 +52,6 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     generatePDF();
   }, [profile]);
 
-  const handleLocationSelect = (lat: number, lng: number) => {
-    setProfile({
-      ...profile,
-      latitude: lat,
-      longitude: lng
-    });
-  };
-
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
       <div className="space-y-4 flex-1">
@@ -99,12 +91,21 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
               {isEditing ? (
-                <Input
+                <Select
                   value={profile.city || ""}
-                  onChange={(e) => setProfile({ ...profile, city: e.target.value })}
-                  className="flex-1"
-                  placeholder="Votre ville"
-                />
+                  onValueChange={(value) => setProfile({ ...profile, city: value })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Sélectionnez une ville" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {quebecCities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               ) : (
                 <span className="text-sm">{profile.city || "Ville non définie"}</span>
               )}
@@ -132,13 +133,6 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
               )}
             </div>
           </div>
-
-          <LocationMap
-            latitude={profile.latitude}
-            longitude={profile.longitude}
-            onLocationSelect={handleLocationSelect}
-            isEditing={isEditing}
-          />
         </VCardSection>
       </div>
       <div className="bg-card p-3 rounded-lg shadow-sm border">
