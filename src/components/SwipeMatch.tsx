@@ -19,16 +19,7 @@ interface Job {
   experience_level: string;
 }
 
-interface SwipeMatchProps {
-  filters: {
-    category: string;
-    subcategory: string;
-    duration: string;
-    salaryRange: number[];
-  };
-}
-
-export function SwipeMatch({ filters }: SwipeMatchProps) {
+export function SwipeMatch() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const controls = useAnimation();
@@ -39,23 +30,10 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   const fetchJobs = async () => {
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from("jobs")
         .select("*")
         .order("created_at", { ascending: false });
-
-      if (filters.category) {
-        query = query.eq("category", filters.category);
-      }
-
-      // Add salary range filter
-      if (filters.salaryRange) {
-        query = query
-          .gte("budget", filters.salaryRange[0])
-          .lte("budget", filters.salaryRange[1]);
-      }
-
-      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -73,7 +51,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
           experience_level: job.experience_level
         }));
         setJobs(formattedJobs);
-        setCurrentIndex(0); // Reset index when new jobs are fetched
+        setCurrentIndex(0);
       }
     } catch (error) {
       console.error("Error fetching jobs:", error);
@@ -83,7 +61,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   useEffect(() => {
     fetchJobs();
-  }, [filters]); // Re-fetch when filters change
+  }, []); // No more filter dependencies
 
   const handleDragEnd = async (event: any, info: any) => {
     const offset = info.offset.x;
@@ -102,7 +80,6 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   const handleSwipe = async (direction: "left" | "right") => {
     if (direction === "right") {
-      // Handle match
       try {
         const { data: profile } = await supabase.auth.getUser();
         if (profile.user) {
@@ -121,7 +98,6 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
       }
     }
 
-    // Move to next card
     if (currentIndex < jobs.length - 1) {
       setCurrentIndex(prev => prev + 1);
       controls.set({ x: 0, opacity: 1 });
@@ -137,7 +113,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
           Aucune offre disponible pour le moment
         </h3>
         <p className="text-muted-foreground">
-          Essayez de modifier vos filtres ou revenez plus tard.
+          Revenez plus tard pour découvrir de nouvelles missions.
         </p>
       </div>
     );
@@ -150,7 +126,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
           Vous avez vu toutes les offres !
         </h3>
         <p className="text-muted-foreground mb-6">
-          Modifiez vos filtres ou revenez plus tard pour découvrir de nouvelles missions.
+          Revenez plus tard pour découvrir de nouvelles missions.
         </p>
         <Button
           onClick={() => {
