@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Building2, MapPin, Calendar, Briefcase, GraduationCap } from "lucide-react";
+import { Building2, MapPin, Calendar, Briefcase, GraduationCap, FolderOpen, List } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface JobCardProps {
@@ -9,6 +9,7 @@ interface JobCardProps {
   location: string;
   salary: string;
   category: string;
+  subcategory?: string;
   contract_type: string;
   experience_level: string;
   skills: string[];
@@ -20,6 +21,7 @@ export function JobCard({
   location,
   salary,
   category,
+  subcategory,
   contract_type,
   experience_level,
   skills,
@@ -51,6 +53,18 @@ export function JobCard({
               <span>{experience_level}</span>
             </div>
           </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <FolderOpen className="h-4 w-4 shrink-0" />
+              <span>{category}</span>
+            </div>
+            {subcategory && (
+              <div className="flex items-center gap-2">
+                <List className="h-4 w-4 shrink-0" />
+                <span>{subcategory}</span>
+              </div>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -60,6 +74,11 @@ export function JobCard({
             <Badge variant="secondary" className="w-fit">
               {category}
             </Badge>
+            {subcategory && (
+              <Badge variant="outline" className="w-fit">
+                {subcategory}
+              </Badge>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             {skills.slice(0, isMobile ? 3 : 5).map((skill) => (
