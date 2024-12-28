@@ -3,7 +3,7 @@ import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
 import { ChatInput } from "./chat/ChatInput";
 import { useChat } from "@/hooks/useChat";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,15 @@ export function MrVictaure() {
   } = useChat();
 
   const [isMaximized, setIsMaximized] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollArea = scrollAreaRef.current;
+      scrollArea.scrollTop = scrollArea.scrollHeight;
+    }
+  }, [messages]);
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);
@@ -35,34 +44,29 @@ export function MrVictaure() {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-victaure-blue/5 to-transparent pointer-events-none" />
       
-      <div className="flex items-center justify-between p-4 relative border-b border-victaure-blue/10">
-        <ChatHeader onClearChat={clearChat} isThinking={isThinking} />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleMaximize}
-          className="hover:bg-victaure-blue/10 ml-2"
-        >
-          {isMaximized ? (
-            <Minimize2 className="h-4 w-4" />
-          ) : (
-            <Maximize2 className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
+      <ChatHeader onClearChat={clearChat} isThinking={isThinking} />
 
-      <ScrollArea className="flex-grow mb-4 pr-4 relative">
-        <div className="space-y-4 p-4">
-          {messages.map((message) => (
+      <div 
+        ref={scrollAreaRef}
+        className="flex-grow overflow-y-auto mb-4 px-4 scrollbar-thin scrollbar-thumb-victaure-blue/20 scrollbar-track-transparent"
+      >
+        <div className="space-y-4 py-4">
+          {messages.map((message, index) => (
             <ChatMessage
               key={message.id}
               content={message.content}
               sender={message.sender}
               thinking={message.thinking}
+              showTimestamp={
+                index === 0 || 
+                messages[index - 1]?.sender !== message.sender ||
+                new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
+              }
+              timestamp={message.timestamp}
             />
           ))}
         </div>
-      </ScrollArea>
+      </div>
 
       <div className="p-4 pt-0">
         <ChatInput
@@ -74,6 +78,19 @@ export function MrVictaure() {
           isThinking={isThinking}
         />
       </div>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleMaximize}
+        className="absolute top-4 right-4 hover:bg-victaure-blue/10"
+      >
+        {isMaximized ? (
+          <Minimize2 className="h-4 w-4" />
+        ) : (
+          <Maximize2 className="h-4 w-4" />
+        )}
+      </Button>
     </div>
   );
 }
