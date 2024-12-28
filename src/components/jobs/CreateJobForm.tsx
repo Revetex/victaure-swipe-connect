@@ -7,7 +7,11 @@ import { JobCategoryFields } from "./form/JobCategoryFields";
 import { JobTypeFields } from "./form/JobTypeFields";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function CreateJobForm() {
+interface CreateJobFormProps {
+  onSuccess?: () => void;
+}
+
+export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,6 +20,7 @@ export function CreateJobForm() {
     budget: "",
     location: "",
     category: "Technology",
+    subcategory: "",
     contract_type: "Full-time",
     experience_level: "Mid-Level",
   });
@@ -45,6 +50,8 @@ export function CreateJobForm() {
         description: "Mission créée avec succès",
       });
 
+      onSuccess?.();
+
       // Reset form
       setFormData({
         title: "",
@@ -52,6 +59,7 @@ export function CreateJobForm() {
         budget: "",
         location: "",
         category: "Technology",
+        subcategory: "",
         contract_type: "Full-time",
         experience_level: "Mid-Level",
       });
@@ -84,6 +92,7 @@ export function CreateJobForm() {
 
           <JobCategoryFields
             category={formData.category}
+            subcategory={formData.subcategory}
             onChange={handleChange}
           />
 
