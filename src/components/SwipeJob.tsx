@@ -12,10 +12,10 @@ import { JobFilters } from "./jobs/JobFilterUtils";
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState<JobFilters>({
-    category: "",
-    duration: "",
+    category: "all",
+    duration: "all",
     salaryRange: [300, 1000],
-    experienceLevel: "",
+    experienceLevel: "all",
     location: "",
     searchTerm: ""
   });
@@ -78,12 +78,12 @@ export function SwipeJob() {
                 <SelectValue placeholder="Toutes les catégories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les catégories</SelectItem>
+                <SelectItem value="all">Toutes les catégories</SelectItem>
                 <SelectItem value="Technology">Technologie</SelectItem>
                 <SelectItem value="Design">Design</SelectItem>
                 <SelectItem value="Marketing">Marketing</SelectItem>
                 <SelectItem value="Construction">Construction</SelectItem>
-                <SelectItem value="Manuel">Manuel</SelectItem>
+                <SelectItem value="Manual">Manuel</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -100,7 +100,7 @@ export function SwipeJob() {
                 <SelectValue placeholder="Toutes les durées" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les durées</SelectItem>
+                <SelectItem value="all">Toutes les durées</SelectItem>
                 <SelectItem value="3-6">3-6 mois</SelectItem>
                 <SelectItem value="6-12">6-12 mois</SelectItem>
                 <SelectItem value="12+">12+ mois</SelectItem>
@@ -120,7 +120,7 @@ export function SwipeJob() {
                 <SelectValue placeholder="Tous les niveaux" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les niveaux</SelectItem>
+                <SelectItem value="all">Tous les niveaux</SelectItem>
                 <SelectItem value="Junior">Junior</SelectItem>
                 <SelectItem value="Mid-Level">Intermédiaire</SelectItem>
                 <SelectItem value="Senior">Senior</SelectItem>
