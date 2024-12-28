@@ -25,18 +25,35 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
 
   const handleDelete = async () => {
     try {
-      const { error } = await supabase
+      // First, delete all matches associated with this job
+      const { error: matchesError } = await supabase
+        .from('matches')
+        .delete()
+        .eq('job_id', jobId);
+
+      if (matchesError) {
+        console.error("Error deleting matches:", matchesError);
+        toast.error("Erreur lors de la suppression des matches associés");
+        return;
+      }
+
+      // Then delete the job
+      const { error: jobError } = await supabase
         .from('jobs')
         .delete()
         .eq('id', jobId);
 
-      if (error) throw error;
+      if (jobError) {
+        console.error("Error deleting job:", jobError);
+        toast.error("Erreur lors de la suppression de l'offre");
+        return;
+      }
       
       toast.success("Offre supprimée avec succès");
       onDelete();
     } catch (error) {
-      console.error("Error deleting job:", error);
-      toast.error("Erreur lors de la suppression de l'offre");
+      console.error("Error in handleDelete:", error);
+      toast.error("Une erreur est survenue");
     }
   };
 
