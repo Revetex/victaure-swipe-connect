@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 interface JobActionsProps {
   jobId: string;
@@ -11,6 +12,17 @@ interface JobActionsProps {
 }
 
 export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsProps) {
+  const [isOwner, setIsOwner] = useState(false);
+
+  useEffect(() => {
+    const checkOwnership = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsOwner(user?.id === employerId);
+    };
+
+    checkOwnership();
+  }, [employerId]);
+
   const handleDelete = async () => {
     try {
       const { error } = await supabase
@@ -27,9 +39,6 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
       toast.error("Erreur lors de la suppression de l'offre");
     }
   };
-
-  const { data: { user } } = await supabase.auth.getUser();
-  const isOwner = user?.id === employerId;
 
   if (!isOwner) return null;
 
