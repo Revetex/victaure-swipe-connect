@@ -4,7 +4,7 @@ interface VCardSectionProps {
   title: string;
   children: ReactNode;
   className?: string;
-  icon?: ReactNode;  // Changed from string to ReactNode
+  icon?: ReactNode;
 }
 
 export function VCardSection({ title, children, className, icon }: VCardSectionProps) {

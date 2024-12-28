@@ -1,18 +1,10 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { predefinedSkills } from "@/data/skills";
 import { VCardSection } from "./VCardSection";
-import { VCardBadge } from "./VCardBadge";
 import { Code, Wrench, PaintBucket, Briefcase, Brain, Filter } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
+import { SkillCategory } from "./skills/SkillCategory";
+import { SkillEditor } from "./skills/SkillEditor";
 
 const skillCategories: Record<string, string[]> = {
   "Développement": ["JavaScript", "TypeScript", "Python", "React", "Node.js"],
@@ -63,7 +55,6 @@ export function VCardSkills({
   handleAddSkill,
   handleRemoveSkill,
 }: VCardSkillsProps) {
-  const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState<string>("Développement");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -86,8 +77,8 @@ export function VCardSkills({
   return (
     <VCardSection 
       title="Compétences" 
-      icon={<Brain className="h-4 w-4 text-indigo-600" />}
-      className="space-y-3"
+      icon={<Brain className="h-4 w-4" />}
+      className="space-y-3 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-900/40 p-6 rounded-lg shadow-sm"
     >
       {!isEditing && (
         <div className="mb-4">
@@ -95,85 +86,36 @@ export function VCardSkills({
             placeholder="Rechercher une compétence..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="max-w-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
             prefix={<Filter className="h-4 w-4 text-muted-foreground" />}
           />
         </div>
       )}
 
-      {Object.entries(groupedSkills)
-        .filter(([category, skills]) => 
-          skills.some(skill => 
-            skill.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        )
-        .map(([category, skills]) => (
-        <div key={category} className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-indigo-700 dark:text-indigo-400 font-medium">
-            <CategoryIcon category={category} />
-            <span>{category}</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {skills
-              .filter(skill => 
-                skill.toLowerCase().includes(searchTerm.toLowerCase())
-              )
-              .map((skill: string) => (
-              <VCardBadge
-                key={skill}
-                text={skill}
-                isEditing={isEditing}
-                onRemove={() => handleRemoveSkill(skill)}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
+      <div className="space-y-6">
+        {Object.entries(groupedSkills).map(([category, skills]) => (
+          <SkillCategory
+            key={category}
+            category={category}
+            skills={skills}
+            icon={<CategoryIcon category={category} />}
+            isEditing={isEditing}
+            searchTerm={searchTerm}
+            onRemoveSkill={handleRemoveSkill}
+          />
+        ))}
+      </div>
 
       {isEditing && (
-        <div className="flex flex-col sm:flex-row gap-2 mt-4">
-          <div className="w-full sm:w-[200px]">
-            <Select
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-            >
-              <SelectTrigger className="bg-white dark:bg-gray-800">
-                <SelectValue placeholder="Catégorie" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.keys(skillCategories).map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex-1">
-            <Select
-              value={newSkill}
-              onValueChange={setNewSkill}
-            >
-              <SelectTrigger className="bg-white dark:bg-gray-800">
-                <SelectValue placeholder="Sélectionnez une compétence" />
-              </SelectTrigger>
-              <SelectContent>
-                {filteredSkills.map((skill) => (
-                  <SelectItem key={skill} value={skill}>
-                    {skill}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button 
-            onClick={handleAddSkill} 
-            variant="secondary"
-            className={`${isMobile ? "w-full" : ""} bg-indigo-600 hover:bg-indigo-700 text-white`}
-          >
-            Ajouter
-          </Button>
-        </div>
+        <SkillEditor
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          newSkill={newSkill}
+          setNewSkill={setNewSkill}
+          handleAddSkill={handleAddSkill}
+          skillCategories={skillCategories}
+          filteredSkills={filteredSkills}
+        />
       )}
     </VCardSection>
   );
