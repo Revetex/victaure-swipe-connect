@@ -10,7 +10,7 @@ import {
 import { predefinedSkills } from "@/data/skills";
 import { VCardSection } from "./VCardSection";
 import { VCardBadge } from "./VCardBadge";
-import { Code, Wrench, PaintBucket, Briefcase, Brain } from "lucide-react";
+import { Code, Wrench, PaintBucket, Briefcase, Brain, Filter } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 
@@ -65,10 +65,12 @@ export function VCardSkills({
 }: VCardSkillsProps) {
   const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState<string>("Développement");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredSkills = predefinedSkills.filter(
     skill => !profile.skills.includes(skill) &&
-    (skillCategories[selectedCategory]?.includes(skill) || !selectedCategory)
+    (skillCategories[selectedCategory]?.includes(skill) || !selectedCategory) &&
+    skill.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const groupedSkills: Record<string, string[]> = profile.skills.reduce((acc: Record<string, string[]>, skill: string) => {
@@ -84,17 +86,39 @@ export function VCardSkills({
   return (
     <VCardSection 
       title="Compétences" 
-      icon={<Brain className="h-4 w-4 text-muted-foreground" />}
+      icon={<Brain className="h-4 w-4 text-indigo-600" />}
       className="space-y-3"
     >
-      {Object.entries(groupedSkills).map(([category, skills]) => (
+      {!isEditing && (
+        <div className="mb-4">
+          <Input
+            placeholder="Rechercher une compétence..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-sm"
+            prefix={<Filter className="h-4 w-4 text-muted-foreground" />}
+          />
+        </div>
+      )}
+
+      {Object.entries(groupedSkills)
+        .filter(([category, skills]) => 
+          skills.some(skill => 
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        )
+        .map(([category, skills]) => (
         <div key={category} className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-indigo-700 dark:text-indigo-400 font-medium">
             <CategoryIcon category={category} />
             <span>{category}</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {skills.map((skill: string) => (
+            {skills
+              .filter(skill => 
+                skill.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((skill: string) => (
               <VCardBadge
                 key={skill}
                 text={skill}
@@ -113,7 +137,7 @@ export function VCardSkills({
               value={selectedCategory}
               onValueChange={setSelectedCategory}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-gray-800">
                 <SelectValue placeholder="Catégorie" />
               </SelectTrigger>
               <SelectContent>
@@ -130,7 +154,7 @@ export function VCardSkills({
               value={newSkill}
               onValueChange={setNewSkill}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-gray-800">
                 <SelectValue placeholder="Sélectionnez une compétence" />
               </SelectTrigger>
               <SelectContent>
@@ -145,7 +169,7 @@ export function VCardSkills({
           <Button 
             onClick={handleAddSkill} 
             variant="secondary"
-            className={isMobile ? "w-full" : ""}
+            className={`${isMobile ? "w-full" : ""} bg-indigo-600 hover:bg-indigo-700 text-white`}
           >
             Ajouter
           </Button>
