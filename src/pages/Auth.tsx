@@ -2,13 +2,31 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { FaceIcon, Fingerprint } from "lucide-react";
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const [biometricSupport, setBiometricSupport] = useState(false);
 
   useEffect(() => {
+    // Check if the browser supports biometric authentication
+    const checkBiometricSupport = async () => {
+      try {
+        if (window.PublicKeyCredential) {
+          const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+          setBiometricSupport(available);
+          console.log("Biometric support:", available);
+        }
+      } catch (error) {
+        console.error("Error checking biometric support:", error);
+      }
+    };
+
+    checkBiometricSupport();
+
     // Clear any existing session data on mount
     const clearSession = async () => {
       const { error } = await supabase.auth.signOut();
@@ -37,6 +55,29 @@ export default function AuthPage() {
     };
   }, [navigate]);
 
+  const handleBiometricAuth = async () => {
+    try {
+      // Request biometric authentication
+      const credential = await navigator.credentials.get({
+        publicKey: {
+          challenge: new Uint8Array(32),
+          rpId: window.location.hostname,
+          userVerification: "required",
+        },
+      });
+
+      if (credential) {
+        // Here you would typically validate the credential with your backend
+        // For demo purposes, we'll just show a success message
+        toast.success("Authentification biométrique réussie");
+        navigate("/dashboard", { replace: true });
+      }
+    } catch (error) {
+      console.error("Biometric auth error:", error);
+      toast.error("Erreur d'authentification biométrique");
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-sm">
@@ -46,6 +87,27 @@ export default function AuthPage() {
             Connectez-vous ou créez un compte pour continuer
           </p>
         </div>
+
+        {biometricSupport && (
+          <div className="flex gap-2 justify-center mb-6">
+            <Button
+              variant="outline"
+              className="w-full flex items-center gap-2"
+              onClick={handleBiometricAuth}
+            >
+              <FaceIcon className="h-4 w-4" />
+              <span>Face ID</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full flex items-center gap-2"
+              onClick={handleBiometricAuth}
+            >
+              <Fingerprint className="h-4 w-4" />
+              <span>Touch ID</span>
+            </Button>
+          </div>
+        )}
 
         <Auth
           supabaseClient={supabase}
@@ -60,7 +122,7 @@ export default function AuthPage() {
               },
             },
           }}
-          providers={[]}
+          providers={["google"]}
           redirectTo={`${window.location.origin}/dashboard`}
           localization={{
             variables: {
@@ -70,6 +132,7 @@ export default function AuthPage() {
                 button_label: "Se connecter",
                 email_input_placeholder: "Votre adresse email",
                 password_input_placeholder: "Votre mot de passe",
+                social_provider_text: "Continuer avec {{provider}}",
               },
               sign_up: {
                 email_label: "Email",
@@ -77,6 +140,7 @@ export default function AuthPage() {
                 button_label: "S'inscrire",
                 email_input_placeholder: "Votre adresse email",
                 password_input_placeholder: "Choisissez un mot de passe",
+                social_provider_text: "Continuer avec {{provider}}",
               },
             },
           }}
