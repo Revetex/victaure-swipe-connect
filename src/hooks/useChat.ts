@@ -122,6 +122,7 @@ export function useChat() {
 
   return {
     messages,
+    setMessages,
     inputMessage,
     isListening,
     isThinking,

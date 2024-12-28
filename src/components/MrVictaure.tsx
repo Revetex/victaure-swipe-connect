@@ -31,6 +31,19 @@ export function MrVictaure() {
     }
   }, [messages]);
 
+  // Add welcome message when component mounts
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage: Message = {
+        id: "welcome",
+        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel. Je peux vous aider à créer et personnaliser votre VCard professionnelle ainsi qu'à gérer vos missions. Comment puis-je vous aider aujourd'hui?",
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
+    }
+  }, []);
+
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);
   };
@@ -44,7 +57,7 @@ export function MrVictaure() {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-victaure-blue/5 to-transparent pointer-events-none" />
       
-      <ChatHeader onClearChat={clearChat} isThinking={isThinking} />
+      <ChatHeader isThinking={isThinking} />
 
       <div 
         ref={scrollAreaRef}
