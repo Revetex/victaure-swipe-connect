@@ -14,7 +14,7 @@ import { Code, Wrench, PaintBucket, Briefcase, Brain } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 
-const skillCategories = {
+const skillCategories: Record<string, string[]> = {
   "Développement": ["JavaScript", "TypeScript", "Python", "React", "Node.js"],
   "DevOps": ["Docker", "Kubernetes", "AWS", "CI/CD", "Git"],
   "Design": ["UI Design", "UX Research", "Figma", "Adobe XD"],
@@ -43,7 +43,9 @@ const CategoryIcon = ({ category }: { category: string }) => {
 };
 
 interface VCardSkillsProps {
-  profile: any;
+  profile: {
+    skills: string[];
+  };
   isEditing: boolean;
   setProfile: (profile: any) => void;
   newSkill: string;
@@ -69,7 +71,7 @@ export function VCardSkills({
     (skillCategories[selectedCategory]?.includes(skill) || !selectedCategory)
   );
 
-  const groupedSkills = profile.skills.reduce((acc: Record<string, string[]>, skill: string) => {
+  const groupedSkills: Record<string, string[]> = profile.skills.reduce((acc: Record<string, string[]>, skill: string) => {
     const category = Object.entries(skillCategories).find(([_, skills]) => 
       skills.includes(skill)
     )?.[0] || "Autre";
@@ -106,37 +108,40 @@ export function VCardSkills({
 
       {isEditing && (
         <div className="flex flex-col sm:flex-row gap-2 mt-4">
-          <Select
-            value={selectedCategory}
-            onValueChange={setSelectedCategory}
-          >
-            <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue placeholder="Catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.keys(skillCategories).map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={newSkill}
-            onValueChange={setNewSkill}
-            className="flex-1"
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une compétence" />
-            </SelectTrigger>
-            <SelectContent>
-              {filteredSkills.map((skill) => (
-                <SelectItem key={skill} value={skill}>
-                  {skill}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="w-full sm:w-[200px]">
+            <Select
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Catégorie" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(skillCategories).map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-1">
+            <Select
+              value={newSkill}
+              onValueChange={setNewSkill}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez une compétence" />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredSkills.map((skill) => (
+                  <SelectItem key={skill} value={skill}>
+                    {skill}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Button 
             onClick={handleAddSkill} 
             variant="secondary"
