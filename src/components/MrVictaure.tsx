@@ -33,12 +33,12 @@ export function MrVictaure() {
     }
   }, [messages]);
 
-  // Add welcome message when component mounts
+  // Add proactive welcome message when component mounts
   useEffect(() => {
     if (messages.length === 0) {
       const welcomeMessage: Message = {
         id: "welcome",
-        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel. Je peux vous aider à créer et personnaliser votre VCard professionnelle ainsi qu'à gérer vos missions. Comment puis-je vous aider aujourd'hui?",
+        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je vais vous guider pas à pas dans la création de votre profil professionnel et la gestion de vos missions. Commençons par votre VCard : souhaitez-vous que je vous aide à enrichir votre profil avec des compétences pertinentes ? Ou préférez-vous que nous travaillions sur la définition d'une nouvelle mission ?",
         sender: "assistant",
         timestamp: new Date(),
       };
