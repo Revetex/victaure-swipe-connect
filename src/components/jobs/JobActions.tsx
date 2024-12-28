@@ -19,7 +19,7 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
       const { data: { user } } = await supabase.auth.getUser();
       setIsOwner(user?.id === employerId);
     };
-
+    
     checkOwnership();
   }, [employerId]);
 
