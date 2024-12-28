@@ -1,4 +1,4 @@
-import { Plus, ListFilter } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
@@ -22,7 +22,6 @@ export function SwipeJob() {
     location: "",
     searchTerm: ""
   });
-  const [openLocation, setOpenLocation] = useState(false);
 
   const { data: myJobs, refetch: refetchMyJobs } = useQuery({
     queryKey: ['my-jobs'],
@@ -99,8 +98,6 @@ export function SwipeJob() {
           <JobFiltersPanel 
             filters={filters}
             onFilterChange={handleFilterChange}
-            openLocation={openLocation}
-            setOpenLocation={setOpenLocation}
           />
           
           <div className="flex justify-center">

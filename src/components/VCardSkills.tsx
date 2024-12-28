@@ -63,13 +63,15 @@ export function VCardSkills({
     >
       {!isEditing && (
         <div className="mb-4">
-          <Input
-            placeholder="Rechercher une compétence..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
-            startAdornment={<Filter className="h-4 w-4 text-muted-foreground" />}
-          />
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher une compétence..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 max-w-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
+            />
+          </div>
         </div>
       )}
 
