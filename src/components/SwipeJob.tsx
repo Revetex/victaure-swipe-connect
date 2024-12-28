@@ -45,7 +45,7 @@ export function SwipeJob() {
         ...job,
         company: "Votre entreprise",
         salary: `${job.budget} CAD`,
-        skills: [] // Initialize with empty array to prevent undefined
+        skills: []
       })) as Job[];
     }
   });

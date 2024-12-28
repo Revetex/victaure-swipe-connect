@@ -1,39 +1,82 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Calendar, MessageSquare, DollarSign } from "lucide-react";
-
-const quickActions = [
-  {
-    title: "Missions en cours",
-    value: "3",
-    icon: Briefcase,
-    color: "text-victaure-blue",
-    bgColor: "bg-victaure-blue/10",
-  },
-  {
-    title: "Messages non lus",
-    value: "12",
-    icon: MessageSquare,
-    color: "text-victaure-green",
-    bgColor: "bg-victaure-green/10",
-  },
-  {
-    title: "Paiements en attente",
-    value: "CAD 2,500",
-    icon: DollarSign,
-    color: "text-victaure-red",
-    bgColor: "bg-victaure-red/10",
-  },
-  {
-    title: "Prochaine mission",
-    value: "Dans 2 jours",
-    icon: Calendar,
-    color: "text-victaure-blue",
-    bgColor: "bg-victaure-blue/10",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Dashboard() {
+  const { data: stats } = useQuery({
+    queryKey: ['dashboard-stats'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const [jobsResponse, messagesResponse, paymentsResponse] = await Promise.all([
+        supabase
+          .from('jobs')
+          .select('*', { count: 'exact' })
+          .eq('employer_id', user.id)
+          .eq('status', 'open'),
+        supabase
+          .from('messages')
+          .select('*', { count: 'exact' })
+          .eq('receiver_id', user.id)
+          .eq('read', false),
+        supabase
+          .from('payments')
+          .select('amount')
+          .eq('status', 'pending')
+          .in('match_id', 
+            supabase
+              .from('matches')
+              .select('id')
+              .eq('employer_id', user.id)
+              .eq('status', 'accepted')
+          )
+      ]);
+
+      const pendingAmount = paymentsResponse.data?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
+
+      return {
+        activeJobs: jobsResponse.count || 0,
+        unreadMessages: messagesResponse.count || 0,
+        pendingPayments: `CAD ${pendingAmount.toLocaleString()}`,
+        nextJob: 'Dans 2 jours' // This could be dynamic based on upcoming jobs
+      };
+    }
+  });
+
+  const quickActions = [
+    {
+      title: "Missions en cours",
+      value: stats?.activeJobs.toString() || "0",
+      icon: Briefcase,
+      color: "text-victaure-blue",
+      bgColor: "bg-victaure-blue/10",
+    },
+    {
+      title: "Messages non lus",
+      value: stats?.unreadMessages.toString() || "0",
+      icon: MessageSquare,
+      color: "text-victaure-green",
+      bgColor: "bg-victaure-green/10",
+    },
+    {
+      title: "Paiements en attente",
+      value: stats?.pendingPayments || "CAD 0",
+      icon: DollarSign,
+      color: "text-victaure-red",
+      bgColor: "bg-victaure-red/10",
+    },
+    {
+      title: "Prochaine mission",
+      value: stats?.nextJob || "Aucune",
+      icon: Calendar,
+      color: "text-victaure-blue",
+      bgColor: "bg-victaure-blue/10",
+    },
+  ];
+
   return (
     <section className="py-8 bg-white">
       <div className="max-w-6xl mx-auto px-4">
