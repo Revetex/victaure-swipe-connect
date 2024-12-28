@@ -58,7 +58,7 @@ export function VCardSkills({
   return (
     <VCardSection 
       title="Compétences" 
-      icon={<Brain className="h-4 w-4" />}
+      icon={<Brain className="h-4 w-4 text-muted-foreground" />}
       className="space-y-3 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-900/40 p-6 rounded-lg shadow-sm"
     >
       {!isEditing && (

@@ -4,11 +4,12 @@ interface VCardSectionProps {
   title: string;
   icon: ReactNode;
   children: ReactNode;
+  className?: string;
 }
 
-export function VCardSection({ title, icon, children }: VCardSectionProps) {
+export function VCardSection({ title, icon, children, className }: VCardSectionProps) {
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${className || ''}`}>
       <div className="flex items-center gap-2">
         {icon}
         <h3 className="font-semibold">{title}</h3>

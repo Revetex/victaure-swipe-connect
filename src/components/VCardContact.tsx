@@ -54,7 +54,11 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
       <div className="space-y-4 flex-1">
-        <VCardSection title="Contact" className="space-y-4">
+        <VCardSection 
+          title="Contact" 
+          icon={<Mail className="h-4 w-4 text-muted-foreground" />}
+          className="space-y-4"
+        >
           <div className="flex items-center gap-2">
             <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
             {isEditing ? (
