@@ -9,25 +9,32 @@ export default function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already authenticated
-    supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
-      if (session) {
-        toast.success("Connexion réussie");
-        navigate("/dashboard");
-      }
-    });
-
-    // Check current session on mount
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log("Current session:", session);
-      if (session) {
-        navigate("/dashboard");
+    // Clear any existing session data on mount
+    const clearSession = async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Error clearing session:", error);
       }
     };
     
-    checkSession();
+    clearSession();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session);
+      
+      if (event === 'SIGNED_IN' && session) {
+        toast.success("Connexion réussie");
+        navigate("/dashboard", { replace: true });
+      } else if (event === 'SIGNED_OUT') {
+        console.log("User signed out");
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (
