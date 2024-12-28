@@ -56,6 +56,39 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   useEffect(() => {
     fetchJobs();
+
+    // S'abonner aux changements en temps réel
+    const channel = supabase
+      .channel('public:jobs')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'jobs'
+        },
+        (payload) => {
+          console.log('Nouvelle mission reçue:', payload);
+          const newJob = payload.new;
+          setJobs(prevJobs => [{
+            id: newJob.id,
+            title: newJob.title,
+            company: "Company Name",
+            location: newJob.location,
+            salary: `${newJob.budget} CAD`,
+            duration: newJob.contract_type,
+            skills: ["Skill 1", "Skill 2"],
+            category: newJob.category,
+            contract_type: newJob.contract_type,
+            experience_level: newJob.experience_level
+          }, ...prevJobs]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [filters]);
 
   const handleDragEnd = async (event: any, info: any) => {
