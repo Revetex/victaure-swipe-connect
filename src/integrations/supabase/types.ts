@@ -109,6 +109,7 @@ export type Database = {
           id: string
           location: string
           status: string | null
+          subcategory: string | null
           title: string
           updated_at: string | null
         }
@@ -123,6 +124,7 @@ export type Database = {
           id?: string
           location: string
           status?: string | null
+          subcategory?: string | null
           title: string
           updated_at?: string | null
         }
@@ -137,6 +139,7 @@ export type Database = {
           id?: string
           location?: string
           status?: string | null
+          subcategory?: string | null
           title?: string
           updated_at?: string | null
         }
