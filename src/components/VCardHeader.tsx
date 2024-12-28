@@ -12,6 +12,7 @@ import { jobTitles } from "@/data/jobTitles";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { motion } from "framer-motion";
 
 interface VCardHeaderProps {
   profile: any;
@@ -28,7 +29,6 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
     if (!file) return;
 
     try {
-      // Check file type
       if (!file.type.startsWith('image/')) {
         toast({
           variant: "destructive",
@@ -38,7 +38,6 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         return;
       }
 
-      // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast({
           variant: "destructive",
@@ -60,7 +59,6 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         .from('vcards')
         .getPublicUrl(fileName);
 
-      // Update profile with new avatar URL
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No authenticated user");
 
@@ -88,18 +86,27 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-6">
+    <motion.div 
+      className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-6"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="flex items-center gap-4 flex-1">
         <div className="relative group">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={profile.avatar_url} alt={profile.name} />
-            <AvatarFallback>
+          <Avatar className="h-20 w-20 ring-2 ring-background">
+            <AvatarImage 
+              src={profile.avatar_url} 
+              alt={profile.name}
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-muted">
               <User className="h-8 w-8 text-muted-foreground/50" />
             </AvatarFallback>
           </Avatar>
           {isEditing && (
             <label 
-              className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity"
+              className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
               htmlFor="avatar-upload"
             >
               <Upload className="h-6 w-6 text-white" />
@@ -123,7 +130,13 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 placeholder="Votre nom"
               />
             ) : (
-              profile.name || "Nom non défini"
+              <motion.h2
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                {profile.name || "Nom non défini"}
+              </motion.h2>
             )}
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -145,7 +158,13 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 </SelectContent>
               </Select>
             ) : (
-              <span>{profile.title || "Titre non défini"}</span>
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                {profile.title || "Titre non défini"}
+              </motion.span>
             )}
           </div>
         </div>
@@ -158,6 +177,6 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
       >
         {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
       </Button>
-    </div>
+    </motion.div>
   );
 }

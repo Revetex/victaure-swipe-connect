@@ -8,6 +8,7 @@ import { VCardCertifications } from "./VCardCertifications";
 import { VCardActions } from "./VCardActions";
 import { useProfile } from "@/hooks/useProfile";
 import { generateVCardData, updateProfile } from "@/utils/profileActions";
+import { motion } from "framer-motion";
 
 export function VCard() {
   const { toast } = useToast();
@@ -113,9 +114,14 @@ export function VCard() {
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-2xl mx-auto glass-card">
+      <Card className="w-full max-w-2xl mx-auto glass-card animate-pulse">
         <CardContent className="p-6">
-          Chargement du profil...
+          <div className="h-24 bg-muted rounded-lg mb-6"></div>
+          <div className="space-y-4">
+            <div className="h-8 bg-muted rounded w-1/3"></div>
+            <div className="h-4 bg-muted rounded w-1/2"></div>
+            <div className="h-4 bg-muted rounded w-2/3"></div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -124,7 +130,7 @@ export function VCard() {
   if (!profile || !tempProfile) {
     return (
       <Card className="w-full max-w-2xl mx-auto glass-card">
-        <CardContent className="p-6">
+        <CardContent className="p-6 text-center text-muted-foreground">
           Aucune donnée de profil disponible
         </CardContent>
       </Card>
@@ -132,61 +138,67 @@ export function VCard() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto glass-card">
-      <CardContent className="p-6 space-y-8">
-        <VCardHeader
-          profile={tempProfile}
-          isEditing={isEditing}
-          setProfile={setTempProfile}
-          setIsEditing={setIsEditing}
-        />
-
-        <div className="grid gap-8">
-          <VCardContact
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm">
+        <CardContent className="p-6 space-y-8">
+          <VCardHeader
             profile={tempProfile}
             isEditing={isEditing}
             setProfile={setTempProfile}
+            setIsEditing={setIsEditing}
           />
 
-          <VCardSkills
-            profile={tempProfile}
-            isEditing={isEditing}
-            setProfile={setTempProfile}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
-            handleAddSkill={() => {
-              if (newSkill && !tempProfile.skills.includes(newSkill)) {
+          <div className="grid gap-8">
+            <VCardContact
+              profile={tempProfile}
+              isEditing={isEditing}
+              setProfile={setTempProfile}
+            />
+
+            <VCardSkills
+              profile={tempProfile}
+              isEditing={isEditing}
+              setProfile={setTempProfile}
+              newSkill={newSkill}
+              setNewSkill={setNewSkill}
+              handleAddSkill={() => {
+                if (newSkill && !tempProfile.skills.includes(newSkill)) {
+                  setTempProfile({
+                    ...tempProfile,
+                    skills: [...tempProfile.skills, newSkill],
+                  });
+                  setNewSkill("");
+                }
+              }}
+              handleRemoveSkill={(skillToRemove: string) => {
                 setTempProfile({
                   ...tempProfile,
-                  skills: [...tempProfile.skills, newSkill],
+                  skills: tempProfile.skills.filter((skill) => skill !== skillToRemove),
                 });
-                setNewSkill("");
-              }
-            }}
-            handleRemoveSkill={(skillToRemove: string) => {
-              setTempProfile({
-                ...tempProfile,
-                skills: tempProfile.skills.filter((skill) => skill !== skillToRemove),
-              });
-            }}
-          />
+              }}
+            />
 
-          <VCardCertifications
-            profile={tempProfile}
+            <VCardCertifications
+              profile={tempProfile}
+              isEditing={isEditing}
+              setProfile={setTempProfile}
+            />
+          </div>
+
+          <VCardActions
             isEditing={isEditing}
-            setProfile={setTempProfile}
+            onShare={handleShare}
+            onDownload={handleDownloadVCard}
+            onCopyLink={handleCopyLink}
+            onSave={handleSave}
+            onApplyChanges={handleApplyChanges}
           />
-        </div>
-
-        <VCardActions
-          isEditing={isEditing}
-          onShare={handleShare}
-          onDownload={handleDownloadVCard}
-          onCopyLink={handleCopyLink}
-          onSave={handleSave}
-          onApplyChanges={handleApplyChanges}
-        />
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
