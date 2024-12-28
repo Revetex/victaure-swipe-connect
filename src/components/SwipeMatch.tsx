@@ -1,36 +1,20 @@
 import { useState, useRef, useEffect } from "react";
-import { JobCard } from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "sonner";
-import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
+import { useMotionValue, useTransform } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  duration: string;
-  skills: string[];
-  category: string;
-  contract_type: string;
-  experience_level: string;
-}
+import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
+import { JobFilters, applyJobFilters } from "./jobs/JobFilterUtils";
+import { Job } from "@/types/job";
 
 interface SwipeMatchProps {
-  filters: {
-    category: string;
-    duration: string;
-    salaryRange: number[];
-  };
+  filters: JobFilters;
 }
 
 export function SwipeMatch({ filters }: SwipeMatchProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const controls = useAnimation();
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
@@ -43,20 +27,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (filters.category) {
-        query = query.eq("category", filters.category);
-      }
-
-      if (filters.duration) {
-        query = query.eq("contract_type", filters.duration);
-      }
-
-      if (filters.salaryRange) {
-        query = query
-          .gte("budget", filters.salaryRange[0])
-          .lte("budget", filters.salaryRange[1]);
-      }
-
+      query = applyJobFilters(query, filters);
       const { data, error } = await query;
 
       if (error) throw error;
@@ -85,20 +56,18 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   useEffect(() => {
     fetchJobs();
-  }, [filters]); // Add filters as dependency
+  }, [filters]);
 
   const handleDragEnd = async (event: any, info: any) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
     if (offset > 100 || velocity > 800) {
-      await controls.start({ x: 200, opacity: 0 });
       handleSwipe("right");
     } else if (offset < -100 || velocity < -800) {
-      await controls.start({ x: -200, opacity: 0 });
       handleSwipe("left");
     } else {
-      controls.start({ x: 0, opacity: 1 });
+      x.set(0);
     }
   };
 
@@ -124,7 +93,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
     if (currentIndex < jobs.length - 1) {
       setCurrentIndex(prev => prev + 1);
-      controls.set({ x: 0, opacity: 1 });
+      x.set(0);
     } else {
       toast.info("Plus d'offres disponibles pour le moment");
     }
@@ -166,16 +135,14 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   return (
     <div className="relative w-full max-w-md mx-auto" ref={dragConstraintsRef}>
-      <motion.div
-        drag="x"
-        dragConstraints={dragConstraintsRef}
+      <AnimatedJobCard
+        job={jobs[currentIndex]}
+        x={x}
+        rotate={rotate}
+        opacity={opacity}
         onDragEnd={handleDragEnd}
-        animate={controls}
-        style={{ x, rotate, opacity }}
-        className="cursor-grab active:cursor-grabbing"
-      >
-        <JobCard {...jobs[currentIndex]} />
-      </motion.div>
+        dragConstraints={dragConstraintsRef}
+      />
       
       <div className="flex justify-center gap-4 mt-4">
         <Button
