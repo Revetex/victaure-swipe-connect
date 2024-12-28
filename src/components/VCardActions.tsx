@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Share2, Download, Copy, Save } from "lucide-react";
+import { Share2, Download, Copy, Save, FilePdf } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface VCardActionsProps {
   isEditing: boolean;
   onShare: () => void;
   onDownload: () => void;
+  onDownloadPDF: () => void;
   onCopyLink: () => void;
   onSave: () => void;
   onApplyChanges: () => void;
@@ -15,6 +16,7 @@ export function VCardActions({
   isEditing,
   onShare,
   onDownload,
+  onDownloadPDF,
   onCopyLink,
   onSave,
   onApplyChanges,
@@ -58,7 +60,15 @@ export function VCardActions({
             className="flex-1 transition-colors"
           >
             <Download className="mr-2 h-4 w-4" />
-            Télécharger VCard
+            VCard
+          </Button>
+          <Button 
+            onClick={onDownloadPDF} 
+            variant="outline" 
+            className="flex-1 transition-colors"
+          >
+            <FilePdf className="mr-2 h-4 w-4" />
+            PDF
           </Button>
           <Button 
             onClick={onCopyLink} 

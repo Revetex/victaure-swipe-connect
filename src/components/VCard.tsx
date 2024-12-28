@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { VCardHeader } from "./VCardHeader";
 import { VCardContact } from "./VCardContact";
@@ -9,6 +9,7 @@ import { VCardActions } from "./VCardActions";
 import { useProfile } from "@/hooks/useProfile";
 import { generateVCardData, updateProfile } from "@/utils/profileActions";
 import { motion } from "framer-motion";
+import { generateVCardPDF } from "@/utils/pdfGenerator";
 
 export function VCard() {
   const { toast } = useToast();
@@ -60,6 +61,27 @@ export function VCard() {
       title: "Succès",
       description: "VCard téléchargée avec succès",
     });
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!profile) return;
+    
+    try {
+      const pdfUrl = await generateVCardPDF(profile);
+      window.open(pdfUrl, '_blank');
+      
+      toast({
+        title: "Succès",
+        description: "PDF généré avec succès",
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de générer le PDF",
+      });
+    }
   };
 
   const handleCopyLink = () => {
@@ -193,6 +215,7 @@ export function VCard() {
             isEditing={isEditing}
             onShare={handleShare}
             onDownload={handleDownloadVCard}
+            onDownloadPDF={handleDownloadPDF}
             onCopyLink={handleCopyLink}
             onSave={handleSave}
             onApplyChanges={handleApplyChanges}
