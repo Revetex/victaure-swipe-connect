@@ -18,7 +18,7 @@ export interface Job {
   updated_at?: string;
 }
 
-export const missionCategories = {
+export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
   "Technologie": {
     icon: Code,
     subcategories: ["Développement Web", "DevOps", "Mobile", "Data"]
