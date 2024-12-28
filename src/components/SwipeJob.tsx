@@ -8,6 +8,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { JobFilters } from "./jobs/JobFilterUtils";
 import { missionCategories } from "@/types/job";
+import { quebecCities } from "@/data/cities";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +34,7 @@ export function SwipeJob() {
     location: "",
     searchTerm: ""
   });
+  const [openLocation, setOpenLocation] = useState(false);
 
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
     if (key === "category" && value !== filters.category) {
@@ -171,11 +187,46 @@ export function SwipeJob() {
             <label className="block text-sm font-medium text-foreground mb-2">
               Localisation
             </label>
-            <Input
-              placeholder="Ville ou région"
-              value={filters.location}
-              onChange={(e) => handleFilterChange("location", e.target.value)}
-            />
+            <Popover open={openLocation} onOpenChange={setOpenLocation}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openLocation}
+                  className="w-full justify-between"
+                >
+                  {filters.location
+                    ? filters.location
+                    : "Sélectionner une ville..."}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Rechercher une ville..." />
+                  <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
+                  <CommandGroup className="max-h-60 overflow-auto">
+                    {quebecCities.map((city) => (
+                      <CommandItem
+                        key={city}
+                        value={city}
+                        onSelect={(currentValue) => {
+                          handleFilterChange("location", currentValue);
+                          setOpenLocation(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            filters.location === city ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {city}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>
