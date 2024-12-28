@@ -7,6 +7,8 @@ import { useState, useRef, useEffect } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/useProfile";
+import { toast } from "sonner";
 import type { Message } from "@/hooks/useChat";
 
 export function MrVictaure() {
@@ -17,15 +19,15 @@ export function MrVictaure() {
     isThinking,
     setMessages,
     setInputMessage,
-    handleSendMessage,
+    handleSendMessage: originalHandleSendMessage,
     handleVoiceInput,
     clearChat,
   } = useChat();
 
+  const { profile, setProfile, tempProfile, setTempProfile } = useProfile();
   const [isMaximized, setIsMaximized] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollArea = scrollAreaRef.current;
@@ -33,18 +35,46 @@ export function MrVictaure() {
     }
   }, [messages]);
 
-  // Add proactive welcome message when component mounts
   useEffect(() => {
     if (messages.length === 0) {
       const welcomeMessage: Message = {
         id: "welcome",
-        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je vais vous guider pas à pas dans la création de votre profil professionnel et la gestion de vos missions. Commençons par votre VCard : souhaitez-vous que je vous aide à enrichir votre profil avec des compétences pertinentes ? Ou préférez-vous que nous travaillions sur la définition d'une nouvelle mission ?",
+        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux directement modifier votre VCard pour vous aider à créer un profil professionnel optimal. Souhaitez-vous que je regarde votre profil actuel et vous suggère des améliorations ? Ou préférez-vous que nous commencions par ajouter de nouvelles compétences ?",
         sender: "assistant",
         timestamp: new Date(),
       };
       setMessages([welcomeMessage]);
     }
   }, [messages.length, setMessages]);
+
+  const handleSendMessage = async (message: string) => {
+    try {
+      const response = await originalHandleSendMessage(message, profile);
+      
+      // Check if the response contains a VCard update action
+      if (response.includes('"action":"UPDATE_VCARD"')) {
+        try {
+          const jsonStartIndex = response.indexOf('{');
+          const jsonEndIndex = response.lastIndexOf('}') + 1;
+          const jsonStr = response.substring(jsonStartIndex, jsonEndIndex);
+          const updateData = JSON.parse(jsonStr);
+
+          if (updateData.action === "UPDATE_VCARD" && updateData.changes) {
+            const newProfile = { ...profile, ...updateData.changes };
+            setTempProfile(newProfile);
+            setProfile(newProfile);
+            
+            toast.success("Profil mis à jour avec succès");
+          }
+        } catch (error) {
+          console.error("Error parsing VCard update:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error in handleSendMessage:", error);
+      toast.error("Une erreur est survenue lors de la mise à jour du profil");
+    }
+  };
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized);

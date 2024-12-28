@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
 import { generateAIResponse } from "@/services/huggingFaceService";
+import { toast } from "sonner";
 
 export interface Message {
   id: string;
   content: string;
   sender: "user" | "assistant";
-  timestamp: Date;
   thinking?: boolean;
+  timestamp: Date;
 }
 
 export function useChat() {
@@ -15,117 +15,85 @@ export function useChat() {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
-  const { toast } = useToast();
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async (message: string, profile?: any) => {
+    if (!message.trim()) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: inputMessage,
+    const newUserMessage: Message = {
+      id: crypto.randomUUID(),
+      content: message,
       sender: "user",
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, newUserMessage]);
     setInputMessage("");
     setIsThinking(true);
 
-    const thinkingMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      content: "...",
-      sender: "assistant",
-      timestamp: new Date(),
-      thinking: true,
-    };
-
-    setMessages((prev) => [...prev, thinkingMessage]);
-
     try {
-      const aiResponse = await generateAIResponse(inputMessage);
-      
-      setMessages((prev) => prev.filter(m => !m.thinking));
-      
-      const assistantMessage: Message = {
-        id: (Date.now() + 2).toString(),
-        content: aiResponse,
+      const response = await generateAIResponse(message, profile);
+
+      const newAssistantMessage: Message = {
+        id: crypto.randomUUID(),
+        content: response,
         sender: "assistant",
         timestamp: new Date(),
       };
-      
-      setMessages((prev) => [...prev, assistantMessage]);
+
+      setMessages((prev) => [...prev, newAssistantMessage]);
+      return response;
     } catch (error) {
-      setMessages((prev) => prev.filter(m => !m.thinking));
-      
-      toast({
-        title: "Erreur",
-        description: "Je ne peux pas répondre pour le moment. Veuillez réessayer dans quelques instants.",
-        variant: "destructive",
-      });
+      console.error("Error generating response:", error);
+      toast.error("Désolé, je n'ai pas pu générer une réponse");
+      throw error;
     } finally {
       setIsThinking(false);
     }
   };
 
-  const handleVoiceInput = async () => {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "La reconnaissance vocale n'est pas supportée sur votre navigateur.",
-      });
+  const handleVoiceInput = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
       return;
     }
 
-    try {
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
       setIsListening(true);
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.lang = "fr-FR";
-      
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = event.results[0][0].transcript;
-        setInputMessage(transcript);
-      };
+    };
 
-      recognition.onerror = () => {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la reconnaissance vocale.",
-        });
-        setIsListening(false);
-      };
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInputMessage(transcript);
+    };
 
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.start();
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'activation du microphone.",
-      });
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
       setIsListening(false);
-    }
+      toast.error("Erreur lors de la reconnaissance vocale");
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
   };
 
   const clearChat = () => {
     setMessages([]);
-    toast({
-      title: "Chat effacé",
-      description: "L'historique de conversation a été effacé.",
-    });
   };
 
   return {
     messages,
-    setMessages,
     inputMessage,
     isListening,
     isThinking,
+    setMessages,
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,

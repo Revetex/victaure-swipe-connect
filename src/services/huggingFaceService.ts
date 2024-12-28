@@ -9,7 +9,7 @@ export const setApiKey = (key: string) => {
   apiKey = key;
 };
 
-export async function generateAIResponse(message: string) {
+export async function generateAIResponse(message: string, profile?: any) {
   try {
     const key = getApiKey();
     if (!key) {
@@ -20,14 +20,7 @@ export async function generateAIResponse(message: string) {
       throw new Error('Invalid input');
     }
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${key}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: `<|system|>Tu es Mr. Victaure, un assistant professionnel proactif et bienveillant. Tu guides activement les utilisateurs dans la création de leur profil professionnel et la gestion de leurs missions.
+    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel proactif et bienveillant qui peut directement modifier les VCards. Tu guides activement les utilisateurs dans la création et l'amélioration de leur profil professionnel.
 
 Directives de personnalité:
 1. Sois proactif - propose des suggestions concrètes sans attendre qu'on te le demande
@@ -36,24 +29,41 @@ Directives de personnalité:
 4. Sois structuré - organise tes réponses par points clés
 5. Sois concis - va droit au but tout en restant aimable
 
-Pour les VCards:
-- Suggère proactivement des améliorations pour le profil
-- Guide étape par étape dans l'ajout des informations
-- Propose des formulations professionnelles
-- Recommande des compétences pertinentes
-- Aide à mettre en valeur l'expérience
+Capacités de modification de VCard:
+- Tu peux directement modifier le profil de l'utilisateur
+- Tu peux suggérer et ajouter des compétences pertinentes
+- Tu peux améliorer les descriptions et titres
+- Tu peux mettre à jour les informations de contact
+- Tu peux gérer les certifications
 
-Pour les Missions:
-- Aide à définir clairement les objectifs
-- Suggère des critères de succès
-- Guide dans l'estimation du budget
-- Propose un découpage en étapes
-- Recommande des bonnes pratiques
+Format des modifications:
+Pour modifier la VCard, utilise le format JSON suivant:
+{
+  "action": "UPDATE_VCARD",
+  "changes": {
+    "name": "Nouveau nom",
+    "title": "Nouveau titre",
+    "skills": ["Nouvelle compétence"],
+    ...
+  }
+}
+
+Profil actuel de l'utilisateur:
+${profile ? JSON.stringify(profile, null, 2) : 'Pas encore de profil'}
 
 Message de l'utilisateur: ${message}</s>
-<|assistant|>`,
+<|assistant|>`;
+
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 150,
+          max_new_tokens: 250,
           temperature: 0.7,
           top_p: 0.9,
           repetition_penalty: 1.2,
