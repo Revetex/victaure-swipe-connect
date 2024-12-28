@@ -18,7 +18,7 @@ export function JobBasicInfoFields({
   onChange,
 }: JobBasicInfoFieldsProps) {
   return (
-    <>
+    <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="title">Titre de la mission</Label>
         <Input
@@ -64,6 +64,6 @@ export function JobBasicInfoFields({
           required
         />
       </div>
-    </>
+    </div>
   );
 }

@@ -5,155 +5,101 @@ import { supabase } from "@/integrations/supabase/client";
 import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
 import { JobCategoryFields } from "./form/JobCategoryFields";
 import { JobTypeFields } from "./form/JobTypeFields";
-import { Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface CreateJobFormProps {
-  onSuccess: () => void;
-}
-
-export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
+export function CreateJobForm() {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     budget: "",
     location: "",
-    category: "Technologie",
-    subcategory: "",
+    category: "Technology",
     contract_type: "Full-time",
-    experience_level: "Mid-Level"
+    experience_level: "Mid-Level",
   });
 
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
+    setIsLoading(true);
+
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError || !user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour créer une mission",
-          variant: "destructive"
-        });
-        return;
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Non authentifié");
 
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !profile) {
-        toast({
-          title: "Erreur",
-          description: "Impossible de vérifier votre profil",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (profile.role !== 'employer') {
-        toast({
-          title: "Erreur",
-          description: "Seuls les employeurs peuvent créer des missions",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const { error: insertError } = await supabase.from("jobs").insert({
-        title: formData.title,
-        description: formData.description,
+      const { error } = await supabase.from("jobs").insert({
+        ...formData,
         budget: parseFloat(formData.budget),
-        location: formData.location,
         employer_id: user.id,
-        status: 'open',
-        category: formData.category,
-        subcategory: formData.subcategory,
-        contract_type: formData.contract_type,
-        experience_level: formData.experience_level
       });
 
-      if (insertError) throw insertError;
+      if (error) throw error;
 
       toast({
         title: "Succès",
-        description: "Votre mission a été créée avec succès"
+        description: "Mission créée avec succès",
       });
 
-      onSuccess();
+      // Reset form
       setFormData({
         title: "",
         description: "",
         budget: "",
         location: "",
-        category: "Technologie",
-        subcategory: "",
+        category: "Technology",
         contract_type: "Full-time",
-        experience_level: "Mid-Level"
+        experience_level: "Mid-Level",
       });
     } catch (error) {
       console.error("Error creating job:", error);
       toast({
+        variant: "destructive",
         title: "Erreur",
-        description: "Une erreur est survenue lors de la création de la mission",
-        variant: "destructive"
+        description: "Impossible de créer la mission",
       });
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-6 bg-gray-50 p-4 rounded-lg">
-        <JobBasicInfoFields
-          title={formData.title}
-          description={formData.description}
-          budget={formData.budget}
-          location={formData.location}
-          onChange={handleChange}
-        />
-      </div>
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle>Créer une nouvelle mission</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <JobBasicInfoFields
+            title={formData.title}
+            description={formData.description}
+            budget={formData.budget}
+            location={formData.location}
+            onChange={handleChange}
+          />
 
-      <div className="space-y-6 bg-gray-50 p-4 rounded-lg">
-        <JobCategoryFields
-          category={formData.category}
-          subcategory={formData.subcategory}
-          onChange={handleChange}
-        />
-      </div>
+          <JobCategoryFields
+            category={formData.category}
+            onChange={handleChange}
+          />
 
-      <div className="space-y-6 bg-gray-50 p-4 rounded-lg">
-        <JobTypeFields
-          contractType={formData.contract_type}
-          experienceLevel={formData.experience_level}
-          onChange={handleChange}
-        />
-      </div>
+          <JobTypeFields
+            contractType={formData.contract_type}
+            experienceLevel={formData.experience_level}
+            onChange={handleChange}
+          />
 
-      <Button 
-        type="submit" 
-        className="w-full bg-victaure-blue hover:bg-victaure-blue/90"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Création en cours...
-          </>
-        ) : (
-          "Créer la mission"
-        )}
-      </Button>
-    </form>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Création..." : "Créer la mission"}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
