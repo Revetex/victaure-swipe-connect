@@ -7,36 +7,79 @@ import { AvatarImage } from "@/components/ui/avatar";
 import { AvatarFallback } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Message {
-  id: number;
-  sender: string;
+  id: string;
+  sender: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
   content: string;
-  time: string;
-  unread: boolean;
-  avatar?: string;
+  created_at: string;
+  read: boolean;
 }
 
-const mockMessages: Message[] = [
-  {
-    id: 1,
-    sender: "Sophie Martin",
-    content: "Bonjour, j'ai regardé votre profil et je pense que votre expérience correspondrait parfaitement à notre poste...",
-    time: new Date().toISOString(),
-    unread: true,
-    avatar: "https://i.pravatar.cc/150?u=sophie",
-  },
-  {
-    id: 2,
-    sender: "Tech Solutions",
-    content: "Nous avons une opportunité passionnante dans le développement web qui pourrait vous intéresser...",
-    time: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    unread: false,
-    avatar: "https://i.pravatar.cc/150?u=tech",
-  },
-];
-
 export function Messages() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch messages
+  const { data: messages = [], isLoading } = useQuery({
+    queryKey: ['messages'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select(`
+          id,
+          content,
+          created_at,
+          read,
+          sender:sender_id(
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq('receiver_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return messages as Message[];
+    },
+  });
+
+  // Mark message as read
+  const markAsRead = useMutation({
+    mutationFn: async (messageId: string) => {
+      const { error } = await supabase
+        .from('messages')
+        .update({ read: true })
+        .eq('id', messageId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    },
+    onError: (error) => {
+      console.error('Error marking message as read:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de marquer le message comme lu",
+      });
+    },
+  });
+
+  const unreadCount = messages.filter(m => !m.read).length;
+
   return (
     <div className="space-y-4 h-full">
       <div className="flex items-center justify-between">
@@ -44,51 +87,67 @@ export function Messages() {
           <MessageSquare className="h-5 w-5" />
           <h2 className="text-lg font-semibold">Messages</h2>
         </div>
-        <Badge variant="secondary" className="bg-primary/10">
-          {mockMessages.filter(m => m.unread).length} nouveau{mockMessages.filter(m => m.unread).length > 1 ? 'x' : ''}
-        </Badge>
+        {unreadCount > 0 && (
+          <Badge variant="secondary" className="bg-primary/10">
+            {unreadCount} nouveau{unreadCount > 1 ? 'x' : ''}
+          </Badge>
+        )}
       </div>
 
       <ScrollArea className="h-[300px] pr-4">
-        <AnimatePresence>
-          <div className="space-y-2">
-            {mockMessages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className={`p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
-                  message.unread 
-                    ? "bg-primary/10 border-l-2 border-primary shadow-sm" 
-                    : "bg-muted hover:bg-muted/80"
-                }`}
-              >
-                <div className="flex gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={message.avatar} alt={message.sender} />
-                    <AvatarFallback>{message.sender.slice(0, 2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start gap-2">
-                      <h3 className="font-medium truncate">{message.sender}</h3>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        {formatDistanceToNow(new Date(message.time), { 
-                          addSuffix: true,
-                          locale: fr 
-                        })}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                      {message.content}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
-        </AnimatePresence>
+        ) : messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+            <MessageSquare className="h-8 w-8 mb-2" />
+            <p>Aucun message</p>
+          </div>
+        ) : (
+          <AnimatePresence>
+            <div className="space-y-2">
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => !message.read && markAsRead.mutate(message.id)}
+                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
+                    !message.read 
+                      ? "bg-primary/10 border-l-2 border-primary shadow-sm" 
+                      : "bg-muted hover:bg-muted/80"
+                  }`}
+                >
+                  <div className="flex gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={message.sender.avatar_url} alt={message.sender.full_name} />
+                      <AvatarFallback>
+                        {message.sender.full_name?.slice(0, 2).toUpperCase() || "??"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2">
+                        <h3 className="font-medium truncate">{message.sender.full_name}</h3>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {formatDistanceToNow(new Date(message.created_at), { 
+                            addSuffix: true,
+                            locale: fr 
+                          })}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                        {message.content}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </AnimatePresence>
+        )}
       </ScrollArea>
     </div>
   );
