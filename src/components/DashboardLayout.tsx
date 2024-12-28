@@ -6,7 +6,6 @@ import { NotificationCenter } from "@/components/NotificationCenter";
 import { SwipeJob } from "@/components/SwipeJob";
 import { Messages } from "@/components/Messages";
 import { Settings } from "@/components/Settings";
-import { Marketplace } from "@/components/Marketplace";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export function DashboardLayout() {
@@ -18,11 +17,6 @@ export function DashboardLayout() {
         {/* Agent Mr-Victaure - Toujours en haut sur mobile */}
         <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-1"}`}>
           <MrVictaure />
-        </div>
-
-        {/* Marketplace - Plus grand sur mobile */}
-        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}>
-          <Marketplace />
         </div>
 
         {/* SwipeJob - Pleine largeur sur mobile */}
