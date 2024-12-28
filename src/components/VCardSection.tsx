@@ -10,11 +10,13 @@ interface VCardSectionProps {
 export function VCardSection({ title, children, className, icon }: VCardSectionProps) {
   return (
     <div className={className}>
-      <div className="flex items-center gap-2 mb-3">
-        {icon}
-        <h3 className="font-semibold text-foreground/80">{title}</h3>
+      <div className="flex items-center gap-2 mb-4">
+        {icon && <span className="text-indigo-600">{icon}</span>}
+        <h3 className="font-semibold text-lg text-indigo-900">{title}</h3>
       </div>
-      {children}
+      <div className="space-y-4">
+        {children}
+      </div>
     </div>
   );
 }

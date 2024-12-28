@@ -1,25 +1,29 @@
-import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface VCardBadgeProps {
   text: string;
-  onRemove?: () => void;
   isEditing?: boolean;
+  onRemove?: () => void;
 }
 
-export function VCardBadge({ text, onRemove, isEditing }: VCardBadgeProps) {
+export function VCardBadge({ text, isEditing, onRemove }: VCardBadgeProps) {
   return (
-    <Badge 
-      variant="secondary" 
-      className="flex items-center gap-1 bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+    <motion.span
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-700"
     >
       {text}
       {isEditing && onRemove && (
-        <X
-          className="h-3 w-3 cursor-pointer hover:text-destructive transition-colors"
+        <button
           onClick={onRemove}
-        />
+          className="ml-2 hover:text-indigo-900 transition-colors"
+        >
+          <X className="h-3 w-3" />
+        </button>
       )}
-    </Badge>
+    </motion.span>
   );
 }

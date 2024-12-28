@@ -32,7 +32,7 @@ export function VCardActions({
         <>
           <Button 
             onClick={onSave} 
-            className="flex-1 bg-primary hover:bg-primary/90 transition-colors"
+            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
           >
             <Save className="mr-2 h-4 w-4" />
             Sauvegarder
@@ -40,7 +40,7 @@ export function VCardActions({
           <Button 
             onClick={onApplyChanges} 
             variant="secondary" 
-            className="flex-1 transition-colors"
+            className="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors"
           >
             Appliquer les changements
           </Button>
@@ -49,7 +49,7 @@ export function VCardActions({
         <>
           <Button 
             onClick={onShare} 
-            className="flex-1 transition-colors"
+            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
           >
             <Share2 className="mr-2 h-4 w-4" />
             Partager
@@ -57,7 +57,7 @@ export function VCardActions({
           <Button 
             onClick={onDownload} 
             variant="outline" 
-            className="flex-1 transition-colors"
+            className="flex-1 border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
           >
             <Download className="mr-2 h-4 w-4" />
             VCard
@@ -65,7 +65,7 @@ export function VCardActions({
           <Button 
             onClick={onDownloadPDF} 
             variant="outline" 
-            className="flex-1 transition-colors"
+            className="flex-1 border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
           >
             <FileText className="mr-2 h-4 w-4" />
             PDF
@@ -73,7 +73,7 @@ export function VCardActions({
           <Button 
             onClick={onCopyLink} 
             variant="outline"
-            className="transition-colors"
+            className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
           >
             <Copy className="h-4 w-4" />
           </Button>
