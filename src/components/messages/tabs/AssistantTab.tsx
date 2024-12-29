@@ -4,8 +4,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { Bot, Send } from "lucide-react";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Message {
+  id: string;
   role: "assistant" | "user";
   content: string;
 }
@@ -18,7 +20,12 @@ export function AssistantTab() {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMessage = { role: "user", content: input };
+    const userMessage: Message = {
+      id: uuidv4(),
+      role: "user",
+      content: input
+    };
+    
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -43,8 +50,9 @@ export function AssistantTab() {
       if (!response.ok) throw new Error('Failed to get response');
 
       const data = await response.json();
-      const assistantMessage = {
-        role: "assistant" as const,
+      const assistantMessage: Message = {
+        id: uuidv4(),
+        role: "assistant",
         content: data.choices[0].message.content
       };
 
