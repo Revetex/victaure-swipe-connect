@@ -17,7 +17,7 @@ export type Database = {
           id: string
           issue_date: string | null
           issuer: string
-          profile_id: string | null
+          profile_id: string
           title: string
           updated_at: string | null
         }
@@ -28,7 +28,7 @@ export type Database = {
           id?: string
           issue_date?: string | null
           issuer: string
-          profile_id?: string | null
+          profile_id: string
           title: string
           updated_at?: string | null
         }
@@ -39,7 +39,7 @@ export type Database = {
           id?: string
           issue_date?: string | null
           issuer?: string
-          profile_id?: string | null
+          profile_id?: string
           title?: string
           updated_at?: string | null
         }
@@ -61,7 +61,7 @@ export type Database = {
           end_date: string | null
           id: string
           position: string
-          profile_id: string | null
+          profile_id: string
           start_date: string | null
           updated_at: string | null
         }
@@ -72,7 +72,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           position: string
-          profile_id?: string | null
+          profile_id: string
           start_date?: string | null
           updated_at?: string | null
         }
@@ -83,7 +83,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           position?: string
-          profile_id?: string | null
+          profile_id?: string
           start_date?: string | null
           updated_at?: string | null
         }

@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { predefinedSkills } from "@/data/skills";
 import { VCardSection } from "./VCardSection";
-import { Brain, Filter } from "lucide-react";
+import { Brain } from "lucide-react";
 import { useState } from "react";
 import { SkillCategory } from "./skills/SkillCategory";
 import { SkillEditor } from "./skills/SkillEditor";
@@ -37,12 +37,10 @@ export function VCardSkills({
   handleRemoveSkill,
 }: VCardSkillsProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("Développement");
-  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredSkills = predefinedSkills.filter(
     skill => !profile.skills.includes(skill) &&
-    (skillCategories[selectedCategory]?.includes(skill) || !selectedCategory) &&
-    skill.toLowerCase().includes(searchTerm.toLowerCase())
+    (skillCategories[selectedCategory]?.includes(skill) || !selectedCategory)
   );
 
   const groupedSkills: Record<string, string[]> = profile.skills.reduce((acc: Record<string, string[]>, skill: string) => {
@@ -61,20 +59,6 @@ export function VCardSkills({
       icon={<Brain className="h-4 w-4 text-muted-foreground" />}
       className="space-y-3 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-900/40 p-6 rounded-lg shadow-sm"
     >
-      {!isEditing && (
-        <div className="mb-4">
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher une compétence..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 max-w-sm bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
-            />
-          </div>
-        </div>
-      )}
-
       <div className="space-y-6">
         {Object.entries(groupedSkills).map(([category, skills]) => (
           <SkillCategory
@@ -82,7 +66,7 @@ export function VCardSkills({
             category={category}
             skills={skills}
             isEditing={isEditing}
-            searchTerm={searchTerm}
+            searchTerm=""
             onRemoveSkill={handleRemoveSkill}
           />
         ))}
