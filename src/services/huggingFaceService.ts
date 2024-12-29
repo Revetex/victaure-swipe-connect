@@ -23,6 +23,15 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Limite de requêtes atteinte. Veuillez réessayer dans une minute.');
     }
 
+    // Get API key from Supabase
+    const { data: secretData, error: secretError } = await supabase
+      .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
+
+    if (secretError || !secretData) {
+      console.error('Error fetching API key:', secretError);
+      throw new Error('Impossible de récupérer la clé API');
+    }
+
     // Sanitize input and build prompt
     const sanitizedMessage = sanitizeInput(message);
     const systemPrompt = buildSystemPrompt(profile, sanitizedMessage);
@@ -30,7 +39,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     // Enhanced API call with better error handling
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': 'Bearer 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',
+        'Authorization': `Bearer ${secretData}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
@@ -49,6 +58,8 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     if (!response.ok) {
+      const errorData = await response.json();
+      console.error('HuggingFace API Error:', errorData);
       throw new Error(`Erreur API: ${response.statusText}`);
     }
 
