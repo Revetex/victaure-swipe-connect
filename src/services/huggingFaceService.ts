@@ -38,19 +38,15 @@ export async function generateAIResponse(prompt: string): Promise<string> {
       }),
     });
 
-    // Clone the response before reading it
-    const responseClone = response.clone();
-
-    // Log the full response for debugging
+    // Log the response status and headers for debugging
     console.log('HuggingFace API Response:', {
       status: response.status,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers.entries()),
     });
 
-    // Handle non-OK responses
     if (!response.ok) {
-      const errorText = await responseClone.text();
+      const errorText = await response.text();
       console.error('HuggingFace API Error:', {
         status: response.status,
         statusText: response.statusText,
@@ -59,13 +55,9 @@ export async function generateAIResponse(prompt: string): Promise<string> {
       throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
-    // Read and parse the response
     const result = await response.json();
-    
-    // Log the parsed response
     console.log('Parsed API Response:', result);
 
-    // Extract the generated text from the response
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text || '';
       return generatedText.trim();

@@ -16,7 +16,7 @@ export function useChat() {
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
 
-  const handleSendMessage = async (message: string, profile?: any) => {
+  const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
 
     const newUserMessage: Message = {
@@ -31,7 +31,7 @@ export function useChat() {
     setIsThinking(true);
 
     try {
-      const response = await generateAIResponse(message, profile);
+      const response = await generateAIResponse(message);
 
       const newAssistantMessage: Message = {
         id: crypto.randomUUID(),
