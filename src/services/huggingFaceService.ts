@@ -68,12 +68,13 @@ Réponds de manière structurée en:
 3. Donnant des exemples spécifiques</s>
 <|assistant|>`;
 
+    // Make the API request
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${secretData}`,
         'Content-Type': 'application/json',
       },
-      method: 'POST',
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
@@ -88,30 +89,38 @@ Réponds de manière structurée en:
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('HuggingFace API Error Response:', errorText);
-      throw new Error(`API request failed: ${response.status} - ${errorText}`);
+    // Clone the response before reading it
+    const responseClone = response.clone();
+
+    // First try to parse as JSON
+    try {
+      const data = await response.json();
+      
+      if (!Array.isArray(data) || !data[0]?.generated_text) {
+        console.error('Invalid response format:', data);
+        throw new Error('Invalid response format from API');
+      }
+
+      const generatedText = data[0].generated_text
+        .split('<|assistant|>')[1]?.trim()
+        .replace(/```/g, '')
+        .replace(/\n\n+/g, '\n\n')
+        .trim();
+      
+      if (!generatedText) {
+        throw new Error('No response generated');
+      }
+
+      return generatedText;
+    } catch (error) {
+      // If JSON parsing fails, try reading as text from the cloned response
+      if (!response.ok) {
+        const errorText = await responseClone.text();
+        console.error('HuggingFace API Error:', errorText);
+        throw new Error(`API request failed: ${response.status} - ${errorText}`);
+      }
+      throw error;
     }
-
-    const data = await response.json();
-
-    if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid response format:', data);
-      throw new Error('Invalid response format from API');
-    }
-
-    const generatedText = data[0].generated_text
-      .split('<|assistant|>')[1]?.trim()
-      .replace(/```/g, '')
-      .replace(/\n\n+/g, '\n\n')
-      .trim();
-    
-    if (!generatedText) {
-      throw new Error('No response generated');
-    }
-
-    return generatedText;
   } catch (error) {
     console.error('Error generating response:', error);
     throw error;
