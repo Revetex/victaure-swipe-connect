@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateAIResponse } from "@/services/perplexityService";
+import { generateAIResponse } from "@/services/geminiService";
 import { toast } from "sonner";
 
 export interface Message {
