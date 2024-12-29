@@ -57,7 +57,7 @@ Message de l'utilisateur: ${message}</s>
 <|assistant|>`;
 
     console.log('Calling Hugging Face API...');
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-v0.1', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${key}`,
