@@ -21,20 +21,16 @@ export function Messages() {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-        const { data, error } = await supabase
-          .from('notifications')
-          .select('id, read')
-          .eq('user_id', user.id);
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('id, read')
+        .eq('user_id', user.id);
 
-        if (error) throw error;
-        setNotifications(data || []);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
+      if (error) throw error;
+      setNotifications(data || []);
     };
 
     fetchNotifications();
