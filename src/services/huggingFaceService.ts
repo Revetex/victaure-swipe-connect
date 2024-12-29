@@ -23,18 +23,25 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Limite de requêtes atteinte. Veuillez réessayer dans une minute.');
     }
 
-    // Get API key from Supabase
+    // Get API key from Supabase with detailed error logging
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
-    if (secretError || !secretData) {
+    if (secretError) {
       console.error('Error fetching API key:', secretError);
-      throw new Error('Impossible de récupérer la clé API');
+      throw new Error(`Erreur lors de la récupération de la clé API: ${secretError.message}`);
+    }
+
+    if (!secretData || secretData.trim() === '') {
+      console.error('No API key found');
+      throw new Error('Clé API HuggingFace non configurée');
     }
 
     // Sanitize input and build prompt
     const sanitizedMessage = sanitizeInput(message);
     const systemPrompt = buildSystemPrompt(profile, sanitizedMessage);
+
+    console.log('Making request to HuggingFace API...');
 
     // Enhanced API call with better error handling
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
@@ -59,13 +66,23 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('HuggingFace API Error:', errorData);
-      throw new Error(`Erreur API: ${response.statusText}`);
+      console.error('HuggingFace API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
+      
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('Clé API HuggingFace invalide');
+      }
+      
+      throw new Error(`Erreur API HuggingFace: ${response.statusText || 'Erreur inconnue'}`);
     }
 
     const data = await response.json();
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data);
       throw new Error('Format de réponse invalide');
     }
 
@@ -79,7 +96,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Aucune réponse générée');
     }
 
-    // Log interaction for analysis and security monitoring
+    // Log successful interaction
     console.log('AI Interaction:', {
       userProfile: profile?.id,
       messageType: 'vcard-consultation',
