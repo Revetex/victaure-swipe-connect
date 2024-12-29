@@ -64,7 +64,8 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         const { error: matchesDeleteError } = await supabase
           .from('matches')
           .delete()
-          .eq('job_id', jobId);
+          .eq('job_id', jobId)
+          .abortSignal(undefined); // Forcer une nouvelle requête
 
         if (matchesDeleteError) {
           console.error("Error deleting matches:", matchesDeleteError);
@@ -78,7 +79,8 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
       const { error: jobError } = await supabase
         .from('jobs')
         .delete()
-        .eq('id', jobId);
+        .eq('id', jobId)
+        .abortSignal(undefined); // Forcer une nouvelle requête
 
       if (jobError) {
         console.error("Error deleting job:", jobError);
