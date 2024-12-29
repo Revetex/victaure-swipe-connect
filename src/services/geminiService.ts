@@ -31,7 +31,8 @@ async function getApiKey() {
       throw new Error('Empty Gemini API key');
     }
 
-    const apiKey = data.trim();
+    // The secret is returned as a string directly from the RPC function
+    const apiKey = String(data).trim();
     console.log('API key retrieved:', { hasKey: !!apiKey, keyLength: apiKey?.length });
 
     if (!apiKey) {
