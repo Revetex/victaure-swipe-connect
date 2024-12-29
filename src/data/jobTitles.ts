@@ -35,6 +35,12 @@ export const jobTitles = [
   "Responsable Innovation",
   "Growth Hacker",
   "Product Marketing Manager",
+  "Directeur Commercial",
+  "Responsable des Opérations",
+  "Chef d'Équipe",
+  "Gestionnaire de Compte",
+  "Analyste Financier",
+  "Responsable RH",
   
   // Design & Créatif
   "Directeur Artistique",
@@ -43,6 +49,10 @@ export const jobTitles = [
   "Designer d'Expérience Utilisateur",
   "Designer d'Interface",
   "Concepteur Web",
+  "Graphiste",
+  "Illustrateur Digital",
+  "Animateur 3D",
+  "Photographe Professionnel",
   
   // Marketing Digital
   "Expert SEO",
@@ -51,15 +61,11 @@ export const jobTitles = [
   "Community Manager",
   "Traffic Manager",
   "Data Analyst Marketing",
+  "Responsable E-commerce",
+  "Spécialiste Médias Sociaux",
+  "Rédacteur Web",
+  "Email Marketing Manager",
   
-  // Autres Spécialités Tech
-  "Expert en IA",
-  "Spécialiste IoT",
-  "Expert en Réalité Virtuelle",
-  "Architecte Big Data",
-  "Expert en Automatisation",
-  "Ingénieur Robotique",
-
   // Construction & BTP
   "Chef de Chantier",
   "Conducteur de Travaux",
@@ -71,6 +77,9 @@ export const jobTitles = [
   "Dessinateur BTP",
   "Coordinateur de Sécurité",
   "Expert en Construction Durable",
+  "Économiste de la Construction",
+  "Diagnostiqueur Immobilier",
+  "Responsable QSE",
   
   // Métiers Manuels & Artisanat
   "Maçon",
@@ -89,30 +98,42 @@ export const jobTitles = [
   "Chauffagiste",
   "Isolation Thermique",
   "Étanchéiste",
-  
-  // Opérateurs & Conducteurs
-  "Conducteur d'Engins",
-  "Grutier",
-  "Conducteur de Pelleteuse",
-  "Conducteur de Bulldozer",
-  "Opérateur de Centrale à Béton",
-  
-  // Finitions & Décoration
-  "Décorateur d'Intérieur",
-  "Agenceur",
-  "Poseur de Revêtements",
+  "Ébéniste",
+  "Tapissier",
   "Marbrier",
-  "Staffeur-Ornemaniste",
-  
-  // Maintenance & Réparation
-  "Technicien de Maintenance",
-  "Ascensoriste",
-  "Frigoriste",
-  "Dépanneur",
+  "Tailleur de pierre",
   
   // Espaces Verts & Paysage
   "Paysagiste",
   "Jardinier",
   "Élagueur",
-  "Horticulteur"
+  "Horticulteur",
+  "Arboriste",
+  "Concepteur Paysager",
+  
+  // Maintenance & Réparation
+  "Technicien de Maintenance",
+  "Mécanicien",
+  "Électromécanicien",
+  "Frigoriste",
+  "Ascensoriste",
+  "Technicien SAV",
+  "Réparateur Électroménager",
+  
+  // Artisanat d'Art
+  "Restaurateur d'Art",
+  "Céramiste",
+  "Bijoutier",
+  "Sculpteur",
+  "Doreur",
+  "Vitrailliste",
+  "Relieur",
+  
+  // Transport & Logistique
+  "Chauffeur Poids Lourd",
+  "Conducteur d'Engins",
+  "Responsable Logistique",
+  "Gestionnaire de Stock",
+  "Cariste",
+  "Dispatcher"
 ];
