@@ -1,9 +1,17 @@
 {
+  "welcome": "Welcome to your dashboard",
+  "tasks": "Tasks",
+  "messages": "Messages",
+  "notifications": "Notifications",
+  "profile": "Profile",
+  "settings": "Settings",
+  "swipeJobs": "Discover missions",
+  "assistant": "Personal assistant",
   "mrVictaure": {
     "title": "Mr. Victaure",
     "subtitle": "AI Personal Assistant",
-    "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish job offers. Would you like me to help you create a new job or improve your profile?",
     "thinking": "Thinking...",
+    "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish job offers. Would you like me to help you create a new job or improve your profile?",
     "clearChat": "Clear chat",
     "maximize": "Maximize",
     "minimize": "Minimize",

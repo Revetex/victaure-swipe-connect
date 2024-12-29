@@ -1,3 +1,10 @@
 {
-  "title": "Notifications"
+  "title": "Notifications",
+  "noNotifications": "No notifications",
+  "markAsRead": "Mark as read",
+  "newNotification": "New notification",
+  "unreadNotifications": "Unread notifications",
+  "deleteNotification": "Notification deleted successfully",
+  "clearAll": "Clear all",
+  "settings": "Notification settings"
 }

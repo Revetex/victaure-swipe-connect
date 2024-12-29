@@ -1,0 +1,14 @@
+{
+  "title": "Notes",
+  "newNote": "Nouvelle note...",
+  "noNotes": "Aucune note",
+  "addNote": "Ajouter une note",
+  "deleteNote": "Supprimer la note",
+  "colors": {
+    "yellow": "Jaune",
+    "green": "Vert",
+    "blue": "Bleu",
+    "pink": "Rose",
+    "purple": "Violet"
+  }
+}

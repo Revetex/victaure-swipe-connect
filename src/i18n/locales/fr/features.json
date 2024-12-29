@@ -1,0 +1,21 @@
+{
+  "whyChoose": "Pourquoi choisir Victaure ?",
+  "items": {
+    "matching": {
+      "title": "Matching Intelligent",
+      "description": "Trouvez les missions qui correspondent parfaitement à vos compétences grâce à notre IA"
+    },
+    "management": {
+      "title": "Gestion Simplifiée",
+      "description": "Gérez vos contrats et paiements en toute simplicité avec notre plateforme automatisée"
+    },
+    "certification": {
+      "title": "Certifications Blockchain",
+      "description": "Validez vos compétences avec des certifications sécurisées et reconnues"
+    },
+    "financial": {
+      "title": "Services Financiers",
+      "description": "Accédez à des services financiers et assuranciels intégrés pour sécuriser vos missions"
+    }
+  }
+}

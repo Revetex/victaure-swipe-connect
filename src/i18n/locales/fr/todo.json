@@ -1,15 +1,12 @@
 {
-  "notes": {
-    "title": "Notes",
-    "newNote": "Nouvelle note...",
-    "noNotes": "Aucune note",
-    "colors": {
-      "yellow": "Jaune"
-    }
-  },
-  "todo": {
-    "title": "Tâches",
-    "newTask": "Nouvelle tâche...",
-    "time": "Heure"
-  }
+  "title": "Tâches",
+  "newTask": "Nouvelle tâche...",
+  "time": "Heure",
+  "noTasks": "Aucune tâche",
+  "addTask": "Ajouter une tâche",
+  "deleteTask": "Supprimer la tâche",
+  "markAsComplete": "Marquer comme terminée",
+  "dueDate": "Date d'échéance",
+  "priority": "Priorité",
+  "categories": "Catégories"
 }

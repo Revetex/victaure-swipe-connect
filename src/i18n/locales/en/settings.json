@@ -1,8 +1,22 @@
 {
+  "general": "General Settings",
+  "language": "Language",
+  "selectLanguage": "Select a language",
+  "languageChanged": "Language changed successfully",
+  "theme": "Theme",
+  "themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "notifications": {
     "title": "Notifications",
     "email": "Email notifications",
     "push": "Push notifications",
     "settings": "Notification Settings"
+  },
+  "success": {
+    "theme": "Theme changed successfully",
+    "notifications": "Notification settings updated"
   }
 }

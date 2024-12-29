@@ -1,8 +1,22 @@
 {
+  "general": "Paramètres généraux",
+  "language": "Langue",
+  "selectLanguage": "Sélectionner une langue",
+  "languageChanged": "Langue modifiée avec succès",
+  "theme": "Thème",
+  "themes": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
   "notifications": {
     "title": "Notifications",
     "email": "Notifications par email",
     "push": "Notifications push",
     "settings": "Paramètres des notifications"
+  },
+  "success": {
+    "theme": "Thème modifié avec succès",
+    "notifications": "Paramètres de notification mis à jour"
   }
 }

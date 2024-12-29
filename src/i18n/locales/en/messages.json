@@ -1,4 +1,10 @@
 {
   "title": "Messages",
-  "noMessages": "No messages"
+  "noMessages": "No messages",
+  "markAsRead": "Mark as read",
+  "newMessage": "New message",
+  "unreadMessages": "Unread messages",
+  "search": "Search messages",
+  "compose": "Compose message",
+  "reply": "Reply"
 }

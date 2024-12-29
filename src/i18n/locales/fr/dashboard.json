@@ -1,9 +1,17 @@
 {
+  "welcome": "Bienvenue sur votre tableau de bord",
+  "tasks": "Tâches",
+  "messages": "Messages",
+  "notifications": "Notifications",
+  "profile": "Profil",
+  "settings": "Paramètres",
+  "swipeJobs": "Découvrir des missions",
+  "assistant": "Assistant personnel",
   "mrVictaure": {
     "title": "Mr. Victaure",
     "subtitle": "Assistant IA Personnel",
-    "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
     "thinking": "En train de réfléchir...",
+    "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
     "clearChat": "Effacer la conversation",
     "maximize": "Agrandir",
     "minimize": "Réduire",

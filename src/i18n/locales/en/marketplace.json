@@ -6,12 +6,22 @@
     "category": "Category",
     "subcategory": "Subcategory",
     "allCategories": "All categories",
+    "duration": "Duration",
+    "allDurations": "All durations",
+    "experienceLevel": "Experience Level",
+    "allLevels": "All levels",
     "location": "Location",
     "selectCity": "Select a city...",
     "noCity": "No city found",
-    "experienceLevel": "Experience Level",
-    "allLevels": "All levels"
+    "salary": "Salary",
+    "remote": "Remote"
   },
   "noJobs": "No jobs available at the moment",
-  "comeBack": "Come back later to discover new opportunities"
+  "comeBack": "Come back later to discover new missions.",
+  "browse": "Browse jobs",
+  "myListings": "My listings",
+  "noListings": "You haven't posted any jobs yet",
+  "addJob": "Add job",
+  "apply": "Apply",
+  "save": "Save"
 }
