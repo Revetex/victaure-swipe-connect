@@ -1,7 +1,6 @@
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin, DollarSign, Clock, Building2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { MapPin, Clock, Briefcase, DollarSign } from "lucide-react";
 import type { Job } from "@/types/job";
 
 interface JobSwipeCardProps {
@@ -10,57 +9,41 @@ interface JobSwipeCardProps {
 
 export function JobSwipeCard({ job }: JobSwipeCardProps) {
   return (
-    <Card className="w-full bg-card shadow-lg">
-      <CardHeader className="space-y-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-2xl font-bold">{job.title}</h2>
-            <div className="flex items-center text-muted-foreground mt-1">
-              <Building2 className="h-4 w-4 mr-1" />
-              <span className="text-sm">Entreprise XYZ</span>
-            </div>
-          </div>
-          <Badge variant="outline" className="text-sm">
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">{job.title}</CardTitle>
+        <div className="flex flex-wrap gap-2 mt-2">
+          <Badge variant="outline" className="flex items-center gap-1">
+            <MapPin className="h-3 w-3" />
+            {job.location}
+          </Badge>
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
             {job.contract_type}
           </Badge>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="text-xs">
-            {job.category}
-          </Badge>
-          {job.subcategory && (
-            <Badge variant="secondary" className="text-xs">
-              {job.subcategory}
-            </Badge>
-          )}
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Briefcase className="h-3 w-3" />
             {job.experience_level}
           </Badge>
         </div>
       </CardHeader>
-
-      <CardContent className="space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-1" />
-            <span className="text-sm">{job.location}</span>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <DollarSign className="h-5 w-5 text-primary" />
+            {new Intl.NumberFormat('fr-CA', {
+              style: 'currency',
+              currency: 'CAD'
+            }).format(Number(job.budget))}
           </div>
-          <div className="flex items-center text-muted-foreground">
-            <DollarSign className="h-4 w-4 mr-1" />
-            <span className="text-sm">
-              {new Intl.NumberFormat('fr-CA', {
-                style: 'currency',
-                currency: 'CAD'
-              }).format(job.budget)}
-            </span>
-          </div>
-        </div>
-
-        <div className="prose prose-sm max-w-none">
-          <h3 className="text-lg font-semibold mb-2">Description</h3>
-          <p className="text-muted-foreground whitespace-pre-wrap">
+          <p className="text-muted-foreground">
             {job.description}
           </p>
+          {job.subcategory && (
+            <Badge variant="secondary">
+              {job.subcategory}
+            </Badge>
+          )}
         </div>
       </CardContent>
     </Card>
