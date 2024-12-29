@@ -2,6 +2,7 @@ import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { TodoList } from "@/components/TodoList";
 import { VCard } from "@/components/VCard";
+import { Marketplace } from "@/components/Marketplace";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -10,7 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const sections = [
   { id: 'messages', title: 'Messages', component: Messages },
-  { id: 'jobs', title: 'Offres', component: SwipeJob },
+  { id: 'jobs', title: 'Offres', component: Marketplace },
   { id: 'todos', title: 'Tâches', component: TodoList },
   { id: 'profile', title: 'Profil', component: VCard },
 ];
