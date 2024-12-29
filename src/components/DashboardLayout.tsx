@@ -51,9 +51,7 @@ export function DashboardLayout() {
                   "h-full w-full transition-all duration-300",
                   isMobile ? "px-2 pb-20" : "px-4 pb-24"
                 )}>
-                  <div className="glass-card h-full rounded-lg p-3 sm:p-4 overflow-y-auto">
-                    <section.component />
-                  </div>
+                  <section.component />
                 </div>
               </CarouselItem>
             ))}
