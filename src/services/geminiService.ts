@@ -10,7 +10,7 @@ async function getApiKey() {
       secret_name: 'GEMINI_API_KEY'
     });
 
-    console.log('API key response:', { hasData: !!data, secret: data?.secret });
+    console.log('API key response:', { hasData: !!data });
 
     if (error) {
       console.error('Error fetching API key:', error);
@@ -20,7 +20,7 @@ async function getApiKey() {
       throw new Error(`Failed to fetch Gemini API key: ${error.message}`);
     }
 
-    if (!data?.secret) {
+    if (!data) {
       toast.error("La clé API Gemini n'est pas configurée", {
         description: "Veuillez vérifier que la clé existe dans les paramètres Supabase",
         action: {
@@ -31,7 +31,7 @@ async function getApiKey() {
       throw new Error('Empty Gemini API key');
     }
 
-    const apiKey = data.secret.trim();
+    const apiKey = data.trim();
     console.log('API key retrieved:', { hasKey: !!apiKey, keyLength: apiKey?.length });
 
     if (!apiKey) {
