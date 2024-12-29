@@ -1,60 +1,74 @@
-let apiKey: string | null = "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";
+import { supabase } from "@/integrations/supabase/client";
+import type { UserProfile } from "@/types/profile";
 
-const getApiKey = () => {
-  if (!apiKey) return null;
-  return apiKey;
-};
-
-export const setApiKey = (key: string) => {
-  apiKey = key;
-};
-
-export async function generateAIResponse(message: string, profile?: any) {
+export async function generateAIResponse(message: string, profile?: UserProfile) {
   try {
-    const key = getApiKey();
-    if (!key) {
-      throw new Error('API key not configured');
-    }
-
-    if (!message || message.length > 2000) {
+    if (!message?.trim()) {
       throw new Error('Invalid input');
     }
 
-    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel proactif, empathique et bienveillant qui aide les utilisateurs à développer leur carrière. Tu as accès à leur profil et peux les guider de manière personnalisée.
+    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA spécialisé dans la gestion des profils professionnels (VCards). Tu as les capacités suivantes:
+
+1. CONSULTATION DES VCARDS:
+- Tu peux voir le profil complet de l'utilisateur
+- Tu peux suggérer des améliorations basées sur les tendances du marché
+- Tu peux analyser les forces et faiblesses du profil
+
+2. MODIFICATION DES VCARDS:
+- Tu peux proposer des modifications spécifiques
+- Tu peux guider l'utilisateur dans la mise à jour de son profil
+- Tu peux suggérer des compétences pertinentes à ajouter
+
+3. CONSEILS PERSONNALISÉS:
+- Tu adaptes tes conseils au secteur d'activité
+- Tu prends en compte l'expérience professionnelle
+- Tu suggères des certifications pertinentes
 
 Directives de personnalité:
-1. Sois proactif - anticipe les besoins et propose des suggestions concrètes
-2. Sois empathique - montre que tu comprends leurs défis professionnels
-3. Sois encourageant - félicite les progrès et motive à continuer
-4. Sois structuré - organise tes réponses par points clés
-5. Sois concis - va droit au but tout en restant chaleureux
-6. Sois pratique - donne des exemples concrets et des étapes actionables
+1. Sois proactif - anticipe les besoins et propose des améliorations concrètes
+2. Sois analytique - examine en détail le profil pour des suggestions pertinentes
+3. Sois stratégique - aligne les suggestions avec les objectifs de carrière
+4. Sois précis - donne des exemples concrets et applicables
+5. Sois encourageant - motive à améliorer continuellement le profil
 
-Contexte professionnel de l'utilisateur:
+Profil actuel de l'utilisateur:
 ${profile ? JSON.stringify({
   nom: profile.full_name,
   role: profile.role,
-  compétences: profile.skills,
+  competences: profile.skills,
   ville: profile.city,
-  bio: profile.bio
+  province: profile.state,
+  telephone: profile.phone,
+  email: profile.email,
+  bio: profile.bio,
+  certifications: profile.certifications
 }, null, 2) : 'Pas encore de profil'}
 
-Historique de la conversation:
-- Dernier message de l'utilisateur: ${message}
+Analyse rapide du profil:
+${profile ? `
+- Forces: ${profile.skills?.length ? 'Compétences variées' : 'À développer'}
+- Complétude: ${profile.bio ? 'Bio présente' : 'Bio manquante'}
+- Contact: ${profile.phone && profile.email ? 'Complet' : 'À compléter'}
+` : 'Profil non disponible'}
 
-Réponds de manière naturelle et personnalisée en te basant sur leur profil.</s>
+Message de l'utilisateur: ${message}
+
+Réponds de manière structurée en:
+1. Analysant la demande
+2. Proposant des actions concrètes
+3. Donnant des exemples spécifiques</s>
 <|assistant|>`;
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
-      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${key}`,
+        'Authorization': 'Bearer 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',
         'Content-Type': 'application/json',
       },
+      method: 'POST',
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 500,
+          max_new_tokens: 750,
           temperature: 0.7,
           top_p: 0.9,
           repetition_penalty: 1.2,
@@ -70,37 +84,49 @@ Réponds de manière naturelle et personnalisée en te basant sur leur profil.</
     }
 
     const data = await response.json();
-    
-    if (!data[0]?.generated_text) {
+
+    if (!Array.isArray(data) || !data[0]?.generated_text) {
       throw new Error('Invalid response format from API');
     }
 
     const generatedText = data[0].generated_text
       .split('<|assistant|>')[1]?.trim()
-      .replace(/```/g, '') // Remove code blocks
-      .replace(/\n\n+/g, '\n\n') // Normalize line breaks
+      .replace(/```/g, '')
+      .replace(/\n\n+/g, '\n\n')
       .trim();
     
     if (!generatedText) {
       throw new Error('No response generated');
     }
 
+    // Log interaction for analysis
+    console.log('AI Interaction:', {
+      userProfile: profile?.id,
+      messageType: 'vcard-consultation',
+      timestamp: new Date().toISOString()
+    });
+
     return generatedText;
   } catch (error) {
     console.error('Error generating response:', error);
     
-    // Fallback responses based on context
+    // Fallback responses basées sur le contexte du profil
     const contextualResponses = [
       profile?.full_name 
-        ? `Je suis là pour vous aider ${profile.full_name}. Que puis-je faire pour votre développement professionnel ?`
-        : "Je suis là pour vous aider dans votre développement professionnel. Que puis-je faire pour vous ?",
+        ? `Je peux vous aider à optimiser votre VCard ${profile.full_name}. Voici les aspects que nous pouvons améliorer:\n\n` +
+          `${!profile.bio ? '- Ajouter une bio professionnelle\n' : ''}` +
+          `${!profile.skills?.length ? '- Ajouter vos compétences clés\n' : ''}` +
+          `${!profile.phone ? '- Compléter vos informations de contact\n' : ''}` +
+          `${!profile.certifications?.length ? '- Ajouter vos certifications\n' : ''}`
+        : "Je peux vous aider à créer et optimiser votre VCard professionnelle. Par où souhaitez-vous commencer ?",
+      
       profile?.role
-        ? `En tant que ${profile.role}, je peux vous donner des conseils spécifiques à votre domaine.`
-        : "Je peux vous aider à définir votre orientation professionnelle.",
-      "Je peux vous aider à mettre en valeur vos compétences et expériences.",
-      "Voulez-vous des conseils pour développer votre réseau professionnel ?",
-      "Je peux vous aider à préparer vos entretiens ou négociations.",
-      "Parlons de vos objectifs de carrière et comment les atteindre.",
+        ? `En tant que ${profile.role}, je peux vous suggérer des améliorations spécifiques à votre secteur.`
+        : "Commençons par définir votre rôle professionnel pour personnaliser votre VCard.",
+      
+      "Je peux analyser votre profil et suggérer des améliorations concrètes.",
+      "Voulez-vous que nous examinions ensemble votre VCard pour la rendre plus attractive ?",
+      "Je peux vous aider à mettre en valeur vos compétences et expériences dans votre VCard.",
     ];
     
     return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
