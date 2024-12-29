@@ -1,40 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-async function getApiKey() {
-  try {
-    const { data, error } = await supabase.rpc('get_secret', {
-      secret_name: 'HUGGING_FACE_ACCESS_TOKEN'
-    });
-
-    if (error) {
-      console.error('Error fetching HuggingFace API key:', error);
-      toast.error("Erreur lors de la récupération de la clé API", {
-        description: error.message,
-      });
-      throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
-    }
-
-    if (!data) {
-      toast.error("La clé API HuggingFace n'est pas configurée");
-      throw new Error('Empty HuggingFace API key');
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error in getApiKey:', error);
-    throw error;
-  }
-}
-
 export async function generateAIResponse(prompt: string): Promise<string> {
   try {
-    const apiKey = await getApiKey();
-    
-    const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta", {
+    const response = await fetch("https://api-inference.huggingface.co/models/facebook/opt-125m", {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
