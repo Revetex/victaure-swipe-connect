@@ -66,7 +66,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => null);
       console.error('HuggingFace API Error:', {
         status: response.status,
         statusText: response.statusText,
