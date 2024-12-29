@@ -3,16 +3,28 @@ import { supabase } from "@/integrations/supabase/client";
 const MODEL_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta";
 
 async function getApiKey() {
-  const { data, error } = await supabase.rpc('get_secret', {
-    secret_name: 'HUGGING_FACE_API_KEY'
-  });
+  try {
+    const { data, error } = await supabase.rpc('get_secret', {
+      secret_name: 'HUGGING_FACE_API_KEY'
+    });
 
-  if (error || !data || !data[0]?.secret) {
-    console.error('Error fetching HuggingFace API key:', error);
-    throw new Error('Failed to get HuggingFace API key');
+    console.log('Supabase get_secret response:', { data, error });
+
+    if (error) {
+      console.error('Supabase get_secret error:', error);
+      throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
+    }
+
+    if (!data || data.length === 0 || !data[0]?.secret) {
+      console.error('No API key found in Supabase secrets');
+      throw new Error('HuggingFace API key not found in secrets');
+    }
+
+    return data[0].secret;
+  } catch (error) {
+    console.error('Error in getApiKey:', error);
+    throw error;
   }
-
-  return data[0].secret;
 }
 
 export async function generateAIResponse(prompt: string): Promise<string> {
