@@ -7,7 +7,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SkillEditorProps } from "@/types/skills";
+
+interface SkillEditorProps {
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  newSkill: string;
+  setNewSkill: (skill: string) => void;
+  handleAddSkill: () => void;
+  skillCategories: Record<string, string[]>;
+  filteredSkills: string[];
+}
 
 export function SkillEditor({
   selectedCategory,
@@ -17,7 +26,6 @@ export function SkillEditor({
   handleAddSkill,
   skillCategories,
   filteredSkills,
-  isLoading = false,
 }: SkillEditorProps) {
   const isMobile = useIsMobile();
 
@@ -61,9 +69,8 @@ export function SkillEditor({
         onClick={handleAddSkill} 
         variant="secondary"
         className={`${isMobile ? "w-full" : ""} bg-indigo-600 hover:bg-indigo-700 text-white`}
-        disabled={isLoading}
       >
-        {isLoading ? "Ajout..." : "Ajouter"}
+        Ajouter
       </Button>
     </div>
   );
