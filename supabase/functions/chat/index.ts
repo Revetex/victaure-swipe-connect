@@ -30,7 +30,7 @@ serve(async (req) => {
       throw new Error('Invalid user');
     }
 
-    console.log('Processing message:', lastMessage.content);
+    console.log('Message reçu:', lastMessage.content);
 
     const hfToken = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
     if (!hfToken) {
@@ -44,18 +44,19 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: `<|im_start|>system
-Tu es Mr Victaure, un assistant IA sympathique qui parle de façon naturelle et décontractée. Tu peux faire des blagues, utiliser des émojis 😊, et adapter ton langage selon la conversation. Tu es là pour aider avec tout ce qui concerne la recherche d'emploi, mais tu peux aussi discuter d'autres sujets de façon amicale.
+        inputs: `<|im_start|>user
+${lastMessage.content}
 <|im_end|>
-${messages.map(m => `<|im_start|>${m.sender === 'assistant' ? 'assistant' : 'user'}
-${m.content}
-<|im_end|>`).join('\n')}`,
+<|im_start|>assistant
+`,
         parameters: {
           temperature: 0.9,
           max_new_tokens: 1000,
           return_full_text: false,
           do_sample: true,
-          top_p: 0.95
+          top_p: 0.95,
+          presence_penalty: 0.5,
+          frequency_penalty: 0.5
         }
       }),
     });
@@ -102,7 +103,7 @@ ${m.content}
         choices: [{
           message: {
             role: 'assistant',
-            content: "Oups ! 😅 J'ai eu un petit souci technique. On peut continuer notre discussion ?",
+            content: "Désolé, j'ai eu un petit problème 😅 On continue?",
             action: 'error'
           }
         }]
