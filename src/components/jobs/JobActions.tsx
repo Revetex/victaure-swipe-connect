@@ -25,7 +25,7 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
 
   const handleDelete = async () => {
     try {
-      // First, delete all matches associated with this job
+      // D'abord, supprimer tous les matches associés
       const { error: matchesError } = await supabase
         .from('matches')
         .delete()
@@ -37,11 +37,12 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         return;
       }
 
-      // Then delete the job
+      // Ensuite, supprimer l'offre
       const { error: jobError } = await supabase
         .from('jobs')
         .delete()
-        .eq('id', jobId);
+        .eq('id', jobId)
+        .single();
 
       if (jobError) {
         console.error("Error deleting job:", jobError);
