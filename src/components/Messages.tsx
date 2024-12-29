@@ -1,76 +1,100 @@
-import { useChat } from "@/hooks/useChat";
-import { ChatMessage } from "./chat/ChatMessage";
-import { ChatInput } from "./chat/ChatInput";
-import { ChatHeader } from "./chat/ChatHeader";
-import { ScrollArea } from "./ui/scroll-area";
-import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MessagesTab } from "./messages/tabs/MessagesTab";
+import { NotificationsTab } from "./messages/tabs/NotificationsTab";
+import { Settings } from "./Settings";
+import { MessageSquare, Bell, Settings2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Notification {
+  id: string;
+  read: boolean;
+}
 
 export function Messages() {
-  const { 
-    messages, 
-    sendMessage, 
-    handleJobResponse, 
-    isCreatingJob,
-    isThinking,
-    inputMessage,
-    setInputMessage,
-    handleVoiceInput,
-    isListening
-  } = useChat();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const unreadMessagesCount = messages.filter(m => !m.read).length;
+  const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
-  const handleClearChat = () => {
-    // This will be implemented later
-    console.log("Clear chat");
-  };
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('id, read')
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        setNotifications(data || []);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+
+    const channel = supabase
+      .channel('notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications'
+        },
+        () => {
+          fetchNotifications();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col h-full bg-background/95 backdrop-blur-sm">
-      <ChatHeader onClearChat={handleClearChat} isThinking={isThinking} />
-      
-      <ScrollArea className="flex-1 px-4">
-        <AnimatePresence mode="popLayout">
-          <div className="space-y-4 py-4">
-            {messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChatMessage
-                  message={message}
-                  onResponse={isCreatingJob ? handleJobResponse : undefined}
-                />
-              </motion.div>
-            ))}
-            {isThinking && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center space-x-2 text-muted-foreground"
-              >
-                <div className="flex space-x-1">
-                  <span className="animate-bounce">•</span>
-                  <span className="animate-bounce delay-100">•</span>
-                  <span className="animate-bounce delay-200">•</span>
-                </div>
-              </motion.div>
+    <div className="space-y-4 h-full">
+      <Tabs defaultValue="messages" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="messages" className="relative">
+            <MessageSquare className="h-5 w-5" />
+            {unreadMessagesCount > 0 && (
+              <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
+                {unreadMessagesCount}
+              </Badge>
             )}
-          </div>
-        </AnimatePresence>
-      </ScrollArea>
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="relative">
+            <Bell className="h-5 w-5" />
+            {unreadNotificationsCount > 0 && (
+              <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
+                {unreadNotificationsCount}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="settings">
+            <Settings2 className="h-5 w-5" />
+          </TabsTrigger>
+        </TabsList>
 
-      <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
-        <ChatInput 
-          value={inputMessage}
-          onChange={setInputMessage}
-          onSend={sendMessage}
-          onVoiceInput={handleVoiceInput}
-          isListening={isListening}
-          isThinking={isThinking}
-        />
-      </div>
+        <TabsContent value="messages">
+          <MessagesTab />
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <NotificationsTab />
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <Settings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

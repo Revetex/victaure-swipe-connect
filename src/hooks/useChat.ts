@@ -1,105 +1,127 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from 'uuid';
+import { supabase } from "@/integrations/supabase/client";
 
-export type MessageType = {
+export interface Message {
   id: string;
-  role: "assistant" | "user";
   content: string;
-  type?: "job_creation" | "text";
-  step?: "title" | "description" | "budget" | "location" | "category" | "confirm";
-  sender: {
-    id: string;
-    full_name: string;
-    avatar_url?: string;
-  };
+  sender: "user" | "assistant";
   timestamp: Date;
-};
+  action?: string;
+}
 
 export function useChat() {
-  const [messages, setMessages] = useState<MessageType[]>([]);
-  const [isCreatingJob, setIsCreatingJob] = useState(false);
-  const [currentStep, setCurrentStep] = useState<MessageType["step"]>();
+  const [messages, setMessages] = useState<Message[]>([{
+    id: uuidv4(),
+    content: "Bonjour ! Je suis Mr Victaure, votre assistant IA. Je peux vous aider à mettre à jour votre profil. Souhaitez-vous commencer ?",
+    sender: "assistant",
+    timestamp: new Date(),
+    action: 'greeting'
+  }]);
   const [inputMessage, setInputMessage] = useState("");
-  const [isThinking, setIsThinking] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
 
-  const handleVoiceInput = useCallback(() => {
-    setIsListening(prev => !prev);
-  }, []);
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim()) return;
 
-  const sendMessage = useCallback((content: string) => {
-    setIsThinking(true);
-    // Add user message
-    setMessages(prev => [...prev, {
-      id: crypto.randomUUID(),
-      role: "user",
-      content,
-      sender: {
-        id: "user",
-        full_name: "You"
-      },
-      timestamp: new Date()
-    }]);
-
-    // Simulate assistant response
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: "I can help you with that! Would you like to create a new mission or update your profile?",
-        sender: {
-          id: "assistant",
-          full_name: "Mr. Victaure"
-        },
-        timestamp: new Date()
-      }]);
-      setIsThinking(false);
-    }, 1000);
-  }, []);
-
-  const handleJobResponse = useCallback((response: string) => {
-    if (response.toLowerCase().includes("créer") && response.toLowerCase().includes("mission")) {
-      setIsCreatingJob(true);
-      setCurrentStep("title");
-      const newMessage: MessageType = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: "D'accord, je vais vous aider à créer une nouvelle mission. Quel est le titre de la mission ?",
-        type: "job_creation",
-        step: "title",
-        sender: {
-          id: "assistant",
-          full_name: "Mr. Victaure"
-        },
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, newMessage]);
-      return true;
-    }
-    return false;
-  }, []);
-
-  const addMessage = useCallback((message: Partial<MessageType> & Pick<MessageType, 'role' | 'content'>) => {
-    const fullMessage: MessageType = {
-      id: crypto.randomUUID(),
-      ...message,
-      sender: {
-        id: message.role === 'assistant' ? 'assistant' : 'user',
-        full_name: message.role === 'assistant' ? 'Mr. Victaure' : 'You'
-      },
-      timestamp: new Date()
+    const userMessage: Message = {
+      id: uuidv4(),
+      content: inputMessage,
+      sender: "user",
+      timestamp: new Date(),
     };
-    setMessages(prev => [...prev, fullMessage]);
-  }, []);
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage("");
+    setIsThinking(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: {
+          messages: messages.concat(userMessage).map(msg => ({
+            role: msg.sender,
+            content: msg.content,
+            action: msg.action
+          }))
+        }
+      });
+
+      if (error) throw error;
+
+      const assistantMessage: Message = {
+        id: uuidv4(),
+        content: data.choices[0].message.content,
+        sender: "assistant",
+        timestamp: new Date(),
+        action: data.choices[0].message.action
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+
+      if (assistantMessage.action === 'update_complete') {
+        toast.success("Votre profil a été mis à jour avec succès !");
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Désolé, je n'ai pas pu répondre. Veuillez réessayer.");
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
+  const handleVoiceInput = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      setInputMessage(transcript);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+      toast.error("Erreur lors de la reconnaissance vocale");
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
+
+  const clearChat = () => {
+    setMessages([{
+      id: uuidv4(),
+      content: "Bonjour ! Je suis Mr Victaure, votre assistant IA. Comment puis-je vous aider aujourd'hui ?",
+      sender: "assistant",
+      timestamp: new Date(),
+    }]);
+  };
 
   return {
     messages,
-    sendMessage,
-    handleJobResponse,
-    isCreatingJob,
     inputMessage,
-    setInputMessage,
+    isListening,
     isThinking,
+    setMessages,
+    setInputMessage,
+    handleSendMessage,
     handleVoiceInput,
-    isListening
+    clearChat,
   };
 }

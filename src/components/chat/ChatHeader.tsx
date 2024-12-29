@@ -1,7 +1,6 @@
-import { Bot, Brain, ArrowLeft, Trash2 } from "lucide-react";
+import { Bot, Brain, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ChatHeaderProps {
   onClearChat: () => void;
@@ -14,8 +13,17 @@ export function ChatHeader({ onClearChat, isThinking }: ChatHeaderProps) {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur-sm"
+      className="flex items-center p-4 border-b bg-background/80 backdrop-blur-sm"
     >
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClearChat}
+        className="mr-4"
+      >
+        <ArrowLeft className="h-5 w-5" />
+      </Button>
+
       <div className="flex items-center gap-4">
         <div className="relative">
           <div className={`h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 ${isThinking ? 'animate-pulse' : ''}`}>
@@ -32,24 +40,6 @@ export function ChatHeader({ onClearChat, isThinking }: ChatHeaderProps) {
           </p>
         </div>
       </div>
-
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClearChat}
-              className="hover:bg-destructive/10 hover:text-destructive"
-            >
-              <Trash2 className="h-5 w-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Effacer la conversation</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
     </motion.div>
   );
 }
