@@ -35,22 +35,22 @@ export function DashboardLayout() {
   }, [api]);
 
   return (
-    <div className="h-screen w-screen fixed top-0 left-0 bg-background">
-      <div className="h-[calc(100vh-4rem)] w-full mt-16">
+    <div className="min-h-screen w-screen bg-background">
+      <div className="pt-16 pb-20">
         <Carousel
           opts={{
             align: "start",
             loop: true,
           }}
-          className="h-full w-full"
+          className="w-full"
           setApi={setApi}
         >
           <CarouselContent className="-ml-0">
             {sections.map((section) => (
-              <CarouselItem key={section.id} className="pl-0 h-full">
+              <CarouselItem key={section.id} className="pl-0">
                 <div className={cn(
-                  "h-full w-full transition-all duration-300",
-                  isMobile ? "px-2 pb-20" : "px-4 pb-24"
+                  "w-full transition-all duration-300",
+                  isMobile ? "px-2" : "px-4"
                 )}>
                   <section.component />
                 </div>
