@@ -26,7 +26,9 @@ export interface Database {
         Args: {
           secret_name: string;
         };
-        Returns: { secret: string };
+        Returns: {
+          secret: string;
+        };
       };
     };
     Enums: {

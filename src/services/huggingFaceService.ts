@@ -1,3 +1,4 @@
+<lov-code>
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 import { checkRateLimit } from "./ai/rateLimiter";
@@ -59,46 +60,4 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
           top_k: 50,
           do_sample: true,
           return_full_text: false,
-          stop: ["</s>", "<|im_end|>"]
-        }
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('API Error Response:', errorData);
-      throw new Error(`Erreur API: ${response.statusText}`);
-    }
-
-    const responseData = await response.json();
-
-    if (!Array.isArray(responseData) || !responseData[0]?.generated_text) {
-      throw new Error('Format de réponse invalide');
-    }
-
-    const generatedText = responseData[0].generated_text
-      .split('<|assistant|>')[1]?.trim()
-      .replace(/```/g, '')
-      .replace(/\n\n+/g, '\n\n')
-      .trim();
-    
-    if (!generatedText) {
-      throw new Error('Aucune réponse générée');
-    }
-
-    console.log('AI Response generated successfully:', {
-      length: generatedText.length,
-      preview: generatedText.substring(0, 100),
-      context: {
-        messageType: message.toLowerCase().includes('question') ? 'question' : 'statement',
-        tone: profile?.role?.includes('senior') ? 'professional' : 'friendly',
-        focus: profile?.skills?.length ? 'skills-based' : 'general'
-      }
-    });
-
-    return generatedText;
-  } catch (error) {
-    console.error('Erreur lors de la génération de la réponse:', error);
-    return getFallbackResponse(profile);
-  }
-}
+          stop: ["</s>", "
