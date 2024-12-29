@@ -2,14 +2,12 @@ import { MessageSquare } from "lucide-react";
 import { useMessages } from "@/hooks/useMessages";
 import { useChat } from "@/hooks/useChat";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
-import { MessageList } from "../MessageList";
 import { ChatBubble } from "@/components/chat/ChatBubble";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatHeader } from "@/components/chat/ChatHeader";
+import { MessageHistory } from "../MessageHistory";
 
 export function MessagesTab() {
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
@@ -64,75 +62,70 @@ export function MessagesTab() {
     );
   }
 
-  if (selectedConversation) {
-    const conversation = allMessages.find(m => m.id === selectedConversation);
-    if (!conversation) return null;
-
-    const conversationMessages = allMessages.filter(m => 
-      (m.sender.id === conversation.sender.id && m.sender.id !== 'assistant') ||
-      (m.sender.id === currentUser?.id) ||
-      (conversation.sender.id === 'assistant' && m.sender.id === 'assistant')
-    );
-
+  if (!selectedConversation) {
     return (
-      <div className="flex flex-col h-full">
-        <ChatHeader 
-          onClearChat={() => setSelectedConversation(null)} 
-          isThinking={isThinking}
-        />
-
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            {conversationMessages.map((message) => (
-              <ChatBubble
-                key={message.id}
-                content={message.content}
-                sender={message.sender}
-                timestamp={new Date(message.created_at)}
-                isCurrentUser={message.sender.id === currentUser?.id}
-              />
-            ))}
-            {isThinking && (
-              <ChatBubble
-                content="En train d'écrire..."
-                sender={{
-                  id: 'assistant',
-                  full_name: 'Mr Victaure',
-                  avatar_url: '/bot-avatar.png'
-                }}
-                timestamp={new Date()}
-                isCurrentUser={false}
-              />
-            )}
-          </div>
-        </ScrollArea>
-
-        <div className="p-4 border-t bg-background">
-          <ChatInput
-            value={inputMessage}
-            onChange={setInputMessage}
-            onSend={handleSendMessage}
-            onVoiceInput={handleVoiceInput}
-            isListening={isListening}
-            isThinking={isThinking}
-          />
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-primary mb-4">
+          <MessageSquare className="h-5 w-5" />
+          <h2 className="text-lg font-semibold">Historique des messages</h2>
         </div>
+        <MessageHistory onSelectConversation={setSelectedConversation} />
       </div>
     );
   }
 
+  const conversation = allMessages.find(m => m.id === selectedConversation);
+  if (!conversation) return null;
+
+  const conversationMessages = allMessages.filter(m => 
+    (m.sender.id === conversation.sender.id && m.sender.id !== 'assistant') ||
+    (m.sender.id === currentUser?.id) ||
+    (conversation.sender.id === 'assistant' && m.sender.id === 'assistant')
+  );
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 text-primary mb-4">
-        <MessageSquare className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Messages</h2>
-      </div>
-      <MessageList
-        messages={allMessages}
-        isLoading={isLoading}
-        onMarkAsRead={markAsRead.mutate}
-        onSelectConversation={setSelectedConversation}
+    <div className="flex flex-col h-full">
+      <ChatHeader 
+        onClearChat={() => setSelectedConversation(null)} 
+        isThinking={isThinking}
       />
+
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-4">
+          {conversationMessages.map((message) => (
+            <ChatBubble
+              key={message.id}
+              content={message.content}
+              sender={message.sender}
+              timestamp={new Date(message.created_at)}
+              isCurrentUser={message.sender.id === currentUser?.id}
+            />
+          ))}
+          {isThinking && (
+            <ChatBubble
+              content="En train d'écrire..."
+              sender={{
+                id: 'assistant',
+                full_name: 'Mr Victaure',
+                avatar_url: '/bot-avatar.png'
+              }}
+              timestamp={new Date()}
+              isCurrentUser={false}
+            />
+          )}
+        </div>
+      </ScrollArea>
+
+      <div className="p-4 border-t bg-background">
+        <ChatInput
+          value={inputMessage}
+          onChange={setInputMessage}
+          onSend={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
+          isListening={isListening}
+          isThinking={isThinking}
+        />
+      </div>
     </div>
   );
 }
