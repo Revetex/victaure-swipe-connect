@@ -73,6 +73,7 @@ export function VCardSkills({
           handleAddSkill={handleAddSkill}
           skillCategories={skillCategories}
           filteredSkills={filteredSkills}
+          existingSkills={profile.skills}
         />
       )}
     </VCardSection>
