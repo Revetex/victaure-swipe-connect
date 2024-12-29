@@ -41,9 +41,11 @@ export function useChat() {
       };
 
       setMessages((prev) => [...prev, newAssistantMessage]);
+      return response;
     } catch (error) {
       console.error("Error generating response:", error);
       toast.error("Désolé, je n'ai pas pu générer une réponse");
+      throw error;
     } finally {
       setIsThinking(false);
     }

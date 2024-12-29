@@ -463,14 +463,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      get_secret: {
-        Args: {
-          secret_name: string
-        }
-        Returns: {
-          secret: string
-        }[]
-      }
     }
     Enums: {
       [_ in never]: never
