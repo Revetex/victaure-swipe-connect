@@ -2,15 +2,10 @@ import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 import { checkRateLimit } from "./ai/rateLimiter";
 import { sanitizeInput } from "./ai/inputSanitizer";
-import { buildSystemPrompt } from "./ai/promptBuilder";
 import { getFallbackResponse } from "./ai/fallbackResponses";
 
 interface HuggingFaceResponse {
   generated_text: string;
-}
-
-interface SecretResponse {
-  secret: string;
 }
 
 export async function generateAIResponse(message: string, profile?: UserProfile) {
@@ -29,19 +24,31 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     }
 
     const sanitizedMessage = sanitizeInput(message);
-    const systemPrompt = buildSystemPrompt(profile, sanitizedMessage);
+    const systemPrompt = `<|system|>Je suis Mr. Victaure, un assistant IA convivial et professionnel. Je m'adapte à chaque utilisateur pour fournir des réponses pertinentes et utiles.
+
+DIRECTIVES:
+1. Réponses claires et concises
+2. Langage naturel et accessible
+3. Exemples concrets quand c'est utile
+4. Focus sur les solutions pratiques
+
+CONTEXTE UTILISATEUR:
+${profile ? `
+- Nom: ${profile.full_name || 'Non spécifié'}
+- Rôle: ${profile.role || 'Non spécifié'}
+- Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
+- Localisation: ${[profile.city, profile.country].filter(Boolean).join(', ')}
+` : 'Profil non disponible'}
+
+Message: ${sanitizedMessage}</s>
+<|assistant|>`;
 
     console.log('Generating AI response with context:', {
-      profile: profile?.id,
       messageLength: sanitizedMessage.length,
-      hasSkills: profile?.skills?.length > 0,
-      hasCertifications: profile?.certifications?.length > 0,
-      hasBio: !!profile?.bio,
-      role: profile?.role,
-      location: profile?.city ? `${profile.city}, ${profile.country}` : profile?.country
+      hasProfile: !!profile,
+      role: profile?.role
     });
 
-    // Get the API key from Supabase secrets
     const { data: secretData, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
@@ -60,11 +67,11 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 1000,
-          temperature: 0.8,
-          top_p: 0.95,
-          repetition_penalty: 1.15,
-          top_k: 50,
+          max_new_tokens: 500,
+          temperature: 0.7,
+          top_p: 0.9,
+          repetition_penalty: 1.2,
+          top_k: 40,
           do_sample: true,
           return_full_text: false,
           stop: ["</s>", "<|im_end|>"]
@@ -96,12 +103,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
     console.log('AI Response generated successfully:', {
       length: generatedText.length,
-      preview: generatedText.substring(0, 100),
-      context: {
-        messageType: message.toLowerCase().includes('question') ? 'question' : 'statement',
-        tone: profile?.role?.includes('senior') ? 'professional' : 'friendly',
-        focus: profile?.skills?.length ? 'skills-based' : 'general'
-      }
+      preview: generatedText.substring(0, 100)
     });
 
     return generatedText;
