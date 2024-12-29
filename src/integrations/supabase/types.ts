@@ -104,11 +104,11 @@ export type Database = {
           contract_type: string
           created_at: string | null
           description: string
-          employer_id: string | null
+          employer_id: string
           experience_level: string
           id: string
           location: string
-          status: string | null
+          status: string
           subcategory: string | null
           title: string
           updated_at: string | null
@@ -119,11 +119,11 @@ export type Database = {
           contract_type?: string
           created_at?: string | null
           description: string
-          employer_id?: string | null
+          employer_id: string
           experience_level?: string
           id?: string
           location: string
-          status?: string | null
+          status?: string
           subcategory?: string | null
           title: string
           updated_at?: string | null
@@ -134,11 +134,11 @@ export type Database = {
           contract_type?: string
           created_at?: string | null
           description?: string
-          employer_id?: string | null
+          employer_id?: string
           experience_level?: string
           id?: string
           location?: string
-          status?: string | null
+          status?: string
           subcategory?: string | null
           title?: string
           updated_at?: string | null
@@ -158,27 +158,27 @@ export type Database = {
           created_at: string | null
           employer_id: string | null
           id: string
-          job_id: string | null
-          professional_id: string | null
-          status: string | null
+          job_id: string
+          professional_id: string
+          status: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           employer_id?: string | null
           id?: string
-          job_id?: string | null
-          professional_id?: string | null
-          status?: string | null
+          job_id: string
+          professional_id: string
+          status?: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           employer_id?: string | null
           id?: string
-          job_id?: string | null
-          professional_id?: string | null
-          status?: string | null
+          job_id?: string
+          professional_id?: string
+          status?: string
           updated_at?: string | null
         }
         Relationships: [

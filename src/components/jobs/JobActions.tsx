@@ -25,11 +25,17 @@ interface JobActionsProps {
 export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsProps) {
   const [isOwner, setIsOwner] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const checkOwnership = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsOwner(user?.id === employerId);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsOwner(user?.id === employerId);
+      } catch (error) {
+        console.error('Error checking ownership:', error);
+        toast.error("Erreur lors de la vérification des droits");
+      }
     };
     
     checkOwnership();
@@ -42,43 +48,6 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
       setIsDeleting(true);
       console.log('Starting deletion process for job:', jobId);
       
-      // 1. Get all matches for this job
-      const { data: matches, error: matchesError } = await supabase
-        .from('matches')
-        .select('id')
-        .eq('job_id', jobId);
-
-      if (matchesError) {
-        console.error('Error fetching matches:', matchesError);
-        throw matchesError;
-      }
-
-      // 2. Delete payments for all matches
-      if (matches && matches.length > 0) {
-        const matchIds = matches.map(match => match.id);
-        const { error: paymentsError } = await supabase
-          .from('payments')
-          .delete()
-          .in('match_id', matchIds);
-
-        if (paymentsError) {
-          console.error('Error deleting payments:', paymentsError);
-          throw paymentsError;
-        }
-      }
-
-      // 3. Delete matches
-      const { error: matchDeleteError } = await supabase
-        .from('matches')
-        .delete()
-        .eq('job_id', jobId);
-
-      if (matchDeleteError) {
-        console.error('Error deleting matches:', matchDeleteError);
-        throw matchDeleteError;
-      }
-
-      // 4. Finally delete the job
       const { error: jobError } = await supabase
         .from('jobs')
         .delete()
@@ -90,6 +59,7 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
       }
 
       toast.success("Annonce supprimée avec succès");
+      setIsDialogOpen(false);
       onDelete();
     } catch (error) {
       console.error("Error in handleDelete:", error);
@@ -113,7 +83,7 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         Modifier
       </Button>
       
-      <AlertDialog>
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogTrigger asChild>
           <Button
             variant="outline"
@@ -128,7 +98,7 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
           <AlertDialogHeader>
             <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette annonce ?</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette action est irréversible. Tous les matches et paiements associés seront également supprimés.
+              Cette action est irréversible. L'annonce et toutes les données associées seront supprimées.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
