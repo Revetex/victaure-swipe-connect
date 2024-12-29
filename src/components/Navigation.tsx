@@ -1,12 +1,42 @@
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function Navigation() {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
+      if (!session) {
+        navigate("/auth");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate("/auth");
+      toast.success("Déconnexion réussie");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Erreur lors de la déconnexion");
+    }
+  };
 
   const NavLinks = () => (
     <nav className="flex gap-6 items-center">
@@ -23,6 +53,14 @@ export function Navigation() {
         <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <ThemeToggle />
+      <Button 
+        variant="ghost" 
+        size="icon"
+        onClick={handleSignOut}
+        className="text-primary hover:text-primary/80"
+      >
+        <User className="h-5 w-5" />
+      </Button>
     </nav>
   );
 
