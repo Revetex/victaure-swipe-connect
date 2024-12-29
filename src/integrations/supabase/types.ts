@@ -250,6 +250,41 @@ export type Database = {
           },
         ]
       }
+      notes: {
+        Row: {
+          color: string
+          created_at: string | null
+          id: string
+          text: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          text: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          text?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string | null
@@ -371,6 +406,50 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      todos: {
+        Row: {
+          all_day: boolean | null
+          completed: boolean | null
+          created_at: string | null
+          due_date: string | null
+          due_time: string | null
+          id: string
+          text: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          all_day?: boolean | null
+          completed?: boolean | null
+          created_at?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          text: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          all_day?: boolean | null
+          completed?: boolean | null
+          created_at?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          text?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
