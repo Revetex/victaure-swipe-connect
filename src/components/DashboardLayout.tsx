@@ -33,8 +33,8 @@ export function DashboardLayout() {
           <Settings />
         </div>
 
-        {/* VCard - Pleine largeur en bas */}
-        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-3 2xl:col-span-4"}`}>
+        {/* VCard - Maintenant dans une colonne */}
+        <div className={`${isMobile ? "col-span-1" : "lg:col-span-1"}`}>
           <VCard />
         </div>
       </div>
