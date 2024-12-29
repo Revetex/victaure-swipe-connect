@@ -1,7 +1,6 @@
 import { JobCard } from "@/components/JobCard";
 import { Job } from "@/types/job";
 import { JobActions } from "./JobActions";
-import { useTranslation } from "react-i18next";
 
 interface JobListProps {
   jobs: Job[];
@@ -9,13 +8,10 @@ interface JobListProps {
 }
 
 export function JobList({ jobs, onJobDeleted }: JobListProps) {
-  const { t } = useTranslation();
-
   if (!jobs.length) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">{t("marketplace.noJobs")}</p>
-        <p className="text-sm text-muted-foreground mt-2">{t("marketplace.comeBack")}</p>
+        <p className="text-muted-foreground">Aucune annonce disponible</p>
       </div>
     );
   }

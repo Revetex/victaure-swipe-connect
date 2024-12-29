@@ -5,7 +5,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { TimeSelector } from "./TimeSelector";
 import { fr } from "date-fns/locale";
-import { useTranslation } from "react-i18next";
 
 interface TodoInputProps {
   newTodo: string;
@@ -26,15 +25,13 @@ export function TodoInput({
   onTimeChange,
   onAdd,
 }: TodoInputProps) {
-  const { t } = useTranslation();
-
   return (
     <div className="flex gap-2">
       <div className="flex-1 flex gap-2">
         <Input
           value={newTodo}
           onChange={(e) => onTodoChange(e.target.value)}
-          placeholder={t("todo.newTask")}
+          placeholder="Nouvelle tâche..."
           className="glass-card flex-1"
           onKeyPress={(e) => e.key === 'Enter' && onAdd()}
         />

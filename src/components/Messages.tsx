@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationItem } from "./notifications/NotificationItem";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
 
 interface Notification {
   id: string;
@@ -19,7 +18,6 @@ interface Notification {
 }
 
 export function Messages() {
-  const { t } = useTranslation();
   const { messages, isLoading, markAsRead } = useMessages();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const unreadMessagesCount = messages.filter(m => !m.read).length;
@@ -76,10 +74,10 @@ export function Messages() {
       if (error) throw error;
 
       setNotifications(notifications.filter(n => n.id !== id));
-      toast.success(t("notifications.deleteNotification"));
+      toast.success("Notification supprimée");
     } catch (error) {
       console.error('Error deleting notification:', error);
-      toast.error(t("error.deleteNotification"));
+      toast.error("Impossible de supprimer la notification");
     }
   };
 
@@ -88,7 +86,7 @@ export function Messages() {
       <Tabs defaultValue="messages" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="messages" className="relative">
-            {t("messages.title")}
+            Messages
             {unreadMessagesCount > 0 && (
               <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
                 {unreadMessagesCount}
@@ -96,7 +94,7 @@ export function Messages() {
             )}
           </TabsTrigger>
           <TabsTrigger value="notifications" className="relative">
-            {t("notifications.title")}
+            Notifications
             {unreadNotificationsCount > 0 && (
               <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
                 {unreadNotificationsCount}
@@ -108,7 +106,7 @@ export function Messages() {
         <TabsContent value="messages">
           <div className="flex items-center gap-2 text-primary mb-4">
             <MessageSquare className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">{t("messages.title")}</h2>
+            <h2 className="text-lg font-semibold">Messages</h2>
           </div>
           <MessageList
             messages={messages}
@@ -120,7 +118,7 @@ export function Messages() {
         <TabsContent value="notifications">
           <div className="flex items-center gap-2 text-primary mb-4">
             <Bell className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">{t("notifications.title")}</h2>
+            <h2 className="text-lg font-semibold">Notifications</h2>
           </div>
           <ScrollArea className="h-[300px] pr-4">
             <div className="space-y-2">
@@ -134,7 +132,7 @@ export function Messages() {
               {notifications.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
                   <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>{t("notifications.noNotifications")}</p>
+                  <p>Aucune notification</p>
                 </div>
               )}
             </div>

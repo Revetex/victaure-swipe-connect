@@ -2,7 +2,6 @@ import { UserRound, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useTranslation } from "react-i18next";
 
 interface ChatMessageProps {
   content: string;
@@ -19,8 +18,6 @@ export function ChatMessage({
   showTimestamp,
   timestamp 
 }: ChatMessageProps) {
-  const { t } = useTranslation();
-
   return (
     <div className="space-y-2">
       {showTimestamp && timestamp && (
@@ -48,9 +45,7 @@ export function ChatMessage({
           {sender === "assistant" && !thinking && (
             <Bot className="h-4 w-4 shrink-0" />
           )}
-          <span className={thinking ? "animate-pulse" : ""}>
-            {thinking ? t("mrVictaure.thinking") : content}
-          </span>
+          <span className={thinking ? "animate-pulse" : ""}>{content}</span>
           {sender === "user" && (
             <UserRound className="h-4 w-4 shrink-0" />
           )}

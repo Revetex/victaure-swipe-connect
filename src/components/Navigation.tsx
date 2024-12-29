@@ -8,12 +8,10 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
 
 export function Navigation() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -33,25 +31,25 @@ export function Navigation() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       navigate("/auth");
-      toast.success(t("auth.logoutSuccess"));
+      toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast.error(t("auth.logoutError"));
+      toast.error("Erreur lors de la déconnexion");
     }
   };
 
   const NavLinks = () => (
     <nav className="flex gap-6 items-center">
       <a href="#" className="text-foreground hover:text-primary transition-colors relative group">
-        <span className="relative z-10">{t("navigation.findJob")}</span>
+        <span className="relative z-10">Trouver un Job</span>
         <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <a href="#" className="text-foreground hover:text-primary transition-colors relative group">
-        <span className="relative z-10">{t("navigation.forEmployers")}</span>
+        <span className="relative z-10">Pour les Employeurs</span>
         <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <a href="#" className="text-foreground hover:text-primary transition-colors relative group">
-        <span className="relative z-10">{t("navigation.training")}</span>
+        <span className="relative z-10">Formation</span>
         <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <ThemeToggle />
