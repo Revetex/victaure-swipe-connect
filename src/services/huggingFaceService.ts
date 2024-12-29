@@ -52,7 +52,7 @@ Message: ${sanitizedMessage}</s>
       throw new Error('Clé API Hugging Face non configurée. Veuillez configurer la clé API dans les paramètres.');
     }
 
-    console.log('Envoi de la requête à Hugging Face avec la clé API...');
+    console.log('Envoi de la requête à Hugging Face...');
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
@@ -78,12 +78,21 @@ Message: ${sanitizedMessage}</s>
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Erreur API Hugging Face:', errorText);
+      
+      // Check for specific error cases
+      if (response.status === 429) {
+        throw new Error('Trop de requêtes. Veuillez patienter quelques secondes avant de réessayer.');
+      } else if (response.status === 503) {
+        throw new Error('Le modèle est en cours de chargement. Veuillez réessayer dans quelques secondes.');
+      }
+      
       throw new Error(`Erreur API: ${response.statusText}`);
     }
 
     const responseData = await response.json() as HuggingFaceResponse[];
 
     if (!Array.isArray(responseData) || !responseData[0]?.generated_text) {
+      console.error('Réponse invalide:', responseData);
       throw new Error('Format de réponse invalide');
     }
 
@@ -94,12 +103,16 @@ Message: ${sanitizedMessage}</s>
       .trim();
     
     if (!generatedText) {
+      console.error('Réponse vide générée');
       throw new Error('Aucune réponse générée');
     }
 
     return generatedText;
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse:', error);
-    throw error;
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Une erreur inattendue est survenue');
   }
 }
