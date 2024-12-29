@@ -17,6 +17,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' });
     
     if (secretError || !secretData) {
+      console.error('Error fetching secret:', secretError);
       throw new Error('Impossible de récupérer le token d\'accès');
     }
 
@@ -32,6 +33,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
 <|assistant|>`;
 
+    console.log('Making request to Hugging Face API...');
     const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -56,8 +58,10 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     }
 
     const data = await response.json();
+    console.log('API Response:', data);
     
     if (!Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data);
       throw new Error('Format de réponse invalide');
     }
 
