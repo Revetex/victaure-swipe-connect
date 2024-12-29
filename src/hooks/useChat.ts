@@ -8,14 +8,16 @@ export interface Message {
   content: string;
   sender: "user" | "assistant";
   timestamp: Date;
+  action?: string;
 }
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([{
     id: uuidv4(),
-    content: "Bonjour ! Je suis Mr Victaure, votre assistant IA. Comment puis-je vous aider aujourd'hui ?",
+    content: "Bonjour ! Je suis Mr Victaure, votre assistant IA. Je peux vous aider à mettre à jour votre profil. Souhaitez-vous commencer ?",
     sender: "assistant",
     timestamp: new Date(),
+    action: 'greeting'
   }]);
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -39,8 +41,9 @@ export function useChat() {
       const { data, error } = await supabase.functions.invoke('chat', {
         body: {
           messages: messages.concat(userMessage).map(msg => ({
-            role: msg.sender === 'assistant' ? 'assistant' : 'user',
-            content: msg.content
+            role: msg.sender,
+            content: msg.content,
+            action: msg.action
           }))
         }
       });
@@ -52,9 +55,14 @@ export function useChat() {
         content: data.choices[0].message.content,
         sender: "assistant",
         timestamp: new Date(),
+        action: data.choices[0].message.action
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+
+      if (assistantMessage.action === 'update_complete') {
+        toast.success("Votre profil a été mis à jour avec succès !");
+      }
     } catch (error) {
       console.error('Error:', error);
       toast.error("Désolé, je n'ai pas pu répondre. Veuillez réessayer.");

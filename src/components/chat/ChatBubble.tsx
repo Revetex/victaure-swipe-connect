@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface ChatBubbleProps {
   content: string;
@@ -14,51 +13,44 @@ interface ChatBubbleProps {
   };
   timestamp: Date;
   isCurrentUser: boolean;
+  action?: string;
 }
 
-export function ChatBubble({ content, sender, timestamp, isCurrentUser }: ChatBubbleProps) {
-  const isAssistant = sender.id === 'assistant';
-
+export function ChatBubble({ content, sender, timestamp, isCurrentUser, action }: ChatBubbleProps) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-2 mb-4",
+        "flex gap-2 items-end",
         isCurrentUser ? "flex-row-reverse" : "flex-row"
       )}
     >
-      <Avatar className="h-8 w-8 shrink-0">
-        {isAssistant ? (
-          <div className="h-full w-full bg-primary/10 flex items-center justify-center">
-            <Bot className="h-5 w-5 text-primary" />
-          </div>
-        ) : (
-          <>
-            <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
-            <AvatarFallback>
-              {sender.full_name?.slice(0, 2).toUpperCase() || "??"}
-            </AvatarFallback>
-          </>
-        )}
+      <Avatar className="w-8 h-8">
+        <AvatarImage src={sender.avatar_url} />
+        <AvatarFallback>
+          {sender.full_name?.charAt(0) || "U"}
+        </AvatarFallback>
       </Avatar>
 
-      <div className={cn(
-        "flex flex-col max-w-[80%]",
-        isCurrentUser ? "items-end" : "items-start"
-      )}>
-        <div className={cn(
-          "rounded-2xl px-4 py-2 break-words",
-          isCurrentUser 
-            ? "bg-primary text-primary-foreground" 
-            : isAssistant
-              ? "bg-primary/10"
-              : "bg-muted",
-        )}>
-          <p className="whitespace-pre-wrap">{content}</p>
+      <div
+        className={cn(
+          "group flex flex-col gap-1 max-w-[80%]",
+          isCurrentUser ? "items-end" : "items-start"
+        )}
+      >
+        <div
+          className={cn(
+            "px-4 py-2.5 rounded-2xl text-sm",
+            isCurrentUser
+              ? "bg-primary text-primary-foreground rounded-br-none"
+              : "bg-muted rounded-bl-none",
+            action === 'update_complete' && "bg-green-500 text-white"
+          )}
+        >
+          {content}
         </div>
-        <span className="text-xs text-muted-foreground mt-1">
+        <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
           {format(timestamp, "HH:mm", { locale: fr })}
         </span>
       </div>
