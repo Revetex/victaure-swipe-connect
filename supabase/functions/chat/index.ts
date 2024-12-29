@@ -32,22 +32,45 @@ serve(async (req) => {
 
     console.log('Processing message:', lastMessage.content);
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    // Use Perplexity API for more natural conversations
+    const perplexityKey = Deno.env.get('PERPLEXITY_API_KEY');
+    if (!perplexityKey) {
+      throw new Error('Perplexity API key not configured');
+    }
 
-    // Generate a natural response based on the conversation context
-    let response = {
-      content: lastMessage.content.toLowerCase().includes('profil') 
-        ? `Je vois que vous souhaitez parler de votre profil${profile?.full_name ? ', ' + profile.full_name : ''}. Comment puis-je vous aider avec cela ?`
-        : `Je comprends votre message. Comment puis-je vous aider davantage ?`,
-      action: 'chat'
-    };
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${perplexityKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-large-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'Tu es Mr Victaure, un assistant IA sympathique et naturel. Adapte ton langage et ton ton en fonction du contexte de la conversation.'
+          },
+          ...messages.map((m: any) => ({
+            role: m.sender === 'assistant' ? 'assistant' : 'user',
+            content: m.content
+          }))
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
+    });
 
-    // If the message contains profile information, try to update it
-    if (lastMessage.content.toLowerCase().includes('ville') || 
+    if (!response.ok) {
+      throw new Error(`Perplexity API error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const aiResponse = result.choices[0].message;
+
+    // Extract any profile updates from the conversation if relevant
+    if (lastMessage.content.toLowerCase().includes('profil') || 
+        lastMessage.content.toLowerCase().includes('ville') || 
         lastMessage.content.toLowerCase().includes('habite')) {
       const cityMatch = lastMessage.content.match(/(?:à|a|dans|de)\s+([A-Za-zÀ-ÿ\s-]+)(?:\s|$)/i);
       if (cityMatch) {
@@ -55,8 +78,6 @@ serve(async (req) => {
           .from('profiles')
           .update({ city: cityMatch[1].trim() })
           .eq('id', user.id);
-        
-        response.action = 'update_city';
       }
     }
 
@@ -65,8 +86,8 @@ serve(async (req) => {
         choices: [{
           message: {
             role: 'assistant',
-            content: response.content,
-            action: response.action
+            content: aiResponse.content,
+            action: 'chat'
           }
         }]
       }),
