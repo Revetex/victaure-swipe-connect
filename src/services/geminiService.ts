@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 async function getApiKey() {
   try {
@@ -13,12 +14,14 @@ async function getApiKey() {
 
     if (!data || data.length === 0) {
       console.error('No Gemini API key found in secrets');
+      toast.error("La clé API Gemini n'a pas été configurée");
       throw new Error('Gemini API key not found in secrets');
     }
 
     const apiKey = data[0]?.secret?.trim();
     if (!apiKey) {
       console.error('Empty Gemini API key');
+      toast.error("La clé API Gemini est vide");
       throw new Error('Empty Gemini API key');
     }
 
@@ -75,6 +78,7 @@ export async function generateAIResponse(message: string) {
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Gemini API error:', errorData);
+      toast.error("Erreur lors de la génération de la réponse");
       throw new Error(`Gemini API error: ${response.statusText}`);
     }
 
@@ -83,12 +87,13 @@ export async function generateAIResponse(message: string) {
 
     if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
       console.error('Unexpected Gemini API response format:', data);
+      toast.error("Format de réponse inattendu");
       throw new Error('Unexpected API response format');
     }
 
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error('Error generating AI response:', error);
-    throw error; // On propage l'erreur au lieu d'utiliser des réponses prédéfinies
+    throw error;
   }
 }
