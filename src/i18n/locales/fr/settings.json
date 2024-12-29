@@ -1,9 +1,9 @@
 {
   "general": "Paramètres généraux",
   "language": "Langue",
-  "selectLanguage": "Sélectionner une langue",
-  "languageChanged": "Langue modifiée avec succès",
-  "theme": "Thème",
+  "selectLanguage": "Choisir la langue",
+  "languageChanged": "Langue modifiée",
+  "theme": "Apparence",
   "themes": {
     "light": "Clair",
     "dark": "Sombre",
@@ -11,12 +11,12 @@
   },
   "notifications": {
     "title": "Notifications",
-    "email": "Notifications par email",
+    "email": "Notifications par courriel",
     "push": "Notifications push",
-    "settings": "Paramètres des notifications"
+    "settings": "Réglages des notifications"
   },
   "success": {
-    "theme": "Thème modifié avec succès",
-    "notifications": "Paramètres de notification mis à jour"
+    "theme": "Apparence modifiée",
+    "notifications": "Notifications mises à jour"
   }
 }

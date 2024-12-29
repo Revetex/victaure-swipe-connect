@@ -1,12 +1,12 @@
 {
-  "title": "Tâches",
+  "title": "À faire",
   "newTask": "Nouvelle tâche...",
   "time": "Heure",
   "noTasks": "Aucune tâche",
-  "addTask": "Ajouter une tâche",
-  "deleteTask": "Supprimer la tâche",
+  "addTask": "Ajouter",
+  "deleteTask": "Supprimer",
   "markAsComplete": "Marquer comme terminée",
-  "dueDate": "Date d'échéance",
+  "dueDate": "Échéance",
   "priority": "Priorité",
   "categories": "Catégories"
 }

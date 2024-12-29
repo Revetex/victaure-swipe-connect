@@ -1,10 +1,10 @@
 {
   "title": "Notifications",
-  "noNotifications": "Aucune notification",
+  "noNotifications": "Pas de notification",
   "markAsRead": "Marquer comme lu",
   "newNotification": "Nouvelle notification",
-  "unreadNotifications": "Notifications non lues",
-  "deleteNotification": "Notification supprimée avec succès",
+  "unreadNotifications": "Non lues",
+  "deleteNotification": "Notification supprimée",
   "clearAll": "Tout effacer",
-  "settings": "Paramètres des notifications"
+  "settings": "Réglages"
 }

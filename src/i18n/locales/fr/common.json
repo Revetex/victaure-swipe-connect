@@ -1,32 +1,7 @@
 {
-  "settings": {
-    "general": "Paramètres généraux",
-    "language": "Langue",
-    "selectLanguage": "Sélectionner une langue",
-    "languageChanged": "Langue modifiée avec succès",
-    "theme": "Thème",
-    "themes": {
-      "light": "Clair",
-      "dark": "Sombre",
-      "system": "Système"
-    }
-  },
-  "auth": {
-    "logout": "Déconnexion",
-    "logoutSuccess": "Vous avez été déconnecté avec succès",
-    "logoutError": "Erreur lors de la déconnexion",
-    "login": "Connexion",
-    "register": "Inscription",
-    "email": "Email",
-    "password": "Mot de passe"
-  },
-  "navigation": {
-    "findJob": "Trouver un Job",
-    "forEmployers": "Pour les Employeurs",
-    "training": "Formation",
-    "profile": "Profil",
-    "settings": "Paramètres",
-    "messages": "Messages",
-    "dashboard": "Tableau de bord"
-  }
+  "quebec": "Québec",
+  "troisRivieres": "Trois-Rivières",
+  "phone": "+1(819) 668-0473",
+  "email": "tblanchet3909@hotmail.com",
+  "fullName": "Thomas Blanchet"
 }

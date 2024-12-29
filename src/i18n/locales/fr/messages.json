@@ -1,10 +1,10 @@
 {
   "title": "Messages",
-  "noMessages": "Aucun message",
+  "noMessages": "Pas de message",
   "markAsRead": "Marquer comme lu",
   "newMessage": "Nouveau message",
   "unreadMessages": "Messages non lus",
-  "search": "Rechercher des messages",
-  "compose": "Composer un message",
+  "search": "Chercher",
+  "compose": "Écrire",
   "reply": "Répondre"
 }

@@ -8,10 +8,10 @@
   "swipeJobs": "Découvrir des missions",
   "assistant": "Assistant personnel",
   "mrVictaure": {
-    "title": "Assistant Victaure",
-    "subtitle": "Votre assistant personnel IA",
+    "title": "Thomas",
+    "subtitle": "Assistant virtuel",
     "thinking": "En réflexion...",
-    "welcome": "Bonjour ! Je suis votre assistant Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
+    "welcome": "Bonjour ! Je suis Thomas, votre assistant virtuel. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
     "clearChat": "Effacer la conversation",
     "maximize": "Agrandir",
     "minimize": "Réduire",
@@ -23,6 +23,6 @@
     }
   },
   "chat": {
-    "typeMessage": "Écrivez votre message..."
+    "typeMessage": "Écrivez un message..."
   }
 }
