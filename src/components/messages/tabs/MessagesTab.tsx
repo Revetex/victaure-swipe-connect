@@ -39,7 +39,6 @@ export function MessagesTab() {
     getCurrentUser();
   }, []);
 
-  // Combine user messages and assistant messages
   const allMessages = [
     ...userMessages,
     ...assistantMessages.map(msg => ({
@@ -67,7 +66,6 @@ export function MessagesTab() {
     const conversation = allMessages.find(m => m.id === selectedConversation);
     if (!conversation) return null;
 
-    // Get all messages for this conversation
     const conversationMessages = allMessages.filter(m => 
       (m.sender.id === conversation.sender.id && m.sender.id !== 'assistant') ||
       (m.sender.id === currentUser?.id) ||
@@ -75,7 +73,7 @@ export function MessagesTab() {
     );
 
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full relative">
         <div className="flex items-center gap-2 p-4 border-b">
           <Button
             variant="ghost"
@@ -92,7 +90,7 @@ export function MessagesTab() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 pb-24">
           <div className="space-y-4">
             {conversationMessages.map((message) => (
               <ChatBubble
@@ -118,7 +116,7 @@ export function MessagesTab() {
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-background p-4 border-t">
+        <div className="absolute bottom-0 left-0 right-0 bg-background p-4 border-t">
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
