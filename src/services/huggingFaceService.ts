@@ -41,13 +41,20 @@ Message: ${sanitizedMessage}</s>
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
-    if (secretError || !secretData?.[0]?.secret) {
-      throw new Error('Configuration API manquante');
+    if (secretError) {
+      console.error('Erreur lors de la récupération de la clé API:', secretError);
+      throw new Error('Erreur de configuration API');
+    }
+
+    const apiKey = secretData?.[0]?.secret?.trim();
+    if (!apiKey) {
+      console.error('Clé API non trouvée ou vide');
+      throw new Error('Clé API Hugging Face non configurée. Veuillez configurer la clé API dans les paramètres.');
     }
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': `Bearer ${secretData[0].secret}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
@@ -67,6 +74,8 @@ Message: ${sanitizedMessage}</s>
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Erreur API Hugging Face:', errorText);
       throw new Error(`Erreur API: ${response.statusText}`);
     }
 
