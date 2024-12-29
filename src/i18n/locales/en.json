@@ -1,46 +1,17 @@
 {
   "settings": {
-    "general": {
-      "title": "General Settings",
-      "description": "Configure your general preferences",
-      "language": "Language",
-      "theme": "Theme"
-    },
-    "notifications": {
-      "title": "Notifications",
-      "description": "Manage your notification preferences",
-      "email": {
-        "title": "Email notifications",
-        "description": "Receive updates via email"
-      },
-      "push": {
-        "title": "Push notifications",
-        "description": "Receive notifications on your device"
-      }
-    },
-    "themes": {
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System"
-    },
+    "general": "General Settings",
+    "language": "Language",
+    "selectLanguage": "Select a language",
+    "languageChanged": "Language changed successfully",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "emailNotifications": "Email notifications",
+    "pushNotifications": "Push notifications"
+  },
+  "auth": {
     "logout": "Logout",
-    "success": {
-      "language": "Language updated successfully",
-      "theme": "Theme updated successfully",
-      "notifications": {
-        "email": {
-          "enabled": "Email notifications enabled",
-          "disabled": "Email notifications disabled"
-        },
-        "push": {
-          "enabled": "Push notifications enabled",
-          "disabled": "Push notifications disabled"
-        }
-      },
-      "logout": "Logout successful"
-    },
-    "error": {
-      "logout": "Error during logout"
-    }
+    "logoutSuccess": "You have been logged out successfully",
+    "logoutError": "Error logging out"
   }
 }

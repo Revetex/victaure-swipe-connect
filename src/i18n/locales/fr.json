@@ -1,46 +1,17 @@
 {
   "settings": {
-    "general": {
-      "title": "Paramètres généraux",
-      "description": "Configurez vos préférences générales d'utilisation",
-      "language": "Langue",
-      "theme": "Thème"
-    },
-    "notifications": {
-      "title": "Notifications",
-      "description": "Gérez vos préférences de notifications",
-      "email": {
-        "title": "Notifications par email",
-        "description": "Recevez des mises à jour par email"
-      },
-      "push": {
-        "title": "Notifications push",
-        "description": "Recevez des notifications sur votre appareil"
-      }
-    },
-    "themes": {
-      "light": "Clair",
-      "dark": "Sombre",
-      "system": "Système"
-    },
-    "logout": "Se déconnecter",
-    "success": {
-      "language": "Langue mise à jour avec succès",
-      "theme": "Thème mis à jour avec succès",
-      "notifications": {
-        "email": {
-          "enabled": "Notifications par email activées",
-          "disabled": "Notifications par email désactivées"
-        },
-        "push": {
-          "enabled": "Notifications push activées",
-          "disabled": "Notifications push désactivées"
-        }
-      },
-      "logout": "Déconnexion réussie"
-    },
-    "error": {
-      "logout": "Erreur lors de la déconnexion"
-    }
+    "general": "Paramètres généraux",
+    "language": "Langue",
+    "selectLanguage": "Sélectionner une langue",
+    "languageChanged": "Langue modifiée avec succès",
+    "theme": "Thème",
+    "notifications": "Notifications",
+    "emailNotifications": "Notifications par email",
+    "pushNotifications": "Notifications push"
+  },
+  "auth": {
+    "logout": "Déconnexion",
+    "logoutSuccess": "Vous avez été déconnecté avec succès",
+    "logoutError": "Erreur lors de la déconnexion"
   }
 }
