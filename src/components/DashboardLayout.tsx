@@ -6,9 +6,11 @@ import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { Settings } from "@/components/Settings";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 min-h-screen bg-background">

@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Building2, MapPin, Briefcase, GraduationCap, FolderOpen, List } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 
 interface JobCardProps {
   title: string;
@@ -27,6 +28,7 @@ export function JobCard({
   skills = [],
 }: JobCardProps) {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
 
   const InfoItem = ({ icon: Icon, text }: { icon: React.ElementType; text: string }) => (
     <div className="flex items-center gap-2">

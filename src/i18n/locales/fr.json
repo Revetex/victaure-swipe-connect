@@ -100,47 +100,30 @@
     "markAsRead": "Marquer comme lu",
     "newNotification": "Nouvelle notification",
     "unreadNotifications": "Notifications non lues",
-    "deleteNotification": "Supprimer la notification"
+    "deleteNotification": "Notification supprimée avec succès"
+  },
+  "todo": {
+    "title": "Tâches",
+    "newTask": "Nouvelle tâche...",
+    "time": "Heure",
+    "noTasks": "Aucune tâche"
   },
   "notes": {
     "title": "Notes",
-    "noNotes": "Aucune note",
-    "addNote": "Ajouter une note",
     "newNote": "Nouvelle note...",
-    "deleteNote": "Supprimer la note",
+    "noNotes": "Aucune note",
     "colors": {
       "yellow": "Jaune"
     }
   },
-  "tasks": {
-    "title": "Tâches",
-    "noTasks": "Aucune tâche",
-    "addTask": "Ajouter une tâche",
-    "newTask": "Nouvelle tâche...",
-    "deleteTask": "Supprimer la tâche",
-    "markAsComplete": "Marquer comme terminée"
-  },
-  "jobs": {
-    "browse": "Parcourir les offres",
-    "myListings": "Mes annonces",
-    "noListings": "Vous n'avez pas encore publié d'annonces",
-    "addJob": "Ajouter une mission",
-    "filters": {
-      "title": "Filtres",
-      "category": "Catégorie",
-      "location": "Lieu",
-      "experience": "Expérience",
-      "duration": "Durée"
-    }
-  },
-  "mrVictaure": {
-    "title": "Mr. Victaure",
-    "subtitle": "Assistant IA Personnel",
-    "thinking": "En train de réfléchir...",
-    "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
-    "clearChat": "Effacer la conversation",
-    "maximize": "Agrandir",
-    "minimize": "Réduire"
+  "profile": {
+    "professional": "Professionnel",
+    "contact": "Contact",
+    "skills": "Compétences",
+    "certifications": "Certifications et Diplômes",
+    "share": "Partager",
+    "vcard": "VCard",
+    "pdf": "PDF"
   },
   "marketplace": {
     "filters": {
@@ -160,27 +143,7 @@
     "noJobs": "Aucune offre disponible pour le moment",
     "comeBack": "Revenez plus tard pour découvrir de nouvelles missions."
   },
-  "todo": {
-    "title": "Tâches",
-    "newTask": "Nouvelle tâche...",
-    "time": "Heure",
-    "noTasks": "Aucune tâche"
-  },
-  "notes": {
-    "title": "Notes",
-    "newNote": "Nouvelle note...",
-    "noNotes": "Aucune note",
-    "colors": {
-      "yellow": "Jaune"
-    }
-  },
-  "profile": {
-    "professional": "professional",
-    "contact": "Contact",
-    "skills": "Compétences",
-    "certifications": "Certifications et Diplômes",
-    "share": "Partager",
-    "vcard": "VCard",
-    "pdf": "PDF"
+  "error": {
+    "deleteNotification": "Erreur lors de la suppression de la notification"
   }
 }
