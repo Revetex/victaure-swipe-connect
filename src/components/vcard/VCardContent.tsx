@@ -58,10 +58,10 @@ export function VCardContent({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full px-2 sm:px-4"
+      className="w-full"
     >
-      <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20">
-        <CardContent className="p-3 sm:p-6">
+      <div className="w-full max-w-2xl mx-auto">
+        <div className="p-3 sm:p-6">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
             <div className="flex-1 min-w-0">
               <VCardHeader
@@ -172,8 +172,8 @@ export function VCardContent({
               </motion.div>
             )}
           </AnimatePresence>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }

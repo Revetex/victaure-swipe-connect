@@ -59,7 +59,7 @@ export function SwipeJob() {
   };
 
   return (
-    <div className="glass-card p-4 space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-2xl font-bold">Offres disponibles</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>

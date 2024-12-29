@@ -140,21 +140,23 @@ export function VCard() {
   }
 
   return (
-    <VCardContent
-      profile={profile}
-      tempProfile={tempProfile}
-      isEditing={isEditing}
-      setProfile={setProfile}
-      setTempProfile={setTempProfile}
-      setIsEditing={setIsEditing}
-      newSkill={newSkill}
-      setNewSkill={setNewSkill}
-      onShare={handleShare}
-      onDownload={handleDownloadVCard}
-      onDownloadPDF={handleDownloadPDF}
-      onCopyLink={handleCopyLink}
-      onSave={handleSave}
-      onApplyChanges={handleApplyChanges}
-    />
+    <div className="space-y-4">
+      <VCardContent
+        profile={profile}
+        tempProfile={tempProfile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+        setTempProfile={setTempProfile}
+        setIsEditing={setIsEditing}
+        newSkill={newSkill}
+        setNewSkill={setNewSkill}
+        onShare={handleShare}
+        onDownload={handleDownloadVCard}
+        onDownloadPDF={handleDownloadPDF}
+        onCopyLink={handleCopyLink}
+        onSave={handleSave}
+        onApplyChanges={handleApplyChanges}
+      />
+    </div>
   );
 }
