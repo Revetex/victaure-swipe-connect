@@ -1,4 +1,5 @@
-import { Bot, Brain, Sparkles, Wand2 } from "lucide-react";
+import { Bot, Brain, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChatHeaderProps {
   onClearChat: () => void;
@@ -7,27 +8,31 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ isThinking }: ChatHeaderProps) {
   return (
-    <div className="flex items-center p-4 relative border-b border-victaure-blue/10">
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex items-center p-4 relative border-b bg-background/80 backdrop-blur-sm"
+    >
       <div className="flex items-center gap-4">
         <div className="relative">
-          <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
-            <Bot className={`h-6 w-6 text-victaure-blue ${isThinking ? 'animate-pulse' : ''}`} />
+          <div className={`h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 ${isThinking ? 'animate-pulse' : ''}`}>
+            <Bot className="h-6 w-6 text-primary" />
           </div>
-          <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-victaure-green/20 flex items-center justify-center">
-            <Brain className={`h-3 w-3 text-victaure-green ${isThinking ? 'animate-spin' : ''}`} />
+          <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
+            <Brain className={`h-3 w-3 text-green-500 ${isThinking ? 'animate-spin' : ''}`} />
           </div>
         </div>
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             Mr. Victaure
-            <Sparkles className="h-4 w-4 text-victaure-orange animate-glow" />
+            <Sparkles className="h-4 w-4 text-yellow-500 animate-pulse" />
           </h2>
-          <p className="text-sm text-victaure-gray flex items-center gap-1">
-            <Wand2 className="h-3 w-3" />
+          <p className="text-sm text-muted-foreground">
             {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
           </p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

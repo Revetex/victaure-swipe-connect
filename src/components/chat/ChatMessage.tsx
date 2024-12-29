@@ -2,6 +2,7 @@ import { UserRound, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { motion } from "framer-motion";
 
 interface ChatMessageProps {
   content: string;
@@ -27,18 +28,21 @@ export function ChatMessage({
           </span>
         </div>
       )}
-      <div 
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
         className={cn(
-          "flex animate-slide-in transition-all duration-300",
+          "flex transition-all duration-300",
           sender === "user" ? "justify-end" : "justify-start"
         )}
       >
         <div
           className={cn(
-            "max-w-[80%] p-3 rounded-lg flex items-center gap-2 shadow-sm transition-all duration-300",
+            "max-w-[80%] p-3 rounded-2xl flex items-center gap-2 shadow-sm transition-all duration-300",
             sender === "user"
-              ? "bg-victaure-blue text-white hover:shadow-md hover:bg-victaure-blue-dark"
-              : "bg-victaure-metal/40 hover:bg-victaure-metal/50 hover:shadow-md",
+              ? "bg-primary text-primary-foreground rounded-br-sm"
+              : "bg-muted rounded-bl-sm",
             thinking ? "animate-pulse" : ""
           )}
         >
@@ -50,7 +54,7 @@ export function ChatMessage({
             <UserRound className="h-4 w-4 shrink-0" />
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
