@@ -23,6 +23,10 @@ export function DashboardLayout() {
     setActiveSection(index);
   };
 
+  const handleSelect = (index: number) => {
+    setActiveSection(index);
+  };
+
   return (
     <div className="h-[calc(100vh-4rem)] bg-background">
       {/* Navigation dots */}
@@ -48,7 +52,7 @@ export function DashboardLayout() {
         }}
         className="h-full w-full"
         setApi={setApi}
-        onSelect={setActiveSection}
+        onSelect={handleSelect}
       >
         <CarouselContent className="-ml-0">
           {sections.map((section, index) => (
