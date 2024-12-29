@@ -39,10 +39,10 @@ export function ChatMessage({
       >
         <div
           className={cn(
-            "max-w-[80%] p-4 rounded-2xl flex items-center gap-3 shadow-md",
+            "max-w-[80%] p-4 rounded-2xl flex items-center gap-3",
             sender === "user"
-              ? "bg-primary text-primary-foreground rounded-br-sm"
-              : "bg-card border border-border rounded-bl-sm",
+              ? "bg-primary text-primary-foreground rounded-br-sm shadow-lg"
+              : "bg-card text-card-foreground border border-border rounded-bl-sm shadow-md",
             thinking ? "animate-pulse" : ""
           )}
         >
