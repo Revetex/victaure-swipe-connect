@@ -25,37 +25,56 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
   }, [employerId]);
 
   const handleDelete = async () => {
-    if (isDeleting) return; // Éviter les doubles clics
+    if (isDeleting) return;
     
     try {
       setIsDeleting(true);
-      console.log("Attempting to delete job:", jobId);
+      console.log("Starting deletion process for job:", jobId);
       
-      // D'abord, supprimer tous les matches associés
-      const { error: matchesError } = await supabase
+      // 1. D'abord, récupérer tous les matches associés à ce job
+      const { data: matches, error: matchesQueryError } = await supabase
         .from('matches')
-        .delete()
+        .select('id')
         .eq('job_id', jobId);
 
-      if (matchesError) {
-        console.error("Error deleting matches:", matchesError);
-        toast.error("Erreur lors de la suppression des matches associés");
+      if (matchesQueryError) {
+        console.error("Error fetching matches:", matchesQueryError);
+        toast.error("Erreur lors de la récupération des matches");
         return;
       }
 
-      // Ensuite, supprimer les paiements associés aux matches
-      const { error: paymentsError } = await supabase
-        .from('payments')
-        .delete()
-        .eq('match_id', jobId);
+      const matchIds = matches?.map(match => match.id) || [];
+      console.log("Found matches:", matchIds);
 
-      if (paymentsError) {
-        console.error("Error deleting payments:", paymentsError);
-        toast.error("Erreur lors de la suppression des paiements associés");
-        return;
+      if (matchIds.length > 0) {
+        // 2. Supprimer tous les paiements associés à ces matches
+        const { error: paymentsError } = await supabase
+          .from('payments')
+          .delete()
+          .in('match_id', matchIds);
+
+        if (paymentsError) {
+          console.error("Error deleting payments:", paymentsError);
+          toast.error("Erreur lors de la suppression des paiements");
+          return;
+        }
+        console.log("Payments deleted successfully");
+
+        // 3. Supprimer les matches
+        const { error: matchesDeleteError } = await supabase
+          .from('matches')
+          .delete()
+          .eq('job_id', jobId);
+
+        if (matchesDeleteError) {
+          console.error("Error deleting matches:", matchesDeleteError);
+          toast.error("Erreur lors de la suppression des matches");
+          return;
+        }
+        console.log("Matches deleted successfully");
       }
 
-      // Enfin, supprimer l'offre
+      // 4. Finalement, supprimer l'offre
       const { error: jobError } = await supabase
         .from('jobs')
         .delete()
@@ -67,11 +86,12 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         return;
       }
 
+      console.log("Job deleted successfully");
       toast.success("Offre supprimée avec succès");
       onDelete();
     } catch (error) {
       console.error("Error in handleDelete:", error);
-      toast.error("Une erreur est survenue");
+      toast.error("Une erreur est survenue lors de la suppression");
     } finally {
       setIsDeleting(false);
     }
