@@ -35,15 +35,16 @@ async function getApiKey() {
     const apiKey = String(data).trim();
     console.log('API key retrieved:', { hasKey: !!apiKey, keyLength: apiKey?.length });
 
-    if (!apiKey) {
-      toast.error("La clé API Gemini est vide", {
-        description: "La clé existe mais semble être vide, veuillez la reconfigurer",
+    // Validate API key format (Gemini API keys are typically longer than 20 characters)
+    if (!apiKey || apiKey.length < 20) {
+      toast.error("La clé API Gemini semble invalide", {
+        description: "Veuillez vérifier le format de la clé API dans les paramètres",
         action: {
           label: "Configurer",
-          onClick: () => window.open("https://supabase.com/dashboard/project/mfjllillnpleasclqabb/settings/secrets", "_blank")
+          onClick: () => window.open("https://makersuite.google.com/app/apikey", "_blank")
         }
       });
-      throw new Error('Empty Gemini API key');
+      throw new Error('Invalid Gemini API key format');
     }
 
     return apiKey;
@@ -67,6 +68,18 @@ export async function generateAIResponse(prompt: string) {
     return text;
   } catch (error) {
     console.error('Error generating AI response:', error);
+    
+    // Check if it's an API key related error
+    if (error.message?.includes('API key not valid') || error.message?.includes('Invalid Gemini API key')) {
+      toast.error("Erreur d'authentification Gemini", {
+        description: "Veuillez vérifier votre clé API Gemini",
+        action: {
+          label: "Configurer",
+          onClick: () => window.open("https://makersuite.google.com/app/apikey", "_blank")
+        }
+      });
+    }
+    
     throw error;
   }
 }
