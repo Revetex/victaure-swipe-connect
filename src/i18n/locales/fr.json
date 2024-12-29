@@ -23,5 +23,77 @@
     "logout": "Déconnexion",
     "logoutSuccess": "Vous avez été déconnecté avec succès",
     "logoutError": "Erreur lors de la déconnexion"
+  },
+  "navigation": {
+    "findJob": "Trouver un Job",
+    "forEmployers": "Pour les Employeurs",
+    "training": "Formation"
+  },
+  "hero": {
+    "title": "Transformez votre carrière avec",
+    "subtitle": "Une plateforme innovante qui connecte les talents aux meilleures opportunités grâce à l'intelligence artificielle",
+    "startNow": "Commencer maintenant",
+    "forEmployers": "Pour les employeurs"
+  },
+  "features": {
+    "whyChoose": "Pourquoi choisir Victaure ?",
+    "items": {
+      "matching": {
+        "title": "Matching Intelligent",
+        "description": "Trouvez les missions qui correspondent parfaitement à vos compétences grâce à notre IA"
+      },
+      "management": {
+        "title": "Gestion Simplifiée",
+        "description": "Gérez vos contrats et paiements en toute simplicité avec notre plateforme automatisée"
+      },
+      "certification": {
+        "title": "Certifications Blockchain",
+        "description": "Validez vos compétences avec des certifications sécurisées et reconnues"
+      },
+      "financial": {
+        "title": "Services Financiers",
+        "description": "Accédez à des services financiers et assuranciels intégrés pour sécuriser vos missions"
+      }
+    }
+  },
+  "stats": {
+    "activeUsers": {
+      "value": "10,000+",
+      "label": "Utilisateurs Actifs",
+      "description": "Professionnels qualifiés"
+    },
+    "availableMissions": {
+      "value": "2,500+",
+      "label": "Missions Disponibles",
+      "description": "Opportunités variées"
+    },
+    "revenue": {
+      "value": "€5M+",
+      "label": "Revenus Générés",
+      "description": "Pour nos freelances"
+    },
+    "satisfaction": {
+      "value": "4.8/5",
+      "label": "Satisfaction Client",
+      "description": "Note moyenne"
+    }
+  },
+  "todo": {
+    "title": "Tâches",
+    "newTask": "Nouvelle tâche...",
+    "addTask": "Ajouter une tâche",
+    "noTasks": "Aucune tâche"
+  },
+  "notes": {
+    "title": "Notes",
+    "newNote": "Nouvelle note...",
+    "addNote": "Ajouter une note",
+    "noNotes": "Aucune note"
+  },
+  "chat": {
+    "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
+    "placeholder": "Écrivez votre message...",
+    "send": "Envoyer",
+    "thinking": "En train de réfléchir..."
   }
 }

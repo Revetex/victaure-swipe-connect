@@ -1,33 +1,36 @@
 import { Users, Briefcase, DollarSign, Star } from "lucide-react";
-
-const stats = [
-  {
-    name: "Utilisateurs Actifs",
-    value: "10,000+",
-    icon: Users,
-    description: "Professionnels qualifiés",
-  },
-  {
-    name: "Missions Disponibles",
-    value: "2,500+",
-    icon: Briefcase,
-    description: "Opportunités variées",
-  },
-  {
-    name: "Revenus Générés",
-    value: "€5M+",
-    icon: DollarSign,
-    description: "Pour nos freelances",
-  },
-  {
-    name: "Satisfaction Client",
-    value: "4.8/5",
-    icon: Star,
-    description: "Note moyenne",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export function Stats() {
+  const { t } = useTranslation();
+
+  const stats = [
+    {
+      name: t("stats.activeUsers.label"),
+      value: t("stats.activeUsers.value"),
+      icon: Users,
+      description: t("stats.activeUsers.description"),
+    },
+    {
+      name: t("stats.availableMissions.label"),
+      value: t("stats.availableMissions.value"),
+      icon: Briefcase,
+      description: t("stats.availableMissions.description"),
+    },
+    {
+      name: t("stats.revenue.label"),
+      value: t("stats.revenue.value"),
+      icon: DollarSign,
+      description: t("stats.revenue.description"),
+    },
+    {
+      name: t("stats.satisfaction.label"),
+      value: t("stats.satisfaction.value"),
+      icon: Star,
+      description: t("stats.satisfaction.description"),
+    },
+  ];
+
   return (
     <section className="py-12 bg-white">
       <div className="max-w-6xl mx-auto px-4">
