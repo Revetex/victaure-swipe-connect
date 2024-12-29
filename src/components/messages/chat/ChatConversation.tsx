@@ -21,12 +21,12 @@ export function ChatConversation({ messagesByDate, currentUser, isThinking }: Ch
   };
 
   return (
-    <ScrollArea className="flex-1 p-4">
-      <div className="space-y-8">
+    <ScrollArea className="flex-1 px-4 py-6">
+      <div className="space-y-8 max-w-3xl mx-auto">
         {Object.entries(messagesByDate).map(([dateStr, messages]) => (
-          <div key={dateStr} className="space-y-4">
+          <div key={dateStr} className="space-y-6">
             <div className="sticky top-0 z-10 flex justify-center">
-              <span className="text-xs text-muted-foreground bg-background/50 px-2 py-1 rounded-full">
+              <span className="text-xs font-medium text-muted-foreground bg-background/95 px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
                 {formatDateHeader(dateStr)}
               </span>
             </div>

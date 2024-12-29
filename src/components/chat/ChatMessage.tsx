@@ -39,19 +39,22 @@ export function ChatMessage({
       >
         <div
           className={cn(
-            "max-w-[80%] p-3 rounded-2xl flex items-center gap-2 shadow-sm transition-all duration-300",
+            "max-w-[80%] p-4 rounded-2xl flex items-center gap-3 shadow-md",
             sender === "user"
               ? "bg-primary text-primary-foreground rounded-br-sm"
-              : "bg-muted rounded-bl-sm",
+              : "bg-card border border-border rounded-bl-sm",
             thinking ? "animate-pulse" : ""
           )}
         >
           {sender === "assistant" && !thinking && (
-            <Bot className="h-4 w-4 shrink-0" />
+            <Bot className="h-5 w-5 shrink-0 text-primary" />
           )}
-          <span className={thinking ? "animate-pulse" : ""}>{content}</span>
+          <span className={cn(
+            "text-base leading-relaxed",
+            thinking ? "animate-pulse" : ""
+          )}>{content}</span>
           {sender === "user" && (
-            <UserRound className="h-4 w-4 shrink-0" />
+            <UserRound className="h-5 w-5 shrink-0" />
           )}
         </div>
       </motion.div>
