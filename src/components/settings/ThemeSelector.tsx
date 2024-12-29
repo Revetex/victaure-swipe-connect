@@ -1,7 +1,6 @@
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
-import { Moon, Sun } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import { Moon, Sun, Monitor } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -17,32 +16,34 @@ export function ThemeSelector() {
 
   const handleThemeChange = (value: string) => {
     setTheme(value);
-    toast.success(t('settings.success.theme'));
+    toast.success(t("settings.success.theme"));
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <Label htmlFor="theme">{t('settings.general.theme')}</Label>
-      <Select value={theme} onValueChange={handleThemeChange}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Sélectionnez un thème" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="light">
-            <span className="flex items-center gap-2">
-              <Sun className="h-4 w-4" />
-              {t('settings.themes.light')}
-            </span>
-          </SelectItem>
-          <SelectItem value="dark">
-            <span className="flex items-center gap-2">
-              <Moon className="h-4 w-4" />
-              {t('settings.themes.dark')}
-            </span>
-          </SelectItem>
-          <SelectItem value="system">{t('settings.themes.system')}</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={theme} onValueChange={handleThemeChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder={t("settings.theme")} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="light">
+          <div className="flex items-center gap-2">
+            <Sun className="h-4 w-4" />
+            <span>{t("settings.themes.light")}</span>
+          </div>
+        </SelectItem>
+        <SelectItem value="dark">
+          <div className="flex items-center gap-2">
+            <Moon className="h-4 w-4" />
+            <span>{t("settings.themes.dark")}</span>
+          </div>
+        </SelectItem>
+        <SelectItem value="system">
+          <div className="flex items-center gap-2">
+            <Monitor className="h-4 w-4" />
+            <span>{t("settings.themes.system")}</span>
+          </div>
+        </SelectItem>
+      </SelectContent>
+    </Select>
   );
 }

@@ -13,21 +13,30 @@
     "notifications": {
       "title": "Notifications",
       "email": "Email notifications",
-      "push": "Push notifications"
+      "push": "Push notifications",
+      "settings": "Notification Settings"
     },
     "success": {
-      "theme": "Theme changed successfully"
+      "theme": "Theme changed successfully",
+      "notifications": "Notification settings updated"
     }
   },
   "auth": {
     "logout": "Logout",
     "logoutSuccess": "You have been logged out successfully",
-    "logoutError": "Error logging out"
+    "logoutError": "Error logging out",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password"
   },
   "navigation": {
     "findJob": "Find a Job",
     "forEmployers": "For Employers",
-    "training": "Training"
+    "training": "Training",
+    "profile": "Profile",
+    "settings": "Settings",
+    "messages": "Messages"
   },
   "hero": {
     "title": "Transform your career with",
@@ -82,18 +91,31 @@
     "title": "Tasks",
     "newTask": "New task...",
     "addTask": "Add task",
-    "noTasks": "No tasks"
+    "noTasks": "No tasks",
+    "deleteTask": "Delete task",
+    "completeTask": "Mark as complete"
   },
   "notes": {
     "title": "Notes",
     "newNote": "New note...",
     "addNote": "Add note",
-    "noNotes": "No notes"
+    "noNotes": "No notes",
+    "deleteNote": "Delete note"
   },
   "chat": {
     "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish mission offers. Would you like me to help you create a new mission or improve your profile?",
     "placeholder": "Write your message...",
     "send": "Send",
     "thinking": "Thinking..."
+  },
+  "profile": {
+    "edit": "Edit Profile",
+    "save": "Save",
+    "cancel": "Cancel",
+    "personalInfo": "Personal Information",
+    "skills": "Skills",
+    "experience": "Experience",
+    "education": "Education",
+    "contact": "Contact"
   }
 }

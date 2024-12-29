@@ -13,21 +13,30 @@
     "notifications": {
       "title": "Notifications",
       "email": "Notifications par email",
-      "push": "Notifications push"
+      "push": "Notifications push",
+      "settings": "Paramètres des notifications"
     },
     "success": {
-      "theme": "Thème modifié avec succès"
+      "theme": "Thème modifié avec succès",
+      "notifications": "Paramètres de notification mis à jour"
     }
   },
   "auth": {
     "logout": "Déconnexion",
     "logoutSuccess": "Vous avez été déconnecté avec succès",
-    "logoutError": "Erreur lors de la déconnexion"
+    "logoutError": "Erreur lors de la déconnexion",
+    "login": "Connexion",
+    "register": "Inscription",
+    "email": "Email",
+    "password": "Mot de passe"
   },
   "navigation": {
     "findJob": "Trouver un Job",
     "forEmployers": "Pour les Employeurs",
-    "training": "Formation"
+    "training": "Formation",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "messages": "Messages"
   },
   "hero": {
     "title": "Transformez votre carrière avec",
@@ -82,18 +91,31 @@
     "title": "Tâches",
     "newTask": "Nouvelle tâche...",
     "addTask": "Ajouter une tâche",
-    "noTasks": "Aucune tâche"
+    "noTasks": "Aucune tâche",
+    "deleteTask": "Supprimer la tâche",
+    "completeTask": "Marquer comme terminée"
   },
   "notes": {
     "title": "Notes",
     "newNote": "Nouvelle note...",
     "addNote": "Ajouter une note",
-    "noNotes": "Aucune note"
+    "noNotes": "Aucune note",
+    "deleteNote": "Supprimer la note"
   },
   "chat": {
     "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
     "placeholder": "Écrivez votre message...",
     "send": "Envoyer",
     "thinking": "En train de réfléchir..."
+  },
+  "profile": {
+    "edit": "Modifier le profil",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "personalInfo": "Informations personnelles",
+    "skills": "Compétences",
+    "experience": "Expérience",
+    "education": "Formation",
+    "contact": "Contact"
   }
 }
