@@ -1,7 +1,18 @@
-let apiKey: string | null = "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";
+let apiKey: string | null = null;
 
-const getApiKey = () => {
-  if (!apiKey) return null;
+const getApiKey = async () => {
+  if (!apiKey) {
+    const { data, error } = await supabase.functions.invoke('get-secret', {
+      body: { secretName: 'HUGGING_FACE_ACCESS_TOKEN' },
+    });
+    
+    if (error || !data?.secret) {
+      console.error('Error fetching Hugging Face API key:', error);
+      throw new Error('Failed to get Hugging Face API key');
+    }
+    
+    apiKey = data.secret;
+  }
   return apiKey;
 };
 
@@ -11,9 +22,9 @@ export const setApiKey = (key: string) => {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
-    const key = getApiKey();
+    const key = await getApiKey();
     if (!key) {
-      throw new Error('API key not configured');
+      throw new Error('Hugging Face API key not configured');
     }
 
     if (!message || message.length > 2000) {
@@ -56,7 +67,9 @@ Message de l'utilisateur: ${message}</s>
     });
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`);
+      const errorData = await response.json();
+      console.error('Hugging Face API error:', errorData);
+      throw new Error(`API request failed: ${errorData.error || response.statusText}`);
     }
 
     const data = await response.json();
