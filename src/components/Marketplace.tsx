@@ -60,7 +60,6 @@ export function Marketplace() {
   });
 
   if (error) {
-    console.error("Query error:", error);
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <p className="text-destructive">Une erreur est survenue lors du chargement des missions</p>
