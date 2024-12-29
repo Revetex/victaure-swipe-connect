@@ -1,23 +1,26 @@
 export interface UserProfile {
-  name: string;
-  title: string;
+  id: string;
   email: string;
-  phone: string;
-  city: string;
-  state: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  role: string;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
   country: string;
-  skills: string[];
-  experiences: Experience[];
-  certifications: Certification[];
+  skills: string[] | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface Experience {
   id?: string;
   company: string;
   position: string;
-  startDate: string;
-  endDate?: string;
-  description?: string;
+  start_date: string | null;
+  end_date?: string | null;
+  description?: string | null;
 }
 
 export interface Certification {
@@ -28,14 +31,17 @@ export interface Certification {
 }
 
 export const mockProfile: UserProfile = {
-  name: "John Doe",
-  title: "Développeur Full Stack",
+  id: "mock-id",
   email: "john.doe@example.com",
+  full_name: "John Doe",
+  avatar_url: null,
+  role: "Développeur Full Stack",
+  bio: null,
   phone: "+1 (555) 123-4567",
   city: "Montréal",
   state: "Québec",
   country: "Canada",
   skills: ["React", "TypeScript", "Node.js", "PostgreSQL"],
-  experiences: [],
-  certifications: [],
+  latitude: null,
+  longitude: null
 };
