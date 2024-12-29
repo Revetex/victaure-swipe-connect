@@ -33,7 +33,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       location: profile?.city ? `${profile.city}, ${profile.country}` : profile?.country
     });
 
-    // Get the API key from Supabase
+    // Get the API key from Supabase secrets
     const { data: { secret }, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
