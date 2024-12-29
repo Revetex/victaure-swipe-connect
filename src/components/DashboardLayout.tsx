@@ -31,7 +31,6 @@ export function DashboardLayout() {
 
   return (
     <div className="h-[calc(100vh-4rem)] bg-background">
-      {/* Navigation dots with improved mobile styling */}
       <div 
         className={cn(
           "fixed left-1/2 transform -translate-x-1/2 z-50 flex gap-2 transition-all duration-300",
