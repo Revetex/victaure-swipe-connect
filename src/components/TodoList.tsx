@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Todo, StickyNote as StickyNoteType } from "@/types/todo";
 import { TodoSection } from "./todo/TodoSection";
 import { NotesSection } from "./todo/NotesSection";
+import { CalendarView } from "./todo/CalendarView";
 import { supabase } from "@/integrations/supabase/client";
 
 const colors = [
@@ -108,8 +109,9 @@ export function TodoList() {
   return (
     <div className="space-y-4">
       <Tabs defaultValue="todos" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="todos">Tâches</TabsTrigger>
+          <TabsTrigger value="calendar">Calendrier</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
         </TabsList>
 
@@ -128,6 +130,10 @@ export function TodoList() {
             onToggle={toggleTodo}
             onDelete={deleteTodo}
           />
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <CalendarView todos={todos} onDateSelect={setSelectedDate} />
         </TabsContent>
 
         <TabsContent value="notes">
