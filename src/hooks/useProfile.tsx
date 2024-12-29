@@ -2,6 +2,22 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
+export interface Certification {
+  id: string;
+  title: string;
+  institution: string;
+  year: string;
+}
+
+export interface Experience {
+  id: string;
+  company: string;
+  position: string;
+  start_date: string;
+  end_date?: string;
+  description?: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -16,6 +32,8 @@ export interface UserProfile {
   skills: string[] | null;
   latitude: number | null;
   longitude: number | null;
+  certifications?: Certification[];
+  experiences?: Experience[];
 }
 
 export function useProfile() {
@@ -32,15 +50,36 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        const { data: profileData, error } = await supabase
+        // Fetch profile data
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
 
-        if (error) {
-          throw error;
-        }
+        if (profileError) throw profileError;
+
+        // Fetch certifications
+        const { data: certifications, error: certError } = await supabase
+          .from('certifications')
+          .select('*')
+          .eq('profile_id', user.id);
+
+        if (certError) throw certError;
+
+        // Fetch experiences
+        const { data: experiences, error: expError } = await supabase
+          .from('experiences')
+          .select('*')
+          .eq('profile_id', user.id);
+
+        if (expError) throw expError;
+
+        const fullProfile = {
+          ...profileData,
+          certifications: certifications || [],
+          experiences: experiences || [],
+        };
 
         if (!profileData) {
           const defaultProfile: UserProfile = {
@@ -57,6 +96,8 @@ export function useProfile() {
             skills: [],
             latitude: null,
             longitude: null,
+            certifications: [],
+            experiences: [],
           };
 
           const { error: insertError } = await supabase
@@ -68,8 +109,8 @@ export function useProfile() {
           setProfile(defaultProfile);
           setTempProfile(defaultProfile);
         } else {
-          setProfile(profileData);
-          setTempProfile(profileData);
+          setProfile(fullProfile);
+          setTempProfile(fullProfile);
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
