@@ -2,6 +2,10 @@ import * as React from "react"
 import { type CarouselApi, CarouselContext, type CarouselProps } from "./use-carousel"
 import useEmblaCarousel from "embla-carousel-react"
 import { cn } from "@/lib/utils"
+import { CarouselContent } from "./carousel-content"
+import { CarouselItem } from "./carousel-item"
+import { CarouselNext } from "./carousel-next"
+import { CarouselPrevious } from "./carousel-previous"
 
 const Carousel = React.forwardRef<
   HTMLDivElement,
@@ -111,4 +115,11 @@ const Carousel = React.forwardRef<
 )
 Carousel.displayName = "Carousel"
 
-export { Carousel }
+export { 
+  type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+}

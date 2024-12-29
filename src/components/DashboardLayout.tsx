@@ -5,6 +5,7 @@ import { VCard } from "@/components/VCard";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import type { CarouselApi } from "@/components/ui/carousel";
 
 const sections = [
   { id: 'messages', title: 'Messages', component: Messages },
@@ -15,6 +16,12 @@ const sections = [
 
 export function DashboardLayout() {
   const [activeSection, setActiveSection] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+
+  const scrollTo = (index: number) => {
+    api?.scrollTo(index);
+    setActiveSection(index);
+  };
 
   return (
     <div className="h-[calc(100vh-4rem)] bg-background">
@@ -29,7 +36,7 @@ export function DashboardLayout() {
                 ? "bg-primary w-4" 
                 : "bg-muted hover:bg-primary/50 cursor-pointer"
             )}
-            onClick={() => setActiveSection(index)}
+            onClick={() => scrollTo(index)}
           />
         ))}
       </div>
@@ -40,9 +47,9 @@ export function DashboardLayout() {
           loop: true,
         }}
         className="h-full w-full"
+        setApi={setApi}
         onSelect={(api) => {
-          const selected = api?.selectedScrollSnap();
-          if (selected !== undefined) setActiveSection(selected);
+          setActiveSection(api.selectedScrollSnap());
         }}
       >
         <CarouselContent className="-ml-0">
