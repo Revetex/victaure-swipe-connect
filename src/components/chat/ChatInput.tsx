@@ -1,68 +1,57 @@
-import { cn } from "@/lib/utils";
-import { Send, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
+import { Mic, Send } from "lucide-react";
+import { useState } from "react";
 
 interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
-  onSend: () => void;
-  onVoiceInput: () => void;
-  isListening: boolean;
-  isThinking: boolean;
+  onSend: (content: string) => void;
+  onVoiceInput?: () => void;
+  isListening?: boolean;
+  isThinking?: boolean;
 }
 
 export function ChatInput({ 
-  value, 
-  onChange, 
-  onSend, 
-  onVoiceInput, 
+  value,
+  onChange,
+  onSend,
+  onVoiceInput,
   isListening,
-  isThinking 
+  isThinking
 }: ChatInputProps) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (value.trim() && !isThinking) {
+      onSend(value.trim());
+      onChange("");
+    }
+  };
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex gap-2 relative"
-    >
-      <Input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyPress={(e) => e.key === "Enter" && !isThinking && onSend()}
-        placeholder="Écrivez votre message..."
-        className="flex-grow pr-20"
-        disabled={isThinking}
-      />
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-        <Button
-          onClick={onVoiceInput}
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "hover:bg-primary/10 transition-all duration-300",
-            isListening && "bg-primary/20 animate-pulse",
-            isThinking && "opacity-50 cursor-not-allowed"
-          )}
+    <form onSubmit={handleSubmit} className="p-4 border-t bg-background">
+      <div className="flex gap-2">
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Écrivez votre message..."
           disabled={isThinking}
-        >
-          <Mic className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={onSend}
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "hover:bg-primary/10 transition-all duration-300",
-            isThinking && "opacity-50 cursor-not-allowed"
-          )}
-          disabled={isThinking}
-        >
-          <Send className="h-4 w-4" />
+        />
+        {onVoiceInput && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onVoiceInput}
+            className={isListening ? "text-primary" : ""}
+          >
+            <Mic className="h-5 w-5" />
+          </Button>
+        )}
+        <Button type="submit" size="icon" disabled={!value.trim() || isThinking}>
+          <Send className="h-5 w-5" />
         </Button>
       </div>
-    </motion.div>
+    </form>
   );
 }
