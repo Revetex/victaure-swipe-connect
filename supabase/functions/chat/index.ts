@@ -16,12 +16,10 @@ serve(async (req) => {
     const { messages } = await req.json();
     const lastMessage = messages[messages.length - 1];
     
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Extract user information from the authorization header
     const authHeader = req.headers.get('Authorization')?.split('Bearer ')[1];
     if (!authHeader) {
       throw new Error('No authorization header');
@@ -32,59 +30,61 @@ serve(async (req) => {
       throw new Error('Invalid user');
     }
 
-    // Define questions and their corresponding profile fields
     const questions = {
-      role: "Quel est votre profession actuelle ?",
+      role: "Quelle est votre profession actuelle ?",
       bio: "Pouvez-vous me parler un peu de vous et de votre parcours ?",
       city: "Dans quelle ville êtes-vous basé(e) ?",
       skills: "Quelles sont vos principales compétences professionnelles ?",
     };
 
-    // Check if the last message contains any keywords related to profile updates
     const profileUpdates: any = {};
-    const response = { content: '', action: null };
+    let response = { 
+      content: "Je ne comprends pas votre demande. Puis-je vous aider à mettre à jour votre profil ?", 
+      action: 'offer_help' 
+    };
 
-    // Process the last message for potential profile updates
     if (lastMessage.role === 'user') {
       const content = lastMessage.content.toLowerCase();
       
-      // If the message is about updating the profile
       if (content.includes('modifier') || content.includes('mettre à jour') || content.includes('changer')) {
-        response.content = "Je vais vous aider à mettre à jour votre profil. " + questions.role;
-        response.action = 'ask_role';
+        response = {
+          content: "Je vais vous aider à mettre à jour votre profil. " + questions.role,
+          action: 'ask_role'
+        };
       }
-      // If it's a response to a previous question
       else if (messages.length >= 2 && messages[messages.length - 2].role === 'assistant') {
         const previousQuestion = messages[messages.length - 2].content;
         
         if (previousQuestion.includes(questions.role)) {
           profileUpdates.role = lastMessage.content;
-          response.content = "Merci ! " + questions.bio;
-          response.action = 'ask_bio';
+          response = {
+            content: "Merci ! " + questions.bio,
+            action: 'ask_bio'
+          };
         }
         else if (previousQuestion.includes(questions.bio)) {
           profileUpdates.bio = lastMessage.content;
-          response.content = questions.city;
-          response.action = 'ask_city';
+          response = {
+            content: questions.city,
+            action: 'ask_city'
+          };
         }
         else if (previousQuestion.includes(questions.city)) {
           profileUpdates.city = lastMessage.content;
-          response.content = questions.skills;
-          response.action = 'ask_skills';
+          response = {
+            content: questions.skills,
+            action: 'ask_skills'
+          };
         }
         else if (previousQuestion.includes(questions.skills)) {
           profileUpdates.skills = lastMessage.content.split(',').map((s: string) => s.trim());
-          response.content = "Parfait ! J'ai mis à jour votre profil avec toutes ces informations. Vous pouvez vérifier les changements sur votre VCard.";
-          response.action = 'update_complete';
+          response = {
+            content: "Parfait ! J'ai mis à jour votre profil avec toutes ces informations. Vous pouvez vérifier les changements sur votre VCard.",
+            action: 'update_complete'
+          };
         }
       }
-      // Default response if no specific context is detected
-      else {
-        response.content = "Je peux vous aider à mettre à jour votre profil. Souhaitez-vous commencer ?";
-        response.action = 'offer_help';
-      }
 
-      // If we have profile updates, apply them
       if (Object.keys(profileUpdates).length > 0) {
         const { error: updateError } = await supabase
           .from('profiles')
@@ -114,7 +114,16 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        choices: [{
+          message: {
+            role: 'assistant',
+            content: "Désolé, j'ai rencontré une erreur. Pouvez-vous reformuler votre demande ?",
+            action: 'error'
+          }
+        }]
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
