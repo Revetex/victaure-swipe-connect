@@ -6,9 +6,11 @@ import { VCardSkills } from "../VCardSkills";
 import { VCardCertifications } from "../VCardCertifications";
 import { VCardActions } from "../VCardActions";
 import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Download, Edit2, X, Mail, Phone, MapPin } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { VCardContactInfo } from "./VCardContactInfo";
+import { VCardCompactActions } from "./VCardCompactActions";
 
 interface VCardContentProps {
   profile: any;
@@ -44,7 +46,6 @@ export function VCardContent({
   onApplyChanges,
 }: VCardContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState("");
 
   useEffect(() => {
     if (isEditing) {
@@ -61,8 +62,8 @@ export function VCardContent({
     >
       <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20">
         <CardContent className="p-3 sm:p-6">
-          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
+            <div className="flex-1 min-w-0">
               <VCardHeader
                 profile={tempProfile}
                 isEditing={isEditing}
@@ -70,68 +71,36 @@ export function VCardContent({
                 setIsEditing={setIsEditing}
               />
 
-              {/* Contact info toujours visible */}
               {!isExpanded && (
-                <div className="mt-4 space-y-2">
-                  {tempProfile.email && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
-                      <span>{tempProfile.email}</span>
-                    </div>
-                  )}
-                  {tempProfile.phone && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="h-4 w-4" />
-                      <span>{tempProfile.phone}</span>
-                    </div>
-                  )}
-                  {tempProfile.city && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{tempProfile.city}, {tempProfile.state || 'Canada'}</span>
-                    </div>
-                  )}
-                </div>
+                <VCardContactInfo
+                  email={tempProfile.email}
+                  phone={tempProfile.phone}
+                  city={tempProfile.city}
+                  state={tempProfile.state}
+                />
               )}
             </div>
 
-            {/* QR Code toujours visible */}
             {!isExpanded && (
-              <div className="shrink-0">
+              <div className="shrink-0 sm:ml-4">
                 <QRCodeSVG
                   value={window.location.href}
                   size={80}
                   level="H"
                   includeMargin={true}
-                  className="bg-white p-1 rounded"
+                  className="bg-white p-1.5 rounded-lg shadow-sm"
                 />
               </div>
             )}
           </div>
 
-          {/* Actions compactes quand non expandé */}
           {!isExpanded && !isEditing && (
-            <div className="flex justify-end gap-2 mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsExpanded(true)}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Télécharger
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(true)}
-              >
-                <Edit2 className="h-4 w-4 mr-2" />
-                Éditer
-              </Button>
-            </div>
+            <VCardCompactActions
+              onExpand={() => setIsExpanded(true)}
+              onEdit={() => setIsEditing(true)}
+            />
           )}
 
-          {/* Contenu détaillé */}
           <AnimatePresence>
             {isExpanded && (
               <motion.div
@@ -146,7 +115,7 @@ export function VCardContent({
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsExpanded(false)}
-                    className="absolute top-2 right-2"
+                    className="absolute top-2 right-2 hover:bg-primary/5"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -166,10 +135,10 @@ export function VCardContent({
                     newSkill={newSkill}
                     setNewSkill={setNewSkill}
                     handleAddSkill={() => {
-                      if (newSkill && !tempProfile.skills.includes(newSkill)) {
+                      if (newSkill && !tempProfile.skills?.includes(newSkill)) {
                         setTempProfile({
                           ...tempProfile,
-                          skills: [...tempProfile.skills, newSkill],
+                          skills: [...(tempProfile.skills || []), newSkill],
                         });
                         setNewSkill("");
                       }
@@ -177,8 +146,8 @@ export function VCardContent({
                     handleRemoveSkill={(skillToRemove: string) => {
                       setTempProfile({
                         ...tempProfile,
-                        skills: tempProfile.skills.filter(
-                          (skill) => skill !== skillToRemove
+                        skills: tempProfile.skills?.filter(
+                          (skill: string) => skill !== skillToRemove
                         ),
                       });
                     }}
