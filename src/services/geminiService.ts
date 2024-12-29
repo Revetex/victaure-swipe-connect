@@ -1,50 +1,30 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
 async function getApiKey() {
   try {
-    console.log('Fetching Gemini API key from Supabase...');
-    
     const { data, error } = await supabase.rpc('get_secret', {
-      secret_name: 'GEMINI_API_KEY'
+      secret_name: 'HUGGING_FACE_ACCESS_TOKEN'
     });
 
-    console.log('API key response:', { hasData: !!data });
-
     if (error) {
-      console.error('Error fetching API key:', error);
+      console.error('Error fetching HuggingFace API key:', error);
       toast.error("Erreur lors de la récupération de la clé API", {
         description: error.message,
       });
-      throw new Error(`Failed to fetch Gemini API key: ${error.message}`);
+      throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
     }
 
     if (!data) {
-      toast.error("La clé API Gemini n'est pas configurée", {
-        description: "Veuillez vérifier que la clé existe dans les paramètres Supabase",
-        action: {
-          label: "Vérifier",
-          onClick: () => window.open("https://supabase.com/dashboard/project/mfjllillnpleasclqabb/settings/secrets", "_blank")
-        }
-      });
-      throw new Error('Empty Gemini API key');
+      toast.error("La clé API HuggingFace n'est pas configurée");
+      throw new Error('Empty HuggingFace API key');
     }
 
-    // The secret is returned as a string directly from the RPC function
     const apiKey = String(data).trim();
-    console.log('API key retrieved:', { hasKey: !!apiKey, keyLength: apiKey?.length });
-
-    // Validate API key format (Gemini API keys are typically longer than 20 characters)
+    
     if (!apiKey || apiKey.length < 20) {
-      toast.error("La clé API Gemini semble invalide", {
-        description: "Veuillez vérifier le format de la clé API dans les paramètres",
-        action: {
-          label: "Configurer",
-          onClick: () => window.open("https://makersuite.google.com/app/apikey", "_blank")
-        }
-      });
-      throw new Error('Invalid Gemini API key format');
+      toast.error("La clé API HuggingFace semble invalide");
+      throw new Error('Invalid HuggingFace API key format');
     }
 
     return apiKey;
@@ -54,32 +34,53 @@ async function getApiKey() {
   }
 }
 
-export async function generateAIResponse(prompt: string) {
+export async function generateAIResponse(prompt: string): Promise<string> {
   try {
     const apiKey = await getApiKey();
     
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta", {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: `<|system|>Tu es Mr. Victaure, un assistant professionnel et amical qui aide les utilisateurs à gérer leur carrière. Tu es bienveillant et encourageant.</s>
+<|user|>${prompt}</s>
+<|assistant|>`,
+        parameters: {
+          max_new_tokens: 250,
+          temperature: 0.7,
+          top_p: 0.95,
+          do_sample: true,
+          return_full_text: false
+        },
+      }),
+    });
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('HuggingFace API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
+      throw new Error(`API request failed: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
     
-    return text;
+    if (Array.isArray(result) && result.length > 0) {
+      const generatedText = result[0]?.generated_text || '';
+      return generatedText.trim();
+    }
+
+    throw new Error('Invalid response format from API');
   } catch (error) {
     console.error('Error generating AI response:', error);
-    
-    // Check if it's an API key related error
-    if (error.message?.includes('API key not valid') || error.message?.includes('Invalid Gemini API key')) {
-      toast.error("Erreur d'authentification Gemini", {
-        description: "Veuillez vérifier votre clé API Gemini",
-        action: {
-          label: "Configurer",
-          onClick: () => window.open("https://makersuite.google.com/app/apikey", "_blank")
-        }
-      });
-    }
-    
+    toast.error("Erreur lors de la génération de la réponse", {
+      description: error.message,
+    });
     throw error;
   }
 }

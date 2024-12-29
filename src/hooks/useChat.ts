@@ -44,8 +44,9 @@ export function useChat() {
       return response;
     } catch (error) {
       console.error("Error generating response:", error);
-      toast.error("Désolé, je n'ai pas pu générer une réponse");
-      throw error;
+      toast.error("Désolé, je n'ai pas pu générer une réponse", {
+        description: "Veuillez réessayer plus tard",
+      });
     } finally {
       setIsThinking(false);
     }
