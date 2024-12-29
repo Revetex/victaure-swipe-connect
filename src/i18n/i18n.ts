@@ -26,6 +26,9 @@ import frMessages from "./locales/fr/messages.json";
 import frNotifications from "./locales/fr/notifications.json";
 import frTodo from "./locales/fr/todo.json";
 import frNotes from "./locales/fr/notes.json";
+import frMrVictaure from "./locales/fr/mrVictaure.json";
+import frChat from "./locales/fr/chat.json";
+import frProfile from "./locales/fr/profile.json";
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -54,6 +57,9 @@ i18n.use(initReactI18next).init({
       notifications: frNotifications,
       todo: frTodo,
       notes: frNotes,
+      mrVictaure: frMrVictaure,
+      chat: frChat,
+      profile: frProfile,
     },
   },
   lng: localStorage.getItem("language") || "fr",

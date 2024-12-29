@@ -1,28 +1,18 @@
 {
+  "browse": "Parcourir les offres",
+  "addJob": "Ajouter une mission",
+  "myListings": "Mes annonces",
+  "noJobs": "Aucune offre disponible pour le moment",
+  "comeBack": "Revenez plus tard pour découvrir de nouvelles missions",
   "filters": {
-    "title": "Filtres de recherche",
-    "search": "Chercher",
+    "title": "Filtres",
+    "search": "Rechercher",
     "searchPlaceholder": "Rechercher une mission...",
-    "category": "Type de mission",
-    "subcategory": "Spécialité",
-    "allCategories": "Toutes les spécialités",
-    "duration": "Durée",
-    "allDurations": "Toutes les durées",
-    "experienceLevel": "Niveau requis",
-    "allLevels": "Tous les niveaux",
-    "location": "Lieu",
-    "selectCity": "Choisir une ville...",
-    "noCity": "Aucune ville trouvée",
-    "salary": "Rémunération",
-    "remote": "À distance"
-  },
-  "noJobs": "Pas de mission disponible",
-  "comeBack": "Revenez bientôt pour voir les nouvelles missions",
-  "browse": "Voir les missions",
-  "myListings": "Mes missions",
-  "noListings": "Vous n'avez pas encore créé de mission",
-  "addJob": "Créer une mission",
-  "apply": "Postuler",
-  "save": "Enregistrer",
-  "createDescription": "Remplissez les détails ci-dessous pour créer une nouvelle mission"
+    "category": "Catégorie",
+    "allCategories": "Toutes les catégories",
+    "location": "Localisation",
+    "selectCity": "Sélectionner une ville",
+    "experienceLevel": "Niveau d'expérience",
+    "allLevels": "Tous les niveaux"
+  }
 }

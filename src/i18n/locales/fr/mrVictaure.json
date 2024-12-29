@@ -1,0 +1,15 @@
+{
+  "title": "Thomas",
+  "subtitle": "Assistant Personnel IA",
+  "thinking": "En réflexion...",
+  "welcome": "Bonjour! Je suis Thomas, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Comment puis-je vous aider aujourd'hui?",
+  "clearChat": "Effacer la conversation",
+  "maximize": "Agrandir",
+  "minimize": "Réduire",
+  "suggestions": {
+    "profile": "Améliorer mon profil",
+    "mission": "Créer une mission",
+    "search": "Rechercher des missions",
+    "settings": "Configurer mes préférences"
+  }
+}

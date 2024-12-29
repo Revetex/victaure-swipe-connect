@@ -1,18 +1,26 @@
 {
   "professional": "Professionnel",
   "contact": "Contact",
-  "skills": "Compétences",
+  "email": "tblanchet3909@hotmail.com",
+  "phone": "+1(819) 668-0473",
+  "city": "Trois-Rivières",
+  "state": "Québec",
+  "skills": {
+    "title": "Compétences",
+    "list": [
+      "Construction",
+      "Maçonnerie",
+      "Charpente",
+      "Gestion",
+      "Agile",
+      "Leadership"
+    ]
+  },
   "certifications": "Certifications et Diplômes",
-  "share": "Partager",
-  "vcard": "VCard",
-  "pdf": "PDF",
-  "edit": "Modifier",
-  "save": "Enregistrer",
-  "cancel": "Annuler",
-  "construction": "Construction",
-  "masonry": "Maçonnerie",
-  "carpentry": "Charpente",
-  "management": "Gestion",
-  "agile": "Agile",
-  "leadership": "Leadership"
+  "share": {
+    "title": "Partager",
+    "vcard": "VCard",
+    "pdf": "PDF"
+  },
+  "fullName": "Thomas Blanchet"
 }
