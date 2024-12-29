@@ -28,7 +28,7 @@ export interface Database {
         };
         Returns: {
           secret: string;
-        };
+        }[];
       };
     };
     Enums: {

@@ -38,14 +38,15 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
-    if (secretError || !secretData?.secret) {
+    const secret = secretData?.[0]?.secret;
+    if (secretError || !secret) {
       console.error('Error fetching API key:', secretError);
       throw new Error('Configuration API manquante');
     }
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': `Bearer ${secretData.secret}`,
+        'Authorization': `Bearer ${secret}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
