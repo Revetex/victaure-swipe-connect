@@ -13,10 +13,6 @@ interface SecretResponse {
   secret: string;
 }
 
-interface SecretParams {
-  secret_name: string;
-}
-
 export async function generateAIResponse(message: string, profile?: UserProfile) {
   try {
     if (!message?.trim()) {
@@ -46,7 +42,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     // Get the API key from Supabase secrets
-    const { data: secretData, error: secretError } = await supabase.rpc<SecretParams, SecretResponse>('get_secret', {
+    const { data: secretData, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
