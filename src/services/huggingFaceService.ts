@@ -1,7 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const MODEL_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta";
-
 async function getApiKey() {
   try {
     const { data, error } = await supabase.rpc('get_secret', {
@@ -13,12 +11,21 @@ async function getApiKey() {
       throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
     }
 
-    if (!data || !Array.isArray(data) || data.length === 0 || !data[0]?.secret?.trim()) {
-      console.error('No valid API key found');
+    // Log the data to help debug
+    console.log('Secret data received:', data);
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      console.error('No data returned from get_secret');
       throw new Error('HuggingFace API key not found in secrets');
     }
 
-    return data[0].secret;
+    const apiKey = data[0]?.secret?.trim();
+    if (!apiKey) {
+      console.error('API key is empty or invalid');
+      throw new Error('Invalid HuggingFace API key format');
+    }
+
+    return apiKey;
   } catch (error) {
     console.error('Error in getApiKey:', error);
     throw error;
@@ -28,8 +35,9 @@ async function getApiKey() {
 export async function generateAIResponse(prompt: string): Promise<string> {
   try {
     const apiKey = await getApiKey();
+    console.log('Successfully retrieved API key');
     
-    const response = await fetch(MODEL_URL, {
+    const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta", {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
