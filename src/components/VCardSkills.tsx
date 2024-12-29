@@ -1,19 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { predefinedSkills } from "@/data/skills";
+import { predefinedSkills, skillCategories } from "@/data/skills";
 import { VCardSection } from "./VCardSection";
 import { Brain } from "lucide-react";
 import { useState } from "react";
 import { SkillCategory } from "./skills/SkillCategory";
 import { SkillEditor } from "./skills/SkillEditor";
-
-const skillCategories: Record<string, string[]> = {
-  "Développement": ["JavaScript", "TypeScript", "Python", "React", "Node.js"],
-  "DevOps": ["Docker", "Kubernetes", "AWS", "CI/CD", "Git"],
-  "Design": ["UI Design", "UX Research", "Figma", "Adobe XD"],
-  "Gestion": ["Agile", "Scrum", "Leadership", "Communication"],
-  "Construction": ["Maçonnerie", "Charpente", "Plomberie", "Électricité"],
-  "Manuel": ["Peinture", "Carrelage", "Menuiserie", "Serrurerie"]
-};
 
 interface VCardSkillsProps {
   profile: {
@@ -36,14 +26,17 @@ export function VCardSkills({
   handleAddSkill,
   handleRemoveSkill,
 }: VCardSkillsProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("Développement");
+  const [selectedCategory, setSelectedCategory] = useState<string>(Object.keys(skillCategories)[0]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredSkills = predefinedSkills.filter(
-    skill => !profile.skills.includes(skill) &&
-    (skillCategories[selectedCategory]?.includes(skill) || !selectedCategory)
+    skill => 
+      !profile.skills?.includes(skill) &&
+      (skillCategories[selectedCategory]?.includes(skill) || !selectedCategory) &&
+      skill.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const groupedSkills: Record<string, string[]> = profile.skills.reduce((acc: Record<string, string[]>, skill: string) => {
+  const groupedSkills: Record<string, string[]> = profile.skills?.reduce((acc: Record<string, string[]>, skill: string) => {
     const category = Object.entries(skillCategories).find(([_, skills]) => 
       skills.includes(skill)
     )?.[0] || "Autre";
@@ -51,7 +44,7 @@ export function VCardSkills({
     if (!acc[category]) acc[category] = [];
     acc[category].push(skill);
     return acc;
-  }, {});
+  }, {}) || {};
 
   return (
     <VCardSection 
@@ -66,7 +59,7 @@ export function VCardSkills({
             category={category}
             skills={skills}
             isEditing={isEditing}
-            searchTerm=""
+            searchTerm={searchTerm}
             onRemoveSkill={handleRemoveSkill}
           />
         ))}
@@ -81,6 +74,7 @@ export function VCardSkills({
           handleAddSkill={handleAddSkill}
           skillCategories={skillCategories}
           filteredSkills={filteredSkills}
+          existingSkills={profile.skills || []}
         />
       )}
     </VCardSection>
