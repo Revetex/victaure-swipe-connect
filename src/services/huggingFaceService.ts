@@ -52,6 +52,8 @@ Message: ${sanitizedMessage}</s>
       throw new Error('Clé API Hugging Face non configurée. Veuillez configurer la clé API dans les paramètres.');
     }
 
+    console.log('Envoi de la requête à Hugging Face avec la clé API...');
+
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
         'Authorization': `Bearer ${apiKey}`,
