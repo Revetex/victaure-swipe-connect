@@ -16,16 +16,21 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' });
     
-    if (secretError || !secretData) {
+    if (secretError) {
       console.error('Error fetching secret:', secretError);
       throw new Error('Impossible de récupérer le token d\'accès');
     }
 
-    // Access the first item's secret property and check if it's empty
-    const token = secretData[0]?.secret;
-    if (!token?.trim()) {
+    if (!secretData || secretData.length === 0 || !secretData[0].secret) {
       throw new Error('Token d\'accès Hugging Face non configuré');
     }
+
+    const token = secretData[0].secret.trim();
+    if (!token) {
+      throw new Error('Token d\'accès Hugging Face invalide');
+    }
+
+    console.log('Making request to Hugging Face API with valid token...');
 
     const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel et amical qui aide les utilisateurs avec leurs questions. Tu réponds toujours en français de manière concise et claire.
 
@@ -33,7 +38,6 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
 <|assistant|>`;
 
-    console.log('Making request to Hugging Face API...');
     const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -75,6 +79,6 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse:', error);
-    return "Désolé, je ne peux pas répondre pour le moment. Veuillez réessayer plus tard.";
+    throw error;
   }
 }
