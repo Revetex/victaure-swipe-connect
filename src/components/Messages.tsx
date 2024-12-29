@@ -1,10 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useMessages } from "@/hooks/useMessages";
 import { MessagesTab } from "./messages/tabs/MessagesTab";
 import { NotificationsTab } from "./messages/tabs/NotificationsTab";
 import { Settings } from "./Settings";
 import { MessageSquare, Bell, Settings2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Notification {
   id: string;
@@ -12,9 +13,9 @@ interface Notification {
 }
 
 export function Messages() {
-  const { messages: userMessages } = useMessages();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const unreadMessagesCount = userMessages.filter(m => !m.read).length;
+  const [messages, setMessages] = useState<any[]>([]);
+  const unreadMessagesCount = messages.filter(m => !m.read).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
   useEffect(() => {
