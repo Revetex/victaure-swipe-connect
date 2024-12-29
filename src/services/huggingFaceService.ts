@@ -26,7 +26,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
 <|assistant|>`;
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
       headers: {
         'Authorization': `Bearer ${secretData}`,
         'Content-Type': 'application/json',
