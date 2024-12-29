@@ -6,16 +6,20 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "./ui/button";
+import { PlusCircle } from "lucide-react";
+import { CreateJobForm } from "./jobs/CreateJobForm";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 export function Marketplace() {
   const [category, setCategory] = useState<string>("");
   const [subcategory, setSubcategory] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
-  const [salaryRange, setSalaryRange] = useState<number[]>([300, 1000]);
   const [activeTab, setActiveTab] = useState<"all" | "mine">("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { data: jobs = [], isLoading, error } = useQuery({
-    queryKey: ["jobs", category, subcategory, duration, salaryRange, activeTab],
+  const { data: jobs = [], isLoading, error, refetch } = useQuery({
+    queryKey: ["jobs", category, subcategory, duration, activeTab],
     queryFn: async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -41,11 +45,6 @@ export function Marketplace() {
         if (duration && duration !== "all") {
           query = query.eq("contract_type", duration);
         }
-
-        // Filter by salary range
-        query = query
-          .gte("budget", salaryRange[0])
-          .lte("budget", salaryRange[1]);
 
         const { data, error } = await query;
 
@@ -76,15 +75,34 @@ export function Marketplace() {
     );
   }
 
+  const handleJobCreated = () => {
+    setIsDialogOpen(false);
+    refetch();
+  };
+
   return (
     <section className="py-8 sm:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4">
-        <Tabs defaultValue="all" className="mb-8" onValueChange={(value) => setActiveTab(value as "all" | "mine")}>
-          <TabsList className="grid w-full max-w-[400px] grid-cols-2">
-            <TabsTrigger value="all">Toutes les missions</TabsTrigger>
-            <TabsTrigger value="mine">Mes annonces</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex justify-between items-center mb-8">
+          <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setActiveTab(value as "all" | "mine")}>
+            <TabsList className="grid w-full max-w-[400px] grid-cols-2">
+              <TabsTrigger value="all">Toutes les missions</TabsTrigger>
+              <TabsTrigger value="mine">Mes annonces</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="ml-4">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Nouvelle mission
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl">
+              <CreateJobForm onSuccess={handleJobCreated} />
+            </DialogContent>
+          </Dialog>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
           <JobFilters
@@ -94,8 +112,6 @@ export function Marketplace() {
             setSubcategory={setSubcategory}
             duration={duration}
             setDuration={setDuration}
-            salaryRange={salaryRange}
-            setSalaryRange={setSalaryRange}
             missionCategories={missionCategories}
           />
           <JobList 
