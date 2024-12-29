@@ -23,12 +23,14 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     const sanitizedMessage = sanitizeInput(message);
     const systemPrompt = buildSystemPrompt(profile, sanitizedMessage);
 
-    console.log('Generating AI response with prompt:', {
+    console.log('Generating AI response with context:', {
       profile: profile?.id,
       messageLength: sanitizedMessage.length,
       hasSkills: profile?.skills?.length > 0,
       hasCertifications: profile?.certifications?.length > 0,
-      hasBio: !!profile?.bio
+      hasBio: !!profile?.bio,
+      role: profile?.role,
+      location: profile?.city ? `${profile.city}, ${profile.country}` : profile?.country
     });
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
@@ -40,13 +42,14 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 750,
-          temperature: 0.7,
-          top_p: 0.9,
-          repetition_penalty: 1.2,
+          max_new_tokens: 1000,
+          temperature: 0.8,
+          top_p: 0.95,
+          repetition_penalty: 1.15,
           top_k: 50,
           do_sample: true,
-          return_full_text: false
+          return_full_text: false,
+          stop: ["</s>", "<|im_end|>"]
         }
       }),
     });
@@ -73,7 +76,12 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
     console.log('AI Response generated successfully:', {
       length: generatedText.length,
-      preview: generatedText.substring(0, 100)
+      preview: generatedText.substring(0, 100),
+      context: {
+        messageType: message.toLowerCase().includes('question') ? 'question' : 'statement',
+        tone: profile?.role?.includes('senior') ? 'professional' : 'friendly',
+        focus: profile?.skills?.length ? 'skills-based' : 'general'
+      }
     });
 
     return generatedText;
