@@ -32,41 +32,39 @@ serve(async (req) => {
 
     console.log('Processing message:', lastMessage.content);
 
-    // Use Perplexity API for more natural conversations
-    const perplexityKey = Deno.env.get('PERPLEXITY_API_KEY');
-    if (!perplexityKey) {
-      throw new Error('Perplexity API key not configured');
+    // Use HuggingFace API for natural conversations
+    const hfToken = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
+    if (!hfToken) {
+      throw new Error('HuggingFace API token not configured');
     }
 
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${perplexityKey}`,
+        'Authorization': `Bearer ${hfToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
-        messages: [
-          {
-            role: 'system',
-            content: 'Tu es Mr Victaure, un assistant IA sympathique et naturel. Adapte ton langage et ton ton en fonction du contexte de la conversation.'
-          },
-          ...messages.map((m: any) => ({
-            role: m.sender === 'assistant' ? 'assistant' : 'user',
-            content: m.content
-          }))
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
+        inputs: `<|im_start|>system
+Tu es Mr Victaure, un assistant IA sympathique et naturel. Adapte ton langage et ton ton en fonction du contexte de la conversation.
+<|im_end|>
+${messages.map(m => `<|im_start|>${m.sender === 'assistant' ? 'assistant' : 'user'}
+${m.content}
+<|im_end|>`).join('\n')}`,
+        parameters: {
+          temperature: 0.7,
+          max_new_tokens: 1000,
+          return_full_text: false
+        }
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Perplexity API error: ${response.statusText}`);
+      throw new Error(`HuggingFace API error: ${response.statusText}`);
     }
 
     const result = await response.json();
-    const aiResponse = result.choices[0].message;
+    const aiResponse = result[0].generated_text;
 
     // Extract any profile updates from the conversation if relevant
     if (lastMessage.content.toLowerCase().includes('profil') || 
@@ -86,7 +84,7 @@ serve(async (req) => {
         choices: [{
           message: {
             role: 'assistant',
-            content: aiResponse.content,
+            content: aiResponse,
             action: 'chat'
           }
         }]
