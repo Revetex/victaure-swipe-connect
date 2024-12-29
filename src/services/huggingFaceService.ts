@@ -45,7 +45,13 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error('Invalid input');
     }
 
-    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA amical et professionnel. Tu aides les utilisateurs avec leurs questions et besoins.
+    const systemPrompt = `<|system|>Tu es un assistant IA amical et professionnel nommé Mr. Victaure. Tu dois:
+- Répondre de manière naturelle et conversationnelle, comme le ferait ChatGPT
+- Être empathique et comprendre le contexte de la conversation
+- Donner des réponses détaillées et utiles
+- Utiliser un ton amical mais professionnel
+- Poser des questions de suivi si nécessaire pour mieux comprendre
+- Adapter ton langage au contexte tout en restant poli
 
 Message de l'utilisateur: ${message}</s>
 <|assistant|>`;
@@ -60,11 +66,11 @@ Message de l'utilisateur: ${message}</s>
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 250,
-          temperature: 0.7,
+          max_new_tokens: 500,
+          temperature: 0.8,
           top_p: 0.9,
           repetition_penalty: 1.2,
-          top_k: 40,
+          top_k: 50,
           do_sample: true
         }
       }),
