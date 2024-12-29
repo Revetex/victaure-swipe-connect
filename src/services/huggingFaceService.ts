@@ -20,13 +20,17 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Impossible de récupérer le token d\'accès');
     }
 
+    if (!secretData.trim()) {
+      throw new Error('Token d\'accès Hugging Face non configuré');
+    }
+
     const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel et amical qui aide les utilisateurs avec leurs questions. Tu réponds toujours en français de manière concise et claire.
 
 <|user|>${message}
 
 <|assistant|>`;
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
+    const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
       headers: {
         'Authorization': `Bearer ${secretData}`,
         'Content-Type': 'application/json',
@@ -44,6 +48,8 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Hugging Face API error:', errorData);
       throw new Error(`Erreur API: ${response.statusText}`);
     }
 
