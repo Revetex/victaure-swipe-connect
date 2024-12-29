@@ -21,16 +21,19 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Impossible de récupérer le token d\'accès');
     }
 
-    if (!secretData || secretData.length === 0 || !secretData[0].secret) {
+    // Vérification plus stricte du token
+    if (!secretData || !Array.isArray(secretData) || secretData.length === 0) {
+      console.error('Secret data is invalid:', secretData);
       throw new Error('Token d\'accès Hugging Face non configuré');
     }
 
-    const token = secretData[0].secret.trim();
-    if (!token) {
+    const token = secretData[0]?.secret;
+    if (!token || typeof token !== 'string' || !token.trim()) {
+      console.error('Token is invalid:', token);
       throw new Error('Token d\'accès Hugging Face invalide');
     }
 
-    console.log('Making request to Hugging Face API with valid token...');
+    console.log('Making request to Hugging Face API with token...');
 
     const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel et amical qui aide les utilisateurs avec leurs questions. Tu réponds toujours en français de manière concise et claire.
 
@@ -40,7 +43,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
     const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token.trim()}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
