@@ -19,8 +19,8 @@ export function VCard() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: profile.name,
-          text: `Professional profile of ${profile.name}`,
+          title: profile.full_name || '',
+          text: `Professional profile of ${profile.full_name || ''}`,
           url: window.location.href,
         });
         toast({
@@ -47,7 +47,7 @@ export function VCard() {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `${profile.name.replace(" ", "_")}.vcf`);
+    link.setAttribute("download", `${profile.full_name?.replace(" ", "_") || 'profile'}.vcf`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -24,14 +24,14 @@ export function VCardCertifications({
     setProfile({
       ...profile,
       certifications: [
-        ...profile.certifications,
+        ...(profile.certifications || []),
         { title: "", institution: "", year: "" },
       ],
     });
   };
 
   const handleRemoveCertification = (index: number) => {
-    const newCertifications = [...profile.certifications];
+    const newCertifications = [...(profile.certifications || [])];
     newCertifications.splice(index, 1);
     setProfile({ ...profile, certifications: newCertifications });
   };
@@ -42,7 +42,7 @@ export function VCardCertifications({
       icon={<GraduationCap className="h-4 w-4 text-muted-foreground" />}
     >
       <div className="space-y-4">
-        {profile.certifications.map((cert: Certification, index: number) => (
+        {(profile.certifications || []).map((cert: Certification, index: number) => (
           <div key={index} className="relative border-l-2 border-primary/30 pl-4 py-2 space-y-2 hover:bg-muted/50 rounded-r transition-colors">
             {isEditing ? (
               <>
@@ -51,7 +51,7 @@ export function VCardCertifications({
                   <Input
                     value={cert.title}
                     onChange={(e) => {
-                      const newCertifications = [...profile.certifications];
+                      const newCertifications = [...(profile.certifications || [])];
                       newCertifications[index].title = e.target.value;
                       setProfile({ ...profile, certifications: newCertifications });
                     }}
@@ -64,7 +64,7 @@ export function VCardCertifications({
                   <Input
                     value={cert.institution}
                     onChange={(e) => {
-                      const newCertifications = [...profile.certifications];
+                      const newCertifications = [...(profile.certifications || [])];
                       newCertifications[index].institution = e.target.value;
                       setProfile({ ...profile, certifications: newCertifications });
                     }}
@@ -76,7 +76,7 @@ export function VCardCertifications({
                   <Input
                     value={cert.year}
                     onChange={(e) => {
-                      const newCertifications = [...profile.certifications];
+                      const newCertifications = [...(profile.certifications || [])];
                       newCertifications[index].year = e.target.value;
                       setProfile({ ...profile, certifications: newCertifications });
                     }}
