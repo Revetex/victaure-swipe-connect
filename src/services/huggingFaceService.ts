@@ -8,16 +8,15 @@ async function getApiKey() {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
-    console.log('Supabase get_secret response:', { data, error });
-
     if (error) {
       console.error('Supabase get_secret error:', error);
       throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
     }
 
-    if (!data || data.length === 0 || !data[0]?.secret) {
-      console.error('No API key found in Supabase secrets');
-      throw new Error('HuggingFace API key not found in secrets');
+    // Check if we have data and it contains a non-empty secret
+    if (!data?.[0]?.secret?.trim()) {
+      console.error('No valid API key found in Supabase secrets');
+      throw new Error('Please add your HuggingFace API key in Supabase secrets');
     }
 
     return data[0].secret;
@@ -53,13 +52,6 @@ export async function generateAIResponse(prompt: string): Promise<string> {
       }),
     });
 
-    // Log the response status and headers for debugging
-    console.log('HuggingFace API Response:', {
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries()),
-    });
-
     if (!response.ok) {
       const errorText = await response.text();
       console.error('HuggingFace API Error:', {
@@ -71,7 +63,7 @@ export async function generateAIResponse(prompt: string): Promise<string> {
     }
 
     const result = await response.json();
-    console.log('Parsed API Response:', result);
+    console.log('HuggingFace API Response:', result);
 
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text || '';
