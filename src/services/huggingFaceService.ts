@@ -2,7 +2,6 @@ import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 import { checkRateLimit } from "./ai/rateLimiter";
 import { sanitizeInput } from "./ai/inputSanitizer";
-import { getFallbackResponse } from "./ai/fallbackResponses";
 
 interface HuggingFaceResponse {
   generated_text: string;
@@ -43,7 +42,6 @@ Message: ${sanitizedMessage}</s>
     });
 
     if (secretError || !secretData?.[0]?.secret) {
-      console.error('Error fetching API key:', secretError);
       throw new Error('Configuration API manquante');
     }
 
@@ -69,8 +67,6 @@ Message: ${sanitizedMessage}</s>
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error('API Error Response:', errorData);
       throw new Error(`Erreur API: ${response.statusText}`);
     }
 
@@ -93,6 +89,6 @@ Message: ${sanitizedMessage}</s>
     return generatedText;
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse:', error);
-    return getFallbackResponse(profile);
+    throw error;
   }
 }
