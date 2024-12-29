@@ -175,11 +175,8 @@
     "typeMessage": "Tapez votre message...",
     "startVoice": "Démarrer l'enregistrement vocal",
     "stopVoice": "Arrêter l'enregistrement vocal",
-    "clearChat": "Effacer la conversation"
-  },
-  "error": {
-    "generic": "Une erreur est survenue",
-    "voiceRecording": "Erreur lors de l'enregistrement vocal",
-    "messageNotSent": "Le message n'a pas pu être envoyé"
+    "clearChat": "Effacer la conversation",
+    "maximize": "Agrandir la conversation",
+    "minimize": "Réduire la conversation"
   }
 }

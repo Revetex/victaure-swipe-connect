@@ -145,41 +145,13 @@
     "maximize": "Maximize",
     "minimize": "Minimize"
   },
-  "vcard": {
-    "title": "Business Card",
-    "share": "Share",
-    "download": {
-      "vcard": "Download VCard",
-      "pdf": "Download PDF"
-    },
-    "copyLink": "Copy link",
-    "edit": "Edit",
-    "save": "Save",
-    "cancel": "Cancel",
-    "sections": {
-      "contact": "Contact",
-      "skills": "Skills",
-      "experience": "Experience",
-      "education": "Education",
-      "certifications": "Certifications"
-    },
-    "placeholders": {
-      "email": "Your email",
-      "phone": "Your phone",
-      "city": "Your city",
-      "state": "Your state/province"
-    }
-  },
   "chat": {
     "sendMessage": "Send message",
     "typeMessage": "Type your message...",
     "startVoice": "Start voice recording",
     "stopVoice": "Stop voice recording",
-    "clearChat": "Clear chat"
-  },
-  "error": {
-    "generic": "An error occurred",
-    "voiceRecording": "Error recording voice",
-    "messageNotSent": "Message could not be sent"
+    "clearChat": "Clear chat",
+    "maximize": "Maximize chat",
+    "minimize": "Minimize chat"
   }
 }

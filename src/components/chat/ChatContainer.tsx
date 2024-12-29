@@ -2,6 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatMessage } from "./ChatMessage";
 import { Message } from "@/hooks/useChat";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ChatContainerProps {
   messages: Message[];
@@ -9,6 +10,7 @@ interface ChatContainerProps {
 }
 
 export function ChatContainer({ messages, isThinking }: ChatContainerProps) {
+  const { t } = useTranslation();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,6 +26,11 @@ export function ChatContainer({ messages, isThinking }: ChatContainerProps) {
       className="flex-grow overflow-y-auto mb-4 px-4 scrollbar-thin scrollbar-thumb-victaure-blue/20 scrollbar-track-transparent"
     >
       <div className="space-y-4 py-4">
+        {messages.length === 0 && (
+          <div className="text-center text-muted-foreground">
+            <p>{t("mrVictaure.welcome")}</p>
+          </div>
+        )}
         {messages.map((message, index) => (
           <ChatMessage
             key={message.id}
