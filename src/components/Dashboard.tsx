@@ -4,13 +4,30 @@ import { Briefcase, Calendar, MessageSquare, DollarSign } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+interface DashboardStats {
+  activeJobs: number;
+  unreadMessages: number;
+  pendingPayments: string;
+  nextJob: string;
+}
+
+interface QuickAction {
+  title: string;
+  value: string;
+  icon: React.ElementType;
+  color: string;
+  bgColor: string;
+}
+
 export function Dashboard() {
-  const { data: stats } = useQuery({
+  // Fetch dashboard statistics
+  const { data: stats } = useQuery<DashboardStats>({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
+      // Fetch active jobs and unread messages
       const [jobsResponse, messagesResponse] = await Promise.all([
         supabase
           .from('jobs')
@@ -24,14 +41,14 @@ export function Dashboard() {
           .eq('read', false),
       ]);
 
-      // First get the matches
+      // Fetch accepted matches
       const { data: matches } = await supabase
         .from('matches')
         .select('id')
         .eq('employer_id', user.id)
         .eq('status', 'accepted');
 
-      // Then get payments using the match IDs
+      // Calculate pending payments
       const { data: payments } = await supabase
         .from('payments')
         .select('amount')
@@ -44,12 +61,13 @@ export function Dashboard() {
         activeJobs: jobsResponse.count || 0,
         unreadMessages: messagesResponse.count || 0,
         pendingPayments: `CAD ${pendingAmount.toLocaleString()}`,
-        nextJob: 'Dans 2 jours' // This could be dynamic based on upcoming jobs
+        nextJob: 'Dans 2 jours'
       };
     }
   });
 
-  const quickActions = [
+  // Define quick action cards
+  const quickActions: QuickAction[] = [
     {
       title: "Missions en cours",
       value: stats?.activeJobs.toString() || "0",
