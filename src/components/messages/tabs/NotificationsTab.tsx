@@ -1,102 +1,40 @@
-import { Bell } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { NotificationItem } from "../../notifications/NotificationItem";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Bell } from "lucide-react";
 
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  created_at: string;
-  read: boolean;
+interface NotificationsTabProps {
+  notifications: {
+    id: string;
+    read: boolean;
+  }[];
 }
 
-export function NotificationsTab() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data, error } = await supabase
-          .from('notifications')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setNotifications(data || []);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
-    };
-
-    fetchNotifications();
-
-    const channel = supabase
-      .channel('notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'notifications'
-        },
-        () => {
-          fetchNotifications();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const deleteNotification = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setNotifications(notifications.filter(n => n.id !== id));
-      toast.success("Notification supprimée");
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-      toast.error("Impossible de supprimer la notification");
-    }
-  };
+export function NotificationsTab({ notifications }: NotificationsTabProps) {
+  if (notifications.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+        <Bell className="h-8 w-8 mb-2" />
+        <p>Aucune notification</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="flex items-center gap-2 text-primary mb-4">
-        <Bell className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Notifications</h2>
+    <ScrollArea className="h-[300px]">
+      <div className="space-y-4">
+        {notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className={`p-4 rounded-lg ${
+              !notification.read
+                ? "bg-primary/10 border-l-2 border-primary"
+                : "bg-muted"
+            }`}
+          >
+            {/* Notification content will be implemented later */}
+            <p>Notification {notification.id}</p>
+          </div>
+        ))}
       </div>
-      <ScrollArea className="h-[300px] pr-4">
-        <div className="space-y-2">
-          {notifications.map((notification) => (
-            <NotificationItem
-              key={notification.id}
-              {...notification}
-              onDelete={deleteNotification}
-            />
-          ))}
-          {notifications.length === 0 && (
-            <div className="text-center text-muted-foreground py-8">
-              <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>Aucune notification</p>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
-    </div>
+    </ScrollArea>
   );
 }
