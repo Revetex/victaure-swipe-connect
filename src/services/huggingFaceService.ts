@@ -38,6 +38,12 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
+    console.log('Secret retrieval:', {
+      hasData: !!secretData,
+      hasError: !!secretError,
+      secretLength: secretData?.[0]?.secret?.length
+    });
+
     const secret = secretData?.[0]?.secret;
     if (secretError || !secret) {
       console.error('Error fetching API key:', secretError);
@@ -72,8 +78,10 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     }
 
     const responseData = await response.json();
+    console.log('Raw API Response:', responseData);
 
     if (!Array.isArray(responseData) || !responseData[0]?.generated_text) {
+      console.error('Invalid response format:', responseData);
       throw new Error('Format de réponse invalide');
     }
 
@@ -84,6 +92,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       .trim();
     
     if (!generatedText) {
+      console.error('No generated text in response');
       throw new Error('Aucune réponse générée');
     }
 
