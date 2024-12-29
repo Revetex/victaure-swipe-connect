@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Building2, MapPin, Calendar, Briefcase, GraduationCap, FolderOpen, List } from "lucide-react";
+import { Building2, MapPin, Briefcase, GraduationCap, FolderOpen, List } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface JobCardProps {
@@ -28,51 +28,38 @@ export function JobCard({
 }: JobCardProps) {
   const isMobile = useIsMobile();
 
+  const InfoItem = ({ icon: Icon, text }: { icon: React.ElementType; text: string }) => (
+    <div className="flex items-center gap-2">
+      <Icon className="h-4 w-4 shrink-0" />
+      <span className="truncate">{text}</span>
+    </div>
+  );
+
   return (
-    <Card className={`w-full ${isMobile ? 'mx-0' : 'max-w-md mx-auto'} shadow-lg hover:shadow-xl transition-shadow`}>
+    <Card className="w-full shadow-lg hover:shadow-xl transition-shadow">
       <CardHeader>
         <div className="space-y-2">
-          <h3 className="font-semibold text-xl text-foreground line-clamp-2">{title}</h3>
+          <h3 className="font-semibold text-xl text-foreground line-clamp-2">
+            {title}
+          </h3>
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 shrink-0" />
-              <span className="truncate">{company}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 shrink-0" />
-              <span className="truncate">{location}</span>
-            </div>
+            <InfoItem icon={Building2} text={company} />
+            <InfoItem icon={MapPin} text={location} />
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 shrink-0" />
-              <span>{contract_type}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4 shrink-0" />
-              <span>{experience_level}</span>
-            </div>
+            <InfoItem icon={Briefcase} text={contract_type} />
+            <InfoItem icon={GraduationCap} text={experience_level} />
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4 shrink-0" />
-              <span>{category}</span>
-            </div>
-            {subcategory && (
-              <div className="flex items-center gap-2">
-                <List className="h-4 w-4 shrink-0" />
-                <span>{subcategory}</span>
-              </div>
-            )}
+            <InfoItem icon={FolderOpen} text={category} />
+            {subcategory && <InfoItem icon={List} text={subcategory} />}
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {salary && (
-            <div className="flex flex-col gap-2">
-              <p className="text-lg font-semibold text-victaure-green">{salary}</p>
-            </div>
+            <p className="text-lg font-semibold text-primary">{salary}</p>
           )}
           <div className="flex flex-wrap gap-2">
             {skills.slice(0, isMobile ? 3 : 5).map((skill) => (
@@ -85,7 +72,9 @@ export function JobCard({
               </Badge>
             ))}
             {skills.length > (isMobile ? 3 : 5) && (
-              <Badge variant="outline">+{skills.length - (isMobile ? 3 : 5)}</Badge>
+              <Badge variant="outline">
+                +{skills.length - (isMobile ? 3 : 5)}
+              </Badge>
             )}
           </div>
         </div>
