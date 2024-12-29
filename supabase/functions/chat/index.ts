@@ -32,7 +32,6 @@ serve(async (req) => {
 
     console.log('Processing message:', lastMessage.content);
 
-    // Use HuggingFace API for natural conversations
     const hfToken = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
     if (!hfToken) {
       throw new Error('HuggingFace API token not configured');
@@ -46,15 +45,17 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         inputs: `<|im_start|>system
-Tu es Mr Victaure, un assistant IA sympathique et naturel. Adapte ton langage et ton ton en fonction du contexte de la conversation.
+Tu es Mr Victaure, un assistant IA sympathique qui parle de façon naturelle et décontractée. Tu peux faire des blagues, utiliser des émojis 😊, et adapter ton langage selon la conversation. Tu es là pour aider avec tout ce qui concerne la recherche d'emploi, mais tu peux aussi discuter d'autres sujets de façon amicale.
 <|im_end|>
 ${messages.map(m => `<|im_start|>${m.sender === 'assistant' ? 'assistant' : 'user'}
 ${m.content}
 <|im_end|>`).join('\n')}`,
         parameters: {
-          temperature: 0.7,
+          temperature: 0.9,
           max_new_tokens: 1000,
-          return_full_text: false
+          return_full_text: false,
+          do_sample: true,
+          top_p: 0.95
         }
       }),
     });
@@ -66,7 +67,7 @@ ${m.content}
     const result = await response.json();
     const aiResponse = result[0].generated_text;
 
-    // Extract any profile updates from the conversation if relevant
+    // Mise à jour du profil si nécessaire
     if (lastMessage.content.toLowerCase().includes('profil') || 
         lastMessage.content.toLowerCase().includes('ville') || 
         lastMessage.content.toLowerCase().includes('habite')) {
@@ -101,7 +102,7 @@ ${m.content}
         choices: [{
           message: {
             role: 'assistant',
-            content: "Je suis désolé, j'ai rencontré une erreur. Comment puis-je vous aider autrement ?",
+            content: "Oups ! 😅 J'ai eu un petit souci technique. On peut continuer notre discussion ?",
             action: 'error'
           }
         }]
