@@ -20,20 +20,29 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error('Invalid input');
     }
 
-    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel proactif et bienveillant qui peut directement modifier les VCards et créer des offres de mission. Tu guides activement les utilisateurs dans la création et l'amélioration de leur profil professionnel ainsi que dans la publication d'offres de mission.
+    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel proactif, empathique et bienveillant qui aide les utilisateurs à développer leur carrière. Tu as accès à leur profil et peux les guider de manière personnalisée.
 
 Directives de personnalité:
-1. Sois proactif - propose des suggestions concrètes sans attendre qu'on te le demande
-2. Sois guidant - explique les étapes à suivre de manière claire
-3. Sois encourageant - félicite les progrès et encourage à continuer
+1. Sois proactif - anticipe les besoins et propose des suggestions concrètes
+2. Sois empathique - montre que tu comprends leurs défis professionnels
+3. Sois encourageant - félicite les progrès et motive à continuer
 4. Sois structuré - organise tes réponses par points clés
-5. Sois concis - va droit au but tout en restant aimable
-6. IMPORTANT: Ne partage jamais de code dans tes réponses, explique plutôt les concepts de manière simple
+5. Sois concis - va droit au but tout en restant chaleureux
+6. Sois pratique - donne des exemples concrets et des étapes actionables
 
-Profil actuel de l'utilisateur:
-${profile ? JSON.stringify(profile, null, 2) : 'Pas encore de profil'}
+Contexte professionnel de l'utilisateur:
+${profile ? JSON.stringify({
+  nom: profile.full_name,
+  role: profile.role,
+  compétences: profile.skills,
+  ville: profile.city,
+  bio: profile.bio
+}, null, 2) : 'Pas encore de profil'}
 
-Message de l'utilisateur: ${message}</s>
+Historique de la conversation:
+- Dernier message de l'utilisateur: ${message}
+
+Réponds de manière naturelle et personnalisée en te basant sur leur profil.</s>
 <|assistant|>`;
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
@@ -45,12 +54,13 @@ Message de l'utilisateur: ${message}</s>
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 250,
+          max_new_tokens: 500,
           temperature: 0.7,
           top_p: 0.9,
           repetition_penalty: 1.2,
-          top_k: 40,
-          do_sample: true
+          top_k: 50,
+          do_sample: true,
+          return_full_text: false
         }
       }),
     });
@@ -65,7 +75,11 @@ Message de l'utilisateur: ${message}</s>
       throw new Error('Invalid response format from API');
     }
 
-    const generatedText = data[0].generated_text.split('<|assistant|>')[1]?.trim();
+    const generatedText = data[0].generated_text
+      .split('<|assistant|>')[1]?.trim()
+      .replace(/```/g, '') // Remove code blocks
+      .replace(/\n\n+/g, '\n\n') // Normalize line breaks
+      .trim();
     
     if (!generatedText) {
       throw new Error('No response generated');
@@ -74,6 +88,21 @@ Message de l'utilisateur: ${message}</s>
     return generatedText;
   } catch (error) {
     console.error('Error generating response:', error);
-    throw error;
+    
+    // Fallback responses based on context
+    const contextualResponses = [
+      profile?.full_name 
+        ? `Je suis là pour vous aider ${profile.full_name}. Que puis-je faire pour votre développement professionnel ?`
+        : "Je suis là pour vous aider dans votre développement professionnel. Que puis-je faire pour vous ?",
+      profile?.role
+        ? `En tant que ${profile.role}, je peux vous donner des conseils spécifiques à votre domaine.`
+        : "Je peux vous aider à définir votre orientation professionnelle.",
+      "Je peux vous aider à mettre en valeur vos compétences et expériences.",
+      "Voulez-vous des conseils pour développer votre réseau professionnel ?",
+      "Je peux vous aider à préparer vos entretiens ou négociations.",
+      "Parlons de vos objectifs de carrière et comment les atteindre.",
+    ];
+    
+    return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
   }
 }
