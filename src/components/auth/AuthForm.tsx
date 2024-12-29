@@ -13,7 +13,32 @@ export function AuthForm() {
             colors: {
               brand: '#0369a1',
               brandAccent: '#0284c7',
+              inputBackground: 'white',
             },
+            borderWidths: {
+              buttonBorderWidth: '1px',
+              inputBorderWidth: '1px',
+            },
+            radii: {
+              borderRadiusButton: '0.5rem',
+              buttonBorderRadius: '0.5rem',
+              inputBorderRadius: '0.5rem',
+            },
+          },
+        },
+        style: {
+          input: {
+            backgroundColor: 'white',
+            border: '1px solid #e2e8f0',
+            borderRadius: '0.5rem',
+          },
+          button: {
+            border: '1px solid transparent',
+            borderRadius: '0.5rem',
+            backgroundColor: '#0369a1',
+            color: 'white',
+            fontSize: '14px',
+            padding: '10px 15px',
           },
         },
       }}

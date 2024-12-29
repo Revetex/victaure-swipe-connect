@@ -12,13 +12,17 @@ export function BiometricAuth() {
   useEffect(() => {
     const checkBiometricSupport = async () => {
       try {
-        if (window.PublicKeyCredential) {
-          const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-          setBiometricSupport(available);
-          console.log("Biometric support:", available);
+        if (!window.PublicKeyCredential) {
+          console.log("WebAuthn API not available");
+          return;
         }
+
+        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        console.log("Biometric support:", available);
+        setBiometricSupport(available);
       } catch (error) {
         console.error("Error checking biometric support:", error);
+        toast.error("Erreur lors de la vérification du support biométrique");
       }
     };
 
@@ -27,6 +31,11 @@ export function BiometricAuth() {
 
   const handleBiometricAuth = async () => {
     try {
+      if (!window.PublicKeyCredential) {
+        toast.error("L'authentification biométrique n'est pas supportée sur votre appareil");
+        return;
+      }
+
       const challenge = new Uint8Array(32);
       window.crypto.getRandomValues(challenge);
 
@@ -42,7 +51,7 @@ export function BiometricAuth() {
       });
 
       if (credential) {
-        // For demo purposes only - in production, validate credentials properly
+        // Pour la démo, nous utilisons un compte test
         const { data: { session }, error } = await supabase.auth.signInWithPassword({
           email: "demo@example.com",
           password: "demopassword",
@@ -61,11 +70,14 @@ export function BiometricAuth() {
       }
     } catch (error) {
       console.error("Biometric auth error:", error);
-      toast.error("Erreur d'authentification biométrique");
+      toast.error("Erreur lors de l'authentification biométrique");
     }
   };
 
-  if (!biometricSupport) return null;
+  if (!biometricSupport) {
+    console.log("Biometric support not available");
+    return null;
+  }
 
   return (
     <div className="flex gap-2 justify-center mb-6">
