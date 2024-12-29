@@ -5,12 +5,16 @@ export interface Message {
   id: string;
   content: string;
   sender: "user" | "assistant";
-  thinking?: boolean;
   timestamp: Date;
 }
 
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([{
+    id: crypto.randomUUID(),
+    content: "Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?",
+    sender: "assistant",
+    timestamp: new Date(),
+  }]);
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);

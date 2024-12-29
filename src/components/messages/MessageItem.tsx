@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
+import { Bot } from "lucide-react";
 
 interface MessageSender {
   id: string;
@@ -26,25 +27,37 @@ export function MessageItem({
   read,
   onMarkAsRead,
 }: MessageItemProps) {
+  const isAssistant = sender.id === 'assistant';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
-      onClick={() => !read && onMarkAsRead(id)}
+      onClick={() => !read && !isAssistant && onMarkAsRead(id)}
       className={`p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
-        !read 
+        !read && !isAssistant
           ? "bg-primary/10 border-l-2 border-primary shadow-sm" 
+          : isAssistant
+          ? "bg-muted/50 hover:bg-muted/80"
           : "bg-muted hover:bg-muted/80"
       }`}
     >
       <div className="flex gap-3">
         <Avatar className="h-10 w-10">
-          <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
-          <AvatarFallback>
-            {sender.full_name?.slice(0, 2).toUpperCase() || "??"}
-          </AvatarFallback>
+          {isAssistant ? (
+            <div className="h-full w-full bg-primary/10 flex items-center justify-center">
+              <Bot className="h-6 w-6 text-primary" />
+            </div>
+          ) : (
+            <>
+              <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
+              <AvatarFallback>
+                {sender.full_name?.slice(0, 2).toUpperCase() || "??"}
+              </AvatarFallback>
+            </>
+          )}
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start gap-2">
