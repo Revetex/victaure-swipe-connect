@@ -41,18 +41,6 @@ export async function generateAIResponse(message: string) {
     return data.choices[0].message.content;
   } catch (error) {
     console.error('Erreur lors de la génération:', error);
-    
-    // Fallback responses in case of error
-    const predefinedResponses = [
-      "Je suis là pour vous aider dans votre recherche d'emploi. Que puis-je faire pour vous ?",
-      "Je peux vous donner des conseils sur la rédaction de votre CV.",
-      "N'hésitez pas à me poser des questions sur les entretiens d'embauche.",
-      "Je peux vous aider à identifier vos compétences clés.",
-      "Voulez-vous des conseils pour votre recherche d'emploi ?",
-      "Je peux vous aider à préparer votre lettre de motivation.",
-      "Avez-vous besoin d'aide pour définir votre projet professionnel ?",
-      "Je peux vous donner des astuces pour développer votre réseau professionnel.",
-    ];
-    return predefinedResponses[Math.floor(Math.random() * predefinedResponses.length)];
+    throw error;
   }
 }
