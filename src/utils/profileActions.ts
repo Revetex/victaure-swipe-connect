@@ -1,15 +1,15 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile } from "@/data/mockProfile";
+import type { UserProfile } from "@/types/profile";
 
 export const generateVCardData = (profile: UserProfile) => {
   const vcard = `BEGIN:VCARD
 VERSION:3.0
-FN:${profile.name}
-TITLE:${profile.title}
-TEL:${profile.phone}
+FN:${profile.full_name || ''}
+TITLE:${profile.role || ''}
+TEL:${profile.phone || ''}
 EMAIL:${profile.email}
-ADR;TYPE=WORK:;;${profile.city};${profile.state};${profile.country}
-NOTE:Skills: ${profile.skills.join(", ")}
+ADR;TYPE=WORK:;;${profile.city || ''};${profile.state || ''};${profile.country}
+NOTE:Skills: ${profile.skills?.join(", ") || ''}
 END:VCARD`;
   return vcard;
 };
@@ -23,14 +23,17 @@ export const updateProfile = async (tempProfile: UserProfile) => {
   const { error } = await supabase
     .from('profiles')
     .update({
-      full_name: tempProfile.name,
-      role: 'professional',
+      full_name: tempProfile.full_name,
+      role: tempProfile.role,
       email: tempProfile.email,
       phone: tempProfile.phone,
       city: tempProfile.city,
       state: tempProfile.state,
       country: tempProfile.country,
       skills: tempProfile.skills,
+      bio: tempProfile.bio,
+      latitude: tempProfile.latitude,
+      longitude: tempProfile.longitude,
     })
     .eq('id', user.id);
 
