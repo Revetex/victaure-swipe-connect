@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Certification, Experience } from "@/types/profile";
+import type { UserProfile } from "@/data/mockProfile";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -17,83 +17,58 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        // Fetch profile data
-        const { data: profileData, error: profileError } = await supabase
+        let finalProfileData;
+        const { data: existingProfile, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (profileError) throw profileError;
+        if (error) {
+          throw error;
+        }
 
-        // Fetch certifications
-        const { data: certifications, error: certError } = await supabase
-          .from('certifications')
-          .select('*')
-          .eq('profile_id', user.id);
-
-        if (certError) throw certError;
-
-        // Fetch experiences
-        const { data: experiences, error: expError } = await supabase
-          .from('experiences')
-          .select('*')
-          .eq('profile_id', user.id);
-
-        if (expError) throw expError;
-
-        // Map certifications to match our interface
-        const mappedCertifications: Certification[] = (certifications || []).map(cert => ({
-          id: cert.id,
-          profile_id: cert.profile_id,
-          title: cert.title,
-          institution: cert.issuer, // Map issuer to institution
-          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
-          created_at: cert.created_at,
-          updated_at: cert.updated_at,
-          credential_url: cert.credential_url,
-          issue_date: cert.issue_date,
-          expiry_date: cert.expiry_date,
-          issuer: cert.issuer
-        }));
-
-        const fullProfile: UserProfile = {
-          ...profileData,
-          certifications: mappedCertifications,
-          experiences: experiences || [],
-        };
-
-        if (!profileData) {
-          const defaultProfile: UserProfile = {
-            id: user.id,
-            email: user.email || '',
-            full_name: null,
-            avatar_url: null,
-            role: 'professional',
-            bio: null,
-            phone: null,
-            city: null,
-            state: null,
-            country: 'Canada',
-            skills: [],
-            latitude: null,
-            longitude: null,
-            certifications: [],
-            experiences: [],
-          };
-
+        if (!existingProfile) {
           const { error: insertError } = await supabase
             .from('profiles')
-            .insert(defaultProfile);
+            .insert({
+              id: user.id,
+              email: user.email,
+              role: 'professional',
+            });
 
           if (insertError) throw insertError;
 
-          setProfile(defaultProfile);
-          setTempProfile(defaultProfile);
+          const { data: newProfile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (fetchError) throw fetchError;
+          if (!newProfile) throw new Error("Failed to create profile");
+
+          finalProfileData = newProfile;
         } else {
-          setProfile(fullProfile);
-          setTempProfile(fullProfile);
+          finalProfileData = existingProfile;
         }
+
+        const transformedProfile: UserProfile = {
+          name: finalProfileData.full_name || '',
+          title: finalProfileData.role || 'professional',
+          email: finalProfileData.email || '',
+          phone: finalProfileData.phone || '',
+          city: finalProfileData.city || '',
+          state: finalProfileData.state || '',
+          country: finalProfileData.country || 'Canada',
+          skills: finalProfileData.skills || [],
+          experiences: [],
+          certifications: [],
+        };
+
+        console.log("Profile loaded:", transformedProfile);
+        setProfile(transformedProfile);
+        setTempProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast({

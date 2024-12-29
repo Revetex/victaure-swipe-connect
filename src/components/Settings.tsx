@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { SettingsSection } from "./settings/SettingsSection";
 import { Separator } from "./ui/separator";
-import { PasswordChangeSection } from "./settings/PasswordChangeSection";
 
 export function Settings() {
   const { theme, setTheme } = useTheme();
@@ -71,14 +70,6 @@ export function Settings() {
               Notifications email
             </Label>
             <Switch defaultChecked />
-          </div>
-        </SettingsSection>
-
-        <Separator />
-
-        <SettingsSection title="Sécurité">
-          <div className="space-y-4">
-            <PasswordChangeSection />
           </div>
         </SettingsSection>
 

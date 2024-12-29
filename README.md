@@ -36,42 +36,23 @@ npm i
 npm run dev
 ```
 
-## Deployment
+**Edit a file directly in GitHub**
 
-This project is configured for optimal deployment on Vercel. Here are some key features:
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-- **Automatic deployments**: Every push to the main branch triggers a deployment
-- **Preview deployments**: Pull requests automatically get preview deployments
-- **Asset optimization**: Static assets are automatically optimized and cached
-- **Smart CDN**: Content is served from edge locations worldwide
+**Use GitHub Codespaces**
 
-### Environment Variables
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-Make sure to set these environment variables in your Vercel project:
+## What technologies are used for this project?
 
-- `VITE_SUPABASE_URL`: Your Supabase project URL
-- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-
-### Performance Optimizations
-
-The build process includes:
-
-- Code splitting and lazy loading
-- Automatic chunk optimization
-- Asset compression and caching
-- Tree shaking for smaller bundle sizes
-
-### Monitoring
-
-Monitor your deployment:
-
-1. Check build logs in Vercel dashboard
-2. Monitor performance in Vercel Analytics
-3. Set up alerts for deployment failures
-
-## Technologies Used
-
-This project is built with:
+This project is built with .
 
 - Vite
 - TypeScript
@@ -79,6 +60,10 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## Custom Domain Setup
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/052296aa-8ca7-44bf-8824-632071249d15) and click on Share -> Publish.
+
+## I want to use a custom domain - is that possible?
 
 We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)

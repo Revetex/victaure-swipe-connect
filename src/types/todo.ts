@@ -1,14 +1,13 @@
 export interface Todo {
-  id: string;
+  id: number;
   text: string;
   completed: boolean;
   dueDate?: Date;
   dueTime?: string;
-  allDay?: boolean;
 }
 
 export interface StickyNote {
-  id: string;
+  id: number;
   text: string;
   color: string;
 }

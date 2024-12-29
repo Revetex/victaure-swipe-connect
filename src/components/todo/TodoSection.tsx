@@ -8,14 +8,12 @@ interface TodoSectionProps {
   newTodo: string;
   selectedDate?: Date;
   selectedTime?: string;
-  isAllDay: boolean;
   onTodoChange: (value: string) => void;
   onDateChange: (date?: Date) => void;
   onTimeChange: (time?: string) => void;
-  onAllDayChange: (value: boolean) => void;
   onAdd: () => void;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
 export function TodoSection({
@@ -23,11 +21,9 @@ export function TodoSection({
   newTodo,
   selectedDate,
   selectedTime,
-  isAllDay,
   onTodoChange,
   onDateChange,
   onTimeChange,
-  onAllDayChange,
   onAdd,
   onToggle,
   onDelete,
@@ -43,16 +39,14 @@ export function TodoSection({
         newTodo={newTodo}
         selectedDate={selectedDate}
         selectedTime={selectedTime}
-        isAllDay={isAllDay}
         onTodoChange={onTodoChange}
         onDateChange={onDateChange}
         onTimeChange={onTimeChange}
-        onAllDayChange={onAllDayChange}
         onAdd={onAdd}
       />
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-        {todos?.map((todo) => (
+        {todos.map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}

@@ -159,7 +159,6 @@ export type Database = {
           employer_id: string | null
           id: string
           job_id: string
-          match_score: number | null
           professional_id: string
           status: string
           updated_at: string | null
@@ -169,7 +168,6 @@ export type Database = {
           employer_id?: string | null
           id?: string
           job_id: string
-          match_score?: number | null
           professional_id: string
           status?: string
           updated_at?: string | null
@@ -179,7 +177,6 @@ export type Database = {
           employer_id?: string | null
           id?: string
           job_id?: string
-          match_score?: number | null
           professional_id?: string
           status?: string
           updated_at?: string | null
@@ -247,41 +244,6 @@ export type Database = {
           {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      notes: {
-        Row: {
-          color: string
-          created_at: string | null
-          id: string
-          text: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          color?: string
-          created_at?: string | null
-          id?: string
-          text: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          color?: string
-          created_at?: string | null
-          id?: string
-          text?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notes_user_id_fkey"
-            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -366,10 +328,8 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
-          last_seen: string | null
           latitude: number | null
           longitude: number | null
-          online_status: boolean | null
           phone: string | null
           role: string
           skills: string[] | null
@@ -385,10 +345,8 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
-          last_seen?: string | null
           latitude?: number | null
           longitude?: number | null
-          online_status?: boolean | null
           phone?: string | null
           role: string
           skills?: string[] | null
@@ -404,10 +362,8 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
-          last_seen?: string | null
           latitude?: number | null
           longitude?: number | null
-          online_status?: boolean | null
           phone?: string | null
           role?: string
           skills?: string[] | null
@@ -416,94 +372,12 @@ export type Database = {
         }
         Relationships: []
       }
-      skills: {
-        Row: {
-          category: string
-          created_at: string | null
-          id: string
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          category: string
-          created_at?: string | null
-          id?: string
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          category?: string
-          created_at?: string | null
-          id?: string
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      todos: {
-        Row: {
-          all_day: boolean | null
-          completed: boolean | null
-          created_at: string | null
-          due_date: string | null
-          due_time: string | null
-          id: string
-          text: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          all_day?: boolean | null
-          completed?: boolean | null
-          created_at?: string | null
-          due_date?: string | null
-          due_time?: string | null
-          id?: string
-          text: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          all_day?: boolean | null
-          completed?: boolean | null
-          created_at?: string | null
-          due_date?: string | null
-          due_time?: string | null
-          id?: string
-          text?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "todos_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      change_user_password: {
-        Args: {
-          current_password: string
-          new_password: string
-        }
-        Returns: boolean
-      }
-      get_secret: {
-        Args: {
-          secret_name: string
-        }
-        Returns: {
-          secret: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

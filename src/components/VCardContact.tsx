@@ -22,6 +22,19 @@ interface VCardContactProps {
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
   const [pdfUrl, setPdfUrl] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(true);
+  
+  const provinces = [
+    "Alberta",
+    "Colombie-Britannique",
+    "Manitoba",
+    "Nouveau-Brunswick",
+    "Terre-Neuve-et-Labrador",
+    "Nouvelle-Écosse",
+    "Ontario",
+    "Île-du-Prince-Édouard",
+    "Québec",
+    "Saskatchewan",
+  ];
 
   useEffect(() => {
     const generatePDF = async () => {
@@ -108,10 +121,11 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                     <SelectValue placeholder="Sélectionnez une province" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Québec">Québec</SelectItem>
-                    <SelectItem value="Ontario">Ontario</SelectItem>
-                    <SelectItem value="Alberta">Alberta</SelectItem>
-                    <SelectItem value="Colombie-Britannique">Colombie-Britannique</SelectItem>
+                    {provinces.map((province) => (
+                      <SelectItem key={province} value={province}>
+                        {province}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               ) : (

@@ -2,9 +2,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
-import type { Message } from "@/hooks/useMessages";
 
-interface MessageItemProps extends Message {
+interface MessageSender {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+}
+
+interface MessageItemProps {
+  id: string;
+  content: string;
+  sender: MessageSender;
+  created_at: string;
+  read: boolean;
   onMarkAsRead: (messageId: string) => void;
 }
 

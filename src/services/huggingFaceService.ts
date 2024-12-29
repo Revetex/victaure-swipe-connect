@@ -1,122 +1,79 @@
-import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile } from "@/types/profile";
-import { checkRateLimit } from "./ai/rateLimiter";
-import { sanitizeInput } from "./ai/inputSanitizer";
+let apiKey: string | null = "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";
 
-interface HuggingFaceResponse {
-  generated_text: string;
-}
+const getApiKey = () => {
+  if (!apiKey) return null;
+  return apiKey;
+};
 
-export async function generateAIResponse(message: string, profile?: UserProfile) {
+export const setApiKey = (key: string) => {
+  apiKey = key;
+};
+
+export async function generateAIResponse(message: string, profile?: any) {
   try {
-    if (!message?.trim()) {
-      throw new Error('Message invalide');
+    const key = getApiKey();
+    if (!key) {
+      throw new Error('API key not configured');
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error('Utilisateur non authentifié');
+    if (!message || message.length > 2000) {
+      throw new Error('Invalid input');
     }
 
-    if (!checkRateLimit(user.id)) {
-      throw new Error('Limite de requêtes atteinte. Veuillez réessayer dans une minute.');
-    }
+    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel proactif et bienveillant qui peut directement modifier les VCards et créer des offres de mission. Tu guides activement les utilisateurs dans la création et l'amélioration de leur profil professionnel ainsi que dans la publication d'offres de mission.
 
-    const sanitizedMessage = sanitizeInput(message);
-    const systemPrompt = `<|system|>Je suis un assistant IA convivial qui s'adapte naturellement à chaque conversation.
+Directives de personnalité:
+1. Sois proactif - propose des suggestions concrètes sans attendre qu'on te le demande
+2. Sois guidant - explique les étapes à suivre de manière claire
+3. Sois encourageant - félicite les progrès et encourage à continuer
+4. Sois structuré - organise tes réponses par points clés
+5. Sois concis - va droit au but tout en restant aimable
+6. IMPORTANT: Ne partage jamais de code dans tes réponses, explique plutôt les concepts de manière simple
 
-CONTEXTE:
-${profile?.full_name ? `Je parle avec ${profile.full_name}` : 'Je parle avec un utilisateur'}
-${profile?.role ? `qui est ${profile.role}` : ''}
+Profil actuel de l'utilisateur:
+${profile ? JSON.stringify(profile, null, 2) : 'Pas encore de profil'}
 
-OBJECTIF:
-- Réponses naturelles et personnalisées
-- Langage simple et accessible
-- Focus sur l'aide concrète
-
-Message: ${sanitizedMessage}</s>
+Message de l'utilisateur: ${message}</s>
 <|assistant|>`;
 
-    console.log('Récupération de la clé API...');
-    const { data: secretData, error: secretError } = await supabase.rpc('get_secret', {
-      secret_name: 'HUGGING_FACE_API_KEY'
-    });
-
-    if (secretError) {
-      console.error('Erreur lors de la récupération de la clé API:', secretError);
-      throw new Error('Erreur de configuration API');
-    }
-
-    const apiKey = secretData?.[0]?.secret?.trim();
-    if (!apiKey) {
-      console.error('Clé API non trouvée ou vide');
-      throw new Error('Clé API Hugging Face non configurée. Veuillez configurer la clé API dans les paramètres.');
-    }
-
-    console.log('Envoi de la requête à Hugging Face...');
-
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
-      method: 'POST',
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 300,
-          temperature: 0.8,
+          max_new_tokens: 250,
+          temperature: 0.7,
           top_p: 0.9,
-          repetition_penalty: 1.1,
+          repetition_penalty: 1.2,
           top_k: 40,
-          do_sample: true,
-          return_full_text: false,
-          stop: ["</s>", "<|im_end|>"]
+          do_sample: true
         }
       }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erreur API Hugging Face:', errorText);
-      
-      // Check for specific error cases
-      if (response.status === 429) {
-        throw new Error('Trop de requêtes. Veuillez patienter quelques secondes avant de réessayer.');
-      } else if (response.status === 503) {
-        throw new Error('Le modèle est en cours de chargement. Veuillez réessayer dans quelques secondes.');
-      }
-      
-      throw new Error(`Erreur API: ${response.statusText}`);
+      throw new Error(`API request failed: ${response.statusText}`);
     }
 
-    const responseData = await response.json() as HuggingFaceResponse[];
-    console.log('Réponse reçue:', responseData);
-
-    if (!Array.isArray(responseData) || !responseData[0]?.generated_text) {
-      console.error('Réponse invalide:', responseData);
-      throw new Error('Format de réponse invalide');
+    const data = await response.json();
+    
+    if (!data[0]?.generated_text) {
+      throw new Error('Invalid response format from API');
     }
 
-    const generatedText = responseData[0].generated_text
-      .split('<|assistant|>')[1]?.trim()
-      .replace(/```/g, '')
-      .replace(/\n\n+/g, '\n\n')
-      .trim();
+    const generatedText = data[0].generated_text.split('<|assistant|>')[1]?.trim();
     
     if (!generatedText) {
-      console.error('Réponse vide générée');
-      throw new Error('Aucune réponse générée');
+      throw new Error('No response generated');
     }
 
-    console.log('Texte généré avec succès:', generatedText.substring(0, 100) + '...');
     return generatedText;
-
   } catch (error) {
-    console.error('Erreur lors de la génération de la réponse:', error);
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error('Une erreur inattendue est survenue');
+    console.error('Error generating response:', error);
+    throw error;
   }
 }

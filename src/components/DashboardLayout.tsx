@@ -1,90 +1,44 @@
+import { Calendar } from "@/components/ui/calendar";
+import { VCard } from "@/components/VCard";
+import { TodoList } from "@/components/TodoList";
+import { MrVictaure } from "@/components/MrVictaure";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
-import { TodoList } from "@/components/TodoList";
-import { VCard } from "@/components/VCard";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
-import type { CarouselApi } from "@/components/ui/carousel";
+import { Settings } from "@/components/Settings";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const sections = [
-  { id: 'messages', title: 'Messages', component: Messages, icon: '💬' },
-  { id: 'jobs', title: 'Offres', component: SwipeJob, icon: '💼' },
-  { id: 'todos', title: 'Tâches', component: TodoList, icon: '📝' },
-  { id: 'profile', title: 'Profil', component: VCard, icon: '👤' },
-];
-
 export function DashboardLayout() {
-  const [activeSection, setActiveSection] = useState(0);
-  const [api, setApi] = useState<CarouselApi>();
   const isMobile = useIsMobile();
 
-  const scrollTo = (index: number) => {
-    api?.scrollTo(index);
-    setActiveSection(index);
-  };
-
-  useEffect(() => {
-    if (!api) return;
-
-    api.on("select", () => {
-      const selectedIndex = api.selectedScrollSnap();
-      setActiveSection(selectedIndex);
-    });
-  }, [api]);
-
   return (
-    <div className="min-h-screen w-screen bg-background">
-      <div className="pt-16 pb-20">
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-          setApi={setApi}
-        >
-          <CarouselContent className="-ml-0">
-            {sections.map((section) => (
-              <CarouselItem key={section.id} className="pl-0">
-                <div className={cn(
-                  "w-full transition-all duration-300",
-                  isMobile ? "px-2" : "px-4"
-                )}>
-                  <section.component />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      </div>
+    <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 min-h-screen bg-background">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+        {/* Agent Mr-Victaure - Toujours en haut sur mobile */}
+        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-1"}`}>
+          <MrVictaure />
+        </div>
 
-      <div 
-        className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 flex justify-center transition-all duration-300 bg-background/80 backdrop-blur-sm border-t border-border",
-          isMobile ? "py-2" : "py-4"
-        )}
-      >
-        <div className="flex gap-8">
-          {sections.map((section, index) => (
-            <button
-              key={index}
-              onClick={() => scrollTo(index)}
-              className={cn(
-                "relative transition-all duration-300 rounded-lg px-3 py-2 group flex flex-col items-center gap-1",
-                activeSection === index 
-                  ? "bg-primary text-primary-foreground" 
-                  : "hover:bg-primary/10"
-              )}
-              aria-label={`Aller à la section ${section.title}`}
-            >
-              <span className="text-lg">{section.icon}</span>
-              <span className="text-xs font-medium">
-                {section.title}
-              </span>
-            </button>
-          ))}
+        {/* SwipeJob - Pleine largeur sur mobile */}
+        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}>
+          <SwipeJob />
+        </div>
+
+        {/* Composants secondaires - Empilés sur mobile */}
+        <div className="glass-card rounded-lg p-3 sm:p-4">
+          <TodoList />
+        </div>
+
+        <div className="glass-card rounded-lg p-3 sm:p-4">
+          <Messages />
+        </div>
+
+        <div className="glass-card rounded-lg p-3 sm:p-4">
+          <Settings />
+        </div>
+
+        {/* VCard - Pleine largeur en bas */}
+        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-3 2xl:col-span-4"}`}>
+          <VCard />
         </div>
       </div>
     </div>

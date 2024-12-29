@@ -6,7 +6,6 @@ import { generateVCardPDF } from "@/utils/pdfGenerator";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
 import { VCardContent } from "./vcard/VCardContent";
-import type { UserProfile } from "@/types/profile";
 
 export function VCard() {
   const { toast } = useToast();
@@ -20,8 +19,8 @@ export function VCard() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: profile.full_name || '',
-          text: `Professional profile of ${profile.full_name || ''}`,
+          title: profile.name,
+          text: `Professional profile of ${profile.name}`,
           url: window.location.href,
         });
         toast({
@@ -48,7 +47,7 @@ export function VCard() {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `${profile.full_name?.replace(" ", "_") || 'profile'}.vcf`);
+    link.setAttribute("download", `${profile.name.replace(" ", "_")}.vcf`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -140,23 +139,21 @@ export function VCard() {
   }
 
   return (
-    <div className="space-y-4">
-      <VCardContent
-        profile={profile}
-        tempProfile={tempProfile}
-        isEditing={isEditing}
-        setProfile={setProfile}
-        setTempProfile={setTempProfile}
-        setIsEditing={setIsEditing}
-        newSkill={newSkill}
-        setNewSkill={setNewSkill}
-        onShare={handleShare}
-        onDownload={handleDownloadVCard}
-        onDownloadPDF={handleDownloadPDF}
-        onCopyLink={handleCopyLink}
-        onSave={handleSave}
-        onApplyChanges={handleApplyChanges}
-      />
-    </div>
+    <VCardContent
+      profile={profile}
+      tempProfile={tempProfile}
+      isEditing={isEditing}
+      setProfile={setProfile}
+      setTempProfile={setTempProfile}
+      setIsEditing={setIsEditing}
+      newSkill={newSkill}
+      setNewSkill={setNewSkill}
+      onShare={handleShare}
+      onDownload={handleDownloadVCard}
+      onDownloadPDF={handleDownloadPDF}
+      onCopyLink={handleCopyLink}
+      onSave={handleSave}
+      onApplyChanges={handleApplyChanges}
+    />
   );
 }

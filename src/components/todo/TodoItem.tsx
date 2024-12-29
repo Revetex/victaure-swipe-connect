@@ -7,8 +7,8 @@ import { Todo } from "@/types/todo";
 
 interface TodoItemProps {
   todo: Todo;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
@@ -30,10 +30,7 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
         {(todo.dueDate || todo.dueTime) && (
           <span className="text-xs text-muted-foreground">
             {todo.dueDate && `Pour le ${format(todo.dueDate, 'dd/MM/yyyy', { locale: fr })}`}
-            {todo.allDay 
-              ? " (toute la journée)" 
-              : todo.dueTime && ` à ${todo.dueTime}`
-            }
+            {todo.dueTime && ` à ${todo.dueTime}`}
           </span>
         )}
       </div>

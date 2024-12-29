@@ -24,7 +24,7 @@ export function useMessages() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data: messages, error } = await supabase
         .from('messages')
         .select(`
           id,
@@ -41,11 +41,7 @@ export function useMessages() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
-      return (data || []).map(message => ({
-        ...message,
-        sender: message.sender as Message['sender']
-      }));
+      return messages as Message[];
     },
   });
 
@@ -61,7 +57,8 @@ export function useMessages() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Error marking message as read:', error);
       toast({
         variant: "destructive",
         title: "Erreur",
