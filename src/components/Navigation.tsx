@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Logo } from "@/components/Logo";
 
 export function Navigation() {
   const isMobile = useIsMobile();
@@ -28,9 +29,12 @@ export function Navigation() {
   return (
     <header className="fixed top-0 left-0 right-0 bg-background/90 backdrop-blur-sm border-b border-border z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <a href="/" className="font-bold text-2xl text-primary relative group">
-          <span className="animate-glow">Victaure</span>
-          <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
+        <a href="/" className="flex items-center gap-3 group">
+          <Logo size={isMobile ? "sm" : "md"} />
+          <span className="font-bold text-xl sm:text-2xl text-primary relative">
+            Victaure
+            <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
+          </span>
         </a>
         
         {isMobile ? (

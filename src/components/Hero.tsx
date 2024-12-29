@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export function Hero() {
   return (
@@ -7,10 +8,13 @@ export function Hero() {
       <div className="absolute inset-0 bg-cyber-pattern opacity-10" />
       <div className="relative z-10">
         <div className="inline-block animate-glow mb-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-victaure-blue-light mb-2">
-            Transformez votre carrière avec{" "}
-            <span className="text-victaure-orange-light">Victaure</span>
-          </h1>
+          <div className="flex flex-col items-center gap-6 mb-8">
+            <Logo size="lg" className="mb-4" />
+            <h1 className="text-4xl md:text-5xl font-bold text-victaure-blue-light mb-2">
+              Transformez votre carrière avec{" "}
+              <span className="text-victaure-orange-light">Victaure</span>
+            </h1>
+          </div>
           <div className="h-1 w-32 bg-gradient-to-r from-victaure-blue to-victaure-orange mx-auto rounded-full" />
         </div>
         <p className="text-lg text-victaure-gray max-w-2xl mx-auto mb-8">
