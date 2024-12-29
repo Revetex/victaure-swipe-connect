@@ -20,14 +20,7 @@ async function getApiKey() {
       throw new Error('Empty HuggingFace API key');
     }
 
-    const apiKey = String(data).trim();
-    
-    if (!apiKey || apiKey.length < 20) {
-      toast.error("La clé API HuggingFace semble invalide");
-      throw new Error('Invalid HuggingFace API key format');
-    }
-
-    return apiKey;
+    return data;
   } catch (error) {
     console.error('Error in getApiKey:', error);
     throw error;
@@ -79,7 +72,7 @@ export async function generateAIResponse(prompt: string): Promise<string> {
   } catch (error) {
     console.error('Error generating AI response:', error);
     toast.error("Erreur lors de la génération de la réponse", {
-      description: error.message,
+      description: "Le service est temporairement indisponible. Veuillez réessayer plus tard.",
     });
     throw error;
   }
