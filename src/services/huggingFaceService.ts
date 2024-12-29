@@ -7,27 +7,30 @@ import { getFallbackResponse } from "./ai/fallbackResponses";
 
 export async function generateAIResponse(message: string, profile?: UserProfile) {
   try {
-    // Input validation
     if (!message?.trim()) {
       throw new Error('Message invalide');
     }
 
-    // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       throw new Error('Utilisateur non authentifié');
     }
 
-    // Rate limiting
     if (!checkRateLimit(user.id)) {
       throw new Error('Limite de requêtes atteinte. Veuillez réessayer dans une minute.');
     }
 
-    // Sanitize input and build prompt
     const sanitizedMessage = sanitizeInput(message);
     const systemPrompt = buildSystemPrompt(profile, sanitizedMessage);
 
-    // Enhanced API call with better error handling
+    console.log('Generating AI response with prompt:', {
+      profile: profile?.id,
+      messageLength: sanitizedMessage.length,
+      hasSkills: profile?.skills?.length > 0,
+      hasCertifications: profile?.certifications?.length > 0,
+      hasBio: !!profile?.bio
+    });
+
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
         'Authorization': 'Bearer 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',
@@ -68,13 +71,9 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Aucune réponse générée');
     }
 
-    // Log interaction for analysis and security monitoring
-    console.log('AI Interaction:', {
-      userProfile: profile?.id,
-      messageType: 'vcard-consultation',
-      timestamp: new Date().toISOString(),
-      messageLength: sanitizedMessage.length,
-      responseLength: generatedText.length
+    console.log('AI Response generated successfully:', {
+      length: generatedText.length,
+      preview: generatedText.substring(0, 100)
     });
 
     return generatedText;
