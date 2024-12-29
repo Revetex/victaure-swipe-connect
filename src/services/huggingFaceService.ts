@@ -13,14 +13,6 @@ async function getApiKey() {
       throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
     }
 
-    // Log the data we received (without the actual key)
-    console.log('Received secret data:', {
-      hasData: !!data,
-      dataLength: data?.length,
-      hasSecret: !!data?.[0]?.secret
-    });
-
-    // Check if we have data and it contains a non-empty secret
     if (!data || !Array.isArray(data) || data.length === 0 || !data[0]?.secret?.trim()) {
       console.error('No valid API key found in Supabase secrets');
       throw new Error('Please add your HuggingFace API key in Supabase secrets');
@@ -36,8 +28,6 @@ async function getApiKey() {
 export async function generateAIResponse(prompt: string): Promise<string> {
   try {
     const apiKey = await getApiKey();
-    
-    console.log('Sending request to HuggingFace API...');
     
     const response = await fetch(MODEL_URL, {
       method: 'POST',
@@ -70,8 +60,7 @@ export async function generateAIResponse(prompt: string): Promise<string> {
     }
 
     const result = await response.json();
-    console.log('HuggingFace API Response:', result);
-
+    
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text || '';
       return generatedText.trim();
