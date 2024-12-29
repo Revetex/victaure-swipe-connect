@@ -9,8 +9,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { format, isToday, isYesterday } from "date-fns";
 import { fr } from "date-fns/locale";
+import { MessageList } from "@/components/messages/MessageList";
+import { useQuery } from "@tanstack/react-query";
 
 export function MessagesTab() {
+  const [showConversationList, setShowConversationList] = useState(true);
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
   const {
     messages: assistantMessages,
@@ -24,6 +27,42 @@ export function MessagesTab() {
   } = useChat();
 
   const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // Fetch matched users
+  const { data: matchedUsers } = useQuery({
+    queryKey: ['matched-users'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
+      const { data: matches } = await supabase
+        .from('matches')
+        .select(`
+          professional_id,
+          employer_id,
+          profiles!matches_professional_id_fkey (
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .or(`professional_id.eq.${user.id},employer_id.eq.${user.id}`)
+        .eq('status', 'accepted');
+
+      if (!matches) return [];
+
+      const userIds = matches.map(match => 
+        match.professional_id === user.id ? match.employer_id : match.professional_id
+      );
+
+      const { data: users } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', userIds);
+
+      return users || [];
+    }
+  });
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -55,7 +94,6 @@ export function MessagesTab() {
     }))
   ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
-  // Grouper les messages par date
   const messagesByDate = allMessages.reduce((groups, message) => {
     const date = new Date(message.created_at);
     const dateStr = format(date, 'yyyy-MM-dd');
@@ -85,11 +123,64 @@ export function MessagesTab() {
     );
   }
 
+  if (showConversationList) {
+    return (
+      <div className="flex flex-col h-full p-4 space-y-4">
+        {/* Mr Victaure (Pinned) */}
+        <div 
+          onClick={() => setShowConversationList(false)}
+          className="flex items-center p-4 space-x-4 bg-primary/5 rounded-lg cursor-pointer hover:bg-primary/10 transition-colors"
+        >
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <MessageSquare className="h-6 w-6 text-primary" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
+              <div className="h-3 w-3 rounded-full bg-green-500" />
+            </div>
+          </div>
+          <div>
+            <h3 className="font-semibold">Mr Victaure</h3>
+            <p className="text-sm text-muted-foreground">Assistant IA Personnel</p>
+          </div>
+        </div>
+
+        {/* Matched Users */}
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-muted-foreground px-2">Conversations</h4>
+          {matchedUsers?.map((user) => (
+            <div
+              key={user.id}
+              className="flex items-center p-4 space-x-4 rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
+              onClick={() => {
+                // TODO: Implement user chat
+                console.log("Open chat with user:", user.id);
+              }}
+            >
+              <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center overflow-hidden">
+                {user.avatar_url ? (
+                  <img src={user.avatar_url} alt={user.full_name} className="h-full w-full object-cover" />
+                ) : (
+                  <MessageSquare className="h-6 w-6 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <h3 className="font-medium">{user.full_name}</h3>
+                <p className="text-sm text-muted-foreground">Cliquez pour discuter</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
       <ChatHeader 
         isThinking={isThinking} 
         onClearChat={clearChat}
+        onBack={() => setShowConversationList(true)}
       />
 
       <ScrollArea className="flex-1 p-4">
