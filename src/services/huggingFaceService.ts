@@ -24,30 +24,19 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     }
 
     const sanitizedMessage = sanitizeInput(message);
-    const systemPrompt = `<|system|>Je suis Mr. Victaure, un assistant IA convivial et professionnel. Je m'adapte à chaque utilisateur pour fournir des réponses pertinentes et utiles.
+    const systemPrompt = `<|system|>Je suis un assistant IA convivial qui s'adapte naturellement à chaque conversation.
 
-DIRECTIVES:
-1. Réponses claires et concises
-2. Langage naturel et accessible
-3. Exemples concrets quand c'est utile
-4. Focus sur les solutions pratiques
+CONTEXTE:
+${profile?.full_name ? `Je parle avec ${profile.full_name}` : 'Je parle avec un utilisateur'}
+${profile?.role ? `qui est ${profile.role}` : ''}
 
-CONTEXTE UTILISATEUR:
-${profile ? `
-- Nom: ${profile.full_name || 'Non spécifié'}
-- Rôle: ${profile.role || 'Non spécifié'}
-- Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
-- Localisation: ${[profile.city, profile.country].filter(Boolean).join(', ')}
-` : 'Profil non disponible'}
+OBJECTIF:
+- Réponses naturelles et personnalisées
+- Langage simple et accessible
+- Focus sur l'aide concrète
 
 Message: ${sanitizedMessage}</s>
 <|assistant|>`;
-
-    console.log('Generating AI response with context:', {
-      messageLength: sanitizedMessage.length,
-      hasProfile: !!profile,
-      role: profile?.role
-    });
 
     const { data: secretData, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
@@ -67,10 +56,10 @@ Message: ${sanitizedMessage}</s>
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 500,
-          temperature: 0.7,
+          max_new_tokens: 300,
+          temperature: 0.8,
           top_p: 0.9,
-          repetition_penalty: 1.2,
+          repetition_penalty: 1.1,
           top_k: 40,
           do_sample: true,
           return_full_text: false,
@@ -100,11 +89,6 @@ Message: ${sanitizedMessage}</s>
     if (!generatedText) {
       throw new Error('Aucune réponse générée');
     }
-
-    console.log('AI Response generated successfully:', {
-      length: generatedText.length,
-      preview: generatedText.substring(0, 100)
-    });
 
     return generatedText;
   } catch (error) {
