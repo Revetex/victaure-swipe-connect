@@ -17,6 +17,7 @@ interface MessageItemProps {
   created_at: string;
   read: boolean;
   onMarkAsRead: (messageId: string) => void;
+  onClick: () => void;
 }
 
 export function MessageItem({
@@ -26,8 +27,16 @@ export function MessageItem({
   created_at,
   read,
   onMarkAsRead,
+  onClick,
 }: MessageItemProps) {
   const isAssistant = sender.id === 'assistant';
+
+  const handleClick = () => {
+    if (!read && !isAssistant) {
+      onMarkAsRead(id);
+    }
+    onClick();
+  };
 
   return (
     <motion.div
@@ -35,7 +44,7 @@ export function MessageItem({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
-      onClick={() => !read && !isAssistant && onMarkAsRead(id)}
+      onClick={handleClick}
       className={`p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
         !read && !isAssistant
           ? "bg-primary/10 border-l-2 border-primary shadow-sm" 
