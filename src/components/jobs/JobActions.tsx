@@ -13,6 +13,7 @@ interface JobActionsProps {
 
 export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsProps) {
   const [isOwner, setIsOwner] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const checkOwnership = async () => {
@@ -24,7 +25,10 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
   }, [employerId]);
 
   const handleDelete = async () => {
+    if (isDeleting) return; // Éviter les doubles clics
+    
     try {
+      setIsDeleting(true);
       console.log("Attempting to delete job:", jobId);
       
       // D'abord, supprimer tous les matches associés
@@ -39,7 +43,19 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         return;
       }
 
-      // Ensuite, supprimer l'offre
+      // Ensuite, supprimer les paiements associés aux matches
+      const { error: paymentsError } = await supabase
+        .from('payments')
+        .delete()
+        .eq('match_id', jobId);
+
+      if (paymentsError) {
+        console.error("Error deleting payments:", paymentsError);
+        toast.error("Erreur lors de la suppression des paiements associés");
+        return;
+      }
+
+      // Enfin, supprimer l'offre
       const { error: jobError } = await supabase
         .from('jobs')
         .delete()
@@ -50,12 +66,14 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         toast.error("Erreur lors de la suppression de l'offre");
         return;
       }
-      
+
       toast.success("Offre supprimée avec succès");
       onDelete();
     } catch (error) {
       console.error("Error in handleDelete:", error);
       toast.error("Une erreur est survenue");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -76,10 +94,11 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         variant="outline"
         size="sm"
         onClick={handleDelete}
+        disabled={isDeleting}
         className="text-red-600 hover:text-red-700"
       >
         <Trash className="h-4 w-4 mr-2" />
-        Supprimer
+        {isDeleting ? "Suppression..." : "Supprimer"}
       </Button>
     </div>
   );
