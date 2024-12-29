@@ -1,3 +1,5 @@
+import type { Tables } from './tables';
+
 export type Json =
   | string
   | number
