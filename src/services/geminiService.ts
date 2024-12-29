@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 async function getApiKey() {
   try {
@@ -9,16 +10,17 @@ async function getApiKey() {
       secret_name: 'GEMINI_API_KEY'
     });
 
+    console.log('API key response:', { hasData: !!data, secret: data?.secret });
+
     if (error) {
-      console.error('Error fetching Gemini API key:', error);
-      toast.error("Erreur lors de la récupération de la clé API Gemini");
+      console.error('Error fetching API key:', error);
+      toast.error("Erreur lors de la récupération de la clé API", {
+        description: error.message,
+      });
       throw new Error(`Failed to fetch Gemini API key: ${error.message}`);
     }
 
-    console.log('API key response:', { hasData: !!data, dataLength: data?.length });
-
-    // Check if we got any data back
-    if (!data || data.length === 0) {
+    if (!data?.secret) {
       toast.error("La clé API Gemini n'est pas configurée", {
         description: "Veuillez vérifier que la clé existe dans les paramètres Supabase",
         action: {
@@ -26,10 +28,10 @@ async function getApiKey() {
           onClick: () => window.open("https://supabase.com/dashboard/project/mfjllillnpleasclqabb/settings/secrets", "_blank")
         }
       });
-      throw new Error('Gemini API key not found in secrets');
+      throw new Error('Empty Gemini API key');
     }
 
-    const apiKey = data[0]?.secret?.trim();
+    const apiKey = data.secret.trim();
     console.log('API key retrieved:', { hasKey: !!apiKey, keyLength: apiKey?.length });
 
     if (!apiKey) {
@@ -50,67 +52,18 @@ async function getApiKey() {
   }
 }
 
-export async function generateAIResponse(message: string) {
+export async function generateAIResponse(prompt: string) {
   try {
     const apiKey = await getApiKey();
-    console.log('Successfully retrieved Gemini API key');
+    
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `Tu es un assistant professionnel qui aide les utilisateurs dans leur recherche d'emploi. Sois précis et concis dans tes réponses. Message de l'utilisateur: ${message}`
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 1000,
-        },
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          }
-        ]
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Gemini API error:', errorData);
-      toast.error("Erreur lors de la génération de la réponse");
-      throw new Error(`Gemini API error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log('Gemini API response:', data);
-
-    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      console.error('Unexpected Gemini API response format:', data);
-      toast.error("Format de réponse inattendu");
-      throw new Error('Unexpected API response format');
-    }
-
-    return data.candidates[0].content.parts[0].text;
-
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    return text;
   } catch (error) {
     console.error('Error generating AI response:', error);
     throw error;
