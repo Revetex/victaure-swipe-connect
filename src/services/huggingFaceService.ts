@@ -20,7 +20,9 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Impossible de récupérer le token d\'accès');
     }
 
-    if (!secretData.trim()) {
+    // Access the first item's secret property and check if it's empty
+    const token = secretData[0]?.secret;
+    if (!token?.trim()) {
       throw new Error('Token d\'accès Hugging Face non configuré');
     }
 
@@ -32,7 +34,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
     const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
       headers: {
-        'Authorization': `Bearer ${secretData}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
