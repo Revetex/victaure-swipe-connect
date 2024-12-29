@@ -4,16 +4,26 @@ let apiKey: string | null = null;
 
 const getApiKey = async () => {
   if (!apiKey) {
-    const { data, error } = await supabase.functions.invoke('get-secret', {
-      body: { secretName: 'HUGGING_FACE_ACCESS_TOKEN' },
-    });
-    
-    if (error || !data?.secret) {
-      console.error('Error fetching Hugging Face API key:', error);
-      throw new Error('Failed to get Hugging Face API key');
+    try {
+      const { data, error } = await supabase.functions.invoke('get-secret', {
+        body: { secretName: 'HUGGING_FACE_ACCESS_TOKEN' }
+      });
+      
+      if (error) {
+        console.error('Error fetching Hugging Face API key:', error);
+        throw new Error('Failed to get Hugging Face API key');
+      }
+      
+      if (!data?.secret) {
+        console.error('No API key returned from get-secret function');
+        throw new Error('Hugging Face API key not found');
+      }
+      
+      apiKey = data.secret;
+    } catch (error) {
+      console.error('Error in getApiKey:', error);
+      throw error;
     }
-    
-    apiKey = data.secret;
   }
   return apiKey;
 };
