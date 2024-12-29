@@ -11,6 +11,12 @@ import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function MrVictaure() {
   const { t } = useTranslation();
@@ -152,18 +158,27 @@ export function MrVictaure() {
         />
       </div>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggleMaximize}
-        className="absolute top-4 right-4 hover:bg-victaure-blue/10"
-      >
-        {isMaximized ? (
-          <Minimize2 className="h-4 w-4" title={t("mrVictaure.minimize")} />
-        ) : (
-          <Maximize2 className="h-4 w-4" title={t("mrVictaure.maximize")} />
-        )}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMaximize}
+              className="absolute top-4 right-4 hover:bg-victaure-blue/10"
+            >
+              {isMaximized ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isMaximized ? t("mrVictaure.minimize") : t("mrVictaure.maximize")}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }
