@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 let apiKey: string | null = null;
 
 const getApiKey = async () => {
