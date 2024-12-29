@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMessages } from "@/hooks/useMessages";
-import { AssistantTab } from "./messages/tabs/AssistantTab";
 import { MessagesTab } from "./messages/tabs/MessagesTab";
 import { NotificationsTab } from "./messages/tabs/NotificationsTab";
 import { useState, useEffect } from "react";
@@ -60,11 +59,8 @@ export function Messages() {
 
   return (
     <div className="space-y-4 h-full">
-      <Tabs defaultValue="assistant" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="assistant" className="relative">
-            Assistant
-          </TabsTrigger>
+      <Tabs defaultValue="messages" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="messages" className="relative">
             Messages
             {unreadMessagesCount > 0 && (
@@ -82,10 +78,6 @@ export function Messages() {
             )}
           </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="assistant">
-          <AssistantTab />
-        </TabsContent>
 
         <TabsContent value="messages">
           <MessagesTab />
