@@ -97,7 +97,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
           <Avatar className="h-20 w-20 ring-2 ring-background">
             <AvatarImage 
               src={profile.avatar_url} 
-              alt={profile.name}
+              alt={profile.full_name}
               className="object-cover"
             />
             <AvatarFallback className="bg-muted">
@@ -124,8 +124,8 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
           <div className="text-2xl font-bold text-foreground">
             {isEditing ? (
               <Input
-                value={profile.name}
-                onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                value={profile.full_name || ""}
+                onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
                 className="text-2xl font-bold"
                 placeholder="Votre nom"
               />
@@ -135,7 +135,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                {profile.name || "Nom non défini"}
+                {profile.full_name || "Nom non défini"}
               </motion.h2>
             )}
           </div>
@@ -143,8 +143,8 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
             <Briefcase className="h-4 w-4" />
             {isEditing ? (
               <Select
-                value={profile.title}
-                onValueChange={(value) => setProfile({ ...profile, title: value })}
+                value={profile.role || ""}
+                onValueChange={(value) => setProfile({ ...profile, role: value })}
               >
                 <SelectTrigger className="w-full sm:w-[250px]">
                   <SelectValue placeholder="Sélectionnez un titre" />
@@ -163,7 +163,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                {profile.title || "Titre non défini"}
+                {profile.role || "Titre non défini"}
               </motion.span>
             )}
           </div>

@@ -1,7 +1,22 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import type { UserProfile } from "@/data/mockProfile";
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  role: string;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string;
+  skills: string[] | null;
+  latitude: number | null;
+  longitude: number | null;
+}
 
 export function useProfile() {
   const { toast } = useToast();
@@ -17,58 +32,45 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        let finalProfileData;
-        const { data: existingProfile, error } = await supabase
+        const { data: profileData, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .maybeSingle();
+          .single();
 
         if (error) {
           throw error;
         }
 
-        if (!existingProfile) {
+        if (!profileData) {
+          const defaultProfile: UserProfile = {
+            id: user.id,
+            email: user.email || '',
+            full_name: null,
+            avatar_url: null,
+            role: 'professional',
+            bio: null,
+            phone: null,
+            city: null,
+            state: null,
+            country: 'Canada',
+            skills: [],
+            latitude: null,
+            longitude: null,
+          };
+
           const { error: insertError } = await supabase
             .from('profiles')
-            .insert({
-              id: user.id,
-              email: user.email,
-              role: 'professional',
-            });
+            .insert(defaultProfile);
 
           if (insertError) throw insertError;
 
-          const { data: newProfile, error: fetchError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          if (fetchError) throw fetchError;
-          if (!newProfile) throw new Error("Failed to create profile");
-
-          finalProfileData = newProfile;
+          setProfile(defaultProfile);
+          setTempProfile(defaultProfile);
         } else {
-          finalProfileData = existingProfile;
+          setProfile(profileData);
+          setTempProfile(profileData);
         }
-
-        const transformedProfile: UserProfile = {
-          name: finalProfileData.full_name || '',
-          title: finalProfileData.role || 'professional',
-          email: finalProfileData.email || '',
-          phone: finalProfileData.phone || '',
-          city: finalProfileData.city || '',
-          state: finalProfileData.state || '',
-          country: finalProfileData.country || 'Canada',
-          skills: finalProfileData.skills || [],
-          experiences: [],
-          certifications: [],
-        };
-
-        console.log("Profile loaded:", transformedProfile);
-        setProfile(transformedProfile);
-        setTempProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast({
