@@ -22,14 +22,14 @@ export function DashboardLayout() {
           <SwipeJob />
         </div>
 
-        {/* VCard - Maintenant dans une colonne dédiée */}
-        <div className="lg:col-span-1">
-          <VCard />
-        </div>
-
-        {/* Composants secondaires - Empilés sur mobile */}
+        {/* TodoList - Maintenant au-dessus de VCard */}
         <div className="glass-card rounded-lg p-3 sm:p-4">
           <TodoList />
+        </div>
+
+        {/* VCard - Maintenant en dessous de TodoList */}
+        <div className="lg:col-span-1">
+          <VCard />
         </div>
       </div>
     </div>
