@@ -5,9 +5,14 @@ import { ChatConversation } from "./ChatConversation";
 import { useChat } from "@/hooks/useChat";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 export function AIAssistant() {
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isConnecting, setIsConnecting] = useState(true);
+  const { toast } = useToast();
+  
   const {
     messages: assistantMessages,
     inputMessage,
@@ -21,18 +26,32 @@ export function AIAssistant() {
 
   useEffect(() => {
     const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        setCurrentUser(profile);
+      try {
+        setIsConnecting(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+            
+          if (error) throw error;
+          setCurrentUser(profile);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        toast({
+          variant: "destructive",
+          title: "Erreur de connexion",
+          description: "Impossible de récupérer vos informations. Veuillez réessayer.",
+        });
+      } finally {
+        setIsConnecting(false);
       }
     };
     getCurrentUser();
-  }, []);
+  }, [toast]);
 
   const formattedMessages = assistantMessages.map(msg => ({
     id: msg.id,
@@ -58,17 +77,40 @@ export function AIAssistant() {
   }, {} as Record<string, typeof formattedMessages>);
 
   return (
-    <div className="flex flex-col h-full">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col h-full"
+    >
       <ChatHeader 
         isThinking={isThinking} 
         onClearChat={clearChat}
+        isConnecting={isConnecting}
       />
 
-      <ChatConversation 
-        messagesByDate={messagesByDate}
-        currentUser={currentUser}
-        isThinking={isThinking}
-      />
+      <AnimatePresence mode="wait">
+        {isConnecting ? (
+          <motion.div
+            key="connecting"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex-1 flex items-center justify-center"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+              <p className="text-muted-foreground">Connexion en cours...</p>
+            </div>
+          </motion.div>
+        ) : (
+          <ChatConversation 
+            messagesByDate={messagesByDate}
+            currentUser={currentUser}
+            isThinking={isThinking}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="p-4 border-t bg-background">
         <ChatInput
@@ -78,8 +120,9 @@ export function AIAssistant() {
           onVoiceInput={handleVoiceInput}
           isListening={isListening}
           isThinking={isThinking}
+          disabled={isConnecting}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,59 +1,50 @@
-import { Bot, Brain, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 interface ChatHeaderProps {
-  onClearChat?: () => void;
   isThinking: boolean;
-  onBack?: () => void;
+  isConnecting: boolean;
+  onClearChat: () => void;
 }
 
-export function ChatHeader({ onClearChat, isThinking, onBack }: ChatHeaderProps) {
+export function ChatHeader({ isThinking, isConnecting, onClearChat }: ChatHeaderProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex items-center p-4 border-b bg-background/80 backdrop-blur-sm"
+      className="flex items-center justify-between p-4 border-b bg-background"
     >
-      {onBack && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBack}
-          className="mr-4"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-      )}
-
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="relative">
-          <div className={`h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 ${isThinking ? 'animate-pulse' : ''}`}>
-            <Bot className="h-6 w-6 text-primary" />
-          </div>
-          <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
-            <Brain className={`h-3 w-3 text-green-500 ${isThinking ? 'animate-spin' : ''}`} />
-          </div>
+          <img 
+            src="/bot-avatar.png" 
+            alt="Mr Victaure" 
+            className="w-10 h-10 rounded-full"
+          />
+          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${isConnecting ? 'bg-orange-500' : isThinking ? 'bg-primary animate-pulse' : 'bg-green-500'}`} />
         </div>
         <div>
-          <h2 className="text-lg font-semibold">Mr. Victaure</h2>
+          <h3 className="font-semibold">Mr Victaure</h3>
           <p className="text-sm text-muted-foreground">
-            {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
+            {isConnecting ? 'Connexion...' : isThinking ? 'En train d\'écrire...' : 'En ligne'}
           </p>
         </div>
       </div>
 
-      {onClearChat && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClearChat}
-          className="ml-auto"
-        >
-          <ArrowLeft className="h-5 w-5 rotate-45" />
-        </Button>
-      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClearChat}
+        disabled={isConnecting || isThinking}
+        className="text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {isThinking ? (
+          <Loader2 className="h-5 w-5 animate-spin" />
+        ) : (
+          <Trash2 className="h-5 w-5" />
+        )}
+      </Button>
     </motion.div>
   );
 }
