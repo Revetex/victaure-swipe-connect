@@ -42,10 +42,9 @@ export function useMessages() {
 
       if (error) throw error;
 
-      // Transform the data to match the Message type
       return (data || []).map(message => ({
         ...message,
-        sender: message.sender as Message['sender'] // Type assertion since we know the structure
+        sender: message.sender as Message['sender']
       }));
     },
   });

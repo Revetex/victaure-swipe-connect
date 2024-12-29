@@ -8,14 +8,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Bell, Settings2 } from "lucide-react";
 
-interface Notification {
-  id: string;
-  read: boolean;
-}
-
 export function Messages() {
   const { messages: userMessages } = useMessages();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<{ id: string; read: boolean }[]>([]);
   const unreadMessagesCount = userMessages.filter(m => !m.read).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
@@ -39,14 +34,8 @@ export function Messages() {
       .channel('notifications')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'notifications'
-        },
-        () => {
-          fetchNotifications();
-        }
+        { event: '*', schema: 'public', table: 'notifications' },
+        fetchNotifications
       )
       .subscribe();
 
