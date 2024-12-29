@@ -61,8 +61,7 @@ export function useMessages() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },
-    onError: (error) => {
-      console.error('Error marking message as read:', error);
+    onError: () => {
       toast({
         variant: "destructive",
         title: "Erreur",
