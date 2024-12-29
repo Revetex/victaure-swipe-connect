@@ -9,23 +9,12 @@ export default function AuthPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const clearSession = async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Error clearing session:", error);
-      }
-    };
-    
-    clearSession();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_IN' && session) {
         toast.success("Connexion réussie");
         navigate("/dashboard");
-      } else if (event === 'SIGNED_OUT') {
-        console.log("User signed out");
       }
     });
 

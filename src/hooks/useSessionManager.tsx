@@ -10,12 +10,6 @@ export const useSessionManager = () => {
   useEffect(() => {
     const initSession = async () => {
       try {
-        // Clear any stale session data
-        const { error: signOutError } = await supabase.auth.signOut();
-        if (signOutError) {
-          console.error("Error clearing session:", signOutError);
-        }
-
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         if (error) {
           console.error("Error getting session:", error);
@@ -24,15 +18,6 @@ export const useSessionManager = () => {
         }
 
         if (currentSession) {
-          // Verify the session is valid by attempting to refresh
-          const { error: refreshError } = await supabase.auth.refreshSession();
-          if (refreshError) {
-            console.error("Session refresh error:", refreshError);
-            toast.error("Session expirée, veuillez vous reconnecter");
-            await supabase.auth.signOut();
-            setSession(null);
-            return;
-          }
           setSession(currentSession);
         }
       } catch (error) {

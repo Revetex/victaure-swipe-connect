@@ -16,7 +16,7 @@ export function Navigation() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event);
-      if (!session) {
+      if (event === 'SIGNED_OUT') {
         navigate("/auth");
       }
     });
