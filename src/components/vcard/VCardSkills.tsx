@@ -1,10 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { skillCategories } from "@/data/skills";
 import { VCardSection } from "../VCardSection";
 import { Brain } from "lucide-react";
 import { useState } from "react";
-import { SkillCategory } from "../skills/SkillCategory";
+import { SkillList } from "../skills/SkillList";
 import { SkillEditor } from "../skills/SkillEditor";
+import { skillCategories } from "@/data/skills";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -90,18 +89,11 @@ export function VCardSkills({
       icon={<Brain className="h-4 w-4 text-muted-foreground" />}
       className="space-y-3 bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-900/40 p-6 rounded-lg shadow-sm"
     >
-      <div className="space-y-6">
-        {Object.entries(groupedSkills).map(([category, skills]) => (
-          <SkillCategory
-            key={category}
-            category={category}
-            skills={skills}
-            isEditing={isEditing}
-            searchTerm=""
-            onRemoveSkill={isEditing ? handleRemoveSkillFromDb : undefined}
-          />
-        ))}
-      </div>
+      <SkillList
+        groupedSkills={groupedSkills}
+        isEditing={isEditing}
+        onRemoveSkill={isEditing ? handleRemoveSkillFromDb : undefined}
+      />
 
       {isEditing && (
         <SkillEditor
