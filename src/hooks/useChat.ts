@@ -15,12 +15,12 @@ export function useChat() {
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
 
-  const handleSendMessage = async (message: string) => {
-    if (!message.trim()) return;
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim()) return;
 
     const newUserMessage: Message = {
       id: crypto.randomUUID(),
-      content: message,
+      content: inputMessage,
       sender: "user",
       timestamp: new Date(),
     };
@@ -29,16 +29,24 @@ export function useChat() {
     setInputMessage("");
     setIsThinking(true);
 
-    // Simulate a response from the assistant
-    const newAssistantMessage: Message = {
-      id: crypto.randomUUID(),
-      content: "This is a placeholder response.",
-      sender: "assistant",
-      timestamp: new Date(),
-    };
+    try {
+      // Simulate a response from the assistant
+      const newAssistantMessage: Message = {
+        id: crypto.randomUUID(),
+        content: "Je suis là pour vous aider. Que puis-je faire pour vous ?",
+        sender: "assistant",
+        timestamp: new Date(),
+      };
 
-    setMessages((prev) => [...prev, newAssistantMessage]);
-    setIsThinking(false);
+      setTimeout(() => {
+        setMessages((prev) => [...prev, newAssistantMessage]);
+        setIsThinking(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Désolé, je n'ai pas pu répondre. Veuillez réessayer.");
+      setIsThinking(false);
+    }
   };
 
   const handleVoiceInput = () => {
