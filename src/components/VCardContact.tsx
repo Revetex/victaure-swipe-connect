@@ -135,17 +135,16 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
           </div>
         </VCardSection>
       </div>
-      <div className="bg-card p-4 rounded-lg shadow-sm border w-full sm:w-auto flex flex-col items-center gap-2">
-        <span className="text-sm text-muted-foreground mb-2">Scanner pour télécharger</span>
+      <div className="bg-card p-3 rounded-lg shadow-sm border w-full sm:w-auto">
         {isGenerating ? (
-          <div className="w-[160px] h-[160px] mx-auto animate-pulse bg-muted rounded-lg" />
+          <div className="w-[120px] h-[120px] mx-auto animate-pulse bg-muted" />
         ) : (
           <QRCodeSVG
             value={pdfUrl}
-            size={160}
+            size={120}
             level="H"
             includeMargin={true}
-            className="mx-auto bg-white p-2 rounded-lg"
+            className="mx-auto"
           />
         )}
       </div>

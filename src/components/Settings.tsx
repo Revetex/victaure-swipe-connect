@@ -1,4 +1,4 @@
-import { LogOut, Moon } from "lucide-react";
+import { LogOut, Bell, Moon, Mail } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { SettingsSection } from "./settings/SettingsSection";
+import { Separator } from "./ui/separator";
 
 export function Settings() {
   const { theme, setTheme } = useTheme();
@@ -39,16 +41,39 @@ export function Settings() {
       <h2 className="text-2xl font-semibold">Paramètres</h2>
       
       <div className="space-y-6">
-        <div className="flex items-center justify-between space-x-4 hover:bg-muted p-2 rounded-lg transition-colors">
-          <Label className="text-sm cursor-pointer flex items-center gap-2">
-            <Moon className="h-4 w-4" />
-            Mode sombre
-          </Label>
-          <Switch
-            checked={theme === "dark"}
-            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-          />
-        </div>
+        <SettingsSection title="Apparence">
+          <div className="flex items-center justify-between space-x-4 hover:bg-muted p-2 rounded-lg transition-colors">
+            <Label className="text-sm cursor-pointer flex items-center gap-2">
+              <Moon className="h-4 w-4" />
+              Mode sombre
+            </Label>
+            <Switch
+              checked={theme === "dark"}
+              onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+            />
+          </div>
+        </SettingsSection>
+
+        <Separator />
+
+        <SettingsSection title="Notifications">
+          <div className="flex items-center justify-between space-x-4 hover:bg-muted p-2 rounded-lg transition-colors">
+            <Label className="text-sm cursor-pointer flex items-center gap-2">
+              <Bell className="h-4 w-4" />
+              Notifications push
+            </Label>
+            <Switch defaultChecked />
+          </div>
+          <div className="flex items-center justify-between space-x-4 hover:bg-muted p-2 rounded-lg transition-colors">
+            <Label className="text-sm cursor-pointer flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Notifications email
+            </Label>
+            <Switch defaultChecked />
+          </div>
+        </SettingsSection>
+
+        <Separator />
 
         <Button 
           variant="destructive" 
