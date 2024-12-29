@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import type { UserProfile } from '@/data/mockProfile';
+import type { UserProfile } from '@/types/profile';
 import { supabase } from "@/integrations/supabase/client";
 
 export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
@@ -18,11 +18,11 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(28);
   doc.setFont("helvetica", "bold");
-  doc.text(profile.name || "Nom non défini", 20, 30);
+  doc.text(profile.full_name || "Nom non défini", 20, 30);
   
   doc.setFontSize(18);
   doc.setFont("helvetica", "normal");
-  doc.text(profile.title || "Titre non défini", 20, 42);
+  doc.text(profile.role || "Titre non défini", 20, 42);
   
   // Informations de contact
   doc.setTextColor(textColor);
@@ -75,7 +75,7 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     doc.setFontSize(14);
     doc.text("Certifications", 20, yPos);
     
-    profile.certifications.forEach((cert: any, index: number) => {
+    profile.certifications.forEach((cert, index) => {
       yPos += 15;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);

@@ -1,40 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-
-export interface Certification {
-  id: string;
-  title: string;
-  institution: string;
-  year: string;
-}
-
-export interface Experience {
-  id: string;
-  company: string;
-  position: string;
-  start_date: string;
-  end_date?: string;
-  description?: string;
-}
-
-export interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  role: string;
-  bio: string | null;
-  phone: string | null;
-  city: string | null;
-  state: string | null;
-  country: string;
-  skills: string[] | null;
-  latitude: number | null;
-  longitude: number | null;
-  certifications?: Certification[];
-  experiences?: Experience[];
-}
+import { UserProfile, Certification, Experience } from "@/types/profile";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -75,7 +42,7 @@ export function useProfile() {
 
         if (expError) throw expError;
 
-        const fullProfile = {
+        const fullProfile: UserProfile = {
           ...profileData,
           certifications: certifications || [],
           experiences: experiences || [],
