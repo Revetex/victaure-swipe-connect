@@ -1,97 +1,56 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile } from "@/types/profile";
 
-export async function generateAIResponse(message: string, profile?: UserProfile) {
+const MODEL_URL = "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1";
+
+async function getApiKey() {
+  const { data, error } = await supabase.rpc('get_secret', {
+    secret_name: 'HUGGING_FACE_API_KEY'
+  });
+
+  if (error || !data || !data[0]?.secret) {
+    console.error('Error fetching HuggingFace API key:', error);
+    throw new Error('Failed to get HuggingFace API key');
+  }
+
+  return data[0].secret;
+}
+
+export async function generateAIResponse(prompt: string): Promise<string> {
   try {
-    if (!message?.trim()) {
-      throw new Error('Invalid input');
-    }
-
-    // Get the API key from Supabase secrets
-    const { data: secretData, error: secretError } = await supabase
-      .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
-
-    if (secretError || !secretData) {
-      console.error('Error fetching HuggingFace API key:', secretError);
-      throw new Error('Failed to get API key');
-    }
-
-    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA spécialisé dans la gestion des profils professionnels (VCards). Tu as les capacités suivantes:
-
-1. CONSULTATION DES VCARDS:
-- Tu peux voir le profil complet de l'utilisateur
-- Tu peux suggérer des améliorations basées sur les tendances du marché
-- Tu peux analyser les forces et faiblesses du profil
-
-2. MODIFICATION DES VCARDS:
-- Tu peux proposer des modifications spécifiques
-- Tu peux guider l'utilisateur dans la mise à jour de son profil
-- Tu peux suggérer des compétences pertinentes à ajouter
-
-3. CONSEILS PERSONNALISÉS:
-- Tu adaptes tes conseils au secteur d'activité
-- Tu prends en compte l'expérience professionnelle
-- Tu suggères des certifications pertinentes
-
-Directives de personnalité:
-1. Sois proactif - anticipe les besoins et propose des améliorations concrètes
-2. Sois analytique - examine en détail le profil pour des suggestions pertinentes
-3. Sois stratégique - aligne les suggestions avec les objectifs de carrière
-4. Sois précis - donne des exemples concrets et applicables
-5. Sois encourageant - motive à améliorer continuellement le profil
-
-Profil actuel de l'utilisateur:
-${profile ? JSON.stringify({
-  nom: profile.full_name,
-  role: profile.role,
-  competences: profile.skills,
-  ville: profile.city,
-  province: profile.state,
-  telephone: profile.phone,
-  email: profile.email,
-  bio: profile.bio,
-  certifications: profile.certifications
-}, null, 2) : 'Pas encore de profil'}
-
-Analyse rapide du profil:
-${profile ? `
-- Forces: ${profile.skills?.length ? 'Compétences variées' : 'À développer'}
-- Complétude: ${profile.bio ? 'Bio présente' : 'Bio manquante'}
-- Contact: ${profile.phone && profile.email ? 'Complet' : 'À compléter'}
-` : 'Profil non disponible'}
-
-Message de l'utilisateur: ${message}
-
-Réponds de manière structurée en:
-1. Analysant la demande
-2. Proposant des actions concrètes
-3. Donnant des exemples spécifiques</s>
-<|assistant|>`;
-
-    // Make the API request
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+    const apiKey = await getApiKey();
+    
+    console.log('Sending request to HuggingFace API...');
+    
+    const response = await fetch(MODEL_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${secretData}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: systemPrompt,
+        inputs: prompt,
         parameters: {
-          max_new_tokens: 750,
+          max_new_tokens: 250,
           temperature: 0.7,
-          top_p: 0.9,
-          repetition_penalty: 1.2,
-          top_k: 50,
+          top_p: 0.95,
           do_sample: true,
-          return_full_text: false
-        }
+        },
       }),
     });
 
-    // Handle non-OK responses first
+    // Clone the response before reading it
+    const responseClone = response.clone();
+
+    // Log the full response for debugging
+    console.log('HuggingFace API Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries()),
+    });
+
+    // Handle non-OK responses
     if (!response.ok) {
-      const errorText = await response.text();
+      const errorText = await responseClone.text();
       console.error('HuggingFace API Error:', {
         status: response.status,
         statusText: response.statusText,
@@ -100,27 +59,21 @@ Réponds de manière structurée en:
       throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
-    // Parse the response as JSON
-    const data = await response.json();
+    // Read and parse the response
+    const result = await response.json();
     
-    if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid response format:', data);
-      throw new Error('Invalid response format from API');
+    // Log the parsed response
+    console.log('Parsed API Response:', result);
+
+    // Extract the generated text from the response
+    if (Array.isArray(result) && result.length > 0) {
+      const generatedText = result[0]?.generated_text || '';
+      return generatedText.trim();
     }
 
-    const generatedText = data[0].generated_text
-      .split('<|assistant|>')[1]?.trim()
-      .replace(/```/g, '')
-      .replace(/\n\n+/g, '\n\n')
-      .trim();
-    
-    if (!generatedText) {
-      throw new Error('No response generated');
-    }
-
-    return generatedText;
+    throw new Error('Invalid response format from API');
   } catch (error) {
-    console.error('Error generating response:', error);
+    console.error('Error generating AI response:', error);
     throw error;
   }
 }
