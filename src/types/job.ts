@@ -1,4 +1,4 @@
-import { Code, Briefcase, PaintBucket, HardHat, Wrench, Brain, Building2, Laptop, Palette, ChartBar, Cog, Hammer, Truck, Leaf } from "lucide-react";
+import { Code, Briefcase, PaintBucket, HardHat, Wrench, Brain, Building2, Laptop, Palette, ChartBar, Cog, Hammer, Truck, Leaf, Heart, Stethoscope, Utensils, School, Music, Camera, Scale, Microscope } from "lucide-react";
 
 export interface Job {
   id: string;
@@ -32,7 +32,13 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Architecture Logicielle",
       "QA & Testing",
       "Administration Système",
-      "Support Technique"
+      "Support Technique",
+      "Blockchain",
+      "IoT",
+      "Réalité Virtuelle/Augmentée",
+      "Jeux Vidéo",
+      "Réseaux",
+      "Base de Données"
     ]
   },
   "Gestion & Business": {
@@ -47,7 +53,13 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Ressources Humaines",
       "Finance & Comptabilité",
       "Ventes B2B",
-      "Service Client"
+      "Service Client",
+      "Entrepreneuriat",
+      "E-commerce",
+      "Relations Publiques",
+      "Développement Commercial",
+      "Gestion des Risques",
+      "Audit"
     ]
   },
   "Design & Créatif": {
@@ -62,7 +74,13 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Design d'Intérieur",
       "Illustration",
       "Photographie",
-      "Vidéo & Animation"
+      "Vidéo & Animation",
+      "Design Web",
+      "Design Editorial",
+      "Design Packaging",
+      "Design Textile",
+      "Design Industriel",
+      "Architecture d'Intérieur"
     ]
   },
   "Construction & BTP": {
@@ -77,7 +95,13 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Maîtrise d'Œuvre",
       "Expertise Technique",
       "Sécurité & Conformité",
-      "Rénovation"
+      "Rénovation",
+      "Construction Durable",
+      "Géotechnique",
+      "Topographie",
+      "Urbanisme",
+      "Infrastructures",
+      "Aménagement Paysager"
     ]
   },
   "Industrie & Production": {
@@ -92,7 +116,13 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Supply Chain",
       "QHSE",
       "Lean Management",
-      "Ingénierie"
+      "Ingénierie",
+      "Robotique",
+      "Mécanique",
+      "Électronique",
+      "Plasturgie",
+      "Métallurgie",
+      "Agroalimentaire"
     ]
   },
   "Artisanat & Métiers Manuels": {
@@ -107,7 +137,13 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Couverture",
       "Serrurerie",
       "Chauffage",
-      "Finitions"
+      "Finitions",
+      "Ébénisterie",
+      "Ferronnerie",
+      "Vitrerie",
+      "Tapisserie",
+      "Cordonnerie",
+      "Bijouterie"
     ]
   },
   "Transport & Logistique": {
@@ -122,7 +158,13 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Planification",
       "Achats",
       "Douane",
-      "E-commerce"
+      "E-commerce",
+      "Transport Maritime",
+      "Transport Aérien",
+      "Transport Ferroviaire",
+      "Entreposage",
+      "Supply Chain",
+      "Logistique Internationale"
     ]
   },
   "Environnement & Énergie": {
@@ -137,7 +179,160 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Conseil Environnemental",
       "Économie Circulaire",
       "Agriculture Durable",
-      "Biodiversité"
+      "Biodiversité",
+      "Traitement de l'Eau",
+      "Qualité de l'Air",
+      "Dépollution",
+      "Écologie Industrielle",
+      "Smart Grid",
+      "Transition Énergétique"
+    ]
+  },
+  "Santé & Bien-être": {
+    icon: Heart,
+    subcategories: [
+      "Médecine",
+      "Soins Infirmiers",
+      "Kinésithérapie",
+      "Pharmacie",
+      "Psychologie",
+      "Nutrition",
+      "Sport & Fitness",
+      "Médecine Alternative",
+      "Thérapie",
+      "Santé Mentale",
+      "Soins à Domicile",
+      "Radiologie",
+      "Dentisterie",
+      "Optométrie",
+      "Laboratoire Médical",
+      "Recherche Médicale"
+    ]
+  },
+  "Hôtellerie & Restauration": {
+    icon: Utensils,
+    subcategories: [
+      "Cuisine",
+      "Service en Salle",
+      "Management Hôtelier",
+      "Réception",
+      "Housekeeping",
+      "Bar & Cocktails",
+      "Événementiel",
+      "Traiteur",
+      "Pâtisserie",
+      "Sommellerie",
+      "Gestion de Restaurant",
+      "Food & Beverage",
+      "Conciergerie",
+      "Tourisme",
+      "Animation",
+      "Spa & Bien-être"
+    ]
+  },
+  "Éducation & Formation": {
+    icon: School,
+    subcategories: [
+      "Enseignement Primaire",
+      "Enseignement Secondaire",
+      "Enseignement Supérieur",
+      "Formation Professionnelle",
+      "E-learning",
+      "Coaching",
+      "Langues Étrangères",
+      "Soutien Scolaire",
+      "Formation Continue",
+      "Pédagogie",
+      "Éducation Spécialisée",
+      "Formation d'Adultes",
+      "Sciences de l'Éducation",
+      "Petite Enfance",
+      "Formation en Entreprise",
+      "Orientation Professionnelle"
+    ]
+  },
+  "Arts & Culture": {
+    icon: Music,
+    subcategories: [
+      "Musique",
+      "Théâtre",
+      "Danse",
+      "Arts Visuels",
+      "Cinéma",
+      "Littérature",
+      "Patrimoine",
+      "Muséologie",
+      "Arts Numériques",
+      "Production Culturelle",
+      "Médiation Culturelle",
+      "Arts du Spectacle",
+      "Arts Plastiques",
+      "Artisanat d'Art",
+      "Gestion Culturelle",
+      "Conservation"
+    ]
+  },
+  "Médias & Communication": {
+    icon: Camera,
+    subcategories: [
+      "Journalisme",
+      "Production Audiovisuelle",
+      "Relations Presse",
+      "Communication Digitale",
+      "Rédaction Web",
+      "Community Management",
+      "Publicité",
+      "Production Radio",
+      "Édition",
+      "Traduction",
+      "Content Marketing",
+      "Réseaux Sociaux",
+      "Storytelling",
+      "Copywriting",
+      "Communication Corporate",
+      "Relations Publiques"
+    ]
+  },
+  "Juridique & Droit": {
+    icon: Scale,
+    subcategories: [
+      "Droit des Affaires",
+      "Droit Social",
+      "Droit Immobilier",
+      "Droit Fiscal",
+      "Propriété Intellectuelle",
+      "Droit International",
+      "Droit Pénal",
+      "Droit Public",
+      "Droit de l'Environnement",
+      "Droit des Contrats",
+      "Droit Bancaire",
+      "Droit des Sociétés",
+      "Contentieux",
+      "Conseil Juridique",
+      "Compliance",
+      "Protection des Données"
+    ]
+  },
+  "Recherche & Sciences": {
+    icon: Microscope,
+    subcategories: [
+      "Recherche Fondamentale",
+      "Recherche Appliquée",
+      "Biotechnologie",
+      "Sciences des Matériaux",
+      "Physique",
+      "Chimie",
+      "Biologie",
+      "Mathématiques",
+      "Neurosciences",
+      "Génétique",
+      "Astronomie",
+      "Géologie",
+      "Océanographie",
+      "Climatologie",
+      "Nanotechnologie",
+      "Sciences Cognitives"
     ]
   }
 };
