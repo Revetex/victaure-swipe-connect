@@ -64,10 +64,7 @@ export function Messages() {
       <Tabs defaultValue="messages" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="relative">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              <span className="hidden sm:inline">Messages</span>
-            </div>
+            <MessageSquare className="h-5 w-5" />
             {unreadMessagesCount > 0 && (
               <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
                 {unreadMessagesCount}
@@ -75,10 +72,7 @@ export function Messages() {
             )}
           </TabsTrigger>
           <TabsTrigger value="notifications" className="relative">
-            <div className="flex items-center gap-2">
-              <Bell className="h-4 w-4" />
-              <span className="hidden sm:inline">Notifications</span>
-            </div>
+            <Bell className="h-5 w-5" />
             {unreadNotificationsCount > 0 && (
               <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
                 {unreadNotificationsCount}
@@ -86,10 +80,7 @@ export function Messages() {
             )}
           </TabsTrigger>
           <TabsTrigger value="settings">
-            <div className="flex items-center gap-2">
-              <Settings2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Paramètres</span>
-            </div>
+            <Settings2 className="h-5 w-5" />
           </TabsTrigger>
         </TabsList>
 
