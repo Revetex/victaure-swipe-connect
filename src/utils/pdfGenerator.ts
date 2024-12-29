@@ -5,77 +5,98 @@ import { supabase } from "@/integrations/supabase/client";
 export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
   const doc = new jsPDF();
   
-  // Couleurs professionnelles
-  const primaryColor = "#4F46E5"; // Indigo-600
-  const secondaryColor = "#6366F1"; // Indigo-500
-  const textColor = "#1F2937"; // Gray-800
+  // Professional colors
+  const primaryColor = "#4F46E5";
+  const secondaryColor = "#6366F1";
+  const textColor = "#1F2937";
   
-  // En-tête avec dégradé
+  // Header with gradient
   doc.setFillColor(primaryColor);
-  doc.rect(0, 0, 210, 50, "F");
+  doc.rect(0, 0, 210, 60, "F");
   
-  // Nom et titre
+  // Profile name and title
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(28);
+  doc.setFontSize(32);
   doc.setFont("helvetica", "bold");
-  doc.text(profile.full_name || "Nom non défini", 20, 30);
+  doc.text(profile.full_name || "Nom non défini", 20, 35);
   
-  doc.setFontSize(18);
+  doc.setFontSize(20);
   doc.setFont("helvetica", "normal");
-  doc.text(profile.role || "Titre non défini", 20, 42);
+  doc.text(profile.role || "Titre non défini", 20, 50);
   
-  // Informations de contact
+  // Contact information
+  let yPos = 80;
   doc.setTextColor(textColor);
-  doc.setFontSize(14);
+  doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text("Contact", 20, 70);
+  doc.text("Contact", 20, yPos);
   
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
-  doc.text(`Email: ${profile.email}`, 25, 82);
-  doc.text(`Téléphone: ${profile.phone || 'Non spécifié'}`, 25, 92);
-  doc.text(`Localisation: ${[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}`, 25, 102);
+  yPos += 15;
+  doc.text(`Email: ${profile.email}`, 25, yPos);
+  yPos += 10;
+  doc.text(`Téléphone: ${profile.phone || 'Non spécifié'}`, 25, yPos);
+  yPos += 10;
+  doc.text(`Localisation: ${[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}`, 25, yPos);
   
-  // Compétences avec badges stylisés
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Compétences", 20, 122);
+  // Bio section
+  if (profile.bio) {
+    yPos += 25;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("À propos", 20, yPos);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    yPos += 10;
+    const bioLines = doc.splitTextToSize(profile.bio, 170);
+    doc.text(bioLines, 25, yPos);
+    yPos += (bioLines.length * 7) + 15;
+  }
   
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  const skills = profile.skills || [];
-  let yPos = 132;
-  let xPos = 25;
-  
-  skills.forEach((skill, index) => {
-    const textWidth = doc.getTextWidth(skill) + 10;
+  // Skills with styled badges
+  if (profile.skills && profile.skills.length > 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Compétences", 20, yPos);
     
-    // Badge avec fond
-    doc.setFillColor(secondaryColor);
-    doc.roundedRect(xPos - 2, yPos - 5, textWidth, 10, 2, 2, "F");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    let xPos = 25;
+    yPos += 10;
+    const startY = yPos;
     
-    // Texte du badge
-    doc.setTextColor(255, 255, 255);
-    doc.text(skill, xPos + 3, yPos);
+    profile.skills.forEach((skill, index) => {
+      const textWidth = doc.getTextWidth(skill) + 10;
+      
+      if (xPos + textWidth > 190) {
+        xPos = 25;
+        yPos += 12;
+      }
+      
+      // Badge background
+      doc.setFillColor(secondaryColor);
+      doc.roundedRect(xPos - 2, yPos - 5, textWidth, 10, 2, 2, "F");
+      
+      // Badge text
+      doc.setTextColor(255, 255, 255);
+      doc.text(skill, xPos + 3, yPos);
+      
+      xPos += textWidth + 5;
+    });
     
-    // Positionnement du prochain badge
-    if (xPos + textWidth + 30 > 190) {
-      xPos = 25;
-      yPos += 15;
-    } else {
-      xPos += textWidth + 10;
-    }
-  });
+    yPos += 20;
+  }
   
   // Certifications
   if (profile.certifications && profile.certifications.length > 0) {
-    yPos += 30;
     doc.setTextColor(textColor);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.text("Certifications", 20, yPos);
     
-    profile.certifications.forEach((cert, index) => {
+    profile.certifications.forEach((cert) => {
       yPos += 15;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
@@ -88,20 +109,21 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     });
   }
   
-  // Pied de page
+  // Footer with QR code
   const pageHeight = doc.internal.pageSize.height;
   doc.setFillColor(primaryColor);
-  doc.rect(0, pageHeight - 20, 210, 20, "F");
+  doc.rect(0, pageHeight - 25, 210, 25, "F");
   
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.text("Généré via Victaure", 20, pageHeight - 8);
+  const currentDate = new Date().toLocaleDateString();
+  doc.text(`Généré via Victaure le ${currentDate}`, 20, pageHeight - 10);
   
-  // Générer le PDF comme blob
+  // Generate PDF as blob
   const pdfBlob = doc.output('blob');
   const filename = `${crypto.randomUUID()}_${Date.now()}.pdf`;
   
-  // Upload vers Supabase Storage
+  // Upload to Supabase Storage
   const { data, error } = await supabase
     .storage
     .from('vcards')
@@ -111,11 +133,11 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     });
     
   if (error) {
-    console.error('Erreur lors de l\'upload du PDF:', error);
+    console.error('Error uploading PDF:', error);
     throw error;
   }
   
-  // Obtenir l'URL publique
+  // Get public URL
   const { data: { publicUrl } } = supabase
     .storage
     .from('vcards')
