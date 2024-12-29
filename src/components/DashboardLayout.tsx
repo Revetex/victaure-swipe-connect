@@ -1,4 +1,3 @@
-import { Calendar } from "@/components/ui/calendar";
 import { VCard } from "@/components/VCard";
 import { TodoList } from "@/components/TodoList";
 import { Messages } from "@/components/Messages";
@@ -24,19 +23,19 @@ export function DashboardLayout() {
           <SwipeJob />
         </div>
 
+        {/* VCard - Maintenant dans une colonne dédiée */}
+        <div className="lg:col-span-1">
+          <VCard />
+        </div>
+
         {/* Composants secondaires - Empilés sur mobile */}
         <div className="glass-card rounded-lg p-3 sm:p-4">
           <TodoList />
         </div>
 
-        {/* Settings - Taille réduite */}
-        <div className="glass-card rounded-lg p-3 sm:p-4 lg:col-span-1">
+        {/* Settings - Déplacé en bas */}
+        <div className="glass-card rounded-lg p-3 sm:p-4">
           <Settings />
-        </div>
-
-        {/* VCard - Maintenant dans une colonne */}
-        <div className={`${isMobile ? "col-span-1" : "lg:col-span-1"}`}>
-          <VCard />
         </div>
       </div>
     </div>

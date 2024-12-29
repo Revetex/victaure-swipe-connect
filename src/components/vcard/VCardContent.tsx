@@ -44,7 +44,6 @@ export function VCardContent({
 }: VCardContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Expand when editing or downloading
   useEffect(() => {
     if (isEditing) {
       setIsExpanded(true);
@@ -58,9 +57,8 @@ export function VCardContent({
       transition={{ duration: 0.5 }}
       className="w-full px-2 sm:px-4"
     >
-      <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20">
+      <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20 hover:shadow-lg transition-shadow duration-300">
         <CardContent className="p-3 sm:p-6">
-          {/* Header toujours visible */}
           <VCardHeader
             profile={tempProfile}
             isEditing={isEditing}
@@ -68,13 +66,13 @@ export function VCardContent({
             setIsEditing={setIsEditing}
           />
 
-          {/* Actions compactes quand non expandé */}
           {!isExpanded && !isEditing && (
             <div className="flex justify-end gap-2 mt-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsExpanded(true)}
+                className="text-muted-foreground hover:text-foreground"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Télécharger
@@ -83,6 +81,7 @@ export function VCardContent({
                 variant="outline"
                 size="sm"
                 onClick={() => setIsEditing(true)}
+                className="text-muted-foreground hover:text-foreground"
               >
                 <Edit2 className="h-4 w-4 mr-2" />
                 Éditer
@@ -90,7 +89,6 @@ export function VCardContent({
             </div>
           )}
 
-          {/* Contenu détaillé */}
           <AnimatePresence>
             {isExpanded && (
               <motion.div
