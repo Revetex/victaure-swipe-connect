@@ -12,20 +12,20 @@ export interface VCardSkillsProps {
   };
   isEditing: boolean;
   setProfile: (profile: any) => void;
-  newSkill: string;
-  setNewSkill: (skill: string) => void;
-  handleAddSkill: () => void;
-  handleRemoveSkill: (skill: string) => void;
+  newSkill?: string;
+  setNewSkill?: (skill: string) => void;
+  handleAddSkill?: () => void;
+  handleRemoveSkill?: (skill: string) => void;
 }
 
 export function VCardSkills({
   profile,
   isEditing,
   setProfile,
-  newSkill,
-  setNewSkill,
-  handleAddSkill,
-  handleRemoveSkill,
+  newSkill = "",
+  setNewSkill = () => {},
+  handleAddSkill = () => {},
+  handleRemoveSkill = () => {},
 }: VCardSkillsProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>(Object.keys(skillCategories)[0]);
 
