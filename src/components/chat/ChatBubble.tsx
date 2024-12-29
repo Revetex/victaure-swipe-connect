@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChatBubbleProps {
   content: string;
@@ -17,12 +18,35 @@ interface ChatBubbleProps {
 }
 
 export function ChatBubble({ content, sender, timestamp, isCurrentUser, action }: ChatBubbleProps) {
+  // Check if the content contains a code block
+  const hasCodeBlock = content.includes("```");
+  
+  // Function to format content with code blocks
+  const formatContent = () => {
+    if (!hasCodeBlock) return content;
+
+    const parts = content.split("```");
+    return parts.map((part, index) => {
+      if (index % 2 === 1) { // This is a code block
+        return (
+          <ScrollArea key={index} className="w-full max-h-[300px] my-2">
+            <pre className="bg-muted p-4 rounded-md overflow-x-auto">
+              <code className="text-sm font-mono">{part.trim()}</code>
+            </pre>
+          </ScrollArea>
+        );
+      }
+      // This is regular text
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex gap-2 items-end",
+        "flex gap-2 items-end mb-4",
         isCurrentUser ? "flex-row-reverse" : "flex-row"
       )}
     >
@@ -47,10 +71,11 @@ export function ChatBubble({ content, sender, timestamp, isCurrentUser, action }
             isCurrentUser
               ? "bg-primary text-primary-foreground rounded-br-none"
               : "bg-muted rounded-bl-none",
-            action === 'update_complete' && "bg-green-500 text-white"
+            action === 'update_complete' && "bg-green-500 text-white",
+            hasCodeBlock && "max-w-full w-full"
           )}
         >
-          {content}
+          {formatContent()}
         </motion.div>
         <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
           {format(timestamp, "HH:mm", { locale: fr })}
