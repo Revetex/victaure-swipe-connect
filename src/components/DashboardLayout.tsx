@@ -29,7 +29,8 @@ export function DashboardLayout() {
           <TodoList />
         </div>
 
-        <div className="glass-card rounded-lg p-3 sm:p-4">
+        {/* Settings - Taille réduite */}
+        <div className="glass-card rounded-lg p-3 sm:p-4 lg:col-span-1">
           <Settings />
         </div>
 
