@@ -42,7 +42,7 @@ export function TodoList() {
 
       return data.map(todo => ({
         ...todo,
-        id: todo.id,
+        id: todo.id.toString(),
         dueDate: todo.due_date ? new Date(todo.due_date) : undefined,
         dueTime: todo.due_time,
         allDay: todo.all_day,
@@ -64,7 +64,10 @@ export function TodoList() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data.map(note => ({
+        ...note,
+        id: note.id.toString()
+      }));
     }
   });
 
