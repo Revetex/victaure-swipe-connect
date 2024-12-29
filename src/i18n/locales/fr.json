@@ -36,7 +36,8 @@
     "training": "Formation",
     "profile": "Profil",
     "settings": "Paramètres",
-    "messages": "Messages"
+    "messages": "Messages",
+    "dashboard": "Tableau de bord"
   },
   "hero": {
     "title": "Transformez votre carrière avec",
@@ -65,6 +66,16 @@
       }
     }
   },
+  "dashboard": {
+    "welcome": "Bienvenue sur votre tableau de bord",
+    "tasks": "Tâches",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "swipeJobs": "Découvrir des missions",
+    "assistant": "Assistant personnel"
+  },
   "stats": {
     "activeUsers": {
       "value": "10,000+",
@@ -92,7 +103,10 @@
     "noMessages": "Aucun message",
     "markAsRead": "Marquer comme lu",
     "newMessage": "Nouveau message",
-    "unreadMessages": "Messages non lus"
+    "unreadMessages": "Messages non lus",
+    "search": "Rechercher dans les messages",
+    "compose": "Composer un message",
+    "reply": "Répondre"
   },
   "notifications": {
     "title": "Notifications",
@@ -100,7 +114,9 @@
     "markAsRead": "Marquer comme lu",
     "newNotification": "Nouvelle notification",
     "unreadNotifications": "Notifications non lues",
-    "deleteNotification": "Notification supprimée avec succès"
+    "deleteNotification": "Notification supprimée avec succès",
+    "clearAll": "Tout effacer",
+    "settings": "Paramètres de notification"
   },
   "todo": {
     "title": "Tâches",
@@ -109,7 +125,10 @@
     "noTasks": "Aucune tâche",
     "addTask": "Ajouter une tâche",
     "deleteTask": "Supprimer la tâche",
-    "markAsComplete": "Marquer comme terminée"
+    "markAsComplete": "Marquer comme terminée",
+    "dueDate": "Date d'échéance",
+    "priority": "Priorité",
+    "categories": "Catégories"
   },
   "notes": {
     "title": "Notes",
@@ -118,7 +137,11 @@
     "addNote": "Ajouter une note",
     "deleteNote": "Supprimer la note",
     "colors": {
-      "yellow": "Jaune"
+      "yellow": "Jaune",
+      "green": "Vert",
+      "blue": "Bleu",
+      "pink": "Rose",
+      "purple": "Violet"
     }
   },
   "profile": {
@@ -128,7 +151,10 @@
     "certifications": "Certifications et Diplômes",
     "share": "Partager",
     "vcard": "VCard",
-    "pdf": "PDF"
+    "pdf": "PDF",
+    "edit": "Modifier le profil",
+    "save": "Enregistrer les modifications",
+    "cancel": "Annuler"
   },
   "marketplace": {
     "filters": {
@@ -144,17 +170,26 @@
       "allLevels": "Tous les niveaux",
       "location": "Localisation",
       "selectCity": "Sélectionner une ville...",
-      "noCity": "Aucune ville trouvée"
+      "noCity": "Aucune ville trouvée",
+      "salary": "Salaire",
+      "remote": "Télétravail"
     },
     "noJobs": "Aucune offre disponible pour le moment",
     "comeBack": "Revenez plus tard pour découvrir de nouvelles missions.",
     "browse": "Parcourir les offres",
     "myListings": "Mes annonces",
     "noListings": "Vous n'avez pas encore publié d'annonces",
-    "addJob": "Ajouter une mission"
+    "addJob": "Ajouter une mission",
+    "apply": "Postuler",
+    "save": "Sauvegarder"
   },
   "error": {
-    "deleteNotification": "Erreur lors de la suppression de la notification"
+    "deleteNotification": "Erreur lors de la suppression de la notification",
+    "generic": "Une erreur est survenue",
+    "tryAgain": "Veuillez réessayer",
+    "networkError": "Erreur de connexion",
+    "unauthorized": "Non autorisé",
+    "notFound": "Non trouvé"
   },
   "mrVictaure": {
     "title": "Mr. Victaure",
@@ -163,6 +198,12 @@
     "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
     "clearChat": "Effacer la conversation",
     "maximize": "Agrandir",
-    "minimize": "Réduire"
+    "minimize": "Réduire",
+    "suggestions": {
+      "profile": "Améliorer mon profil",
+      "mission": "Créer une mission",
+      "search": "Rechercher des missions",
+      "settings": "Configurer mes préférences"
+    }
   }
 }

@@ -13,34 +13,40 @@ export function DashboardLayout() {
   const { t } = useTranslation();
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 min-h-screen bg-background">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-        {/* Agent Mr-Victaure - Toujours en haut sur mobile */}
+    <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 min-h-screen bg-gradient-to-br from-background to-muted/30">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+        {/* Agent Mr-Victaure - Always on top on mobile */}
         <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-1"}`}>
-          <MrVictaure />
+          <div className="glass-card p-4 h-full">
+            <MrVictaure />
+          </div>
         </div>
 
-        {/* SwipeJob - Pleine largeur sur mobile */}
+        {/* SwipeJob - Full width on mobile */}
         <div className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}>
-          <SwipeJob />
+          <div className="glass-card p-4 h-full">
+            <SwipeJob />
+          </div>
         </div>
 
-        {/* Composants secondaires - Empilés sur mobile */}
-        <div className="glass-card rounded-lg p-3 sm:p-4">
+        {/* Secondary components - Stacked on mobile */}
+        <div className="glass-card p-4 h-full">
           <TodoList />
         </div>
 
-        <div className="glass-card rounded-lg p-3 sm:p-4">
+        <div className="glass-card p-4 h-full">
           <Messages />
         </div>
 
-        <div className="glass-card rounded-lg p-3 sm:p-4">
+        <div className="glass-card p-4 h-full">
           <Settings />
         </div>
 
-        {/* VCard - Pleine largeur en bas */}
+        {/* VCard - Full width at bottom */}
         <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-3 2xl:col-span-4"}`}>
-          <VCard />
+          <div className="glass-card p-4">
+            <VCard />
+          </div>
         </div>
       </div>
     </div>

@@ -36,7 +36,8 @@
     "training": "Training",
     "profile": "Profile",
     "settings": "Settings",
-    "messages": "Messages"
+    "messages": "Messages",
+    "dashboard": "Dashboard"
   },
   "hero": {
     "title": "Transform your career with",
@@ -65,6 +66,16 @@
       }
     }
   },
+  "dashboard": {
+    "welcome": "Welcome to your dashboard",
+    "tasks": "Tasks",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "settings": "Settings",
+    "swipeJobs": "Discover missions",
+    "assistant": "Personal assistant"
+  },
   "stats": {
     "activeUsers": {
       "value": "10,000+",
@@ -92,7 +103,10 @@
     "noMessages": "No messages",
     "markAsRead": "Mark as read",
     "newMessage": "New message",
-    "unreadMessages": "Unread messages"
+    "unreadMessages": "Unread messages",
+    "search": "Search messages",
+    "compose": "Compose message",
+    "reply": "Reply"
   },
   "notifications": {
     "title": "Notifications",
@@ -100,7 +114,9 @@
     "markAsRead": "Mark as read",
     "newNotification": "New notification",
     "unreadNotifications": "Unread notifications",
-    "deleteNotification": "Notification deleted successfully"
+    "deleteNotification": "Notification deleted successfully",
+    "clearAll": "Clear all",
+    "settings": "Notification settings"
   },
   "todo": {
     "title": "Tasks",
@@ -109,7 +125,10 @@
     "noTasks": "No tasks",
     "addTask": "Add task",
     "deleteTask": "Delete task",
-    "markAsComplete": "Mark as complete"
+    "markAsComplete": "Mark as complete",
+    "dueDate": "Due date",
+    "priority": "Priority",
+    "categories": "Categories"
   },
   "notes": {
     "title": "Notes",
@@ -118,7 +137,11 @@
     "addNote": "Add note",
     "deleteNote": "Delete note",
     "colors": {
-      "yellow": "Yellow"
+      "yellow": "Yellow",
+      "green": "Green",
+      "blue": "Blue",
+      "pink": "Pink",
+      "purple": "Purple"
     }
   },
   "profile": {
@@ -128,7 +151,10 @@
     "certifications": "Certifications and Diplomas",
     "share": "Share",
     "vcard": "VCard",
-    "pdf": "PDF"
+    "pdf": "PDF",
+    "edit": "Edit profile",
+    "save": "Save changes",
+    "cancel": "Cancel"
   },
   "marketplace": {
     "filters": {
@@ -144,17 +170,26 @@
       "allLevels": "All levels",
       "location": "Location",
       "selectCity": "Select a city...",
-      "noCity": "No city found"
+      "noCity": "No city found",
+      "salary": "Salary",
+      "remote": "Remote"
     },
     "noJobs": "No jobs available at the moment",
     "comeBack": "Come back later to discover new missions.",
     "browse": "Browse jobs",
     "myListings": "My listings",
     "noListings": "You haven't posted any jobs yet",
-    "addJob": "Add job"
+    "addJob": "Add job",
+    "apply": "Apply",
+    "save": "Save"
   },
   "error": {
-    "deleteNotification": "Error deleting notification"
+    "deleteNotification": "Error deleting notification",
+    "generic": "An error occurred",
+    "tryAgain": "Please try again",
+    "networkError": "Network error",
+    "unauthorized": "Unauthorized",
+    "notFound": "Not found"
   },
   "mrVictaure": {
     "title": "Mr. Victaure",
@@ -163,6 +198,12 @@
     "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish job offers. Would you like me to help you create a new job or improve your profile?",
     "clearChat": "Clear chat",
     "maximize": "Maximize",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "suggestions": {
+      "profile": "Improve my profile",
+      "mission": "Create a mission",
+      "search": "Search for missions",
+      "settings": "Configure my preferences"
+    }
   }
 }
