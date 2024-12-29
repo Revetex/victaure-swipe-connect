@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "./ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Search } from "lucide-react";
 import { CreateJobForm } from "./jobs/CreateJobForm";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
@@ -17,6 +17,7 @@ export function Marketplace() {
   const [duration, setDuration] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"all" | "mine">("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: jobs = [], isLoading, error, refetch } = useQuery({
     queryKey: ["jobs", category, subcategory, duration, activeTab],
@@ -29,7 +30,6 @@ export function Marketplace() {
           .select("*")
           .order("created_at", { ascending: false });
 
-        // Filter by employer_id if on "mine" tab
         if (activeTab === "mine" && user) {
           query = query.eq("employer_id", user.id);
         }
@@ -84,12 +84,22 @@ export function Marketplace() {
     <section className="py-8 sm:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-          <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setActiveTab(value as "all" | "mine")}>
-            <TabsList className="grid w-full max-w-[400px] grid-cols-2">
-              <TabsTrigger value="all">Toutes les missions</TabsTrigger>
-              <TabsTrigger value="mine">Mes annonces</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center gap-4">
+            <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setActiveTab(value as "all" | "mine")}>
+              <TabsList className="grid w-full max-w-[400px] grid-cols-2">
+                <TabsTrigger value="all">Toutes les missions</TabsTrigger>
+                <TabsTrigger value="mine">Mes annonces</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2"
+            >
+              <Search className="h-4 w-4" />
+              Filtres
+            </Button>
+          </div>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -105,19 +115,23 @@ export function Marketplace() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
-          <JobFilters
-            category={category}
-            setCategory={setCategory}
-            subcategory={subcategory}
-            setSubcategory={setSubcategory}
-            duration={duration}
-            setDuration={setDuration}
-            missionCategories={missionCategories}
-          />
-          <JobList 
-            jobs={jobs} 
-            isLoading={isLoading}
-          />
+          {showFilters && (
+            <JobFilters
+              category={category}
+              setCategory={setCategory}
+              subcategory={subcategory}
+              setSubcategory={setSubcategory}
+              duration={duration}
+              setDuration={setDuration}
+              missionCategories={missionCategories}
+            />
+          )}
+          <div className={showFilters ? "lg:col-span-3" : "lg:col-span-4"}>
+            <JobList 
+              jobs={jobs} 
+              isLoading={isLoading}
+            />
+          </div>
         </div>
       </div>
     </section>
