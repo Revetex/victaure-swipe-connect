@@ -26,7 +26,7 @@ export function useChat() {
     setIsListening(prev => !prev);
   }, []);
 
-  const handleSendMessage = useCallback((content: string) => {
+  const sendMessage = useCallback((content: string) => {
     setIsThinking(true);
     // Add user message
     setMessages(prev => [...prev, {
@@ -60,24 +60,40 @@ export function useChat() {
     if (response.toLowerCase().includes("créer") && response.toLowerCase().includes("mission")) {
       setIsCreatingJob(true);
       setCurrentStep("title");
-      addMessage({
+      const newMessage: MessageType = {
+        id: crypto.randomUUID(),
         role: "assistant",
         content: "D'accord, je vais vous aider à créer une nouvelle mission. Quel est le titre de la mission ?",
         type: "job_creation",
-        step: "title"
-      });
+        step: "title",
+        sender: {
+          id: "assistant",
+          full_name: "Mr. Victaure"
+        },
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, newMessage]);
       return true;
     }
     return false;
   }, []);
 
-  const addMessage = useCallback((message: MessageType) => {
-    setMessages((prev) => [...prev, message]);
+  const addMessage = useCallback((message: Partial<MessageType> & Pick<MessageType, 'role' | 'content'>) => {
+    const fullMessage: MessageType = {
+      id: crypto.randomUUID(),
+      ...message,
+      sender: {
+        id: message.role === 'assistant' ? 'assistant' : 'user',
+        full_name: message.role === 'assistant' ? 'Mr. Victaure' : 'You'
+      },
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, fullMessage]);
   }, []);
 
   return {
     messages,
-    sendMessage: handleSendMessage,
+    sendMessage,
     handleJobResponse,
     isCreatingJob,
     inputMessage,
