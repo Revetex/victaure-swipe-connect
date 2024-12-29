@@ -32,7 +32,8 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error(`Erreur lors de la récupération de la clé API: ${secretError.message}`);
     }
 
-    if (!secretData || secretData.trim() === '') {
+    // Check if we have a valid secret
+    if (!secretData?.[0]?.secret || secretData[0].secret.trim() === '') {
       console.error('No API key found');
       throw new Error('Clé API HuggingFace non configurée');
     }
@@ -46,7 +47,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     // Enhanced API call with better error handling
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': `Bearer ${secretData}`,
+        'Authorization': `Bearer ${secretData[0].secret}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
