@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 export async function generateAIResponse(prompt: string): Promise<string> {
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/facebook/opt-125m", {
+    const response = await fetch("https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
