@@ -3,12 +3,15 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Database } from "@/integrations/supabase/types";
 
 interface SkillSuggestionsProps {
   searchTerm: string;
   onSelect: (skill: string) => void;
   existingSkills: string[];
 }
+
+type Skill = Database["public"]["Tables"]["skills"]["Row"];
 
 export function SkillSuggestions({ searchTerm, onSelect, existingSkills }: SkillSuggestionsProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -23,11 +26,13 @@ export function SkillSuggestions({ searchTerm, onSelect, existingSkills }: Skill
 
       setIsLoading(true);
       try {
-        const { data: skills } = await supabase
+        const { data: skills, error } = await supabase
           .from('skills')
           .select('name')
           .ilike('name', `${searchTerm}%`)
           .limit(5);
+
+        if (error) throw error;
 
         if (skills) {
           const filteredSkills = skills
