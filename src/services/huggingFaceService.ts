@@ -34,18 +34,18 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     // Get the API key from Supabase secrets
-    const { data: { secret }, error: secretError } = await supabase.rpc('get_secret', {
+    const { data, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
-    if (secretError || !secret) {
+    if (secretError || !data?.secret) {
       console.error('Error fetching API key:', secretError);
       throw new Error('Configuration API manquante');
     }
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': `Bearer ${secret}`,
+        'Authorization': `Bearer ${data.secret}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
