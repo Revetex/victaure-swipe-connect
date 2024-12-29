@@ -1,22 +1,14 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatHeader } from "./chat/ChatHeader";
-import { ChatMessage } from "./chat/ChatMessage";
 import { ChatInput } from "./chat/ChatInput";
-import { useChat, Message } from "@/hooks/useChat";
-import { useState, useRef, useEffect } from "react";
-import { Maximize2, Minimize2 } from "lucide-react";
-import { Button } from "./ui/button";
+import { useChat } from "@/hooks/useChat";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ChatContainer } from "./chat/ChatContainer";
+import { MaximizeButton } from "./chat/MaximizeButton";
 
 export function MrVictaure() {
   const { t } = useTranslation();
@@ -34,26 +26,6 @@ export function MrVictaure() {
 
   const { profile, setProfile, tempProfile, setTempProfile } = useProfile();
   const [isMaximized, setIsMaximized] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollArea = scrollAreaRef.current;
-      scrollArea.scrollTop = scrollArea.scrollHeight;
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      const welcomeMessage: Message = {
-        id: "welcome",
-        content: t("mrVictaure.welcome"),
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-      setMessages([welcomeMessage]);
-    }
-  }, [messages.length, setMessages, t]);
 
   const handleSendMessage = async (message: string) => {
     try {
@@ -110,10 +82,6 @@ export function MrVictaure() {
     }
   };
 
-  const toggleMaximize = () => {
-    setIsMaximized(!isMaximized);
-  };
-
   return (
     <div 
       className={cn(
@@ -125,27 +93,7 @@ export function MrVictaure() {
       
       <ChatHeader isThinking={isThinking} onClearChat={clearChat} />
 
-      <div 
-        ref={scrollAreaRef}
-        className="flex-grow overflow-y-auto mb-4 px-4 scrollbar-thin scrollbar-thumb-victaure-blue/20 scrollbar-track-transparent"
-      >
-        <div className="space-y-4 py-4">
-          {messages.map((message, index) => (
-            <ChatMessage
-              key={message.id}
-              content={message.content}
-              sender={message.sender}
-              thinking={message.thinking}
-              showTimestamp={
-                index === 0 || 
-                messages[index - 1]?.sender !== message.sender ||
-                new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
-              }
-              timestamp={message.timestamp}
-            />
-          ))}
-        </div>
-      </div>
+      <ChatContainer messages={messages} isThinking={isThinking} />
 
       <div className="p-4 pt-0">
         <ChatInput
@@ -158,27 +106,10 @@ export function MrVictaure() {
         />
       </div>
 
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMaximize}
-              className="absolute top-4 right-4 hover:bg-victaure-blue/10"
-            >
-              {isMaximized ? (
-                <Minimize2 className="h-4 w-4" />
-              ) : (
-                <Maximize2 className="h-4 w-4" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            {isMaximized ? t("mrVictaure.minimize") : t("mrVictaure.maximize")}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <MaximizeButton 
+        isMaximized={isMaximized}
+        onToggle={() => setIsMaximized(!isMaximized)}
+      />
     </div>
   );
 }
