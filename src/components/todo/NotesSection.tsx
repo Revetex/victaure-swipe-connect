@@ -2,6 +2,7 @@ import { StickyNote as StickyNoteIcon } from "lucide-react";
 import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
 import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
+import { useTranslation } from "react-i18next";
 
 interface NotesSectionProps {
   notes: StickyNoteType[];
@@ -24,11 +25,13 @@ export function NotesSection({
   onAdd,
   onDelete,
 }: NotesSectionProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-primary">
         <StickyNoteIcon className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Notes</h2>
+        <h2 className="text-lg font-semibold">{t("notes.title")}</h2>
       </div>
 
       <NotesInput
@@ -52,6 +55,11 @@ export function NotesSection({
             />
           );
         })}
+        {notes.length === 0 && (
+          <p className="text-center text-muted-foreground col-span-2">
+            {t("notes.noNotes")}
+          </p>
+        )}
       </div>
     </div>
   );

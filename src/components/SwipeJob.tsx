@@ -11,8 +11,10 @@ import { JobList } from "./jobs/JobList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
+import { useTranslation } from "react-i18next";
 
 export function SwipeJob() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [openLocation, setOpenLocation] = useState(false);
   const [filters, setFilters] = useState<JobFilters>({
@@ -61,22 +63,21 @@ export function SwipeJob() {
   return (
     <div className="glass-card p-4 space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-2xl font-bold">Offres disponibles</h2>
+        <h2 className="text-2xl font-bold">{t("jobs.browse")}</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" size="sm">
               <Plus className="mr-2 h-4 w-4" />
-              Ajouter une mission
+              {t("jobs.addJob")}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-victaure-blue">
-                Ajouter une mission
+                {t("jobs.addJob")}
               </DialogTitle>
               <DialogDescription className="text-victaure-gray-dark">
-                Créez une nouvelle mission en remplissant les informations ci-dessous.
-                Les professionnels pourront la consulter et y postuler.
+                {t("jobs.createDescription")}
               </DialogDescription>
             </DialogHeader>
             <div className="mt-6">
@@ -91,8 +92,8 @@ export function SwipeJob() {
 
       <Tabs defaultValue="browse" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
-          <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
+          <TabsTrigger value="browse">{t("jobs.browse")}</TabsTrigger>
+          <TabsTrigger value="my-jobs">{t("jobs.myListings")}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="browse">
@@ -110,12 +111,12 @@ export function SwipeJob() {
 
         <TabsContent value="my-jobs">
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
+            <h3 className="text-lg font-semibold">{t("jobs.myListings")}</h3>
             {myJobs && myJobs.length > 0 ? (
               <JobList jobs={myJobs} onJobDeleted={refetchMyJobs} />
             ) : (
               <p className="text-muted-foreground text-center py-8">
-                Vous n'avez pas encore publié d'annonces.
+                {t("jobs.noListings")}
               </p>
             )}
           </div>

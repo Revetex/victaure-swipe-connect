@@ -10,8 +10,10 @@ import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 export function MrVictaure() {
+  const { t } = useTranslation();
   const {
     messages,
     inputMessage,
@@ -39,19 +41,18 @@ export function MrVictaure() {
     if (messages.length === 0) {
       const welcomeMessage: Message = {
         id: "welcome",
-        content: "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
+        content: t("mrVictaure.welcome"),
         sender: "assistant",
         timestamp: new Date(),
       };
       setMessages([welcomeMessage]);
     }
-  }, [messages.length, setMessages]);
+  }, [messages.length, setMessages, t]);
 
   const handleSendMessage = async (message: string) => {
     try {
       const response = await originalHandleSendMessage(message, profile);
       
-      // Check if the response contains a VCard update action
       if (response.includes('"action":"UPDATE_VCARD"')) {
         try {
           const jsonStartIndex = response.indexOf('{');
@@ -63,14 +64,13 @@ export function MrVictaure() {
             const newProfile = { ...profile, ...updateData.changes };
             setTempProfile(newProfile);
             setProfile(newProfile);
-            toast.success("Profil mis à jour avec succès");
+            toast.success(t("vcard.updateSuccess"));
           }
         } catch (error) {
           console.error("Error parsing VCard update:", error);
         }
       }
       
-      // Check if the response contains a job creation action
       if (response.includes('"action":"CREATE_JOB"')) {
         try {
           const jsonStartIndex = response.indexOf('{');
@@ -91,16 +91,16 @@ export function MrVictaure() {
               });
 
             if (jobError) throw jobError;
-            toast.success("Mission créée avec succès");
+            toast.success(t("jobs.createSuccess"));
           }
         } catch (error) {
           console.error("Error creating job:", error);
-          toast.error("Erreur lors de la création de la mission");
+          toast.error(t("jobs.createError"));
         }
       }
     } catch (error) {
       console.error("Error in handleSendMessage:", error);
-      toast.error("Une erreur est survenue");
+      toast.error(t("error.generic"));
     }
   };
 
@@ -159,9 +159,9 @@ export function MrVictaure() {
         className="absolute top-4 right-4 hover:bg-victaure-blue/10"
       >
         {isMaximized ? (
-          <Minimize2 className="h-4 w-4" />
+          <Minimize2 className="h-4 w-4" title={t("mrVictaure.minimize")} />
         ) : (
-          <Maximize2 className="h-4 w-4" />
+          <Maximize2 className="h-4 w-4" title={t("mrVictaure.maximize")} />
         )}
       </Button>
     </div>

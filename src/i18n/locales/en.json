@@ -87,35 +87,87 @@
       "description": "Average rating"
     }
   },
-  "todo": {
-    "title": "Tasks",
-    "newTask": "New task...",
-    "addTask": "Add task",
-    "noTasks": "No tasks",
-    "deleteTask": "Delete task",
-    "completeTask": "Mark as complete"
+  "messages": {
+    "title": "Messages",
+    "noMessages": "No messages",
+    "markAsRead": "Mark as read",
+    "newMessage": "New message",
+    "unreadMessages": "Unread messages"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "markAsRead": "Mark as read",
+    "newNotification": "New notification",
+    "unreadNotifications": "Unread notifications",
+    "deleteNotification": "Delete notification"
   },
   "notes": {
     "title": "Notes",
-    "newNote": "New note...",
-    "addNote": "Add note",
     "noNotes": "No notes",
-    "deleteNote": "Delete note"
+    "addNote": "Add note",
+    "newNote": "New note...",
+    "deleteNote": "Delete note",
+    "colors": {
+      "yellow": "Yellow",
+      "green": "Green",
+      "blue": "Blue",
+      "pink": "Pink"
+    }
   },
-  "chat": {
-    "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish mission offers. Would you like me to help you create a new mission or improve your profile?",
-    "placeholder": "Write your message...",
-    "send": "Send",
-    "thinking": "Thinking..."
+  "tasks": {
+    "title": "Tasks",
+    "noTasks": "No tasks",
+    "addTask": "Add task",
+    "newTask": "New task...",
+    "deleteTask": "Delete task",
+    "markAsComplete": "Mark as complete"
   },
-  "profile": {
-    "edit": "Edit Profile",
+  "jobs": {
+    "browse": "Browse jobs",
+    "myListings": "My listings",
+    "noListings": "You haven't posted any jobs yet",
+    "addJob": "Add job",
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "location": "Location",
+      "experience": "Experience",
+      "duration": "Duration"
+    }
+  },
+  "mrVictaure": {
+    "title": "Mr. Victaure",
+    "subtitle": "AI Personal Assistant",
+    "thinking": "Thinking...",
+    "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish job offers. Would you like me to help you create a new job or improve your profile?",
+    "clearChat": "Clear chat",
+    "maximize": "Maximize",
+    "minimize": "Minimize"
+  },
+  "vcard": {
+    "title": "Business Card",
+    "share": "Share",
+    "download": {
+      "vcard": "Download VCard",
+      "pdf": "Download PDF"
+    },
+    "copyLink": "Copy link",
+    "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
-    "personalInfo": "Personal Information",
-    "skills": "Skills",
-    "experience": "Experience",
-    "education": "Education",
-    "contact": "Contact"
+    "sections": {
+      "contact": "Contact",
+      "skills": "Skills",
+      "experience": "Experience",
+      "education": "Education",
+      "certifications": "Certifications"
+    },
+    "placeholders": {
+      "email": "Your email",
+      "phone": "Your phone",
+      "city": "Your city",
+      "state": "Your state/province"
+    }
   }
 }

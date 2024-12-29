@@ -87,35 +87,87 @@
       "description": "Note moyenne"
     }
   },
-  "todo": {
-    "title": "Tâches",
-    "newTask": "Nouvelle tâche...",
-    "addTask": "Ajouter une tâche",
-    "noTasks": "Aucune tâche",
-    "deleteTask": "Supprimer la tâche",
-    "completeTask": "Marquer comme terminée"
+  "messages": {
+    "title": "Messages",
+    "noMessages": "Aucun message",
+    "markAsRead": "Marquer comme lu",
+    "newMessage": "Nouveau message",
+    "unreadMessages": "Messages non lus"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "Aucune notification",
+    "markAsRead": "Marquer comme lu",
+    "newNotification": "Nouvelle notification",
+    "unreadNotifications": "Notifications non lues",
+    "deleteNotification": "Supprimer la notification"
   },
   "notes": {
     "title": "Notes",
-    "newNote": "Nouvelle note...",
-    "addNote": "Ajouter une note",
     "noNotes": "Aucune note",
-    "deleteNote": "Supprimer la note"
+    "addNote": "Ajouter une note",
+    "newNote": "Nouvelle note...",
+    "deleteNote": "Supprimer la note",
+    "colors": {
+      "yellow": "Jaune",
+      "green": "Vert",
+      "blue": "Bleu",
+      "pink": "Rose"
+    }
   },
-  "chat": {
+  "tasks": {
+    "title": "Tâches",
+    "noTasks": "Aucune tâche",
+    "addTask": "Ajouter une tâche",
+    "newTask": "Nouvelle tâche...",
+    "deleteTask": "Supprimer la tâche",
+    "markAsComplete": "Marquer comme terminée"
+  },
+  "jobs": {
+    "browse": "Parcourir les offres",
+    "myListings": "Mes annonces",
+    "noListings": "Vous n'avez pas encore publié d'annonces",
+    "addJob": "Ajouter une mission",
+    "filters": {
+      "title": "Filtres",
+      "category": "Catégorie",
+      "location": "Lieu",
+      "experience": "Expérience",
+      "duration": "Durée"
+    }
+  },
+  "mrVictaure": {
+    "title": "Mr. Victaure",
+    "subtitle": "Assistant IA Personnel",
+    "thinking": "En train de réfléchir...",
     "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
-    "placeholder": "Écrivez votre message...",
-    "send": "Envoyer",
-    "thinking": "En train de réfléchir..."
+    "clearChat": "Effacer la conversation",
+    "maximize": "Agrandir",
+    "minimize": "Réduire"
   },
-  "profile": {
-    "edit": "Modifier le profil",
-    "save": "Enregistrer",
+  "vcard": {
+    "title": "Carte de visite",
+    "share": "Partager",
+    "download": {
+      "vcard": "Télécharger VCard",
+      "pdf": "Télécharger PDF"
+    },
+    "copyLink": "Copier le lien",
+    "edit": "Modifier",
+    "save": "Sauvegarder",
     "cancel": "Annuler",
-    "personalInfo": "Informations personnelles",
-    "skills": "Compétences",
-    "experience": "Expérience",
-    "education": "Formation",
-    "contact": "Contact"
+    "sections": {
+      "contact": "Contact",
+      "skills": "Compétences",
+      "experience": "Expérience",
+      "education": "Formation",
+      "certifications": "Certifications"
+    },
+    "placeholders": {
+      "email": "Votre email",
+      "phone": "Votre téléphone",
+      "city": "Votre ville",
+      "state": "Votre province"
+    }
   }
 }
