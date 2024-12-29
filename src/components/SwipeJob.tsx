@@ -1,126 +1,219 @@
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { SwipeMatch } from "./SwipeMatch";
-import { CreateJobForm } from "./jobs/CreateJobForm";
-import { JobFilters } from "./jobs/JobFilterUtils";
-import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { JobList } from "./jobs/JobList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Job } from "@/types/job";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Briefcase, MapPin, DollarSign, Clock, Building2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import type { Job } from "@/types/job";
 
 export function SwipeJob() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [openLocation, setOpenLocation] = useState(false);
-  const [filters, setFilters] = useState<JobFilters>({
-    category: "all",
-    subcategory: "all",
-    duration: "all",
-    experienceLevel: "all",
-    location: "",
-    searchTerm: ""
-  });
+  const { toast } = useToast();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data: myJobs, refetch: refetchMyJobs } = useQuery({
-    queryKey: ['my-jobs'],
+  const { data: jobs, isLoading } = useQuery({
+    queryKey: ['available-jobs'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
-      
-      const { data, error } = await supabase
+
+      const { data: jobs, error } = await supabase
         .from('jobs')
         .select('*')
-        .eq('employer_id', user.id)
+        .eq('status', 'open')
+        .neq('employer_id', user.id)
         .order('created_at', { ascending: false });
-      
+
       if (error) {
-        console.error('Error fetching my jobs:', error);
+        console.error('Error fetching jobs:', error);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de charger les offres",
+        });
         return [];
       }
-      
-      return data?.map(job => ({
-        ...job,
-        company: "Votre entreprise",
-        salary: `${job.budget} CAD`,
-        skills: []
-      })) as Job[];
+
+      return jobs as Job[];
     }
   });
 
-  const handleFilterChange = (key: keyof JobFilters, value: any) => {
-    if (key === "category" && value !== filters.category) {
-      setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
-    } else {
-      setFilters(prev => ({ ...prev, [key]: value }));
+  const handleSwipe = async (jobId: string, action: 'accept' | 'reject') => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    if (action === 'accept') {
+      const { error } = await supabase
+        .from('matches')
+        .insert({
+          job_id: jobId,
+          professional_id: user.id,
+          status: 'pending'
+        });
+
+      if (error) {
+        console.error('Error creating match:', error);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de postuler à cette offre",
+        });
+        return;
+      }
+
+      toast({
+        title: "Succès",
+        description: "Vous avez postulé à cette offre",
+      });
     }
+
+    setCurrentIndex(prev => prev + 1);
   };
 
-  return (
-    <div className="glass-card p-4 space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-2xl font-bold">Offres disponibles</h2>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" size="sm">
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter une mission
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-victaure-blue">
-                Ajouter une mission
-              </DialogTitle>
-              <DialogDescription className="text-victaure-gray-dark">
-                Créez une nouvelle mission en remplissant les informations ci-dessous.
-                Les professionnels pourront la consulter et y postuler.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-6">
-              <CreateJobForm onSuccess={() => {
-                setIsOpen(false);
-                refetchMyJobs();
-              }} />
-            </div>
-          </DialogContent>
-        </Dialog>
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
+    );
+  }
 
-      <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
-          <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="browse">
-          <JobFiltersPanel 
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            openLocation={openLocation}
-            setOpenLocation={setOpenLocation}
+  if (!jobs || jobs.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+        <Briefcase className="h-12 w-12 mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Aucune offre disponible</h3>
+        <p className="text-sm text-center">
+          Revenez plus tard pour découvrir de nouvelles opportunités
+        </p>
+      </div>
+    );
+  }
+
+  if (currentIndex >= jobs.length) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+        <Clock className="h-12 w-12 mb-4" />
+        <h3 className="text-lg font-semibold mb-2">C'est tout pour le moment!</h3>
+        <p className="text-sm text-center">
+          Vous avez vu toutes les offres disponibles
+        </p>
+        <Button 
+          variant="outline" 
+          className="mt-4"
+          onClick={() => setCurrentIndex(0)}
+        >
+          Recommencer
+        </Button>
+      </div>
+    );
+  }
+
+  const currentJob = jobs[currentIndex];
+
+  return (
+    <div className="h-full flex flex-col items-center justify-center p-4">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentJob.id}
+          initial={{ x: 300, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -300, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="w-full max-w-xl"
+        >
+          <Card className="w-full bg-card shadow-lg">
+            <CardHeader className="space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-bold">{currentJob.title}</h2>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Building2 className="h-4 w-4 mr-1" />
+                    <span className="text-sm">Entreprise XYZ</span>
+                  </div>
+                </div>
+                <Badge variant="outline" className="text-sm">
+                  {currentJob.contract_type}
+                </Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary" className="text-xs">
+                  {currentJob.category}
+                </Badge>
+                {currentJob.subcategory && (
+                  <Badge variant="secondary" className="text-xs">
+                    {currentJob.subcategory}
+                  </Badge>
+                )}
+                <Badge variant="secondary" className="text-xs">
+                  {currentJob.experience_level}
+                </Badge>
+              </div>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center text-muted-foreground">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  <span className="text-sm">{currentJob.location}</span>
+                </div>
+                <div className="flex items-center text-muted-foreground">
+                  <DollarSign className="h-4 w-4 mr-1" />
+                  <span className="text-sm">
+                    {new Intl.NumberFormat('fr-CA', {
+                      style: 'currency',
+                      currency: 'CAD'
+                    }).format(currentJob.budget)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="prose prose-sm max-w-none">
+                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <p className="text-muted-foreground whitespace-pre-wrap">
+                  {currentJob.description}
+                </p>
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex justify-between gap-4 pt-6">
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex-1 text-destructive hover:text-destructive"
+                onClick={() => handleSwipe(currentJob.id, 'reject')}
+              >
+                Passer
+              </Button>
+              <Button
+                variant="default"
+                size="lg"
+                className="flex-1"
+                onClick={() => handleSwipe(currentJob.id, 'accept')}
+              >
+                Postuler
+              </Button>
+            </CardFooter>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="mt-6 flex items-center gap-2">
+        {jobs.map((_, index) => (
+          <div
+            key={index}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              index === currentIndex
+                ? "w-6 bg-primary"
+                : index < currentIndex
+                ? "w-1.5 bg-primary/30"
+                : "w-1.5 bg-muted"
+            }`}
           />
-          
-          <div className="flex justify-center">
-            <SwipeMatch filters={filters} />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="my-jobs">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
-            {myJobs && myJobs.length > 0 ? (
-              <JobList jobs={myJobs} onJobDeleted={refetchMyJobs} />
-            ) : (
-              <p className="text-muted-foreground text-center py-8">
-                Vous n'avez pas encore publié d'annonces.
-              </p>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
+        ))}
+      </div>
     </div>
   );
 }
