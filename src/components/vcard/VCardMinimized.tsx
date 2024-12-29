@@ -31,76 +31,69 @@ export function VCardMinimized({ profile, onExpand, onEdit }: VCardMinimizedProp
   }, [profile]);
 
   return (
-    <div className="glass-card p-6 relative overflow-hidden w-full aspect-[1.8/1] max-w-[600px] mx-auto">
-      {/* Background gradients */}
-      <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-radial from-primary/20 to-transparent opacity-50" />
-      <div className="absolute left-0 bottom-0 h-1/2 w-1/3 bg-gradient-radial from-secondary/20 to-transparent opacity-50" />
-      
-      {/* Main content container */}
-      <div className="relative z-10 flex justify-between h-full gap-8">
+    <div className="glass-card relative overflow-hidden w-full max-w-[600px] mx-auto">
+      <div className="flex justify-between items-center p-6 gap-8">
         {/* Left side - Contact info */}
-        <div className="flex-1 flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-semibold text-foreground">
-                  {profile.full_name || "Nom non défini"}
-                </h3>
-                {profile.title && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {profile.title}
-                  </p>
-                )}
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onEdit}
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
+        <div className="flex-1 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-semibold text-foreground">
+                {profile.full_name || "Nom non défini"}
+              </h3>
+              {profile.title && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {profile.title}
+                </p>
+              )}
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEdit}
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            >
+              <Edit2 className="h-4 w-4" />
+            </Button>
+          </div>
 
-            <div className="space-y-3">
-              {profile.email && (
-                <div className="flex items-center gap-3 group">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Mail className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors truncate">
-                    {profile.email}
-                  </span>
+          <div className="space-y-3">
+            {profile.email && (
+              <div className="flex items-center gap-3 group">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-primary" />
                 </div>
-              )}
-              {profile.phone && (
-                <div className="flex items-center gap-3 group">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Phone className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                    {profile.phone}
-                  </span>
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors truncate">
+                  {profile.email}
+                </span>
+              </div>
+            )}
+            {profile.phone && (
+              <div className="flex items-center gap-3 group">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Phone className="h-4 w-4 text-primary" />
                 </div>
-              )}
-              {profile.city && (
-                <div className="flex items-center gap-3 group">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <MapPin className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                    {profile.city}
-                  </span>
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  {profile.phone}
+                </span>
+              </div>
+            )}
+            {profile.city && (
+              <div className="flex items-center gap-3 group">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <MapPin className="h-4 w-4 text-primary" />
                 </div>
-              )}
-            </div>
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  {profile.city}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right side - QR Code section with border */}
+        {/* Right side - QR Code section */}
         <div 
           onClick={onExpand}
-          className="flex flex-col items-center justify-center border-l border-border pl-8 cursor-pointer group"
+          className="flex flex-col items-center justify-center border-l border-border pl-8 cursor-pointer group min-w-[200px]"
         >
           <div className="p-3 rounded-xl bg-background/50 border border-border group-hover:border-primary/50 group-hover:bg-primary/5 transition-all duration-300">
             {isGenerating ? (
