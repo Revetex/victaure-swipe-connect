@@ -1,9 +1,8 @@
-import { Calendar } from "@/components/ui/calendar";
-import { VCard } from "@/components/VCard";
 import { TodoList } from "@/components/TodoList";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { VCard } from "@/components/VCard";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -28,8 +27,8 @@ export function DashboardLayout() {
           <TodoList />
         </div>
 
-        {/* VCard - Maintenant dans une colonne */}
-        <div className={`${isMobile ? "col-span-1" : "lg:col-span-1"}`}>
+        {/* VCard - Même largeur que SwipeJob quand étendu */}
+        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}>
           <VCard />
         </div>
       </div>
