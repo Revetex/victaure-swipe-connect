@@ -1,11 +1,13 @@
 import { MessageSquare } from "lucide-react";
-import { MessageList } from "../MessageList";
 import { useMessages } from "@/hooks/useMessages";
 import { useChat } from "@/hooks/useChat";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
+import { MessageList } from "../MessageList";
+import { ChatBubble } from "@/components/chat/ChatBubble";
+import { supabase } from "@/integrations/supabase/client";
 
 export function MessagesTab() {
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
@@ -20,6 +22,22 @@ export function MessagesTab() {
   } = useChat();
 
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setCurrentUser(profile);
+      }
+    };
+    getCurrentUser();
+  }, []);
 
   // Combine user messages and assistant messages
   const allMessages = [
@@ -29,7 +47,7 @@ export function MessagesTab() {
       content: msg.content,
       sender: {
         id: msg.sender === 'assistant' ? 'assistant' : 'user',
-        full_name: msg.sender === 'assistant' ? 'Assistant IA' : 'Vous',
+        full_name: msg.sender === 'assistant' ? 'Mr Victaure' : 'Vous',
         avatar_url: msg.sender === 'assistant' ? '/bot-avatar.png' : undefined
       },
       created_at: msg.timestamp.toISOString(),
@@ -49,9 +67,16 @@ export function MessagesTab() {
     const conversation = allMessages.find(m => m.id === selectedConversation);
     if (!conversation) return null;
 
+    // Get all messages for this conversation
+    const conversationMessages = allMessages.filter(m => 
+      (m.sender.id === conversation.sender.id && m.sender.id !== 'assistant') ||
+      (m.sender.id === currentUser?.id) ||
+      (conversation.sender.id === 'assistant' && m.sender.id === 'assistant')
+    );
+
     return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col h-full">
+        <div className="flex items-center gap-2 p-4 border-b">
           <Button
             variant="ghost"
             size="icon"
@@ -67,14 +92,33 @@ export function MessagesTab() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4">
+        <div className="flex-1 overflow-y-auto p-4">
           <div className="space-y-4">
-            {/* Afficher les messages de la conversation ici */}
-            <p>{conversation.content}</p>
+            {conversationMessages.map((message) => (
+              <ChatBubble
+                key={message.id}
+                content={message.content}
+                sender={message.sender}
+                timestamp={new Date(message.created_at)}
+                isCurrentUser={message.sender.id === currentUser?.id}
+              />
+            ))}
+            {isThinking && (
+              <ChatBubble
+                content="En train d'écrire..."
+                sender={{
+                  id: 'assistant',
+                  full_name: 'Mr Victaure',
+                  avatar_url: '/bot-avatar.png'
+                }}
+                timestamp={new Date()}
+                isCurrentUser={false}
+              />
+            )}
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-background pt-2">
+        <div className="sticky bottom-0 bg-background p-4 border-t">
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}

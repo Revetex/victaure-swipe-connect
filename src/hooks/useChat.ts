@@ -12,7 +12,7 @@ export interface Message {
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([{
     id: uuidv4(),
-    content: "Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?",
+    content: "Bonjour ! Je suis Mr Victaure, votre assistant IA. Comment puis-je vous aider aujourd'hui ?",
     sender: "assistant",
     timestamp: new Date(),
   }]);
@@ -45,7 +45,7 @@ export function useChat() {
           messages: [
             {
               role: 'system',
-              content: 'Tu es un assistant professionnel qui aide les utilisateurs dans leur recherche d\'emploi. Sois précis et concis dans tes réponses.'
+              content: 'Tu es Mr Victaure, un assistant professionnel qui aide les utilisateurs dans leur recherche d\'emploi. Tu es précis, concis et bienveillant dans tes réponses.'
             },
             ...messages.map(msg => ({
               role: msg.sender === 'assistant' ? 'assistant' : 'user',
@@ -74,7 +74,6 @@ export function useChat() {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error:', error);
-      // Fallback responses in case of error
       const fallbackResponses = [
         "Je suis là pour vous aider dans votre recherche d'emploi. Que puis-je faire pour vous ?",
         "Je peux vous donner des conseils sur la rédaction de votre CV.",
