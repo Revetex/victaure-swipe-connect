@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateAIResponse } from "@/services/perplexityService";
+import { generateAIResponse } from "@/services/huggingFaceService";
 import { toast } from "sonner";
 
 export interface Message {
@@ -31,7 +31,7 @@ export function useChat() {
     setIsThinking(true);
 
     try {
-      const response = await generateAIResponse(message);
+      const response = await generateAIResponse(message, profile);
 
       const newAssistantMessage: Message = {
         id: crypto.randomUUID(),
