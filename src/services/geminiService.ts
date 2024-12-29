@@ -3,6 +3,8 @@ import { toast } from "sonner";
 
 async function getApiKey() {
   try {
+    console.log('Fetching Gemini API key from Supabase...');
+    
     const { data, error } = await supabase.rpc('get_secret', {
       secret_name: 'GEMINI_API_KEY'
     });
@@ -13,12 +15,14 @@ async function getApiKey() {
       throw new Error(`Failed to fetch Gemini API key: ${error.message}`);
     }
 
+    console.log('API key response:', { hasData: !!data, dataLength: data?.length });
+
     // Check if we got any data back
     if (!data || data.length === 0) {
       toast.error("La clé API Gemini n'est pas configurée", {
-        description: "Veuillez configurer votre clé API dans les paramètres Supabase",
+        description: "Veuillez vérifier que la clé existe dans les paramètres Supabase",
         action: {
-          label: "Configurer",
+          label: "Vérifier",
           onClick: () => window.open("https://supabase.com/dashboard/project/mfjllillnpleasclqabb/settings/secrets", "_blank")
         }
       });
@@ -26,9 +30,11 @@ async function getApiKey() {
     }
 
     const apiKey = data[0]?.secret?.trim();
+    console.log('API key retrieved:', { hasKey: !!apiKey, keyLength: apiKey?.length });
+
     if (!apiKey) {
       toast.error("La clé API Gemini est vide", {
-        description: "Veuillez configurer une clé API valide dans les paramètres Supabase",
+        description: "La clé existe mais semble être vide, veuillez la reconfigurer",
         action: {
           label: "Configurer",
           onClick: () => window.open("https://supabase.com/dashboard/project/mfjllillnpleasclqabb/settings/secrets", "_blank")
@@ -104,6 +110,7 @@ export async function generateAIResponse(message: string) {
     }
 
     return data.candidates[0].content.parts[0].text;
+
   } catch (error) {
     console.error('Error generating AI response:', error);
     throw error;
