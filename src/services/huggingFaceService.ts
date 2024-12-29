@@ -89,14 +89,15 @@ Réponds de manière structurée en:
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error('HuggingFace API Error:', errorData);
-      throw new Error(`API request failed: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('HuggingFace API Error Response:', errorText);
+      throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data);
       throw new Error('Invalid response format from API');
     }
 
