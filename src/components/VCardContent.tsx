@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { VCardHeader } from "../VCardHeader";
-import { VCardContact } from "../VCardContact";
-import { VCardSkills } from "../VCardSkills";
-import { VCardCertifications } from "../VCardCertifications";
-import { VCardActions } from "../VCardActions";
+import { VCardHeader } from "./vcard/VCardHeader";
+import { VCardContact } from "./vcard/VCardContact";
+import { VCardSkills } from "./vcard/VCardSkills";
+import { VCardCertifications } from "./vcard/VCardCertifications";
+import { VCardActions } from "./vcard/VCardActions";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
-import { VCardContactInfo } from "./VCardContactInfo";
-import { VCardCompactActions } from "./VCardCompactActions";
+import { VCardContactInfo } from "./vcard/VCardContactInfo";
+import { VCardCompactActions } from "./vcard/VCardCompactActions";
 import { cn } from "@/lib/utils";
 
 interface VCardContentProps {

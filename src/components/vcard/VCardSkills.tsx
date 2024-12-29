@@ -6,7 +6,7 @@ import { useState } from "react";
 import { SkillCategory } from "../skills/SkillCategory";
 import { SkillEditor } from "../skills/SkillEditor";
 
-interface VCardSkillsProps {
+export interface VCardSkillsProps {
   profile: {
     skills: string[];
   };
