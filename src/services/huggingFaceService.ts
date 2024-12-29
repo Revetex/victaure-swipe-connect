@@ -32,9 +32,8 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
   });
 
   console.log('Vérification de la clé API:', { 
-    hasData: !!secretData, 
-    hasError: !!secretError,
-    errorDetails: secretError?.message 
+    hasData: !!secretData?.[0]?.secret,
+    hasError: !!secretError
   });
 
   if (secretError) {
@@ -42,13 +41,15 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     throw new Error('Erreur lors de la récupération de la clé API');
   }
 
-  if (!secretData?.[0]?.secret || secretData[0].secret.trim() === '') {
-    console.error('Clé API non trouvée ou invalide');
+  const apiKey = secretData?.[0]?.secret?.trim();
+  
+  // Validation plus stricte de la clé API
+  if (!apiKey || apiKey.length < 30) { // Les clés HF font généralement plus de 30 caractères
+    console.error('Clé API invalide ou manquante:', { keyLength: apiKey?.length || 0 });
     throw new Error('Configuration API manquante ou invalide');
   }
 
-  const apiKey = secretData[0].secret.trim();
-  console.log('Clé API récupérée avec succès');
+  console.log('Clé API validée avec succès');
 
   try {
     console.log('Envoi de la requête à Hugging Face...');
@@ -80,6 +81,13 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
         statusText: response.statusText,
         error: errorData
       });
+      
+      // Message d'erreur plus spécifique selon le code de statut
+      if (response.status === 401) {
+        throw new Error('Clé API invalide ou expirée');
+      } else if (response.status === 429) {
+        throw new Error('Trop de requêtes. Veuillez réessayer plus tard.');
+      }
       throw new Error(`Erreur API Hugging Face: ${response.statusText}`);
     }
 
