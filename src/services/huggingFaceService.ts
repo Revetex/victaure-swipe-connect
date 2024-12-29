@@ -12,6 +12,14 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Utilisateur non authentifié');
     }
 
+    // Get the Hugging Face access token from Supabase
+    const { data: secretData, error: secretError } = await supabase
+      .rpc('get_secret', { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' });
+    
+    if (secretError || !secretData) {
+      throw new Error('Impossible de récupérer le token d\'accès');
+    }
+
     const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel et amical qui aide les utilisateurs avec leurs questions. Tu réponds toujours en français de manière concise et claire.
 
 <|user|>${message}
@@ -20,6 +28,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
+        'Authorization': `Bearer ${secretData}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
