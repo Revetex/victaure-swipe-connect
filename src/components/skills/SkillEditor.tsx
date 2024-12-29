@@ -69,6 +69,7 @@ export function SkillEditor({
         onClick={handleAddSkill} 
         variant="secondary"
         className={`${isMobile ? "w-full" : ""} bg-indigo-600 hover:bg-indigo-700 text-white`}
+        disabled={!newSkill}
       >
         Ajouter
       </Button>
