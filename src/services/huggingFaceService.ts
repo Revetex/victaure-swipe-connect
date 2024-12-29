@@ -3,7 +3,6 @@ import type { UserProfile } from "@/types/profile";
 import { checkRateLimit } from "./ai/rateLimiter";
 import { sanitizeInput } from "./ai/inputSanitizer";
 import { buildSystemPrompt } from "./ai/promptBuilder";
-import { getFallbackResponse } from "./ai/fallbackResponses";
 
 export async function generateAIResponse(message: string, profile?: UserProfile) {
   try {
@@ -109,6 +108,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     return generatedText;
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse:', error);
-    return getFallbackResponse(profile);
+    // Instead of using pre-recorded messages, generate a simple error response
+    return "Je suis désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler votre demande différemment ?";
   }
 }

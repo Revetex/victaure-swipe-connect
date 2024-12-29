@@ -1,23 +1,18 @@
 import type { UserProfile } from "@/types/profile";
+import { generateAIResponse } from "../huggingFaceService";
 
-export function getFallbackResponse(profile?: UserProfile): string {
-  const contextualResponses = [
-    profile?.full_name 
-      ? `Je peux vous aider à optimiser votre profil professionnel ${profile.full_name}. Voici les aspects prioritaires à améliorer:\n\n` +
-        `${!profile.bio ? '- Développer une bio professionnelle qui met en valeur votre expertise\n' : ''}` +
-        `${!profile.skills?.length ? '- Ajouter vos compétences clés et technologies maîtrisées\n' : ''}` +
-        `${!profile.phone ? '- Compléter vos coordonnées professionnelles\n' : ''}` +
-        `${!profile.certifications?.length ? '- Valoriser vos certifications et formations\n' : ''}`
-      : "Je peux vous accompagner dans la création de votre profil professionnel. Par où souhaitez-vous commencer ?",
+export async function getFallbackResponse(profile?: UserProfile): Promise<string> {
+  try {
+    // Generate a dynamic response using the AI model
+    const fallbackPrompt = profile 
+      ? `Je suis un assistant IA et je remarque une erreur. Pour vous aider au mieux ${profile.full_name}, pouvez-vous me donner plus de détails sur votre demande ?`
+      : "Je suis un assistant IA et je remarque une erreur. Pour vous aider au mieux, pouvez-vous me donner plus de détails sur votre demande ?";
     
-    profile?.role
-      ? `En tant que ${profile.role}, je peux vous proposer des améliorations ciblées pour votre secteur d'activité.`
-      : "Commençons par définir votre rôle professionnel pour personnaliser votre profil.",
-    
-    "Je peux analyser votre profil et suggérer des améliorations stratégiques.",
-    "Souhaitez-vous que nous examinions ensemble votre profil pour le rendre plus attractif ?",
-    "Je peux vous aider à mettre en valeur votre parcours et vos compétences de manière optimale.",
-  ];
-  
-  return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
+    const response = await generateAIResponse(fallbackPrompt, profile);
+    return response;
+  } catch (error) {
+    console.error('Error generating fallback response:', error);
+    // If AI generation fails, return a simple message
+    return "Désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler votre demande ?";
+  }
 }
