@@ -22,9 +22,9 @@ export function MessagesTab() {
       id: msg.id,
       content: msg.content,
       sender: {
-        id: 'assistant',
-        full_name: 'Assistant IA',
-        avatar_url: '/bot-avatar.png'
+        id: msg.sender === 'assistant' ? 'assistant' : 'user',
+        full_name: msg.sender === 'assistant' ? 'Assistant IA' : 'Vous',
+        avatar_url: msg.sender === 'assistant' ? '/bot-avatar.png' : undefined
       },
       created_at: msg.timestamp.toISOString(),
       read: true
