@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { VCardHeader } from "../VCardHeader";
 import { motion, AnimatePresence } from "framer-motion";
