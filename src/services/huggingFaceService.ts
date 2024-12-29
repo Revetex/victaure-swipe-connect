@@ -89,38 +89,32 @@ Réponds de manière structurée en:
       }),
     });
 
-    // Clone the response before reading it
-    const responseClone = response.clone();
-
-    // First try to parse as JSON
-    try {
-      const data = await response.json();
-      
-      if (!Array.isArray(data) || !data[0]?.generated_text) {
-        console.error('Invalid response format:', data);
-        throw new Error('Invalid response format from API');
-      }
-
-      const generatedText = data[0].generated_text
-        .split('<|assistant|>')[1]?.trim()
-        .replace(/```/g, '')
-        .replace(/\n\n+/g, '\n\n')
-        .trim();
-      
-      if (!generatedText) {
-        throw new Error('No response generated');
-      }
-
-      return generatedText;
-    } catch (error) {
-      // If JSON parsing fails, try reading as text from the cloned response
-      if (!response.ok) {
-        const errorText = await responseClone.text();
-        console.error('HuggingFace API Error:', errorText);
-        throw new Error(`API request failed: ${response.status} - ${errorText}`);
-      }
-      throw error;
+    // Handle non-OK responses first
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('HuggingFace API Error:', errorText);
+      throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
+
+    // Parse the response as JSON
+    const data = await response.json();
+    
+    if (!Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data);
+      throw new Error('Invalid response format from API');
+    }
+
+    const generatedText = data[0].generated_text
+      .split('<|assistant|>')[1]?.trim()
+      .replace(/```/g, '')
+      .replace(/\n\n+/g, '\n\n')
+      .trim();
+    
+    if (!generatedText) {
+      throw new Error('No response generated');
+    }
+
+    return generatedText;
   } catch (error) {
     console.error('Error generating response:', error);
     throw error;
