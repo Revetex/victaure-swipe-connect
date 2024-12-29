@@ -17,6 +17,7 @@ export function MessagesTab() {
   const { profile } = useProfile();
   const [isAssistantChatOpen, setIsAssistantChatOpen] = useState(false);
   const {
+    messages: chatMessages,
     inputMessage,
     isListening,
     isThinking,
@@ -24,6 +25,8 @@ export function MessagesTab() {
     handleSendMessage,
     handleVoiceInput,
   } = useChat();
+
+  const lastAssistantMessage = chatMessages[chatMessages.length - 1]?.content || "Comment puis-je vous aider ?";
 
   return (
     <div className="space-y-4">
@@ -51,7 +54,7 @@ export function MessagesTab() {
               </span>
             </div>
             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              Comment puis-je vous aider ?
+              {lastAssistantMessage}
             </p>
           </div>
         </div>
@@ -77,12 +80,20 @@ export function MessagesTab() {
 
           <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
-              <ChatMessage
-                content="Bonjour! Comment puis-je vous aider aujourd'hui?"
-                sender="assistant"
-                timestamp={new Date()}
-                showTimestamp={true}
-              />
+              {chatMessages.map((message, index) => (
+                <ChatMessage
+                  key={message.id}
+                  content={message.content}
+                  sender={message.sender}
+                  thinking={message.thinking}
+                  showTimestamp={
+                    index === 0 || 
+                    chatMessages[index - 1]?.sender !== message.sender ||
+                    new Date(message.timestamp).getTime() - new Date(chatMessages[index - 1]?.timestamp).getTime() > 300000
+                  }
+                  timestamp={message.timestamp}
+                />
+              ))}
             </div>
           </ScrollArea>
 
