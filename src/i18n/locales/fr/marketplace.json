@@ -1,8 +1,8 @@
 {
   "filters": {
     "title": "Filtres",
-    "search": "Recherche",
-    "searchPlaceholder": "Rechercher une offre...",
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher une mission...",
     "category": "Catégorie",
     "subcategory": "Sous-catégorie",
     "allCategories": "Toutes les catégories",
@@ -11,16 +11,16 @@
     "experienceLevel": "Niveau d'expérience",
     "allLevels": "Tous les niveaux",
     "location": "Localisation",
-    "selectCity": "Sélectionner une ville...",
+    "selectCity": "Sélectionnez une ville...",
     "noCity": "Aucune ville trouvée",
     "salary": "Salaire",
     "remote": "Télétravail"
   },
-  "noJobs": "Aucune offre disponible pour le moment",
-  "comeBack": "Revenez plus tard pour découvrir de nouvelles missions.",
-  "browse": "Parcourir les offres",
+  "noJobs": "Aucune mission disponible pour le moment",
+  "comeBack": "Revenez plus tard pour découvrir de nouvelles missions",
+  "browse": "Parcourir les missions",
   "myListings": "Mes annonces",
-  "noListings": "Vous n'avez pas encore publié d'annonces",
+  "noListings": "Vous n'avez pas encore publié de mission",
   "addJob": "Ajouter une mission",
   "apply": "Postuler",
   "save": "Sauvegarder"
