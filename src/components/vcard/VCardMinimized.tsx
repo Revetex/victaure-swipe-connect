@@ -9,53 +9,83 @@ interface VCardMinimizedProps {
 
 export function VCardMinimized({ profile, onExpand, onEdit }: VCardMinimizedProps) {
   return (
-    <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 p-6 shadow-lg backdrop-blur-sm transition-all hover:shadow-xl">
-      <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 blur-2xl" />
+    <div className="glass-card p-6 relative overflow-hidden">
+      {/* Gradient decorative elements */}
+      <div className="absolute right-0 top-0 h-32 w-32 bg-gradient-to-br from-primary/20 to-secondary/20 blur-2xl" />
+      <div className="absolute left-0 bottom-0 h-32 w-32 bg-gradient-to-tr from-secondary/10 to-primary/10 blur-2xl" />
       
-      {/* Header with name and edit button */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">{profile.full_name || "Nom non défini"}</h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onEdit}
-          className="h-8 w-8"
-        >
-          <Edit2 className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Two-column layout */}
-      <div className="flex gap-6">
-        {/* Contact info */}
-        <div className="flex-1 space-y-2">
-          {profile.email && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Mail className="h-4 w-4 shrink-0" />
-              <span className="truncate">{profile.email}</span>
-            </div>
-          )}
-          {profile.phone && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 shrink-0" />
-              <span>{profile.phone}</span>
-            </div>
-          )}
-          {profile.city && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 shrink-0" />
-              <span>{profile.city}</span>
-            </div>
-          )}
+      {/* Content container with backdrop blur */}
+      <div className="relative z-10">
+        {/* Header with name and edit button */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-xl font-semibold text-foreground">
+              {profile.full_name || "Nom non défini"}
+            </h3>
+            {profile.title && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {profile.title}
+              </p>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onEdit}
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          >
+            <Edit2 className="h-4 w-4" />
+          </Button>
         </div>
 
-        {/* QR Code section */}
-        <div 
-          className="flex flex-col items-center justify-center border-l border-border pl-6"
-          onClick={onExpand}
-        >
-          <QrCode className="h-16 w-16 text-muted-foreground hover:text-primary cursor-pointer transition-colors" />
-          <span className="text-xs text-muted-foreground mt-2">Scanner pour plus</span>
+        {/* Two-column layout */}
+        <div className="flex gap-8">
+          {/* Contact info */}
+          <div className="flex-1 space-y-3">
+            {profile.email && (
+              <div className="flex items-center gap-3 group">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors truncate">
+                  {profile.email}
+                </span>
+              </div>
+            )}
+            {profile.phone && (
+              <div className="flex items-center gap-3 group">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Phone className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  {profile.phone}
+                </span>
+              </div>
+            )}
+            {profile.city && (
+              <div className="flex items-center gap-3 group">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <MapPin className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  {profile.city}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* QR Code section */}
+          <div 
+            onClick={onExpand}
+            className="flex flex-col items-center justify-center border-l border-border pl-8 cursor-pointer group"
+          >
+            <div className="p-3 rounded-xl bg-background/50 border border-border group-hover:border-primary/50 group-hover:bg-primary/5 transition-all duration-300">
+              <QrCode className="h-16 w-16 text-muted-foreground group-hover:text-primary transition-colors" />
+            </div>
+            <span className="text-xs text-muted-foreground mt-2 group-hover:text-primary transition-colors">
+              Scanner pour plus
+            </span>
+          </div>
         </div>
       </div>
     </div>
