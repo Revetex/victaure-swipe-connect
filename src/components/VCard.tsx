@@ -6,7 +6,6 @@ import { generateVCardPDF } from "@/utils/pdfGenerator";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
 import { VCardContent } from "./vcard/VCardContent";
-import { VCardEditForm } from "./vcard/VCardEditForm";
 import type { UserProfile } from "@/types/profile";
 
 export function VCard() {
@@ -111,6 +110,27 @@ export function VCard() {
     }
   };
 
+  const handleApplyChanges = async () => {
+    if (!tempProfile) return;
+    
+    try {
+      await updateProfile(tempProfile);
+      setProfile(tempProfile);
+      setIsEditing(false);
+      toast({
+        title: "Succès",
+        description: "Changements appliqués avec succès",
+      });
+    } catch (error) {
+      console.error('Error applying changes:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible d'appliquer les changements",
+      });
+    }
+  };
+
   if (isLoading) {
     return <VCardSkeleton />;
   }
@@ -134,7 +154,7 @@ export function VCard() {
       onDownloadPDF={handleDownloadPDF}
       onCopyLink={handleCopyLink}
       onSave={handleSave}
-      editForm={<VCardEditForm profile={tempProfile} setProfile={setTempProfile} />}
+      onApplyChanges={handleApplyChanges}
     />
   );
 }

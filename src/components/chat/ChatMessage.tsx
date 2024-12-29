@@ -2,7 +2,6 @@ import { UserRound, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { motion } from "framer-motion";
 
 interface ChatMessageProps {
   content: string;
@@ -28,36 +27,30 @@ export function ChatMessage({
           </span>
         </div>
       )}
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+      <div 
         className={cn(
-          "flex transition-all duration-300",
+          "flex animate-slide-in transition-all duration-300",
           sender === "user" ? "justify-end" : "justify-start"
         )}
       >
         <div
           className={cn(
-            "max-w-[80%] p-4 rounded-2xl flex items-center gap-3",
+            "max-w-[80%] p-3 rounded-lg flex items-center gap-2 shadow-sm transition-all duration-300",
             sender === "user"
-              ? "bg-primary text-primary-foreground rounded-br-sm shadow-lg"
-              : "bg-card text-card-foreground border border-border rounded-bl-sm shadow-md",
+              ? "bg-victaure-blue text-white hover:shadow-md hover:bg-victaure-blue-dark"
+              : "bg-victaure-metal/40 hover:bg-victaure-metal/50 hover:shadow-md",
             thinking ? "animate-pulse" : ""
           )}
         >
           {sender === "assistant" && !thinking && (
-            <Bot className="h-5 w-5 shrink-0 text-primary" />
+            <Bot className="h-4 w-4 shrink-0" />
           )}
-          <span className={cn(
-            "text-base leading-relaxed",
-            thinking ? "animate-pulse" : ""
-          )}>{content}</span>
+          <span className={thinking ? "animate-pulse" : ""}>{content}</span>
           {sender === "user" && (
-            <UserRound className="h-5 w-5 shrink-0" />
+            <UserRound className="h-4 w-4 shrink-0" />
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

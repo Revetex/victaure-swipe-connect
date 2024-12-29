@@ -2,7 +2,6 @@ import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { TodoList } from "@/components/TodoList";
 import { VCard } from "@/components/VCard";
-import { Marketplace } from "@/components/Marketplace";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -11,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const sections = [
   { id: 'messages', title: 'Messages', component: Messages },
-  { id: 'jobs', title: 'Offres', component: Marketplace },
+  { id: 'jobs', title: 'Offres', component: SwipeJob },
   { id: 'todos', title: 'Tâches', component: TodoList },
   { id: 'profile', title: 'Profil', component: VCard },
 ];
@@ -27,9 +26,9 @@ export function DashboardLayout() {
   };
 
   const handleSelect = () => {
-    const currentIndex = api?.selectedScrollSnap();
-    if (typeof currentIndex === 'number') {
-      setActiveSection(currentIndex);
+    const selectedIndex = api?.selectedScrollSnap();
+    if (selectedIndex !== undefined) {
+      setActiveSection(selectedIndex);
     }
   };
 
@@ -67,7 +66,7 @@ export function DashboardLayout() {
         onSelect={handleSelect}
       >
         <CarouselContent className="-ml-0">
-          {sections.map((section, index) => (
+          {sections.map((section) => (
             <CarouselItem key={section.id} className="pl-0 h-[calc(100vh-4rem)]">
               <div className={cn(
                 "h-full w-full transition-all duration-300",

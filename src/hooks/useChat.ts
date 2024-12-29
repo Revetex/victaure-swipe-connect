@@ -1,71 +1,51 @@
 import { useState } from "react";
+import { generateAIResponse } from "@/services/huggingFaceService";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from 'uuid';
-import { supabase } from "@/integrations/supabase/client";
 
 export interface Message {
   id: string;
   content: string;
   sender: "user" | "assistant";
+  thinking?: boolean;
   timestamp: Date;
-  action?: string;
 }
 
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([{
-    id: uuidv4(),
-    content: "Bonjour ! Je suis Mr Victaure, votre assistant IA. Je peux vous aider à mettre à jour votre profil. Souhaitez-vous commencer ?",
-    sender: "assistant",
-    timestamp: new Date(),
-    action: 'greeting'
-  }]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async (message: string, profile?: any) => {
+    if (!message.trim()) return;
 
-    const userMessage: Message = {
-      id: uuidv4(),
-      content: inputMessage,
+    const newUserMessage: Message = {
+      id: crypto.randomUUID(),
+      content: message,
       sender: "user",
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, newUserMessage]);
     setInputMessage("");
     setIsThinking(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: {
-          messages: messages.concat(userMessage).map(msg => ({
-            role: msg.sender,
-            content: msg.content,
-            action: msg.action
-          }))
-        }
-      });
+      const response = await generateAIResponse(message, profile);
 
-      if (error) throw error;
-
-      const assistantMessage: Message = {
-        id: uuidv4(),
-        content: data.choices[0].message.content,
+      const newAssistantMessage: Message = {
+        id: crypto.randomUUID(),
+        content: response,
         sender: "assistant",
         timestamp: new Date(),
-        action: data.choices[0].message.action
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
-
-      if (assistantMessage.action === 'update_complete') {
-        toast.success("Votre profil a été mis à jour avec succès !");
-      }
+      setMessages((prev) => [...prev, newAssistantMessage]);
+      return response;
     } catch (error) {
-      console.error('Error:', error);
-      toast.error("Désolé, je n'ai pas pu répondre. Veuillez réessayer.");
+      console.error("Error generating response:", error);
+      toast.error("Désolé, je n'ai pas pu générer une réponse");
+      throw error;
     } finally {
       setIsThinking(false);
     }
@@ -105,12 +85,7 @@ export function useChat() {
   };
 
   const clearChat = () => {
-    setMessages([{
-      id: uuidv4(),
-      content: "Bonjour ! Je suis Mr Victaure, votre assistant IA. Comment puis-je vous aider aujourd'hui ?",
-      sender: "assistant",
-      timestamp: new Date(),
-    }]);
+    setMessages([]);
   };
 
   return {

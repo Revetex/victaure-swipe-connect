@@ -8,15 +8,9 @@ interface MessageListProps {
   messages: Message[];
   isLoading: boolean;
   onMarkAsRead: (messageId: string) => void;
-  onSelectConversation: (messageId: string) => void;
 }
 
-export function MessageList({ 
-  messages, 
-  isLoading, 
-  onMarkAsRead,
-  onSelectConversation 
-}: MessageListProps) {
+export function MessageList({ messages, isLoading, onMarkAsRead }: MessageListProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -43,7 +37,6 @@ export function MessageList({
               key={message.id}
               {...message}
               onMarkAsRead={onMarkAsRead}
-              onClick={() => onSelectConversation(message.id)}
             />
           ))}
         </div>

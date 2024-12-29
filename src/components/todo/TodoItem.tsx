@@ -7,8 +7,8 @@ import { Todo } from "@/types/todo";
 
 interface TodoItemProps {
   todo: Todo;
-  onToggle: (id: number) => void;
-  onDelete: (id: number) => void;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {

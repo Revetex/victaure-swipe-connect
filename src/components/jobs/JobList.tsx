@@ -4,22 +4,13 @@ import { JobActions } from "./JobActions";
 
 interface JobListProps {
   jobs: Job[];
-  isLoading?: boolean;
   onJobDeleted?: () => void;
 }
 
-export function JobList({ jobs, isLoading, onJobDeleted }: JobListProps) {
-  if (isLoading) {
-    return (
-      <div className="lg:col-span-3 flex justify-center items-center min-h-[200px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
+export function JobList({ jobs, onJobDeleted }: JobListProps) {
   if (!jobs.length) {
     return (
-      <div className="lg:col-span-3 text-center py-8">
+      <div className="text-center py-8">
         <p className="text-muted-foreground">Aucune annonce disponible</p>
       </div>
     );

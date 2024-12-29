@@ -1,50 +1,33 @@
-import { Trash2, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { Bot, Brain, Sparkles, Wand2 } from "lucide-react";
 
 interface ChatHeaderProps {
-  isThinking: boolean;
-  isConnecting: boolean;
   onClearChat: () => void;
+  isThinking: boolean;
 }
 
-export function ChatHeader({ isThinking, isConnecting, onClearChat }: ChatHeaderProps) {
+export function ChatHeader({ isThinking }: ChatHeaderProps) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex items-center justify-between p-4 border-b bg-background"
-    >
-      <div className="flex items-center gap-3">
+    <div className="flex items-center p-4 relative border-b border-victaure-blue/10">
+      <div className="flex items-center gap-4">
         <div className="relative">
-          <img 
-            src="/bot-avatar.png" 
-            alt="Mr Victaure" 
-            className="w-10 h-10 rounded-full"
-          />
-          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${isConnecting ? 'bg-orange-500' : isThinking ? 'bg-primary animate-pulse' : 'bg-green-500'}`} />
+          <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
+            <Bot className={`h-6 w-6 text-victaure-blue ${isThinking ? 'animate-pulse' : ''}`} />
+          </div>
+          <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-victaure-green/20 flex items-center justify-center">
+            <Brain className={`h-3 w-3 text-victaure-green ${isThinking ? 'animate-spin' : ''}`} />
+          </div>
         </div>
         <div>
-          <h3 className="font-semibold">Mr Victaure</h3>
-          <p className="text-sm text-muted-foreground">
-            {isConnecting ? 'Connexion...' : isThinking ? 'En train d\'écrire...' : 'En ligne'}
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            Mr. Victaure
+            <Sparkles className="h-4 w-4 text-victaure-orange animate-glow" />
+          </h2>
+          <p className="text-sm text-victaure-gray flex items-center gap-1">
+            <Wand2 className="h-3 w-3" />
+            {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
           </p>
         </div>
       </div>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onClearChat}
-        disabled={isConnecting || isThinking}
-        className="text-muted-foreground hover:text-foreground transition-colors"
-      >
-        {isThinking ? (
-          <Loader2 className="h-5 w-5 animate-spin" />
-        ) : (
-          <Trash2 className="h-5 w-5" />
-        )}
-      </Button>
-    </motion.div>
+    </div>
   );
 }

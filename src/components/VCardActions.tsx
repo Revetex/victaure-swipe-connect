@@ -23,7 +23,7 @@ export function VCardActions({
 }: VCardActionsProps) {
   return (
     <motion.div 
-      className="flex flex-wrap gap-3 pt-4 border-t"
+      className="flex gap-3 pt-4 border-t"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4, duration: 0.3 }}
@@ -32,7 +32,7 @@ export function VCardActions({
         <>
           <Button 
             onClick={onSave} 
-            className="flex-1 min-w-[200px] bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
           >
             <Save className="mr-2 h-4 w-4" />
             Sauvegarder
@@ -40,7 +40,7 @@ export function VCardActions({
           <Button 
             onClick={onApplyChanges} 
             variant="secondary" 
-            className="flex-1 min-w-[200px] bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors"
+            className="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors"
           >
             Appliquer les changements
           </Button>
@@ -49,7 +49,7 @@ export function VCardActions({
         <>
           <Button 
             onClick={onShare} 
-            className="flex-1 min-w-[120px] bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
           >
             <Share2 className="mr-2 h-4 w-4" />
             Partager
@@ -57,7 +57,7 @@ export function VCardActions({
           <Button 
             onClick={onDownload} 
             variant="outline" 
-            className="flex-1 min-w-[120px] border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+            className="flex-1 border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
           >
             <Download className="mr-2 h-4 w-4" />
             VCard
@@ -65,7 +65,7 @@ export function VCardActions({
           <Button 
             onClick={onDownloadPDF} 
             variant="outline" 
-            className="flex-1 min-w-[120px] border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+            className="flex-1 border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
           >
             <FileText className="mr-2 h-4 w-4" />
             PDF

@@ -1,6 +1,7 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { VCardHeader } from "../VCardHeader";
+import { VCardContact } from "../VCardContact";
 import { VCardSkills } from "../VCardSkills";
 import { VCardCertifications } from "../VCardCertifications";
 import { VCardActions } from "../VCardActions";
@@ -10,14 +11,13 @@ import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
 import { VCardContactInfo } from "./VCardContactInfo";
 import { VCardCompactActions } from "./VCardCompactActions";
-import type { UserProfile } from "@/types/profile";
 
 interface VCardContentProps {
-  profile: UserProfile;
-  tempProfile: UserProfile;
+  profile: any;
+  tempProfile: any;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
-  setTempProfile: (profile: UserProfile) => void;
+  setProfile: (profile: any) => void;
+  setTempProfile: (profile: any) => void;
   setIsEditing: (isEditing: boolean) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
@@ -26,7 +26,7 @@ interface VCardContentProps {
   onDownloadPDF: () => void;
   onCopyLink: () => void;
   onSave: () => void;
-  editForm: ReactNode;
+  onApplyChanges: () => void;
 }
 
 export function VCardContent({
@@ -43,7 +43,7 @@ export function VCardContent({
   onDownloadPDF,
   onCopyLink,
   onSave,
-  editForm,
+  onApplyChanges,
 }: VCardContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -122,7 +122,11 @@ export function VCardContent({
                 )}
 
                 <div className="grid gap-6 sm:gap-8">
-                  {editForm}
+                  <VCardContact
+                    profile={tempProfile}
+                    isEditing={isEditing}
+                    setProfile={setTempProfile}
+                  />
 
                   <VCardSkills
                     profile={tempProfile}
@@ -163,7 +167,7 @@ export function VCardContent({
                   onDownloadPDF={onDownloadPDF}
                   onCopyLink={onCopyLink}
                   onSave={onSave}
-                  onApplyChanges={onSave}
+                  onApplyChanges={onApplyChanges}
                 />
               </motion.div>
             )}

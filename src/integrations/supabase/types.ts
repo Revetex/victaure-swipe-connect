@@ -159,7 +159,6 @@ export type Database = {
           employer_id: string | null
           id: string
           job_id: string
-          match_score: number | null
           professional_id: string
           status: string
           updated_at: string | null
@@ -169,7 +168,6 @@ export type Database = {
           employer_id?: string | null
           id?: string
           job_id: string
-          match_score?: number | null
           professional_id: string
           status?: string
           updated_at?: string | null
@@ -179,7 +177,6 @@ export type Database = {
           employer_id?: string | null
           id?: string
           job_id?: string
-          match_score?: number | null
           professional_id?: string
           status?: string
           updated_at?: string | null
@@ -366,10 +363,8 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
-          last_seen: string | null
           latitude: number | null
           longitude: number | null
-          online_status: boolean | null
           phone: string | null
           role: string
           skills: string[] | null
@@ -385,10 +380,8 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
-          last_seen?: string | null
           latitude?: number | null
           longitude?: number | null
-          online_status?: boolean | null
           phone?: string | null
           role: string
           skills?: string[] | null
@@ -404,10 +397,8 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
-          last_seen?: string | null
           latitude?: number | null
           longitude?: number | null
-          online_status?: boolean | null
           phone?: string | null
           role?: string
           skills?: string[] | null
@@ -471,14 +462,6 @@ export type Database = {
           new_password: string
         }
         Returns: boolean
-      }
-      get_secret: {
-        Args: {
-          secret_name: string
-        }
-        Returns: {
-          secret: string
-        }[]
       }
     }
     Enums: {
