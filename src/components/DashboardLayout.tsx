@@ -33,31 +33,33 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-background relative">
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        className="h-full w-full"
-        setApi={setApi}
-        onSelect={handleSelect}
-      >
-        <CarouselContent className="-ml-0">
-          {sections.map((section) => (
-            <CarouselItem key={section.id} className="pl-0 h-[calc(100vh-4rem)]">
-              <div className={cn(
-                "h-full w-full transition-all duration-300",
-                isMobile ? "p-2 pb-20" : "p-4 pb-24"
-              )}>
-                <div className="glass-card h-full rounded-lg p-3 sm:p-4 overflow-y-auto">
-                  <section.component />
+    <div className="h-screen w-screen fixed top-0 left-0 bg-background">
+      <div className="h-[calc(100vh-4rem)] w-full mt-16">
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="h-full w-full"
+          setApi={setApi}
+          onSelect={handleSelect}
+        >
+          <CarouselContent className="-ml-0">
+            {sections.map((section) => (
+              <CarouselItem key={section.id} className="pl-0 h-full">
+                <div className={cn(
+                  "h-full w-full transition-all duration-300",
+                  isMobile ? "px-2 pb-20" : "px-4 pb-24"
+                )}>
+                  <div className="glass-card h-full rounded-lg p-3 sm:p-4 overflow-y-auto">
+                    <section.component />
+                  </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
 
       <div 
         className={cn(
