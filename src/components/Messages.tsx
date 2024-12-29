@@ -3,8 +3,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMessages } from "@/hooks/useMessages";
 import { MessagesTab } from "./messages/tabs/MessagesTab";
 import { NotificationsTab } from "./messages/tabs/NotificationsTab";
+import { Settings } from "./Settings";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MessageSquare, Bell, Settings2 } from "lucide-react";
 
 interface Notification {
   id: string;
@@ -60,9 +62,12 @@ export function Messages() {
   return (
     <div className="space-y-4 h-full">
       <Tabs defaultValue="messages" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="relative">
-            Messages
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden sm:inline">Messages</span>
+            </div>
             {unreadMessagesCount > 0 && (
               <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
                 {unreadMessagesCount}
@@ -70,12 +75,21 @@ export function Messages() {
             )}
           </TabsTrigger>
           <TabsTrigger value="notifications" className="relative">
-            Notifications
+            <div className="flex items-center gap-2">
+              <Bell className="h-4 w-4" />
+              <span className="hidden sm:inline">Notifications</span>
+            </div>
             {unreadNotificationsCount > 0 && (
               <Badge variant="secondary" className="absolute -top-2 -right-2 bg-primary/10">
                 {unreadNotificationsCount}
               </Badge>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="settings">
+            <div className="flex items-center gap-2">
+              <Settings2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Paramètres</span>
+            </div>
           </TabsTrigger>
         </TabsList>
 
@@ -85,6 +99,10 @@ export function Messages() {
 
         <TabsContent value="notifications">
           <NotificationsTab />
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <Settings />
         </TabsContent>
       </Tabs>
     </div>
