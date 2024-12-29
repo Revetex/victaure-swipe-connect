@@ -1,33 +1,62 @@
-import { TodoList } from "@/components/TodoList";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { TodoList } from "@/components/TodoList";
 import { VCard } from "@/components/VCard";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+
+const sections = [
+  { id: 'messages', title: 'Messages', component: Messages },
+  { id: 'jobs', title: 'Offres', component: SwipeJob },
+  { id: 'todos', title: 'Tâches', component: TodoList },
+  { id: 'profile', title: 'Profil', component: VCard },
+];
 
 export function DashboardLayout() {
-  const isMobile = useIsMobile();
+  const [activeSection, setActiveSection] = useState(0);
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 min-h-screen bg-background">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-1"}`}>
-          <div className="glass-card rounded-lg p-3 sm:p-4">
-            <Messages />
-          </div>
-        </div>
-
-        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}>
-          <SwipeJob />
-        </div>
-
-        <div className="glass-card rounded-lg p-3 sm:p-4">
-          <TodoList />
-        </div>
-
-        <div className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}>
-          <VCard />
-        </div>
+    <div className="h-[calc(100vh-4rem)] bg-background">
+      {/* Navigation dots */}
+      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex gap-2">
+        {sections.map((_, index) => (
+          <div
+            key={index}
+            className={cn(
+              "w-2 h-2 rounded-full transition-all duration-300",
+              activeSection === index 
+                ? "bg-primary w-4" 
+                : "bg-muted hover:bg-primary/50 cursor-pointer"
+            )}
+            onClick={() => setActiveSection(index)}
+          />
+        ))}
       </div>
+
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="h-full w-full"
+        onSelect={(api) => {
+          const selected = api?.selectedScrollSnap();
+          if (selected !== undefined) setActiveSection(selected);
+        }}
+      >
+        <CarouselContent className="-ml-0">
+          {sections.map((section, index) => (
+            <CarouselItem key={section.id} className="pl-0 h-[calc(100vh-4rem)]">
+              <div className="h-full w-full p-2 sm:p-4">
+                <div className="glass-card h-full rounded-lg p-3 sm:p-4 overflow-y-auto">
+                  <section.component />
+                </div>
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
     </div>
   );
 }
