@@ -35,7 +35,7 @@ export function TodoSection({
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-primary">
         <ListTodo className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">{t("tasks.title")}</h2>
+        <h2 className="text-lg font-semibold">{t("todo.title")}</h2>
       </div>
 
       <TodoInput
@@ -50,7 +50,7 @@ export function TodoSection({
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
         {todos.length === 0 ? (
-          <p className="text-center text-muted-foreground">{t("tasks.noTasks")}</p>
+          <p className="text-center text-muted-foreground">{t("todo.noTasks")}</p>
         ) : (
           todos.map((todo) => (
             <TodoItem

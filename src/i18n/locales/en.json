@@ -109,10 +109,7 @@
     "newNote": "New note...",
     "deleteNote": "Delete note",
     "colors": {
-      "yellow": "Yellow",
-      "green": "Green",
-      "blue": "Blue",
-      "pink": "Pink"
+      "yellow": "Yellow"
     }
   },
   "tasks": {
@@ -153,5 +150,32 @@
     "clearChat": "Clear chat",
     "maximize": "Maximize chat",
     "minimize": "Minimize chat"
+  },
+  "marketplace": {
+    "filters": {
+      "title": "Filters",
+      "search": "Search",
+      "searchPlaceholder": "Search for a job...",
+      "category": "Category",
+      "allCategories": "All categories",
+      "duration": "Duration",
+      "allDurations": "All durations",
+      "experienceLevel": "Experience Level",
+      "allLevels": "All levels",
+      "location": "Location",
+      "selectCity": "Select a city...",
+      "noCity": "No city found"
+    },
+    "noJobs": "No jobs available at the moment",
+    "comeBack": "Come back later to discover new missions."
+  },
+  "profile": {
+    "professional": "professional",
+    "contact": "Contact",
+    "skills": "Skills",
+    "certifications": "Certifications and Diplomas",
+    "share": "Share",
+    "vcard": "VCard",
+    "pdf": "PDF"
   }
 }

@@ -109,10 +109,7 @@
     "newNote": "Nouvelle note...",
     "deleteNote": "Supprimer la note",
     "colors": {
-      "yellow": "Jaune",
-      "green": "Vert",
-      "blue": "Bleu",
-      "pink": "Rose"
+      "yellow": "Jaune"
     }
   },
   "tasks": {
@@ -145,38 +142,45 @@
     "maximize": "Agrandir",
     "minimize": "Réduire"
   },
-  "vcard": {
-    "title": "Carte de visite",
-    "share": "Partager",
-    "download": {
-      "vcard": "Télécharger VCard",
-      "pdf": "Télécharger PDF"
+  "marketplace": {
+    "filters": {
+      "title": "Filtres",
+      "search": "Recherche",
+      "searchPlaceholder": "Rechercher une offre...",
+      "category": "Catégorie",
+      "allCategories": "Toutes les catégories",
+      "duration": "Durée",
+      "allDurations": "Toutes les durées",
+      "experienceLevel": "Niveau d'expérience",
+      "allLevels": "Tous les niveaux",
+      "location": "Localisation",
+      "selectCity": "Sélectionner une ville...",
+      "noCity": "Aucune ville trouvée"
     },
-    "copyLink": "Copier le lien",
-    "edit": "Modifier",
-    "save": "Sauvegarder",
-    "cancel": "Annuler",
-    "sections": {
-      "contact": "Contact",
-      "skills": "Compétences",
-      "experience": "Expérience",
-      "education": "Formation",
-      "certifications": "Certifications"
-    },
-    "placeholders": {
-      "email": "Votre email",
-      "phone": "Votre téléphone",
-      "city": "Votre ville",
-      "state": "Votre province"
+    "noJobs": "Aucune offre disponible pour le moment",
+    "comeBack": "Revenez plus tard pour découvrir de nouvelles missions."
+  },
+  "todo": {
+    "title": "Tâches",
+    "newTask": "Nouvelle tâche...",
+    "time": "Heure",
+    "noTasks": "Aucune tâche"
+  },
+  "notes": {
+    "title": "Notes",
+    "newNote": "Nouvelle note...",
+    "noNotes": "Aucune note",
+    "colors": {
+      "yellow": "Jaune"
     }
   },
-  "chat": {
-    "sendMessage": "Envoyer un message",
-    "typeMessage": "Tapez votre message...",
-    "startVoice": "Démarrer l'enregistrement vocal",
-    "stopVoice": "Arrêter l'enregistrement vocal",
-    "clearChat": "Effacer la conversation",
-    "maximize": "Agrandir la conversation",
-    "minimize": "Réduire la conversation"
+  "profile": {
+    "professional": "professional",
+    "contact": "Contact",
+    "skills": "Compétences",
+    "certifications": "Certifications et Diplômes",
+    "share": "Partager",
+    "vcard": "VCard",
+    "pdf": "PDF"
   }
 }
