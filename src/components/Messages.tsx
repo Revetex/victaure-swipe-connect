@@ -4,10 +4,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { MessagesTab } from "./messages/tabs/MessagesTab";
 import { NotificationsTab } from "./messages/tabs/NotificationsTab";
 import { Settings } from "./Settings";
-import { AssistantTab } from "./messages/tabs/AssistantTab";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { MessageSquare, Bell, Settings2, Bot } from "lucide-react";
+import { MessageSquare, Bell, Settings2 } from "lucide-react";
 
 interface Notification {
   id: string;
@@ -63,7 +60,7 @@ export function Messages() {
   return (
     <div className="space-y-4 h-full">
       <Tabs defaultValue="messages" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="relative">
             <MessageSquare className="h-5 w-5" />
             {unreadMessagesCount > 0 && (
@@ -80,9 +77,6 @@ export function Messages() {
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="assistant">
-            <Bot className="h-5 w-5" />
-          </TabsTrigger>
           <TabsTrigger value="settings">
             <Settings2 className="h-5 w-5" />
           </TabsTrigger>
@@ -94,10 +88,6 @@ export function Messages() {
 
         <TabsContent value="notifications">
           <NotificationsTab />
-        </TabsContent>
-
-        <TabsContent value="assistant">
-          <AssistantTab />
         </TabsContent>
 
         <TabsContent value="settings">

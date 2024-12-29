@@ -2,6 +2,7 @@ import { MessageSquare } from "lucide-react";
 import { MessageList } from "../MessageList";
 import { useMessages } from "@/hooks/useMessages";
 import { useChat } from "@/hooks/useChat";
+import { ChatInput } from "@/components/chat/ChatInput";
 
 export function MessagesTab() {
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
@@ -42,6 +43,16 @@ export function MessagesTab() {
         isLoading={isLoading}
         onMarkAsRead={markAsRead.mutate}
       />
+      <div className="mt-4">
+        <ChatInput
+          value={inputMessage}
+          onChange={setInputMessage}
+          onSend={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
+          isListening={isListening}
+          isThinking={isThinking}
+        />
+      </div>
     </div>
   );
 }
