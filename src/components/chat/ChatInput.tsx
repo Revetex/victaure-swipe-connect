@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mic, Send } from "lucide-react";
-import { useState } from "react";
+import { motion } from "framer-motion";
 
 interface ChatInputProps {
   value: string;
@@ -29,28 +29,46 @@ export function ChatInput({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border-t bg-background">
+    <form onSubmit={handleSubmit} className="relative">
       <div className="flex gap-2">
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Écrivez votre message..."
           disabled={isThinking}
+          className="pr-24"
         />
-        {onVoiceInput && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onVoiceInput}
-            className={isListening ? "text-primary" : ""}
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+          {onVoiceInput && (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={onVoiceInput}
+                className={`transition-colors ${isListening ? 'text-primary' : ''}`}
+              >
+                <Mic className="h-5 w-5" />
+              </Button>
+            </motion.div>
+          )}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Mic className="h-5 w-5" />
-          </Button>
-        )}
-        <Button type="submit" size="icon" disabled={!value.trim() || isThinking}>
-          <Send className="h-5 w-5" />
-        </Button>
+            <Button 
+              type="submit" 
+              size="icon"
+              disabled={!value.trim() || isThinking}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          </motion.div>
+        </div>
       </div>
     </form>
   );
