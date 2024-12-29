@@ -9,13 +9,13 @@ async function getApiKey() {
     });
 
     if (error) {
-      console.error('Supabase get_secret error:', error);
+      console.error('Error fetching HuggingFace API key:', error);
       throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
     }
 
     if (!data || !Array.isArray(data) || data.length === 0 || !data[0]?.secret?.trim()) {
-      console.error('No valid API key found in Supabase secrets');
-      throw new Error('Please add your HuggingFace API key in Supabase secrets');
+      console.error('No valid API key found');
+      throw new Error('HuggingFace API key not found in secrets');
     }
 
     return data[0].secret;
