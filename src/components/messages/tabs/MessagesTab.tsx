@@ -20,6 +20,7 @@ export function MessagesTab() {
     handleSendMessage,
     handleVoiceInput,
     isListening,
+    clearChat
   } = useChat();
 
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -86,7 +87,10 @@ export function MessagesTab() {
 
   return (
     <div className="flex flex-col h-full">
-      <ChatHeader isThinking={isThinking} />
+      <ChatHeader 
+        isThinking={isThinking} 
+        onClearChat={clearChat}
+      />
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-8">

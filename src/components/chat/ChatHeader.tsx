@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 interface ChatHeaderProps {
-  onClearChat: () => void;
+  onClearChat?: () => void;
   isThinking: boolean;
 }
 
@@ -15,14 +15,16 @@ export function ChatHeader({ onClearChat, isThinking }: ChatHeaderProps) {
       transition={{ duration: 0.3 }}
       className="flex items-center p-4 border-b bg-background/80 backdrop-blur-sm"
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onClearChat}
-        className="mr-4"
-      >
-        <ArrowLeft className="h-5 w-5" />
-      </Button>
+      {onClearChat && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClearChat}
+          className="mr-4"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+      )}
 
       <div className="flex items-center gap-4">
         <div className="relative">
