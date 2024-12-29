@@ -53,15 +53,15 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
   }, [profile]);
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
-      <div className="space-y-4 flex-1">
+    <div className="flex flex-col lg:flex-row justify-between items-start gap-4 lg:gap-6">
+      <div className="space-y-4 flex-1 w-full">
         <VCardSection 
           title="Contact" 
           icon={<Mail className="h-4 w-4 text-muted-foreground" />}
           className="space-y-4"
         >
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <Mail className="h-4 w-4 text-muted-foreground shrink-0 mt-2 sm:mt-0" />
             {isEditing ? (
               <Input
                 value={profile.email}
@@ -73,8 +73,8 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
               <span className="text-sm">{profile.email || "Email non défini"}</span>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <Phone className="h-4 w-4 text-muted-foreground shrink-0 mt-2 sm:mt-0" />
             {isEditing ? (
               <Input
                 value={profile.phone || ""}
@@ -88,8 +88,8 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             )}
           </div>
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-2 sm:mt-0" />
               {isEditing ? (
                 <Select
                   value={profile.city || ""}
@@ -110,8 +110,8 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 <span className="text-sm">{profile.city || "Ville non définie"}</span>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <Globe className="h-4 w-4 text-muted-foreground shrink-0 mt-2 sm:mt-0" />
               {isEditing ? (
                 <Select
                   value={profile.state || ""}
@@ -135,15 +135,16 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
           </div>
         </VCardSection>
       </div>
-      <div className="bg-card p-3 rounded-lg shadow-sm border">
+      <div className="bg-card p-3 rounded-lg shadow-sm border w-full sm:w-auto">
         {isGenerating ? (
-          <div className="w-[120px] h-[120px] animate-pulse bg-muted" />
+          <div className="w-[120px] h-[120px] mx-auto animate-pulse bg-muted" />
         ) : (
           <QRCodeSVG
             value={pdfUrl}
             size={120}
             level="H"
             includeMargin={true}
+            className="mx-auto"
           />
         )}
       </div>

@@ -92,8 +92,8 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center gap-4 flex-1">
-        <div className="relative group">
+      <div className="flex flex-col sm:flex-row items-start gap-4 flex-1 w-full">
+        <div className="relative group mx-auto sm:mx-0">
           <Avatar className="h-20 w-20 ring-2 ring-background">
             <AvatarImage 
               src={profile.avatar_url} 
@@ -120,7 +120,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
             </label>
           )}
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 w-full text-center sm:text-left">
           <div className="text-2xl font-bold text-foreground">
             {isEditing ? (
               <Input
@@ -139,14 +139,14 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
               </motion.h2>
             )}
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex flex-col sm:flex-row items-center gap-2 text-muted-foreground justify-center sm:justify-start">
             <Briefcase className="h-4 w-4" />
             {isEditing ? (
               <Select
                 value={profile.title}
                 onValueChange={(value) => setProfile({ ...profile, title: value })}
               >
-                <SelectTrigger className="w-[250px]">
+                <SelectTrigger className="w-full sm:w-[250px]">
                   <SelectValue placeholder="Sélectionnez un titre" />
                 </SelectTrigger>
                 <SelectContent>
@@ -173,7 +173,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         variant="ghost"
         size="icon"
         onClick={() => setIsEditing(!isEditing)}
-        className="text-muted-foreground hover:text-foreground transition-colors"
+        className="text-muted-foreground hover:text-foreground transition-colors absolute top-2 right-2 sm:static"
       >
         {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
       </Button>

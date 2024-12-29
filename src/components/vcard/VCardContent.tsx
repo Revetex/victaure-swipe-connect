@@ -44,9 +44,10 @@ export function VCardContent({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      className="w-full px-2 sm:px-4"
     >
       <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20">
-        <CardContent className="p-6 space-y-8">
+        <CardContent className="p-3 sm:p-6 space-y-6 sm:space-y-8">
           <VCardHeader
             profile={tempProfile}
             isEditing={isEditing}
@@ -54,7 +55,7 @@ export function VCardContent({
             setIsEditing={setIsEditing}
           />
 
-          <div className="grid gap-8">
+          <div className="grid gap-6 sm:gap-8">
             <VCardContact
               profile={tempProfile}
               isEditing={isEditing}
