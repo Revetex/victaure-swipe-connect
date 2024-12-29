@@ -33,9 +33,19 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       location: profile?.city ? `${profile.city}, ${profile.country}` : profile?.country
     });
 
+    // Get the API key from Supabase
+    const { data: { secret }, error: secretError } = await supabase.rpc('get_secret', {
+      secret_name: 'HUGGING_FACE_API_KEY'
+    });
+
+    if (secretError || !secret) {
+      console.error('Error fetching API key:', secretError);
+      throw new Error('Configuration API manquante');
+    }
+
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': 'Bearer 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',
+        'Authorization': `Bearer ${secret}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
@@ -55,6 +65,8 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     if (!response.ok) {
+      const errorData = await response.text();
+      console.error('API Error Response:', errorData);
       throw new Error(`Erreur API: ${response.statusText}`);
     }
 
