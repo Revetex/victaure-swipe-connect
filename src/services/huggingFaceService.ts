@@ -7,45 +7,6 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Invalid input');
     }
 
-    // First, try to get web search results using Perplexity
-    let webSearchContext = '';
-    try {
-      const searchResponse = await fetch('https://api.perplexity.ai/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-sonar-small-128k-online',
-          messages: [
-            {
-              role: 'system',
-              content: 'Search the web and provide relevant information about this query. Focus on professional and career-related content.'
-            },
-            {
-              role: 'user',
-              content: message
-            }
-          ],
-          temperature: 0.2,
-          top_p: 0.9,
-          max_tokens: 1000,
-          return_related_questions: true,
-          search_domain_filter: ['linkedin.com', 'indeed.com', 'glassdoor.com'],
-          search_recency_filter: 'month'
-        }),
-      });
-
-      const searchData = await searchResponse.json();
-      if (searchData.choices?.[0]?.message?.content) {
-        webSearchContext = `\nWeb Search Results:\n${searchData.choices[0].message.content}`;
-      }
-    } catch (error) {
-      console.error('Web search error:', error);
-      // Continue without web search results if there's an error
-    }
-
     const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA spécialisé dans la gestion des profils professionnels (VCards). Tu as les capacités suivantes:
 
 1. CONSULTATION DES VCARDS:
@@ -62,11 +23,6 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
 - Tu adaptes tes conseils au secteur d'activité
 - Tu prends en compte l'expérience professionnelle
 - Tu suggères des certifications pertinentes
-
-4. RECHERCHE WEB EN TEMPS RÉEL:
-- Tu peux rechercher des informations actuelles sur le marché du travail
-- Tu peux trouver des tendances récentes dans différents secteurs
-- Tu peux fournir des données sur les compétences recherchées
 
 Directives de personnalité:
 1. Sois proactif - anticipe les besoins et propose des améliorations concrètes
@@ -95,13 +51,11 @@ ${profile ? `
 - Contact: ${profile.phone && profile.email ? 'Complet' : 'À compléter'}
 ` : 'Profil non disponible'}
 
-${webSearchContext}
-
 Message de l'utilisateur: ${message}
 
 Réponds de manière structurée en:
 1. Analysant la demande
-2. Proposant des actions concrètes basées sur les données web actuelles
+2. Proposant des actions concrètes
 3. Donnant des exemples spécifiques</s>
 <|assistant|>`;
 
@@ -149,8 +103,7 @@ Réponds de manière structurée en:
     console.log('AI Interaction:', {
       userProfile: profile?.id,
       messageType: 'vcard-consultation',
-      timestamp: new Date().toISOString(),
-      webSearchUsed: !!webSearchContext
+      timestamp: new Date().toISOString()
     });
 
     return generatedText;
