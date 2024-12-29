@@ -1,0 +1,17 @@
+{
+  "filters": {
+    "title": "Filters",
+    "search": "Search",
+    "searchPlaceholder": "Search for a job...",
+    "category": "Category",
+    "subcategory": "Subcategory",
+    "allCategories": "All categories",
+    "location": "Location",
+    "selectCity": "Select a city...",
+    "noCity": "No city found",
+    "experienceLevel": "Experience Level",
+    "allLevels": "All levels"
+  },
+  "noJobs": "No jobs available at the moment",
+  "comeBack": "Come back later to discover new opportunities"
+}

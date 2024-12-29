@@ -1,0 +1,8 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "email": "Notifications par email",
+    "push": "Notifications push",
+    "settings": "Paramètres des notifications"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "mrVictaure": {
+    "title": "Mr. Victaure",
+    "subtitle": "Assistant IA Personnel",
+    "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
+    "thinking": "En train de réfléchir...",
+    "clearChat": "Effacer la conversation",
+    "maximize": "Agrandir",
+    "minimize": "Réduire",
+    "suggestions": {
+      "profile": "Améliorer mon profil",
+      "mission": "Créer une mission",
+      "search": "Rechercher des missions",
+      "settings": "Configurer mes préférences"
+    }
+  },
+  "chat": {
+    "typeMessage": "Tapez un message..."
+  }
+}

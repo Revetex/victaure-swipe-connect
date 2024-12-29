@@ -1,0 +1,15 @@
+{
+  "notes": {
+    "title": "Notes",
+    "newNote": "New note...",
+    "noNotes": "No notes",
+    "colors": {
+      "yellow": "Yellow"
+    }
+  },
+  "todo": {
+    "title": "Tasks",
+    "newTask": "New task...",
+    "time": "Time"
+  }
+}

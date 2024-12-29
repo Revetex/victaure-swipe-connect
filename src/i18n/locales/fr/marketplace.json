@@ -1,0 +1,17 @@
+{
+  "filters": {
+    "title": "Filtres",
+    "search": "Recherche",
+    "searchPlaceholder": "Rechercher une offre...",
+    "category": "Catégorie",
+    "subcategory": "Sous-catégorie",
+    "allCategories": "Toutes les catégories",
+    "location": "Localisation",
+    "selectCity": "Sélectionner une ville...",
+    "noCity": "Aucune ville trouvée",
+    "experienceLevel": "Niveau d'expérience",
+    "allLevels": "Tous les niveaux"
+  },
+  "noJobs": "Aucune offre disponible pour le moment",
+  "comeBack": "Revenez plus tard pour découvrir de nouvelles missions"
+}
