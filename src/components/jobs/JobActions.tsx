@@ -3,6 +3,17 @@ import { Edit, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface JobActionsProps {
   jobId: string;
@@ -30,8 +41,8 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
     try {
       setIsDeleting(true);
       
-      // 1. D'abord supprimer les paiements liés aux matches de cette annonce
-      const { error: paymentsError } = await supabase
+      // 1. Supprimer les paiements liés aux matches
+      await supabase
         .from('payments')
         .delete()
         .eq('match_id', supabase
@@ -40,35 +51,19 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
           .eq('job_id', jobId)
         );
 
-      if (paymentsError) {
-        console.error("Error deleting payments:", paymentsError);
-        toast.error("Erreur lors de la suppression des paiements");
-        return;
-      }
-
-      // 2. Ensuite supprimer les matches
-      const { error: matchesError } = await supabase
+      // 2. Supprimer les matches
+      await supabase
         .from('matches')
         .delete()
         .eq('job_id', jobId);
 
-      if (matchesError) {
-        console.error("Error deleting matches:", matchesError);
-        toast.error("Erreur lors de la suppression des matches");
-        return;
-      }
-
-      // 3. Finalement supprimer l'annonce
+      // 3. Supprimer l'annonce
       const { error: jobError } = await supabase
         .from('jobs')
         .delete()
         .eq('id', jobId);
 
-      if (jobError) {
-        console.error("Error deleting job:", jobError);
-        toast.error("Erreur lors de la suppression de l'annonce");
-        return;
-      }
+      if (jobError) throw jobError;
 
       toast.success("Annonce supprimée avec succès");
       onDelete();
@@ -93,16 +88,37 @@ export function JobActions({ jobId, employerId, onDelete, onEdit }: JobActionsPr
         <Edit className="h-4 w-4 mr-2" />
         Modifier
       </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleDelete}
-        disabled={isDeleting}
-        className="text-red-600 hover:text-red-700"
-      >
-        <Trash className="h-4 w-4 mr-2" />
-        {isDeleting ? "Suppression..." : "Supprimer"}
-      </Button>
+      
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-red-600 hover:text-red-700"
+          >
+            <Trash className="h-4 w-4 mr-2" />
+            Supprimer
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette annonce ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. Tous les matches et paiements associés seront également supprimés.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Suppression..." : "Supprimer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
