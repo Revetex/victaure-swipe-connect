@@ -14,8 +14,8 @@ interface TodoSectionProps {
   onTimeChange: (time?: string) => void;
   onAllDayChange: (value: boolean) => void;
   onAdd: () => void;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
 export function TodoSection({
@@ -52,7 +52,7 @@ export function TodoSection({
       />
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-        {todos?.map((todo) => (
+        {todos.map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}

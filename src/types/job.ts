@@ -1,4 +1,4 @@
-import { Code, Briefcase, PaintBucket, HardHat, Wrench, Brain, Building2, Laptop, Palette, ChartBar, Cog, Hammer, Truck, Leaf } from "lucide-react";
+import { Code, Briefcase, PaintBucket, HardHat, Wrench, Brain } from "lucide-react";
 
 export interface Job {
   id: string;
@@ -21,123 +21,27 @@ export interface Job {
 
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
   "Technologie": {
-    icon: Laptop,
-    subcategories: [
-      "Développement Web",
-      "Développement Mobile",
-      "DevOps & Cloud",
-      "Intelligence Artificielle",
-      "Data Science",
-      "Cybersécurité",
-      "Architecture Logicielle",
-      "QA & Testing",
-      "Administration Système",
-      "Support Technique"
-    ]
+    icon: Code,
+    subcategories: ["Développement Web", "DevOps", "Mobile", "Data"]
   },
-  "Gestion & Business": {
-    icon: ChartBar,
-    subcategories: [
-      "Gestion de Projet",
-      "Product Management",
-      "Business Analysis",
-      "Consulting",
-      "Stratégie",
-      "Marketing Digital",
-      "Ressources Humaines",
-      "Finance & Comptabilité",
-      "Ventes B2B",
-      "Service Client"
-    ]
+  "Gestion": {
+    icon: Briefcase,
+    subcategories: ["Product Management", "Agile", "Conseil"]
   },
-  "Design & Créatif": {
-    icon: Palette,
-    subcategories: [
-      "UI/UX Design",
-      "Design Graphique",
-      "Motion Design",
-      "Design 3D",
-      "Direction Artistique",
-      "Design Produit",
-      "Design d'Intérieur",
-      "Illustration",
-      "Photographie",
-      "Vidéo & Animation"
-    ]
+  "Design": {
+    icon: PaintBucket,
+    subcategories: ["UI/UX", "Graphisme", "Motion"]
   },
-  "Construction & BTP": {
-    icon: Building2,
-    subcategories: [
-      "Gros Œuvre",
-      "Second Œuvre",
-      "Architecture",
-      "Génie Civil",
-      "Conduite de Travaux",
-      "Bureau d'Études",
-      "Maîtrise d'Œuvre",
-      "Expertise Technique",
-      "Sécurité & Conformité",
-      "Rénovation"
-    ]
+  "Construction": {
+    icon: HardHat,
+    subcategories: ["Gros œuvre", "Second œuvre", "Finitions"]
   },
-  "Industrie & Production": {
-    icon: Cog,
-    subcategories: [
-      "Production",
-      "Maintenance Industrielle",
-      "Qualité",
-      "Méthodes & Industrialisation",
-      "R&D",
-      "Automatisation",
-      "Supply Chain",
-      "QHSE",
-      "Lean Management",
-      "Ingénierie"
-    ]
+  "Manuel": {
+    icon: Wrench,
+    subcategories: ["Rénovation", "Installation", "Maintenance"]
   },
-  "Artisanat & Métiers Manuels": {
-    icon: Hammer,
-    subcategories: [
-      "Menuiserie",
-      "Plomberie",
-      "Électricité",
-      "Peinture",
-      "Carrelage",
-      "Maçonnerie",
-      "Couverture",
-      "Serrurerie",
-      "Chauffage",
-      "Finitions"
-    ]
-  },
-  "Transport & Logistique": {
-    icon: Truck,
-    subcategories: [
-      "Transport Routier",
-      "Logistique",
-      "Manutention",
-      "Gestion de Stock",
-      "Import/Export",
-      "Distribution",
-      "Planification",
-      "Achats",
-      "Douane",
-      "E-commerce"
-    ]
-  },
-  "Environnement & Énergie": {
-    icon: Leaf,
-    subcategories: [
-      "Énergies Renouvelables",
-      "Efficacité Énergétique",
-      "Gestion des Déchets",
-      "Développement Durable",
-      "Études Environnementales",
-      "Certification",
-      "Conseil Environnemental",
-      "Économie Circulaire",
-      "Agriculture Durable",
-      "Biodiversité"
-    ]
+  "Expertise": {
+    icon: Brain,
+    subcategories: ["Formation", "Audit", "Conseil"]
   }
 };

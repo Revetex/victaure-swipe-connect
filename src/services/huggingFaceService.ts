@@ -1,95 +1,79 @@
-import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile } from "@/types/profile";
+let apiKey: string | null = "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";
 
-export async function generateAIResponse(message: string, profile?: UserProfile) {
+const getApiKey = () => {
+  if (!apiKey) return null;
+  return apiKey;
+};
+
+export const setApiKey = (key: string) => {
+  apiKey = key;
+};
+
+export async function generateAIResponse(message: string, profile?: any) {
   try {
-    if (!message?.trim()) {
-      throw new Error('Message invalide');
+    const key = getApiKey();
+    if (!key) {
+      throw new Error('API key not configured');
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error('Utilisateur non authentifié');
+    if (!message || message.length > 2000) {
+      throw new Error('Invalid input');
     }
 
-    // Get the Hugging Face access token from Supabase
-    const { data: secretData, error: secretError } = await supabase
-      .rpc('get_secret', { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' });
-    
-    if (secretError) {
-      console.error('Error fetching secret:', secretError);
-      throw new Error('Impossible de récupérer le token d\'accès');
-    }
+    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel proactif et bienveillant qui peut directement modifier les VCards et créer des offres de mission. Tu guides activement les utilisateurs dans la création et l'amélioration de leur profil professionnel ainsi que dans la publication d'offres de mission.
 
-    // Log the raw secret data for debugging
-    console.log('Secret data received:', secretData);
+Directives de personnalité:
+1. Sois proactif - propose des suggestions concrètes sans attendre qu'on te le demande
+2. Sois guidant - explique les étapes à suivre de manière claire
+3. Sois encourageant - félicite les progrès et encourage à continuer
+4. Sois structuré - organise tes réponses par points clés
+5. Sois concis - va droit au but tout en restant aimable
+6. IMPORTANT: Ne partage jamais de code dans tes réponses, explique plutôt les concepts de manière simple
 
-    // Ensure we have valid secret data
-    if (!secretData || !Array.isArray(secretData) || secretData.length === 0) {
-      throw new Error('Token d\'accès Hugging Face non configuré');
-    }
+Profil actuel de l'utilisateur:
+${profile ? JSON.stringify(profile, null, 2) : 'Pas encore de profil'}
 
-    const token = secretData[0]?.secret;
-    
-    // Validate token format
-    if (!token || typeof token !== 'string') {
-      throw new Error('Format du token Hugging Face invalide');
-    }
-
-    const cleanToken = token.trim();
-    if (!cleanToken) {
-      throw new Error('Token Hugging Face vide');
-    }
-
-    console.log('Making request to Hugging Face API...');
-
-    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant professionnel et amical qui aide les utilisateurs avec leurs questions. Tu réponds toujours en français de manière concise et claire.
-
-<|user|>${message}
-
+Message de l'utilisateur: ${message}</s>
 <|assistant|>`;
 
-    const response = await fetch('https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta', {
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${cleanToken}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
-      method: 'POST',
       body: JSON.stringify({
         inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 500,
+          max_new_tokens: 250,
           temperature: 0.7,
           top_p: 0.9,
-          return_full_text: false
+          repetition_penalty: 1.2,
+          top_k: 40,
+          do_sample: true
         }
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Hugging Face API error:', errorData);
-      throw new Error(`Erreur API: ${response.statusText}`);
+      throw new Error(`API request failed: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('API Response:', data);
     
-    if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid response format:', data);
-      throw new Error('Format de réponse invalide');
+    if (!data[0]?.generated_text) {
+      throw new Error('Invalid response format from API');
     }
 
-    const generatedText = data[0].generated_text.trim();
+    const generatedText = data[0].generated_text.split('<|assistant|>')[1]?.trim();
     
     if (!generatedText) {
-      throw new Error('Aucune réponse générée');
+      throw new Error('No response generated');
     }
 
     return generatedText;
-
   } catch (error) {
-    console.error('Erreur lors de la génération de la réponse:', error);
+    console.error('Error generating response:', error);
     throw error;
   }
 }

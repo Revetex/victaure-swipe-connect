@@ -11,7 +11,7 @@ interface NotesSectionProps {
   onNoteChange: (value: string) => void;
   onColorChange: (color: string) => void;
   onAdd: () => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 export function NotesSection({
@@ -41,7 +41,7 @@ export function NotesSection({
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-2">
-        {notes?.map((note) => {
+        {notes.map((note) => {
           const colorClass = colors.find(c => c.value === note.color)?.class || "bg-yellow-200";
           return (
             <StickyNote
