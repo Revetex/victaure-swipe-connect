@@ -1,19 +1,29 @@
-import { Bot, Brain, Sparkles } from "lucide-react";
+import { Bot, Brain, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface ChatHeaderProps {
   onClearChat: () => void;
   isThinking: boolean;
 }
 
-export function ChatHeader({ isThinking }: ChatHeaderProps) {
+export function ChatHeader({ onClearChat, isThinking }: ChatHeaderProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center p-4 relative border-b bg-background/80 backdrop-blur-sm"
+      className="flex items-center p-4 border-b bg-background/80 backdrop-blur-sm"
     >
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClearChat}
+        className="mr-4"
+      >
+        <ArrowLeft className="h-5 w-5" />
+      </Button>
+
       <div className="flex items-center gap-4">
         <div className="relative">
           <div className={`h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 ${isThinking ? 'animate-pulse' : ''}`}>
@@ -24,10 +34,7 @@ export function ChatHeader({ isThinking }: ChatHeaderProps) {
           </div>
         </div>
         <div>
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            Mr. Victaure
-            <Sparkles className="h-4 w-4 text-yellow-500 animate-pulse" />
-          </h2>
+          <h2 className="text-lg font-semibold">Mr. Victaure</h2>
           <p className="text-sm text-muted-foreground">
             {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
           </p>

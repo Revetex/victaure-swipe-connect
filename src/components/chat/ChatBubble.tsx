@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bot } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChatBubbleProps {
   content: string;
@@ -19,10 +20,15 @@ export function ChatBubble({ content, sender, timestamp, isCurrentUser }: ChatBu
   const isAssistant = sender.id === 'assistant';
 
   return (
-    <div className={cn(
-      "flex gap-2 mb-4",
-      isCurrentUser ? "flex-row-reverse" : "flex-row"
-    )}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className={cn(
+        "flex gap-2 mb-4",
+        isCurrentUser ? "flex-row-reverse" : "flex-row"
+      )}
+    >
       <Avatar className="h-8 w-8 shrink-0">
         {isAssistant ? (
           <div className="h-full w-full bg-primary/10 flex items-center justify-center">
@@ -56,6 +62,6 @@ export function ChatBubble({ content, sender, timestamp, isCurrentUser }: ChatBu
           {format(timestamp, "HH:mm", { locale: fr })}
         </span>
       </div>
-    </div>
+    </motion.div>
   );
 }

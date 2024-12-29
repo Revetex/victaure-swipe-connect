@@ -26,7 +26,7 @@ export function ChatInput({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex gap-2 relative bg-background/80 backdrop-blur-sm p-4 rounded-lg shadow-lg"
+      className="flex gap-2 relative"
     >
       <Input
         value={value}
@@ -36,7 +36,7 @@ export function ChatInput({
         className="flex-grow pr-20"
         disabled={isThinking}
       />
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-1">
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
         <Button
           onClick={onVoiceInput}
           variant="ghost"
