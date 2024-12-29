@@ -37,6 +37,7 @@ OBJECTIF:
 Message: ${sanitizedMessage}</s>
 <|assistant|>`;
 
+    console.log('Récupération de la clé API...');
     const { data: secretData, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
@@ -90,6 +91,7 @@ Message: ${sanitizedMessage}</s>
     }
 
     const responseData = await response.json() as HuggingFaceResponse[];
+    console.log('Réponse reçue:', responseData);
 
     if (!Array.isArray(responseData) || !responseData[0]?.generated_text) {
       console.error('Réponse invalide:', responseData);
@@ -107,7 +109,9 @@ Message: ${sanitizedMessage}</s>
       throw new Error('Aucune réponse générée');
     }
 
+    console.log('Texte généré avec succès:', generatedText.substring(0, 100) + '...');
     return generatedText;
+
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse:', error);
     if (error instanceof Error) {
