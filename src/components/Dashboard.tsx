@@ -20,14 +20,12 @@ interface QuickAction {
 }
 
 export function Dashboard() {
-  // Fetch dashboard statistics
   const { data: stats } = useQuery<DashboardStats>({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      // Fetch active jobs and unread messages
       const [jobsResponse, messagesResponse] = await Promise.all([
         supabase
           .from('jobs')
@@ -41,14 +39,12 @@ export function Dashboard() {
           .eq('read', false),
       ]);
 
-      // Fetch accepted matches
       const { data: matches } = await supabase
         .from('matches')
         .select('id')
         .eq('employer_id', user.id)
         .eq('status', 'accepted');
 
-      // Calculate pending payments
       const { data: payments } = await supabase
         .from('payments')
         .select('amount')
@@ -66,7 +62,6 @@ export function Dashboard() {
     }
   });
 
-  // Define quick action cards
   const quickActions: QuickAction[] = [
     {
       title: "Missions en cours",
