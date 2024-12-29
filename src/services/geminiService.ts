@@ -11,15 +11,15 @@ async function getApiKey() {
       throw new Error(`Failed to fetch Gemini API key: ${error.message}`);
     }
 
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      console.error('No data returned from get_secret');
+    if (!data || data.length === 0) {
+      console.error('No Gemini API key found in secrets');
       throw new Error('Gemini API key not found in secrets');
     }
 
     const apiKey = data[0]?.secret?.trim();
     if (!apiKey) {
-      console.error('API key is empty or invalid');
-      throw new Error('Invalid Gemini API key format');
+      console.error('Empty Gemini API key');
+      throw new Error('Empty Gemini API key');
     }
 
     return apiKey;
@@ -42,13 +42,13 @@ export async function generateAIResponse(message: string) {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `You are a professional assistant helping users with their job search. Be precise and concise in your responses. User message: ${message}`
+            text: `Tu es un assistant professionnel qui aide les utilisateurs dans leur recherche d'emploi. Sois précis et concis dans tes réponses. Message de l'utilisateur: ${message}`
           }]
         }],
         generationConfig: {
-          temperature: 0.2,
+          temperature: 0.7,
           topK: 40,
-          topP: 0.8,
+          topP: 0.95,
           maxOutputTokens: 1000,
         },
         safetySettings: [
@@ -73,15 +73,24 @@ export async function generateAIResponse(message: string) {
     });
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`);
+      const errorData = await response.json();
+      console.error('Gemini API error:', errorData);
+      throw new Error(`Gemini API error: ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('Gemini API response:', data);
+
+    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      console.error('Unexpected Gemini API response format:', data);
+      throw new Error('Unexpected API response format');
+    }
+
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error('Error generating AI response:', error);
     
-    // Fallback responses in case of error
+    // Fallback responses in French
     const predefinedResponses = [
       "Je suis là pour vous aider dans votre recherche d'emploi. Que puis-je faire pour vous ?",
       "Je peux vous donner des conseils sur la rédaction de votre CV.",
