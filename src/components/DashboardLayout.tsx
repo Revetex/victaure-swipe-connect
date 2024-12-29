@@ -33,42 +33,7 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-background">
-      <div 
-        className={cn(
-          "fixed left-1/2 transform -translate-x-1/2 z-50 flex flex-col items-center gap-4 transition-all duration-300",
-          isMobile ? "top-2" : "top-4"
-        )}
-      >
-        <div className="bg-background/80 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg border border-border flex gap-4">
-          {sections.map((section, index) => (
-            <button
-              key={index}
-              onClick={() => scrollTo(index)}
-              className={cn(
-                "relative transition-all duration-300 rounded-full p-2 group",
-                activeSection === index 
-                  ? "bg-primary text-primary-foreground" 
-                  : "hover:bg-primary/10"
-              )}
-              aria-label={`Aller à la section ${section.title}`}
-            >
-              <span className="text-lg">{section.icon}</span>
-              <span 
-                className={cn(
-                  "absolute left-1/2 -translate-x-1/2 -bottom-6 text-xs font-medium whitespace-nowrap transition-all duration-300",
-                  activeSection === index 
-                    ? "opacity-100 translate-y-0" 
-                    : "opacity-0 -translate-y-1"
-                )}
-              >
-                {section.title}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <div className="h-[calc(100vh-4rem)] bg-background relative">
       <Carousel
         opts={{
           align: "start",
@@ -83,7 +48,7 @@ export function DashboardLayout() {
             <CarouselItem key={section.id} className="pl-0 h-[calc(100vh-4rem)]">
               <div className={cn(
                 "h-full w-full transition-all duration-300",
-                isMobile ? "p-2" : "p-4"
+                isMobile ? "p-2 pb-20" : "p-4 pb-24"
               )}>
                 <div className="glass-card h-full rounded-lg p-3 sm:p-4 overflow-y-auto">
                   <section.component />
@@ -93,6 +58,34 @@ export function DashboardLayout() {
           ))}
         </CarouselContent>
       </Carousel>
+
+      <div 
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-50 flex justify-center transition-all duration-300 bg-background/80 backdrop-blur-sm border-t border-border",
+          isMobile ? "py-2" : "py-4"
+        )}
+      >
+        <div className="flex gap-8">
+          {sections.map((section, index) => (
+            <button
+              key={index}
+              onClick={() => scrollTo(index)}
+              className={cn(
+                "relative transition-all duration-300 rounded-lg px-3 py-2 group flex flex-col items-center gap-1",
+                activeSection === index 
+                  ? "bg-primary text-primary-foreground" 
+                  : "hover:bg-primary/10"
+              )}
+              aria-label={`Aller à la section ${section.title}`}
+            >
+              <span className="text-lg">{section.icon}</span>
+              <span className="text-xs font-medium">
+                {section.title}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
