@@ -5,9 +5,19 @@
     "selectLanguage": "Sélectionner une langue",
     "languageChanged": "Langue modifiée avec succès",
     "theme": "Thème",
-    "notifications": "Notifications",
-    "emailNotifications": "Notifications par email",
-    "pushNotifications": "Notifications push"
+    "themes": {
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "email": "Notifications par email",
+      "push": "Notifications push"
+    },
+    "success": {
+      "theme": "Thème modifié avec succès"
+    }
   },
   "auth": {
     "logout": "Déconnexion",

@@ -9,16 +9,20 @@ export function NotificationSettings() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("settings.notifications")}</CardTitle>
+        <CardTitle>{t("settings.notifications.title")}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label htmlFor="email-notif">{t("settings.emailNotifications")}</Label>
-          <Switch id="email-notif" />
+          <Label htmlFor="email-notifications">
+            {t("settings.notifications.email")}
+          </Label>
+          <Switch id="email-notifications" />
         </div>
         <div className="flex items-center justify-between">
-          <Label htmlFor="push-notif">{t("settings.pushNotifications")}</Label>
-          <Switch id="push-notif" />
+          <Label htmlFor="push-notifications">
+            {t("settings.notifications.push")}
+          </Label>
+          <Switch id="push-notifications" />
         </div>
       </CardContent>
     </Card>

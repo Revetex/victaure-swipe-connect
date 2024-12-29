@@ -10,6 +10,7 @@ export function GeneralSettings() {
 
   const handleLanguageChange = (value: string) => {
     i18n.changeLanguage(value);
+    localStorage.setItem("language", value);
     toast.success(t("settings.languageChanged"));
   };
 
@@ -25,7 +26,7 @@ export function GeneralSettings() {
             value={i18n.language}
             onValueChange={handleLanguageChange}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder={t("settings.selectLanguage")} />
             </SelectTrigger>
             <SelectContent>
