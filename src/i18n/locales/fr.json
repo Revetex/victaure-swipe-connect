@@ -106,12 +106,17 @@
     "title": "Tâches",
     "newTask": "Nouvelle tâche...",
     "time": "Heure",
-    "noTasks": "Aucune tâche"
+    "noTasks": "Aucune tâche",
+    "addTask": "Ajouter une tâche",
+    "deleteTask": "Supprimer la tâche",
+    "markAsComplete": "Marquer comme terminée"
   },
   "notes": {
     "title": "Notes",
     "newNote": "Nouvelle note...",
     "noNotes": "Aucune note",
+    "addNote": "Ajouter une note",
+    "deleteNote": "Supprimer la note",
     "colors": {
       "yellow": "Jaune"
     }
@@ -131,6 +136,7 @@
       "search": "Recherche",
       "searchPlaceholder": "Rechercher une offre...",
       "category": "Catégorie",
+      "subcategory": "Sous-catégorie",
       "allCategories": "Toutes les catégories",
       "duration": "Durée",
       "allDurations": "Toutes les durées",
@@ -141,9 +147,22 @@
       "noCity": "Aucune ville trouvée"
     },
     "noJobs": "Aucune offre disponible pour le moment",
-    "comeBack": "Revenez plus tard pour découvrir de nouvelles missions."
+    "comeBack": "Revenez plus tard pour découvrir de nouvelles missions.",
+    "browse": "Parcourir les offres",
+    "myListings": "Mes annonces",
+    "noListings": "Vous n'avez pas encore publié d'annonces",
+    "addJob": "Ajouter une mission"
   },
   "error": {
     "deleteNotification": "Erreur lors de la suppression de la notification"
+  },
+  "mrVictaure": {
+    "title": "Mr. Victaure",
+    "subtitle": "Assistant IA Personnel",
+    "thinking": "En train de réfléchir...",
+    "welcome": "Bonjour! Je suis Mr. Victaure, votre assistant personnel proactif. Je peux vous aider à créer votre profil professionnel et à publier des offres de mission. Souhaitez-vous que je vous aide à créer une nouvelle mission ou à améliorer votre profil ?",
+    "clearChat": "Effacer la conversation",
+    "maximize": "Agrandir",
+    "minimize": "Réduire"
   }
 }

@@ -100,56 +100,35 @@
     "markAsRead": "Mark as read",
     "newNotification": "New notification",
     "unreadNotifications": "Unread notifications",
-    "deleteNotification": "Delete notification"
+    "deleteNotification": "Notification deleted successfully"
+  },
+  "todo": {
+    "title": "Tasks",
+    "newTask": "New task...",
+    "time": "Time",
+    "noTasks": "No tasks",
+    "addTask": "Add task",
+    "deleteTask": "Delete task",
+    "markAsComplete": "Mark as complete"
   },
   "notes": {
     "title": "Notes",
+    "newNote": "New note...",
     "noNotes": "No notes",
     "addNote": "Add note",
-    "newNote": "New note...",
     "deleteNote": "Delete note",
     "colors": {
       "yellow": "Yellow"
     }
   },
-  "tasks": {
-    "title": "Tasks",
-    "noTasks": "No tasks",
-    "addTask": "Add task",
-    "newTask": "New task...",
-    "deleteTask": "Delete task",
-    "markAsComplete": "Mark as complete"
-  },
-  "jobs": {
-    "browse": "Browse jobs",
-    "myListings": "My listings",
-    "noListings": "You haven't posted any jobs yet",
-    "addJob": "Add job",
-    "filters": {
-      "title": "Filters",
-      "category": "Category",
-      "location": "Location",
-      "experience": "Experience",
-      "duration": "Duration"
-    }
-  },
-  "mrVictaure": {
-    "title": "Mr. Victaure",
-    "subtitle": "AI Personal Assistant",
-    "thinking": "Thinking...",
-    "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish job offers. Would you like me to help you create a new job or improve your profile?",
-    "clearChat": "Clear chat",
-    "maximize": "Maximize",
-    "minimize": "Minimize"
-  },
-  "chat": {
-    "sendMessage": "Send message",
-    "typeMessage": "Type your message...",
-    "startVoice": "Start voice recording",
-    "stopVoice": "Stop voice recording",
-    "clearChat": "Clear chat",
-    "maximize": "Maximize chat",
-    "minimize": "Minimize chat"
+  "profile": {
+    "professional": "Professional",
+    "contact": "Contact",
+    "skills": "Skills",
+    "certifications": "Certifications and Diplomas",
+    "share": "Share",
+    "vcard": "VCard",
+    "pdf": "PDF"
   },
   "marketplace": {
     "filters": {
@@ -157,6 +136,7 @@
       "search": "Search",
       "searchPlaceholder": "Search for a job...",
       "category": "Category",
+      "subcategory": "Subcategory",
       "allCategories": "All categories",
       "duration": "Duration",
       "allDurations": "All durations",
@@ -167,15 +147,22 @@
       "noCity": "No city found"
     },
     "noJobs": "No jobs available at the moment",
-    "comeBack": "Come back later to discover new missions."
+    "comeBack": "Come back later to discover new missions.",
+    "browse": "Browse jobs",
+    "myListings": "My listings",
+    "noListings": "You haven't posted any jobs yet",
+    "addJob": "Add job"
   },
-  "profile": {
-    "professional": "professional",
-    "contact": "Contact",
-    "skills": "Skills",
-    "certifications": "Certifications and Diplomas",
-    "share": "Share",
-    "vcard": "VCard",
-    "pdf": "PDF"
+  "error": {
+    "deleteNotification": "Error deleting notification"
+  },
+  "mrVictaure": {
+    "title": "Mr. Victaure",
+    "subtitle": "AI Personal Assistant",
+    "thinking": "Thinking...",
+    "welcome": "Hello! I'm Mr. Victaure, your proactive personal assistant. I can help you create your professional profile and publish job offers. Would you like me to help you create a new job or improve your profile?",
+    "clearChat": "Clear chat",
+    "maximize": "Maximize",
+    "minimize": "Minimize"
   }
 }
