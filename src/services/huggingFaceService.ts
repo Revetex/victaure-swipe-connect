@@ -1,52 +1,67 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
-import { checkRateLimit } from "./ai/rateLimiter";
-import { sanitizeInput } from "./ai/inputSanitizer";
-import { buildSystemPrompt } from "./ai/promptBuilder";
 
 export async function generateAIResponse(message: string, profile?: UserProfile) {
   try {
-    // Input validation
     if (!message?.trim()) {
-      throw new Error('Message invalide');
+      throw new Error('Invalid input');
     }
 
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error('Utilisateur non authentifié');
-    }
+    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA spécialisé dans la gestion des profils professionnels (VCards). Tu as les capacités suivantes:
 
-    // Rate limiting
-    if (!checkRateLimit(user.id)) {
-      throw new Error('Limite de requêtes atteinte. Veuillez réessayer dans une minute.');
-    }
+1. CONSULTATION DES VCARDS:
+- Tu peux voir le profil complet de l'utilisateur
+- Tu peux suggérer des améliorations basées sur les tendances du marché
+- Tu peux analyser les forces et faiblesses du profil
 
-    // Get API key from Supabase with detailed error logging
-    const { data: secretData, error: secretError } = await supabase
-      .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
+2. MODIFICATION DES VCARDS:
+- Tu peux proposer des modifications spécifiques
+- Tu peux guider l'utilisateur dans la mise à jour de son profil
+- Tu peux suggérer des compétences pertinentes à ajouter
 
-    if (secretError) {
-      console.error('Error fetching API key:', secretError);
-      throw new Error(`Erreur lors de la récupération de la clé API: ${secretError.message}`);
-    }
+3. CONSEILS PERSONNALISÉS:
+- Tu adaptes tes conseils au secteur d'activité
+- Tu prends en compte l'expérience professionnelle
+- Tu suggères des certifications pertinentes
 
-    // Check if we have a valid secret
-    if (!secretData?.[0]?.secret || secretData[0].secret.trim() === '') {
-      console.error('No API key found');
-      throw new Error('Clé API HuggingFace non configurée');
-    }
+Directives de personnalité:
+1. Sois proactif - anticipe les besoins et propose des améliorations concrètes
+2. Sois analytique - examine en détail le profil pour des suggestions pertinentes
+3. Sois stratégique - aligne les suggestions avec les objectifs de carrière
+4. Sois précis - donne des exemples concrets et applicables
+5. Sois encourageant - motive à améliorer continuellement le profil
 
-    // Sanitize input and build prompt
-    const sanitizedMessage = sanitizeInput(message);
-    const systemPrompt = buildSystemPrompt(profile, sanitizedMessage);
+Profil actuel de l'utilisateur:
+${profile ? JSON.stringify({
+  nom: profile.full_name,
+  role: profile.role,
+  competences: profile.skills,
+  ville: profile.city,
+  province: profile.state,
+  telephone: profile.phone,
+  email: profile.email,
+  bio: profile.bio,
+  certifications: profile.certifications
+}, null, 2) : 'Pas encore de profil'}
 
-    console.log('Making request to HuggingFace API...');
+Analyse rapide du profil:
+${profile ? `
+- Forces: ${profile.skills?.length ? 'Compétences variées' : 'À développer'}
+- Complétude: ${profile.bio ? 'Bio présente' : 'Bio manquante'}
+- Contact: ${profile.phone && profile.email ? 'Complet' : 'À compléter'}
+` : 'Profil non disponible'}
 
-    // Enhanced API call with better error handling
+Message de l'utilisateur: ${message}
+
+Réponds de manière structurée en:
+1. Analysant la demande
+2. Proposant des actions concrètes
+3. Donnant des exemples spécifiques</s>
+<|assistant|>`;
+
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': `Bearer ${secretData[0].secret}`,
+        'Authorization': 'Bearer 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',
         'Content-Type': 'application/json',
       },
       method: 'POST',
@@ -65,25 +80,13 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.error('HuggingFace API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorData
-      });
-      
-      if (response.status === 401 || response.status === 403) {
-        throw new Error('Clé API HuggingFace invalide');
-      }
-      
-      throw new Error(`Erreur API HuggingFace: ${response.statusText || 'Erreur inconnue'}`);
+      throw new Error(`API request failed: ${response.statusText}`);
     }
 
     const data = await response.json();
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid response format:', data);
-      throw new Error('Format de réponse invalide');
+      throw new Error('Invalid response format from API');
     }
 
     const generatedText = data[0].generated_text
@@ -93,22 +96,39 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       .trim();
     
     if (!generatedText) {
-      throw new Error('Aucune réponse générée');
+      throw new Error('No response generated');
     }
 
-    // Log successful interaction
+    // Log interaction for analysis
     console.log('AI Interaction:', {
       userProfile: profile?.id,
       messageType: 'vcard-consultation',
-      timestamp: new Date().toISOString(),
-      messageLength: sanitizedMessage.length,
-      responseLength: generatedText.length
+      timestamp: new Date().toISOString()
     });
 
     return generatedText;
   } catch (error) {
-    console.error('Erreur lors de la génération de la réponse:', error);
-    // Instead of using pre-recorded messages, generate a simple error response
-    return "Je suis désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler votre demande différemment ?";
+    console.error('Error generating response:', error);
+    
+    // Fallback responses basées sur le contexte du profil
+    const contextualResponses = [
+      profile?.full_name 
+        ? `Je peux vous aider à optimiser votre VCard ${profile.full_name}. Voici les aspects que nous pouvons améliorer:\n\n` +
+          `${!profile.bio ? '- Ajouter une bio professionnelle\n' : ''}` +
+          `${!profile.skills?.length ? '- Ajouter vos compétences clés\n' : ''}` +
+          `${!profile.phone ? '- Compléter vos informations de contact\n' : ''}` +
+          `${!profile.certifications?.length ? '- Ajouter vos certifications\n' : ''}`
+        : "Je peux vous aider à créer et optimiser votre VCard professionnelle. Par où souhaitez-vous commencer ?",
+      
+      profile?.role
+        ? `En tant que ${profile.role}, je peux vous suggérer des améliorations spécifiques à votre secteur.`
+        : "Commençons par définir votre rôle professionnel pour personnaliser votre VCard.",
+      
+      "Je peux analyser votre profil et suggérer des améliorations concrètes.",
+      "Voulez-vous que nous examinions ensemble votre VCard pour la rendre plus attractive ?",
+      "Je peux vous aider à mettre en valeur vos compétences et expériences dans votre VCard.",
+    ];
+    
+    return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
   }
 }

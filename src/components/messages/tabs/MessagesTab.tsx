@@ -27,7 +27,7 @@ export function MessagesTab() {
   } = useChat();
 
   const lastAssistantMessage = chatMessages[chatMessages.length - 1]?.content || "Comment puis-je vous aider ?";
-
+  
   return (
     <div className="space-y-4">
       {/* Assistant Message Item */}

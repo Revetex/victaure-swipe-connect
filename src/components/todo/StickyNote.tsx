@@ -5,7 +5,7 @@ import { StickyNote as StickyNoteType } from "@/types/todo";
 interface StickyNoteProps {
   note: StickyNoteType;
   colorClass: string;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
