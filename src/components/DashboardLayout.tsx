@@ -25,8 +25,11 @@ export function DashboardLayout() {
     setActiveSection(index);
   };
 
-  const handleSelect = (index: number) => {
-    setActiveSection(index);
+  const handleSelect = () => {
+    const currentIndex = api?.selectedScrollSnap();
+    if (typeof currentIndex === 'number') {
+      setActiveSection(currentIndex);
+    }
   };
 
   return (
