@@ -34,18 +34,18 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     });
 
     // Get the API key from Supabase secrets
-    const { data, error: secretError } = await supabase.rpc('get_secret', {
+    const { data: secretData, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     }) as { data: { secret: string } | null, error: Error | null };
 
-    if (secretError || !data?.secret) {
+    if (secretError || !secretData?.secret) {
       console.error('Error fetching API key:', secretError);
       throw new Error('Configuration API manquante');
     }
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': `Bearer ${data.secret}`,
+        'Authorization': `Bearer ${secretData.secret}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
@@ -70,13 +70,13 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error(`Erreur API: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const responseData = await response.json();
 
-    if (!Array.isArray(data) || !data[0]?.generated_text) {
+    if (!Array.isArray(responseData) || !responseData[0]?.generated_text) {
       throw new Error('Format de réponse invalide');
     }
 
-    const generatedText = data[0].generated_text
+    const generatedText = responseData[0].generated_text
       .split('<|assistant|>')[1]?.trim()
       .replace(/```/g, '')
       .replace(/\n\n+/g, '\n\n')
