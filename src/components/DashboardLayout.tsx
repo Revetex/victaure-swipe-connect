@@ -25,7 +25,7 @@ export function DashboardLayout() {
     setActiveSection(index);
   };
 
-  const handleSelect = (event: React.SyntheticEvent<HTMLDivElement>) => {
+  const handleSelect = () => {
     const selectedIndex = api?.selectedScrollSnap();
     if (selectedIndex !== undefined) {
       setActiveSection(selectedIndex);
@@ -34,7 +34,6 @@ export function DashboardLayout() {
 
   return (
     <div className="h-[calc(100vh-4rem)] bg-background">
-      {/* Navigation dots with improved mobile styling */}
       <div 
         className={cn(
           "fixed left-1/2 transform -translate-x-1/2 z-50 flex gap-2 transition-all duration-300",
@@ -67,7 +66,7 @@ export function DashboardLayout() {
         onSelect={handleSelect}
       >
         <CarouselContent className="-ml-0">
-          {sections.map((section, index) => (
+          {sections.map((section) => (
             <CarouselItem key={section.id} className="pl-0 h-[calc(100vh-4rem)]">
               <div className={cn(
                 "h-full w-full transition-all duration-300",
