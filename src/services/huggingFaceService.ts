@@ -1,82 +1,85 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { UserProfile } from "@/types/profile";
+import { checkRateLimit } from "./ai/rateLimiter";
+import { sanitizeInput } from "./ai/inputSanitizer";
+import { buildSystemPrompt } from "./ai/promptBuilder";
+import { getFallbackResponse } from "./ai/fallbackResponses";
 
-async function getApiKey() {
+export async function generateAIResponse(message: string, profile?: UserProfile) {
   try {
-    const { data, error } = await supabase.rpc('get_secret', {
-      secret_name: 'HUGGING_FACE_API_KEY'
-    });
-
-    if (error) {
-      console.error('Error fetching HuggingFace API key:', error);
-      throw new Error(`Failed to fetch HuggingFace API key: ${error.message}`);
+    // Input validation
+    if (!message?.trim()) {
+      throw new Error('Message invalide');
     }
 
-    // Log the data to help debug
-    console.log('Secret data received:', data);
-
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      console.error('No data returned from get_secret');
-      throw new Error('HuggingFace API key not found in secrets');
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('Utilisateur non authentifié');
     }
 
-    const apiKey = data[0]?.secret?.trim();
-    if (!apiKey) {
-      console.error('API key is empty or invalid');
-      throw new Error('Invalid HuggingFace API key format');
+    // Rate limiting
+    if (!checkRateLimit(user.id)) {
+      throw new Error('Limite de requêtes atteinte. Veuillez réessayer dans une minute.');
     }
 
-    return apiKey;
-  } catch (error) {
-    console.error('Error in getApiKey:', error);
-    throw error;
-  }
-}
+    // Sanitize input and build prompt
+    const sanitizedMessage = sanitizeInput(message);
+    const systemPrompt = buildSystemPrompt(profile, sanitizedMessage);
 
-export async function generateAIResponse(prompt: string): Promise<string> {
-  try {
-    const apiKey = await getApiKey();
-    console.log('Successfully retrieved API key');
-    
-    const response = await fetch("https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta", {
-      method: 'POST',
+    // Enhanced API call with better error handling
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': 'Bearer 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',
         'Content-Type': 'application/json',
       },
+      method: 'POST',
       body: JSON.stringify({
-        inputs: `<|system|>You are a helpful assistant.</s>
-<|user|>${prompt}</s>
-<|assistant|>`,
+        inputs: systemPrompt,
         parameters: {
-          max_new_tokens: 250,
+          max_new_tokens: 750,
           temperature: 0.7,
-          top_p: 0.95,
+          top_p: 0.9,
+          repetition_penalty: 1.2,
+          top_k: 50,
           do_sample: true,
           return_full_text: false
-        },
+        }
       }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('HuggingFace API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText
-      });
-      throw new Error(`API request failed: ${response.status} - ${errorText}`);
+      throw new Error(`Erreur API: ${response.statusText}`);
     }
 
-    const result = await response.json();
+    const data = await response.json();
+
+    if (!Array.isArray(data) || !data[0]?.generated_text) {
+      throw new Error('Format de réponse invalide');
+    }
+
+    const generatedText = data[0].generated_text
+      .split('<|assistant|>')[1]?.trim()
+      .replace(/```/g, '')
+      .replace(/\n\n+/g, '\n\n')
+      .trim();
     
-    if (Array.isArray(result) && result.length > 0) {
-      const generatedText = result[0]?.generated_text || '';
-      return generatedText.trim();
+    if (!generatedText) {
+      throw new Error('Aucune réponse générée');
     }
 
-    throw new Error('Invalid response format from API');
+    // Log interaction for analysis and security monitoring
+    console.log('AI Interaction:', {
+      userProfile: profile?.id,
+      messageType: 'vcard-consultation',
+      timestamp: new Date().toISOString(),
+      messageLength: sanitizedMessage.length,
+      responseLength: generatedText.length
+    });
+
+    return generatedText;
   } catch (error) {
-    console.error('Error generating AI response:', error);
-    throw error;
+    console.error('Erreur lors de la génération de la réponse:', error);
+    return getFallbackResponse(profile);
   }
 }

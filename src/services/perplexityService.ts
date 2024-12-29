@@ -1,38 +1,14 @@
-import { supabase } from "@/integrations/supabase/client";
+let apiKey: string | null = null;
 
-async function getApiKey() {
-  try {
-    const { data, error } = await supabase.rpc('get_secret', {
-      secret_name: 'PERPLEXITY_API_KEY'
-    });
-
-    if (error) {
-      console.error('Error fetching Perplexity API key:', error);
-      throw new Error(`Failed to fetch Perplexity API key: ${error.message}`);
-    }
-
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      console.error('No data returned from get_secret');
-      throw new Error('Perplexity API key not found in secrets');
-    }
-
-    const apiKey = data[0]?.secret?.trim();
-    if (!apiKey) {
-      console.error('API key is empty or invalid');
-      throw new Error('Invalid Perplexity API key format');
-    }
-
-    return apiKey;
-  } catch (error) {
-    console.error('Error in getApiKey:', error);
-    throw error;
-  }
-}
+export const setApiKey = (key: string) => {
+  apiKey = key;
+};
 
 export async function generateAIResponse(message: string) {
   try {
-    const apiKey = await getApiKey();
-    console.log('Successfully retrieved Perplexity API key');
+    if (!apiKey) {
+      throw new Error('API key not configured');
+    }
 
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',

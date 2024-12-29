@@ -101,7 +101,7 @@ export function MessagesTab() {
             <ChatInput
               value={inputMessage}
               onChange={setInputMessage}
-              onSend={() => handleSendMessage(inputMessage)}
+              onSend={() => handleSendMessage(inputMessage, profile)}
               onVoiceInput={handleVoiceInput}
               isListening={isListening}
               isThinking={isThinking}

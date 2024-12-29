@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateAIResponse } from "@/services/geminiService";
+import { generateAIResponse } from "@/services/huggingFaceService";
 import { toast } from "sonner";
 
 export interface Message {
@@ -16,7 +16,7 @@ export function useChat() {
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string, profile?: any) => {
     if (!message.trim()) return;
 
     const newUserMessage: Message = {
@@ -31,7 +31,7 @@ export function useChat() {
     setIsThinking(true);
 
     try {
-      const response = await generateAIResponse(message);
+      const response = await generateAIResponse(message, profile);
 
       const newAssistantMessage: Message = {
         id: crypto.randomUUID(),
@@ -44,9 +44,8 @@ export function useChat() {
       return response;
     } catch (error) {
       console.error("Error generating response:", error);
-      toast.error("Désolé, je n'ai pas pu générer une réponse", {
-        description: "Veuillez réessayer plus tard",
-      });
+      toast.error("Désolé, je n'ai pas pu générer une réponse");
+      throw error;
     } finally {
       setIsThinking(false);
     }

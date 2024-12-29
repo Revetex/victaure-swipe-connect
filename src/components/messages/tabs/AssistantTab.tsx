@@ -67,16 +67,14 @@ export function AssistantTab() {
       </div>
 
       <div className="p-4 pt-0">
-
-<ChatInput
-  value={inputMessage}
-  onChange={setInputMessage}
-  onSend={() => handleSendMessage(inputMessage)}
-  onVoiceInput={handleVoiceInput}
-  isListening={isListening}
-  isThinking={isThinking}
-/>
-
+        <ChatInput
+          value={inputMessage}
+          onChange={setInputMessage}
+          onSend={() => handleSendMessage(inputMessage, profile)}
+          onVoiceInput={handleVoiceInput}
+          isListening={isListening}
+          isThinking={isThinking}
+        />
       </div>
     </div>
   );
