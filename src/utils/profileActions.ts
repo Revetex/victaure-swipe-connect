@@ -20,7 +20,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
 
   console.log("Updating profile with data:", tempProfile);
 
-  const { error } = await supabase
+  const { error: profileError } = await supabase
     .from('profiles')
     .update({
       full_name: tempProfile.full_name,
@@ -37,9 +37,23 @@ export const updateProfile = async (tempProfile: UserProfile) => {
     })
     .eq('id', user.id);
 
-  if (error) {
-    console.error("Error updating profile:", error);
-    throw error;
+  if (profileError) {
+    console.error("Error updating profile:", profileError);
+    throw profileError;
+  }
+
+  // Create a notification for the profile update
+  const { error: notificationError } = await supabase
+    .from('notifications')
+    .insert({
+      user_id: user.id,
+      title: 'Profil mis à jour',
+      message: 'Votre profil a été mis à jour avec succès.',
+    });
+
+  if (notificationError) {
+    console.error("Error creating notification:", notificationError);
+    // We don't throw here as the profile update was successful
   }
 
   console.log("Profile updated successfully");
