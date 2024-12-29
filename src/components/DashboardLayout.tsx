@@ -4,7 +4,7 @@ import { TodoList } from "@/components/TodoList";
 import { VCard } from "@/components/VCard";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { CarouselApi } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -25,12 +25,14 @@ export function DashboardLayout() {
     setActiveSection(index);
   };
 
-  const handleSelect = () => {
-    const selectedIndex = api?.selectedScrollSnap();
-    if (selectedIndex !== undefined) {
+  useEffect(() => {
+    if (!api) return;
+
+    api.on("select", () => {
+      const selectedIndex = api.selectedScrollSnap();
       setActiveSection(selectedIndex);
-    }
-  };
+    });
+  }, [api]);
 
   return (
     <div className="h-screen w-screen fixed top-0 left-0 bg-background">
@@ -42,7 +44,6 @@ export function DashboardLayout() {
           }}
           className="h-full w-full"
           setApi={setApi}
-          onSelect={handleSelect}
         >
           <CarouselContent className="-ml-0">
             {sections.map((section) => (
