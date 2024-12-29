@@ -92,7 +92,11 @@ Réponds de manière structurée en:
     // Handle non-OK responses first
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('HuggingFace API Error:', errorText);
+      console.error('HuggingFace API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
       throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
