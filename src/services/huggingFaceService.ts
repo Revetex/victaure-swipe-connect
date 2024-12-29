@@ -7,6 +7,15 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
       throw new Error('Invalid input');
     }
 
+    // Get the API key from Supabase secrets
+    const { data: secretData, error: secretError } = await supabase
+      .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
+
+    if (secretError || !secretData) {
+      console.error('Error fetching HuggingFace API key:', secretError);
+      throw new Error('Failed to get API key');
+    }
+
     const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA spécialisé dans la gestion des profils professionnels (VCards). Tu as les capacités suivantes:
 
 1. CONSULTATION DES VCARDS:
@@ -61,7 +70,7 @@ Réponds de manière structurée en:
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
-        'Authorization': 'Bearer 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',
+        'Authorization': `Bearer ${secretData}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
@@ -80,6 +89,8 @@ Réponds de manière structurée en:
     });
 
     if (!response.ok) {
+      const errorData = await response.text();
+      console.error('HuggingFace API Error:', errorData);
       throw new Error(`API request failed: ${response.statusText}`);
     }
 
@@ -99,36 +110,9 @@ Réponds de manière structurée en:
       throw new Error('No response generated');
     }
 
-    // Log interaction for analysis
-    console.log('AI Interaction:', {
-      userProfile: profile?.id,
-      messageType: 'vcard-consultation',
-      timestamp: new Date().toISOString()
-    });
-
     return generatedText;
   } catch (error) {
     console.error('Error generating response:', error);
-    
-    // Fallback responses basées sur le contexte du profil
-    const contextualResponses = [
-      profile?.full_name 
-        ? `Je peux vous aider à optimiser votre VCard ${profile.full_name}. Voici les aspects que nous pouvons améliorer:\n\n` +
-          `${!profile.bio ? '- Ajouter une bio professionnelle\n' : ''}` +
-          `${!profile.skills?.length ? '- Ajouter vos compétences clés\n' : ''}` +
-          `${!profile.phone ? '- Compléter vos informations de contact\n' : ''}` +
-          `${!profile.certifications?.length ? '- Ajouter vos certifications\n' : ''}`
-        : "Je peux vous aider à créer et optimiser votre VCard professionnelle. Par où souhaitez-vous commencer ?",
-      
-      profile?.role
-        ? `En tant que ${profile.role}, je peux vous suggérer des améliorations spécifiques à votre secteur.`
-        : "Commençons par définir votre rôle professionnel pour personnaliser votre VCard.",
-      
-      "Je peux analyser votre profil et suggérer des améliorations concrètes.",
-      "Voulez-vous que nous examinions ensemble votre VCard pour la rendre plus attractive ?",
-      "Je peux vous aider à mettre en valeur vos compétences et expériences dans votre VCard.",
-    ];
-    
-    return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
+    throw error;
   }
 }
