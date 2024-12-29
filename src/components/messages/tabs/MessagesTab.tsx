@@ -7,7 +7,8 @@ import { ChatBubble } from "@/components/chat/ChatBubble";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatHeader } from "@/components/chat/ChatHeader";
-import { MessageHistory } from "../MessageHistory";
+import { format, isToday, isYesterday } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export function MessagesTab() {
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
@@ -21,7 +22,6 @@ export function MessagesTab() {
     isListening,
   } = useChat();
 
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
@@ -54,6 +54,28 @@ export function MessagesTab() {
     }))
   ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
+  // Grouper les messages par date
+  const messagesByDate = allMessages.reduce((groups, message) => {
+    const date = new Date(message.created_at);
+    const dateStr = format(date, 'yyyy-MM-dd');
+    
+    if (!groups[dateStr]) {
+      groups[dateStr] = [];
+    }
+    groups[dateStr].push(message);
+    return groups;
+  }, {} as Record<string, typeof allMessages>);
+
+  const formatDateHeader = (dateStr: string) => {
+    const date = new Date(dateStr);
+    if (isToday(date)) {
+      return "Aujourd'hui";
+    } else if (isYesterday(date)) {
+      return "Hier";
+    }
+    return format(date, 'd MMMM yyyy', { locale: fr });
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -62,44 +84,29 @@ export function MessagesTab() {
     );
   }
 
-  if (!selectedConversation) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-primary mb-4">
-          <MessageSquare className="h-5 w-5" />
-          <h2 className="text-lg font-semibold">Historique des messages</h2>
-        </div>
-        <MessageHistory onSelectConversation={setSelectedConversation} />
-      </div>
-    );
-  }
-
-  const conversation = allMessages.find(m => m.id === selectedConversation);
-  if (!conversation) return null;
-
-  const conversationMessages = allMessages.filter(m => 
-    (m.sender.id === conversation.sender.id && m.sender.id !== 'assistant') ||
-    (m.sender.id === currentUser?.id) ||
-    (conversation.sender.id === 'assistant' && m.sender.id === 'assistant')
-  );
-
   return (
     <div className="flex flex-col h-full">
-      <ChatHeader 
-        onClearChat={() => setSelectedConversation(null)} 
-        isThinking={isThinking}
-      />
+      <ChatHeader isThinking={isThinking} />
 
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {conversationMessages.map((message) => (
-            <ChatBubble
-              key={message.id}
-              content={message.content}
-              sender={message.sender}
-              timestamp={new Date(message.created_at)}
-              isCurrentUser={message.sender.id === currentUser?.id}
-            />
+        <div className="space-y-8">
+          {Object.entries(messagesByDate).map(([dateStr, messages]) => (
+            <div key={dateStr} className="space-y-4">
+              <div className="sticky top-0 z-10 flex justify-center">
+                <span className="text-xs text-muted-foreground bg-background/50 px-2 py-1 rounded-full">
+                  {formatDateHeader(dateStr)}
+                </span>
+              </div>
+              {messages.map((message) => (
+                <ChatBubble
+                  key={message.id}
+                  content={message.content}
+                  sender={message.sender}
+                  timestamp={new Date(message.created_at)}
+                  isCurrentUser={message.sender.id === currentUser?.id}
+                />
+              ))}
+            </div>
           ))}
           {isThinking && (
             <ChatBubble
