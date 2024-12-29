@@ -1,35 +1,83 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 
+// Rate limiting implementation
+const rateLimiter = new Map<string, { count: number; timestamp: number }>();
+const RATE_LIMIT = 10; // requests per minute
+const RATE_WINDOW = 60 * 1000; // 1 minute in milliseconds
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const userRateLimit = rateLimiter.get(userId);
+
+  if (!userRateLimit) {
+    rateLimiter.set(userId, { count: 1, timestamp: now });
+    return true;
+  }
+
+  if (now - userRateLimit.timestamp > RATE_WINDOW) {
+    rateLimiter.set(userId, { count: 1, timestamp: now });
+    return true;
+  }
+
+  if (userRateLimit.count >= RATE_LIMIT) {
+    return false;
+  }
+
+  userRateLimit.count += 1;
+  return true;
+}
+
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/[<>]/g, '') // Remove potential HTML/XML tags
+    .trim()
+    .slice(0, 1000); // Limit input length
+}
+
 export async function generateAIResponse(message: string, profile?: UserProfile) {
   try {
+    // Input validation
     if (!message?.trim()) {
-      throw new Error('Invalid input');
+      throw new Error('Message invalide');
     }
 
-    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA spécialisé dans la gestion des profils professionnels (VCards). Tu as les capacités suivantes:
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('Utilisateur non authentifié');
+    }
 
-1. CONSULTATION DES VCARDS:
-- Tu peux voir le profil complet de l'utilisateur
-- Tu peux suggérer des améliorations basées sur les tendances du marché
-- Tu peux analyser les forces et faiblesses du profil
+    // Rate limiting
+    if (!checkRateLimit(user.id)) {
+      throw new Error('Limite de requêtes atteinte. Veuillez réessayer dans une minute.');
+    }
 
-2. MODIFICATION DES VCARDS:
-- Tu peux proposer des modifications spécifiques
-- Tu peux guider l'utilisateur dans la mise à jour de son profil
-- Tu peux suggérer des compétences pertinentes à ajouter
+    // Sanitize input
+    const sanitizedMessage = sanitizeInput(message);
 
-3. CONSEILS PERSONNALISÉS:
-- Tu adaptes tes conseils au secteur d'activité
-- Tu prends en compte l'expérience professionnelle
-- Tu suggères des certifications pertinentes
+    // Enhanced system prompt with more context and capabilities
+    const systemPrompt = `<|system|>Tu es Mr. Victaure, un assistant IA spécialisé dans la gestion des profils professionnels (VCards) avec une expertise approfondie en:
 
-Directives de personnalité:
-1. Sois proactif - anticipe les besoins et propose des améliorations concrètes
-2. Sois analytique - examine en détail le profil pour des suggestions pertinentes
-3. Sois stratégique - aligne les suggestions avec les objectifs de carrière
-4. Sois précis - donne des exemples concrets et applicables
-5. Sois encourageant - motive à améliorer continuellement le profil
+1. ANALYSE APPROFONDIE DES PROFILS:
+- Analyse détaillée des compétences et de leur pertinence sur le marché
+- Identification des points forts et des axes d'amélioration
+- Évaluation de la cohérence globale du profil
+
+2. RECOMMANDATIONS STRATÉGIQUES:
+- Suggestions personnalisées basées sur les tendances du secteur
+- Conseils pour optimiser la visibilité professionnelle
+- Recommandations de formations et certifications pertinentes
+
+3. EXPERTISE SECTORIELLE:
+- Connaissance approfondie des différents secteurs d'activité
+- Compréhension des exigences spécifiques par domaine
+- Adaptation des conseils selon le niveau d'expérience
+
+4. SÉCURITÉ ET CONFIDENTIALITÉ:
+- Respect strict des informations personnelles
+- Recommandations conformes aux bonnes pratiques
+- Protection des données sensibles
 
 Profil actuel de l'utilisateur:
 ${profile ? JSON.stringify({
@@ -42,23 +90,35 @@ ${profile ? JSON.stringify({
   email: profile.email,
   bio: profile.bio,
   certifications: profile.certifications
-}, null, 2) : 'Pas encore de profil'}
+}, null, 2) : 'Profil non disponible'}
 
-Analyse rapide du profil:
+Analyse du profil:
 ${profile ? `
-- Forces: ${profile.skills?.length ? 'Compétences variées' : 'À développer'}
-- Complétude: ${profile.bio ? 'Bio présente' : 'Bio manquante'}
-- Contact: ${profile.phone && profile.email ? 'Complet' : 'À compléter'}
-` : 'Profil non disponible'}
+Forces:
+- ${profile.skills?.length ? 'Compétences diversifiées' : 'À développer'}
+- ${profile.certifications?.length ? 'Certifications présentes' : 'Pas encore de certifications'}
+- ${profile.bio ? 'Présentation professionnelle complète' : 'Bio à développer'}
 
-Message de l'utilisateur: ${message}
+Points d'amélioration:
+- ${!profile.skills?.length ? 'Ajouter des compétences clés' : ''}
+- ${!profile.bio ? 'Développer une bio professionnelle' : ''}
+- ${!profile.certifications?.length ? 'Obtenir des certifications pertinentes' : ''}
+- ${!profile.phone || !profile.email ? 'Compléter les informations de contact' : ''}
 
-Réponds de manière structurée en:
-1. Analysant la demande
-2. Proposant des actions concrètes
-3. Donnant des exemples spécifiques</s>
+Recommandations personnalisées:
+- ${profile.role ? `Basées sur votre rôle de ${profile.role}` : 'À définir selon votre objectif professionnel'}
+` : 'Analyse non disponible - profil à créer'}
+
+Message de l'utilisateur: ${sanitizedMessage}
+
+Instructions de réponse:
+1. Analyse approfondie de la demande
+2. Propositions concrètes et réalisables
+3. Exemples spécifiques et personnalisés
+4. Suggestions d'actions immédiates</s>
 <|assistant|>`;
 
+    // Enhanced API call with better error handling
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       headers: {
         'Authorization': 'Bearer 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',
@@ -80,13 +140,13 @@ Réponds de manière structurée en:
     });
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`);
+      throw new Error(`Erreur API: ${response.statusText}`);
     }
 
     const data = await response.json();
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
-      throw new Error('Invalid response format from API');
+      throw new Error('Format de réponse invalide');
     }
 
     const generatedText = data[0].generated_text
@@ -96,37 +156,39 @@ Réponds de manière structurée en:
       .trim();
     
     if (!generatedText) {
-      throw new Error('No response generated');
+      throw new Error('Aucune réponse générée');
     }
 
-    // Log interaction for analysis
+    // Log interaction for analysis and security monitoring
     console.log('AI Interaction:', {
       userProfile: profile?.id,
       messageType: 'vcard-consultation',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      messageLength: sanitizedMessage.length,
+      responseLength: generatedText.length
     });
 
     return generatedText;
   } catch (error) {
-    console.error('Error generating response:', error);
+    console.error('Erreur lors de la génération de la réponse:', error);
     
-    // Fallback responses basées sur le contexte du profil
+    // Enhanced fallback responses with more context
     const contextualResponses = [
       profile?.full_name 
-        ? `Je peux vous aider à optimiser votre VCard ${profile.full_name}. Voici les aspects que nous pouvons améliorer:\n\n` +
-          `${!profile.bio ? '- Ajouter une bio professionnelle\n' : ''}` +
-          `${!profile.skills?.length ? '- Ajouter vos compétences clés\n' : ''}` +
-          `${!profile.phone ? '- Compléter vos informations de contact\n' : ''}` +
-          `${!profile.certifications?.length ? '- Ajouter vos certifications\n' : ''}`
-        : "Je peux vous aider à créer et optimiser votre VCard professionnelle. Par où souhaitez-vous commencer ?",
+        ? `Je peux vous aider à optimiser votre profil professionnel ${profile.full_name}. Voici les aspects prioritaires à améliorer:\n\n` +
+          `${!profile.bio ? '- Développer une bio professionnelle qui met en valeur votre expertise\n' : ''}` +
+          `${!profile.skills?.length ? '- Ajouter vos compétences clés et technologies maîtrisées\n' : ''}` +
+          `${!profile.phone ? '- Compléter vos coordonnées professionnelles\n' : ''}` +
+          `${!profile.certifications?.length ? '- Valoriser vos certifications et formations\n' : ''}`
+        : "Je peux vous accompagner dans la création de votre profil professionnel. Par où souhaitez-vous commencer ?",
       
       profile?.role
-        ? `En tant que ${profile.role}, je peux vous suggérer des améliorations spécifiques à votre secteur.`
-        : "Commençons par définir votre rôle professionnel pour personnaliser votre VCard.",
+        ? `En tant que ${profile.role}, je peux vous proposer des améliorations ciblées pour votre secteur d'activité.`
+        : "Commençons par définir votre rôle professionnel pour personnaliser votre profil.",
       
-      "Je peux analyser votre profil et suggérer des améliorations concrètes.",
-      "Voulez-vous que nous examinions ensemble votre VCard pour la rendre plus attractive ?",
-      "Je peux vous aider à mettre en valeur vos compétences et expériences dans votre VCard.",
+      "Je peux analyser votre profil et suggérer des améliorations stratégiques.",
+      "Souhaitez-vous que nous examinions ensemble votre profil pour le rendre plus attractif ?",
+      "Je peux vous aider à mettre en valeur votre parcours et vos compétences de manière optimale.",
     ];
     
     return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
