@@ -42,9 +42,24 @@ export function useProfile() {
 
         if (expError) throw expError;
 
+        // Map certifications to match our interface
+        const mappedCertifications: Certification[] = (certifications || []).map(cert => ({
+          id: cert.id,
+          profile_id: cert.profile_id,
+          title: cert.title,
+          institution: cert.issuer, // Map issuer to institution
+          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
+          created_at: cert.created_at,
+          updated_at: cert.updated_at,
+          credential_url: cert.credential_url,
+          issue_date: cert.issue_date,
+          expiry_date: cert.expiry_date,
+          issuer: cert.issuer
+        }));
+
         const fullProfile: UserProfile = {
           ...profileData,
-          certifications: certifications || [],
+          certifications: mappedCertifications,
           experiences: experiences || [],
         };
 

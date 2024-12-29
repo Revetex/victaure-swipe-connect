@@ -6,7 +6,7 @@ import { generateVCardPDF } from "@/utils/pdfGenerator";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
 import { VCardContent } from "./vcard/VCardContent";
-import type { UserProfile } from "@/hooks/useProfile";
+import type { UserProfile } from "@/types/profile";
 
 export function VCard() {
   const { toast } = useToast();

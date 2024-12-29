@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile } from "@/hooks/useProfile";
+import type { UserProfile } from "@/types/profile";
 
 export const generateVCardData = (profile: UserProfile) => {
   const vcard = `BEGIN:VCARD
