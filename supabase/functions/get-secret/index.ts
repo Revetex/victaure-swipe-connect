@@ -6,6 +6,8 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  console.log('get-secret function called')
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -13,8 +15,10 @@ serve(async (req) => {
 
   try {
     const { secretName } = await req.json()
+    console.log('Requested secret:', secretName)
     
     if (!secretName) {
+      console.error('No secret name provided')
       return new Response(
         JSON.stringify({ error: 'Secret name is required' }),
         { 
@@ -26,6 +30,7 @@ serve(async (req) => {
 
     // Get the secret from Supabase
     const secret = Deno.env.get(secretName)
+    console.log(`Secret ${secretName} ${secret ? 'found' : 'not found'}`)
     
     if (!secret) {
       console.error(`Secret ${secretName} not found`)
@@ -48,7 +53,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in get-secret function:', error)
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ 
+        error: 'Internal server error',
+        details: error.message 
+      }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

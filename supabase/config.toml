@@ -1,1 +1,4 @@
 project_id = "mfjllillnpleasclqabb"
+
+[functions.get-secret]
+verify_jwt = false
