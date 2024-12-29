@@ -36,7 +36,7 @@ export async function generateAIResponse(message: string, profile?: UserProfile)
     // Get the API key from Supabase secrets
     const { data: secretData, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
-    }) as { data: { secret: string } | null, error: Error | null };
+    });
 
     if (secretError || !secretData?.secret) {
       console.error('Error fetching API key:', secretError);
