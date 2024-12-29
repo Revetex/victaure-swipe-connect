@@ -48,9 +48,7 @@ export function DashboardLayout() {
         }}
         className="h-full w-full"
         setApi={setApi}
-        onSelect={(api) => {
-          setActiveSection(api.selectedScrollSnap());
-        }}
+        onSelect={setActiveSection}
       >
         <CarouselContent className="-ml-0">
           {sections.map((section, index) => (
