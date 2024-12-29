@@ -28,23 +28,23 @@ export function ChatInput({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex gap-2 relative"
+      className="flex gap-2 relative bg-background/95 backdrop-blur-sm p-4 rounded-lg shadow-lg"
     >
       <Input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyPress={(e) => e.key === "Enter" && !isThinking && !disabled && onSend()}
         placeholder={disabled ? "Connexion en cours..." : "Écrivez votre message..."}
-        className="flex-grow pr-20"
+        className="flex-grow pr-20 bg-transparent border-muted"
         disabled={disabled || isThinking}
       />
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-1">
         <Button
           onClick={onVoiceInput}
           variant="ghost"
           size="icon"
           className={cn(
-            "hover:bg-primary/10 transition-all duration-300",
+            "hover:bg-primary/10 transition-all duration-300 rounded-full",
             isListening && "bg-primary/20 animate-pulse",
             (isThinking || disabled) && "opacity-50 cursor-not-allowed"
           )}
@@ -66,7 +66,7 @@ export function ChatInput({
           variant="ghost"
           size="icon"
           className={cn(
-            "hover:bg-primary/10 transition-all duration-300",
+            "hover:bg-primary/10 transition-all duration-300 rounded-full",
             (isThinking || disabled) && "opacity-50 cursor-not-allowed"
           )}
           disabled={isThinking || disabled}

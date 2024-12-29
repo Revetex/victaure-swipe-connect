@@ -39,9 +39,11 @@ export function ChatBubble({ content, sender, timestamp, isCurrentUser, action }
           isCurrentUser ? "items-end" : "items-start"
         )}
       >
-        <div
+        <motion.div
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
           className={cn(
-            "px-4 py-2.5 rounded-2xl text-sm",
+            "px-4 py-2.5 rounded-2xl text-sm shadow-sm",
             isCurrentUser
               ? "bg-primary text-primary-foreground rounded-br-none"
               : "bg-muted rounded-bl-none",
@@ -49,7 +51,7 @@ export function ChatBubble({ content, sender, timestamp, isCurrentUser, action }
           )}
         >
           {content}
-        </div>
+        </motion.div>
         <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
           {format(timestamp, "HH:mm", { locale: fr })}
         </span>
