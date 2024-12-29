@@ -9,19 +9,31 @@ async function getApiKey() {
 
     if (error) {
       console.error('Error fetching Gemini API key:', error);
+      toast.error("Erreur lors de la récupération de la clé API Gemini");
       throw new Error(`Failed to fetch Gemini API key: ${error.message}`);
     }
 
+    // Check if we got any data back
     if (!data || data.length === 0) {
-      console.error('No Gemini API key found in secrets');
-      toast.error("La clé API Gemini n'a pas été configurée");
+      toast.error("La clé API Gemini n'est pas configurée", {
+        description: "Veuillez configurer votre clé API dans les paramètres Supabase",
+        action: {
+          label: "Configurer",
+          onClick: () => window.open("https://supabase.com/dashboard/project/mfjllillnpleasclqabb/settings/secrets", "_blank")
+        }
+      });
       throw new Error('Gemini API key not found in secrets');
     }
 
     const apiKey = data[0]?.secret?.trim();
     if (!apiKey) {
-      console.error('Empty Gemini API key');
-      toast.error("La clé API Gemini est vide");
+      toast.error("La clé API Gemini est vide", {
+        description: "Veuillez configurer une clé API valide dans les paramètres Supabase",
+        action: {
+          label: "Configurer",
+          onClick: () => window.open("https://supabase.com/dashboard/project/mfjllillnpleasclqabb/settings/secrets", "_blank")
+        }
+      });
       throw new Error('Empty Gemini API key');
     }
 
