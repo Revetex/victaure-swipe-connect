@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const MODEL_URL = "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1";
+const MODEL_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta";
 
 async function getApiKey() {
   const { data, error } = await supabase.rpc('get_secret', {
@@ -28,12 +28,15 @@ export async function generateAIResponse(prompt: string): Promise<string> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: prompt,
+        inputs: `<|system|>You are a helpful assistant.</s>
+<|user|>${prompt}</s>
+<|assistant|>`,
         parameters: {
           max_new_tokens: 250,
           temperature: 0.7,
           top_p: 0.95,
           do_sample: true,
+          return_full_text: false
         },
       }),
     });
