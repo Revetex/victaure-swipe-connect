@@ -20,47 +20,51 @@ import { Bell, Globe, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 export function Settings() {
   const { theme, setTheme } = useTheme();
+  const { t, i18n } = useTranslation();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
-  const [language, setLanguage] = useState("fr");
 
   const handleLanguageChange = (value: string) => {
-    setLanguage(value);
-    toast.success("Langue mise à jour avec succès");
+    i18n.changeLanguage(value);
+    localStorage.setItem('language', value);
+    toast.success(t('settings.success.language'));
   };
 
   const handleEmailNotifications = (checked: boolean) => {
     setEmailNotifications(checked);
     toast.success(
-      checked
-        ? "Notifications par email activées"
-        : "Notifications par email désactivées"
+      t(checked 
+        ? 'settings.success.notifications.email.enabled'
+        : 'settings.success.notifications.email.disabled'
+      )
     );
   };
 
   const handlePushNotifications = (checked: boolean) => {
     setPushNotifications(checked);
     toast.success(
-      checked
-        ? "Notifications push activées"
-        : "Notifications push désactivées"
+      t(checked
+        ? 'settings.success.notifications.push.enabled'
+        : 'settings.success.notifications.push.disabled'
+      )
     );
   };
 
   const handleThemeChange = (value: string) => {
     setTheme(value);
-    toast.success("Thème mis à jour avec succès");
+    toast.success(t('settings.success.theme'));
   };
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      toast.error("Erreur lors de la déconnexion");
+      toast.error(t('settings.error.logout'));
     } else {
-      toast.success("Déconnexion réussie");
+      toast.success(t('settings.success.logout'));
     }
   };
 
@@ -70,16 +74,16 @@ export function Settings() {
         <CardHeader>
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <Globe className="h-5 w-5" />
-            Paramètres généraux
+            {t('settings.general.title')}
           </CardTitle>
           <CardDescription>
-            Configurez vos préférences générales d'utilisation
+            {t('settings.general.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="language">Langue</Label>
-            <Select value={language} onValueChange={handleLanguageChange}>
+            <Label htmlFor="language">{t('settings.general.language')}</Label>
+            <Select value={i18n.language} onValueChange={handleLanguageChange}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sélectionnez une langue" />
               </SelectTrigger>
@@ -91,7 +95,7 @@ export function Settings() {
           </div>
 
           <div className="flex items-center justify-between">
-            <Label htmlFor="theme">Thème</Label>
+            <Label htmlFor="theme">{t('settings.general.theme')}</Label>
             <Select value={theme} onValueChange={handleThemeChange}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sélectionnez un thème" />
@@ -100,16 +104,16 @@ export function Settings() {
                 <SelectItem value="light">
                   <span className="flex items-center gap-2">
                     <Sun className="h-4 w-4" />
-                    Clair
+                    {t('settings.themes.light')}
                   </span>
                 </SelectItem>
                 <SelectItem value="dark">
                   <span className="flex items-center gap-2">
                     <Moon className="h-4 w-4" />
-                    Sombre
+                    {t('settings.themes.dark')}
                   </span>
                 </SelectItem>
-                <SelectItem value="system">Système</SelectItem>
+                <SelectItem value="system">{t('settings.themes.system')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -120,18 +124,18 @@ export function Settings() {
         <CardHeader>
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <Bell className="h-5 w-5" />
-            Notifications
+            {t('settings.notifications.title')}
           </CardTitle>
           <CardDescription>
-            Gérez vos préférences de notifications
+            {t('settings.notifications.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Notifications par email</Label>
+              <Label>{t('settings.notifications.email.title')}</Label>
               <p className="text-sm text-muted-foreground">
-                Recevez des mises à jour par email
+                {t('settings.notifications.email.description')}
               </p>
             </div>
             <Switch
@@ -142,9 +146,9 @@ export function Settings() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Notifications push</Label>
+              <Label>{t('settings.notifications.push.title')}</Label>
               <p className="text-sm text-muted-foreground">
-                Recevez des notifications sur votre appareil
+                {t('settings.notifications.push.description')}
               </p>
             </div>
             <Switch
@@ -161,7 +165,7 @@ export function Settings() {
           onClick={handleSignOut}
           className="w-full sm:w-auto"
         >
-          Se déconnecter
+          {t('settings.logout')}
         </Button>
       </div>
     </div>
