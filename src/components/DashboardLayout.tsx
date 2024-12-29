@@ -3,7 +3,6 @@ import { VCard } from "@/components/VCard";
 import { TodoList } from "@/components/TodoList";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
-import { Settings } from "@/components/Settings";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export function DashboardLayout() {
@@ -27,10 +26,6 @@ export function DashboardLayout() {
         {/* Composants secondaires - Empilés sur mobile */}
         <div className="glass-card rounded-lg p-3 sm:p-4">
           <TodoList />
-        </div>
-
-        <div className="glass-card rounded-lg p-3 sm:p-4">
-          <Settings />
         </div>
 
         {/* VCard - Maintenant dans une colonne */}
