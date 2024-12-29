@@ -1,4 +1,4 @@
-import { Brain, Briefcase, Code, Palette, Tool, Users, Wrench } from "lucide-react";
+import { Brain, Briefcase, Code, Palette, Hammer, Users, Wrench } from "lucide-react";
 
 interface CategoryIconProps {
   category: string;
@@ -13,7 +13,7 @@ export function CategoryIcon({ category }: CategoryIconProps) {
     case "gestion":
       return <Briefcase className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
     case "construction":
-      return <Tool className="h-4 w-4 text-orange-600 dark:text-orange-400" />;
+      return <Hammer className="h-4 w-4 text-orange-600 dark:text-orange-400" />;
     case "manuel":
       return <Wrench className="h-4 w-4 text-green-600 dark:text-green-400" />;
     case "soft skills":
