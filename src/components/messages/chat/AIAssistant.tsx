@@ -7,8 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 
 interface AIAssistantProps {
   onBack?: () => void;
@@ -89,18 +87,6 @@ export function AIAssistant({ onBack }: AIAssistantProps) {
       transition={{ duration: 0.5 }}
       className="flex flex-col h-full relative"
     >
-      {onBack && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="absolute top-2 left-2 z-10"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Retour
-        </Button>
-      )}
-
       <ChatHeader 
         isThinking={isThinking} 
         onClearChat={clearChat}
