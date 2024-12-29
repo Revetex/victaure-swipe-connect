@@ -7,7 +7,8 @@ import { VCardCertifications } from "../VCardCertifications";
 import { VCardActions } from "../VCardActions";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Download, Edit2, X } from "lucide-react";
+import { Download, Edit2, X, Mail, Phone, MapPin } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 interface VCardContentProps {
   profile: any;
@@ -43,8 +44,8 @@ export function VCardContent({
   onApplyChanges,
 }: VCardContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState("");
 
-  // Expand when editing or downloading
   useEffect(() => {
     if (isEditing) {
       setIsExpanded(true);
@@ -60,13 +61,53 @@ export function VCardContent({
     >
       <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20">
         <CardContent className="p-3 sm:p-6">
-          {/* Header toujours visible */}
-          <VCardHeader
-            profile={tempProfile}
-            isEditing={isEditing}
-            setProfile={setTempProfile}
-            setIsEditing={setIsEditing}
-          />
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+            <div className="flex-1">
+              <VCardHeader
+                profile={tempProfile}
+                isEditing={isEditing}
+                setProfile={setTempProfile}
+                setIsEditing={setIsEditing}
+              />
+
+              {/* Contact info toujours visible */}
+              {!isExpanded && (
+                <div className="mt-4 space-y-2">
+                  {tempProfile.email && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Mail className="h-4 w-4" />
+                      <span>{tempProfile.email}</span>
+                    </div>
+                  )}
+                  {tempProfile.phone && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-4 w-4" />
+                      <span>{tempProfile.phone}</span>
+                    </div>
+                  )}
+                  {tempProfile.city && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>{tempProfile.city}, {tempProfile.state || 'Canada'}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* QR Code toujours visible */}
+            {!isExpanded && (
+              <div className="shrink-0">
+                <QRCodeSVG
+                  value={window.location.href}
+                  size={80}
+                  level="H"
+                  includeMargin={true}
+                  className="bg-white p-1 rounded"
+                />
+              </div>
+            )}
+          </div>
 
           {/* Actions compactes quand non expandé */}
           {!isExpanded && !isEditing && (
