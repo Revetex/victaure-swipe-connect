@@ -9,10 +9,10 @@ import type { CarouselApi } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const sections = [
-  { id: 'messages', title: 'Messages', component: Messages },
-  { id: 'jobs', title: 'Offres', component: SwipeJob },
-  { id: 'todos', title: 'Tâches', component: TodoList },
-  { id: 'profile', title: 'Profil', component: VCard },
+  { id: 'messages', title: 'Messages', component: Messages, icon: '💬' },
+  { id: 'jobs', title: 'Offres', component: SwipeJob, icon: '💼' },
+  { id: 'todos', title: 'Tâches', component: TodoList, icon: '📝' },
+  { id: 'profile', title: 'Profil', component: VCard, icon: '👤' },
 ];
 
 export function DashboardLayout() {
@@ -36,24 +36,37 @@ export function DashboardLayout() {
     <div className="h-[calc(100vh-4rem)] bg-background">
       <div 
         className={cn(
-          "fixed left-1/2 transform -translate-x-1/2 z-50 flex gap-2 transition-all duration-300",
+          "fixed left-1/2 transform -translate-x-1/2 z-50 flex flex-col items-center gap-4 transition-all duration-300",
           isMobile ? "top-2" : "top-4"
         )}
       >
-        {sections.map((section, index) => (
-          <button
-            key={index}
-            onClick={() => scrollTo(index)}
-            className={cn(
-              "transition-all duration-300 rounded-full",
-              activeSection === index 
-                ? "bg-primary w-4 h-2" 
-                : "bg-muted hover:bg-primary/50 w-2 h-2",
-              "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-            )}
-            aria-label={`Go to ${section.title} section`}
-          />
-        ))}
+        <div className="bg-background/80 backdrop-blur-sm rounded-full px-6 py-2 shadow-lg border border-border flex gap-4">
+          {sections.map((section, index) => (
+            <button
+              key={index}
+              onClick={() => scrollTo(index)}
+              className={cn(
+                "relative transition-all duration-300 rounded-full p-2 group",
+                activeSection === index 
+                  ? "bg-primary text-primary-foreground" 
+                  : "hover:bg-primary/10"
+              )}
+              aria-label={`Aller à la section ${section.title}`}
+            >
+              <span className="text-lg">{section.icon}</span>
+              <span 
+                className={cn(
+                  "absolute left-1/2 -translate-x-1/2 -bottom-6 text-xs font-medium whitespace-nowrap transition-all duration-300",
+                  activeSection === index 
+                    ? "opacity-100 translate-y-0" 
+                    : "opacity-0 -translate-y-1"
+                )}
+              >
+                {section.title}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <Carousel
