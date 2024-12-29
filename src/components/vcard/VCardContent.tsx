@@ -7,7 +7,7 @@ import { VCardCertifications } from "../VCardCertifications";
 import { VCardActions } from "../VCardActions";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Download, Edit2, X } from "lucide-react";
+import { Download, Edit2, X, Mail, Phone, MapPin } from "lucide-react";
 
 interface VCardContentProps {
   profile: any;
@@ -59,12 +59,49 @@ export function VCardContent({
     >
       <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20 hover:shadow-lg transition-shadow duration-300">
         <CardContent className="p-3 sm:p-6">
-          <VCardHeader
-            profile={tempProfile}
-            isEditing={isEditing}
-            setProfile={setTempProfile}
-            setIsEditing={setIsEditing}
-          />
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            <div className="flex-1">
+              <VCardHeader
+                profile={tempProfile}
+                isEditing={isEditing}
+                setProfile={setTempProfile}
+                setIsEditing={setIsEditing}
+              />
+              
+              {!isExpanded && !isEditing && (
+                <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  {tempProfile.email && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      <span>{tempProfile.email}</span>
+                    </div>
+                  )}
+                  {tempProfile.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4" />
+                      <span>{tempProfile.phone}</span>
+                    </div>
+                  )}
+                  {tempProfile.city && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>{tempProfile.city}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {!isExpanded && !isEditing && (
+              <div className="w-32 h-32 bg-white rounded-lg p-2 shadow-sm">
+                <VCardContact
+                  profile={tempProfile}
+                  isEditing={false}
+                  setProfile={setTempProfile}
+                />
+              </div>
+            )}
+          </div>
 
           {!isExpanded && !isEditing && (
             <div className="flex justify-end gap-2 mt-4">
