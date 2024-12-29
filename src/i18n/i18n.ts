@@ -1,17 +1,27 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import fr from "./locales/fr.json";
-import en from "./locales/en.json";
+import enCommon from "./locales/en/common.json";
+import enJobs from "./locales/en/jobs.json";
+import frCommon from "./locales/fr/common.json";
+import frJobs from "./locales/fr/jobs.json";
 
 i18n
   .use(initReactI18next)
   .init({
     resources: {
-      fr: { translation: fr },
-      en: { translation: en },
+      en: {
+        common: enCommon,
+        jobs: enJobs,
+      },
+      fr: {
+        common: frCommon,
+        jobs: frJobs,
+      },
     },
     lng: localStorage.getItem("language") || "fr",
     fallbackLng: "fr",
+    ns: ["common", "jobs"],
+    defaultNS: "common",
     interpolation: {
       escapeValue: false,
     },

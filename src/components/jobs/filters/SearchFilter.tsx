@@ -8,18 +8,18 @@ interface SearchFilterProps {
 }
 
 export function SearchFilter({ value, onChange }: SearchFilterProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("jobs");
 
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-foreground">
-        {t("marketplace.filters.search")}
+        {t("filters.search")}
       </label>
       <div className="relative">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder={t("marketplace.filters.searchPlaceholder")}
-          className="pl-8"
+          placeholder={t("filters.searchPlaceholder")}
+          className="pl-9"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />

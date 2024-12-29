@@ -10,19 +10,19 @@ export function ExperienceFilter({
   experienceLevel,
   onExperienceLevelChange,
 }: ExperienceFilterProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("jobs");
 
   return (
     <div>
       <label className="block text-sm font-medium text-foreground mb-2">
-        {t("marketplace.filters.experienceLevel")}
+        {t("filters.experienceLevel")}
       </label>
       <Select value={experienceLevel} onValueChange={onExperienceLevelChange}>
         <SelectTrigger>
-          <SelectValue placeholder={t("marketplace.filters.allLevels")} />
+          <SelectValue placeholder={t("filters.allLevels")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">{t("marketplace.filters.allLevels")}</SelectItem>
+          <SelectItem value="all">{t("filters.allLevels")}</SelectItem>
           <SelectItem value="Junior">Junior</SelectItem>
           <SelectItem value="Mid-Level">Intermédiaire</SelectItem>
           <SelectItem value="Senior">Senior</SelectItem>

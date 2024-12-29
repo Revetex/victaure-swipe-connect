@@ -19,12 +19,12 @@ export function LocationFilter({
   setOpenLocation,
   onLocationChange,
 }: LocationFilterProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("jobs");
 
   return (
     <div>
       <label className="block text-sm font-medium text-foreground mb-2">
-        {t("marketplace.filters.location")}
+        {t("filters.location")}
       </label>
       <Popover open={openLocation} onOpenChange={setOpenLocation}>
         <PopoverTrigger asChild>
@@ -34,13 +34,13 @@ export function LocationFilter({
             aria-expanded={openLocation}
             className="w-full justify-between"
           >
-            {location || t("marketplace.filters.selectCity")}
+            {location || t("filters.selectCity")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
           <Command>
-            <CommandInput placeholder={t("marketplace.filters.selectCity")} />
-            <CommandEmpty>{t("marketplace.filters.noCity")}</CommandEmpty>
+            <CommandInput placeholder={t("filters.selectCity")} />
+            <CommandEmpty>{t("filters.noCity")}</CommandEmpty>
             <CommandGroup className="max-h-60 overflow-auto">
               {quebecCities.map((city) => (
                 <CommandItem
