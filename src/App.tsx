@@ -25,8 +25,6 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
           <Routes>
             <Route
               path="/"
@@ -51,6 +49,8 @@ const App = () => {
               }
             />
           </Routes>
+          <Toaster />
+          <Sonner />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
