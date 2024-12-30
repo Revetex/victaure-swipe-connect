@@ -1,4 +1,5 @@
 import { Code, Palette, TrendingUp, ClipboardList, Headphones, MoreHorizontal } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export interface Job {
   id: string;
@@ -28,7 +29,18 @@ export interface Job {
   skills?: string[];
 }
 
-export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
+export type ValidCategory = keyof typeof missionCategories;
+
+export const isValidCategory = (category: string): category is ValidCategory => {
+  return category in missionCategories;
+};
+
+interface CategoryConfig {
+  icon: LucideIcon;
+  subcategories: string[];
+}
+
+export const missionCategories: Record<string, CategoryConfig> = {
   "Développement": {
     icon: Code,
     subcategories: [
@@ -101,12 +113,4 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
       "Autre"
     ]
   }
-};
-
-// Add a type for valid categories to ensure type safety
-export type ValidCategory = keyof typeof missionCategories;
-
-// Helper function to check if a category is valid
-export const isValidCategory = (category: string): category is ValidCategory => {
-  return category in missionCategories;
 };
