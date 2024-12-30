@@ -9,22 +9,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Image, Upload } from "lucide-react";
+import { useState } from "react";
 
 interface JobBasicInfoFieldsProps {
   title: string;
   description: string;
   budget: string;
   location: string;
-  onChange: (field: string, value: string | number) => void;
+  province: string;
+  images: File[];
+  onChange: (field: string, value: string | number | File[]) => void;
 }
 
 export function JobBasicInfoFields({ 
   title, 
   description, 
   budget, 
-  location, 
+  location,
+  province,
+  images,
   onChange 
 }: JobBasicInfoFieldsProps) {
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newImages = Array.from(e.target.files);
+      onChange("images", [...images, ...newImages]);
+      
+      // Create preview URLs
+      const newPreviewUrls = newImages.map(file => URL.createObjectURL(file));
+      setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4">
@@ -45,26 +65,53 @@ export function JobBasicInfoFields({
             placeholder="Décrivez la mission en détail"
             value={description}
             onChange={(e) => onChange("description", e.target.value)}
+            className="min-h-[150px]"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Ville</Label>
-          <Select
-            value={location}
-            onValueChange={(value) => onChange("location", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une ville..." />
-            </SelectTrigger>
-            <SelectContent>
-              {quebecCities.map((city) => (
-                <SelectItem key={city} value={city}>
-                  {city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Province</Label>
+            <Select
+              value={province}
+              onValueChange={(value) => onChange("province", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez une province" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Québec">Québec</SelectItem>
+                <SelectItem value="Ontario">Ontario</SelectItem>
+                <SelectItem value="Alberta">Alberta</SelectItem>
+                <SelectItem value="Colombie-Britannique">Colombie-Britannique</SelectItem>
+                <SelectItem value="Manitoba">Manitoba</SelectItem>
+                <SelectItem value="Nouveau-Brunswick">Nouveau-Brunswick</SelectItem>
+                <SelectItem value="Terre-Neuve-et-Labrador">Terre-Neuve-et-Labrador</SelectItem>
+                <SelectItem value="Nouvelle-Écosse">Nouvelle-Écosse</SelectItem>
+                <SelectItem value="Île-du-Prince-Édouard">Île-du-Prince-Édouard</SelectItem>
+                <SelectItem value="Saskatchewan">Saskatchewan</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Ville</Label>
+            <Select
+              value={location}
+              onValueChange={(value) => onChange("location", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionnez une ville..." />
+              </SelectTrigger>
+              <SelectContent>
+                {quebecCities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -75,6 +122,38 @@ export function JobBasicInfoFields({
             placeholder="Ex: 5000"
             value={budget}
             onChange={(e) => onChange("budget", e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Images de la mission</Label>
+          <div className="flex flex-wrap gap-4">
+            {previewUrls.map((url, index) => (
+              <div key={index} className="relative w-24 h-24">
+                <img
+                  src={url}
+                  alt={`Preview ${index + 1}`}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-24 h-24 flex flex-col items-center justify-center gap-2"
+              onClick={() => document.getElementById('image-upload')?.click()}
+            >
+              <Upload className="h-6 w-6" />
+              <span className="text-xs">Ajouter</span>
+            </Button>
+          </div>
+          <input
+            id="image-upload"
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handleImageChange}
           />
         </div>
       </div>

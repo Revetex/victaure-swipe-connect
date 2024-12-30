@@ -20,15 +20,17 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     description: "",
     budget: "",
     location: "",
+    province: "Québec",
     category: "Technologie",
     subcategory: "",
-    contract_type: "Full-time",
-    experience_level: "Mid-Level",
+    contract_type: "CDI",
+    experience_level: "Intermédiaire (3-5 ans)",
+    images: [] as File[],
     latitude: null as number | null,
     longitude: null as number | null,
   });
 
-  const handleChange = (field: string, value: string | number) => {
+  const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -40,15 +42,30 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
 
-      // Validate category before insertion
       if (!isValidCategory(formData.category)) {
         throw new Error("Catégorie invalide");
+      }
+
+      // Upload images if any
+      const imageUrls = [];
+      if (formData.images.length > 0) {
+        for (const image of formData.images) {
+          const fileExt = image.name.split('.').pop();
+          const fileName = `${crypto.randomUUID()}.${fileExt}`;
+          const { error: uploadError, data } = await supabase.storage
+            .from('jobs')
+            .upload(`images/${fileName}`, image);
+
+          if (uploadError) throw uploadError;
+          if (data) imageUrls.push(data.path);
+        }
       }
 
       const { error } = await supabase.from("jobs").insert({
         ...formData,
         budget: parseFloat(formData.budget),
         employer_id: user.id,
+        images: imageUrls
       });
 
       if (error) throw error;
@@ -66,10 +83,12 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         description: "",
         budget: "",
         location: "",
+        province: "Québec",
         category: "Technologie",
         subcategory: "",
-        contract_type: "Full-time",
-        experience_level: "Mid-Level",
+        contract_type: "CDI",
+        experience_level: "Intermédiaire (3-5 ans)",
+        images: [],
         latitude: null,
         longitude: null,
       });
@@ -97,6 +116,8 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
             description={formData.description}
             budget={formData.budget}
             location={formData.location}
+            province={formData.province}
+            images={formData.images}
             onChange={handleChange}
           />
 

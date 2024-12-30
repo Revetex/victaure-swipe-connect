@@ -13,19 +13,25 @@ export function JobTypeFields({
   onChange,
 }: JobTypeFieldsProps) {
   const contractTypes = [
-    "Full-time",
-    "Part-time",
-    "Contract",
+    "CDI",
+    "CDD",
     "Freelance",
-    "Internship",
-    "Temporary"
+    "Stage",
+    "Alternance",
+    "Temps partiel",
+    "Temps plein",
+    "Intérim",
+    "Saisonnier"
   ];
 
   const experienceLevels = [
-    "Entry-Level",
-    "Mid-Level",
-    "Senior",
-    "Expert"
+    "Débutant",
+    "Junior (1-3 ans)",
+    "Intermédiaire (3-5 ans)",
+    "Senior (5-8 ans)",
+    "Expert (8+ ans)",
+    "Lead",
+    "Directeur"
   ];
 
   return (
