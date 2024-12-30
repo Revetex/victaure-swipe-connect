@@ -20,7 +20,6 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     description: "",
     budget: "",
     location: "",
-    province: "Québec",
     category: "Technologie",
     subcategory: "",
     contract_type: "CDI",
@@ -97,7 +96,6 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         description: "",
         budget: "",
         location: "",
-        province: "Québec",
         category: "Technologie",
         subcategory: "",
         contract_type: "CDI",
@@ -130,7 +128,6 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
             description={formData.description}
             budget={formData.budget}
             location={formData.location}
-            province={formData.province}
             images={formData.images}
             onChange={handleChange}
           />
