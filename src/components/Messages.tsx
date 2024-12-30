@@ -60,8 +60,8 @@ export function Messages() {
   }, []);
 
   return (
-    <div className="space-y-4 h-full">
-      <Tabs defaultValue="messages" className="w-full">
+    <div className="h-screen p-4">
+      <Tabs defaultValue="messages" className="h-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="relative">
             <MessageSquare className="h-5 w-5" />
@@ -84,15 +84,15 @@ export function Messages() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="messages">
+        <TabsContent value="messages" className="h-[calc(100vh-8rem)]">
           <MessagesTab />
         </TabsContent>
 
-        <TabsContent value="notifications">
+        <TabsContent value="notifications" className="h-[calc(100vh-8rem)]">
           <NotificationsTab />
         </TabsContent>
 
-        <TabsContent value="settings">
+        <TabsContent value="settings" className="h-[calc(100vh-8rem)]">
           <Settings />
         </TabsContent>
       </Tabs>

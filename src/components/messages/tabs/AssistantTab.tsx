@@ -22,7 +22,6 @@ export function AssistantTab() {
     clearChat,
   } = useChat();
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollArea = scrollAreaRef.current;
@@ -41,7 +40,7 @@ export function AssistantTab() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] bg-background rounded-lg border">
+    <div className="flex flex-col h-full min-h-[500px] bg-background rounded-lg border">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-4">
@@ -68,7 +67,7 @@ export function AssistantTab() {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         <ScrollArea className="h-full px-4 py-6">
           <div className="space-y-4">
             {chatMessages.map((message, index) => (
@@ -90,7 +89,7 @@ export function AssistantTab() {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t mt-auto">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
