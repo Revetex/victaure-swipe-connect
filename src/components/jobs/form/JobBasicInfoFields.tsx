@@ -17,7 +17,13 @@ interface JobBasicInfoFieldsProps {
   onChange: (field: string, value: string | number) => void;
 }
 
-export function JobBasicInfoFields({ title, description, budget, location, onChange }: JobBasicInfoFieldsProps) {
+export function JobBasicInfoFields({ 
+  title, 
+  description, 
+  budget, 
+  location, 
+  onChange 
+}: JobBasicInfoFieldsProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -57,12 +63,12 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0" align="start">
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
               <Command>
                 <CommandInput placeholder="Rechercher une ville..." />
                 <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
                 <CommandGroup className="max-h-[200px] overflow-y-auto">
-                  {quebecCities.map((city) => (
+                  {(quebecCities || []).map((city) => (
                     <CommandItem
                       key={city}
                       value={city}
