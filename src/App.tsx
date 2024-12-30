@@ -19,35 +19,41 @@ const queryClient = new QueryClient({
   },
 });
 
+function AppContent() {
+  return (
+    <TooltipProvider>
+      <main className="min-h-screen">
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+        <Toaster />
+      </main>
+    </TooltipProvider>
+  );
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TooltipProvider>
-            <main className="min-h-screen">
-              <Routes>
-                <Route path="/auth" element={<Auth />} />
-                <Route 
-                  path="/" 
-                  element={
-                    <ProtectedRoute>
-                      <Index />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-              </Routes>
-              <Toaster />
-            </main>
-          </TooltipProvider>
+          <AppContent />
         </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>

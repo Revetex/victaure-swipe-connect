@@ -5,30 +5,18 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: true,
+    host: "0.0.0.0",
     port: 8080,
     strictPort: true,
     hmr: {
       protocol: 'ws',
-      host: 'localhost',
-      port: 8080,
-      clientPort: 8080,
-      timeout: 30000
+      clientPort: 443,
+      path: '/hmr/',
     },
     watch: {
       usePolling: true
     },
-    cors: {
-      origin: '*',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true
-    },
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
+    cors: true
   },
   plugins: [
     react(),
