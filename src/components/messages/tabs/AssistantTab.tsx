@@ -40,7 +40,7 @@ export function AssistantTab() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-screen">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-background">
         <div className="flex items-center gap-4">
@@ -67,8 +67,8 @@ export function AssistantTab() {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-hidden relative">
-        <ScrollArea className="h-[calc(100vh-16rem)]">
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
           <div className="space-y-4 p-4">
             {chatMessages.map((message, index) => (
               <ChatMessage
