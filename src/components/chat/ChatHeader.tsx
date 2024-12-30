@@ -12,9 +12,9 @@ export function ChatHeader({ isThinking }: ChatHeaderProps) {
         <div className="relative">
           <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
             <img
-              src="/lovable-uploads/465f04b5-cc68-4002-adcc-ccd6492ca572.png"
+              src="/lovable-uploads/193c092a-9104-486d-a72a-0d882d86ce20.png"
               alt="Mr. Victaure"
-              className={`h-12 w-12 object-cover rounded-full ${isThinking ? 'animate-pulse' : ''}`}
+              className={`h-10 w-10 object-contain ${isThinking ? 'animate-pulse' : ''}`}
             />
           </div>
           <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-victaure-green/20 flex items-center justify-center">
