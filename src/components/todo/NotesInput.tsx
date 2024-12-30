@@ -22,16 +22,16 @@ export function NotesInput({
   onAdd,
 }: NotesInputProps) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 w-full">
       <Input
         value={newNote}
         onChange={(e) => onNoteChange(e.target.value)}
         placeholder="Nouvelle note..."
-        className="glass-card flex-1"
+        className="glass-card flex-1 min-w-[180px]"
         onKeyPress={(e) => e.key === 'Enter' && onAdd()}
       />
       <Select onValueChange={onColorChange} defaultValue={selectedColor}>
-        <SelectTrigger className="w-[100px]">
+        <SelectTrigger className="w-[100px] glass-card">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

@@ -26,13 +26,13 @@ export function TodoInput({
   onAdd,
 }: TodoInputProps) {
   return (
-    <div className="flex gap-2">
-      <div className="flex-1 flex gap-2">
+    <div className="flex gap-2 w-full">
+      <div className="flex-1 flex gap-2 min-w-[200px]">
         <Input
           value={newTodo}
           onChange={(e) => onTodoChange(e.target.value)}
           placeholder="Nouvelle tâche..."
-          className="glass-card flex-1"
+          className="glass-card flex-1 min-w-[180px]"
           onKeyPress={(e) => e.key === 'Enter' && onAdd()}
         />
         <Popover>
