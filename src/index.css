@@ -77,6 +77,6 @@
 
 @layer components {
   .glass-card {
-    @apply relative overflow-hidden bg-white/80 dark:bg-gray-900/80 shadow-lg backdrop-blur-sm;
+    @apply relative overflow-hidden bg-white/60 dark:bg-gray-900/60 shadow-lg backdrop-blur-sm;
   }
 }
