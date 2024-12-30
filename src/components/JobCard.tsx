@@ -17,8 +17,11 @@ export function JobCard({
   experience_level,
   description,
   created_at,
-  images
+  images,
+  budget
 }: JobCardProps) {
+  const displaySalary = salary || (budget ? `${budget} CAD` : undefined);
+  
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
@@ -33,8 +36,8 @@ export function JobCard({
       <CardContent>
         <div className="flex flex-wrap gap-2 mb-4">
           <Badge variant="outline">{location}</Badge>
-          {salary && (
-            <Badge variant="outline">{salary}</Badge>
+          {displaySalary && (
+            <Badge variant="outline">{displaySalary}</Badge>
           )}
           <Badge variant="outline">{contract_type}</Badge>
           <Badge variant="outline">{experience_level}</Badge>

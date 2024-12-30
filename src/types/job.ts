@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import { Code, Palette, TrendingUp, ClipboardList, Headphones, MoreHorizontal } from "lucide-react";
 
 export interface Job {
   id: string;
@@ -22,11 +22,15 @@ export interface Job {
   application_deadline?: string;
   created_at?: string;
   updated_at?: string;
+  // Virtual fields for display
+  company?: string;
+  salary?: string;
+  skills?: string[];
 }
 
-export const missionCategories: Record<string, { icon: LucideIcon; subcategories: string[] }> = {
+export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
   "Développement": {
-    icon: "Code",
+    icon: Code,
     subcategories: [
       "Frontend",
       "Backend",
@@ -41,7 +45,7 @@ export const missionCategories: Record<string, { icon: LucideIcon; subcategories
     ]
   },
   "Design": {
-    icon: "Palette",
+    icon: Palette,
     subcategories: [
       "UI/UX",
       "Web Design",
@@ -54,7 +58,7 @@ export const missionCategories: Record<string, { icon: LucideIcon; subcategories
     ]
   },
   "Marketing": {
-    icon: "TrendingUp",
+    icon: TrendingUp,
     subcategories: [
       "SEO",
       "SEM",
@@ -67,7 +71,7 @@ export const missionCategories: Record<string, { icon: LucideIcon; subcategories
     ]
   },
   "Gestion de projet": {
-    icon: "ClipboardList",
+    icon: ClipboardList,
     subcategories: [
       "Agile",
       "Scrum",
@@ -78,7 +82,7 @@ export const missionCategories: Record<string, { icon: LucideIcon; subcategories
     ]
   },
   "Support": {
-    icon: "Headphones",
+    icon: Headphones,
     subcategories: [
       "Support technique",
       "Support client",
@@ -88,7 +92,7 @@ export const missionCategories: Record<string, { icon: LucideIcon; subcategories
     ]
   },
   "Autre": {
-    icon: "MoreHorizontal",
+    icon: MoreHorizontal,
     subcategories: [
       "Conseil",
       "Stratégie",
@@ -97,4 +101,12 @@ export const missionCategories: Record<string, { icon: LucideIcon; subcategories
       "Autre"
     ]
   }
+};
+
+// Add a type for valid categories to ensure type safety
+export type ValidCategory = keyof typeof missionCategories;
+
+// Helper function to check if a category is valid
+export const isValidCategory = (category: string): category is ValidCategory => {
+  return category in missionCategories;
 };

@@ -28,6 +28,9 @@ export function AnimatedJobCard({
   isDragging,
   dragConstraints = { left: -100, right: 100 }
 }: AnimatedJobCardProps) {
+  const displaySalary = job.salary || (job.budget ? `${job.budget} CAD` : undefined);
+  const displaySkills = job.skills || job.required_skills || [];
+  
   return (
     <motion.div
       style={{
@@ -52,7 +55,7 @@ export function AnimatedJobCard({
             <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
             <div className="flex items-center gap-2 mt-2 text-muted-foreground">
               <Building2 className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
-              <span>{job.company}</span>
+              <span>{job.company || "Entreprise"}</span>
             </div>
           </div>
 
@@ -78,14 +81,14 @@ export function AnimatedJobCard({
             </div>
           </div>
 
-          {job.salary && (
+          {displaySalary && (
             <div>
-              <p className="font-semibold text-[#9b87f5] dark:text-[#b4a4f7]">{job.salary}</p>
+              <p className="font-semibold text-[#9b87f5] dark:text-[#b4a4f7]">{displaySalary}</p>
             </div>
           )}
 
           <div className="flex flex-wrap gap-2">
-            {job.skills?.map((skill, index) => (
+            {displaySkills.map((skill, index) => (
               <Badge 
                 key={index}
                 variant="secondary" 
