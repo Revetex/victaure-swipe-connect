@@ -17,7 +17,8 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     currentIndex,
     handleSwipe,
     fetchJobs,
-    setCurrentIndex
+    setCurrentIndex,
+    loading
   } = useSwipeJobs(filters);
 
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
@@ -76,7 +77,13 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     setIsAnimating(false);
   };
 
-  if (jobs.length === 0) {
+  if (loading) {
+    return <div className="flex items-center justify-center h-64">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
+  }
+
+  if (!jobs || jobs.length === 0) {
     return <SwipeEmptyState onRefresh={fetchJobs} />;
   }
 

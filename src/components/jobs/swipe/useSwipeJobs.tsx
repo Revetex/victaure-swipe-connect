@@ -9,10 +9,6 @@ export function useSwipeJobs(filters: JobFilters) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchJobs();
-  }, [filters]);
-
   const fetchJobs = async () => {
     try {
       setLoading(true);
@@ -43,7 +39,7 @@ export function useSwipeJobs(filters: JobFilters) {
       if (filters.experienceLevel && filters.experienceLevel !== "all") {
         query = query.eq("experience_level", filters.experienceLevel);
       }
-      if (filters.location) {
+      if (filters.location && filters.location !== "all") {
         query = query.eq("location", filters.location);
       }
       if (filters.searchTerm) {
@@ -62,7 +58,7 @@ export function useSwipeJobs(filters: JobFilters) {
         company: job.employer?.company_name || "Entreprise",
         salary: `${job.budget} CAD`,
         skills: job.required_skills || [],
-        status: job.status as Job['status'], // Type assertion
+        status: job.status as Job['status'],
       }));
 
       setJobs(formattedJobs);
@@ -75,20 +71,22 @@ export function useSwipeJobs(filters: JobFilters) {
     }
   };
 
-  const currentJob = jobs[currentIndex];
-  const hasMoreJobs = currentIndex < jobs.length - 1;
+  useEffect(() => {
+    fetchJobs();
+  }, [filters]);
 
-  const nextJob = () => {
-    if (hasMoreJobs) {
+  const handleSwipe = async (direction: "left" | "right") => {
+    if (currentIndex < jobs.length) {
       setCurrentIndex(prev => prev + 1);
     }
   };
 
   return {
-    currentJob,
-    hasMoreJobs,
-    nextJob,
-    loading,
-    refetch: fetchJobs
+    jobs,
+    currentIndex,
+    handleSwipe,
+    fetchJobs,
+    setCurrentIndex,
+    loading
   };
 }
