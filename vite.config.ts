@@ -5,18 +5,20 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: true,
     port: 8080,
     strictPort: true,
     hmr: {
-      protocol: 'ws',
-      host: 'localhost',
-      port: 8080,
-      clientPort: 8080,
+      protocol: 'wss',
+      host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
+      port: 443,
+      clientPort: 443,
     },
-    cors: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true
     },
   },
   plugins: [
