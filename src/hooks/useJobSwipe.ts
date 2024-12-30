@@ -18,7 +18,24 @@ export function useJobSwipe(filters: JobFilters) {
         .eq('status', 'open')
         .order("created_at", { ascending: false });
 
-      query = applyJobFilters(query, filters);
+      // Apply filters only for existing columns
+      if (filters.category && filters.category !== 'all') {
+        query = query.eq('category', filters.category);
+      }
+      
+      if (filters.subcategory && filters.subcategory !== 'all') {
+        query = query.eq('subcategory', filters.subcategory);
+      }
+
+      if (filters.location && filters.location !== 'all') {
+        query = query.eq('location', filters.location);
+      }
+
+      if (filters.experienceLevel && filters.experienceLevel !== 'all') {
+        query = query.eq('experience_level', filters.experienceLevel);
+      }
+
+      console.log("Fetching jobs with filters:", filters);
       const { data, error } = await query;
 
       if (error) {
