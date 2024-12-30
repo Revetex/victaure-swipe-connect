@@ -21,6 +21,7 @@ export function SwipeJob() {
     duration: "all",
     experienceLevel: "all",
     location: "",
+    province: "",
     searchTerm: ""
   });
 

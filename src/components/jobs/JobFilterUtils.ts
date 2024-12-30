@@ -6,12 +6,17 @@ export interface JobFilters {
   duration: string;
   experienceLevel: string;
   location: string;
+  province: string;
   searchTerm: string;
 }
 
 export const applyJobFilters = (query: any, filters: JobFilters) => {
   if (filters.category && filters.category !== "all") {
     query = query.eq("category", filters.category);
+  }
+
+  if (filters.subcategory && filters.subcategory !== "all") {
+    query = query.eq("subcategory", filters.subcategory);
   }
 
   if (filters.duration && filters.duration !== "all") {
@@ -23,7 +28,7 @@ export const applyJobFilters = (query: any, filters: JobFilters) => {
   }
 
   if (filters.location) {
-    query = query.ilike("location", `%${filters.location}%`);
+    query = query.eq("location", filters.location);
   }
 
   if (filters.searchTerm) {
