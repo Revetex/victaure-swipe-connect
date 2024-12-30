@@ -8,6 +8,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { SlidersHorizontal } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { provinceData } from "@/data/provinces";
 
 interface JobFiltersProps {
   category: string;
@@ -54,6 +55,7 @@ export function JobFilters({
               <SelectValue placeholder="Toutes les catégories" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
               {Object.keys(missionCategories).map((cat) => {
                 const CategoryIcon = missionCategories[cat].icon;
                 return (
@@ -69,7 +71,7 @@ export function JobFilters({
           </Select>
         </div>
 
-        {category && subcategories && (
+        {category && subcategories && category !== "all" && (
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Sous-catégorie
@@ -79,6 +81,7 @@ export function JobFilters({
                 <SelectValue placeholder="Toutes les sous-catégories" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">Toutes les sous-catégories</SelectItem>
                 {subcategories.map((subcat) => (
                   <SelectItem key={subcat} value={subcat}>
                     {subcat}
@@ -98,6 +101,7 @@ export function JobFilters({
               <SelectValue placeholder="Toutes les durées" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">Toutes les durées</SelectItem>
               {["3-6 mois", "6-12 mois", "12+ mois"].map((d) => (
                 <SelectItem key={d} value={d}>
                   {d}
