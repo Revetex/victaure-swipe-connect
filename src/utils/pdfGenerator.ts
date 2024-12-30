@@ -93,8 +93,8 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   
   // Save PDF to Supabase Storage
   try {
-    // Convert PDF to blob with proper content type
-    const pdfOutput = doc.output('blob', { type: 'application/pdf' });
+    // Convert PDF to blob using the correct method
+    const pdfOutput = new Blob([doc.output('arraybuffer')], { type: 'application/pdf' });
     const filename = `${profile.id}_${Date.now()}.pdf`;
     
     const { data, error } = await supabase
