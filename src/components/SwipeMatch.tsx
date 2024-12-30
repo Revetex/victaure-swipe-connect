@@ -21,6 +21,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
@@ -44,6 +45,23 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
       await handleSwipe("left");
     }
     x.set(0);
+  };
+
+  const handleButtonSwipe = async (direction: "left" | "right") => {
+    setIsAnimating(true);
+    setSwipeDirection(direction);
+    
+    // Animate the card
+    const targetX = direction === "left" ? -200 : 200;
+    x.set(targetX);
+    
+    // Handle the swipe after a short delay to allow for animation
+    setTimeout(async () => {
+      await handleSwipe(direction);
+      x.set(0);
+      setSwipeDirection(null);
+      setIsAnimating(false);
+    }, 300);
   };
 
   if (jobs.length === 0) {
@@ -82,7 +100,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
         />
       </motion.div>
       
-      <SwipeControls onSwipe={handleSwipe} />
+      <SwipeControls onSwipe={handleButtonSwipe} isAnimating={isAnimating} />
     </div>
   );
 }
