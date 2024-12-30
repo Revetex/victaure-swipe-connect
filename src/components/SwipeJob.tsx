@@ -52,7 +52,6 @@ export function SwipeJob() {
 
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
     if (key === "category" && value !== filters.category) {
-      // Reset subcategory when category changes
       setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
     } else {
       setFilters(prev => ({ ...prev, [key]: value }));
