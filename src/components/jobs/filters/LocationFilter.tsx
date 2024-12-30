@@ -9,8 +9,8 @@ interface LocationFilterProps {
 }
 
 export function LocationFilter({ filters, onFilterChange }: LocationFilterProps) {
-  const [selectedProvince, setSelectedProvince] = useState<string>(filters.province || "");
-  const cities = selectedProvince ? provinceData[selectedProvince] || [] : [];
+  const [selectedProvince, setSelectedProvince] = useState<string>(filters.province || "all");
+  const cities = selectedProvince !== "all" ? provinceData[selectedProvince] || [] : [];
 
   return (
     <div className="space-y-4">
@@ -23,14 +23,14 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
           onValueChange={(value) => {
             setSelectedProvince(value);
             onFilterChange("province", value);
-            onFilterChange("location", ""); // Reset city when province changes
+            onFilterChange("location", "all"); // Reset city when province changes
           }}
         >
           <SelectTrigger>
             <SelectValue placeholder="Toutes les provinces" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Toutes les provinces</SelectItem>
+            <SelectItem value="all">Toutes les provinces</SelectItem>
             {Object.keys(provinceData).map((province) => (
               <SelectItem key={province} value={province}>
                 {province}
@@ -47,13 +47,13 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
         <Select
           value={filters.location}
           onValueChange={(value) => onFilterChange("location", value)}
-          disabled={!selectedProvince}
+          disabled={selectedProvince === "all"}
         >
           <SelectTrigger>
             <SelectValue placeholder="Toutes les villes" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Toutes les villes</SelectItem>
+            <SelectItem value="all">Toutes les villes</SelectItem>
             {cities.map((city) => (
               <SelectItem key={city} value={city}>
                 {city}
