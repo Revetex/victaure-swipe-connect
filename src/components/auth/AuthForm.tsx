@@ -87,6 +87,8 @@ export function AuthForm() {
           },
         },
       }}
+      theme={theme === "dark" ? "dark" : "light"}
+      redirectTo={window.location.origin}
     />
   );
 }
