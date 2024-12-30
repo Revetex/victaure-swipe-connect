@@ -41,12 +41,12 @@ export function AssistantTab() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] bg-background">
-      <div className="flex items-center justify-between p-4 relative border-b">
+    <div className="flex flex-col h-[calc(100vh-12rem)] max-w-3xl mx-auto bg-background rounded-lg shadow-sm border">
+      <div className="flex items-center justify-between p-4 border-b bg-muted/50">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
-              <Bot className={`h-6 w-6 text-victaure-blue ${isThinking ? 'animate-pulse' : ''}`} />
+            <div className={`h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 ${isThinking ? 'animate-pulse' : 'hover:bg-primary/20'}`}>
+              <Bot className="h-6 w-6 text-primary" />
             </div>
           </div>
           <div>
@@ -66,11 +66,11 @@ export function AssistantTab() {
         </Button>
       </div>
 
-      <div 
+      <ScrollArea 
         ref={scrollAreaRef}
-        className="flex-1 overflow-y-auto px-4 scrollbar-thin scrollbar-thumb-victaure-blue/20 scrollbar-track-transparent"
+        className="flex-1 p-4 overflow-y-auto"
       >
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 max-w-2xl mx-auto">
           {chatMessages.map((message, index) => (
             <ChatMessage
               key={message.id}
@@ -86,17 +86,19 @@ export function AssistantTab() {
             />
           ))}
         </div>
-      </div>
+      </ScrollArea>
 
-      <div className="p-4 mt-auto border-t bg-background">
-        <ChatInput
-          value={inputMessage}
-          onChange={setInputMessage}
-          onSend={() => handleSendMessage(inputMessage, profile)}
-          onVoiceInput={handleVoiceInput}
-          isListening={isListening}
-          isThinking={isThinking}
-        />
+      <div className="p-4 border-t bg-muted/50">
+        <div className="max-w-2xl mx-auto">
+          <ChatInput
+            value={inputMessage}
+            onChange={setInputMessage}
+            onSend={() => handleSendMessage(inputMessage, profile)}
+            onVoiceInput={handleVoiceInput}
+            isListening={isListening}
+            isThinking={isThinking}
+          />
+        </div>
       </div>
     </div>
   );
