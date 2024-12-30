@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +8,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 interface JobBasicInfoFieldsProps {
   title: string;
@@ -25,6 +25,7 @@ export function JobBasicInfoFields({
   onChange 
 }: JobBasicInfoFieldsProps) {
   const [open, setOpen] = useState(false);
+  const cities = quebecCities || [];
 
   return (
     <div className="space-y-4">
@@ -68,7 +69,7 @@ export function JobBasicInfoFields({
                 <CommandInput placeholder="Rechercher une ville..." />
                 <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
                 <CommandGroup className="max-h-[200px] overflow-y-auto">
-                  {(quebecCities || []).map((city) => (
+                  {cities.map((city) => (
                     <CommandItem
                       key={city}
                       value={city}
