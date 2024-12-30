@@ -17,6 +17,7 @@ export interface Job {
   created_at?: string;
   updated_at?: string;
   subcategory?: string;
+  duration?: string; // Added this property
 }
 
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {

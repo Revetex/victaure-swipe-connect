@@ -1,7 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, MotionValue } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Job } from "@/types/job";
-import { MotionValue } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Clock, Award } from "lucide-react";
 
@@ -66,7 +65,7 @@ export function AnimatedJobCard({
 
             <div className="flex items-center gap-2 text-gray-600">
               <Clock className="h-4 w-4" />
-              <span>{job.duration}</span>
+              <span>{job.contract_type}</span>
             </div>
 
             <div className="flex items-center gap-2 text-gray-600">
@@ -80,7 +79,7 @@ export function AnimatedJobCard({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {job.skills.map((skill, index) => (
+            {job.skills?.map((skill, index) => (
               <Badge 
                 key={index}
                 variant="secondary" 
@@ -92,10 +91,9 @@ export function AnimatedJobCard({
           </div>
         </div>
 
-        {/* Swipe indicators */}
         <motion.div
           className="absolute left-4 top-1/2 -translate-y-1/2"
-          style={{ opacity: x.get() < 0 ? Math.abs(x.get()) / 100 : 0 }}
+          style={{ opacity: x }}
         >
           <div className="bg-red-500/80 text-white px-4 py-2 rounded-lg">
             Passer
@@ -104,7 +102,7 @@ export function AnimatedJobCard({
 
         <motion.div
           className="absolute right-4 top-1/2 -translate-y-1/2"
-          style={{ opacity: x.get() > 0 ? x.get() / 100 : 0 }}
+          style={{ opacity: x }}
         >
           <div className="bg-green-500/80 text-white px-4 py-2 rounded-lg">
             Like
