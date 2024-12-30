@@ -125,8 +125,9 @@ export function SwipeJob() {
       </div>
 
       <Tabs defaultValue="browse" className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="browse">Liste</TabsTrigger>
+          <TabsTrigger value="swipe">Swipe</TabsTrigger>
           <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
         </TabsList>
         
@@ -148,6 +149,19 @@ export function SwipeJob() {
                 <p className="text-gray-500">Aucune mission disponible</p>
               </div>
             )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="swipe" className="mt-4 flex-1 flex flex-col">
+          <JobFiltersPanel 
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            openLocation={openLocation}
+            setOpenLocation={setOpenLocation}
+          />
+          
+          <div className="flex-1 flex justify-center items-center mt-6">
+            <SwipeMatch filters={filters} />
           </div>
         </TabsContent>
 
