@@ -28,7 +28,12 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
-  const scale = useTransform(x, [-200, 0, 200], [0.95, 1, 0.95]);
+  const scale = useTransform(x, [-200, 0, 200], [0.8, 1, 0.8]);
+  const background = useTransform(
+    x,
+    [-200, 0, 200],
+    ["rgba(239, 68, 68, 0.1)", "rgba(0, 0, 0, 0)", "rgba(34, 197, 94, 0.1)"]
+  );
 
   const handleDragStart = () => {
     setIsDragging(true);
@@ -45,36 +50,39 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     } else if (offset < -100 || velocity < -800) {
       setSwipeDirection("left");
       await handleSwipeWithMatch("left");
+    } else {
+      // Reset to center with spring animation if not swiped far enough
+      await animate(x, 0, {
+        type: "spring",
+        stiffness: 400,
+        damping: 30
+      });
     }
-    x.set(0);
   };
 
   const handleSwipeWithMatch = async (direction: "left" | "right") => {
-    if (direction === "right" && jobs[currentIndex]) {
-      await onMatchSuccess(jobs[currentIndex].id);
-    }
-    await handleSwipe(direction);
-  };
-
-  const handleButtonSwipe = async (direction: "left" | "right") => {
-    if (isAnimating) return;
-    
     setIsAnimating(true);
-    setSwipeDirection(direction);
     
     const targetX = direction === "left" ? -200 : 200;
-    
     await animate(x, targetX, {
       type: "spring",
       stiffness: 300,
       damping: 30
     });
-    
-    await handleSwipeWithMatch(direction);
+
+    if (direction === "right" && jobs[currentIndex]) {
+      await onMatchSuccess(jobs[currentIndex].id);
+    }
+    await handleSwipe(direction);
     
     x.set(0);
     setSwipeDirection(null);
     setIsAnimating(false);
+  };
+
+  const handleButtonSwipe = async (direction: "left" | "right") => {
+    if (isAnimating) return;
+    await handleSwipeWithMatch(direction);
   };
 
   if (loading) {
@@ -96,6 +104,10 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
 
   return (
     <div className="relative w-full max-w-md mx-auto">
+      <motion.div
+        style={{ background }}
+        className="absolute inset-0 rounded-3xl transition-colors"
+      />
       <motion.div
         key={currentIndex}
         initial={{ scale: 0.8, opacity: 0 }}

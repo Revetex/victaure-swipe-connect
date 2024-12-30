@@ -75,7 +75,7 @@ export function MessagesTab() {
 
       {/* Assistant Chat Dialog */}
       <Dialog open={isAssistantChatOpen} onOpenChange={setIsAssistantChatOpen}>
-        <DialogContent className="sm:max-w-[500px] h-[80vh] flex flex-col p-0">
+        <DialogContent className="sm:max-w-[500px] h-[80vh] flex flex-col p-0 gap-0 data-[state=open]:duration-300">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">

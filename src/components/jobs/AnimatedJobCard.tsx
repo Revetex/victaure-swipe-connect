@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Job } from "@/types/job";
 import { MotionValue } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Briefcase, Clock, Award, Building2 } from "lucide-react";
+import { MapPin, Briefcase, Clock, Award, Building2, ThumbsUp, ThumbsDown } from "lucide-react";
 
 interface AnimatedJobCardProps {
   job: Job;
@@ -50,6 +50,23 @@ export function AnimatedJobCard({
       <Card className="p-6 glass-card relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9b87f5] via-[#7E69AB] to-[#6E59A5] dark:from-[#b4a4f7] dark:via-[#9b87f5] dark:to-[#8a76f3]" />
         
+        {/* Swipe indicators */}
+        <motion.div
+          className="absolute left-4 top-4 bg-red-500/90 text-white px-3 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-2"
+          style={{ opacity: x.get() < 0 ? Math.abs(x.get()) / 100 : 0 }}
+        >
+          <ThumbsDown className="h-4 w-4" />
+          <span className="text-sm font-medium">Passer</span>
+        </motion.div>
+
+        <motion.div
+          className="absolute right-4 top-4 bg-green-500/90 text-white px-3 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-2"
+          style={{ opacity: x.get() > 0 ? x.get() / 100 : 0 }}
+        >
+          <span className="text-sm font-medium">Like</span>
+          <ThumbsUp className="h-4 w-4" />
+        </motion.div>
+
         <div className="space-y-4">
           <div>
             <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
@@ -99,25 +116,6 @@ export function AnimatedJobCard({
             ))}
           </div>
         </div>
-
-        {/* Swipe indicators */}
-        <motion.div
-          className="absolute left-4 top-1/2 -translate-y-1/2"
-          style={{ opacity: x.get() < 0 ? Math.abs(x.get()) / 100 : 0 }}
-        >
-          <div className="bg-red-500/80 dark:bg-red-500/90 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
-            Passer
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="absolute right-4 top-1/2 -translate-y-1/2"
-          style={{ opacity: x.get() > 0 ? x.get() / 100 : 0 }}
-        >
-          <div className="bg-green-500/80 dark:bg-green-500/90 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
-            Like
-          </div>
-        </motion.div>
       </Card>
     </motion.div>
   );
