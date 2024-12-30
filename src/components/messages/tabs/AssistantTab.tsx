@@ -41,7 +41,8 @@ export function AssistantTab() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background rounded-lg shadow-sm border">
+    <div className="flex flex-col h-screen bg-background">
+      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-muted/50">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -66,28 +67,32 @@ export function AssistantTab() {
         </Button>
       </div>
 
-      <ScrollArea 
-        ref={scrollAreaRef}
-        className="flex-1 p-4 overflow-y-auto"
-      >
-        <div className="space-y-4">
-          {chatMessages.map((message, index) => (
-            <ChatMessage
-              key={message.id}
-              content={message.content}
-              sender={message.sender}
-              thinking={message.thinking}
-              showTimestamp={
-                index === 0 || 
-                chatMessages[index - 1]?.sender !== message.sender ||
-                new Date(message.timestamp).getTime() - new Date(chatMessages[index - 1]?.timestamp).getTime() > 300000
-              }
-              timestamp={message.timestamp?.toString()}
-            />
-          ))}
-        </div>
-      </ScrollArea>
+      {/* Messages Area */}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea 
+          ref={scrollAreaRef}
+          className="h-full p-4"
+        >
+          <div className="space-y-4">
+            {chatMessages.map((message, index) => (
+              <ChatMessage
+                key={message.id}
+                content={message.content}
+                sender={message.sender}
+                thinking={message.thinking}
+                showTimestamp={
+                  index === 0 || 
+                  chatMessages[index - 1]?.sender !== message.sender ||
+                  new Date(message.timestamp).getTime() - new Date(chatMessages[index - 1]?.timestamp).getTime() > 300000
+                }
+                timestamp={message.timestamp?.toString()}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
 
+      {/* Input Area */}
       <div className="p-4 border-t bg-muted/50">
         <ChatInput
           value={inputMessage}
