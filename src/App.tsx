@@ -25,7 +25,7 @@ export default function App() {
       <BrowserRouter>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <main className="min-h-screen w-full">
+            <div className="h-screen w-full overflow-hidden">
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route 
@@ -46,7 +46,7 @@ export default function App() {
                 />
               </Routes>
               <Toaster />
-            </main>
+            </div>
           </TooltipProvider>
         </ThemeProvider>
       </BrowserRouter>
