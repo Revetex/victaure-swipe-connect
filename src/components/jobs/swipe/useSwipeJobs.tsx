@@ -47,11 +47,12 @@ export function useSwipeJobs(filters: JobFilters) {
       if (error) throw error;
 
       if (data) {
-        const formattedJobs = data.map(job => ({
+        const formattedJobs: Job[] = data.map(job => ({
           ...job,
           company: job.employer?.company_name || job.employer?.full_name || "Entreprise",
           salary: `${job.budget} CAD`,
           skills: job.required_skills || [],
+          status: job.status as 'open' | 'closed' | 'in-progress'
         }));
         setJobs(formattedJobs);
         setCurrentIndex(0);
@@ -83,12 +84,7 @@ export function useSwipeJobs(filters: JobFilters) {
             company: "Nouvelle entreprise",
             salary: `${newJob.budget} CAD`,
             skills: newJob.required_skills || [],
-            // Ensure all required Job properties are present
-            title: newJob.title,
-            location: newJob.location,
-            category: newJob.category,
-            contract_type: newJob.contract_type,
-            experience_level: newJob.experience_level,
+            status: newJob.status as 'open' | 'closed' | 'in-progress'
           }, ...prevJobs]);
         }
       )
