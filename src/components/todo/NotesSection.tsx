@@ -2,6 +2,7 @@ import { StickyNote as StickyNoteIcon } from "lucide-react";
 import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
 import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface NotesSectionProps {
   notes: StickyNoteType[];
@@ -41,17 +42,26 @@ export function NotesSection({
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-2">
-        {notes.map((note) => {
-          const colorClass = colors.find(c => c.value === note.color)?.class || "bg-yellow-200";
-          return (
-            <StickyNote
-              key={note.id}
-              note={note}
-              colorClass={colorClass}
-              onDelete={onDelete}
-            />
-          );
-        })}
+        <AnimatePresence>
+          {notes.map((note) => {
+            const colorClass = colors.find(c => c.value === note.color)?.class || "bg-yellow-200";
+            return (
+              <motion.div
+                key={note.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <StickyNote
+                  note={note}
+                  colorClass={colorClass}
+                  onDelete={onDelete}
+                />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
     </div>
   );
