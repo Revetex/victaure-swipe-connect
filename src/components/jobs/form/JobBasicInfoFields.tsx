@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { quebecCities } from "@/data/cities";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -19,7 +19,12 @@ interface JobBasicInfoFieldsProps {
 
 export function JobBasicInfoFields({ title, description, budget, location, onChange }: JobBasicInfoFieldsProps) {
   const [open, setOpen] = useState(false);
-  const cities = quebecCities || [];
+  const [cities, setCities] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Ensure cities are loaded and never undefined
+    setCities(quebecCities || []);
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -55,7 +60,7 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 className="w-full justify-between"
               >
                 {location
-                  ? cities.find((city) => city === location)
+                  ? cities.find((city) => city === location) || "Sélectionnez une ville..."
                   : "Sélectionnez une ville..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
