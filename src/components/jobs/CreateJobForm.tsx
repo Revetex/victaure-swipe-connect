@@ -23,9 +23,11 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     subcategory: "",
     contract_type: "Full-time",
     experience_level: "Mid-Level",
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -62,6 +64,8 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         subcategory: "",
         contract_type: "Full-time",
         experience_level: "Mid-Level",
+        latitude: null,
+        longitude: null,
       });
     } catch (error) {
       console.error("Error creating job:", error);

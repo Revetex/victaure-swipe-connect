@@ -134,7 +134,9 @@ export type Database = {
           employer_id: string
           experience_level: string
           id: string
+          latitude: number | null
           location: string
+          longitude: number | null
           status: string
           subcategory: string | null
           title: string
@@ -149,7 +151,9 @@ export type Database = {
           employer_id: string
           experience_level?: string
           id?: string
+          latitude?: number | null
           location: string
+          longitude?: number | null
           status?: string
           subcategory?: string | null
           title: string
@@ -164,7 +168,9 @@ export type Database = {
           employer_id?: string
           experience_level?: string
           id?: string
+          latitude?: number | null
           location?: string
+          longitude?: number | null
           status?: string
           subcategory?: string | null
           title?: string
