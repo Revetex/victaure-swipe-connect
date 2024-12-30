@@ -13,8 +13,8 @@ interface AnimatedJobCardProps {
   scale: MotionValue<number>;
   onDragStart: () => void;
   onDragEnd: (event: any, info: any) => void;
-  dragConstraints: React.RefObject<Element>;
   isDragging: boolean;
+  dragConstraints?: { left: number; right: number };
 }
 
 export function AnimatedJobCard({
@@ -25,8 +25,8 @@ export function AnimatedJobCard({
   scale,
   onDragStart,
   onDragEnd,
-  dragConstraints,
-  isDragging
+  isDragging,
+  dragConstraints = { left: -100, right: 100 }
 }: AnimatedJobCardProps) {
   return (
     <motion.div
@@ -44,36 +44,36 @@ export function AnimatedJobCard({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      <Card className="p-6 glass-card relative overflow-hidden border-2 border-primary/20 dark:border-primary/10 transition-all duration-300">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9b87f5] via-[#7E69AB] to-[#6E59A5]" />
+      <Card className="p-6 glass-card relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9b87f5] via-[#7E69AB] to-[#6E59A5] dark:from-[#b4a4f7] dark:via-[#9b87f5] dark:to-[#8a76f3]" />
         
         <div className="space-y-4">
           <div>
             <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
             <div className="flex items-center gap-2 mt-2 text-muted-foreground">
-              <Building2 className="h-4 w-4 text-[#9b87f5]" />
+              <Building2 className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
               <span>{job.company}</span>
             </div>
           </div>
 
           <div className="grid gap-3">
             <div className="flex items-center gap-2 text-muted-foreground">
-              <MapPin className="h-4 w-4 text-[#9b87f5]" />
+              <MapPin className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
               <span>{job.location}</span>
             </div>
             
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Briefcase className="h-4 w-4 text-[#9b87f5]" />
+              <Briefcase className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
               <span>{job.contract_type}</span>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="h-4 w-4 text-[#9b87f5]" />
+              <Clock className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
               <span>{job.contract_type}</span>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Award className="h-4 w-4 text-[#9b87f5]" />
+              <Award className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
               <span>{job.experience_level}</span>
             </div>
           </div>
