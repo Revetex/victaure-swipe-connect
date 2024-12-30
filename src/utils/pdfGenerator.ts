@@ -4,8 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import QRCode from 'qrcode';
 
 export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
-  // Create new PDF document
-  const doc = new jsPDF();
+  // Create new PDF document with French encoding
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    putOnlyUsedFonts: true,
+    compress: true
+  });
   
   // Set font
   doc.setFont("helvetica");
@@ -17,7 +23,13 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   // Profile name and role
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
-  doc.text(profile.full_name || "Nom non défini", 20, 25);
+  const name = profile.full_name || "Nom non défini";
+  doc.text(name, 20, 25);
+  
+  if (profile.role) {
+    doc.setFontSize(16);
+    doc.text(profile.role, 20, 35);
+  }
   
   // Generate QR code
   try {
@@ -79,15 +91,16 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     doc.text(profile.website, 120, pageHeight - 8);
   }
   
-  // Upload to Supabase Storage
+  // Save PDF to Supabase Storage
   try {
-    const pdfBlob = doc.output('blob');
+    // Convert PDF to blob with proper content type
+    const pdfOutput = doc.output('blob', { type: 'application/pdf' });
     const filename = `${profile.id}_${Date.now()}.pdf`;
     
     const { data, error } = await supabase
       .storage
       .from('vcards')
-      .upload(filename, pdfBlob, {
+      .upload(filename, pdfOutput, {
         contentType: 'application/pdf',
         upsert: true
       });
