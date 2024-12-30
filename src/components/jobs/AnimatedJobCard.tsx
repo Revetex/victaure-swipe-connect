@@ -2,7 +2,9 @@ import { motion, MotionValue } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Job } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Briefcase, Clock, Award } from "lucide-react";
+import { MapPin, Briefcase, Clock, Award, Building2 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface AnimatedJobCardProps {
   job: Job;
@@ -43,51 +45,62 @@ export function AnimatedJobCard({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      <Card className="p-6 bg-white shadow-lg relative overflow-hidden">
+      <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-victaure-blue to-green-400" />
         
         <div className="space-y-4">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">{job.title}</h3>
-            <p className="text-gray-600">{job.company}</p>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{job.title}</h3>
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 mt-1">
+              <Building2 className="h-4 w-4" />
+              <span>{job.company}</span>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-gray-600">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <MapPin className="h-4 w-4" />
               <span>{job.location}</span>
             </div>
             
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Briefcase className="h-4 w-4" />
               <span>{job.contract_type}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Clock className="h-4 w-4" />
-              <span>{job.contract_type}</span>
+              <span>{formatDistanceToNow(new Date(job.created_at), { 
+                addSuffix: true,
+                locale: fr 
+              })}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Award className="h-4 w-4" />
               <span>{job.experience_level}</span>
             </div>
           </div>
 
           <div>
-            <p className="font-semibold text-victaure-blue">{job.salary}</p>
+            <p className="font-semibold text-victaure-blue dark:text-blue-400">{job.salary}</p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {job.skills?.map((skill, index) => (
+            {job.required_skills?.slice(0, 4).map((skill, index) => (
               <Badge 
                 key={index}
                 variant="secondary" 
-                className="bg-gray-100 text-gray-700 hover:bg-gray-200"
+                className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
               >
                 {skill}
               </Badge>
             ))}
+            {job.required_skills?.length > 4 && (
+              <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-700">
+                +{job.required_skills.length - 4}
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -95,7 +108,7 @@ export function AnimatedJobCard({
           className="absolute left-4 top-1/2 -translate-y-1/2"
           style={{ opacity: x }}
         >
-          <div className="bg-red-500/80 text-white px-4 py-2 rounded-lg">
+          <div className="bg-red-500/90 text-white px-4 py-2 rounded-lg shadow-lg">
             Passer
           </div>
         </motion.div>
@@ -104,7 +117,7 @@ export function AnimatedJobCard({
           className="absolute right-4 top-1/2 -translate-y-1/2"
           style={{ opacity: x }}
         >
-          <div className="bg-green-500/80 text-white px-4 py-2 rounded-lg">
+          <div className="bg-green-500/90 text-white px-4 py-2 rounded-lg shadow-lg">
             Like
           </div>
         </motion.div>
