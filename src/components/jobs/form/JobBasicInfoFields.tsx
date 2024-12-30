@@ -10,8 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Image, Upload } from "lucide-react";
+import { Image, Upload, X } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface JobBasicInfoFieldsProps {
   title: string;
@@ -36,18 +37,38 @@ export function JobBasicInfoFields({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newImages = Array.from(e.target.files);
-      onChange("images", [...images, ...newImages]);
-      
-      // Create preview URLs
-      const newPreviewUrls = newImages.map(file => URL.createObjectURL(file));
+      const newFiles = Array.from(e.target.files).filter(file => {
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+          console.error('Invalid file type:', file.type);
+          return false;
+        }
+        // Check file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+          console.error('File too large:', file.name);
+          return false;
+        }
+        return true;
+      });
+
+      // Create preview URLs for valid files
+      const newPreviewUrls = newFiles.map(file => URL.createObjectURL(file));
       setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+      
+      // Update parent component with new files
+      onChange("images", [...images, ...newFiles]);
     }
   };
 
-  const handleProvinceChange = (value: string) => {
-    onChange("province", value);
-    onChange("location", ""); // Reset city when province changes
+  const removeImage = (index: number) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    onChange("images", newImages);
+
+    const newPreviewUrls = [...previewUrls];
+    URL.revokeObjectURL(newPreviewUrls[index]); // Clean up the URL
+    newPreviewUrls.splice(index, 1);
+    setPreviewUrls(newPreviewUrls);
   };
 
   return (
@@ -79,7 +100,10 @@ export function JobBasicInfoFields({
             <Label>Province</Label>
             <Select
               value={province}
-              onValueChange={handleProvinceChange}
+              onValueChange={(value) => {
+                onChange("province", value);
+                onChange("location", "");
+              }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez une province" />
@@ -127,35 +151,46 @@ export function JobBasicInfoFields({
         </div>
 
         <div className="space-y-2">
-          <Label>Images de la mission</Label>
+          <Label className="block mb-2">Images de la mission</Label>
           <div className="flex flex-wrap gap-4">
             {previewUrls.map((url, index) => (
-              <div key={index} className="relative w-24 h-24">
+              <div key={index} className="relative group">
                 <img
                   src={url}
                   alt={`Preview ${index + 1}`}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-24 h-24 object-cover rounded-lg border border-border"
                 />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="absolute top-1 right-1 p-1 bg-background/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="h-4 w-4 text-foreground" />
+                </button>
               </div>
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              className="w-24 h-24 flex flex-col items-center justify-center gap-2"
-              onClick={() => document.getElementById('image-upload')?.click()}
+            <label 
+              className={cn(
+                "w-24 h-24 flex flex-col items-center justify-center gap-2",
+                "border-2 border-dashed border-muted-foreground/25",
+                "rounded-lg cursor-pointer hover:border-muted-foreground/50 transition-colors",
+                "bg-muted/50"
+              )}
             >
-              <Upload className="h-6 w-6" />
-              <span className="text-xs">Ajouter</span>
-            </Button>
+              <Upload className="h-6 w-6 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">Ajouter</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </label>
           </div>
-          <input
-            id="image-upload"
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={handleImageChange}
-          />
+          <p className="text-xs text-muted-foreground mt-2">
+            Formats acceptés: JPG, PNG. Taille max: 5MB
+          </p>
         </div>
       </div>
     </div>
