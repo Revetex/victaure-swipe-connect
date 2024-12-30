@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { provinceData } from "@/data/provinces";
-import { JobFilters } from "../JobFilterUtils";
-import { useState } from "react";
+import { JobFilters } from "@/types/job";
 
 interface LocationFilterProps {
   filters: JobFilters;

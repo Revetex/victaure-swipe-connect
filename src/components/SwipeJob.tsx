@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { SwipeMatch } from "./SwipeMatch";
 import { CreateJobForm } from "./jobs/CreateJobForm";
-import { JobFilters } from "./jobs/JobFilterUtils";
+import { JobFilters } from "@/types/job";
 import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JobList } from "./jobs/JobList";

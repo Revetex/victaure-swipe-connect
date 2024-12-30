@@ -19,6 +19,15 @@ export interface Job {
   subcategory?: string;
 }
 
+export interface JobFilters {
+  category: string;
+  subcategory: string;
+  duration: string;
+  experienceLevel: string;
+  location: string;
+  searchTerm: string;
+}
+
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
   "Technologie": {
     icon: Code,
