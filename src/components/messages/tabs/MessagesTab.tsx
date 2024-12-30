@@ -4,7 +4,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { ConversationView } from "../conversation/ConversationView";
-import { MessageList } from "../MessageList";
+import { MessagesList } from "../conversation/MessagesList";
 
 export function MessagesTab() {
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
@@ -25,13 +25,22 @@ export function MessagesTab() {
     setSelectedConversation(null);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="relative h-full overflow-hidden">
       <AnimatePresence mode="wait">
         {!selectedConversation ? (
-          <MessageList
+          <MessagesList
             messages={userMessages}
-            isLoading={isLoading}
+            chatMessages={chatMessages}
+            onSelectConversation={setSelectedConversation}
             onMarkAsRead={(messageId) => markAsRead.mutate(messageId)}
           />
         ) : (
