@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { useSessionManager } from "@/hooks/useSessionManager";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,6 +20,16 @@ const queryClient = new QueryClient({
 
 const App = () => {
   const { session, loading } = useSessionManager();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Ne pas rendre l'application tant que le thème n'est pas monté
+  if (!mounted) {
+    return null;
+  }
 
   if (loading) {
     return (
@@ -30,7 +41,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <TooltipProvider>
           <Routes>
             <Route
