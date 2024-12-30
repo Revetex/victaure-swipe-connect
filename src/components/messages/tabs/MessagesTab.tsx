@@ -5,7 +5,7 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { useChat } from "@/hooks/useChat";
 import { useProfile } from "@/hooks/useProfile";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,6 +16,7 @@ export function MessagesTab() {
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
   const { profile } = useProfile();
   const [isAssistantChatOpen, setIsAssistantChatOpen] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const {
     messages: chatMessages,
     inputMessage,
@@ -27,6 +28,14 @@ export function MessagesTab() {
   } = useChat();
 
   const lastAssistantMessage = chatMessages[chatMessages.length - 1]?.content || "Comment puis-je vous aider ?";
+
+  // Auto-scroll effect when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollArea = scrollAreaRef.current;
+      scrollArea.scrollTop = scrollArea.scrollHeight;
+    }
+  }, [chatMessages]);
   
   return (
     <div className="space-y-4">
@@ -78,7 +87,10 @@ export function MessagesTab() {
             </div>
           </div>
 
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea 
+            ref={scrollAreaRef} 
+            className="flex-1 p-4"
+          >
             <div className="space-y-4">
               {chatMessages.map((message, index) => (
                 <ChatMessage
