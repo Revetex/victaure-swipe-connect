@@ -20,7 +20,7 @@ export function JobFiltersPanel({
   openLocation, 
   setOpenLocation 
 }: JobFiltersPanelProps) {
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   return (
     <div className="bg-card p-4 rounded-lg space-y-6">
