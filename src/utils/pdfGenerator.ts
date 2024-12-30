@@ -4,61 +4,36 @@ import { supabase } from "@/integrations/supabase/client";
 import QRCode from 'qrcode';
 
 export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
-  // Create new PDF document with default font
+  // Create new PDF document
   const doc = new jsPDF();
+  
+  // Set default font
   doc.setFont("helvetica");
   
-  // Background pattern
-  doc.setFillColor(245, 245, 245);
-  for (let i = 0; i < doc.internal.pageSize.width; i += 10) {
-    for (let j = 0; j < doc.internal.pageSize.height; j += 10) {
-      doc.circle(i, j, 0.5, 'F');
-    }
-  }
-  
-  // Header with gradient-like effect
+  // Header section with solid background
   doc.setFillColor(79, 70, 229); // Indigo color
-  doc.rect(0, 0, 210, 60, "F");
+  doc.rect(0, 0, 210, 50, "F");
   
-  // Add pattern to header
-  doc.setFillColor(255, 255, 255, 0.1);
-  for (let i = 0; i < 210; i += 5) {
-    doc.line(i, 0, i + 10, 60);
-  }
-  
-  // Generate QR code
-  try {
-    const qrCodeDataUrl = await QRCode.toDataURL(window.location.href, {
-      width: 100,
-      margin: 1,
-      color: {
-        dark: "#000",
-        light: "#FFF"
-      }
-    });
-    
-    // Add QR code with white background
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(155, 8, 40, 40, 3, 3, 'F');
-    doc.addImage(qrCodeDataUrl, 'PNG', 160, 10, 30, 30);
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-  }
-  
-  // Profile information
+  // Add profile name and role
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.text(profile.full_name || "Nom non défini", 20, 30);
   
   doc.setFontSize(16);
-  doc.text(profile.role || "Titre non défini", 20, 45);
+  doc.text(profile.role || "Titre non défini", 20, 42);
   
-  // Contact information
-  const startY = 80;
+  // Generate and add QR code
+  try {
+    const qrCodeDataUrl = await QRCode.toDataURL(window.location.href);
+    doc.addImage(qrCodeDataUrl, 'PNG', 160, 10, 30, 30);
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
+  
+  // Contact information section
+  const startY = 70;
   doc.setTextColor(0, 0, 0);
-  
-  // Contact section
-  doc.setFillColor(249, 250, 251);
+  doc.setFillColor(245, 245, 245);
   doc.roundedRect(15, startY - 10, 180, 50, 3, 3, 'F');
   
   doc.setFontSize(16);
@@ -72,14 +47,14 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   
   // Skills section
   const skillsStartY = startY + 70;
-  doc.setFillColor(249, 250, 251);
+  doc.setFillColor(245, 245, 245);
   doc.roundedRect(15, skillsStartY - 10, 180, 60, 3, 3, 'F');
   
   doc.setFontSize(16);
   doc.text("Compétences", 20, skillsStartY);
   
   const skills = profile.skills || [];
-  let currentY = skillsStartY + 15;
+  let currentY = skillsStartY + 12;
   let currentX = 25;
   
   doc.setFontSize(11);
@@ -88,15 +63,15 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     
     if (currentX + textWidth > 185) {
       currentX = 25;
-      currentY += 15;
+      currentY += 12;
     }
     
-    // Skill badge
     doc.setFillColor(79, 70, 229);
     doc.roundedRect(currentX - 2, currentY - 5, textWidth, 10, 2, 2, 'F');
     
     doc.setTextColor(255, 255, 255);
     doc.text(skill, currentX + 3, currentY);
+    doc.setTextColor(0, 0, 0);
     
     currentX += textWidth + 10;
   });
