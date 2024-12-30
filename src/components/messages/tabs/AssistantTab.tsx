@@ -1,4 +1,4 @@
-import { Bot, Trash2 } from "lucide-react";
+import { Bot, Trash2, RotateCcw } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ChatMessage } from "@/components/chat/ChatMessage";
@@ -20,6 +20,7 @@ export function AssistantTab() {
     handleSendMessage,
     handleVoiceInput,
     clearChat,
+    restoreChat,
   } = useChat();
 
   useEffect(() => {
@@ -36,6 +37,16 @@ export function AssistantTab() {
     } catch (error) {
       console.error("Error clearing chat:", error);
       toast.error("Erreur lors de l'effacement de la conversation");
+    }
+  };
+
+  const handleRestoreChat = async () => {
+    try {
+      await restoreChat();
+      toast.success("Conversation restaurée avec succès");
+    } catch (error) {
+      console.error("Error restoring chat:", error);
+      toast.error("Erreur lors de la restauration de la conversation");
     }
   };
 
@@ -56,14 +67,24 @@ export function AssistantTab() {
             </p>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleClearChat}
-          className="hover:bg-destructive/10 hover:text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleRestoreChat}
+            className="hover:bg-primary/10 hover:text-primary"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleClearChat}
+            className="hover:bg-destructive/10 hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Messages Area */}

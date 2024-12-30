@@ -13,6 +13,7 @@ export interface Message {
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [deletedMessages, setDeletedMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
@@ -142,6 +143,8 @@ export function useChat() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    setDeletedMessages(messages);
+
     const { error } = await supabase
       .from('ai_chat_messages')
       .delete()
@@ -155,6 +158,24 @@ export function useChat() {
     setMessages([]);
   };
 
+  const restoreChat = async () => {
+    if (deletedMessages.length === 0) {
+      toast.error("Aucune conversation à restaurer");
+      return;
+    }
+
+    try {
+      for (const message of deletedMessages) {
+        await saveMessage(message);
+      }
+      setMessages(deletedMessages);
+      setDeletedMessages([]);
+    } catch (error) {
+      console.error('Error restoring chat:', error);
+      throw error;
+    }
+  };
+
   return {
     messages,
     inputMessage,
@@ -165,5 +186,6 @@ export function useChat() {
     handleSendMessage,
     handleVoiceInput,
     clearChat,
+    restoreChat,
   };
 }
