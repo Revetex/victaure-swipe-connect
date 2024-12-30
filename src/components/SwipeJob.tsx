@@ -140,8 +140,8 @@ export function SwipeJob() {
           
           <div className="flex-1 flex justify-center items-center mt-6 relative">
             {allJobs && allJobs.length > 0 ? (
-              <div className="w-full max-w-md mx-auto">
-                <SwipeMatch filters={filters} />
+              <div className="w-full">
+                <JobList jobs={allJobs} isLoading={allJobsLoading} />
               </div>
             ) : (
               <div className="text-center">
