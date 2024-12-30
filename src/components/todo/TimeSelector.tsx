@@ -1,5 +1,5 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 interface TimeSelectorProps {
   selectedTime?: string;
@@ -7,29 +7,43 @@ interface TimeSelectorProps {
 }
 
 export function TimeSelector({ selectedTime, onTimeChange }: TimeSelectorProps) {
-  const timeOptions = Array.from({ length: 24 * 4 }, (_, i) => {
-    const hour = Math.floor(i / 4);
-    const minute = (i % 4) * 15;
-    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-  });
+  const [inputValue, setInputValue] = useState(selectedTime || "");
+
+  const formatTimeString = (value: string) => {
+    // Remove non-numeric characters
+    const numbers = value.replace(/[^\d]/g, "");
+    
+    if (numbers.length <= 2) {
+      return numbers;
+    }
+    
+    // Format as HH:MM
+    let hours = parseInt(numbers.substring(0, 2));
+    let minutes = parseInt(numbers.substring(2, 4));
+    
+    // Validate hours and minutes
+    hours = Math.min(Math.max(hours, 0), 23);
+    minutes = Math.min(Math.max(minutes || 0, 0), 59);
+    
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+  };
+
+  const handleTimeChange = (value: string) => {
+    setInputValue(value);
+    const formattedTime = formatTimeString(value);
+    if (formattedTime.length === 5) {
+      onTimeChange(formattedTime);
+    }
+  };
 
   return (
-    <Select onValueChange={onTimeChange} value={selectedTime}>
-      <SelectTrigger className="w-[120px]">
-        <SelectValue placeholder="Heure">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            {selectedTime || "Heure"}
-          </div>
-        </SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {timeOptions.map((time) => (
-          <SelectItem key={time} value={time}>
-            {time}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="relative">
+      <Input
+        value={inputValue}
+        onChange={(e) => handleTimeChange(e.target.value)}
+        placeholder="HH:MM"
+        className="w-[120px]"
+      />
+    </div>
   );
 }

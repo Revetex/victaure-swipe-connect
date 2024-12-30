@@ -4,6 +4,7 @@ export interface Todo {
   completed: boolean;
   dueDate?: Date;
   dueTime?: string;
+  allDay?: boolean;
 }
 
 export interface StickyNote {

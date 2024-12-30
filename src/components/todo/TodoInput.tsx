@@ -1,18 +1,22 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { Plus, Calendar as CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { TimeSelector } from "./TimeSelector";
 import { fr } from "date-fns/locale";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 interface TodoInputProps {
   newTodo: string;
   selectedDate?: Date;
   selectedTime?: string;
+  allDay?: boolean;
   onTodoChange: (value: string) => void;
   onDateChange: (date?: Date) => void;
   onTimeChange: (time: string) => void;
+  onAllDayChange: (checked: boolean) => void;
   onAdd: () => void;
 }
 
@@ -20,9 +24,11 @@ export function TodoInput({
   newTodo,
   selectedDate,
   selectedTime,
+  allDay,
   onTodoChange,
   onDateChange,
   onTimeChange,
+  onAllDayChange,
   onAdd,
 }: TodoInputProps) {
   return (
@@ -47,10 +53,22 @@ export function TodoInput({
             />
           </PopoverContent>
         </Popover>
-        <TimeSelector
-          selectedTime={selectedTime}
-          onTimeChange={onTimeChange}
-        />
+        <div className="flex items-center gap-2">
+          {!allDay && (
+            <TimeSelector
+              selectedTime={selectedTime}
+              onTimeChange={onTimeChange}
+            />
+          )}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="allDay"
+              checked={allDay}
+              onCheckedChange={(checked) => onAllDayChange(checked as boolean)}
+            />
+            <Label htmlFor="allDay" className="text-sm">Toute la journée</Label>
+          </div>
+        </div>
         <Button 
           onClick={onAdd} 
           size="icon"

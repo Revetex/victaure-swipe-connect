@@ -9,9 +9,11 @@ interface TodoSectionProps {
   newTodo: string;
   selectedDate?: Date;
   selectedTime?: string;
+  allDay?: boolean;
   onTodoChange: (value: string) => void;
   onDateChange: (date?: Date) => void;
   onTimeChange: (time?: string) => void;
+  onAllDayChange: (checked: boolean) => void;
   onAdd: () => void;
   onToggle: (id: number) => void;
   onDelete: (id: number) => void;
@@ -22,9 +24,11 @@ export function TodoSection({
   newTodo,
   selectedDate,
   selectedTime,
+  allDay,
   onTodoChange,
   onDateChange,
   onTimeChange,
+  onAllDayChange,
   onAdd,
   onToggle,
   onDelete,
@@ -40,9 +44,11 @@ export function TodoSection({
         newTodo={newTodo}
         selectedDate={selectedDate}
         selectedTime={selectedTime}
+        allDay={allDay}
         onTodoChange={onTodoChange}
         onDateChange={onDateChange}
         onTimeChange={onTimeChange}
+        onAllDayChange={onAllDayChange}
         onAdd={onAdd}
       />
 

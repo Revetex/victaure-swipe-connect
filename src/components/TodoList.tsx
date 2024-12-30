@@ -18,6 +18,7 @@ export function TodoList() {
   const [newTodo, setNewTodo] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>();
+  const [allDay, setAllDay] = useState(false);
   const [notes, setNotes] = useState<StickyNoteType[]>([]);
   const [newNote, setNewNote] = useState("");
   const [selectedColor, setSelectedColor] = useState("yellow");
@@ -30,12 +31,14 @@ export function TodoList() {
         text: newTodo,
         completed: false,
         dueDate: selectedDate,
-        dueTime: selectedTime,
+        dueTime: allDay ? undefined : selectedTime,
+        allDay,
       };
       setTodos([...todos, todo]);
       setNewTodo("");
       setSelectedDate(undefined);
       setSelectedTime(undefined);
+      setAllDay(false);
       
       toast({
         title: "Tâche ajoutée",
@@ -120,9 +123,11 @@ export function TodoList() {
             newTodo={newTodo}
             selectedDate={selectedDate}
             selectedTime={selectedTime}
+            allDay={allDay}
             onTodoChange={setNewTodo}
             onDateChange={setSelectedDate}
             onTimeChange={setSelectedTime}
+            onAllDayChange={setAllDay}
             onAdd={addTodo}
             onToggle={toggleTodo}
             onDelete={deleteTodo}
