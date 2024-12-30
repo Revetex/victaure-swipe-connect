@@ -62,7 +62,7 @@ export function VCardContent({
       className="w-full px-2 sm:px-4"
     >
       <Card className="w-full max-w-2xl mx-auto overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-lg border border-indigo-200/20 dark:border-indigo-800/20">
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="p-4 sm:p-6 relative">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
             <div className="flex-1 min-w-0">
               <VCardHeader
@@ -89,7 +89,7 @@ export function VCardContent({
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <div className="p-2 bg-white rounded-xl shadow-md">
+                <div className="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
                   <QRCodeSVG
                     value={window.location.href}
                     size={80}
@@ -134,6 +134,7 @@ export function VCardContent({
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.1 }}
+                    className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 backdrop-blur-sm"
                   >
                     <VCardContact
                       profile={tempProfile}
@@ -146,6 +147,7 @@ export function VCardContent({
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
+                    className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 backdrop-blur-sm"
                   >
                     <VCardSkills
                       profile={tempProfile}
@@ -177,6 +179,7 @@ export function VCardContent({
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.3 }}
+                    className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 backdrop-blur-sm"
                   >
                     <VCardEducation
                       profile={tempProfile}
@@ -189,6 +192,7 @@ export function VCardContent({
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.4 }}
+                    className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 backdrop-blur-sm"
                   >
                     <VCardCertifications
                       profile={tempProfile}
