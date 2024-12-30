@@ -49,7 +49,7 @@ export function ChatMessage({
         <div className={cn(
           "rounded-lg px-4 py-2 max-w-[80%] shadow-sm",
           isBot 
-            ? "bg-muted text-muted-foreground" 
+            ? "bg-muted/80 text-foreground backdrop-blur-sm" 
             : "bg-primary text-primary-foreground",
           thinking && "animate-pulse"
         )}>

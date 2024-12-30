@@ -48,7 +48,7 @@ export function ConversationView({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.2 }}
-      className="h-full flex flex-col"
+      className="flex flex-col h-full"
     >
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-3">
@@ -56,7 +56,6 @@ export function ConversationView({
             variant="ghost"
             size="icon"
             onClick={onBack}
-            className="mr-2"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
