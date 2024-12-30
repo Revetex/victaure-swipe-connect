@@ -10,102 +10,92 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface JobBasicInfoFieldsProps {
-  title: string;
-  description: string;
-  budget: string;
-  location: string;
-  onChange: (field: string, value: string | number) => void;
+  formData: any;
+  setFormData: (data: any) => void;
 }
 
-export function JobBasicInfoFields({
-  title,
-  description,
-  budget,
-  location,
-  onChange,
-}: JobBasicInfoFieldsProps) {
+export function JobBasicInfoFields({ formData, setFormData }: JobBasicInfoFieldsProps) {
   const [open, setOpen] = useState(false);
+  const cities = quebecCities || [];
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Titre de la mission</Label>
-        <Input
-          id="title"
-          placeholder="Ex: Développeur React Senior"
-          value={title}
-          onChange={(e) => onChange("title", e.target.value)}
-          required
-        />
-      </div>
+      <div className="grid gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Titre de la mission</Label>
+          <Input
+            id="title"
+            placeholder="Ex: Développeur React Senior"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          />
+        </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description détaillée</Label>
-        <Textarea
-          id="description"
-          placeholder="Décrivez les responsabilités et les attentes..."
-          value={description}
-          onChange={(e) => onChange("description", e.target.value)}
-          required
-          className="min-h-[100px]"
-        />
-      </div>
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            placeholder="Décrivez la mission en détail"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          />
+        </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="budget">Budget (CAD)</Label>
-        <Input
-          id="budget"
-          type="number"
-          placeholder="Ex: 5000"
-          value={budget}
-          onChange={(e) => onChange("budget", e.target.value)}
-          required
-        />
-      </div>
+        <div className="space-y-2">
+          <Label>Ville</Label>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between"
+              >
+                {formData.location
+                  ? cities.find((city) => city === formData.location)
+                  : "Sélectionnez une ville..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Rechercher une ville..." />
+                <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
+                <CommandGroup className="max-h-60 overflow-auto">
+                  {cities.map((city) => (
+                    <CommandItem
+                      key={city}
+                      value={city}
+                      onSelect={(currentValue) => {
+                        setFormData({ ...formData, location: currentValue });
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          formData.location === city ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {city}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
 
-      <div className="space-y-2">
-        <Label>Localisation</Label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between"
-            >
-              {location
-                ? quebecCities.find((city) => city.toLowerCase() === location.toLowerCase())
-                : "Sélectionnez une ville..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandInput placeholder="Rechercher une ville..." />
-              <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
-              <CommandGroup className="max-h-60 overflow-auto">
-                {quebecCities.map((city) => (
-                  <CommandItem
-                    key={city}
-                    value={city}
-                    onSelect={(currentValue) => {
-                      onChange("location", currentValue);
-                      setOpen(false);
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        location.toLowerCase() === city.toLowerCase() ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {city}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <div className="space-y-2">
+          <Label htmlFor="budget">Budget (CAD)</Label>
+          <Input
+            id="budget"
+            type="number"
+            placeholder="Ex: 5000"
+            value={formData.budget}
+            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+          />
+        </div>
       </div>
     </div>
   );
