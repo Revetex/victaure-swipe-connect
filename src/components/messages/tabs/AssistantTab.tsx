@@ -41,7 +41,7 @@ export function AssistantTab() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] max-w-3xl mx-auto bg-background rounded-lg shadow-sm border">
+    <div className="flex flex-col h-full bg-background rounded-lg shadow-sm border">
       <div className="flex items-center justify-between p-4 border-b bg-muted/50">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -70,7 +70,7 @@ export function AssistantTab() {
         ref={scrollAreaRef}
         className="flex-1 p-4 overflow-y-auto"
       >
-        <div className="space-y-4 max-w-2xl mx-auto">
+        <div className="space-y-4">
           {chatMessages.map((message, index) => (
             <ChatMessage
               key={message.id}
@@ -89,16 +89,14 @@ export function AssistantTab() {
       </ScrollArea>
 
       <div className="p-4 border-t bg-muted/50">
-        <div className="max-w-2xl mx-auto">
-          <ChatInput
-            value={inputMessage}
-            onChange={setInputMessage}
-            onSend={() => handleSendMessage(inputMessage, profile)}
-            onVoiceInput={handleVoiceInput}
-            isListening={isListening}
-            isThinking={isThinking}
-          />
-        </div>
+        <ChatInput
+          value={inputMessage}
+          onChange={setInputMessage}
+          onSend={() => handleSendMessage(inputMessage, profile)}
+          onVoiceInput={handleVoiceInput}
+          isListening={isListening}
+          isThinking={isThinking}
+        />
       </div>
     </div>
   );
