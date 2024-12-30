@@ -80,7 +80,7 @@ export function DashboardLayout() {
             {/* VCard Section - Moved and resized */}
             <motion.div 
               variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-3 h-[650px] md:h-[750px]"
+              className="col-span-1 md:col-span-2 xl:col-span-4 h-[650px] md:h-[750px]"
             >
               <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
                 <div className="p-6 sm:p-8 h-full">
