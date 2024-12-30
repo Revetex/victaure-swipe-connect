@@ -81,7 +81,10 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         images: imageUrls
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error creating job:", error);
+        throw error;
+      }
 
       toast({
         title: "Succès",
