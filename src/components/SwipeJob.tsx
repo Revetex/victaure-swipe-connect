@@ -46,7 +46,7 @@ export function SwipeJob() {
         ...job,
         company: "Votre entreprise",
         salary: `${job.budget} CAD`,
-        skills: []
+        skills: job.required_skills || []
       })) as Job[];
     }
   });
@@ -96,7 +96,7 @@ export function SwipeJob() {
           <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="browse">
+        <TabsContent value="browse" className="mt-4">
           <JobFiltersPanel 
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -104,7 +104,7 @@ export function SwipeJob() {
             setOpenLocation={setOpenLocation}
           />
           
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-6">
             <SwipeMatch filters={filters} />
           </div>
         </TabsContent>
