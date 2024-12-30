@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { Todo } from "@/types/todo";
+import { cn } from "@/lib/utils";
 
 interface TodoItemProps {
   todo: Todo;
@@ -13,18 +14,23 @@ interface TodoItemProps {
 
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg glass-card group animate-in slide-in-from-left duration-300">
+    <div className={cn(
+      "flex items-center gap-3 p-4 rounded-lg transition-all duration-200",
+      "bg-background/50 hover:bg-background shadow-sm hover:shadow",
+      "border border-border/50 hover:border-border",
+      "group animate-in slide-in-from-left"
+    )}>
       <Checkbox
         checked={todo.completed}
         onCheckedChange={() => onToggle(todo.id)}
         className="data-[state=checked]:bg-primary"
       />
-      <div className="flex-1">
-        <span className={`block ${
-          todo.completed 
-            ? "line-through text-muted-foreground" 
-            : "group-hover:text-primary transition-colors"
-        }`}>
+      <div className="flex-1 min-w-0">
+        <span className={cn(
+          "block transition-colors",
+          todo.completed && "line-through text-muted-foreground",
+          !todo.completed && "group-hover:text-primary"
+        )}>
           {todo.text}
         </span>
         {(todo.dueDate || todo.dueTime) && (

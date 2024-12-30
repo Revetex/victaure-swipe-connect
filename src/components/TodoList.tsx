@@ -7,10 +7,10 @@ import { NotesSection } from "./todo/NotesSection";
 import { supabase } from "@/integrations/supabase/client";
 
 const colors = [
-  { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
-  { value: "green", label: "Vert", class: "bg-green-200" },
-  { value: "blue", label: "Bleu", class: "bg-blue-200" },
-  { value: "pink", label: "Rose", class: "bg-pink-200" },
+  { value: "yellow", label: "Jaune", class: "bg-yellow-100" },
+  { value: "green", label: "Vert", class: "bg-green-100" },
+  { value: "blue", label: "Bleu", class: "bg-blue-100" },
+  { value: "pink", label: "Rose", class: "bg-pink-100" },
 ];
 
 export function TodoList() {
@@ -105,12 +105,16 @@ export function TodoList() {
   return (
     <div className="space-y-4">
       <Tabs defaultValue="todos" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="todos">Tâches</TabsTrigger>
-          <TabsTrigger value="notes">Notes</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger value="todos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            Tâches
+          </TabsTrigger>
+          <TabsTrigger value="notes" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            Notes
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="todos">
+        <TabsContent value="todos" className="mt-0">
           <TodoSection
             todos={todos}
             newTodo={newTodo}
@@ -125,7 +129,7 @@ export function TodoList() {
           />
         </TabsContent>
 
-        <TabsContent value="notes">
+        <TabsContent value="notes" className="mt-0">
           <NotesSection
             notes={notes}
             newNote={newNote}

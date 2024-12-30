@@ -2,6 +2,7 @@ import { ListTodo } from "lucide-react";
 import { TodoInput } from "./TodoInput";
 import { TodoItem } from "./TodoItem";
 import { Todo } from "@/types/todo";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TodoSectionProps {
   todos: Todo[];
@@ -45,16 +46,23 @@ export function TodoSection({
         onAdd={onAdd}
       />
 
-      <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={onToggle}
-            onDelete={onDelete}
-          />
-        ))}
-      </div>
+      <ScrollArea className="h-[400px] pr-4">
+        <div className="space-y-2">
+          {todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onToggle={onToggle}
+              onDelete={onDelete}
+            />
+          ))}
+          {todos.length === 0 && (
+            <div className="text-center text-muted-foreground py-8">
+              Aucune tâche pour le moment
+            </div>
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

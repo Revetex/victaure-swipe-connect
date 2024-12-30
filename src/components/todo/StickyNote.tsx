@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { StickyNote as StickyNoteType } from "@/types/todo";
+import { cn } from "@/lib/utils";
 
 interface StickyNoteProps {
   note: StickyNoteType;
@@ -10,9 +11,14 @@ interface StickyNoteProps {
 
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
   return (
-    <div className={`p-4 rounded-lg shadow-sm group animate-in slide-in-from-left duration-300 ${colorClass}`}>
-      <div className="flex justify-between items-start">
-        <p className="flex-1 whitespace-pre-wrap">{note.text}</p>
+    <div className={cn(
+      "p-4 rounded-lg shadow-sm group transition-all duration-200",
+      "hover:shadow hover:scale-[1.02]",
+      "animate-in slide-in-from-left",
+      colorClass
+    )}>
+      <div className="flex justify-between items-start gap-2">
+        <p className="flex-1 whitespace-pre-wrap text-sm">{note.text}</p>
         <Button
           variant="ghost"
           size="icon"

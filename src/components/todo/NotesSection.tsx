@@ -2,6 +2,7 @@ import { StickyNote as StickyNoteIcon } from "lucide-react";
 import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
 import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface NotesSectionProps {
   notes: StickyNoteType[];
@@ -40,19 +41,26 @@ export function NotesSection({
         onAdd={onAdd}
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-2">
-        {notes.map((note) => {
-          const colorClass = colors.find(c => c.value === note.color)?.class || "bg-yellow-200";
-          return (
-            <StickyNote
-              key={note.id}
-              note={note}
-              colorClass={colorClass}
-              onDelete={onDelete}
-            />
-          );
-        })}
-      </div>
+      <ScrollArea className="h-[400px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-4">
+          {notes.map((note) => {
+            const colorClass = colors.find(c => c.value === note.color)?.class || "bg-yellow-100";
+            return (
+              <StickyNote
+                key={note.id}
+                note={note}
+                colorClass={colorClass}
+                onDelete={onDelete}
+              />
+            );
+          })}
+          {notes.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 col-span-2">
+              Aucune note pour le moment
+            </div>
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 }
