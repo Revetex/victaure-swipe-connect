@@ -66,7 +66,7 @@ export function AnimatedJobCard({
 
             <div className="flex items-center gap-2 text-gray-600">
               <Clock className="h-4 w-4" />
-              <span>{job.duration}</span>
+              <span>{job.contract_type}</span>
             </div>
 
             <div className="flex items-center gap-2 text-gray-600">
@@ -80,7 +80,7 @@ export function AnimatedJobCard({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {job.skills.map((skill, index) => (
+            {job.skills?.map((skill, index) => (
               <Badge 
                 key={index}
                 variant="secondary" 
