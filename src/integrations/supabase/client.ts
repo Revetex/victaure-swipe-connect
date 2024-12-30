@@ -37,6 +37,27 @@ export const supabase = createClient<Database>(
           }
         }
       }
-    }
+    },
+    global: {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      fetch: (url, options = {}) => {
+        return fetch(url, {
+          ...options,
+          credentials: 'include',
+        }).then(async (response) => {
+          if (!response.ok) {
+            const error = await response.json();
+            console.error('Supabase request failed:', error);
+            throw new Error('Request failed');
+          }
+          return response;
+        }).catch((error) => {
+          console.error('Supabase fetch error:', error);
+          throw error;
+        });
+      },
+    },
   }
 );
