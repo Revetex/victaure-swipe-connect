@@ -1,4 +1,4 @@
-import { LogOut, Bell, Moon } from "lucide-react";
+import { LogOut, Bell, Moon, Lock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { SettingsSection } from "./settings/SettingsSection";
 import { Separator } from "./ui/separator";
+import { PasswordChangeSection } from "./settings/PasswordChangeSection";
 
 export function Settings() {
   const { theme, setTheme } = useTheme();
@@ -63,6 +64,18 @@ export function Settings() {
               Notifications
             </Label>
             <Switch defaultChecked />
+          </div>
+        </SettingsSection>
+
+        <Separator />
+
+        <SettingsSection title="Sécurité">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              <h3 className="text-sm font-medium">Mot de passe</h3>
+            </div>
+            <PasswordChangeSection />
           </div>
         </SettingsSection>
 
