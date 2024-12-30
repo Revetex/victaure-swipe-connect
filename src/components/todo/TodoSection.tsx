@@ -2,7 +2,6 @@ import { ListTodo } from "lucide-react";
 import { TodoInput } from "./TodoInput";
 import { TodoItem } from "./TodoItem";
 import { Todo } from "@/types/todo";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface TodoSectionProps {
   todos: Todo[];
@@ -47,23 +46,14 @@ export function TodoSection({
       />
 
       <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-        <AnimatePresence>
-          {todos.map((todo) => (
-            <motion.div
-              key={todo.id}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <TodoItem
-                todo={todo}
-                onToggle={onToggle}
-                onDelete={onDelete}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {todos.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onToggle={onToggle}
+            onDelete={onDelete}
+          />
+        ))}
       </div>
     </div>
   );
