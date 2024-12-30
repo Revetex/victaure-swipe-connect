@@ -25,7 +25,7 @@ export function useMessages() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: messagesData = [], error } = await supabase
+      const { data: messagesData, error } = await supabase
         .from('messages')
         .select(`
           id,
@@ -43,7 +43,7 @@ export function useMessages() {
 
       if (error) throw error;
 
-      return messagesData.map((msg: any) => ({
+      return (messagesData || []).map((msg: any) => ({
         id: msg.id,
         content: msg.content,
         created_at: msg.created_at,
@@ -57,7 +57,7 @@ export function useMessages() {
     mutationFn: async (messageId: string) => {
       const { error } = await supabase
         .from('messages')
-        .update({ read: true } as Tables<'messages'>)
+        .update({ read: true })
         .eq('id', messageId);
 
       if (error) throw error;

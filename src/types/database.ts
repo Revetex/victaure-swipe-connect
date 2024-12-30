@@ -8,3 +8,8 @@ export type UpdateTables<T extends keyof Database['public']['Tables']> = Databas
 // Helper type to handle Supabase query responses
 export type DbResult<T> = T extends PromiseLike<infer U> ? U : never;
 export type DbResultOk<T> = T extends PromiseLike<{ data: infer U }> ? Exclude<U, null> : never;
+
+// Message specific types
+export type MessageRow = Tables<'messages'>;
+export type MessageInsert = InsertTables<'messages'>;
+export type MessageUpdate = UpdateTables<'messages'>;
