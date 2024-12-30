@@ -48,20 +48,28 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
   };
 
   const handleButtonSwipe = async (direction: "left" | "right") => {
+    if (isAnimating) return;
+    
     setIsAnimating(true);
     setSwipeDirection(direction);
     
     // Animate the card
     const targetX = direction === "left" ? -200 : 200;
-    x.set(targetX);
     
-    // Handle the swipe after a short delay to allow for animation
-    setTimeout(async () => {
-      await handleSwipe(direction);
-      x.set(0);
-      setSwipeDirection(null);
-      setIsAnimating(false);
-    }, 300);
+    // Animate smoothly to target position
+    await x.set(targetX, {
+      type: "spring",
+      stiffness: 300,
+      damping: 30
+    });
+    
+    // Handle the swipe after animation
+    await handleSwipe(direction);
+    
+    // Reset position and states
+    x.set(0);
+    setSwipeDirection(null);
+    setIsAnimating(false);
   };
 
   if (jobs.length === 0) {
