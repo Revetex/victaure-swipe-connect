@@ -39,15 +39,15 @@ export function VCardCertifications({
   return (
     <VCardSection 
       title="Certifications et Diplômes"
-      icon={<GraduationCap className="h-4 w-4 text-muted-foreground" />}
+      icon={<GraduationCap className="h-5 w-5 text-muted-foreground" />}
     >
       <div className="space-y-4">
         {(profile.certifications || []).map((cert: Certification, index: number) => (
-          <div key={index} className="relative border-l-2 border-primary/30 pl-4 py-2 space-y-2 hover:bg-muted/50 rounded-r transition-colors">
+          <div key={index} className="relative border-l-2 border-primary/30 pl-4 py-3 space-y-3 hover:bg-muted/50 rounded-r transition-colors">
             {isEditing ? (
               <>
                 <div className="flex items-center gap-2">
-                  <Award className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <Award className="h-5 w-5 text-muted-foreground shrink-0" />
                   <Input
                     value={cert.title}
                     onChange={(e) => {
@@ -60,7 +60,7 @@ export function VCardCertifications({
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
                   <Input
                     value={cert.institution}
                     onChange={(e) => {
@@ -89,19 +89,19 @@ export function VCardCertifications({
                     onClick={() => handleRemoveCertification(index)}
                     className="text-muted-foreground hover:text-destructive transition-colors"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-5 w-5" />
                   </Button>
                 </div>
               </>
             ) : (
               <>
                 <div className="flex items-center gap-2">
-                  <Award className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <p className="font-medium">{cert.title || "Titre non défini"}</p>
+                  <Award className="h-5 w-5 text-muted-foreground shrink-0" />
+                  <p className="font-medium text-lg">{cert.title || "Titre non défini"}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <p className="text-sm text-muted-foreground">{cert.institution || "Institution non définie"}</p>
+                  <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
+                  <p className="text-muted-foreground">{cert.institution || "Institution non définie"}</p>
                 </div>
                 <p className="text-sm text-muted-foreground">{cert.year || "Année non définie"}</p>
               </>
