@@ -35,12 +35,13 @@ export function useChat() {
       }
 
       if (data) {
-        setMessages(data.map(msg => ({
+        const formattedMessages: Message[] = data.map(msg => ({
           id: msg.id,
           content: msg.content,
-          sender: msg.sender,
+          sender: msg.sender as "user" | "assistant",
           timestamp: new Date(msg.created_at),
-        })));
+        }));
+        setMessages(formattedMessages);
       }
     };
 
@@ -54,7 +55,6 @@ export function useChat() {
     const { error } = await supabase
       .from('ai_chat_messages')
       .insert([{
-        id: message.id,
         content: message.content,
         sender: message.sender,
         user_id: user.id,
