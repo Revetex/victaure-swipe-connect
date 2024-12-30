@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { JobFilters } from "./jobs/JobFilterUtils";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
@@ -53,11 +53,10 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
     setIsAnimating(true);
     setSwipeDirection(direction);
     
-    // Animate the card
+    // Animate the card using the proper animation API
     const targetX = direction === "left" ? -200 : 200;
     
-    // Animate smoothly to target position
-    await x.set(targetX, {
+    await animate(x, targetX, {
       type: "spring",
       stiffness: 300,
       damping: 30
