@@ -75,27 +75,26 @@ export function BiometricAuth() {
   };
 
   if (!biometricSupport) {
-    console.log("Biometric support not available");
     return null;
   }
 
   return (
-    <div className="flex gap-2 justify-center mb-6">
+    <div className="grid grid-cols-2 gap-4">
       <Button
         variant="outline"
-        className="w-full flex items-center gap-2"
+        className="flex items-center justify-center gap-2 h-12"
         onClick={handleBiometricAuth}
       >
         <UserRound className="h-4 w-4" />
-        <span>Face ID</span>
+        <span className="sr-only sm:not-sr-only">Face ID</span>
       </Button>
       <Button
         variant="outline"
-        className="w-full flex items-center gap-2"
+        className="flex items-center justify-center gap-2 h-12"
         onClick={handleBiometricAuth}
       >
         <Fingerprint className="h-4 w-4" />
-        <span>Touch ID</span>
+        <span className="sr-only sm:not-sr-only">Touch ID</span>
       </Button>
     </div>
   );

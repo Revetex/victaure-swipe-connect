@@ -1,8 +1,11 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "next-themes";
 
 export function AuthForm() {
+  const { theme } = useTheme();
+
   return (
     <Auth
       supabaseClient={supabase}
@@ -11,9 +14,15 @@ export function AuthForm() {
         variables: {
           default: {
             colors: {
-              brand: '#0369a1',
-              brandAccent: '#0284c7',
-              inputBackground: 'white',
+              brand: 'hsl(var(--primary))',
+              brandAccent: 'hsl(var(--primary))',
+              inputBackground: 'transparent',
+              inputText: 'hsl(var(--foreground))',
+              inputPlaceholder: 'hsl(var(--muted-foreground))',
+            },
+            space: {
+              inputPadding: '1rem',
+              buttonPadding: '1.25rem',
             },
             borderWidths: {
               buttonBorderWidth: '1px',
@@ -24,21 +33,38 @@ export function AuthForm() {
               buttonBorderRadius: '0.5rem',
               inputBorderRadius: '0.5rem',
             },
+            fonts: {
+              bodyFontFamily: `var(--font-sans)`,
+              buttonFontFamily: `var(--font-sans)`,
+              inputFontFamily: `var(--font-sans)`,
+            },
           },
         },
         style: {
-          input: {
-            backgroundColor: 'white',
-            border: '1px solid #e2e8f0',
-            borderRadius: '0.5rem',
+          container: {
+            width: '100%',
           },
           button: {
-            border: '1px solid transparent',
-            borderRadius: '0.5rem',
-            backgroundColor: '#0369a1',
-            color: 'white',
-            fontSize: '14px',
-            padding: '10px 15px',
+            width: '100%',
+            height: '2.75rem',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+          },
+          input: {
+            width: '100%',
+            height: '2.75rem',
+            fontSize: '0.875rem',
+            backgroundColor: 'transparent',
+            border: '1px solid hsl(var(--border))',
+          },
+          label: {
+            fontSize: '0.875rem',
+            color: 'hsl(var(--foreground))',
+            marginBottom: '0.5rem',
+          },
+          message: {
+            fontSize: '0.875rem',
+            color: 'hsl(var(--muted-foreground))',
           },
         },
       }}
