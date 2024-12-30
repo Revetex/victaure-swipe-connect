@@ -14,25 +14,10 @@ export function Navigation() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check initial auth state
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
+      if (event === 'SIGNED_OUT') {
         navigate("/auth");
-      }
-    };
-    
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
-      
-      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
-        // Clear any local storage data
-        localStorage.clear();
-        navigate("/auth");
-      } else if (event === 'SIGNED_IN' && session) {
-        navigate("/dashboard");
       }
     });
 
@@ -43,15 +28,8 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      // Clear any local storage before signing out
-      localStorage.clear();
-      
-      const { error } = await supabase.auth.signOut({
-        scope: 'local' // Only sign out from this tab/window
-      });
-      
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
       navigate("/auth");
       toast.success("Déconnexion réussie");
     } catch (error) {

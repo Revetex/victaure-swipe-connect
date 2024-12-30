@@ -18,7 +18,7 @@ export function DashboardLayout() {
       >
         {/* Messages Section */}
         <motion.div 
-          className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-1"} min-h-[500px]`}
+          className={`${isMobile ? "col-span-1" : "sm:col-span-2 lg:col-span-1"}`}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
@@ -30,7 +30,7 @@ export function DashboardLayout() {
 
         {/* SwipeJob Section */}
         <motion.div 
-          className={`${isMobile ? "col-span-1" : "sm:col-span-2"} min-h-[600px]`}
+          className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -43,14 +43,14 @@ export function DashboardLayout() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
-          className="glass-card rounded-lg p-4 sm:p-5 h-full min-h-[500px] transition-transform duration-300 hover:scale-[1.01]"
+          className="glass-card rounded-lg p-4 sm:p-5 h-full transition-transform duration-300 hover:scale-[1.01]"
         >
           <TodoList />
         </motion.div>
 
         {/* VCard Section */}
         <motion.div 
-          className={`${isMobile ? "col-span-1" : "sm:col-span-2"} min-h-[600px]`}
+          className={`${isMobile ? "col-span-1" : "sm:col-span-2"}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}

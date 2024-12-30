@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Fingerprint } from "lucide-react";
+import { UserRound, Fingerprint } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export function BiometricAuth() {
@@ -22,6 +22,7 @@ export function BiometricAuth() {
         setBiometricSupport(available);
       } catch (error) {
         console.error("Error checking biometric support:", error);
+        toast.error("Erreur lors de la vérification du support biométrique");
       }
     };
 
@@ -45,25 +46,27 @@ export function BiometricAuth() {
         timeout: 60000,
       };
 
-      await navigator.credentials.get({
+      const credential = await navigator.credentials.get({
         publicKey: publicKeyCredentialRequestOptions,
       });
 
-      // Pour la démo, nous utilisons un compte test
-      const { data: { session }, error } = await supabase.auth.signInWithPassword({
-        email: "demo@example.com",
-        password: "demopassword",
-      });
+      if (credential) {
+        // Pour la démo, nous utilisons un compte test
+        const { data: { session }, error } = await supabase.auth.signInWithPassword({
+          email: "demo@example.com",
+          password: "demopassword",
+        });
 
-      if (error) {
-        console.error("Auth error:", error);
-        toast.error("Erreur d'authentification biométrique");
-        return;
-      }
+        if (error) {
+          console.error("Auth error:", error);
+          toast.error("Erreur d'authentification biométrique");
+          return;
+        }
 
-      if (session) {
-        toast.success("Authentification biométrique réussie");
-        navigate("/dashboard");
+        if (session) {
+          toast.success("Authentification biométrique réussie");
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       console.error("Biometric auth error:", error);
@@ -76,13 +79,23 @@ export function BiometricAuth() {
   }
 
   return (
-    <Button
-      variant="outline"
-      className="w-full flex items-center justify-center gap-2 h-12 hover:bg-primary/5"
-      onClick={handleBiometricAuth}
-    >
-      <Fingerprint className="h-5 w-5" />
-      <span>Se connecter avec l'authentification biométrique</span>
-    </Button>
+    <div className="grid grid-cols-2 gap-4">
+      <Button
+        variant="outline"
+        className="flex items-center justify-center gap-2 h-12"
+        onClick={handleBiometricAuth}
+      >
+        <UserRound className="h-4 w-4" />
+        <span className="sr-only sm:not-sr-only">Face ID</span>
+      </Button>
+      <Button
+        variant="outline"
+        className="flex items-center justify-center gap-2 h-12"
+        onClick={handleBiometricAuth}
+      >
+        <Fingerprint className="h-4 w-4" />
+        <span className="sr-only sm:not-sr-only">Touch ID</span>
+      </Button>
+    </div>
   );
 }

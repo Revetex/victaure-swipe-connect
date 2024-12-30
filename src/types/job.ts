@@ -17,51 +17,39 @@ export interface Job {
   created_at?: string;
   updated_at?: string;
   subcategory?: string;
-  required_skills?: string[];
-  preferred_skills?: string[];
-  images?: string[];
-  remote_type?: string;
-  application_deadline?: string;
-}
-
-export interface JobFilters {
-  category: string;
-  subcategory: string;
-  duration: string;
-  experienceLevel: string;
-  location: string;
-  searchTerm: string;
 }
 
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
   "Technologie": {
     icon: Code,
-    subcategories: ["Développement Web", "DevOps", "Mobile", "Data", "Cloud", "Sécurité", "IA", "Blockchain"]
+    subcategories: ["Développement Web", "DevOps", "Mobile", "Data"]
   },
   "Gestion": {
     icon: Briefcase,
-    subcategories: ["Product Management", "Agile", "Conseil", "Stratégie", "Opérations", "Qualité"]
+    subcategories: ["Product Management", "Agile", "Conseil"]
   },
   "Design": {
     icon: PaintBucket,
-    subcategories: ["UI/UX", "Graphisme", "Motion", "3D", "Web Design", "Print", "Branding"]
+    subcategories: ["UI/UX", "Graphisme", "Motion"]
   },
   "Construction": {
     icon: HardHat,
-    subcategories: ["Gros œuvre", "Second œuvre", "Finitions", "BIM", "Architecture"]
+    subcategories: ["Gros œuvre", "Second œuvre", "Finitions"]
   },
   "Manuel": {
     icon: Wrench,
-    subcategories: ["Rénovation", "Installation", "Maintenance", "Artisanat", "Réparation"]
+    subcategories: ["Rénovation", "Installation", "Maintenance"]
   },
   "Expertise": {
     icon: Brain,
-    subcategories: ["Formation", "Audit", "Conseil", "Expertise technique", "Certification"]
+    subcategories: ["Formation", "Audit", "Conseil"]
   }
 };
 
+// Add a type for valid categories to ensure type safety
 export type ValidCategory = keyof typeof missionCategories;
 
+// Helper function to check if a category is valid
 export const isValidCategory = (category: string): category is ValidCategory => {
   return category in missionCategories;
 };

@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { provinceData } from "@/data/provinces";
-import { JobFilters } from "@/types/job";
+import { JobFilters } from "../JobFilterUtils";
+import { useState } from "react";
 
 interface LocationFilterProps {
   filters: JobFilters;
@@ -9,7 +9,7 @@ interface LocationFilterProps {
 }
 
 export function LocationFilter({ filters, onFilterChange }: LocationFilterProps) {
-  const [selectedProvince, setSelectedProvince] = useState<string>("all");
+  const [selectedProvince, setSelectedProvince] = useState<string>(filters.province || "all");
   const cities = selectedProvince !== "all" ? provinceData[selectedProvince] || [] : [];
 
   return (
@@ -22,8 +22,8 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
           value={selectedProvince}
           onValueChange={(value) => {
             setSelectedProvince(value);
-            // Reset location when province changes
-            onFilterChange("location", "all");
+            onFilterChange("province", value);
+            onFilterChange("location", "all"); // Reset city when province changes
           }}
         >
           <SelectTrigger>

@@ -1,24 +1,97 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "sonner";
-import { motion, useMotionValue } from "framer-motion";
+import { useMotionValue, useTransform, motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
-import { JobFilters } from "./jobs/JobFilterUtils";
-import { useJobSwipe } from "@/hooks/useJobSwipe";
-import { SwipeControls } from "./jobs/SwipeControls";
-import { Loader2 } from "lucide-react";
+import { JobFilters, applyJobFilters } from "./jobs/JobFilterUtils";
+import { Job } from "@/types/job";
 
 interface SwipeMatchProps {
   filters: JobFilters;
 }
 
 export function SwipeMatch({ filters }: SwipeMatchProps) {
-  const { jobs, currentIndex, setCurrentIndex, fetchJobs, isLoading } = useJobSwipe(filters);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  
   const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-30, 30]);
+  const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
+  const scale = useTransform(Math.abs(x.get()), [0, 100], [1, 0.95]);
   const dragConstraintsRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const fetchJobs = async () => {
+    try {
+      let query = supabase
+        .from("jobs")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      query = applyJobFilters(query, filters);
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      if (data) {
+        const formattedJobs = data.map(job => ({
+          id: job.id,
+          title: job.title,
+          company: "Company Name",
+          location: job.location,
+          salary: `${job.budget} CAD`,
+          duration: job.contract_type,
+          skills: job.required_skills || ["Skill 1", "Skill 2"],
+          category: job.category,
+          contract_type: job.contract_type,
+          experience_level: job.experience_level
+        }));
+        setJobs(formattedJobs);
+        setCurrentIndex(0);
+      }
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      toast.error("Erreur lors du chargement des offres");
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+
+    const channel = supabase
+      .channel('public:jobs')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'jobs'
+        },
+        (payload) => {
+          console.log('Nouvelle mission reçue:', payload);
+          const newJob = payload.new;
+          setJobs(prevJobs => [{
+            id: newJob.id,
+            title: newJob.title,
+            company: "Company Name",
+            location: newJob.location,
+            salary: `${newJob.budget} CAD`,
+            duration: newJob.contract_type,
+            skills: newJob.required_skills || ["Skill 1", "Skill 2"],
+            category: newJob.category,
+            contract_type: newJob.contract_type,
+            experience_level: newJob.experience_level
+          }, ...prevJobs]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [filters]);
 
   const handleDragStart = () => {
     setIsDragging(true);
@@ -41,8 +114,6 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
   };
 
   const handleSwipe = async (direction: "left" | "right") => {
-    if (!jobs[currentIndex]) return;
-
     if (direction === "right") {
       try {
         const { data: profile } = await supabase.auth.getUser();
@@ -64,6 +135,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
       }
     }
 
+    // Add a small delay for the animation to complete
     setTimeout(() => {
       if (currentIndex < jobs.length - 1) {
         setCurrentIndex(prev => prev + 1);
@@ -77,16 +149,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
     }, 200);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-victaure-blue" />
-        <p className="mt-2 text-muted-foreground">Chargement des offres...</p>
-      </div>
-    );
-  }
-
-  if (!jobs || jobs.length === 0) {
+  if (jobs.length === 0) {
     return (
       <motion.div 
         className="flex flex-col items-center justify-center p-8 text-center"
@@ -118,22 +181,22 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
         <p className="text-muted-foreground mb-6">
           Revenez plus tard pour découvrir de nouvelles missions.
         </p>
-        <button
+        <Button
           onClick={() => {
             setCurrentIndex(0);
             fetchJobs();
           }}
-          className="bg-victaure-blue hover:bg-victaure-blue/90 text-white px-4 py-2 rounded"
+          className="bg-victaure-blue hover:bg-victaure-blue/90 text-white"
         >
           Recommencer
-        </button>
+        </Button>
       </motion.div>
     );
   }
 
   return (
     <div className="relative w-full max-w-md mx-auto" ref={dragConstraintsRef}>
-      {jobs[currentIndex] && (
+      <AnimatePresence>
         <motion.div
           key={currentIndex}
           initial={{ scale: 0.8, opacity: 0 }}
@@ -148,18 +211,34 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
           <AnimatedJobCard
             job={jobs[currentIndex]}
             x={x}
-            rotate={x}
-            opacity={x}
-            scale={x}
+            rotate={rotate}
+            opacity={opacity}
+            scale={scale}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             dragConstraints={dragConstraintsRef}
             isDragging={isDragging}
           />
         </motion.div>
-      )}
+      </AnimatePresence>
       
-      <SwipeControls onSwipe={handleSwipe} />
+      <div className="flex justify-center gap-4 mt-6">
+        <Button
+          variant="outline"
+          size="lg"
+          className="border-destructive text-destructive hover:bg-destructive/10 transition-all duration-200 shadow-sm"
+          onClick={() => handleSwipe("left")}
+        >
+          <ThumbsDown className="h-5 w-5" />
+        </Button>
+        <Button
+          size="lg"
+          className="bg-green-500 hover:bg-green-600 text-white transition-all duration-200 shadow-sm"
+          onClick={() => handleSwipe("right")}
+        >
+          <ThumbsUp className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 }

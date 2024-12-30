@@ -21,10 +21,11 @@ export function SwipeJob() {
     duration: "all",
     experienceLevel: "all",
     location: "",
+    province: "",
     searchTerm: ""
   });
 
-  const { data: myJobs, isLoading: myJobsLoading, refetch: refetchMyJobs } = useQuery({
+  const { data: myJobs, refetch: refetchMyJobs } = useQuery({
     queryKey: ['my-jobs'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -45,42 +46,7 @@ export function SwipeJob() {
         ...job,
         company: "Votre entreprise",
         salary: `${job.budget} CAD`,
-        skills: job.required_skills || []
-      })) as Job[];
-    }
-  });
-
-  const { data: allJobs, isLoading: allJobsLoading } = useQuery({
-    queryKey: ['all-jobs', filters],
-    queryFn: async () => {
-      let query = supabase
-        .from('jobs')
-        .select('*')
-        .eq('status', 'open')
-        .order('created_at', { ascending: false });
-
-      if (filters.category !== 'all') {
-        query = query.eq('category', filters.category);
-      }
-      if (filters.experienceLevel !== 'all') {
-        query = query.eq('experience_level', filters.experienceLevel);
-      }
-      if (filters.location) {
-        query = query.eq('location', filters.location);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching all jobs:', error);
-        return [];
-      }
-
-      return data?.map(job => ({
-        ...job,
-        company: "Company Name",
-        salary: `${job.budget} CAD`,
-        skills: job.required_skills || []
+        skills: []
       })) as Job[];
     }
   });
@@ -94,7 +60,7 @@ export function SwipeJob() {
   };
 
   return (
-    <div className="glass-card p-4 space-y-4 min-h-[600px] flex flex-col">
+    <div className="glass-card p-4 space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-2xl font-bold">Offres disponibles</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -124,14 +90,13 @@ export function SwipeJob() {
         </Dialog>
       </div>
 
-      <Tabs defaultValue="browse" className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="browse">Liste</TabsTrigger>
-          <TabsTrigger value="swipe">Swipe</TabsTrigger>
+      <Tabs defaultValue="browse" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
           <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="browse" className="mt-4 flex-1 flex flex-col">
+        <TabsContent value="browse">
           <JobFiltersPanel 
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -139,42 +104,21 @@ export function SwipeJob() {
             setOpenLocation={setOpenLocation}
           />
           
-          <div className="flex-1 flex justify-center items-center mt-6 relative">
-            {allJobs && allJobs.length > 0 ? (
-              <div className="w-full">
-                <JobList jobs={allJobs} isLoading={allJobsLoading} />
-              </div>
-            ) : (
-              <div className="text-center">
-                <p className="text-gray-500">Aucune mission disponible</p>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="swipe" className="mt-4 flex-1 flex flex-col">
-          <JobFiltersPanel 
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            openLocation={openLocation}
-            setOpenLocation={setOpenLocation}
-          />
-          
-          <div className="flex-1 flex justify-center items-center mt-6">
+          <div className="flex justify-center">
             <SwipeMatch filters={filters} />
           </div>
         </TabsContent>
 
-        <TabsContent value="my-jobs" className="flex-1">
-          <div className="space-y-4 h-full">
+        <TabsContent value="my-jobs">
+          <div className="space-y-4">
             <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
-            <div className="flex-1 overflow-auto">
-              <JobList 
-                jobs={myJobs || []} 
-                isLoading={myJobsLoading}
-                onJobDeleted={refetchMyJobs} 
-              />
-            </div>
+            {myJobs && myJobs.length > 0 ? (
+              <JobList jobs={myJobs} onJobDeleted={refetchMyJobs} />
+            ) : (
+              <p className="text-muted-foreground text-center py-8">
+                Vous n'avez pas encore publié d'annonces.
+              </p>
+            )}
           </div>
         </TabsContent>
       </Tabs>
