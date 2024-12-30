@@ -26,15 +26,15 @@ export function TodoInput({
   onAdd,
 }: TodoInputProps) {
   return (
-    <div className="flex gap-2 w-full">
-      <div className="flex-1 flex gap-2 min-w-[200px]">
-        <Input
-          value={newTodo}
-          onChange={(e) => onTodoChange(e.target.value)}
-          placeholder="Nouvelle tâche..."
-          className="glass-card flex-1 min-w-[180px]"
-          onKeyPress={(e) => e.key === 'Enter' && onAdd()}
-        />
+    <div className="flex flex-col sm:flex-row gap-2 w-full">
+      <Input
+        value={newTodo}
+        onChange={(e) => onTodoChange(e.target.value)}
+        placeholder="Nouvelle tâche..."
+        className="glass-card flex-1 min-w-0"
+        onKeyPress={(e) => e.key === 'Enter' && onAdd()}
+      />
+      <div className="flex gap-2 sm:w-auto w-full">
         <Popover>
           <PopoverTrigger asChild>
             <Button 
@@ -58,15 +58,15 @@ export function TodoInput({
           selectedTime={selectedTime}
           onTimeChange={onTimeChange}
         />
+        <Button 
+          onClick={onAdd} 
+          size="icon"
+          variant="outline"
+          className="glass-card hover:bg-primary hover:text-white transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
       </div>
-      <Button 
-        onClick={onAdd} 
-        size="icon"
-        variant="outline"
-        className="glass-card hover:bg-primary hover:text-white transition-colors"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
     </div>
   );
 }

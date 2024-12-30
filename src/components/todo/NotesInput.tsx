@@ -22,38 +22,40 @@ export function NotesInput({
   onAdd,
 }: NotesInputProps) {
   return (
-    <div className="flex gap-2 w-full">
+    <div className="flex flex-col sm:flex-row gap-2 w-full">
       <Input
         value={newNote}
         onChange={(e) => onNoteChange(e.target.value)}
         placeholder="Nouvelle note..."
-        className="glass-card flex-1 min-w-[180px]"
+        className="glass-card flex-1 min-w-0"
         onKeyPress={(e) => e.key === 'Enter' && onAdd()}
       />
-      <Select onValueChange={onColorChange} defaultValue={selectedColor}>
-        <SelectTrigger className="w-[100px] glass-card">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {colors.map((color) => (
-            <SelectItem 
-              key={color.value} 
-              value={color.value}
-              className={`${color.class} rounded-md`}
-            >
-              {color.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Button 
-        onClick={onAdd}
-        size="icon"
-        variant="outline"
-        className="glass-card hover:bg-primary hover:text-white transition-colors"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+      <div className="flex gap-2 sm:w-auto w-full">
+        <Select onValueChange={onColorChange} defaultValue={selectedColor}>
+          <SelectTrigger className="w-[120px] glass-card">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {colors.map((color) => (
+              <SelectItem 
+                key={color.value} 
+                value={color.value}
+                className={`${color.class} rounded-md`}
+              >
+                {color.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button 
+          onClick={onAdd}
+          size="icon"
+          variant="outline"
+          className="glass-card hover:bg-primary hover:text-white transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }
