@@ -35,15 +35,16 @@ export function AnimatedJobCard({
     <motion.div
       style={{
         x,
-        rotate,
+        rotate: x.get() / 10, // Réduit la rotation pour un effet plus naturel
         opacity,
         scale,
       }}
       drag="x"
+      dragElastic={0.9} // Ajoute de l'élasticité au swipe
       dragConstraints={dragConstraints}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      className={`cursor-grab active:cursor-grabbing ${isDragging ? 'z-50' : ''}`}
+      className={`cursor-grab active:cursor-grabbing touch-none select-none ${isDragging ? 'z-50' : ''}`}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
