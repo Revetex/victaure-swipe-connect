@@ -15,7 +15,7 @@ export function Logo({ className, size = "md" }: LogoProps) {
   return (
     <div className={cn("relative group", className)}>
       <img
-        src="/lovable-uploads/c3f6a4e9-90e3-48ad-b045-ae534bbbdfd7.png"
+        src="/lovable-uploads/465f04b5-cc68-4002-adcc-ccd6492ca572.png"
         alt="Victaure Logo"
         className={cn(
           "transition-all duration-300 group-hover:scale-105",

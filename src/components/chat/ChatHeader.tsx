@@ -11,7 +11,11 @@ export function ChatHeader({ isThinking }: ChatHeaderProps) {
       <div className="flex items-center gap-4">
         <div className="relative">
           <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
-            <Bot className={`h-6 w-6 text-victaure-blue ${isThinking ? 'animate-pulse' : ''}`} />
+            <img
+              src="/lovable-uploads/465f04b5-cc68-4002-adcc-ccd6492ca572.png"
+              alt="Mr. Victaure"
+              className={`h-10 w-10 rounded-full ${isThinking ? 'animate-pulse' : ''}`}
+            />
           </div>
           <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-victaure-green/20 flex items-center justify-center">
             <Brain className={`h-3 w-3 text-victaure-green ${isThinking ? 'animate-spin' : ''}`} />
