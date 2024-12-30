@@ -4,11 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VCardCreationForm } from "@/components/VCardCreationForm";
 import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -18,6 +19,7 @@ export default function Dashboard() {
       
       if (!session) {
         console.log("No session found, redirecting to auth");
+        toast.info("Veuillez vous connecter pour accéder au tableau de bord");
         navigate("/auth");
         return;
       }
@@ -30,7 +32,7 @@ export default function Dashboard() {
 
       if (error) {
         console.error("Error checking profile:", error);
-        toast({
+        uiToast({
           variant: "destructive",
           title: "Erreur",
           description: "Impossible de vérifier votre profil",
@@ -56,7 +58,7 @@ export default function Dashboard() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, toast]);
+  }, [navigate, uiToast]);
 
   if (hasProfile === null) {
     return (
