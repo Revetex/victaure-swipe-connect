@@ -7,9 +7,11 @@ import { JobFilters, applyJobFilters } from "@/components/jobs/JobFilterUtils";
 export function useJobSwipe(filters: JobFilters) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchJobs = async () => {
     try {
+      setIsLoading(true);
       let query = supabase
         .from("jobs")
         .select("*")
@@ -19,7 +21,11 @@ export function useJobSwipe(filters: JobFilters) {
       query = applyJobFilters(query, filters);
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching jobs:", error);
+        toast.error("Erreur lors du chargement des offres");
+        return;
+      }
 
       if (data) {
         const formattedJobs = data.map(job => ({
@@ -32,14 +38,23 @@ export function useJobSwipe(filters: JobFilters) {
           contract_type: job.contract_type,
           experience_level: job.experience_level,
           subcategory: job.subcategory,
-          skills: job.required_skills || []
+          skills: job.required_skills || [],
+          employer_id: job.employer_id,
+          description: job.description,
+          budget: job.budget,
+          status: job.status,
+          created_at: job.created_at,
+          updated_at: job.updated_at
         }));
+        console.log("Formatted jobs:", formattedJobs);
         setJobs(formattedJobs);
         setCurrentIndex(0);
       }
     } catch (error) {
-      console.error("Error fetching jobs:", error);
+      console.error("Error in fetchJobs:", error);
       toast.error("Erreur lors du chargement des offres");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,7 +83,13 @@ export function useJobSwipe(filters: JobFilters) {
             contract_type: newJob.contract_type,
             experience_level: newJob.experience_level,
             subcategory: newJob.subcategory,
-            skills: newJob.required_skills || []
+            skills: newJob.required_skills || [],
+            employer_id: newJob.employer_id,
+            description: newJob.description,
+            budget: newJob.budget,
+            status: newJob.status,
+            created_at: newJob.created_at,
+            updated_at: newJob.updated_at
           }, ...prevJobs]);
         }
       )
@@ -83,6 +104,7 @@ export function useJobSwipe(filters: JobFilters) {
     jobs,
     currentIndex,
     setCurrentIndex,
-    fetchJobs
+    fetchJobs,
+    isLoading
   };
 }

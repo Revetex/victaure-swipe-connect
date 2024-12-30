@@ -6,13 +6,14 @@ import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { JobFilters } from "./jobs/JobFilterUtils";
 import { useJobSwipe } from "@/hooks/useJobSwipe";
 import { SwipeControls } from "./jobs/SwipeControls";
+import { Loader2 } from "lucide-react";
 
 interface SwipeMatchProps {
   filters: JobFilters;
 }
 
 export function SwipeMatch({ filters }: SwipeMatchProps) {
-  const { jobs, currentIndex, setCurrentIndex, fetchJobs } = useJobSwipe(filters);
+  const { jobs, currentIndex, setCurrentIndex, fetchJobs, isLoading } = useJobSwipe(filters);
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   
@@ -75,6 +76,15 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
       }
     }, 200);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-victaure-blue" />
+        <p className="mt-2 text-muted-foreground">Chargement des offres...</p>
+      </div>
+    );
+  }
 
   if (!jobs || jobs.length === 0) {
     return (
