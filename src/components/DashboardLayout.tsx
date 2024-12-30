@@ -14,7 +14,7 @@ export function DashboardLayout() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.15
       }
     }
   };
@@ -33,15 +33,15 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="relative min-h-screen bg-nature-pattern bg-cover bg-center bg-fixed">
-      {/* Semi-transparent overlay */}
-      <div className="absolute inset-0 bg-black/40" />
+    <div className="min-h-screen bg-nature-pattern bg-cover bg-center bg-fixed">
+      {/* Semi-transparent gradient overlay for better readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50 backdrop-blur-[2px]" />
       
       {/* Content */}
       <div className="relative z-10 min-h-screen">
-        <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="container mx-auto p-4 sm:p-6 lg:p-8">
           <motion.div 
-            className="max-w-[2000px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -49,10 +49,12 @@ export function DashboardLayout() {
             {/* Messages Section */}
             <motion.div 
               variants={itemVariants}
-              className="col-span-1 md:col-span-1 xl:col-span-1"
+              className="col-span-1"
             >
-              <div className="glass-card h-full p-5 rounded-xl">
-                <Messages />
+              <div className="glass-card rounded-xl shadow-xl shadow-black/5 h-full">
+                <div className="p-4 sm:p-6">
+                  <Messages />
+                </div>
               </div>
             </motion.div>
 
@@ -61,7 +63,7 @@ export function DashboardLayout() {
               variants={itemVariants}
               className="col-span-1 md:col-span-1 xl:col-span-2"
             >
-              <div className="glass-card h-full rounded-xl">
+              <div className="glass-card rounded-xl shadow-xl shadow-black/5 h-full">
                 <SwipeJob />
               </div>
             </motion.div>
@@ -71,8 +73,10 @@ export function DashboardLayout() {
               variants={itemVariants}
               className="col-span-1"
             >
-              <div className="glass-card h-full p-5 rounded-xl">
-                <TodoList />
+              <div className="glass-card rounded-xl shadow-xl shadow-black/5 h-full">
+                <div className="p-4 sm:p-6">
+                  <TodoList />
+                </div>
               </div>
             </motion.div>
 
@@ -81,8 +85,10 @@ export function DashboardLayout() {
               variants={itemVariants}
               className="col-span-1 md:col-span-2 xl:col-span-2"
             >
-              <div className="glass-card h-full p-5 rounded-xl">
-                <PaymentBox />
+              <div className="glass-card rounded-xl shadow-xl shadow-black/5 h-full">
+                <div className="p-4 sm:p-6">
+                  <PaymentBox />
+                </div>
               </div>
             </motion.div>
 
@@ -91,8 +97,10 @@ export function DashboardLayout() {
               variants={itemVariants}
               className="col-span-1 md:col-span-2 xl:col-span-1 2xl:col-span-2"
             >
-              <div className="glass-card h-full p-5 rounded-xl">
-                <VCard />
+              <div className="glass-card rounded-xl shadow-xl shadow-black/5 h-full">
+                <div className="p-4 sm:p-6">
+                  <VCard />
+                </div>
               </div>
             </motion.div>
           </motion.div>
