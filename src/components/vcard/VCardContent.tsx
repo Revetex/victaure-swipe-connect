@@ -61,8 +61,8 @@ export function VCardContent({
       transition={{ duration: 0.5 }}
       className="w-full px-2 sm:px-4"
     >
-      <Card className="w-full max-w-2xl mx-auto glass-card backdrop-blur-sm bg-gradient-to-br from-white/40 to-white/10 dark:from-gray-900/40 dark:to-gray-900/10 border-indigo-200/20 dark:border-indigo-800/20">
-        <CardContent className="p-3 sm:p-6">
+      <Card className="w-full max-w-2xl mx-auto overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-lg border border-indigo-200/20 dark:border-indigo-800/20">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
             <div className="flex-1 min-w-0">
               <VCardHeader
@@ -83,15 +83,22 @@ export function VCardContent({
             </div>
 
             {!isExpanded && (
-              <div className="shrink-0 sm:ml-4">
-                <QRCodeSVG
-                  value={window.location.href}
-                  size={80}
-                  level="H"
-                  includeMargin={true}
-                  className="bg-white p-1.5 rounded-lg shadow-sm"
-                />
-              </div>
+              <motion.div 
+                className="shrink-0 sm:ml-4"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="p-2 bg-white rounded-xl shadow-md">
+                  <QRCodeSVG
+                    value={window.location.href}
+                    size={80}
+                    level="H"
+                    includeMargin={false}
+                    className="rounded-lg"
+                  />
+                </div>
+              </motion.div>
             )}
           </div>
 
@@ -116,55 +123,79 @@ export function VCardContent({
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsExpanded(false)}
-                    className="absolute top-2 right-2 hover:bg-primary/5"
+                    className="absolute top-2 right-2 hover:bg-primary/5 transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 )}
 
                 <div className="grid gap-6 sm:gap-8">
-                  <VCardContact
-                    profile={tempProfile}
-                    isEditing={isEditing}
-                    setProfile={setTempProfile}
-                  />
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <VCardContact
+                      profile={tempProfile}
+                      isEditing={isEditing}
+                      setProfile={setTempProfile}
+                    />
+                  </motion.div>
 
-                  <VCardSkills
-                    profile={tempProfile}
-                    isEditing={isEditing}
-                    setProfile={setTempProfile}
-                    newSkill={newSkill}
-                    setNewSkill={setNewSkill}
-                    handleAddSkill={() => {
-                      if (newSkill && !tempProfile.skills?.includes(newSkill)) {
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <VCardSkills
+                      profile={tempProfile}
+                      isEditing={isEditing}
+                      setProfile={setTempProfile}
+                      newSkill={newSkill}
+                      setNewSkill={setNewSkill}
+                      handleAddSkill={() => {
+                        if (newSkill && !tempProfile.skills?.includes(newSkill)) {
+                          setTempProfile({
+                            ...tempProfile,
+                            skills: [...(tempProfile.skills || []), newSkill],
+                          });
+                          setNewSkill("");
+                        }
+                      }}
+                      handleRemoveSkill={(skillToRemove: string) => {
                         setTempProfile({
                           ...tempProfile,
-                          skills: [...(tempProfile.skills || []), newSkill],
+                          skills: tempProfile.skills?.filter(
+                            (skill: string) => skill !== skillToRemove
+                          ),
                         });
-                        setNewSkill("");
-                      }
-                    }}
-                    handleRemoveSkill={(skillToRemove: string) => {
-                      setTempProfile({
-                        ...tempProfile,
-                        skills: tempProfile.skills?.filter(
-                          (skill: string) => skill !== skillToRemove
-                        ),
-                      });
-                    }}
-                  />
+                      }}
+                    />
+                  </motion.div>
 
-                  <VCardEducation
-                    profile={tempProfile}
-                    isEditing={isEditing}
-                    setProfile={setTempProfile}
-                  />
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <VCardEducation
+                      profile={tempProfile}
+                      isEditing={isEditing}
+                      setProfile={setTempProfile}
+                    />
+                  </motion.div>
 
-                  <VCardCertifications
-                    profile={tempProfile}
-                    isEditing={isEditing}
-                    setProfile={setTempProfile}
-                  />
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <VCardCertifications
+                      profile={tempProfile}
+                      isEditing={isEditing}
+                      setProfile={setTempProfile}
+                    />
+                  </motion.div>
                 </div>
 
                 <VCardActions

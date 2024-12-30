@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Download, Edit2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface VCardCompactActionsProps {
   onExpand: () => void;
@@ -8,12 +9,17 @@ interface VCardCompactActionsProps {
 
 export function VCardCompactActions({ onExpand, onEdit }: VCardCompactActionsProps) {
   return (
-    <div className="flex justify-end gap-2 mt-4">
+    <motion.div 
+      className="flex justify-end gap-2 mt-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+    >
       <Button
         variant="outline"
         size="sm"
         onClick={onExpand}
-        className="hover:bg-primary/5"
+        className="bg-white/50 hover:bg-white/80 dark:bg-gray-900/50 dark:hover:bg-gray-900/80 backdrop-blur-sm transition-all duration-300"
       >
         <Download className="h-4 w-4 mr-2" />
         Télécharger
@@ -22,11 +28,11 @@ export function VCardCompactActions({ onExpand, onEdit }: VCardCompactActionsPro
         variant="outline"
         size="sm"
         onClick={onEdit}
-        className="hover:bg-primary/5"
+        className="bg-white/50 hover:bg-white/80 dark:bg-gray-900/50 dark:hover:bg-gray-900/80 backdrop-blur-sm transition-all duration-300"
       >
         <Edit2 className="h-4 w-4 mr-2" />
         Éditer
       </Button>
-    </div>
+    </motion.div>
   );
 }
