@@ -21,7 +21,8 @@ export function DashboardLayout() {
   const pages = [
     {
       component: <Messages />,
-      title: "Messages & Notifications"
+      title: "Messages & Notifications",
+      color: "bg-primary/5"
     },
     {
       component: (
@@ -30,11 +31,13 @@ export function DashboardLayout() {
           <VCard />
         </div>
       ),
-      title: "Offres & Profil"
+      title: "Offres & Profil",
+      color: "bg-primary/10"
     },
     {
       component: <TodoList />,
-      title: "Tâches & Notes"
+      title: "Tâches & Notes",
+      color: "bg-primary/15"
     }
   ];
 
@@ -46,12 +49,23 @@ export function DashboardLayout() {
           initial={{ opacity: 0, x: 300 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -300 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 30,
+            mass: 0.8
+          }}
           className="h-screen w-screen"
         >
           <div className="container mx-auto px-4 py-4 h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h1 className="text-xl font-bold">{pages[currentPage].title}</h1>
+              <motion.h1 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xl font-bold"
+              >
+                {pages[currentPage].title}
+              </motion.h1>
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
@@ -63,9 +77,14 @@ export function DashboardLayout() {
                 </Button>
                 <div className="flex gap-1">
                   {pages.map((_, index) => (
-                    <div
+                    <motion.div
                       key={index}
-                      className={`h-2 w-2 rounded-full transition-colors ${
+                      initial={{ scale: 0.8 }}
+                      animate={{ 
+                        scale: currentPage === index ? 1 : 0.8,
+                        backgroundColor: currentPage === index ? "var(--primary)" : "var(--primary-light)"
+                      }}
+                      className={`h-2 w-2 rounded-full transition-all duration-300 ${
                         currentPage === index
                           ? "bg-primary"
                           : "bg-primary/20"
@@ -84,24 +103,36 @@ export function DashboardLayout() {
               </div>
             </div>
             
-            <div className="flex-1 glass-card rounded-lg overflow-hidden">
+            <motion.div 
+              className={`flex-1 glass-card rounded-lg overflow-hidden ${pages[currentPage].color}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+            >
               {pages[currentPage].component}
-            </div>
+            </motion.div>
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Touch swipe handlers */}
+      {/* Touch swipe handlers with improved sensitivity */}
       <div
         className="absolute inset-0 z-10"
         onTouchStart={(e) => {
           const touch = e.touches[0];
           (e.currentTarget as any).touchStartX = touch.clientX;
+          (e.currentTarget as any).touchStartTime = Date.now();
         }}
         onTouchEnd={(e) => {
           const touch = e.changedTouches[0];
           const deltaX = touch.clientX - (e.currentTarget as any).touchStartX;
-          if (Math.abs(deltaX) > 50) {
+          const deltaTime = Date.now() - (e.currentTarget as any).touchStartTime;
+          
+          // Calculate swipe velocity
+          const velocity = Math.abs(deltaX) / deltaTime;
+          
+          // Adjust sensitivity based on velocity and distance
+          if (Math.abs(deltaX) > 50 || (Math.abs(deltaX) > 20 && velocity > 0.5)) {
             handleSwipe(deltaX > 0 ? -1 : 1);
           }
         }}
