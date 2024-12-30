@@ -36,7 +36,7 @@ export function DashboardLayout() {
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       {/* Content */}
       <div className="relative z-10 flex-1 overflow-auto py-8 sm:py-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px] pb-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px] pb-12">
           <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 md:gap-10"
             variants={containerVariants}
@@ -80,10 +80,10 @@ export function DashboardLayout() {
             {/* VCard Section */}
             <motion.div 
               variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px]"
+              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px] mb-8"
             >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <div className="p-6 sm:p-8 h-full">
+              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
+                <div className="p-6 sm:p-8">
                   <VCard />
                 </div>
               </div>
