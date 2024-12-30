@@ -16,14 +16,14 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
         Localisation
       </label>
       <Select
-        value={filters.location}
-        onValueChange={(value) => onFilterChange("location", value)}
+        value={filters.location || "all"}
+        onValueChange={(value) => onFilterChange("location", value === "all" ? "" : value)}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Sélectionner une ville..." />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Toutes les villes</SelectItem>
+          <SelectItem value="all">Toutes les villes</SelectItem>
           {quebecCities.map((city) => (
             <SelectItem key={city} value={city}>
               {city}
