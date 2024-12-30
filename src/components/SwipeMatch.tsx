@@ -32,7 +32,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   const background = useTransform(
     x,
     [-200, 0, 200],
-    ["rgba(239, 68, 68, 0.1)", "rgba(0, 0, 0, 0)", "rgba(34, 197, 94, 0.1)"]
+    ["rgba(239, 68, 68, 0.2)", "rgba(0, 0, 0, 0)", "rgba(34, 197, 94, 0.2)"]
   );
 
   const handleDragStart = () => {
@@ -51,7 +51,6 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
       setSwipeDirection("left");
       await handleSwipeWithMatch("left");
     } else {
-      // Reset to center with spring animation if not swiped far enough
       await animate(x, 0, {
         type: "spring",
         stiffness: 400,
@@ -67,7 +66,8 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     await animate(x, targetX, {
       type: "spring",
       stiffness: 300,
-      damping: 30
+      damping: 30,
+      velocity: direction === "left" ? -800 : 800
     });
 
     if (direction === "right" && jobs[currentIndex]) {
@@ -86,9 +86,15 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>;
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex items-center justify-center h-64"
+      >
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </motion.div>
+    );
   }
 
   if (!jobs || jobs.length === 0) {
@@ -96,14 +102,23 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   }
 
   if (currentIndex >= jobs.length) {
-    return <SwipeEmptyState onRefresh={() => {
-      setCurrentIndex(0);
-      fetchJobs();
-    }} />;
+    return (
+      <SwipeEmptyState 
+        onRefresh={() => {
+          setCurrentIndex(0);
+          fetchJobs();
+        }} 
+      />
+    );
   }
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
+    <motion.div 
+      className="relative w-full max-w-md mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <motion.div
         style={{ background }}
         className="absolute inset-0 rounded-3xl transition-colors"
@@ -117,7 +132,12 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
           opacity: 0,
           transition: { duration: 0.2 }
         }}
-        transition={{ duration: 0.3 }}
+        transition={{ 
+          duration: 0.3,
+          type: "spring",
+          stiffness: 300,
+          damping: 25
+        }}
       >
         <AnimatedJobCard
           job={jobs[currentIndex]}
@@ -132,6 +152,6 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
       </motion.div>
       
       <SwipeControls onSwipe={handleButtonSwipe} isAnimating={isAnimating} />
-    </div>
+    </motion.div>
   );
 }
