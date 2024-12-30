@@ -34,7 +34,7 @@
  
     --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -77,6 +77,6 @@
 
 @layer components {
   .glass-card {
-    @apply relative overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border border-white/20 dark:border-gray-800/20;
+    @apply relative overflow-hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/30 dark:border-gray-800/30;
   }
 }
