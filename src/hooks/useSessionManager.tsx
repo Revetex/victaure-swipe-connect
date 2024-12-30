@@ -36,6 +36,9 @@ export const useSessionManager = () => {
           if (user) {
             setSession(storedSession);
           }
+        } else {
+          // No stored session found, redirect to auth
+          navigate("/auth");
         }
       } catch (error) {
         console.error("Session initialization error:", error);
@@ -53,17 +56,18 @@ export const useSessionManager = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      console.log("Auth state changed:", event, currentSession);
+      console.log("Auth state changed:", event);
       
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !currentSession) {
         setSession(null);
-        toast.info("Déconnexion effectuée");
+        localStorage.clear(); // Clear all local storage to ensure no stale tokens remain
+        toast.info("Session expirée, veuillez vous reconnecter");
         navigate("/auth");
       } else if (event === 'SIGNED_IN') {
         setSession(currentSession);
         toast.success("Connexion réussie");
         navigate("/dashboard");
-      } else if (event === 'TOKEN_REFRESHED') {
+      } else if (event === 'TOKEN_REFRESHED' && currentSession) {
         setSession(currentSession);
         console.log("Token refreshed successfully");
       } else if (event === 'USER_UPDATED') {
