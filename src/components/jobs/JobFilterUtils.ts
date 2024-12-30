@@ -29,5 +29,9 @@ export const applyJobFilters = (
     query = query.eq('experience_level', filters.experienceLevel);
   }
 
+  if (filters.duration && filters.duration !== 'all') {
+    query = query.eq('contract_type', filters.duration);
+  }
+
   return query;
 };
