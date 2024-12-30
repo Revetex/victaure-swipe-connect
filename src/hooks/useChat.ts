@@ -54,12 +54,13 @@ export function useChat() {
 
     const { error } = await supabase
       .from('ai_chat_messages')
-      .insert([{
+      .insert({
+        id: message.id,
         content: message.content,
         sender: message.sender,
         user_id: user.id,
         created_at: message.timestamp.toISOString(),
-      }]);
+      });
 
     if (error) {
       console.error('Error saving message:', error);
