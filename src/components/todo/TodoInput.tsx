@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, Clock } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { TimeSelector } from "./TimeSelector";
@@ -39,9 +39,9 @@ export function TodoInput({
           <Popover>
             <PopoverTrigger asChild>
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="icon"
-                className={`glass-card ${selectedDate ? 'text-primary' : ''}`}
+                className={selectedDate ? 'text-primary' : 'text-muted-foreground'}
               >
                 <CalendarIcon className="h-4 w-4" />
               </Button>
@@ -62,8 +62,8 @@ export function TodoInput({
           <Button 
             onClick={onAdd} 
             size="icon"
-            variant="outline"
-            className="glass-card hover:bg-primary hover:text-white transition-colors"
+            variant="ghost"
+            className="hover:bg-primary hover:text-primary-foreground transition-colors"
           >
             <Plus className="h-4 w-4" />
           </Button>

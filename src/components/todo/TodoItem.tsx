@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Clock } from "lucide-react";
 import { Todo } from "@/types/todo";
 import { cn } from "@/lib/utils";
 
@@ -34,10 +34,13 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
           {todo.text}
         </span>
         {(todo.dueDate || todo.dueTime) && (
-          <span className="text-xs text-muted-foreground">
-            {todo.dueDate && `Pour le ${format(todo.dueDate, 'dd/MM/yyyy', { locale: fr })}`}
-            {todo.dueTime && ` à ${todo.dueTime}`}
-          </span>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            <span>
+              {todo.dueDate && `Pour le ${format(todo.dueDate, 'dd/MM/yyyy', { locale: fr })}`}
+              {todo.dueTime && ` à ${todo.dueTime}`}
+            </span>
+          </div>
         )}
       </div>
       <Button

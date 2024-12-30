@@ -303,26 +303,38 @@ export type Database = {
       }
       notes: {
         Row: {
+          category: string | null
           color: string
           created_at: string | null
           id: string
+          pinned: boolean | null
+          priority: string | null
           text: string
+          title: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          category?: string | null
           color?: string
           created_at?: string | null
           id?: string
+          pinned?: boolean | null
+          priority?: string | null
           text: string
+          title?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          category?: string | null
           color?: string
           created_at?: string | null
           id?: string
+          pinned?: boolean | null
+          priority?: string | null
           text?: string
+          title?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -503,33 +515,39 @@ export type Database = {
       todos: {
         Row: {
           all_day: boolean | null
+          category: string | null
           completed: boolean | null
           created_at: string | null
           due_date: string | null
           due_time: string | null
           id: string
+          priority: string | null
           text: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
           all_day?: boolean | null
+          category?: string | null
           completed?: boolean | null
           created_at?: string | null
           due_date?: string | null
           due_time?: string | null
           id?: string
+          priority?: string | null
           text: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
           all_day?: boolean | null
+          category?: string | null
           completed?: boolean | null
           created_at?: string | null
           due_date?: string | null
           due_time?: string | null
           id?: string
+          priority?: string | null
           text?: string
           updated_at?: string | null
           user_id?: string
