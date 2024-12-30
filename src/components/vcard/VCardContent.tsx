@@ -4,6 +4,7 @@ import { VCardHeader } from "../VCardHeader";
 import { VCardContact } from "../VCardContact";
 import { VCardSkills } from "../VCardSkills";
 import { VCardCertifications } from "../VCardCertifications";
+import { VCardEducation } from "../VCardEducation";
 import { VCardActions } from "../VCardActions";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";

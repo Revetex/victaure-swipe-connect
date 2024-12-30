@@ -9,6 +9,7 @@ interface Education {
   field_of_study?: string;
   start_date?: string;
   end_date?: string;
+  description?: string;
 }
 
 interface VCardEducationProps {
