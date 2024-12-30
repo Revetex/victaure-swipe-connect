@@ -134,6 +134,7 @@ export type Database = {
           employer_id: string
           experience_level: string
           id: string
+          images: string[] | null
           latitude: number | null
           location: string
           longitude: number | null
@@ -151,6 +152,7 @@ export type Database = {
           employer_id: string
           experience_level?: string
           id?: string
+          images?: string[] | null
           latitude?: number | null
           location: string
           longitude?: number | null
@@ -168,6 +170,7 @@ export type Database = {
           employer_id?: string
           experience_level?: string
           id?: string
+          images?: string[] | null
           latitude?: number | null
           location?: string
           longitude?: number | null

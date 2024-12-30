@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { quebecCities } from "@/data/cities";
+import { provinceData } from "@/data/provinces";
 import {
   Select,
   SelectContent,
@@ -45,6 +45,11 @@ export function JobBasicInfoFields({
     }
   };
 
+  const handleProvinceChange = (value: string) => {
+    onChange("province", value);
+    onChange("location", ""); // Reset city when province changes
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4">
@@ -74,22 +79,17 @@ export function JobBasicInfoFields({
             <Label>Province</Label>
             <Select
               value={province}
-              onValueChange={(value) => onChange("province", value)}
+              onValueChange={handleProvinceChange}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez une province" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Québec">Québec</SelectItem>
-                <SelectItem value="Ontario">Ontario</SelectItem>
-                <SelectItem value="Alberta">Alberta</SelectItem>
-                <SelectItem value="Colombie-Britannique">Colombie-Britannique</SelectItem>
-                <SelectItem value="Manitoba">Manitoba</SelectItem>
-                <SelectItem value="Nouveau-Brunswick">Nouveau-Brunswick</SelectItem>
-                <SelectItem value="Terre-Neuve-et-Labrador">Terre-Neuve-et-Labrador</SelectItem>
-                <SelectItem value="Nouvelle-Écosse">Nouvelle-Écosse</SelectItem>
-                <SelectItem value="Île-du-Prince-Édouard">Île-du-Prince-Édouard</SelectItem>
-                <SelectItem value="Saskatchewan">Saskatchewan</SelectItem>
+                {Object.keys(provinceData).map((prov) => (
+                  <SelectItem key={prov} value={prov}>
+                    {prov}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -99,12 +99,13 @@ export function JobBasicInfoFields({
             <Select
               value={location}
               onValueChange={(value) => onChange("location", value)}
+              disabled={!province}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez une ville..." />
               </SelectTrigger>
               <SelectContent>
-                {quebecCities.map((city) => (
+                {province && provinceData[province]?.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}
                   </SelectItem>

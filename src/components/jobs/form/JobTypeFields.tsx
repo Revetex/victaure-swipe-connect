@@ -1,5 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { contractTypes, experienceLevels } from "@/data/provinces";
 
 interface JobTypeFieldsProps {
   contractType: string;
@@ -12,28 +13,6 @@ export function JobTypeFields({
   experienceLevel,
   onChange,
 }: JobTypeFieldsProps) {
-  const contractTypes = [
-    "CDI",
-    "CDD",
-    "Freelance",
-    "Stage",
-    "Alternance",
-    "Temps partiel",
-    "Temps plein",
-    "Intérim",
-    "Saisonnier"
-  ];
-
-  const experienceLevels = [
-    "Débutant",
-    "Junior (1-3 ans)",
-    "Intermédiaire (3-5 ans)",
-    "Senior (5-8 ans)",
-    "Expert (8+ ans)",
-    "Lead",
-    "Directeur"
-  ];
-
   return (
     <>
       <div className="space-y-2">
