@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
 import { quebecCities } from "@/data/cities";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -19,8 +18,6 @@ interface JobBasicInfoFieldsProps {
 
 export function JobBasicInfoFields({ title, description, budget, location, onChange }: JobBasicInfoFieldsProps) {
   const [open, setOpen] = useState(false);
-  // Initialize cities with an empty array if quebecCities is undefined
-  const cities = Array.isArray(quebecCities) ? quebecCities : [];
 
   return (
     <div className="space-y-4">
@@ -55,9 +52,7 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 aria-expanded={open}
                 className="w-full justify-between"
               >
-                {location
-                  ? cities.find((city) => city === location) || "Sélectionnez une ville..."
-                  : "Sélectionnez une ville..."}
+                {location || "Sélectionnez une ville..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -65,8 +60,8 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
               <Command>
                 <CommandInput placeholder="Rechercher une ville..." />
                 <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
-                <CommandGroup className="max-h-60 overflow-auto">
-                  {cities.map((city) => (
+                <CommandGroup>
+                  {(quebecCities || []).map((city) => (
                     <CommandItem
                       key={city}
                       value={city}
