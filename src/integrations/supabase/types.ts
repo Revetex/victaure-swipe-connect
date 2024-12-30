@@ -40,39 +40,92 @@ export type Database = {
         Row: {
           created_at: string | null
           credential_url: string | null
+          description: string | null
           expiry_date: string | null
           id: string
           issue_date: string | null
           issuer: string
           profile_id: string
+          skills: string[] | null
           title: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           credential_url?: string | null
+          description?: string | null
           expiry_date?: string | null
           id?: string
           issue_date?: string | null
           issuer: string
           profile_id: string
+          skills?: string[] | null
           title: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           credential_url?: string | null
+          description?: string | null
           expiry_date?: string | null
           id?: string
           issue_date?: string | null
           issuer?: string
           profile_id?: string
+          skills?: string[] | null
           title?: string
           updated_at?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "certifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      education: {
+        Row: {
+          created_at: string | null
+          degree: string
+          description: string | null
+          end_date: string | null
+          field_of_study: string | null
+          id: string
+          profile_id: string | null
+          school_name: string
+          start_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          degree: string
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          id?: string
+          profile_id?: string | null
+          school_name: string
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          degree?: string
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          id?: string
+          profile_id?: string | null
+          school_name?: string
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "education_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"

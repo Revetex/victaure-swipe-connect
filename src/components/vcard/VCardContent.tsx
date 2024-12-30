@@ -153,6 +153,12 @@ export function VCardContent({
                     }}
                   />
 
+                  <VCardEducation
+                    profile={tempProfile}
+                    isEditing={isEditing}
+                    setProfile={setTempProfile}
+                  />
+
                   <VCardCertifications
                     profile={tempProfile}
                     isEditing={isEditing}

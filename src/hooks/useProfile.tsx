@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Certification, Experience } from "@/types/profile";
+import { UserProfile, Certification, Experience, Education } from "@/types/profile";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -34,6 +34,14 @@ export function useProfile() {
 
         if (certError) throw certError;
 
+        // Fetch education
+        const { data: education, error: eduError } = await supabase
+          .from('education')
+          .select('*')
+          .eq('profile_id', user.id);
+
+        if (eduError) throw eduError;
+
         // Fetch experiences
         const { data: experiences, error: expError } = await supabase
           .from('experiences')
@@ -47,7 +55,7 @@ export function useProfile() {
           id: cert.id,
           profile_id: cert.profile_id,
           title: cert.title,
-          institution: cert.issuer, // Map issuer to institution
+          institution: cert.issuer,
           year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
           created_at: cert.created_at,
           updated_at: cert.updated_at,
@@ -57,9 +65,20 @@ export function useProfile() {
           issuer: cert.issuer
         }));
 
+        const mappedEducation: Education[] = (education || []).map(edu => ({
+          id: edu.id,
+          school_name: edu.school_name,
+          degree: edu.degree,
+          field_of_study: edu.field_of_study,
+          start_date: edu.start_date,
+          end_date: edu.end_date,
+          description: edu.description
+        }));
+
         const fullProfile: UserProfile = {
           ...profileData,
           certifications: mappedCertifications,
+          education: mappedEducation,
           experiences: experiences || [],
         };
 
@@ -79,6 +98,7 @@ export function useProfile() {
             latitude: null,
             longitude: null,
             certifications: [],
+            education: [],
             experiences: [],
           };
 

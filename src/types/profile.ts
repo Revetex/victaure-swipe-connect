@@ -12,6 +12,16 @@ export interface Certification {
   issuer: string;
 }
 
+export interface Education {
+  id: string;
+  school_name: string;
+  degree: string;
+  field_of_study?: string;
+  start_date?: string;
+  end_date?: string;
+  description?: string;
+}
+
 export interface Experience {
   id: string;
   company: string;
@@ -36,5 +46,6 @@ export interface UserProfile {
   latitude: number | null;
   longitude: number | null;
   certifications?: Certification[];
+  education?: Education[];
   experiences?: Experience[];
 }
