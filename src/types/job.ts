@@ -19,6 +19,8 @@ export interface Job {
   subcategory?: string;
   duration?: string;
   images?: string[];
+  required_skills?: string[];
+  preferred_skills?: string[];
 }
 
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
