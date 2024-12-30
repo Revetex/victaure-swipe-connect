@@ -26,7 +26,7 @@ export function useSwipeJobs(filters: JobFilters) {
           )
         `)
         .eq('status', 'open')
-        .neq('employer_id', user.id) // Don't show user's own jobs
+        .neq('employer_id', user.id)
         .order('created_at', { ascending: false });
 
       query = applyJobFilters(query, filters);
@@ -77,12 +77,18 @@ export function useSwipeJobs(filters: JobFilters) {
         },
         (payload) => {
           console.log('Nouvelle mission reçue:', payload);
-          const newJob = payload.new;
+          const newJob = payload.new as Job;
           setJobs(prevJobs => [{
             ...newJob,
             company: "Nouvelle entreprise",
             salary: `${newJob.budget} CAD`,
             skills: newJob.required_skills || [],
+            // Ensure all required Job properties are present
+            title: newJob.title,
+            location: newJob.location,
+            category: newJob.category,
+            contract_type: newJob.contract_type,
+            experience_level: newJob.experience_level,
           }, ...prevJobs]);
         }
       )
