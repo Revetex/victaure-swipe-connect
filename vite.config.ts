@@ -8,12 +8,12 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     strictPort: true,
-    hmr: {
+    hmr: mode === 'development' ? {
       protocol: 'ws',
       host: 'localhost',
       port: 8080,
       clientPort: 8080,
-    },
+    } : false,
     cors: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -32,5 +32,12 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
   }
 }));
