@@ -1,8 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { LocationMap } from "@/components/map/LocationMap";
 import { useState } from "react";
+import { cities } from "@/data/cities";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface JobBasicInfoFieldsProps {
   title: string;
@@ -19,13 +24,7 @@ export function JobBasicInfoFields({
   location,
   onChange,
 }: JobBasicInfoFieldsProps) {
-  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
-
-  const handleLocationSelect = (lat: number, lng: number) => {
-    setCoordinates({ lat, lng });
-    onChange("latitude", lat);
-    onChange("longitude", lng);
-  };
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -65,20 +64,48 @@ export function JobBasicInfoFields({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="location">Localisation</Label>
-        <Input
-          id="location"
-          placeholder="Ex: Montréal, QC"
-          value={location}
-          onChange={(e) => onChange("location", e.target.value)}
-          required
-        />
-        <LocationMap
-          latitude={coordinates?.lat}
-          longitude={coordinates?.lng}
-          onLocationSelect={handleLocationSelect}
-          isEditing={true}
-        />
+        <Label>Localisation</Label>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-between"
+            >
+              {location
+                ? cities.find((city) => city.toLowerCase() === location.toLowerCase())
+                : "Sélectionnez une ville..."}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0">
+            <Command>
+              <CommandInput placeholder="Rechercher une ville..." />
+              <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
+              <CommandGroup className="max-h-60 overflow-auto">
+                {cities.map((city) => (
+                  <CommandItem
+                    key={city}
+                    value={city}
+                    onSelect={(currentValue) => {
+                      onChange("location", currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        location.toLowerCase() === city.toLowerCase() ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {city}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
