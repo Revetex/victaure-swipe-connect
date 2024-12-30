@@ -26,12 +26,10 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   doc.rect(0, 0, 210, 60, "F");
   
   // Add subtle pattern to header
-  doc.setFillColor(255, 255, 255);
-  doc.setGlobalAlpha(0.1);
+  doc.setFillColor(255, 255, 255, 0.1);
   for (let i = 0; i < 210; i += 5) {
     doc.line(i, 0, i + 10, 60);
   }
-  doc.setGlobalAlpha(1);
   
   // Generate and add QR code
   const qrCodeDataUrl = await QRCode.toDataURL(window.location.href, {
@@ -105,10 +103,8 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     doc.roundedRect(currentX - 2, currentY - 5, textWidth, 10, 2, 2, 'F');
     
     // Add subtle highlight
-    doc.setFillColor(255, 255, 255);
-    doc.setGlobalAlpha(0.1);
+    doc.setFillColor(255, 255, 255, 0.1);
     doc.roundedRect(currentX - 2, currentY - 5, textWidth, 5, 2, 2, 'F');
-    doc.setGlobalAlpha(1);
     
     // Skill text
     doc.setTextColor(255, 255, 255);

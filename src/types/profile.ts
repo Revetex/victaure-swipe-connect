@@ -48,4 +48,5 @@ export interface UserProfile {
   certifications?: Certification[];
   education?: Education[];
   experiences?: Experience[];
+  website?: string | null;
 }
