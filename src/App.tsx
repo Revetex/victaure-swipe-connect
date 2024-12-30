@@ -25,7 +25,7 @@ export default function App() {
       <BrowserRouter>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <main className="min-h-screen">
+            <main className="min-h-screen w-full">
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route 

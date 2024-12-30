@@ -33,12 +33,12 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-dashboard-pattern bg-cover bg-center bg-fixed">
+    <div className="relative min-h-screen w-full bg-dashboard-pattern bg-cover bg-center bg-fixed">
       {/* Semi-transparent gradient overlay for better readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40 backdrop-blur-[1px]" />
       
       {/* Content */}
-      <div className="relative z-10 min-h-screen py-8 sm:py-10">
+      <div className="relative z-10 min-h-screen w-full py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px]">
           <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 md:gap-10"
