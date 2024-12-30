@@ -67,24 +67,26 @@ export function AssistantTab() {
       </div>
 
       {/* Messages Area */}
-      <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
-        <div className="space-y-4">
-          {chatMessages.map((message, index) => (
-            <ChatMessage
-              key={message.id}
-              content={message.content}
-              sender={message.sender}
-              thinking={message.thinking}
-              showTimestamp={
-                index === 0 || 
-                chatMessages[index - 1]?.sender !== message.sender ||
-                new Date(message.timestamp).getTime() - new Date(chatMessages[index - 1]?.timestamp).getTime() > 300000
-              }
-              timestamp={message.timestamp?.toString()}
-            />
-          ))}
-        </div>
-      </ScrollArea>
+      <div className="flex-1 overflow-hidden relative">
+        <ScrollArea className="h-[calc(100vh-16rem)]">
+          <div className="space-y-4 p-4">
+            {chatMessages.map((message, index) => (
+              <ChatMessage
+                key={message.id}
+                content={message.content}
+                sender={message.sender}
+                thinking={message.thinking}
+                showTimestamp={
+                  index === 0 || 
+                  chatMessages[index - 1]?.sender !== message.sender ||
+                  new Date(message.timestamp).getTime() - new Date(chatMessages[index - 1]?.timestamp).getTime() > 300000
+                }
+                timestamp={message.timestamp?.toString()}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
 
       {/* Input Area */}
       <div className="p-4 border-t bg-background">

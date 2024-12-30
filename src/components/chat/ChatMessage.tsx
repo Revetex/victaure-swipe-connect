@@ -28,7 +28,7 @@ export function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 items-start",
+        "flex gap-3 items-start mb-4",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >

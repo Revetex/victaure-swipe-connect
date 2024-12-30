@@ -60,7 +60,7 @@ export function Messages() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="h-[calc(100vh-4rem)] flex flex-col">
       <Tabs defaultValue="messages" className="flex-1 flex flex-col">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="relative">
