@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { cities } from "@/data/cities";
+import { quebecCities } from "@/data/cities";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,7 @@ export function JobBasicInfoFields({
               className="w-full justify-between"
             >
               {location
-                ? cities.find((city) => city.toLowerCase() === location.toLowerCase())
+                ? quebecCities.find((city) => city.toLowerCase() === location.toLowerCase())
                 : "Sélectionnez une ville..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -84,7 +84,7 @@ export function JobBasicInfoFields({
               <CommandInput placeholder="Rechercher une ville..." />
               <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
               <CommandGroup className="max-h-60 overflow-auto">
-                {cities.map((city) => (
+                {quebecCities.map((city) => (
                   <CommandItem
                     key={city}
                     value={city}
