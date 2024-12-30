@@ -17,7 +17,6 @@ export interface Job {
   created_at?: string;
   updated_at?: string;
   subcategory?: string;
-  duration?: string; // Added this property
 }
 
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
@@ -47,10 +46,8 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
   }
 };
 
-// Add a type for valid categories to ensure type safety
 export type ValidCategory = keyof typeof missionCategories;
 
-// Helper function to check if a category is valid
 export const isValidCategory = (category: string): category is ValidCategory => {
   return category in missionCategories;
 };

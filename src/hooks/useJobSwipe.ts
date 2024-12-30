@@ -13,6 +13,7 @@ export function useJobSwipe(filters: JobFilters) {
       let query = supabase
         .from("jobs")
         .select("*")
+        .eq('status', 'open')
         .order("created_at", { ascending: false });
 
       query = applyJobFilters(query, filters);
@@ -27,11 +28,11 @@ export function useJobSwipe(filters: JobFilters) {
           company: "Company Name",
           location: job.location,
           salary: `${job.budget} CAD`,
-          duration: job.contract_type,
-          skills: job.required_skills || ["Skill 1", "Skill 2"],
           category: job.category,
           contract_type: job.contract_type,
-          experience_level: job.experience_level
+          experience_level: job.experience_level,
+          subcategory: job.subcategory,
+          skills: job.required_skills || []
         }));
         setJobs(formattedJobs);
         setCurrentIndex(0);
@@ -63,11 +64,11 @@ export function useJobSwipe(filters: JobFilters) {
             company: "Company Name",
             location: newJob.location,
             salary: `${newJob.budget} CAD`,
-            duration: newJob.contract_type,
-            skills: newJob.required_skills || ["Skill 1", "Skill 2"],
             category: newJob.category,
             contract_type: newJob.contract_type,
-            experience_level: newJob.experience_level
+            experience_level: newJob.experience_level,
+            subcategory: newJob.subcategory,
+            skills: newJob.required_skills || []
           }, ...prevJobs]);
         }
       )

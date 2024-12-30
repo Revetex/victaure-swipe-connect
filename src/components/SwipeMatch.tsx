@@ -40,6 +40,8 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
   };
 
   const handleSwipe = async (direction: "left" | "right") => {
+    if (!jobs[currentIndex]) return;
+
     if (direction === "right") {
       try {
         const { data: profile } = await supabase.auth.getUser();
@@ -74,7 +76,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
     }, 200);
   };
 
-  if (jobs.length === 0) {
+  if (!jobs || jobs.length === 0) {
     return (
       <motion.div 
         className="flex flex-col items-center justify-center p-8 text-center"
@@ -121,29 +123,31 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
   return (
     <div className="relative w-full max-w-md mx-auto" ref={dragConstraintsRef}>
-      <motion.div
-        key={currentIndex}
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ 
-          x: swipeDirection === "left" ? -200 : swipeDirection === "right" ? 200 : 0,
-          opacity: 0,
-          transition: { duration: 0.2 }
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        <AnimatedJobCard
-          job={jobs[currentIndex]}
-          x={x}
-          rotate={x}
-          opacity={x}
-          scale={x}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          dragConstraints={dragConstraintsRef}
-          isDragging={isDragging}
-        />
-      </motion.div>
+      {jobs[currentIndex] && (
+        <motion.div
+          key={currentIndex}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ 
+            x: swipeDirection === "left" ? -200 : swipeDirection === "right" ? 200 : 0,
+            opacity: 0,
+            transition: { duration: 0.2 }
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <AnimatedJobCard
+            job={jobs[currentIndex]}
+            x={x}
+            rotate={x}
+            opacity={x}
+            scale={x}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            dragConstraints={dragConstraintsRef}
+            isDragging={isDragging}
+          />
+        </motion.div>
+      )}
       
       <SwipeControls onSwipe={handleSwipe} />
     </div>
