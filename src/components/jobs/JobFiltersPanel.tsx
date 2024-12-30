@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { JobFilters } from "./JobFilterUtils";
-import { FilterSection } from "./filters/FilterSection";
 import { CategoryFilters } from "./filters/CategoryFilters";
 import { LocationFilter } from "./filters/LocationFilter";
 import { ExperienceFilter } from "./filters/ExperienceFilter";
@@ -23,9 +22,7 @@ export function JobFiltersPanel({
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div className="bg-card p-4 rounded-lg space-y-6">
-      <FilterSection filters={filters} onFilterChange={onFilterChange} />
-      
+    <div className="bg-card p-4 rounded-lg space-y-6">      
       <div className="flex justify-end">
         <Button
           variant="ghost"
