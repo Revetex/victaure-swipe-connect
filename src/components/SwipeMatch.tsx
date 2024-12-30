@@ -19,9 +19,15 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
-  const scale = useTransform(Math.abs(x.get()), [0, 100], [1, 0.95]);
   const dragConstraintsRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  // Calculate scale based on x motion value
+  const scale = useTransform(
+    x,
+    [-200, 0, 200],
+    [0.95, 1, 0.95]
+  );
 
   const fetchJobs = async () => {
     try {
@@ -135,7 +141,6 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
       }
     }
 
-    // Add a small delay for the animation to complete
     setTimeout(() => {
       if (currentIndex < jobs.length - 1) {
         setCurrentIndex(prev => prev + 1);
