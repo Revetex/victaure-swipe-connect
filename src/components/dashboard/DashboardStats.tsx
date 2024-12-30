@@ -2,12 +2,12 @@ import { Card } from "@/components/ui/card";
 import { Briefcase, MessageSquare, DollarSign, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { DashboardStats } from "@/types/dashboard";
+import type { DashboardStats as DashboardStatsType } from "@/types/dashboard";
 
 export function DashboardStats() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboardStats'],
-    queryFn: async (): Promise<DashboardStats> => {
+    queryFn: async (): Promise<DashboardStatsType> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
