@@ -33,15 +33,9 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      {/* Background */}
-      <div 
-        className="fixed inset-0 bg-nature-pattern bg-cover bg-center bg-no-repeat z-0"
-        style={{ opacity: 0.15 }}
-      />
-      
+    <div className="relative min-h-screen bg-nature-pattern bg-cover bg-center bg-fixed">
       {/* Content overlay */}
-      <div className="relative z-10 container mx-auto px-4 py-6 sm:py-8">
+      <div className="relative z-10 container mx-auto px-4 py-6 sm:py-8 bg-white/90 dark:bg-gray-900/90 min-h-screen">
         <motion.div 
           className="max-w-[2000px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
           variants={containerVariants}
