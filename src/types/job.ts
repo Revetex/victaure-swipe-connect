@@ -31,27 +31,27 @@ export interface JobFilters {
 export const missionCategories: Record<string, { icon: any; subcategories: string[] }> = {
   "Technologie": {
     icon: Code,
-    subcategories: ["Développement Web", "DevOps", "Mobile", "Data"]
+    subcategories: ["Développement Web", "DevOps", "Mobile", "Data", "Cloud", "Sécurité", "IA", "Blockchain"]
   },
   "Gestion": {
     icon: Briefcase,
-    subcategories: ["Product Management", "Agile", "Conseil"]
+    subcategories: ["Product Management", "Agile", "Conseil", "Stratégie", "Opérations", "Qualité"]
   },
   "Design": {
     icon: PaintBucket,
-    subcategories: ["UI/UX", "Graphisme", "Motion"]
+    subcategories: ["UI/UX", "Graphisme", "Motion", "3D", "Web Design", "Print", "Branding"]
   },
   "Construction": {
     icon: HardHat,
-    subcategories: ["Gros œuvre", "Second œuvre", "Finitions"]
+    subcategories: ["Gros œuvre", "Second œuvre", "Finitions", "BIM", "Architecture"]
   },
   "Manuel": {
     icon: Wrench,
-    subcategories: ["Rénovation", "Installation", "Maintenance"]
+    subcategories: ["Rénovation", "Installation", "Maintenance", "Artisanat", "Réparation"]
   },
   "Expertise": {
     icon: Brain,
-    subcategories: ["Formation", "Audit", "Conseil"]
+    subcategories: ["Formation", "Audit", "Conseil", "Expertise technique", "Certification"]
   }
 };
 

@@ -1,13 +1,5 @@
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
-
-export interface JobFilters {
-  category: string;
-  subcategory: string;
-  duration: string;
-  experienceLevel: string;
-  location: string;
-  searchTerm: string;
-}
+import { Job } from "@/types/job";
 
 export const applyJobFilters = (
   query: PostgrestFilterBuilder<any, any, any>,

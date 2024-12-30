@@ -51,11 +51,7 @@ export function SwipeJob() {
   });
 
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
-    if (key === "category" && value !== filters.category) {
-      setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
-    } else {
-      setFilters(prev => ({ ...prev, [key]: value }));
-    }
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   return (
