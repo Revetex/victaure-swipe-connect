@@ -60,8 +60,8 @@ export function Messages() {
   }, []);
 
   return (
-    <div className="h-screen p-4">
-      <Tabs defaultValue="messages" className="h-full">
+    <div className="flex flex-col h-screen">
+      <Tabs defaultValue="messages" className="flex-1 flex flex-col">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="relative">
             <MessageSquare className="h-5 w-5" />
@@ -84,17 +84,19 @@ export function Messages() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="messages" className="h-[calc(100vh-8rem)]">
-          <MessagesTab />
-        </TabsContent>
+        <div className="flex-1 overflow-hidden">
+          <TabsContent value="messages" className="h-full">
+            <MessagesTab />
+          </TabsContent>
 
-        <TabsContent value="notifications" className="h-[calc(100vh-8rem)]">
-          <NotificationsTab />
-        </TabsContent>
+          <TabsContent value="notifications" className="h-full">
+            <NotificationsTab />
+          </TabsContent>
 
-        <TabsContent value="settings" className="h-[calc(100vh-8rem)]">
-          <Settings />
-        </TabsContent>
+          <TabsContent value="settings" className="h-full">
+            <Settings />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
