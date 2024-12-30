@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { quebecCities } from "@/data/cities";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -19,12 +19,8 @@ interface JobBasicInfoFieldsProps {
 
 export function JobBasicInfoFields({ title, description, budget, location, onChange }: JobBasicInfoFieldsProps) {
   const [open, setOpen] = useState(false);
-  const [cities, setCities] = useState<string[]>([]);
-
-  useEffect(() => {
-    // Ensure cities are loaded and never undefined
-    setCities(quebecCities || []);
-  }, []);
+  // Initialize cities with an empty array if quebecCities is undefined
+  const cities = Array.isArray(quebecCities) ? quebecCities : [];
 
   return (
     <div className="space-y-4">
