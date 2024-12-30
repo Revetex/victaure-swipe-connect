@@ -9,10 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Image, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface JobBasicInfoFieldsProps {
   title: string;
@@ -40,12 +40,12 @@ export function JobBasicInfoFields({
       const newFiles = Array.from(e.target.files).filter(file => {
         // Check file type
         if (!file.type.startsWith('image/')) {
-          console.error('Invalid file type:', file.type);
+          toast.error(`Le fichier ${file.name} n'est pas une image valide`);
           return false;
         }
         // Check file size (5MB limit)
         if (file.size > 5 * 1024 * 1024) {
-          console.error('File too large:', file.name);
+          toast.error(`Le fichier ${file.name} est trop volumineux (max 5MB)`);
           return false;
         }
         return true;

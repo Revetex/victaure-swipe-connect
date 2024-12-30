@@ -56,8 +56,22 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
             .from('jobs')
             .upload(`images/${fileName}`, image);
 
-          if (uploadError) throw uploadError;
-          if (data) imageUrls.push(data.path);
+          if (uploadError) {
+            console.error('Error uploading image:', uploadError);
+            toast({
+              variant: "destructive",
+              title: "Erreur",
+              description: "Impossible de télécharger l'image",
+            });
+            continue;
+          }
+          
+          if (data) {
+            const { data: { publicUrl } } = supabase.storage
+              .from('jobs')
+              .getPublicUrl(`images/${fileName}`);
+            imageUrls.push(publicUrl);
+          }
         }
       }
 
