@@ -8,11 +8,17 @@ import { toast } from "sonner";
 
 interface PaymentTransaction {
   id: string;
-  match_id: string;
+  match_id: string | null;
   amount: number;
   payment_type: 'interac' | 'credit_card';
   status: 'frozen' | 'released' | 'cancelled';
   created_at: string;
+  matches?: {
+    id: string;
+    job: {
+      title: string;
+    } | null;
+  } | null;
 }
 
 export function PaymentBox() {
