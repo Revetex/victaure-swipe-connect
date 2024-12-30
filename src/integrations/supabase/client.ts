@@ -10,8 +10,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     storage: {
       getItem: (key) => {
         try {
-          const item = localStorage.getItem(key);
-          return item;
+          return localStorage.getItem(key);
         } catch (error) {
           console.error("Error accessing localStorage:", error);
           return null;
@@ -33,7 +32,8 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
       }
     },
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    flowType: "pkce"
   },
   global: {
     headers: {
