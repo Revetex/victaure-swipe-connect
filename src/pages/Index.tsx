@@ -1,7 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { DashboardLayout } from "@/components/DashboardLayout";
 
-const Index = () => {
+export default function Index() {
   return (
     <div className="min-h-screen bg-victaure-dark">
       <Navigation />
@@ -10,6 +10,4 @@ const Index = () => {
       </main>
     </div>
   );
-};
-
-export default Index;
+}

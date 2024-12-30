@@ -6,7 +6,7 @@ import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
 
-export default function AuthPage() {
+export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -4,9 +4,9 @@ import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Index } from "@/pages/Index";
-import { Auth } from "@/pages/Auth";
-import { Dashboard } from "@/pages/Dashboard";
+import Index from "@/pages/Index";
+import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard";
 import "./App.css";
 
 const queryClient = new QueryClient({

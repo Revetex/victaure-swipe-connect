@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { VCardCreationForm } from "@/components/VCardCreationForm";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const navigate = useNavigate();
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
   const { toast } = useToast();
@@ -22,7 +22,6 @@ export default function DashboardPage() {
         return;
       }
 
-      // Vérifions le profil complet, pas seulement l'ID
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("*")
@@ -40,7 +39,6 @@ export default function DashboardPage() {
       }
 
       console.log("Profile check:", profile);
-      // On vérifie si le profil existe ET s'il a les informations minimales requises
       setHasProfile(!!profile && !!profile.full_name);
     };
 
@@ -51,7 +49,6 @@ export default function DashboardPage() {
       if (!session) {
         navigate("/auth");
       } else {
-        // Revérifier le profil à chaque changement d'état d'authentification
         checkAuth();
       }
     });
