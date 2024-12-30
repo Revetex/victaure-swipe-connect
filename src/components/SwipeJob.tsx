@@ -11,6 +11,7 @@ import { JobList } from "./jobs/JobList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
+import { toast } from "sonner";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +47,7 @@ export function SwipeJob() {
         ...job,
         company: "Votre entreprise",
         salary: `${job.budget} CAD`,
-        skills: []
+        skills: job.required_skills || []
       })) as Job[];
     }
   });
@@ -56,6 +57,57 @@ export function SwipeJob() {
       setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
     } else {
       setFilters(prev => ({ ...prev, [key]: value }));
+    }
+  };
+
+  const handleMatchSuccess = async (jobId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour effectuer cette action");
+        return;
+      }
+
+      // Get employer_id from the job
+      const { data: jobData } = await supabase
+        .from('jobs')
+        .select('employer_id')
+        .eq('id', jobId)
+        .single();
+
+      if (!jobData) {
+        toast.error("Cette offre n'existe plus");
+        return;
+      }
+
+      // Create match
+      const { error: matchError } = await supabase
+        .from('matches')
+        .insert({
+          job_id: jobId,
+          professional_id: user.id,
+          employer_id: jobData.employer_id,
+          status: 'pending',
+          match_score: 0.8 // TODO: Implement real matching score
+        });
+
+      if (matchError) throw matchError;
+
+      // Create notification for employer
+      const { error: notifError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: jobData.employer_id,
+          title: "Nouveau match !",
+          message: "Un professionnel a manifesté son intérêt pour votre offre",
+        });
+
+      if (notifError) throw notifError;
+
+      toast.success("Match créé avec succès !");
+    } catch (error) {
+      console.error('Error creating match:', error);
+      toast.error("Une erreur est survenue lors du match");
     }
   };
 
@@ -105,7 +157,10 @@ export function SwipeJob() {
           />
           
           <div className="flex justify-center">
-            <SwipeMatch filters={filters} />
+            <SwipeMatch 
+              filters={filters} 
+              onMatchSuccess={handleMatchSuccess}
+            />
           </div>
         </TabsContent>
 

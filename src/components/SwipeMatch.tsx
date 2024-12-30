@@ -8,9 +8,10 @@ import { useSwipeJobs } from "./jobs/swipe/useSwipeJobs";
 
 interface SwipeMatchProps {
   filters: JobFilters;
+  onMatchSuccess: (jobId: string) => Promise<void>;
 }
 
-export function SwipeMatch({ filters }: SwipeMatchProps) {
+export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   const {
     jobs,
     currentIndex,
@@ -39,12 +40,19 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
 
     if (offset > 100 || velocity > 800) {
       setSwipeDirection("right");
-      await handleSwipe("right");
+      await handleSwipeWithMatch("right");
     } else if (offset < -100 || velocity < -800) {
       setSwipeDirection("left");
-      await handleSwipe("left");
+      await handleSwipeWithMatch("left");
     }
     x.set(0);
+  };
+
+  const handleSwipeWithMatch = async (direction: "left" | "right") => {
+    if (direction === "right" && jobs[currentIndex]) {
+      await onMatchSuccess(jobs[currentIndex].id);
+    }
+    await handleSwipe(direction);
   };
 
   const handleButtonSwipe = async (direction: "left" | "right") => {
@@ -53,7 +61,6 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
     setIsAnimating(true);
     setSwipeDirection(direction);
     
-    // Animate the card using the proper animation API
     const targetX = direction === "left" ? -200 : 200;
     
     await animate(x, targetX, {
@@ -62,10 +69,8 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
       damping: 30
     });
     
-    // Handle the swipe after animation
-    await handleSwipe(direction);
+    await handleSwipeWithMatch(direction);
     
-    // Reset position and states
     x.set(0);
     setSwipeDirection(null);
     setIsAnimating(false);

@@ -10,27 +10,48 @@ export function useSwipeJobs(filters: JobFilters) {
 
   const fetchJobs = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour voir les offres");
+        return;
+      }
+
       let query = supabase
         .from("jobs")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select(`
+          *,
+          employer:profiles!jobs_employer_id_fkey (
+            company_name,
+            full_name
+          )
+        `)
+        .eq('status', 'open')
+        .neq('employer_id', user.id) // Don't show user's own jobs
+        .order('created_at', { ascending: false });
 
       query = applyJobFilters(query, filters);
+
+      // Exclude jobs user has already matched with
+      const { data: matchedJobs } = await supabase
+        .from('matches')
+        .select('job_id')
+        .eq('professional_id', user.id);
+
+      if (matchedJobs && matchedJobs.length > 0) {
+        const matchedJobIds = matchedJobs.map(match => match.job_id);
+        query = query.not('id', 'in', `(${matchedJobIds.join(',')})`);
+      }
+
       const { data, error } = await query;
 
       if (error) throw error;
 
       if (data) {
         const formattedJobs = data.map(job => ({
-          id: job.id,
-          title: job.title,
-          company: "Company Name",
-          location: job.location,
+          ...job,
+          company: job.employer?.company_name || job.employer?.full_name || "Entreprise",
           salary: `${job.budget} CAD`,
-          category: job.category,
-          contract_type: job.contract_type,
-          experience_level: job.experience_level,
-          skills: job.required_skills || ["Skill 1", "Skill 2"],
+          skills: job.required_skills || [],
         }));
         setJobs(formattedJobs);
         setCurrentIndex(0);
@@ -44,6 +65,7 @@ export function useSwipeJobs(filters: JobFilters) {
   useEffect(() => {
     fetchJobs();
 
+    // Subscribe to new jobs
     const channel = supabase
       .channel('public:jobs')
       .on(
@@ -57,15 +79,10 @@ export function useSwipeJobs(filters: JobFilters) {
           console.log('Nouvelle mission reçue:', payload);
           const newJob = payload.new;
           setJobs(prevJobs => [{
-            id: newJob.id,
-            title: newJob.title,
-            company: "Company Name",
-            location: newJob.location,
+            ...newJob,
+            company: "Nouvelle entreprise",
             salary: `${newJob.budget} CAD`,
-            category: newJob.category,
-            contract_type: newJob.contract_type,
-            experience_level: newJob.experience_level,
-            skills: newJob.required_skills || ["Skill 1", "Skill 2"],
+            skills: newJob.required_skills || [],
           }, ...prevJobs]);
         }
       )
@@ -77,27 +94,6 @@ export function useSwipeJobs(filters: JobFilters) {
   }, [filters]);
 
   const handleSwipe = async (direction: "left" | "right") => {
-    if (direction === "right") {
-      try {
-        const { data: profile } = await supabase.auth.getUser();
-        if (profile.user) {
-          const { error } = await supabase.from("matches").insert({
-            job_id: jobs[currentIndex].id,
-            professional_id: profile.user.id,
-            status: "pending"
-          });
-
-          if (error) throw error;
-          toast.success("Match! Vous avez liké cette offre", {
-            position: "top-center",
-          });
-        }
-      } catch (error) {
-        console.error("Error creating match:", error);
-        toast.error("Erreur lors de la création du match");
-      }
-    }
-
     if (currentIndex < jobs.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
