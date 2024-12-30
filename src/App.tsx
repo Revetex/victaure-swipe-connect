@@ -7,33 +7,15 @@ import { ThemeProvider } from "next-themes";
 import { useSessionManager } from "@/hooks/useSessionManager";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import { useEffect, useState } from "react";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 const App = () => {
   const { session, loading } = useSessionManager();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Ne pas rendre l'application tant que le thème n'est pas monté
-  if (!mounted) {
-    return null;
-  }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -41,7 +23,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <TooltipProvider>
           <Routes>
             <Route

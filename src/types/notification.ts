@@ -1,7 +1,7 @@
-import type { Tables } from "./database";
-
-export type Notification = Tables<'notifications'>;
-
-export interface NotificationDisplay extends Notification {
-  formattedDate?: string;
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  created_at: string;
+  read: boolean;
 }

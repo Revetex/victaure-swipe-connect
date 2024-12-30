@@ -12,11 +12,40 @@ export const useSessionManager = () => {
   useEffect(() => {
     const initSession = async () => {
       try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        setSession(currentSession);
+        // First try to recover the session from storage
+        const { data: { session: storedSession }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          throw sessionError;
+        }
+
+        if (storedSession) {
+          // Verify the session is still valid
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          
+          if (userError) {
+            console.error("User verification error:", userError);
+            // If there's an error, clear the invalid session
+            await supabase.auth.signOut();
+            setSession(null);
+            navigate("/auth");
+            return;
+          }
+
+          if (user) {
+            setSession(storedSession);
+          }
+        } else {
+          // No stored session found, redirect to auth
+          navigate("/auth");
+        }
       } catch (error) {
         console.error("Session initialization error:", error);
         toast.error("Erreur d'initialisation de la session");
+        // Clear any invalid session data
+        await supabase.auth.signOut();
+        navigate("/auth");
       } finally {
         setLoading(false);
       }
@@ -29,13 +58,19 @@ export const useSessionManager = () => {
     } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
       console.log("Auth state changed:", event);
       
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !currentSession) {
         setSession(null);
+        localStorage.clear(); // Clear all local storage to ensure no stale tokens remain
+        toast.info("Session expirée, veuillez vous reconnecter");
         navigate("/auth");
-      } else if (event === 'SIGNED_IN' && currentSession) {
+      } else if (event === 'SIGNED_IN') {
         setSession(currentSession);
+        toast.success("Connexion réussie");
         navigate("/dashboard");
       } else if (event === 'TOKEN_REFRESHED' && currentSession) {
+        setSession(currentSession);
+        console.log("Token refreshed successfully");
+      } else if (event === 'USER_UPDATED') {
         setSession(currentSession);
       }
     });

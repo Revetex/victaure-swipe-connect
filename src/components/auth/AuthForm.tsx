@@ -87,7 +87,6 @@ export function AuthForm() {
           },
         },
       }}
-      theme={theme === "dark" ? "dark" : "light"}
     />
   );
 }

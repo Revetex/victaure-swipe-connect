@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import type { Tables } from "@/types/database";
 
 export interface Message {
   id: string;
@@ -25,7 +24,7 @@ export function useMessages() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: messagesData, error } = await supabase
+      const { data: messages, error } = await supabase
         .from('messages')
         .select(`
           id,
@@ -42,14 +41,7 @@ export function useMessages() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
-      return (messagesData || []).map((msg: any) => ({
-        id: msg.id,
-        content: msg.content,
-        created_at: msg.created_at,
-        read: msg.read,
-        sender: msg.sender
-      })) as Message[];
+      return messages as Message[];
     },
   });
 

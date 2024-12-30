@@ -24,13 +24,13 @@ export function useChat() {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from("ai_chat_messages")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true });
+        .from('ai_chat_messages')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
 
       if (error) {
-        console.error("Error loading messages:", error);
+        console.error('Error loading messages:', error);
         return;
       }
 
@@ -38,8 +38,8 @@ export function useChat() {
         setMessages(data.map(msg => ({
           id: msg.id,
           content: msg.content,
-          sender: msg.sender as "user" | "assistant",
-          timestamp: new Date(msg.created_at || new Date()),
+          sender: msg.sender,
+          timestamp: new Date(msg.created_at),
         })));
       }
     };
@@ -52,17 +52,17 @@ export function useChat() {
     if (!user) return;
 
     const { error } = await supabase
-      .from("ai_chat_messages")
-      .insert({
+      .from('ai_chat_messages')
+      .insert([{
         id: message.id,
         content: message.content,
         sender: message.sender,
         user_id: user.id,
         created_at: message.timestamp.toISOString(),
-      });
+      }]);
 
     if (error) {
-      console.error("Error saving message:", error);
+      console.error('Error saving message:', error);
     }
   };
 
@@ -141,12 +141,12 @@ export function useChat() {
     if (!user) return;
 
     const { error } = await supabase
-      .from("ai_chat_messages")
+      .from('ai_chat_messages')
       .delete()
-      .eq("user_id", user.id);
+      .eq('user_id', user.id);
 
     if (error) {
-      console.error("Error clearing chat:", error);
+      console.error('Error clearing chat:', error);
       throw error;
     }
 

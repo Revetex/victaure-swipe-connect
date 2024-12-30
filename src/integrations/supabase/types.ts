@@ -9,33 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      ai_chat_messages: {
-        Row: {
-          content: string
-          created_at: string | null
-          id: string
-          sender: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          id: string
-          sender: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          id?: string
-          sender?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       certifications: {
         Row: {
           created_at: string | null
