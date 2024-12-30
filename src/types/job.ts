@@ -45,3 +45,11 @@ export const missionCategories: Record<string, { icon: any; subcategories: strin
     subcategories: ["Formation", "Audit", "Conseil"]
   }
 };
+
+// Add a type for valid categories to ensure type safety
+export type ValidCategory = keyof typeof missionCategories;
+
+// Helper function to check if a category is valid
+export const isValidCategory = (category: string): category is ValidCategory => {
+  return category in missionCategories;
+};

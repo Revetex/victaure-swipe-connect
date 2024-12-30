@@ -6,6 +6,7 @@ import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
 import { JobCategoryFields } from "./form/JobCategoryFields";
 import { JobTypeFields } from "./form/JobTypeFields";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { isValidCategory } from "@/types/job";
 
 interface CreateJobFormProps {
   onSuccess?: () => void;
@@ -19,7 +20,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     description: "",
     budget: "",
     location: "",
-    category: "Technology",
+    category: "Technologie",
     subcategory: "",
     contract_type: "Full-time",
     experience_level: "Mid-Level",
@@ -38,6 +39,11 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Non authentifié");
+
+      // Validate category before insertion
+      if (!isValidCategory(formData.category)) {
+        throw new Error("Catégorie invalide");
+      }
 
       const { error } = await supabase.from("jobs").insert({
         ...formData,
@@ -60,7 +66,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         description: "",
         budget: "",
         location: "",
-        category: "Technology",
+        category: "Technologie",
         subcategory: "",
         contract_type: "Full-time",
         experience_level: "Mid-Level",
