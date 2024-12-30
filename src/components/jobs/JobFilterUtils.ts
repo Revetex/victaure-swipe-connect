@@ -1,5 +1,4 @@
-import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
-import { Job } from "@/types/job";
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface JobFilters {
   category: string;
@@ -10,14 +9,11 @@ export interface JobFilters {
   searchTerm: string;
 }
 
-export const applyJobFilters = (
-  query: PostgrestFilterBuilder<any, any, any>,
-  filters: JobFilters
-) => {
+export const applyJobFilters = (query: any, filters: JobFilters) => {
   if (filters.category && filters.category !== 'all') {
     query = query.eq('category', filters.category);
   }
-
+  
   if (filters.subcategory && filters.subcategory !== 'all') {
     query = query.eq('subcategory', filters.subcategory);
   }
@@ -30,9 +26,36 @@ export const applyJobFilters = (
     query = query.eq('experience_level', filters.experienceLevel);
   }
 
-  if (filters.duration && filters.duration !== 'all') {
-    query = query.eq('contract_type', filters.duration);
+  return query;
+};
+
+export const uploadJobImages = async (
+  supabase: SupabaseClient,
+  images: File[]
+): Promise<string[]> => {
+  const imageUrls: string[] = [];
+
+  for (const image of images) {
+    const fileExt = image.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+    const { error: uploadError, data } = await supabase.storage
+      .from('jobs')
+      .upload(`images/${fileName}`, image);
+
+    if (uploadError) {
+      console.error('Error uploading image:', uploadError);
+      continue;
+    }
+
+    if (data) {
+      const { data: { publicUrl } } = supabase.storage
+        .from('jobs')
+        .getPublicUrl(`images/${fileName}`);
+      
+      imageUrls.push(publicUrl);
+    }
   }
 
-  return query;
+  return imageUrls;
 };

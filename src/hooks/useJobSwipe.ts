@@ -46,7 +46,8 @@ export function useJobSwipe(filters: JobFilters) {
           budget: job.budget,
           status: job.status,
           created_at: job.created_at,
-          updated_at: job.updated_at
+          updated_at: job.updated_at,
+          images: job.images || []
         }));
         console.log("Formatted jobs:", formattedJobs);
         setJobs(formattedJobs);
@@ -91,7 +92,8 @@ export function useJobSwipe(filters: JobFilters) {
             budget: newJob.budget,
             status: newJob.status,
             created_at: newJob.created_at,
-            updated_at: newJob.updated_at
+            updated_at: newJob.updated_at,
+            images: newJob.images || []
           }, ...prevJobs]);
         }
       )
