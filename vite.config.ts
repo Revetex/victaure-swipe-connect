@@ -9,10 +9,10 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     strictPort: true,
     hmr: {
-      protocol: 'wss',
-      host: process.env.VITE_DEV_SERVER_HOST || 'localhost',
-      port: Number(process.env.VITE_DEV_SERVER_PORT) || 8080,
-      clientPort: Number(process.env.VITE_DEV_CLIENT_PORT) || 8080,
+      protocol: 'ws',
+      host: 'localhost',
+      port: 8080,
+      clientPort: 8080,
     },
     cors: true,
     headers: {
