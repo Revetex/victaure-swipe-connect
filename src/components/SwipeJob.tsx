@@ -50,41 +50,6 @@ export function SwipeJob() {
     }
   });
 
-  const { data: allJobs, isLoading: allJobsLoading } = useQuery({
-    queryKey: ['all-jobs', filters],
-    queryFn: async () => {
-      let query = supabase
-        .from('jobs')
-        .select('*')
-        .eq('status', 'open')
-        .order('created_at', { ascending: false });
-
-      if (filters.category !== 'all') {
-        query = query.eq('category', filters.category);
-      }
-      if (filters.experienceLevel !== 'all') {
-        query = query.eq('experience_level', filters.experienceLevel);
-      }
-      if (filters.location) {
-        query = query.eq('location', filters.location);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching all jobs:', error);
-        return [];
-      }
-
-      return data?.map(job => ({
-        ...job,
-        company: "Company Name",
-        salary: `${job.budget} CAD`,
-        skills: job.required_skills || []
-      })) as Job[];
-    }
-  });
-
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
     if (key === "category" && value !== filters.category) {
       setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
@@ -139,11 +104,7 @@ export function SwipeJob() {
           />
           
           <div className="flex justify-center mt-6">
-            {allJobs && allJobs.length > 0 ? (
-              <JobList jobs={allJobs} isLoading={allJobsLoading} />
-            ) : (
-              <SwipeMatch filters={filters} />
-            )}
+            <SwipeMatch filters={filters} />
           </div>
         </TabsContent>
 
