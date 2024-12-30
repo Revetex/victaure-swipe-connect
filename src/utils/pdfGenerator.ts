@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import type { UserProfile } from '@/types/profile';
 import { supabase } from "@/integrations/supabase/client";
+import QRCode from 'qrcode';
 
 export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
   const doc = new jsPDF();
@@ -10,19 +11,37 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   const secondaryColor = "#6366F1"; // Indigo-500
   const textColor = "#1F2937"; // Gray-800
   
+  // Ajout du logo Victaure
+  const logoImg = new Image();
+  logoImg.src = "/lovable-uploads/193c092a-9104-486d-a72a-0d882d86ce20.png";
+  doc.addImage(logoImg, 'PNG', 10, 10, 30, 30);
+  
   // En-tête avec dégradé
   doc.setFillColor(primaryColor);
   doc.rect(0, 0, 210, 50, "F");
+  
+  // Génération du QR Code
+  const qrCodeDataUrl = await QRCode.toDataURL(window.location.href, {
+    width: 100,
+    margin: 1,
+    color: {
+      dark: "#000",
+      light: "#FFF"
+    }
+  });
+  
+  // Ajout du QR code en haut à droite
+  doc.addImage(qrCodeDataUrl, 'PNG', 160, 10, 30, 30);
   
   // Nom et titre
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(28);
   doc.setFont("helvetica", "bold");
-  doc.text(profile.full_name || "Nom non défini", 20, 30);
+  doc.text(profile.full_name || "Nom non défini", 50, 30);
   
   doc.setFontSize(18);
   doc.setFont("helvetica", "normal");
-  doc.text(profile.role || "Titre non défini", 20, 42);
+  doc.text(profile.role || "Titre non défini", 50, 42);
   
   // Informations de contact
   doc.setTextColor(textColor);
@@ -88,14 +107,17 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     });
   }
   
-  // Pied de page
+  // Pied de page avec logo
   const pageHeight = doc.internal.pageSize.height;
   doc.setFillColor(primaryColor);
   doc.rect(0, pageHeight - 20, 210, 20, "F");
   
+  // Ajout du petit logo dans le pied de page
+  doc.addImage(logoImg, 'PNG', 10, pageHeight - 15, 10, 10);
+  
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.text("Généré via Victaure", 20, pageHeight - 8);
+  doc.text("Généré via Victaure", 25, pageHeight - 8);
   
   // Générer le PDF comme blob
   const pdfBlob = doc.output('blob');
