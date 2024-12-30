@@ -1,4 +1,4 @@
-import { Bot } from "lucide-react";
+import { Bot, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ChatMessage } from "@/components/chat/ChatMessage";
@@ -6,7 +6,6 @@ import { useChat } from "@/hooks/useChat";
 import { useProfile } from "@/hooks/useProfile";
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export function AssistantTab() {
@@ -42,8 +41,8 @@ export function AssistantTab() {
   };
 
   return (
-    <div className="h-[500px] flex flex-col">
-      <div className="flex items-center justify-between p-4 relative border-b border-victaure-blue/10">
+    <div className="flex flex-col h-[calc(100vh-12rem)] bg-background">
+      <div className="flex items-center justify-between p-4 relative border-b">
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
@@ -69,7 +68,7 @@ export function AssistantTab() {
 
       <div 
         ref={scrollAreaRef}
-        className="flex-grow overflow-y-auto mb-4 px-4 scrollbar-thin scrollbar-thumb-victaure-blue/20 scrollbar-track-transparent"
+        className="flex-1 overflow-y-auto px-4 scrollbar-thin scrollbar-thumb-victaure-blue/20 scrollbar-track-transparent"
       >
         <div className="space-y-4 py-4">
           {chatMessages.map((message, index) => (
@@ -89,7 +88,7 @@ export function AssistantTab() {
         </div>
       </div>
 
-      <div className="p-4 pt-0">
+      <div className="p-4 mt-auto border-t bg-background">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
