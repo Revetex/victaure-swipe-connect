@@ -34,7 +34,6 @@ export function AuthForm() {
               spaceLarge: '1.5rem',
               labelBottomMargin: '0.5rem',
               anchorBottomMargin: '0.5rem',
-              dividerMargin: '1.5rem',
             },
             borderWidths: {
               buttonBorderWidth: '1px',
@@ -63,6 +62,7 @@ export function AuthForm() {
             fontSize: '0.875rem',
             fontWeight: 500,
             transition: 'all 150ms',
+            opacity: 1,
             '&:hover': {
               opacity: 0.9,
             },
