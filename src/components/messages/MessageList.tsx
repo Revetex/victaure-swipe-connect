@@ -29,9 +29,9 @@ export function MessageList({ messages, isLoading, onMarkAsRead }: MessageListPr
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-16rem)] pr-4">
+    <ScrollArea className="h-full pr-4">
       <AnimatePresence>
-        <div className="space-y-2">
+        <div className="space-y-2 p-4">
           {messages.map((message) => (
             <MessageItem
               key={message.id}
