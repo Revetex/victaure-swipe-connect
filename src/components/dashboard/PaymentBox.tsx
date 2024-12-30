@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CreditCard, Lock, DollarSign, CheckCircle2 } from "lucide-react";
+import { Lock } from "lucide-react";
 import { toast } from "sonner";
+import { PaymentTypeSelector } from "./payment/PaymentTypeSelector";
+import { TransactionList } from "./payment/TransactionList";
 
 interface PaymentTransaction {
   id: string;
@@ -89,61 +90,14 @@ export function PaymentBox() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="flex gap-4">
-            <Button
-              variant={selectedPaymentType === 'interac' ? 'default' : 'outline'}
-              onClick={() => setSelectedPaymentType('interac')}
-              className="flex-1"
-            >
-              <DollarSign className="h-4 w-4 mr-2" />
-              Interac
-            </Button>
-            <Button
-              variant={selectedPaymentType === 'credit_card' ? 'default' : 'outline'}
-              onClick={() => setSelectedPaymentType('credit_card')}
-              className="flex-1"
-            >
-              <CreditCard className="h-4 w-4 mr-2" />
-              Carte de crédit
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            {transactions?.map((transaction) => (
-              <div
-                key={transaction.id}
-                className="p-4 border rounded-lg flex items-center justify-between"
-              >
-                <div className="space-y-1">
-                  <p className="font-medium">CAD {transaction.amount}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {transaction.status === 'frozen' ? (
-                      <span className="flex items-center text-yellow-500">
-                        <Lock className="h-4 w-4 mr-1" />
-                        Gelé
-                      </span>
-                    ) : transaction.status === 'released' ? (
-                      <span className="flex items-center text-green-500">
-                        <CheckCircle2 className="h-4 w-4 mr-1" />
-                        Libéré
-                      </span>
-                    ) : (
-                      <span className="text-red-500">Annulé</span>
-                    )}
-                  </p>
-                </div>
-                {transaction.status === 'frozen' && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePayment(transaction.amount)}
-                  >
-                    Libérer
-                  </Button>
-                )}
-              </div>
-            ))}
-          </div>
+          <PaymentTypeSelector
+            selectedPaymentType={selectedPaymentType}
+            onSelect={setSelectedPaymentType}
+          />
+          <TransactionList
+            transactions={transactions || []}
+            onRelease={handlePayment}
+          />
         </div>
       </CardContent>
     </Card>
