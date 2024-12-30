@@ -11,4 +11,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   },
+  headers: {
+    'X-Client-Info': 'lovable',
+  },
 });
