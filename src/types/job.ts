@@ -17,6 +17,11 @@ export interface Job {
   created_at?: string;
   updated_at?: string;
   subcategory?: string;
+  required_skills?: string[];
+  preferred_skills?: string[];
+  images?: string[];
+  remote_type?: string;
+  application_deadline?: string;
 }
 
 export interface JobFilters {

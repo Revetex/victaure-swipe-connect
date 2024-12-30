@@ -29,6 +29,8 @@ export function AnimatedJobCard({
   dragConstraints,
   isDragging
 }: AnimatedJobCardProps) {
+  const skills = job.required_skills || job.skills || [];
+
   return (
     <motion.div
       style={{
@@ -70,7 +72,7 @@ export function AnimatedJobCard({
 
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Clock className="h-4 w-4" />
-              <span>{formatDistanceToNow(new Date(job.created_at), { 
+              <span>{formatDistanceToNow(new Date(job.created_at || ''), { 
                 addSuffix: true,
                 locale: fr 
               })}</span>
@@ -87,7 +89,7 @@ export function AnimatedJobCard({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {job.required_skills?.slice(0, 4).map((skill, index) => (
+            {skills.slice(0, 4).map((skill, index) => (
               <Badge 
                 key={index}
                 variant="secondary" 
@@ -96,9 +98,9 @@ export function AnimatedJobCard({
                 {skill}
               </Badge>
             ))}
-            {job.required_skills?.length > 4 && (
+            {skills.length > 4 && (
               <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-700">
-                +{job.required_skills.length - 4}
+                +{skills.length - 4}
               </Badge>
             )}
           </div>

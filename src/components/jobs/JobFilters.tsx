@@ -102,11 +102,9 @@ export function JobFilters({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes les durées</SelectItem>
-                {["3-6 mois", "6-12 mois", "12+ mois"].map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
+                <SelectItem value="3-6">3-6 mois</SelectItem>
+                <SelectItem value="6-12">6-12 mois</SelectItem>
+                <SelectItem value="12+">12+ mois</SelectItem>
               </SelectContent>
             </Select>
           </div>
