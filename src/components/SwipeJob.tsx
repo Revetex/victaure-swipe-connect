@@ -94,7 +94,7 @@ export function SwipeJob() {
   };
 
   return (
-    <div className="glass-card p-4 space-y-4">
+    <div className="glass-card p-4 space-y-4 min-h-[600px] flex flex-col">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-2xl font-bold">Offres disponibles</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -124,13 +124,13 @@ export function SwipeJob() {
         </Dialog>
       </div>
 
-      <Tabs defaultValue="browse" className="w-full">
+      <Tabs defaultValue="browse" className="flex-1 flex flex-col">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
           <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="browse" className="mt-4">
+        <TabsContent value="browse" className="mt-4 flex-1 flex flex-col">
           <JobFiltersPanel 
             filters={filters}
             onFilterChange={handleFilterChange}
@@ -138,23 +138,29 @@ export function SwipeJob() {
             setOpenLocation={setOpenLocation}
           />
           
-          <div className="flex justify-center mt-6">
+          <div className="flex-1 flex justify-center items-center mt-6 relative">
             {allJobs && allJobs.length > 0 ? (
-              <JobList jobs={allJobs} isLoading={allJobsLoading} />
+              <div className="w-full max-w-md mx-auto">
+                <SwipeMatch filters={filters} />
+              </div>
             ) : (
-              <SwipeMatch filters={filters} />
+              <div className="text-center">
+                <p className="text-gray-500">Aucune mission disponible</p>
+              </div>
             )}
           </div>
         </TabsContent>
 
-        <TabsContent value="my-jobs">
-          <div className="space-y-4">
+        <TabsContent value="my-jobs" className="flex-1">
+          <div className="space-y-4 h-full">
             <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
-            <JobList 
-              jobs={myJobs || []} 
-              isLoading={myJobsLoading}
-              onJobDeleted={refetchMyJobs} 
-            />
+            <div className="flex-1 overflow-auto">
+              <JobList 
+                jobs={myJobs || []} 
+                isLoading={myJobsLoading}
+                onJobDeleted={refetchMyJobs} 
+              />
+            </div>
           </div>
         </TabsContent>
       </Tabs>
