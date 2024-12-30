@@ -11,10 +11,9 @@ export function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Blurred background */}
+      {/* Background */}
       <div 
-        className="fixed inset-0 bg-cyber-pattern bg-cover bg-center bg-no-repeat"
-        style={{ filter: 'blur(8px)', transform: 'scale(1.1)' }}
+        className="fixed inset-0 bg-nature-pattern bg-cover bg-center bg-no-repeat"
       />
       
       {/* Content overlay */}
