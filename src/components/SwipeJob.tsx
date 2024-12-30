@@ -24,7 +24,7 @@ export function SwipeJob() {
     searchTerm: ""
   });
 
-  const { data: myJobs, isLoading, refetch: refetchMyJobs } = useQuery({
+  const { data: myJobs, isLoading: myJobsLoading, refetch: refetchMyJobs } = useQuery({
     queryKey: ['my-jobs'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -44,6 +44,41 @@ export function SwipeJob() {
       return data?.map(job => ({
         ...job,
         company: "Votre entreprise",
+        salary: `${job.budget} CAD`,
+        skills: job.required_skills || []
+      })) as Job[];
+    }
+  });
+
+  const { data: allJobs, isLoading: allJobsLoading } = useQuery({
+    queryKey: ['all-jobs', filters],
+    queryFn: async () => {
+      let query = supabase
+        .from('jobs')
+        .select('*')
+        .eq('status', 'open')
+        .order('created_at', { ascending: false });
+
+      if (filters.category !== 'all') {
+        query = query.eq('category', filters.category);
+      }
+      if (filters.experienceLevel !== 'all') {
+        query = query.eq('experience_level', filters.experienceLevel);
+      }
+      if (filters.location) {
+        query = query.eq('location', filters.location);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching all jobs:', error);
+        return [];
+      }
+
+      return data?.map(job => ({
+        ...job,
+        company: "Company Name",
         salary: `${job.budget} CAD`,
         skills: job.required_skills || []
       })) as Job[];
@@ -104,7 +139,11 @@ export function SwipeJob() {
           />
           
           <div className="flex justify-center mt-6">
-            <SwipeMatch filters={filters} />
+            {allJobs && allJobs.length > 0 ? (
+              <JobList jobs={allJobs} isLoading={allJobsLoading} />
+            ) : (
+              <SwipeMatch filters={filters} />
+            )}
           </div>
         </TabsContent>
 
@@ -113,7 +152,7 @@ export function SwipeJob() {
             <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
             <JobList 
               jobs={myJobs || []} 
-              isLoading={isLoading}
+              isLoading={myJobsLoading}
               onJobDeleted={refetchMyJobs} 
             />
           </div>
