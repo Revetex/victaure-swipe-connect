@@ -4,7 +4,7 @@ import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { PaymentBox } from "@/components/dashboard/PaymentBox";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -50,7 +50,7 @@ export function DashboardLayout() {
           <TodoList />
         </motion.div>
 
-        {/* Recent Activity Section */}
+        {/* Payment Box Section */}
         <motion.div 
           className="col-span-1 sm:col-span-2 lg:col-span-2"
           initial={{ opacity: 0, y: 20 }}
@@ -58,7 +58,7 @@ export function DashboardLayout() {
           transition={{ delay: 0.5 }}
         >
           <div className="glass-card rounded-lg p-4 sm:p-5 h-full transition-transform duration-300 hover:scale-[1.01]">
-            <RecentActivity />
+            <PaymentBox />
           </div>
         </motion.div>
 
