@@ -1,108 +1,66 @@
+import { Job } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Building2, MapPin, Calendar, Briefcase, GraduationCap, FolderOpen, List } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { motion } from "framer-motion";
+import { CategoryIcon } from "./skills/CategoryIcon";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
-interface JobCardProps {
-  title: string;
-  company?: string;
-  location: string;
-  salary?: string;
-  category: string;
-  subcategory?: string;
-  contract_type: string;
-  experience_level: string;
-  skills?: string[];
-}
+interface JobCardProps extends Job {}
 
-export function JobCard({
-  title,
-  company = "Entreprise",
-  location,
-  salary,
+export function JobCard({ 
+  title, 
+  company, 
+  location, 
+  salary, 
   category,
-  subcategory,
   contract_type,
   experience_level,
-  skills = [],
+  description,
+  created_at,
+  images
 }: JobCardProps) {
-  const isMobile = useIsMobile();
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ scale: 1.02 }}
-      className="w-full"
-    >
-      <Card className="glass-card w-full overflow-hidden relative">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9b87f5] via-[#7E69AB] to-[#6E59A5] dark:from-[#b4a4f7] dark:via-[#9b87f5] dark:to-[#8a76f3]" />
-        <CardHeader className="space-y-3 pb-3">
-          <h3 className="font-semibold text-xl text-foreground line-clamp-2 leading-tight">{title}</h3>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
-              <span className="truncate">{company}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
-              <span className="truncate">{location}</span>
-            </div>
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+        <div className="space-y-1">
+          <h3 className="font-semibold leading-none tracking-tight">{title}</h3>
+          {company && (
+            <p className="text-sm text-muted-foreground">{company}</p>
+          )}
+        </div>
+        <CategoryIcon category={category} className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Badge variant="outline">{location}</Badge>
+          {salary && (
+            <Badge variant="outline">{salary}</Badge>
+          )}
+          <Badge variant="outline">{contract_type}</Badge>
+          <Badge variant="outline">{experience_level}</Badge>
+        </div>
+        
+        {images && images.length > 0 && (
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+            {images.map((imageUrl, index) => (
+              <img
+                key={index}
+                src={imageUrl}
+                alt={`Image ${index + 1} pour ${title}`}
+                className="w-24 h-24 object-cover rounded-lg"
+              />
+            ))}
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
-              <span>{contract_type}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
-              <span>{experience_level}</span>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
-              <span>{category}</span>
-            </div>
-            {subcategory && (
-              <div className="flex items-center gap-2">
-                <List className="h-4 w-4 text-[#9b87f5] dark:text-[#b4a4f7]" />
-                <span>{subcategory}</span>
-              </div>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {salary && (
-              <div className="flex flex-col gap-2">
-                <p className="text-lg font-semibold text-[#9b87f5] dark:text-[#b4a4f7]">{salary}</p>
-              </div>
-            )}
-            <div className="flex flex-wrap gap-2">
-              {skills.slice(0, isMobile ? 3 : 5).map((skill) => (
-                <Badge
-                  key={skill}
-                  variant="secondary"
-                  className="bg-[#F1F0FB] dark:bg-[#2A2438] text-[#7E69AB] dark:text-[#b4a4f7] hover:bg-[#E5DEFF] dark:hover:bg-[#352B47] transition-colors"
-                >
-                  {skill}
-                </Badge>
-              ))}
-              {skills.length > (isMobile ? 3 : 5) && (
-                <Badge 
-                  variant="outline"
-                  className="border-[#9b87f5] dark:border-[#b4a4f7] text-[#9b87f5] dark:text-[#b4a4f7]"
-                >
-                  +{skills.length - (isMobile ? 3 : 5)}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+        )}
+
+        <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
+        
+        {created_at && (
+          <p className="text-xs text-muted-foreground mt-4">
+            Publié {formatDistanceToNow(new Date(created_at), { addSuffix: true, locale: fr })}
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
