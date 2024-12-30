@@ -33,9 +33,9 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="relative min-h-screen bg-nature-pattern bg-cover bg-center bg-fixed before:content-[''] before:absolute before:inset-0 before:bg-black/30">
+    <div className="relative min-h-screen bg-nature-pattern bg-cover bg-center bg-fixed before:content-[''] before:absolute before:inset-0 before:bg-black/50">
       {/* Content overlay */}
-      <div className="relative z-10 container mx-auto px-4 py-6 sm:py-8 bg-white/70 dark:bg-gray-900/70 min-h-screen backdrop-blur-sm">
+      <div className="relative z-10 container mx-auto px-4 py-6 sm:py-8 bg-white/40 dark:bg-gray-900/40 min-h-screen backdrop-blur-md">
         <motion.div 
           className="max-w-[2000px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
           variants={containerVariants}
@@ -87,7 +87,7 @@ export function DashboardLayout() {
             variants={itemVariants}
             className="col-span-1 md:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
-            <div className="glass-card h-full rounded-xl">
+            <div className="glass-card h-full p-5 rounded-xl">
               <VCard />
             </div>
           </motion.div>
