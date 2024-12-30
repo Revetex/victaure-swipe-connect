@@ -126,6 +126,7 @@ export type Database = {
       }
       jobs: {
         Row: {
+          application_deadline: string | null
           budget: number
           category: string
           contract_type: string
@@ -138,12 +139,16 @@ export type Database = {
           latitude: number | null
           location: string
           longitude: number | null
+          preferred_skills: string[] | null
+          remote_type: string | null
+          required_skills: string[] | null
           status: string
           subcategory: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
+          application_deadline?: string | null
           budget: number
           category?: string
           contract_type?: string
@@ -156,12 +161,16 @@ export type Database = {
           latitude?: number | null
           location: string
           longitude?: number | null
+          preferred_skills?: string[] | null
+          remote_type?: string | null
+          required_skills?: string[] | null
           status?: string
           subcategory?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
+          application_deadline?: string | null
           budget?: number
           category?: string
           contract_type?: string
@@ -174,6 +183,9 @@ export type Database = {
           latitude?: number | null
           location?: string
           longitude?: number | null
+          preferred_skills?: string[] | null
+          remote_type?: string | null
+          required_skills?: string[] | null
           status?: string
           subcategory?: string | null
           title?: string
@@ -397,11 +409,14 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           city: string | null
+          company_name: string | null
+          company_size: string | null
           country: string | null
           created_at: string | null
           email: string
           full_name: string | null
           id: string
+          industry: string | null
           last_seen: string | null
           latitude: number | null
           longitude: number | null
@@ -411,16 +426,20 @@ export type Database = {
           skills: string[] | null
           state: string | null
           updated_at: string | null
+          website: string | null
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          company_name?: string | null
+          company_size?: string | null
           country?: string | null
           created_at?: string | null
           email: string
           full_name?: string | null
           id: string
+          industry?: string | null
           last_seen?: string | null
           latitude?: number | null
           longitude?: number | null
@@ -430,16 +449,20 @@ export type Database = {
           skills?: string[] | null
           state?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          company_name?: string | null
+          company_size?: string | null
           country?: string | null
           created_at?: string | null
           email?: string
           full_name?: string | null
           id?: string
+          industry?: string | null
           last_seen?: string | null
           latitude?: number | null
           longitude?: number | null
@@ -449,6 +472,7 @@ export type Database = {
           skills?: string[] | null
           state?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Relationships: []
       }
