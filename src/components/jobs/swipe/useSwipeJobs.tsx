@@ -1,115 +1,94 @@
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
-import { JobFilters, applyJobFilters } from "../JobFilterUtils";
+import { JobFilters } from "../JobFilterUtils";
+import { toast } from "sonner";
 
 export function useSwipeJobs(filters: JobFilters) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [filters]);
 
   const fetchJobs = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour voir les offres");
-        return;
-      }
-
+      setLoading(true);
+      
       let query = supabase
-        .from("jobs")
+        .from('jobs')
         .select(`
           *,
-          employer:profiles!jobs_employer_id_fkey (
+          employer:profiles(
+            full_name,
             company_name,
-            full_name
+            avatar_url
           )
         `)
         .eq('status', 'open')
-        .neq('employer_id', user.id)
         .order('created_at', { ascending: false });
 
-      query = applyJobFilters(query, filters);
-
-      // Exclude jobs user has already matched with
-      const { data: matchedJobs } = await supabase
-        .from('matches')
-        .select('job_id')
-        .eq('professional_id', user.id);
-
-      if (matchedJobs && matchedJobs.length > 0) {
-        const matchedJobIds = matchedJobs.map(match => match.job_id);
-        query = query.not('id', 'in', `(${matchedJobIds.join(',')})`);
+      // Apply filters
+      if (filters.category && filters.category !== "all") {
+        query = query.eq("category", filters.category);
+      }
+      if (filters.subcategory && filters.subcategory !== "all") {
+        query = query.eq("subcategory", filters.subcategory);
+      }
+      if (filters.duration && filters.duration !== "all") {
+        query = query.eq("contract_type", filters.duration);
+      }
+      if (filters.experienceLevel && filters.experienceLevel !== "all") {
+        query = query.eq("experience_level", filters.experienceLevel);
+      }
+      if (filters.location) {
+        query = query.eq("location", filters.location);
+      }
+      if (filters.searchTerm) {
+        query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
       const { data, error } = await query;
 
-      if (error) throw error;
-
-      if (data) {
-        const formattedJobs: Job[] = data.map(job => ({
-          ...job,
-          company: job.employer?.company_name || job.employer?.full_name || "Entreprise",
-          salary: `${job.budget} CAD`,
-          skills: job.required_skills || [],
-          status: job.status as 'open' | 'closed' | 'in-progress'
-        }));
-        setJobs(formattedJobs);
-        setCurrentIndex(0);
+      if (error) {
+        throw error;
       }
+
+      // Format jobs with virtual fields
+      const formattedJobs = data.map(job => ({
+        ...job,
+        company: job.employer?.company_name || "Entreprise",
+        salary: `${job.budget} CAD`,
+        skills: job.required_skills || [],
+        status: job.status as Job['status'], // Type assertion
+      }));
+
+      setJobs(formattedJobs);
+      setCurrentIndex(0);
     } catch (error) {
-      console.error("Error fetching jobs:", error);
-      toast.error("Erreur lors du chargement des offres");
+      console.error('Error fetching jobs:', error);
+      toast.error("Impossible de charger les offres");
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchJobs();
+  const currentJob = jobs[currentIndex];
+  const hasMoreJobs = currentIndex < jobs.length - 1;
 
-    // Subscribe to new jobs
-    const channel = supabase
-      .channel('public:jobs')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'jobs'
-        },
-        (payload) => {
-          console.log('Nouvelle mission reçue:', payload);
-          const newJob = payload.new as Job;
-          setJobs(prevJobs => [{
-            ...newJob,
-            company: "Nouvelle entreprise",
-            salary: `${newJob.budget} CAD`,
-            skills: newJob.required_skills || [],
-            status: newJob.status as 'open' | 'closed' | 'in-progress'
-          }, ...prevJobs]);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [filters]);
-
-  const handleSwipe = async (direction: "left" | "right") => {
-    if (currentIndex < jobs.length - 1) {
+  const nextJob = () => {
+    if (hasMoreJobs) {
       setCurrentIndex(prev => prev + 1);
-    } else {
-      toast.info("Plus d'offres disponibles pour le moment", {
-        position: "top-center",
-      });
     }
   };
 
   return {
-    jobs,
-    currentIndex,
-    handleSwipe,
-    fetchJobs,
-    setCurrentIndex
+    currentJob,
+    hasMoreJobs,
+    nextJob,
+    loading,
+    refetch: fetchJobs
   };
 }

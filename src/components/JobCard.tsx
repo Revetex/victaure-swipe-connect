@@ -5,7 +5,7 @@ import { CategoryIcon } from "./skills/CategoryIcon";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
-interface JobCardProps extends Job {}
+type JobCardProps = Job;
 
 export function JobCard({ 
   title, 
