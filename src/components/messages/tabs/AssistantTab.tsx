@@ -41,9 +41,9 @@ export function AssistantTab() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-[calc(100vh-8rem)] bg-background rounded-lg border">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-muted/50">
+      <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className={`h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center transition-all duration-300 ${isThinking ? 'animate-pulse' : 'hover:bg-primary/20'}`}>
@@ -69,10 +69,7 @@ export function AssistantTab() {
 
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden">
-        <ScrollArea 
-          ref={scrollAreaRef}
-          className="h-full p-4"
-        >
+        <ScrollArea className="h-full px-4 py-6">
           <div className="space-y-4">
             {chatMessages.map((message, index) => (
               <ChatMessage
@@ -93,7 +90,7 @@ export function AssistantTab() {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t bg-muted/50">
+      <div className="p-4 border-t">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
