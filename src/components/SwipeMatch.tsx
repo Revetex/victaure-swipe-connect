@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "sonner";
-import { useMotionValue, useTransform } from "framer-motion";
+import { useMotionValue, useTransform, motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { JobFilters, applyJobFilters } from "./jobs/JobFilterUtils";
@@ -15,10 +15,13 @@ interface SwipeMatchProps {
 export function SwipeMatch({ filters }: SwipeMatchProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-30, 30]);
   const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
+  const scale = useTransform(Math.abs(x.get()), [0, 100], [1, 0.95]);
   const dragConstraintsRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const fetchJobs = async () => {
     try {
@@ -40,7 +43,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
           location: job.location,
           salary: `${job.budget} CAD`,
           duration: job.contract_type,
-          skills: ["Skill 1", "Skill 2"],
+          skills: job.required_skills || ["Skill 1", "Skill 2"],
           category: job.category,
           contract_type: job.contract_type,
           experience_level: job.experience_level
@@ -57,7 +60,6 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
   useEffect(() => {
     fetchJobs();
 
-    // S'abonner aux changements en temps réel
     const channel = supabase
       .channel('public:jobs')
       .on(
@@ -77,7 +79,7 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
             location: newJob.location,
             salary: `${newJob.budget} CAD`,
             duration: newJob.contract_type,
-            skills: ["Skill 1", "Skill 2"],
+            skills: newJob.required_skills || ["Skill 1", "Skill 2"],
             category: newJob.category,
             contract_type: newJob.contract_type,
             experience_level: newJob.experience_level
@@ -91,14 +93,21 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
     };
   }, [filters]);
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = async (event: any, info: any) => {
+    setIsDragging(false);
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
     if (offset > 100 || velocity > 800) {
-      handleSwipe("right");
+      setSwipeDirection("right");
+      await handleSwipe("right");
     } else if (offset < -100 || velocity < -800) {
-      handleSwipe("left");
+      setSwipeDirection("left");
+      await handleSwipe("left");
     } else {
       x.set(0);
     }
@@ -116,7 +125,9 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
           });
 
           if (error) throw error;
-          toast.success("Match! Vous avez liké cette offre");
+          toast.success("Match! Vous avez liké cette offre", {
+            position: "top-center",
+          });
         }
       } catch (error) {
         console.error("Error creating match:", error);
@@ -124,30 +135,46 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
       }
     }
 
-    if (currentIndex < jobs.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-      x.set(0);
-    } else {
-      toast.info("Plus d'offres disponibles pour le moment");
-    }
+    // Add a small delay for the animation to complete
+    setTimeout(() => {
+      if (currentIndex < jobs.length - 1) {
+        setCurrentIndex(prev => prev + 1);
+        x.set(0);
+        setSwipeDirection(null);
+      } else {
+        toast.info("Plus d'offres disponibles pour le moment", {
+          position: "top-center",
+        });
+      }
+    }, 200);
   };
 
   if (jobs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center">
+      <motion.div 
+        className="flex flex-col items-center justify-center p-8 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <h3 className="text-xl font-semibold mb-4">
           Aucune offre disponible pour le moment
         </h3>
         <p className="text-muted-foreground">
           Revenez plus tard pour découvrir de nouvelles missions.
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   if (currentIndex >= jobs.length) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center">
+      <motion.div 
+        className="flex flex-col items-center justify-center p-8 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <h3 className="text-xl font-semibold mb-4">
           Vous avez vu toutes les offres !
         </h3>
@@ -159,36 +186,54 @@ export function SwipeMatch({ filters }: SwipeMatchProps) {
             setCurrentIndex(0);
             fetchJobs();
           }}
+          className="bg-victaure-blue hover:bg-victaure-blue/90 text-white"
         >
           Recommencer
         </Button>
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <div className="relative w-full max-w-md mx-auto" ref={dragConstraintsRef}>
-      <AnimatedJobCard
-        job={jobs[currentIndex]}
-        x={x}
-        rotate={rotate}
-        opacity={opacity}
-        onDragEnd={handleDragEnd}
-        dragConstraints={dragConstraintsRef}
-      />
+      <AnimatePresence>
+        <motion.div
+          key={currentIndex}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ 
+            x: swipeDirection === "left" ? -200 : swipeDirection === "right" ? 200 : 0,
+            opacity: 0,
+            transition: { duration: 0.2 }
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <AnimatedJobCard
+            job={jobs[currentIndex]}
+            x={x}
+            rotate={rotate}
+            opacity={opacity}
+            scale={scale}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            dragConstraints={dragConstraintsRef}
+            isDragging={isDragging}
+          />
+        </motion.div>
+      </AnimatePresence>
       
-      <div className="flex justify-center gap-4 mt-4">
+      <div className="flex justify-center gap-4 mt-6">
         <Button
           variant="outline"
           size="lg"
-          className="border-destructive text-destructive hover:bg-destructive/10 transition-all duration-200"
+          className="border-destructive text-destructive hover:bg-destructive/10 transition-all duration-200 shadow-sm"
           onClick={() => handleSwipe("left")}
         >
           <ThumbsDown className="h-5 w-5" />
         </Button>
         <Button
           size="lg"
-          className="bg-green-500 hover:bg-green-600 text-white transition-all duration-200"
+          className="bg-green-500 hover:bg-green-600 text-white transition-all duration-200 shadow-sm"
           onClick={() => handleSwipe("right")}
         >
           <ThumbsUp className="h-5 w-5" />
