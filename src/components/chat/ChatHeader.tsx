@@ -1,46 +1,51 @@
-import { Bot, Brain, Sparkles, Wand2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Bot } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChatHeaderProps {
-  onClearChat: () => void;
-  isThinking: boolean;
+  onBack?: () => void;
+  title?: string;
+  subtitle?: string;
+  avatarUrl?: string;
+  isThinking?: boolean;
 }
 
-export function ChatHeader({ isThinking }: ChatHeaderProps) {
+export function ChatHeader({
+  onBack,
+  title = "Mr. Victaure",
+  subtitle = "Assistant IA Personnel",
+  avatarUrl = "/bot-avatar.png",
+  isThinking = false,
+}: ChatHeaderProps) {
   return (
-    <div className="flex items-center p-4 relative border-b border-primary/10">
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          <div 
-            className={cn(
-              "h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center transition-all duration-300",
-              isThinking ? "bg-primary/30" : "hover:bg-primary/30"
-            )}
+    <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center gap-3">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="mr-2"
           >
-            <img
-              src="/lovable-uploads/193c092a-9104-486d-a72a-0d882d86ce20.png"
-              alt="Mr. Victaure"
-              className={cn(
-                "h-10 w-10 object-contain",
-                isThinking && "animate-pulse"
-              )}
-            />
-          </div>
-          <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-green-500/20 flex items-center justify-center">
-            <Brain className={cn(
-              "h-3 w-3 text-green-500",
-              isThinking && "animate-spin"
-            )} />
-          </div>
-        </div>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        )}
+        <motion.div
+          animate={isThinking ? { scale: [1, 1.05, 1] } : {}}
+          transition={{ repeat: Infinity, duration: 2 }}
+        >
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={avatarUrl} alt={title} />
+            <AvatarFallback className="bg-primary/20">
+              <Bot className="h-5 w-5 text-primary" />
+            </AvatarFallback>
+          </Avatar>
+        </motion.div>
         <div>
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            Mr. Victaure
-            <Sparkles className="h-4 w-4 text-orange-500 animate-pulse" />
-          </h2>
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
-            <Wand2 className="h-3 w-3" />
-            {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
+          <h2 className="text-lg font-semibold">{title}</h2>
+          <p className="text-sm text-muted-foreground">
+            {isThinking ? "En train de réfléchir..." : subtitle}
           </p>
         </div>
       </div>
