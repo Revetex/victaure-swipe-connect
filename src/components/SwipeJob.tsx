@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { SwipeMatch } from "./SwipeMatch";
 import { CreateJobForm } from "./jobs/CreateJobForm";
-import { JobFilters } from "@/types/job";
+import { JobFilters } from "./jobs/JobFilterUtils";
 import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JobList } from "./jobs/JobList";
@@ -51,7 +51,12 @@ export function SwipeJob() {
   });
 
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    if (key === "category" && value !== filters.category) {
+      // Reset subcategory when category changes
+      setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
+    } else {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }
   };
 
   return (
