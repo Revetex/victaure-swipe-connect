@@ -63,6 +63,7 @@ export function useChat() {
 
     if (error) {
       console.error('Error saving message:', error);
+      throw error;
     }
   };
 

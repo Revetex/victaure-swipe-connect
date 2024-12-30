@@ -9,8 +9,10 @@ import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot } from "lucide-react";
+import { Bot, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function MessagesTab() {
   const { messages: userMessages, isLoading, markAsRead } = useMessages();
@@ -24,7 +26,18 @@ export function MessagesTab() {
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,
+    clearChat,
   } = useChat();
+
+  const handleClearChat = async () => {
+    try {
+      await clearChat();
+      toast.success("Conversation effacée avec succès");
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      toast.error("Erreur lors de l'effacement de la conversation");
+    }
+  };
 
   const lastAssistantMessage = chatMessages[chatMessages.length - 1]?.content || "Comment puis-je vous aider ?";
   
@@ -63,19 +76,29 @@ export function MessagesTab() {
       {/* Assistant Chat Dialog */}
       <Dialog open={isAssistantChatOpen} onOpenChange={setIsAssistantChatOpen}>
         <DialogContent className="sm:max-w-[500px] h-[80vh] flex flex-col p-0">
-          <div className="flex items-center gap-3 p-4 border-b">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src="/bot-avatar.png" alt="Mr. Victaure" />
-              <AvatarFallback className="bg-victaure-blue/20">
-                <Bot className="h-5 w-5 text-victaure-blue" />
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-lg font-semibold">Mr. Victaure</h2>
-              <p className="text-sm text-muted-foreground">
-                {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
-              </p>
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src="/bot-avatar.png" alt="Mr. Victaure" />
+                <AvatarFallback className="bg-victaure-blue/20">
+                  <Bot className="h-5 w-5 text-victaure-blue" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-lg font-semibold">Mr. Victaure</h2>
+                <p className="text-sm text-muted-foreground">
+                  {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
+                </p>
+              </div>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleClearChat}
+              className="hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
 
           <ScrollArea className="flex-1 p-4">
