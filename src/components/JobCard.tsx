@@ -29,8 +29,8 @@ export function JobCard({
   const isMobile = useIsMobile();
 
   return (
-    <Card className={`w-full ${isMobile ? 'mx-0' : 'max-w-md mx-auto'} shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800`}>
-      <CardHeader>
+    <Card className={`w-full ${isMobile ? 'mx-0' : 'max-w-md mx-auto'} min-h-[400px] shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800`}>
+      <CardHeader className="flex-1">
         <div className="space-y-2">
           <h3 className="font-semibold text-xl text-gray-900 dark:text-white line-clamp-2">{title}</h3>
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-gray-600 dark:text-gray-300">
@@ -71,7 +71,7 @@ export function JobCard({
         <div className="space-y-4">
           {salary && (
             <div className="flex flex-col gap-2">
-              <p className="text-lg font-semibold text-victaure-green">{salary}</p>
+              <p className="text-lg font-semibold text-victaure-blue">{salary}</p>
             </div>
           )}
           <div className="flex flex-wrap gap-2">
