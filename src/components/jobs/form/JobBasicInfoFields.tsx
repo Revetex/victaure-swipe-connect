@@ -10,11 +10,14 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface JobBasicInfoFieldsProps {
-  formData: any;
-  setFormData: (data: any) => void;
+  title: string;
+  description: string;
+  budget: string;
+  location: string;
+  onChange: (field: string, value: string | number) => void;
 }
 
-export function JobBasicInfoFields({ formData, setFormData }: JobBasicInfoFieldsProps) {
+export function JobBasicInfoFields({ title, description, budget, location, onChange }: JobBasicInfoFieldsProps) {
   const [open, setOpen] = useState(false);
   const cities = quebecCities || [];
 
@@ -26,8 +29,8 @@ export function JobBasicInfoFields({ formData, setFormData }: JobBasicInfoFields
           <Input
             id="title"
             placeholder="Ex: Développeur React Senior"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            value={title}
+            onChange={(e) => onChange("title", e.target.value)}
           />
         </div>
 
@@ -36,8 +39,8 @@ export function JobBasicInfoFields({ formData, setFormData }: JobBasicInfoFields
           <Textarea
             id="description"
             placeholder="Décrivez la mission en détail"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            value={description}
+            onChange={(e) => onChange("description", e.target.value)}
           />
         </div>
 
@@ -51,8 +54,8 @@ export function JobBasicInfoFields({ formData, setFormData }: JobBasicInfoFields
                 aria-expanded={open}
                 className="w-full justify-between"
               >
-                {formData.location
-                  ? cities.find((city) => city === formData.location)
+                {location
+                  ? cities.find((city) => city === location)
                   : "Sélectionnez une ville..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -67,14 +70,14 @@ export function JobBasicInfoFields({ formData, setFormData }: JobBasicInfoFields
                       key={city}
                       value={city}
                       onSelect={(currentValue) => {
-                        setFormData({ ...formData, location: currentValue });
+                        onChange("location", currentValue);
                         setOpen(false);
                       }}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          formData.location === city ? "opacity-100" : "opacity-0"
+                          location === city ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {city}
@@ -92,8 +95,8 @@ export function JobBasicInfoFields({ formData, setFormData }: JobBasicInfoFields
             id="budget"
             type="number"
             placeholder="Ex: 5000"
-            value={formData.budget}
-            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+            value={budget}
+            onChange={(e) => onChange("budget", e.target.value)}
           />
         </div>
       </div>
