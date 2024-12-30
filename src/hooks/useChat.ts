@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateAIResponse } from "@/services/huggingFaceService";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Message {
   id: string;
@@ -16,6 +17,55 @@ export function useChat() {
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
 
+  // Load messages from Supabase on mount
+  useEffect(() => {
+    const loadMessages = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('ai_chat_messages')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error loading messages:', error);
+        return;
+      }
+
+      if (data) {
+        setMessages(data.map(msg => ({
+          id: msg.id,
+          content: msg.content,
+          sender: msg.sender,
+          timestamp: new Date(msg.created_at),
+        })));
+      }
+    };
+
+    loadMessages();
+  }, []);
+
+  const saveMessage = async (message: Message) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('ai_chat_messages')
+      .insert([{
+        id: message.id,
+        content: message.content,
+        sender: message.sender,
+        user_id: user.id,
+        created_at: message.timestamp.toISOString(),
+      }]);
+
+    if (error) {
+      console.error('Error saving message:', error);
+    }
+  };
+
   const handleSendMessage = async (message: string, profile?: any) => {
     if (!message.trim()) return;
 
@@ -27,6 +77,7 @@ export function useChat() {
     };
 
     setMessages((prev) => [...prev, newUserMessage]);
+    await saveMessage(newUserMessage);
     setInputMessage("");
     setIsThinking(true);
 
@@ -41,6 +92,7 @@ export function useChat() {
       };
 
       setMessages((prev) => [...prev, newAssistantMessage]);
+      await saveMessage(newAssistantMessage);
       return response;
     } catch (error) {
       console.error("Error generating response:", error);
@@ -84,7 +136,20 @@ export function useChat() {
     recognition.start();
   };
 
-  const clearChat = () => {
+  const clearChat = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('ai_chat_messages')
+      .delete()
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error clearing chat:', error);
+      throw error;
+    }
+
     setMessages([]);
   };
 

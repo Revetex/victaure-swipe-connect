@@ -5,6 +5,9 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { useChat } from "@/hooks/useChat";
 import { useProfile } from "@/hooks/useProfile";
 import { useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function AssistantTab() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -17,8 +20,10 @@ export function AssistantTab() {
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,
+    clearChat,
   } = useChat();
 
+  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollArea = scrollAreaRef.current;
@@ -26,9 +31,19 @@ export function AssistantTab() {
     }
   }, [chatMessages]);
 
+  const handleClearChat = async () => {
+    try {
+      await clearChat();
+      toast.success("Conversation effacée avec succès");
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      toast.error("Erreur lors de l'effacement de la conversation");
+    }
+  };
+
   return (
     <div className="h-[500px] flex flex-col">
-      <div className="flex items-center p-4 relative border-b border-victaure-blue/10">
+      <div className="flex items-center justify-between p-4 relative border-b border-victaure-blue/10">
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className={`h-12 w-12 rounded-full bg-victaure-blue/20 flex items-center justify-center transition-all duration-300 ${isThinking ? 'bg-victaure-blue/30' : 'hover:bg-victaure-blue/30'}`}>
@@ -42,6 +57,14 @@ export function AssistantTab() {
             </p>
           </div>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleClearChat}
+          className="hover:bg-destructive/10 hover:text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
 
       <div 
