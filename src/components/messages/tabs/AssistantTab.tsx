@@ -83,7 +83,7 @@ export function AssistantTab() {
                 chatMessages[index - 1]?.sender !== message.sender ||
                 new Date(message.timestamp).getTime() - new Date(chatMessages[index - 1]?.timestamp).getTime() > 300000
               }
-              timestamp={message.timestamp}
+              timestamp={message.timestamp?.toString()}
             />
           ))}
         </div>
