@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Building2, MapPin, Calendar, Briefcase, GraduationCap, FolderOpen, List } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 interface JobCardProps {
   title: string;
@@ -29,67 +30,79 @@ export function JobCard({
   const isMobile = useIsMobile();
 
   return (
-    <Card className={`w-full ${isMobile ? 'mx-0' : 'max-w-md mx-auto'} shadow-lg hover:shadow-xl transition-shadow`}>
-      <CardHeader>
-        <div className="space-y-2">
-          <h3 className="font-semibold text-xl text-foreground line-clamp-2">{title}</h3>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.02 }}
+      className="w-full"
+    >
+      <Card className={`w-full ${isMobile ? 'mx-0' : 'max-w-md mx-auto'} overflow-hidden bg-white border-none shadow-lg hover:shadow-xl transition-all duration-300`}>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]" />
+        <CardHeader className="space-y-3 pb-3">
+          <h3 className="font-semibold text-xl text-[#1A1F2C] line-clamp-2 leading-tight">{title}</h3>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-[#8E9196]">
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 shrink-0" />
+              <Building2 className="h-4 w-4 shrink-0 text-[#9b87f5]" />
               <span className="truncate">{company}</span>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 shrink-0" />
+              <MapPin className="h-4 w-4 shrink-0 text-[#9b87f5]" />
               <span className="truncate">{location}</span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-[#8E9196]">
             <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 shrink-0" />
+              <Briefcase className="h-4 w-4 shrink-0 text-[#9b87f5]" />
               <span>{contract_type}</span>
             </div>
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4 shrink-0" />
+              <GraduationCap className="h-4 w-4 shrink-0 text-[#9b87f5]" />
               <span>{experience_level}</span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-[#8E9196]">
             <div className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4 shrink-0" />
+              <FolderOpen className="h-4 w-4 shrink-0 text-[#9b87f5]" />
               <span>{category}</span>
             </div>
             {subcategory && (
               <div className="flex items-center gap-2">
-                <List className="h-4 w-4 shrink-0" />
+                <List className="h-4 w-4 shrink-0 text-[#9b87f5]" />
                 <span>{subcategory}</span>
               </div>
             )}
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {salary && (
-            <div className="flex flex-col gap-2">
-              <p className="text-lg font-semibold text-victaure-green">{salary}</p>
-            </div>
-          )}
-          <div className="flex flex-wrap gap-2">
-            {skills.slice(0, isMobile ? 3 : 5).map((skill) => (
-              <Badge
-                key={skill}
-                variant="secondary"
-                className="bg-muted text-muted-foreground"
-              >
-                {skill}
-              </Badge>
-            ))}
-            {skills.length > (isMobile ? 3 : 5) && (
-              <Badge variant="outline">+{skills.length - (isMobile ? 3 : 5)}</Badge>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {salary && (
+              <div className="flex flex-col gap-2">
+                <p className="text-lg font-semibold text-[#9b87f5]">{salary}</p>
+              </div>
             )}
+            <div className="flex flex-wrap gap-2">
+              {skills.slice(0, isMobile ? 3 : 5).map((skill) => (
+                <Badge
+                  key={skill}
+                  variant="secondary"
+                  className="bg-[#F1F0FB] text-[#7E69AB] hover:bg-[#E5DEFF] transition-colors"
+                >
+                  {skill}
+                </Badge>
+              ))}
+              {skills.length > (isMobile ? 3 : 5) && (
+                <Badge 
+                  variant="outline"
+                  className="border-[#9b87f5] text-[#9b87f5]"
+                >
+                  +{skills.length - (isMobile ? 3 : 5)}
+                </Badge>
+              )}
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
