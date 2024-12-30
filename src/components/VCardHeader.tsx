@@ -87,13 +87,13 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
 
   return (
     <motion.div 
-      className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-6 relative"
+      className="flex flex-col items-center sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 relative w-full"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col sm:flex-row items-start gap-4 flex-1 w-full">
-        <div className="relative group mx-auto sm:mx-0">
+      <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4 w-full">
+        <div className="relative group">
           <Avatar className="h-24 w-24 ring-2 ring-background">
             <AvatarImage 
               src={profile.avatar_url} 
@@ -121,12 +121,12 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
           )}
         </div>
         <div className="space-y-2 w-full text-center sm:text-left">
-          <div className="text-3xl font-bold text-foreground">
+          <div className="text-2xl sm:text-3xl font-bold text-foreground">
             {isEditing ? (
               <Input
                 value={profile.full_name || ""}
                 onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                className="text-2xl font-bold"
+                className="text-xl sm:text-2xl font-bold"
                 placeholder="Votre nom"
               />
             ) : (
@@ -134,13 +134,13 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-3xl font-bold"
+                className="text-2xl sm:text-3xl font-bold"
               >
                 {profile.full_name || "Nom non défini"}
               </motion.h2>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2 text-muted-foreground justify-center sm:justify-start">
+          <div className="flex flex-col sm:flex-row items-center gap-2 text-muted-foreground">
             <Briefcase className="h-5 w-5" />
             {isEditing ? (
               <Select
@@ -163,7 +163,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-lg"
+                className="text-base sm:text-lg"
               >
                 {profile.role || "Titre non défini"}
               </motion.span>
@@ -175,7 +175,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         variant="ghost"
         size="icon"
         onClick={() => setIsEditing(!isEditing)}
-        className="text-muted-foreground hover:text-foreground transition-colors absolute top-2 right-2 sm:static"
+        className="text-muted-foreground hover:text-foreground transition-colors absolute top-0 right-0 sm:static"
       >
         {isEditing ? <X className="h-5 w-5" /> : <Edit2 className="h-5 w-5" />}
       </Button>
