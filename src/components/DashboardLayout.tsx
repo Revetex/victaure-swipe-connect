@@ -33,14 +33,15 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background/50">
+    <div className="relative min-h-screen">
       {/* Background */}
       <div 
-        className="fixed inset-0 bg-nature-pattern bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 bg-nature-pattern bg-cover bg-center bg-no-repeat z-0"
+        style={{ opacity: 0.15 }}
       />
       
       {/* Content overlay */}
-      <div className="relative container mx-auto px-4 py-6 sm:py-8">
+      <div className="relative z-10 container mx-auto px-4 py-6 sm:py-8">
         <motion.div 
           className="max-w-[2000px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6"
           variants={containerVariants}
@@ -52,7 +53,7 @@ export function DashboardLayout() {
             variants={itemVariants}
             className="col-span-1 md:col-span-1 xl:col-span-1"
           >
-            <div className="glass-card h-full p-5 rounded-xl shadow-lg backdrop-blur-sm bg-white/10 dark:bg-gray-900/10 border border-white/20 dark:border-gray-800/20">
+            <div className="glass-card h-full p-5 rounded-xl">
               <Messages />
             </div>
           </motion.div>
@@ -62,7 +63,7 @@ export function DashboardLayout() {
             variants={itemVariants}
             className="col-span-1 md:col-span-1 xl:col-span-2"
           >
-            <div className="glass-card h-full rounded-xl shadow-lg backdrop-blur-sm bg-white/10 dark:bg-gray-900/10 border border-white/20 dark:border-gray-800/20">
+            <div className="glass-card h-full rounded-xl">
               <SwipeJob />
             </div>
           </motion.div>
@@ -72,7 +73,7 @@ export function DashboardLayout() {
             variants={itemVariants}
             className="col-span-1"
           >
-            <div className="glass-card h-full p-5 rounded-xl shadow-lg backdrop-blur-sm bg-white/10 dark:bg-gray-900/10 border border-white/20 dark:border-gray-800/20">
+            <div className="glass-card h-full p-5 rounded-xl">
               <TodoList />
             </div>
           </motion.div>
@@ -82,7 +83,7 @@ export function DashboardLayout() {
             variants={itemVariants}
             className="col-span-1 md:col-span-2 xl:col-span-2"
           >
-            <div className="glass-card h-full p-5 rounded-xl shadow-lg backdrop-blur-sm bg-white/10 dark:bg-gray-900/10 border border-white/20 dark:border-gray-800/20">
+            <div className="glass-card h-full p-5 rounded-xl">
               <PaymentBox />
             </div>
           </motion.div>
@@ -92,7 +93,7 @@ export function DashboardLayout() {
             variants={itemVariants}
             className="col-span-1 md:col-span-2 xl:col-span-1 2xl:col-span-2"
           >
-            <div className="glass-card h-full rounded-xl shadow-lg backdrop-blur-sm bg-white/10 dark:bg-gray-900/10 border border-white/20 dark:border-gray-800/20">
+            <div className="glass-card h-full rounded-xl">
               <VCard />
             </div>
           </motion.div>
