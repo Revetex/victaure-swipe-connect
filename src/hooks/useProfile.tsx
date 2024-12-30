@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { UserProfile, Certification, Experience } from "@/types/profile";
+import type { UserProfile, Certification, Experience } from "@/types/profile";
+import type { Tables, InsertTables } from "@/types/database";
 
 export function useProfile() {
   const { toast } = useToast();
@@ -17,7 +18,6 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        // Fetch profile data
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -26,28 +26,25 @@ export function useProfile() {
 
         if (profileError) throw profileError;
 
-        // Fetch certifications
-        const { data: certifications, error: certError } = await supabase
+        const { data: certifications = [], error: certError } = await supabase
           .from('certifications')
           .select('*')
           .eq('profile_id', user.id);
 
         if (certError) throw certError;
 
-        // Fetch experiences
-        const { data: experiences, error: expError } = await supabase
+        const { data: experiences = [], error: expError } = await supabase
           .from('experiences')
           .select('*')
           .eq('profile_id', user.id);
 
         if (expError) throw expError;
 
-        // Map certifications to match our interface
-        const mappedCertifications: Certification[] = (certifications || []).map(cert => ({
+        const mappedCertifications: Certification[] = certifications.map((cert: Tables<'certifications'>) => ({
           id: cert.id,
           profile_id: cert.profile_id,
           title: cert.title,
-          institution: cert.issuer, // Map issuer to institution
+          institution: cert.issuer,
           year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
           created_at: cert.created_at,
           updated_at: cert.updated_at,
@@ -57,29 +54,19 @@ export function useProfile() {
           issuer: cert.issuer
         }));
 
-        const fullProfile: UserProfile = {
-          ...profileData,
-          certifications: mappedCertifications,
-          experiences: experiences || [],
-        };
-
         if (!profileData) {
-          const defaultProfile: UserProfile = {
+          const defaultProfile: InsertTables<'profiles'> = {
             id: user.id,
             email: user.email || '',
+            role: 'professional',
             full_name: null,
             avatar_url: null,
-            role: 'professional',
             bio: null,
             phone: null,
             city: null,
             state: null,
             country: 'Canada',
             skills: [],
-            latitude: null,
-            longitude: null,
-            certifications: [],
-            experiences: [],
           };
 
           const { error: insertError } = await supabase
@@ -88,9 +75,15 @@ export function useProfile() {
 
           if (insertError) throw insertError;
 
-          setProfile(defaultProfile);
-          setTempProfile(defaultProfile);
+          setProfile(defaultProfile as UserProfile);
+          setTempProfile(defaultProfile as UserProfile);
         } else {
+          const fullProfile: UserProfile = {
+            ...profileData,
+            certifications: mappedCertifications,
+            experiences: experiences as Experience[],
+          };
+
           setProfile(fullProfile);
           setTempProfile(fullProfile);
         }
