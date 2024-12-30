@@ -13,9 +13,9 @@ interface PaymentTransaction {
   payment_type: 'interac' | 'credit_card';
   status: 'frozen' | 'released' | 'cancelled';
   created_at: string;
-  matches?: {
+  match?: {
     id: string;
-    job: {
+    job?: {
       title: string;
     } | null;
   } | null;
@@ -39,7 +39,7 @@ export function PaymentBox() {
           payment_type,
           status,
           created_at,
-          matches (
+          match:matches (
             id,
             job:jobs(title)
           )
