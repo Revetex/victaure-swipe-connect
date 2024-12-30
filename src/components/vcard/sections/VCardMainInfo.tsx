@@ -29,12 +29,18 @@ export function VCardMainInfo({
         />
 
         {!isExpanded && (
-          <VCardContactInfo
-            email={profile.email}
-            phone={profile.phone}
-            city={profile.city}
-            state={profile.state}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <VCardContactInfo
+              email={profile.email}
+              phone={profile.phone}
+              city={profile.city}
+              state={profile.state}
+            />
+          </motion.div>
         )}
       </div>
 
@@ -45,13 +51,13 @@ export function VCardMainInfo({
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+          <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
             <QRCodeSVG
               value={window.location.href}
               size={80}
               level="H"
               includeMargin={false}
-              className="rounded-lg"
+              className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
             />
           </div>
         </motion.div>
