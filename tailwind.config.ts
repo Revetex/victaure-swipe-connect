@@ -115,6 +115,9 @@ export default {
         'cyber-pattern': "url('/lovable-uploads/872d2e8e-da2a-4e2a-8b25-13151c5f367f.png')",
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
+      backdropBlur: {
+        xs: '2px',
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
