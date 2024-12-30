@@ -33,7 +33,7 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-nature-pattern bg-cover bg-center bg-fixed">
+    <div className="min-h-screen bg-dashboard-pattern bg-cover bg-center bg-fixed">
       {/* Semi-transparent gradient overlay for better readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50 backdrop-blur-[2px]" />
       
