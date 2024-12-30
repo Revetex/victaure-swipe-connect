@@ -112,7 +112,7 @@ export default {
         rotate: "rotate 10s linear infinite",
       },
       backgroundImage: {
-        'cyber-pattern': "url('/lovable-uploads/872d2e8e-da2a-4e2a-8b25-13151c5f367f.png')",
+        'nature-pattern': "url('/lovable-uploads/7fc46207-aee0-4509-ae37-a2b71221b8ed.png')",
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
       backdropBlur: {
