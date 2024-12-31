@@ -45,22 +45,6 @@ export function VCardActions({
     show: { opacity: 1, y: 0 }
   };
 
-  const handleSave = async () => {
-    try {
-      await onSave();
-      toast({
-        title: "Succès",
-        description: "Modifications sauvegardées avec succès",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de sauvegarder les modifications",
-      });
-    }
-  };
-
   return (
     <motion.div 
       variants={container}
@@ -72,7 +56,7 @@ export function VCardActions({
         <>
           <motion.div variants={item} className="flex-1 min-w-[120px]">
             <Button 
-              onClick={handleSave}
+              onClick={onSave}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
             >
               <Save className="mr-2 h-4 w-4" />

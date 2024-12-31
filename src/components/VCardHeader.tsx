@@ -40,25 +40,28 @@ export function VCardHeader({
           setProfile={setProfile}
         />
       </div>
-      {isExpanded ? (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsEditing(!isEditing)}
-          className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
-        >
-          {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
-        </Button>
-      ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsExpanded(true)}
-          className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
-        >
-          <Maximize2 className="h-4 w-4" />
-        </Button>
-      )}
+      <div className="absolute top-0 right-0 flex gap-2">
+        {isExpanded && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsEditing(!isEditing)}
+            className="text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
+          >
+            {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
+          </Button>
+        )}
+        {!isExpanded && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsExpanded(true)}
+            className="text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
     </motion.div>
   );
 }

@@ -14,10 +14,11 @@ export function VCard() {
   const { handleShare, handleDownloadVCard, handleDownloadPDF, handleDownloadBusinessPDF, handleDownloadCVPDF, handleCopyLink } = useVCardHandlers();
   const { handleSave, handleApplyChanges } = useProfileHandlers();
 
-  const handleProfileUpdate = async (updatedProfile: any) => {
+  const handleProfileUpdate = async () => {
     try {
-      setTempProfile(updatedProfile);
-      await handleSave(updatedProfile);
+      await handleSave(tempProfile);
+      setProfile(tempProfile);
+      setIsEditing(false);
       toast.success("Modifications enregistrées avec succès");
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -49,7 +50,7 @@ export function VCard() {
       onDownloadBusinessPDF={() => handleDownloadBusinessPDF(profile)}
       onDownloadCVPDF={() => handleDownloadCVPDF(profile)}
       onCopyLink={handleCopyLink}
-      onSave={() => handleProfileUpdate(tempProfile)}
+      onSave={handleProfileUpdate}
       onApplyChanges={() => handleApplyChanges(tempProfile, setProfile, setIsEditing)}
     />
   );
