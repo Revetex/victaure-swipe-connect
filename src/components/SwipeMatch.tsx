@@ -82,11 +82,6 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     setIsAnimating(false);
   };
 
-  const handleButtonSwipe = async (direction: "left" | "right") => {
-    if (isAnimating) return;
-    await handleSwipeWithMatch(direction);
-  };
-
   if (loading) {
     return (
       <motion.div 
@@ -153,7 +148,11 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
         />
       </motion.div>
       
-      <SwipeControls onSwipe={handleButtonSwipe} isAnimating={isAnimating} />
+      <SwipeControls 
+        onSwipeLeft={() => handleSwipeWithMatch("left")}
+        onSwipeRight={() => handleSwipeWithMatch("right")}
+        isAnimating={isAnimating}
+      />
     </motion.div>
   );
 }
