@@ -7,7 +7,14 @@ export interface JobFilters {
   experienceLevel: string;
   location: string;
   province: string;
+  remoteType: string;
+  minBudget: number;
+  maxBudget: number;
+  skills: string[];
   searchTerm: string;
+  createdAfter: string | null;
+  createdBefore: string | null;
+  deadlineBefore: string | null;
 }
 
 export const defaultFilters: JobFilters = {
@@ -17,7 +24,14 @@ export const defaultFilters: JobFilters = {
   experienceLevel: "all",
   location: "",
   province: "",
-  searchTerm: ""
+  remoteType: "all",
+  minBudget: 300,
+  maxBudget: 1000,
+  skills: [],
+  searchTerm: "",
+  createdAfter: null,
+  createdBefore: null,
+  deadlineBefore: null
 };
 
 export const applyJobFilters = (query: any, filters: JobFilters) => {

@@ -4,7 +4,7 @@ import { JobList } from "./jobs/JobList";
 import { missionCategories, Job } from "@/types/job";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { JobFilters as JobFiltersType, defaultFilters } from "@/types/filters";
+import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
 
 export function Marketplace() {
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
