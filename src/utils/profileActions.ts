@@ -33,24 +33,24 @@ export const updateProfile = async (tempProfile: UserProfile) => {
     throw checkError;
   }
 
-  // Prepare profile data, ensuring role is preserved if it exists
+  // Prepare profile data
   const profileData = {
+    id: user.id,
     full_name: tempProfile.full_name,
     email: tempProfile.email,
-    phone: tempProfile.phone,
-    city: tempProfile.city,
-    state: tempProfile.state,
-    country: tempProfile.country,
-    skills: tempProfile.skills,
-    bio: tempProfile.bio,
-    latitude: tempProfile.latitude,
-    longitude: tempProfile.longitude,
-    website: tempProfile.website,
-    company_name: tempProfile.company_name,
-    company_size: tempProfile.company_size,
-    industry: tempProfile.industry,
-    // Only set role if profile doesn't exist
-    ...(existingProfile ? {} : { role: 'professional' })
+    phone: tempProfile.phone || null,
+    city: tempProfile.city || null,
+    state: tempProfile.state || null,
+    country: tempProfile.country || 'Canada',
+    skills: tempProfile.skills || [],
+    bio: tempProfile.bio || null,
+    latitude: tempProfile.latitude || null,
+    longitude: tempProfile.longitude || null,
+    website: tempProfile.website || null,
+    company_name: tempProfile.company_name || null,
+    company_size: tempProfile.company_size || null,
+    industry: tempProfile.industry || null,
+    role: existingProfile?.role || 'professional' // Always ensure role has a value
   };
 
   console.log("Profile data to be saved:", profileData);
@@ -58,12 +58,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
   // Update or insert profile
   const { error: upsertError } = await supabase
     .from('profiles')
-    .upsert({
-      id: user.id,
-      ...profileData
-    }, {
-      onConflict: 'id'
-    });
+    .upsert(profileData);
 
   if (upsertError) {
     console.error("Error upserting profile:", upsertError);
