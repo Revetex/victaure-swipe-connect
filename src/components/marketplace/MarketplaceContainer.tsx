@@ -10,15 +10,14 @@ export function MarketplaceContainer() {
     category: "",
     subcategory: "",
     duration: "",
-    salaryRange: [300, 1000] as [number, number],
-    searchTerm: "",
     experienceLevel: "",
     location: "",
-    province: ""
+    province: "",
+    searchTerm: ""
   });
 
   const { 
-    jobs, 
+    data: jobs = [], 
     isLoading, 
     refetch,
     error 
@@ -39,8 +38,6 @@ export function MarketplaceContainer() {
             setSubcategory={(value) => handleFilterChange("subcategory", value)}
             duration={filters.duration}
             setDuration={(value) => handleFilterChange("duration", value)}
-            salaryRange={filters.salaryRange}
-            setSalaryRange={(value) => handleFilterChange("salaryRange", value)}
             missionCategories={missionCategories}
           />
           <JobList 

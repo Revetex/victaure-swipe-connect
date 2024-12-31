@@ -26,7 +26,7 @@ export function SwipeJob() {
     searchTerm: ""
   });
 
-  const { data: myJobs, refetch: refetchMyJobs } = useQuery({
+  const { data: myJobs, refetch: refetchMyJobs, isLoading, error } = useQuery({
     queryKey: ['my-jobs'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -168,7 +168,12 @@ export function SwipeJob() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
             {myJobs && myJobs.length > 0 ? (
-              <JobList jobs={myJobs} onJobDeleted={refetchMyJobs} />
+              <JobList 
+                jobs={myJobs} 
+                onJobDeleted={refetchMyJobs}
+                isLoading={isLoading}
+                error={error}
+              />
             ) : (
               <p className="text-muted-foreground text-center py-8">
                 Vous n'avez pas encore publié d'annonces.
