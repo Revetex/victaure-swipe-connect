@@ -125,12 +125,12 @@ export function VCard({ onEditStateChange }: VCardProps) {
 
               <VCardActions
                 isEditing={isEditing}
-                onShare={() => handleShare()}
-                onDownload={() => handleDownloadVCard()}
-                onDownloadPDF={() => handleDownloadPDF()}
-                onDownloadBusinessPDF={() => handleDownloadBusinessPDF()}
-                onDownloadCVPDF={() => handleDownloadCVPDF()}
-                onCopyLink={() => handleCopyLink()}
+                onShare={() => handleShare(tempProfile)}
+                onDownload={() => handleDownloadVCard(tempProfile)}
+                onDownloadPDF={() => handleDownloadPDF(tempProfile)}
+                onDownloadBusinessPDF={() => handleDownloadBusinessPDF(tempProfile)}
+                onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
+                onCopyLink={() => handleCopyLink(tempProfile)}
                 onSave={handleProfileUpdate}
                 onApplyChanges={() => handleApplyChanges(tempProfile, setProfile, handleSetIsEditing)}
                 setIsEditing={handleSetIsEditing}
