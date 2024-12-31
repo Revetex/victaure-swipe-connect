@@ -3,18 +3,10 @@ import { useJobsQuery } from "./hooks/useJobsQuery";
 import { JobFilters } from "../jobs/JobFilters";
 import { JobList } from "../jobs/JobList";
 import { missionCategories } from "@/types/job";
-import type { JobFilters as JobFiltersType } from "../jobs/JobFilterUtils";
+import { JobFilters as JobFiltersType, defaultFilters } from "../jobs/JobFilterUtils";
 
 export function MarketplaceContainer() {
-  const [filters, setFilters] = useState<JobFiltersType>({
-    category: "",
-    subcategory: "",
-    duration: "",
-    experienceLevel: "",
-    location: "",
-    province: "",
-    searchTerm: ""
-  });
+  const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
 
   const { 
     data: jobs = [], 
@@ -23,7 +15,7 @@ export function MarketplaceContainer() {
     error 
   } = useJobsQuery(filters);
 
-  const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
+  const handleFilterChange = (key: keyof JobFiltersType, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 

@@ -1,187 +1,123 @@
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { SwipeMatch } from "./SwipeMatch";
-import { CreateJobForm } from "./jobs/CreateJobForm";
-import { JobFilters } from "./jobs/JobFilterUtils";
-import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { JobList } from "./jobs/JobList";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Job } from "@/types/job";
+import { JobList } from "@/components/jobs/JobList";
+import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export function SwipeJob() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [openLocation, setOpenLocation] = useState(false);
-  const [filters, setFilters] = useState<JobFilters>({
-    category: "all",
-    subcategory: "all",
-    duration: "all",
-    experienceLevel: "all",
-    location: "",
-    province: "",
-    searchTerm: ""
-  });
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data: myJobs, refetch: refetchMyJobs, isLoading, error } = useQuery({
+  const { 
+    data: myJobs = [], 
+    refetch: refetchMyJobs, 
+    isLoading, 
+    error 
+  } = useQuery({
     queryKey: ['my-jobs'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-      
+      if (!user) throw new Error('Not authenticated');
+
       const { data, error } = await supabase
         .from('jobs')
-        .select('*')
+        .select(`
+          *,
+          employer:profiles(
+            full_name,
+            company_name,
+            avatar_url
+          )
+        `)
         .eq('employer_id', user.id)
         .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error fetching my jobs:', error);
-        return [];
-      }
-      
-      return data?.map(job => ({
-        ...job,
-        company: "Votre entreprise",
-        salary: `${job.budget} CAD`,
-        skills: job.required_skills || []
-      })) as Job[];
+
+      if (error) throw error;
+      return data;
     }
   });
 
-  const handleFilterChange = (key: keyof JobFilters, value: any) => {
-    if (key === "category" && value !== filters.category) {
-      setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
     } else {
-      setFilters(prev => ({ ...prev, [key]: value }));
+      toast.info("Vous êtes au début de la liste");
     }
   };
 
-  const handleMatchSuccess = async (jobId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour effectuer cette action");
-        return;
-      }
-
-      // Get employer_id from the job
-      const { data: jobData } = await supabase
-        .from('jobs')
-        .select('employer_id')
-        .eq('id', jobId)
-        .single();
-
-      if (!jobData) {
-        toast.error("Cette offre n'existe plus");
-        return;
-      }
-
-      // Create match
-      const { error: matchError } = await supabase
-        .from('matches')
-        .insert({
-          job_id: jobId,
-          professional_id: user.id,
-          employer_id: jobData.employer_id,
-          status: 'pending',
-          match_score: 0.8 // TODO: Implement real matching score
-        });
-
-      if (matchError) throw matchError;
-
-      // Create notification for employer
-      const { error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          user_id: jobData.employer_id,
-          title: "Nouveau match !",
-          message: "Un professionnel a manifesté son intérêt pour votre offre",
-        });
-
-      if (notifError) throw notifError;
-
-      toast.success("Match créé avec succès !");
-    } catch (error) {
-      console.error('Error creating match:', error);
-      toast.error("Une erreur est survenue lors du match");
+  const handleNext = () => {
+    if (currentIndex < myJobs.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      toast.info("Vous êtes à la fin de la liste");
     }
+  };
+
+  const handleCreateJob = () => {
+    navigate("/jobs/create");
   };
 
   return (
-    <div className="glass-card p-4 space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-2xl font-bold">Offres disponibles</h2>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" size="sm">
-              <Plus className="mr-2 h-4 w-4" />
-              Ajouter une mission
+    <div className="container mx-auto py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Swipe des missions</h2>
+            <Button onClick={handleCreateJob} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Créer une mission
             </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-victaure-blue">
-                Ajouter une mission
-              </DialogTitle>
-              <DialogDescription className="text-victaure-gray-dark">
-                Créez une nouvelle mission en remplissant les informations ci-dessous.
-                Les professionnels pourront la consulter et y postuler.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-6">
-              <CreateJobForm onSuccess={() => {
-                setIsOpen(false);
-                refetchMyJobs();
-              }} />
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
-          <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="browse">
-          <JobFiltersPanel 
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            openLocation={openLocation}
-            setOpenLocation={setOpenLocation}
-          />
-          
-          <div className="flex justify-center">
-            <SwipeMatch 
-              filters={filters} 
-              onMatchSuccess={handleMatchSuccess}
-            />
           </div>
-        </TabsContent>
-
-        <TabsContent value="my-jobs">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
-            {myJobs && myJobs.length > 0 ? (
-              <JobList 
-                jobs={myJobs} 
-                onJobDeleted={refetchMyJobs}
-                isLoading={isLoading}
-                error={error}
-              />
+          <div className="flex justify-center gap-4 mb-8">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handlePrevious}
+              disabled={currentIndex === 0}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleNext}
+              disabled={currentIndex === myJobs.length - 1}
+            >
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="aspect-[4/3] bg-muted rounded-lg flex items-center justify-center">
+            {myJobs[currentIndex] ? (
+              <div className="p-8">
+                <h3 className="text-xl font-semibold mb-4">{myJobs[currentIndex].title}</h3>
+                <p className="text-muted-foreground">{myJobs[currentIndex].description}</p>
+              </div>
             ) : (
-              <p className="text-muted-foreground text-center py-8">
-                Vous n'avez pas encore publié d'annonces.
-              </p>
+              <p className="text-muted-foreground">Aucune mission à afficher</p>
             )}
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
+          {myJobs && myJobs.length > 0 ? (
+            <JobList 
+              jobs={myJobs} 
+              onJobDeleted={refetchMyJobs}
+              isLoading={isLoading}
+              error={error}
+            />
+          ) : (
+            <p className="text-muted-foreground text-center py-8">
+              Vous n'avez pas encore publié d'annonces.
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
