@@ -78,7 +78,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       throw deleteError;
     }
 
-    // Insert new certifications
+    // Insert new certifications if any exist
     if (tempProfile.certifications.length > 0) {
       const { error: certError } = await supabase
         .from('certifications')
@@ -86,7 +86,9 @@ export const updateProfile = async (tempProfile: UserProfile) => {
           profile_id: user.id,
           title: cert.title,
           issuer: cert.institution,
-          issue_date: cert.year ? `${cert.year}-01-01` : null
+          issue_date: cert.year ? `${cert.year}-01-01` : null,
+          credential_url: cert.credential_url || null,
+          description: cert.description || null
         })));
 
       if (certError) {
@@ -109,7 +111,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       throw deleteError;
     }
 
-    // Insert new education
+    // Insert new education if any exist
     if (tempProfile.education.length > 0) {
       const { error: eduError } = await supabase
         .from('education')
@@ -117,10 +119,10 @@ export const updateProfile = async (tempProfile: UserProfile) => {
           profile_id: user.id,
           school_name: edu.school_name,
           degree: edu.degree,
-          field_of_study: edu.field_of_study,
-          start_date: edu.start_date,
-          end_date: edu.end_date,
-          description: edu.description
+          field_of_study: edu.field_of_study || null,
+          start_date: edu.start_date || null,
+          end_date: edu.end_date || null,
+          description: edu.description || null
         })));
 
       if (eduError) {
