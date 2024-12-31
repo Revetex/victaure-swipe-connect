@@ -37,7 +37,7 @@ export function PaymentBox() {
 
   if (isLoading) {
     return (
-      <Card className="w-full">
+      <Card className="w-full h-[400px]">
         <CardHeader className="space-y-1">
           <CardTitle className="flex items-center gap-2 text-xl">
             <Lock className="h-5 w-5" />
@@ -61,14 +61,14 @@ export function PaymentBox() {
       animate="visible"
       className="w-full h-full"
     >
-      <Card className="h-full">
-        <CardHeader className="space-y-1">
-          <CardTitle className="flex items-center gap-2 text-xl">
-            <Lock className="h-5 w-5" />
+      <Card className="h-[400px]">
+        <CardHeader className="space-y-1 py-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Lock className="h-4 w-4" />
             Paiements sécurisés
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 p-3">
           <motion.div variants={itemVariants}>
             <PaymentTypeSelector
               selectedPaymentType={selectedPaymentType}
@@ -78,7 +78,7 @@ export function PaymentBox() {
           
           <motion.div 
             variants={itemVariants}
-            className="overflow-auto max-h-[calc(100vh-400px)] rounded-lg"
+            className="overflow-auto max-h-[280px] rounded-lg"
           >
             <TransactionList
               transactions={transactions || []}
