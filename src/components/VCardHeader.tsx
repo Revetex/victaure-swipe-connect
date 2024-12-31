@@ -171,14 +171,6 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
           </div>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setIsEditing(!isEditing)}
-        className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
-      >
-        {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
-      </Button>
     </motion.div>
   );
 }

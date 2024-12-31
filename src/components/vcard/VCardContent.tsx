@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
-import { VCardMainContent } from "./sections/VCardMainContent";
-import { VCardExpandedContent } from "./sections/VCardExpandedContent";
-import { VCardCompactActions } from "./VCardCompactActions";
+import { VCardHeader } from "@/components/VCardHeader";
 import { VCardActions } from "@/components/VCardActions";
+import { VCardContactInfo } from "./VCardContactInfo";
+import { VCardSkills } from "@/components/VCardSkills";
+import { VCardCertifications } from "@/components/VCardCertifications";
+import { VCardEducation } from "@/components/VCardEducation";
+import { VCardSection } from "@/components/VCardSection";
+import { VCardBadge } from "@/components/VCardBadge";
+import { motion } from "framer-motion";
+import type { UserProfile } from "@/types/profile";
 
 interface VCardContentProps {
-  profile: any;
-  tempProfile: any;
+  profile: UserProfile;
+  tempProfile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
-  setTempProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
+  setTempProfile: (profile: UserProfile) => void;
   setIsEditing: (isEditing: boolean) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
@@ -41,81 +44,86 @@ export function VCardContent({
   onSave,
   onApplyChanges,
 }: VCardContentProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  useEffect(() => {
-    if (isEditing) {
-      setIsExpanded(true);
-    }
-  }, [isEditing]);
-
   return (
-    <Card className={`w-full max-w-[85.6mm] mx-auto overflow-hidden border-none shadow-xl transition-all duration-300 ${
-      !isExpanded ? 'h-[53.98mm] bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm' : 
-      'bg-white dark:bg-gray-800'
-    }`}>
-      <CardContent className={`p-6 ${!isExpanded && 'relative'}`}>
-        {!isExpanded && (
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-circuit-pattern opacity-5" />
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-70" />
-            <div className="absolute inset-0 border border-white/30 rounded-lg" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-victaure-blue/5 to-transparent opacity-50" />
-            <div className="absolute top-0 left-1/4 w-32 h-[2px] bg-victaure-blue/20 rounded-full blur-sm" />
-            <div className="absolute bottom-0 right-1/4 w-32 h-[2px] bg-victaure-blue/20 rounded-full blur-sm" />
-            <div className="absolute -left-10 top-1/2 w-20 h-20 bg-victaure-blue/10 rounded-full blur-2xl" />
-            <div className="absolute -right-10 top-1/2 w-20 h-20 bg-victaure-blue/10 rounded-full blur-2xl" />
-          </div>
-        )}
-        <div className="space-y-6">
-          <VCardMainContent
-            profile={tempProfile}
-            isEditing={isEditing}
-            setProfile={setTempProfile}
-            setIsEditing={setIsEditing}
-            isExpanded={isExpanded}
-            setIsExpanded={setIsExpanded}
-          />
-
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <VCardExpandedContent
-                  profile={tempProfile}
-                  isEditing={isEditing}
-                  setProfile={setTempProfile}
-                  newSkill={newSkill}
-                  setNewSkill={setNewSkill}
-                  isExpanded={isExpanded}
-                  setIsExpanded={setIsExpanded}
-                  onShare={onShare}
-                  onDownload={onDownload}
-                  onDownloadPDF={onDownloadPDF}
-                  onCopyLink={onCopyLink}
-                  onSave={onSave}
-                  onApplyChanges={onApplyChanges}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {!isExpanded && !isEditing && (
-            <VCardCompactActions
-              onExpand={() => setIsExpanded(true)}
-              onEdit={() => setIsEditing(true)}
+    <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex-1">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+        >
+          <div className="p-6 space-y-6">
+            <VCardHeader
+              profile={isEditing ? tempProfile : profile}
+              isEditing={isEditing}
+              setProfile={setTempProfile}
+              setIsEditing={setIsEditing}
+            />
+            <VCardContactInfo
+              profile={isEditing ? tempProfile : profile}
+              isEditing={isEditing}
+              setProfile={setTempProfile}
+            />
+            <VCardSkills
+              profile={isEditing ? tempProfile : profile}
+              isEditing={isEditing}
+              setProfile={setTempProfile}
+              newSkill={newSkill}
+              setNewSkill={setNewSkill}
+            />
+            <VCardSection title="Certifications">
+              <VCardCertifications
+                profile={isEditing ? tempProfile : profile}
+                isEditing={isEditing}
+                setProfile={setTempProfile}
+              />
+            </VCardSection>
+            <VCardSection title="Formation">
+              <VCardEducation
+                profile={isEditing ? tempProfile : profile}
+                isEditing={isEditing}
+                setProfile={setTempProfile}
+              />
+            </VCardSection>
+            <VCardActions
+              isEditing={isEditing}
+              onShare={onShare}
               onDownload={onDownload}
               onDownloadPDF={onDownloadPDF}
-              onDownloadBusinessPDF={onDownloadBusinessPDF}
+              onCopyLink={onCopyLink}
+              onSave={onSave}
+              onApplyChanges={onApplyChanges}
             />
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </motion.div>
+      </div>
+      <div className="w-full md:w-48 space-y-2">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setIsEditing(!isEditing)}
+          className="w-full p-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+        >
+          {isEditing ? "Annuler" : "Éditer"}
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onDownloadPDF}
+          className="w-full p-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+        >
+          Télécharger CV PDF
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onDownloadBusinessPDF}
+          className="w-full p-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+        >
+          Télécharger Business VCard PDF
+        </motion.button>
+      </div>
+    </div>
   );
 }
