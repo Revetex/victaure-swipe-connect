@@ -86,6 +86,34 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing, isEx
     }
   };
 
+  const handleRoleChange = async (value: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No authenticated user");
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ role: value })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setProfile({ ...profile, role: value });
+      
+      toast({
+        title: "Succès",
+        description: "Profession mise à jour",
+      });
+    } catch (error) {
+      console.error('Error updating role:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de mettre à jour la profession",
+      });
+    }
+  };
+
   return (
     <motion.div 
       className="flex flex-col sm:flex-row sm:items-start gap-3 relative w-full"
@@ -123,7 +151,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing, isEx
         </div>
         <div className="space-y-2 w-full text-center sm:text-left">
           <div className="space-y-1">
-            {isEditing && isExpanded ? (
+            {isEditing ? (
               <Input
                 value={profile.full_name || ""}
                 onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
@@ -143,10 +171,10 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing, isEx
           </div>
           <div className="flex items-center justify-center sm:justify-start gap-1.5">
             <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
-            {isEditing && isExpanded ? (
+            {isEditing ? (
               <Select
                 value={profile.role || ""}
-                onValueChange={(value) => setProfile({ ...profile, role: value })}
+                onValueChange={handleRoleChange}
               >
                 <SelectTrigger className="w-full max-w-[250px] h-8 text-sm">
                   <SelectValue placeholder="Sélectionnez un titre" />
