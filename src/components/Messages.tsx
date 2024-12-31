@@ -24,11 +24,12 @@ export function Messages() {
 
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="messages">Messages</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
         <TabsTrigger value="notes">Notes</TabsTrigger>
         <TabsTrigger value="tasks">Tâches</TabsTrigger>
+        <TabsTrigger value="payments">Paiements</TabsTrigger>
         <TabsTrigger value="settings">Paramètres</TabsTrigger>
       </TabsList>
       <div className="flex-1 overflow-hidden">
@@ -71,6 +72,9 @@ export function Messages() {
             onToggle={toggleTodo}
             onDelete={deleteTodo}
           />
+        </TabsContent>
+        <TabsContent value="payments" className="h-full">
+          <PaymentBox />
         </TabsContent>
         <TabsContent value="settings" className="h-full">
           <Settings />
