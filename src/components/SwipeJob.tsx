@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Filter, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,11 +20,14 @@ export function SwipeJob() {
   const [filters, setFilters] = useState<JobFilters>(defaultFilters);
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: myJobs, refetch: refetchMyJobs } = useQuery({
+  const { data: myJobs, refetch: refetchMyJobs, isLoading } = useQuery({
     queryKey: ['my-jobs'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      if (!user) {
+        toast.error("Vous devez être connecté pour voir vos annonces");
+        return [];
+      }
       
       const { data, error } = await supabase
         .from('jobs')
@@ -33,6 +37,7 @@ export function SwipeJob() {
       
       if (error) {
         console.error('Error fetching my jobs:', error);
+        toast.error("Erreur lors du chargement de vos annonces");
         return [];
       }
       
@@ -53,61 +58,35 @@ export function SwipeJob() {
     }
   };
 
-  const handleMatchSuccess = async (jobId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour effectuer cette action");
-        return;
-      }
-
-      const { data: jobData } = await supabase
-        .from('jobs')
-        .select('employer_id')
-        .eq('id', jobId)
-        .single();
-
-      if (!jobData) {
-        toast.error("Cette offre n'existe plus");
-        return;
-      }
-
-      const { error: matchError } = await supabase
-        .from('matches')
-        .insert({
-          job_id: jobId,
-          professional_id: user.id,
-          employer_id: jobData.employer_id,
-          status: 'pending',
-          match_score: 0.8
-        });
-
-      if (matchError) throw matchError;
-
-      const { error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          user_id: jobData.employer_id,
-          title: "Nouveau match !",
-          message: "Un professionnel a manifesté son intérêt pour votre offre",
-        });
-
-      if (notifError) throw notifError;
-
-      toast.success("Match créé avec succès !");
-    } catch (error) {
-      console.error('Error creating match:', error);
-      toast.error("Une erreur est survenue lors du match");
-    }
-  };
-
   return (
-    <div className="glass-card p-4 space-y-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="glass-card p-4 space-y-4"
+    >
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-2xl font-bold text-victaure-blue">Offres disponibles</h2>
+        <motion.h2 
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="text-2xl font-bold text-victaure-blue"
+        >
+          Offres disponibles
+        </motion.h2>
+        
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" size="sm">
+            <Button 
+              className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" 
+              size="sm"
+              onClick={() => {
+                const { data: { user } } = supabase.auth.getUser();
+                if (!user) {
+                  toast.error("Vous devez être connecté pour créer une mission");
+                  return;
+                }
+              }}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Ajouter une mission
             </Button>
@@ -126,6 +105,7 @@ export function SwipeJob() {
               <CreateJobForm onSuccess={() => {
                 setIsOpen(false);
                 refetchMyJobs();
+                toast.success("Mission créée avec succès");
               }} />
             </div>
           </DialogContent>
@@ -134,50 +114,137 @@ export function SwipeJob() {
 
       <Tabs defaultValue="browse" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
-          <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
+          <TabsTrigger value="browse" className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            Parcourir les offres
+          </TabsTrigger>
+          <TabsTrigger value="my-jobs" className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            Mes annonces
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="browse" className="space-y-4">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowFilters(!showFilters)}
-            className="w-full justify-between"
-          >
-            {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-            <Plus className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-45' : ''}`} />
-          </Button>
-          
-          {showFilters && (
-            <JobFiltersPanel 
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              openLocation={openLocation}
-              setOpenLocation={setOpenLocation}
-            />
-          )}
-          
-          <div className="flex justify-center mt-6">
-            <SwipeMatch 
-              filters={filters} 
-              onMatchSuccess={handleMatchSuccess}
-            />
-          </div>
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <Button 
+                variant="outline" 
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+                </span>
+                <Plus className={`h-4 w-4 transition-transform duration-200 ${showFilters ? 'rotate-45' : ''}`} />
+              </Button>
+              
+              <AnimatePresence>
+                {showFilters && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <JobFiltersPanel 
+                      filters={filters}
+                      onFilterChange={handleFilterChange}
+                      openLocation={openLocation}
+                      setOpenLocation={setOpenLocation}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <div className="flex justify-center mt-6">
+                <SwipeMatch 
+                  filters={filters} 
+                  onMatchSuccess={async (jobId) => {
+                    try {
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) {
+                        toast.error("Vous devez être connecté pour effectuer cette action");
+                        return;
+                      }
+
+                      const { data: jobData } = await supabase
+                        .from('jobs')
+                        .select('employer_id')
+                        .eq('id', jobId)
+                        .single();
+
+                      if (!jobData) {
+                        toast.error("Cette offre n'existe plus");
+                        return;
+                      }
+
+                      const { error: matchError } = await supabase
+                        .from('matches')
+                        .insert({
+                          job_id: jobId,
+                          professional_id: user.id,
+                          employer_id: jobData.employer_id,
+                          status: 'pending',
+                          match_score: 0.8
+                        });
+
+                      if (matchError) throw matchError;
+
+                      const { error: notifError } = await supabase
+                        .from('notifications')
+                        .insert({
+                          user_id: jobData.employer_id,
+                          title: "Nouveau match !",
+                          message: "Un professionnel a manifesté son intérêt pour votre offre",
+                        });
+
+                      if (notifError) throw notifError;
+
+                      toast.success("Match créé avec succès !");
+                    } catch (error) {
+                      console.error('Error creating match:', error);
+                      toast.error("Une erreur est survenue lors du match");
+                    }
+                  }}
+                />
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </TabsContent>
 
         <TabsContent value="my-jobs">
-          <div className="space-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-4"
+          >
             <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
-            {myJobs && myJobs.length > 0 ? (
-              <JobList jobs={myJobs} onJobDeleted={refetchMyJobs} />
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : myJobs && myJobs.length > 0 ? (
+              <JobList 
+                jobs={myJobs} 
+                onJobDeleted={() => {
+                  refetchMyJobs();
+                  toast.success("Annonce supprimée avec succès");
+                }} 
+              />
             ) : (
               <p className="text-muted-foreground text-center py-8">
                 Vous n'avez pas encore publié d'annonces.
               </p>
             )}
-          </div>
+          </motion.div>
         </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, RefreshCw } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JobFilters as JobFiltersType, defaultFilters } from "./JobFilterUtils";
 import { SearchFilter } from "./filters/SearchFilter";
@@ -7,6 +7,7 @@ import { CategoryFilters } from "./filters/CategoryFilters";
 import { BudgetFilter } from "./filters/BudgetFilter";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { motion } from "framer-motion";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -26,9 +27,13 @@ export function JobFilters({
   };
 
   return (
-    <div className={`lg:col-span-1 bg-card rounded-lg shadow-sm border ${
-      isMobile ? "sticky top-0 z-10 bg-opacity-95 backdrop-blur-sm" : ""
-    }`}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`lg:col-span-1 bg-card rounded-lg shadow-sm border ${
+        isMobile ? "sticky top-0 z-10 bg-opacity-95 backdrop-blur-sm" : ""
+      }`}
+    >
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -41,13 +46,19 @@ export function JobFilters({
             onClick={resetFilters}
             className="text-muted-foreground hover:text-foreground"
           >
+            <RefreshCw className="h-4 w-4 mr-2" />
             Réinitialiser
           </Button>
         </div>
       </div>
 
       <ScrollArea className="h-[calc(100vh-200px)] lg:h-auto">
-        <div className="p-4 space-y-6">
+        <motion.div 
+          className="p-4 space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <div className="space-y-4">
             <SearchFilter filters={filters} onFilterChange={onFilterChange} />
             <Separator />
@@ -55,8 +66,8 @@ export function JobFilters({
             <Separator />
             <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
           </div>
-        </div>
+        </motion.div>
       </ScrollArea>
-    </div>
+    </motion.div>
   );
 }
