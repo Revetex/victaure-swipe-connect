@@ -1,13 +1,11 @@
 export const pdfColors = {
-  background: "#1A1F2C",
-  primary: "#9b87f5",
-  secondary: "#7E69AB",
+  background: '#1A1F2C', // Dark Purple background
   text: {
-    primary: "#FFFFFF",
-    secondary: "#C8C8C9",
-    muted: "#8A898C",
+    primary: '#FFFFFF',    // White for main text
+    secondary: '#D6BCFA',  // Light Purple for secondary text
+    muted: '#8E9196'      // Neutral Gray for less important text
   },
   circuit: {
-    lines: "rgba(30, 174, 219, 0.1)",
+    lines: '#6E59A5'      // Tertiary Purple for circuit pattern
   }
-} as const;
+};

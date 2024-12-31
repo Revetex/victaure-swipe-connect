@@ -13,7 +13,7 @@ export function useVCardHandlers() {
       try {
         await navigator.share({
           title: profile.full_name || '',
-          text: `Professional profile of ${profile.full_name || ''}`,
+          text: `Profil professionnel de ${profile.full_name || ''}`,
           url: window.location.href,
         });
         toast({
@@ -21,6 +21,7 @@ export function useVCardHandlers() {
           description: "Profil partagé avec succès",
         });
       } catch (error) {
+        console.error('Error sharing:', error);
         toast({
           variant: "destructive",
           title: "Erreur",
@@ -35,21 +36,30 @@ export function useVCardHandlers() {
   const handleDownloadVCard = (profile: UserProfile) => {
     if (!profile) return;
     
-    const vCardData = generateVCardData(profile);
-    const blob = new Blob([vCardData], { type: "text/vcard" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `${profile.full_name?.replace(" ", "_") || 'profile'}.vcf`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Succès",
-      description: "VCard téléchargée avec succès",
-    });
+    try {
+      const vCardData = generateVCardData(profile);
+      const blob = new Blob([vCardData], { type: "text/vcard" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${profile.full_name?.replace(/\s+/g, '_').toLowerCase() || 'profile'}.vcf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Succès",
+        description: "VCard téléchargée avec succès",
+      });
+    } catch (error) {
+      console.error('Error downloading vCard:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de télécharger la VCard",
+      });
+    }
   };
 
   const handleDownloadPDF = async (profile: UserProfile) => {
@@ -113,11 +123,20 @@ export function useVCardHandlers() {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast({
-      title: "Succès",
-      description: "Lien copié dans le presse-papier",
-    });
+    try {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Succès",
+        description: "Lien copié dans le presse-papier",
+      });
+    } catch (error) {
+      console.error('Error copying link:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de copier le lien",
+      });
+    }
   };
 
   return {
