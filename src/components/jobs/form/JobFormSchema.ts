@@ -8,7 +8,16 @@ export const jobFormSchema = z.object({
   category: z.string().min(1, "La catégorie est requise"),
   subcategory: z.string().min(1, "La sous-catégorie est requise"),
   contract_type: z.string().min(1, "Le type de contrat est requis"),
-  experience_level: z.string().min(1, "Le niveau d'expérience est requis"),
+  experience_level: z.enum([
+    "Entry-Level",
+    "Mid-Level", 
+    "Senior",
+    "Expert",
+    "Lead"
+  ], {
+    required_error: "Le niveau d'expérience est requis",
+    invalid_type_error: "Niveau d'expérience invalide"
+  }),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
