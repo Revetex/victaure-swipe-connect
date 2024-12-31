@@ -78,6 +78,7 @@ export function VCardCreationForm() {
             email: user.email,
             role: "professional", // Explicitly set the role to a valid value
             skills: values.skills,
+            phone: values.phone || null,
           })
           .eq('id', user.id);
 
@@ -96,6 +97,7 @@ export function VCardCreationForm() {
             email: user.email,
             role: "professional", // Explicitly set the role to a valid value
             skills: values.skills,
+            phone: values.phone || null,
           });
 
         if (insertError) {
@@ -157,6 +159,24 @@ export function VCardCreationForm() {
                     <Textarea
                       placeholder="Parlez-nous de vous et de votre expérience..."
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Téléphone</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="tel"
+                      placeholder="+1 (555) 555-5555" 
+                      {...field} 
                     />
                   </FormControl>
                   <FormMessage />
