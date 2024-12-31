@@ -89,6 +89,16 @@ export function VCardActions({
           </motion.div>
           <motion.div variants={item} className="flex-1 min-w-[100px]">
             <Button 
+              onClick={onDownload} 
+              variant="outline" 
+              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Télécharger
+            </Button>
+          </motion.div>
+          <motion.div variants={item} className="flex-1 min-w-[100px]">
+            <Button 
               onClick={onDownloadPDF} 
               variant="outline" 
               className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
