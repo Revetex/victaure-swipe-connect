@@ -7,7 +7,14 @@ import { PaymentBox } from "./dashboard/PaymentBox";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
 import { NotesSection } from "./todo/NotesSection";
-import { MessageSquare, Bell, StickyNote, ListTodo, Settings as SettingsIcon, CreditCard } from "lucide-react";
+import { 
+  MessageSquare, 
+  Bell, 
+  StickyNote, 
+  ListTodo, 
+  Settings as SettingsIcon, 
+  CreditCard 
+} from "lucide-react";
 
 export function Messages() {
   const {
@@ -51,27 +58,27 @@ export function Messages() {
       <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="messages" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
-          <span className="sr-only">Messages</span>
+          <span className="hidden sm:inline">Messages</span>
         </TabsTrigger>
         <TabsTrigger value="notifications" className="flex items-center gap-2">
           <Bell className="h-4 w-4" />
-          <span className="sr-only">Notifications</span>
+          <span className="hidden sm:inline">Notifications</span>
         </TabsTrigger>
         <TabsTrigger value="notes" className="flex items-center gap-2">
           <StickyNote className="h-4 w-4" />
-          <span className="sr-only">Notes</span>
+          <span className="hidden sm:inline">Notes</span>
         </TabsTrigger>
         <TabsTrigger value="tasks" className="flex items-center gap-2">
           <ListTodo className="h-4 w-4" />
-          <span className="sr-only">Tâches</span>
+          <span className="hidden sm:inline">Tâches</span>
         </TabsTrigger>
         <TabsTrigger value="payments" className="flex items-center gap-2">
           <CreditCard className="h-4 w-4" />
-          <span className="sr-only">Paiements</span>
+          <span className="hidden sm:inline">Paiements</span>
         </TabsTrigger>
         <TabsTrigger value="settings" className="flex items-center gap-2">
           <SettingsIcon className="h-4 w-4" />
-          <span className="sr-only">Paramètres</span>
+          <span className="hidden sm:inline">Paramètres</span>
         </TabsTrigger>
       </TabsList>
       <div className="flex-1 overflow-hidden">

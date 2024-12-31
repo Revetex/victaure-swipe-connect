@@ -33,11 +33,13 @@ export function MessageItem({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       onClick={() => !read && onMarkAsRead(id)}
-      className={`p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
+      className={cn(
+        "p-4 rounded-lg cursor-pointer transition-all duration-200",
+        "hover:scale-[1.02] hover:bg-muted/80",
         !read 
           ? "bg-primary/10 border-l-2 border-primary shadow-sm" 
-          : "bg-muted hover:bg-muted/80"
-      }`}
+          : "bg-muted"
+      )}
     >
       <div className="flex gap-3">
         <Avatar className="h-10 w-10">
@@ -48,7 +50,9 @@ export function MessageItem({
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start gap-2">
-            <h3 className="font-medium truncate">{sender.full_name}</h3>
+            <h3 className="font-medium truncate text-foreground">
+              {sender.full_name}
+            </h3>
             <span className="text-xs text-muted-foreground whitespace-nowrap">
               {formatDistanceToNow(new Date(created_at), { 
                 addSuffix: true,
