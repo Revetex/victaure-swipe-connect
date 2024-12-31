@@ -19,11 +19,17 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
         .from('job_categories')
         .select('name')
         .eq('id', data.category)
-        .single();
+        .maybeSingle();
 
       if (categoryError) {
         console.error("Error fetching category:", categoryError);
         toast.error("Erreur lors de la récupération de la catégorie");
+        return;
+      }
+
+      if (!categoryData) {
+        console.error("Category not found");
+        toast.error("Catégorie non trouvée");
         return;
       }
 
@@ -34,11 +40,11 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
           .from('job_subcategories')
           .select('name')
           .eq('id', data.subcategory)
-          .single();
+          .maybeSingle();
 
         if (subcategoryError) {
           console.error("Error fetching subcategory:", subcategoryError);
-        } else {
+        } else if (subcategoryData) {
           subcategoryName = subcategoryData.name;
         }
       }
@@ -75,7 +81,11 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
         qualifications: data.qualifications
       };
 
-      const { error } = await supabase.from("jobs").insert(jobData);
+      console.log("Inserting job with data:", jobData);
+
+      const { error } = await supabase
+        .from("jobs")
+        .insert(jobData);
 
       if (error) {
         console.error("Error creating job:", error);
