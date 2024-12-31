@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { JobFilters } from "./JobFilterUtils";
+import { JobFilters } from "./jobs/JobFilterUtils";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
 import { SwipeControls } from "./jobs/swipe/SwipeControls";
