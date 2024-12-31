@@ -27,6 +27,10 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 placeholder="Ex: Développeur Full Stack React/Node.js" 
                 {...field}
                 value={field.value || ""}
+                onChange={(e) => {
+                  field.onChange(e);
+                  onChange({ title: e.target.value });
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -46,6 +50,10 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 className="min-h-[100px]"
                 {...field}
                 value={field.value || ""}
+                onChange={(e) => {
+                  field.onChange(e);
+                  onChange({ description: e.target.value });
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -65,6 +73,10 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 placeholder="Ex: 500" 
                 {...field}
                 value={field.value || ""}
+                onChange={(e) => {
+                  field.onChange(e);
+                  onChange({ budget: e.target.value });
+                }}
               />
             </FormControl>
             <FormMessage />
@@ -83,6 +95,10 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 placeholder="Ex: Montréal, QC" 
                 {...field}
                 value={field.value || ""}
+                onChange={(e) => {
+                  field.onChange(e);
+                  onChange({ location: e.target.value });
+                }}
               />
             </FormControl>
             <FormMessage />

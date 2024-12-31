@@ -51,6 +51,7 @@ const defaultValues: JobFormValues = {
   budget: 0,
   location: "",
   category: "",
+  subcategory: "",
   mission_type: "company",
   contract_type: "Full-time",
   experience_level: "Mid-Level",
@@ -66,6 +67,12 @@ const defaultValues: JobFormValues = {
   payment_schedule: "Monthly",
   salary_min: 0,
   salary_max: 0,
+  company_name: "",
+  company_logo: "",
+  company_website: "",
+  company_description: "",
+  latitude: 0,
+  longitude: 0,
 };
 
 interface CreateJobFormProps {
