@@ -10,6 +10,16 @@ export interface JobFilters {
   searchTerm: string;
 }
 
+export const defaultFilters: JobFilters = {
+  category: "all",
+  subcategory: "all",
+  duration: "all",
+  experienceLevel: "all",
+  location: "",
+  province: "",
+  searchTerm: ""
+};
+
 export const applyJobFilters = (query: any, filters: JobFilters) => {
   if (filters.category && filters.category !== "all") {
     query = query.eq("category", filters.category);

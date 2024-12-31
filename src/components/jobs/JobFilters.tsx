@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { JobFilters as JobFiltersType } from "@/types/filters";
+import { JobFilters as JobFiltersType, defaultFilters } from "./JobFilterUtils";
 import { SearchFilter } from "./filters/SearchFilter";
 import { CategoryFilters } from "./filters/CategoryFilters";
 import { WorkTypeFilters } from "./filters/WorkTypeFilters";
@@ -20,13 +20,8 @@ export function JobFilters({
   const isMobile = useIsMobile();
 
   const resetFilters = () => {
-    Object.keys(filters).forEach((key) => {
-      onFilterChange(key as keyof JobFiltersType, 
-        key === "minBudget" ? 300 : 
-        key === "maxBudget" ? 1000 : 
-        key === "skills" ? [] : 
-        "all"
-      );
+    Object.keys(defaultFilters).forEach((key) => {
+      onFilterChange(key as keyof JobFiltersType, defaultFilters[key as keyof JobFiltersType]);
     });
   };
 
