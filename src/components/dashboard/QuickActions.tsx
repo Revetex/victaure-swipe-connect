@@ -37,35 +37,39 @@ export function QuickActions({ stats }: QuickActionsProps) {
       title: "Missions en cours",
       value: stats?.activeJobs.toString() || "0",
       icon: Briefcase,
-      color: "text-victaure-blue",
-      bgColor: "bg-victaure-blue/10",
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
+      gradient: "from-blue-500/20 to-blue-600/20"
     },
     {
       title: "Messages non lus",
       value: stats?.unreadMessages.toString() || "0",
       icon: MessageSquare,
-      color: "text-victaure-green",
-      bgColor: "bg-victaure-green/10",
+      color: "text-green-500",
+      bgColor: "bg-green-500/10",
+      gradient: "from-green-500/20 to-green-600/20"
     },
     {
       title: "Paiements en attente",
       value: stats?.pendingPayments || "CAD 0",
       icon: DollarSign,
-      color: "text-victaure-red",
-      bgColor: "bg-victaure-red/10",
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10",
+      gradient: "from-yellow-500/20 to-yellow-600/20"
     },
     {
       title: "Prochaine mission",
       value: stats?.nextJob || "Aucune",
       icon: Calendar,
-      color: "text-victaure-blue",
-      bgColor: "bg-victaure-blue/10",
+      color: "text-purple-500",
+      bgColor: "bg-purple-500/10",
+      gradient: "from-purple-500/20 to-purple-600/20"
     },
   ], [stats]);
 
   return (
     <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
