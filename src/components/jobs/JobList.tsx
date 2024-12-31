@@ -10,13 +10,16 @@ import {
   DialogDescription 
 } from "@/components/ui/dialog";
 import { CreateJobForm } from "./CreateJobForm";
+import { Loader2 } from "lucide-react";
 
 interface JobListProps {
   jobs: Job[];
+  isLoading: boolean;
+  error: Error | null;
   onJobDeleted: () => void;
 }
 
-export function JobList({ jobs, onJobDeleted }: JobListProps) {
+export function JobList({ jobs, isLoading, error, onJobDeleted }: JobListProps) {
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -24,6 +27,22 @@ export function JobList({ jobs, onJobDeleted }: JobListProps) {
     setIsEditDialogOpen(false);
     onJobDeleted();
   };
+
+  if (isLoading) {
+    return (
+      <div className="lg:col-span-3 flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="lg:col-span-3 flex justify-center items-center min-h-[400px]">
+        <p className="text-destructive">Une erreur est survenue lors du chargement des missions</p>
+      </div>
+    );
+  }
 
   return (
     <div className="lg:col-span-3 space-y-4">
