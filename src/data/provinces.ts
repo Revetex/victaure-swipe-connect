@@ -64,10 +64,14 @@ export const provinceData = {
 export const contractTypes = [
   'CDI',
   'CDD',
-  'Stage',
   'Freelance',
+  'Stage',
+  'Alternance',
   'Temps partiel',
-  'Temps plein'
+  'Full-time',
+  'Part-time',
+  'Contract',
+  'Internship'
 ] as const;
 
 export const experienceLevels = [
