@@ -2,7 +2,7 @@ import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -41,23 +41,6 @@ export function DashboardLayout() {
     </motion.div>
   );
 
-  const pageVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0
-    })
-  };
-
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       <div className="relative z-10 flex-1 overflow-hidden">
@@ -93,9 +76,13 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {currentPage === 1 && renderDashboardSection(
-              <VCard onEditStateChange={setIsEditing} />,
-              'w-full h-full'
+            {currentPage === 1 && (
+              <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : ""}>
+                {renderDashboardSection(
+                  <VCard onEditStateChange={setIsEditing} />,
+                  'w-full h-full'
+                )}
+              </div>
             )}
             
             {currentPage === 2 && !isEditing && renderDashboardSection(
