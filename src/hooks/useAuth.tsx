@@ -1,0 +1,95 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+export function useAuth() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  const signOut = async () => {
+    try {
+      setIsLoading(true);
+      // Clear all storage first
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      setIsAuthenticated(false);
+      navigate('/auth');
+      toast.success('Déconnexion réussie');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      toast.error('Erreur lors de la déconnexion');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkAuth = async () => {
+      try {
+        // Get the current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) throw sessionError;
+        
+        if (!session) {
+          if (mounted) {
+            setIsAuthenticated(false);
+            if (window.location.pathname !== '/auth') {
+              navigate('/auth');
+            }
+          }
+          return;
+        }
+
+        // Verify the session is valid
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          throw userError || new Error('No user found');
+        }
+
+        if (mounted) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        if (mounted) {
+          setIsAuthenticated(false);
+          await signOut();
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (mounted) {
+        if (event === 'SIGNED_IN' && session) {
+          setIsAuthenticated(true);
+          navigate('/dashboard');
+        } else if (event === 'SIGNED_OUT' || !session) {
+          await signOut();
+        }
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  return { isLoading, isAuthenticated, signOut };
+}
