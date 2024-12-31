@@ -24,11 +24,13 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     doc.line(0, i, 85.6, i);
   }
 
-  // Add gradient overlay
+  // Add gradient-like effect using multiple rectangles
   doc.setFillColor(255, 255, 255);
-  doc.setGlobalAlpha(0.1);
-  doc.rect(0, 0, 85.6, 53.98, 'F');
-  doc.setGlobalAlpha(1);
+  for (let i = 0; i < 85.6; i += 0.5) {
+    const opacity = 0.02; // 2% opacity
+    doc.setFillColor(`rgba(255, 255, 255, ${opacity})`);
+    doc.rect(i, 0, 0.5, 53.98, 'F');
+  }
 
   // Name and Role
   doc.setTextColor(pdfColors.text.primary);

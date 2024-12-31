@@ -1,5 +1,6 @@
 export const pdfColors = {
   background: '#1A1F2C', // Dark Purple background
+  primary: '#9b87f5',    // Primary Purple
   text: {
     primary: '#FFFFFF',    // White for main text
     secondary: '#D6BCFA',  // Light Purple for secondary text
