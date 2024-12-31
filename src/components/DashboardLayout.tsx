@@ -19,9 +19,9 @@ export function DashboardLayout() {
       variants={itemVariants} 
       className={`transform transition-all duration-300 ${className}`}
     >
-      <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+      <div className="dashboard-card hover-lift">
         {padding ? (
-          <div className="p-4 sm:p-6 lg:p-8 h-full">{component}</div>
+          <div className="responsive-padding h-full">{component}</div>
         ) : (
           component
         )}
