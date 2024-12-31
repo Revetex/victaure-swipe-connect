@@ -57,7 +57,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">Contact</h3>
+      <h3 className="text-base sm:text-lg font-semibold text-white">Contact</h3>
       <motion.div 
         variants={container}
         initial="hidden"

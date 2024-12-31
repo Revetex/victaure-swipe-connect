@@ -23,9 +23,9 @@ export function VCardExpandedHeader({ profile, isEditing, setProfile }: VCardExp
           <UserRound className="h-16 w-16 text-gray-400" />
         </AvatarFallback>
       </Avatar>
-      <div>
+      <div className="space-y-4">
         {isEditing ? (
-          <div className="space-y-4">
+          <>
             <Input
               value={profile.full_name || ""}
               onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
@@ -47,7 +47,7 @@ export function VCardExpandedHeader({ profile, isEditing, setProfile }: VCardExp
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </>
         ) : (
           <>
             <h1 className="text-4xl font-bold text-white mb-2">

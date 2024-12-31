@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { VCardMainContent } from "./sections/VCardMainContent";
 import { VCardExpandedContent } from "./sections/VCardExpandedContent";
 import { VCardCompactActions } from "./VCardCompactActions";
+import { toast } from "sonner";
 
 interface VCardContentProps {
   profile: any;
@@ -45,8 +46,20 @@ export function VCardContent({
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (isEditing) setIsExpanded(true);
+    if (isEditing) {
+      setIsExpanded(true);
+    }
   }, [isEditing]);
+
+  const handleSave = async () => {
+    try {
+      await onSave();
+      toast.success("Modifications enregistrées avec succès");
+      setIsEditing(false);
+    } catch (error) {
+      toast.error("Erreur lors de l'enregistrement des modifications");
+    }
+  };
 
   return (
     <Card className={`w-full max-w-[95mm] mx-auto overflow-hidden border-none shadow-xl transition-all duration-300 ${
@@ -96,7 +109,7 @@ export function VCardContent({
                   onDownloadBusinessPDF={onDownloadBusinessPDF}
                   onDownloadCVPDF={onDownloadCVPDF}
                   onCopyLink={onCopyLink}
-                  onSave={onSave}
+                  onSave={handleSave}
                   onApplyChanges={onApplyChanges}
                 />
               </motion.div>
