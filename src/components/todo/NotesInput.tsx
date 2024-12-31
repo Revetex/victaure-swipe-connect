@@ -21,23 +21,6 @@ export function NotesInput({
   onColorChange,
   onAdd,
 }: NotesInputProps) {
-  // Function to determine text color based on background color
-  const getTextColor = (colorClass: string) => {
-    switch (colorClass) {
-      case "bg-yellow-100":
-      case "bg-green-100":
-      case "bg-blue-100":
-      case "bg-pink-100":
-        return "text-gray-900"; // Dark text for light backgrounds
-      case "bg-purple-600":
-      case "bg-blue-600":
-      case "bg-indigo-600":
-        return "text-white"; // Light text for dark backgrounds
-      default:
-        return "text-gray-900"; // Default to dark text
-    }
-  };
-
   return (
     <div className="flex flex-col sm:flex-row gap-2 w-full">
       <Input
@@ -57,7 +40,7 @@ export function NotesInput({
               <SelectItem 
                 key={color.value} 
                 value={color.value}
-                className={`${color.class} ${getTextColor(color.class)} rounded-md`}
+                className={`sticky-note-${color.value}`}
               >
                 {color.label}
               </SelectItem>

@@ -55,8 +55,8 @@ export function NotesSection({
         onAdd={onAdd}
       />
 
-      <ScrollArea className="h-[400px]">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pr-4">
+      <ScrollArea className="h-[600px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-4">
           {notes.map((note) => (
             <StickyNote
               key={note.id}
