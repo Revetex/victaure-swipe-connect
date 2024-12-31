@@ -124,14 +124,35 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       }
 
       const jobData = {
-        ...data,
+        title: data.title,
+        description: data.description,
+        budget: Number(data.budget),
+        location: data.location,
         employer_id: user.id,
         status: "open",
-        category: categoryData.name, // Use the category name instead of ID
-        subcategory: subcategoryName, // Use the subcategory name instead of ID
-        budget: Number(data.budget),
+        category: categoryData.name,
+        subcategory: subcategoryName,
+        mission_type: data.mission_type,
+        contract_type: data.contract_type,
+        experience_level: data.experience_level,
+        remote_type: data.remote_type,
+        payment_schedule: data.payment_schedule,
+        is_urgent: data.is_urgent,
+        required_skills: data.required_skills,
+        preferred_skills: data.preferred_skills,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        company_name: data.company_name,
+        company_logo: data.company_logo,
+        company_website: data.company_website,
+        company_description: data.company_description,
         salary_min: Number(data.salary_min),
         salary_max: Number(data.salary_max),
+        salary_currency: data.salary_currency,
+        salary_period: data.salary_period,
+        benefits: data.benefits,
+        responsibilities: data.responsibilities,
+        qualifications: data.qualifications
       };
 
       const { error } = await supabase.from("jobs").insert(jobData);
