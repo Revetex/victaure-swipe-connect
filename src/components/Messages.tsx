@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Bell, Settings2, ListTodo, StickyNote } from "lucide-react";
 import { TodoList } from "./TodoList";
 import { NotesSection } from "./todo/NotesSection";
+import { useNotes } from "@/hooks/useNotes";
 
 interface Notification {
   id: string;
@@ -20,6 +21,26 @@ export function Messages() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const unreadMessagesCount = userMessages.filter(m => !m.read).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
+
+  // Add notes functionality using the useNotes hook
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
+  // Define color options for notes
+  const colors = [
+    { value: "yellow", label: "Yellow", class: "bg-yellow-100" },
+    { value: "blue", label: "Blue", class: "bg-blue-100" },
+    { value: "green", label: "Green", class: "bg-green-100" },
+    { value: "red", label: "Red", class: "bg-red-100" },
+    { value: "purple", label: "Purple", class: "bg-purple-100" }
+  ];
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -106,7 +127,16 @@ export function Messages() {
           </TabsContent>
 
           <TabsContent value="notes" className="h-full">
-            <NotesSection />
+            <NotesSection
+              notes={notes}
+              newNote={newNote}
+              selectedColor={selectedColor}
+              colors={colors}
+              onNoteChange={setNewNote}
+              onColorChange={setSelectedColor}
+              onAdd={addNote}
+              onDelete={deleteNote}
+            />
           </TabsContent>
 
           <TabsContent value="settings" className="h-full">
