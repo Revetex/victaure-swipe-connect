@@ -15,12 +15,11 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
   doc.setFillColor(pdfColors.background);
   doc.rect(0, 0, 85.6, 53.98, 'F');
 
-  // Add subtle gradient effect using multiple rectangles with varying opacity
-  for (let i = 0; i < 85.6; i += 0.5) {
-    const opacity = 0.02; // 2% opacity
-    const rgbaColor = `rgba(${parseInt(pdfColors.background.slice(1, 3), 16)}, ${parseInt(pdfColors.background.slice(3, 5), 16)}, ${parseInt(pdfColors.background.slice(5, 7), 16)}, ${opacity})`;
-    doc.setFillColor(rgbaColor);
-    doc.rect(i, 0, 0.5, 53.98, 'F');
+  // Add subtle gradient effect using multiple rectangles with hex colors
+  for (let i = 0; i < 85.6; i += 2) {
+    const shade = Math.floor((i / 85.6) * 20); // 0-20% variation
+    doc.setFillColor(`#${(parseInt(pdfColors.background.slice(1), 16) + shade).toString(16).padStart(6, '0')}`);
+    doc.rect(i, 0, 2, 53.98, 'F');
   }
 
   // Circuit pattern with subtle effect
@@ -92,7 +91,7 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
       margin: 0,
       width: 256,
       color: {
-        dark: pdfColors.text.primary,
+        dark: pdfColors.text.primary.slice(1), // Remove # from hex
         light: '#0000' // Transparent background
       }
     });
