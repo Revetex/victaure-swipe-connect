@@ -59,6 +59,9 @@ const defaultValues: Partial<JobFormValues> = {
   qualifications: [],
   is_urgent: false,
   payment_schedule: "Monthly",
+  budget: 0,
+  salary_min: 0,
+  salary_max: 0,
 };
 
 interface CreateJobFormProps {
@@ -80,11 +83,16 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         return;
       }
 
-      const { error } = await supabase.from("jobs").insert({
+      const jobData = {
         ...data,
         employer_id: user.id,
         status: "open",
-      });
+        budget: Number(data.budget),
+        salary_min: Number(data.salary_min),
+        salary_max: Number(data.salary_max),
+      };
+
+      const { error } = await supabase.from("jobs").insert(jobData);
 
       if (error) throw error;
 
