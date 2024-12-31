@@ -1,167 +1,86 @@
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
-import { JobCategoryFields } from "./form/JobCategoryFields";
-import { JobTypeFields } from "./form/JobTypeFields";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isValidCategory } from "@/types/job";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
+import { JobTypeFields } from "./form/JobTypeFields";
+import { JobCategoryFields } from "./form/JobCategoryFields";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-interface CreateJobFormProps {
-  onSuccess?: () => void;
-}
+const jobFormSchema = z.object({
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().min(1, "La description est requise"),
+  budget: z.string().min(1, "Le budget est requis"),
+  location: z.string().min(1, "La localisation est requise"),
+  category: z.string().min(1, "La catégorie est requise"),
+  subcategory: z.string().optional(),
+  contract_type: z.string().min(1, "Le type de contrat est requis"),
+  experience_level: z.string().min(1, "Le niveau d'expérience est requis"),
+  remote_type: z.string().min(1, "Le type de travail est requis"),
+  required_skills: z.array(z.string()).optional(),
+  preferred_skills: z.array(z.string()).optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+});
 
-interface JobFormData {
-  title: string;
-  description: string;
-  budget: string;
-  location: string;
-  category: string;
-  subcategory: string;
-  contract_type: string;
-  experience_level: string;
-  images: File[];
-  latitude: number | null;
-  longitude: number | null;
-}
+type JobFormValues = z.infer<typeof jobFormSchema>;
 
-export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const form = useForm<JobFormData>({
-    defaultValues: {
-      title: "",
-      description: "",
-      budget: "",
-      location: "",
-      category: "Technologie",
-      subcategory: "",
-      contract_type: "Full-time",
-      experience_level: "Mid-Level",
-      images: [],
-      latitude: null,
-      longitude: null,
-    }
+const defaultValues: Partial<JobFormValues> = {
+  contract_type: "Full-time",
+  experience_level: "Mid-Level",
+  remote_type: "On-site",
+  required_skills: [],
+  preferred_skills: [],
+};
+
+export function CreateJobForm() {
+  const navigate = useNavigate();
+  const form = useForm<JobFormValues>({
+    resolver: zodResolver(jobFormSchema),
+    defaultValues,
   });
 
-  const handleSubmit = async (formData: JobFormData) => {
-    setIsLoading(true);
-
+  const onSubmit = async (data: JobFormValues) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
-
-      if (!isValidCategory(formData.category)) {
-        throw new Error("Catégorie invalide");
-      }
-
-      // Upload images if any
-      const imageUrls = [];
-      if (formData.images.length > 0) {
-        for (const image of formData.images) {
-          const fileExt = image.name.split('.').pop();
-          const fileName = `${crypto.randomUUID()}.${fileExt}`;
-          const { error: uploadError, data } = await supabase.storage
-            .from('jobs')
-            .upload(`images/${fileName}`, image);
-
-          if (uploadError) {
-            console.error('Error uploading image:', uploadError);
-            toast({
-              variant: "destructive",
-              title: "Erreur",
-              description: "Impossible de télécharger l'image",
-            });
-            continue;
-          }
-          
-          if (data) {
-            const { data: { publicUrl } } = supabase.storage
-              .from('jobs')
-              .getPublicUrl(`images/${fileName}`);
-            imageUrls.push(publicUrl);
-          }
-        }
+      if (!user) {
+        toast.error("Vous devez être connecté pour créer une mission");
+        return;
       }
 
       const { error } = await supabase.from("jobs").insert({
-        title: formData.title,
-        description: formData.description,
-        budget: parseFloat(formData.budget),
-        location: formData.location,
-        category: formData.category,
-        subcategory: formData.subcategory,
-        contract_type: formData.contract_type,
-        experience_level: formData.experience_level,
+        ...data,
         employer_id: user.id,
-        images: imageUrls,
-        latitude: formData.latitude,
-        longitude: formData.longitude
+        budget: parseFloat(data.budget),
+        status: "open",
       });
 
-      if (error) {
-        console.error("Error creating job:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      toast({
-        title: "Succès",
-        description: "Mission créée avec succès",
-      });
-
-      onSuccess?.();
-      form.reset();
+      toast.success("Mission créée avec succès");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error creating job:", error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de créer la mission",
-      });
-    } finally {
-      setIsLoading(false);
+      toast.error("Erreur lors de la création de la mission");
     }
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Créer une nouvelle mission</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <FormProvider {...form}>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              <JobBasicInfoFields
-                title={form.watch("title")}
-                description={form.watch("description")}
-                budget={form.watch("budget")}
-                location={form.watch("location")}
-                images={form.watch("images")}
-                onChange={(field, value) => form.setValue(field as any, value)}
-              />
-
-              <JobCategoryFields
-                category={form.watch("category")}
-                subcategory={form.watch("subcategory")}
-                onChange={(field, value) => form.setValue(field as any, value)}
-              />
-
-              <JobTypeFields form={form} />
-
-              <div className="flex justify-end">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Création..." : "Créer la mission"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </FormProvider>
-      </CardContent>
-    </Card>
+    <FormProvider {...form}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <JobBasicInfoFields />
+          <JobCategoryFields />
+          <JobTypeFields />
+          
+          <Button type="submit" className="w-full">
+            Créer la mission
+          </Button>
+        </form>
+      </Form>
+    </FormProvider>
   );
 }

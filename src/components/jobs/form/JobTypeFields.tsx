@@ -1,21 +1,7 @@
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
 
-const CONTRACT_TYPES = [
-  "CDI",
-  "CDD",
-  "Freelance",
-  "Stage",
-  "Alternance",
-  "Temps partiel",
-  "Full-time",
-  "Part-time",
-  "Contract",
-  "Internship"
-];
-
-const EXPERIENCE_LEVELS = [
+const experienceLevels = [
   "Entry Level",
   "Junior",
   "Mid-Level",
@@ -24,57 +10,88 @@ const EXPERIENCE_LEVELS = [
   "Expert"
 ];
 
-interface JobTypeFieldsProps {
-  form: UseFormReturn<any>;
-}
+const contractTypes = [
+  "Full-time",
+  "Part-time",
+  "Contract",
+  "Temporary",
+  "Internship"
+];
 
-export function JobTypeFields({ form }: JobTypeFieldsProps) {
+const remoteTypes = [
+  "On-site",
+  "Remote",
+  "Hybrid"
+];
+
+export function JobTypeFields() {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="space-y-4">
       <FormField
-        control={form.control}
-        name="contract_type"
+        name="experience_level"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Type de contrat</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
+            <FormLabel>Niveau d'expérience requis</FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "Mid-Level"}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez le type de contrat" />
+                  <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
                 </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {CONTRACT_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectContent>
+                  {experienceLevels.map((level) => (
+                    <SelectItem key={level} value={level}>
+                      {level}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
           </FormItem>
         )}
       />
 
       <FormField
-        control={form.control}
-        name="experience_level"
+        name="contract_type"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Niveau d'expérience requis</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
+            <FormLabel>Type de contrat</FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "Full-time"}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
+                  <SelectValue placeholder="Sélectionnez le type de contrat" />
                 </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {EXPERIENCE_LEVELS.map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {level}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectContent>
+                  {contractTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        name="remote_type"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Type de travail</FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "On-site"}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez le type de travail" />
+                </SelectTrigger>
+                <SelectContent>
+                  {remoteTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
           </FormItem>
         )}
       />
