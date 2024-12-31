@@ -54,6 +54,23 @@ export function WorkTypeFilters({ filters, onFilterChange }: WorkTypeFiltersProp
           </SelectContent>
         </Select>
       </div>
+
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium text-foreground">Fréquence de paiement</h4>
+        <Select value={filters.paymentSchedule} onValueChange={(value) => onFilterChange("paymentSchedule", value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Toutes les fréquences" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes les fréquences</SelectItem>
+            <SelectItem value="hourly">Par heure</SelectItem>
+            <SelectItem value="daily">Par jour</SelectItem>
+            <SelectItem value="weekly">Par semaine</SelectItem>
+            <SelectItem value="monthly">Par mois</SelectItem>
+            <SelectItem value="project">Par projet</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }

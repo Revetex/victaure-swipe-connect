@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { JobFilters } from "./jobs/JobFilters";
 import { JobList } from "./jobs/JobList";
-import { missionCategories, Job } from "@/types/job";
+import { Job } from "@/types/job";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
+import { JobFilters as JobFiltersType, defaultFilters, applyJobFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
 import { Filter } from "lucide-react";
 
@@ -20,52 +20,8 @@ export function Marketplace() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      // Apply filters
-      if (filters.category && filters.category !== "all") {
-        query = query.eq("category", filters.category);
-      }
-      
-      if (filters.subcategory && filters.subcategory !== "all") {
-        query = query.eq("subcategory", filters.subcategory);
-      }
-
-      if (filters.duration && filters.duration !== "all") {
-        query = query.eq("contract_type", filters.duration);
-      }
-
-      if (filters.experienceLevel && filters.experienceLevel !== "all") {
-        query = query.eq("experience_level", filters.experienceLevel);
-      }
-
-      if (filters.location) {
-        query = query.eq("location", filters.location);
-      }
-
-      if (filters.remoteType && filters.remoteType !== "all") {
-        query = query.eq("remote_type", filters.remoteType);
-      }
-
-      if (filters.minBudget && filters.maxBudget) {
-        query = query
-          .gte("budget", filters.minBudget)
-          .lte("budget", filters.maxBudget);
-      }
-
-      if (filters.createdAfter) {
-        query = query.gte("created_at", filters.createdAfter);
-      }
-
-      if (filters.createdBefore) {
-        query = query.lte("created_at", filters.createdBefore);
-      }
-
-      if (filters.deadlineBefore) {
-        query = query.lte("application_deadline", filters.deadlineBefore);
-      }
-
-      if (filters.searchTerm) {
-        query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
-      }
+      // Apply filters using the utility function
+      query = applyJobFilters(query, filters);
 
       const { data, error } = await query;
 
@@ -73,8 +29,8 @@ export function Marketplace() {
 
       return data.map(job => ({
         ...job,
-        company: "Company Name",
-        skills: job.required_skills || ["Skill 1", "Skill 2"],
+        company: job.company_name || "Entreprise",
+        skills: job.required_skills || [],
         salary: `${job.budget} CAD`
       })) as Job[];
     }
@@ -82,9 +38,12 @@ export function Marketplace() {
 
   const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
     setFilters(prev => {
-      // Reset subcategory when changing category
+      // Reset subcategory when changing category or mission type
       if (key === "category" && value !== prev.category) {
         return { ...prev, [key]: value, subcategory: "all" };
+      }
+      if (key === "missionType" && value !== prev.missionType) {
+        return { ...prev, [key]: value, category: "all", subcategory: "all" };
       }
       return { ...prev, [key]: value };
     });

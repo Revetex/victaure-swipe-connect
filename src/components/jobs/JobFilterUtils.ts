@@ -15,6 +15,8 @@ export interface JobFilters {
   createdAfter: string | null;
   createdBefore: string | null;
   deadlineBefore: string | null;
+  missionType: "company" | "individual" | "all";
+  paymentSchedule: string;
 }
 
 export const defaultFilters: JobFilters = {
@@ -31,7 +33,9 @@ export const defaultFilters: JobFilters = {
   searchTerm: "",
   createdAfter: null,
   createdBefore: null,
-  deadlineBefore: null
+  deadlineBefore: null,
+  missionType: "all",
+  paymentSchedule: "all"
 };
 
 export const applyJobFilters = (query: any, filters: JobFilters) => {
@@ -53,6 +57,24 @@ export const applyJobFilters = (query: any, filters: JobFilters) => {
 
   if (filters.location) {
     query = query.eq("location", filters.location);
+  }
+
+  if (filters.remoteType && filters.remoteType !== "all") {
+    query = query.eq("remote_type", filters.remoteType);
+  }
+
+  if (filters.minBudget && filters.maxBudget) {
+    query = query
+      .gte("budget", filters.minBudget)
+      .lte("budget", filters.maxBudget);
+  }
+
+  if (filters.missionType && filters.missionType !== "all") {
+    query = query.eq("mission_type", filters.missionType);
+  }
+
+  if (filters.paymentSchedule && filters.paymentSchedule !== "all") {
+    query = query.eq("payment_schedule", filters.paymentSchedule);
   }
 
   if (filters.searchTerm) {
