@@ -19,7 +19,7 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
         .from('job_categories')
         .select('name')
         .eq('id', data.category)
-        .maybeSingle();
+        .single();
 
       if (categoryError) {
         console.error("Error fetching category:", categoryError);
@@ -40,7 +40,7 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
           .from('job_subcategories')
           .select('name')
           .eq('id', data.subcategory)
-          .maybeSingle();
+          .single();
 
         if (subcategoryError) {
           console.error("Error fetching subcategory:", subcategoryError);
@@ -56,29 +56,29 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
         location: data.location,
         employer_id: user.id,
         status: "open",
-        category: categoryData.name,
-        subcategory: subcategoryName,
+        category: categoryData.name, // Use the name from the database
+        subcategory: subcategoryName, // Use the name from the database
         mission_type: data.mission_type,
         contract_type: data.contract_type,
         experience_level: data.experience_level,
         remote_type: data.remote_type,
         payment_schedule: data.payment_schedule,
         is_urgent: data.is_urgent,
-        required_skills: data.required_skills,
-        preferred_skills: data.preferred_skills,
+        required_skills: data.required_skills || [],
+        preferred_skills: data.preferred_skills || [],
         latitude: data.latitude,
         longitude: data.longitude,
-        company_name: data.company_name,
-        company_logo: data.company_logo,
-        company_website: data.company_website,
-        company_description: data.company_description,
-        salary_min: Number(data.salary_min),
-        salary_max: Number(data.salary_max),
-        salary_currency: data.salary_currency,
-        salary_period: data.salary_period,
-        benefits: data.benefits,
-        responsibilities: data.responsibilities,
-        qualifications: data.qualifications
+        company_name: data.company_name || "",
+        company_logo: data.company_logo || "",
+        company_website: data.company_website || "",
+        company_description: data.company_description || "",
+        salary_min: Number(data.salary_min || 0),
+        salary_max: Number(data.salary_max || 0),
+        salary_currency: data.salary_currency || "CAD",
+        salary_period: data.salary_period || "yearly",
+        benefits: data.benefits || [],
+        responsibilities: data.responsibilities || [],
+        qualifications: data.qualifications || []
       };
 
       console.log("Inserting job with data:", jobData);
