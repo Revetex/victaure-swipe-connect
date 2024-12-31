@@ -6,35 +6,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Calendar } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { provinceData } from "@/data/provinces";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { JobFilters as JobFiltersType } from "@/types/filters";
+import { missionCategories } from "@/types/job";
 
 interface JobFiltersProps {
-  category: string;
-  setCategory: (category: string) => void;
-  subcategory: string;
-  setSubcategory: (subcategory: string) => void;
-  duration: string;
-  setDuration: (duration: string) => void;
-  salaryRange: number[];
-  setSalaryRange: (range: number[]) => void;
-  missionCategories: Record<string, { icon: any; subcategories: string[] }>;
+  filters: JobFiltersType;
+  onFilterChange: (key: keyof JobFiltersType, value: any) => void;
 }
 
 export function JobFilters({
-  category,
-  setCategory,
-  subcategory,
-  setSubcategory,
-  duration,
-  setDuration,
-  salaryRange,
-  setSalaryRange,
-  missionCategories,
+  filters,
+  onFilterChange,
 }: JobFiltersProps) {
   const isMobile = useIsMobile();
-  const subcategories = category ? missionCategories[category]?.subcategories : [];
+  const subcategories = filters.category !== "all" ? missionCategories[filters.category]?.subcategories : [];
 
   return (
     <div className={`lg:col-span-1 bg-card rounded-lg shadow-sm border ${
@@ -48,88 +43,211 @@ export function JobFilters({
       </div>
 
       <div className="p-4 space-y-6">
-        <div className="grid grid-cols-1 gap-6">
-          {/* Category Section */}
+        {/* Search */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground">Recherche</h4>
+          <Input
+            placeholder="Rechercher une offre..."
+            value={filters.searchTerm}
+            onChange={(e) => onFilterChange("searchTerm", e.target.value)}
+          />
+        </div>
+
+        {/* Category */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground">Catégorie</h4>
+          <Select value={filters.category} onValueChange={(value) => onFilterChange("category", value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Toutes les catégories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              {Object.keys(missionCategories).map((cat) => (
+                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Subcategory - Only show if category is selected */}
+        {filters.category !== "all" && subcategories && (
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-foreground">Catégorie</h4>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Toutes les catégories" />
+            <h4 className="text-sm font-medium text-foreground">Sous-catégorie</h4>
+            <Select value={filters.subcategory} onValueChange={(value) => onFilterChange("subcategory", value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Toutes les sous-catégories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Toutes les catégories</SelectItem>
-                {Object.keys(missionCategories).map((cat) => {
-                  const CategoryIcon = missionCategories[cat].icon;
-                  return (
-                    <SelectItem key={cat} value={cat}>
-                      <div className="flex items-center gap-2">
-                        <CategoryIcon className="h-4 w-4" />
-                        <span>{cat}</span>
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Subcategory Section - Only show if category is selected */}
-          {category && subcategories && category !== "all" && (
-            <div className="space-y-4">
-              <h4 className="text-sm font-medium text-foreground">Sous-catégorie</h4>
-              <Select value={subcategory} onValueChange={setSubcategory}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Toutes les sous-catégories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Toutes les sous-catégories</SelectItem>
-                  {subcategories.map((subcat) => (
-                    <SelectItem key={subcat} value={subcat}>
-                      {subcat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {/* Duration Section */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-medium text-foreground">Durée</h4>
-            <Select value={duration} onValueChange={setDuration}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Toutes les durées" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les durées</SelectItem>
-                {["3-6 mois", "6-12 mois", "12+ mois"].map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
+                <SelectItem value="all">Toutes les sous-catégories</SelectItem>
+                {subcategories.map((subcat) => (
+                  <SelectItem key={subcat} value={subcat}>{subcat}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+        )}
 
-          {/* Salary Range Section */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-medium text-foreground">
-              Rémunération (CAD/jour)
-            </h4>
-            <Slider
-              defaultValue={salaryRange}
-              max={1000}
-              min={300}
-              step={50}
-              onValueChange={setSalaryRange}
-              className="mt-6"
-            />
-            <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-              <span>{salaryRange[0]} CAD</span>
-              <span>{salaryRange[1]} CAD</span>
-            </div>
+        {/* Contract Type */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground">Type de contrat</h4>
+          <Select value={filters.duration} onValueChange={(value) => onFilterChange("duration", value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Tous les types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les types</SelectItem>
+              {["Full-time", "Part-time", "Contract", "Temporary", "Freelance"].map((type) => (
+                <SelectItem key={type} value={type}>{type}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Experience Level */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground">Niveau d'expérience</h4>
+          <Select value={filters.experienceLevel} onValueChange={(value) => onFilterChange("experienceLevel", value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Tous les niveaux" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les niveaux</SelectItem>
+              {["Junior", "Mid-Level", "Senior", "Expert"].map((level) => (
+                <SelectItem key={level} value={level}>{level}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Remote Type */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground">Type de travail</h4>
+          <Select value={filters.remoteType} onValueChange={(value) => onFilterChange("remoteType", value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Tous les types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les types</SelectItem>
+              <SelectItem value="on-site">Sur site</SelectItem>
+              <SelectItem value="remote">Télétravail</SelectItem>
+              <SelectItem value="hybrid">Hybride</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Budget Range */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground">Budget (CAD/jour)</h4>
+          <Slider
+            defaultValue={[filters.minBudget, filters.maxBudget]}
+            max={1000}
+            min={300}
+            step={50}
+            onValueChange={(value) => {
+              onFilterChange("minBudget", value[0]);
+              onFilterChange("maxBudget", value[1]);
+            }}
+          />
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>{filters.minBudget} CAD</span>
+            <span>{filters.maxBudget} CAD</span>
           </div>
         </div>
+
+        {/* Date Filters */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground">Dates</h4>
+          
+          {/* Created After */}
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Créé après</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left font-normal">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {filters.createdAfter ? 
+                    format(new Date(filters.createdAfter), 'PP', { locale: fr }) : 
+                    'Sélectionner une date'
+                  }
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <CalendarComponent
+                  mode="single"
+                  selected={filters.createdAfter ? new Date(filters.createdAfter) : undefined}
+                  onSelect={(date) => onFilterChange("createdAfter", date?.toISOString() || null)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Created Before */}
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Créé avant</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left font-normal">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {filters.createdBefore ? 
+                    format(new Date(filters.createdBefore), 'PP', { locale: fr }) : 
+                    'Sélectionner une date'
+                  }
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <CalendarComponent
+                  mode="single"
+                  selected={filters.createdBefore ? new Date(filters.createdBefore) : undefined}
+                  onSelect={(date) => onFilterChange("createdBefore", date?.toISOString() || null)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Application Deadline */}
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Date limite de candidature</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left font-normal">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {filters.deadlineBefore ? 
+                    format(new Date(filters.deadlineBefore), 'PP', { locale: fr }) : 
+                    'Sélectionner une date'
+                  }
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <CalendarComponent
+                  mode="single"
+                  selected={filters.deadlineBefore ? new Date(filters.deadlineBefore) : undefined}
+                  onSelect={(date) => onFilterChange("deadlineBefore", date?.toISOString() || null)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        {/* Reset Filters */}
+        <Button 
+          variant="outline" 
+          className="w-full"
+          onClick={() => {
+            Object.keys(filters).forEach((key) => {
+              onFilterChange(key as keyof JobFiltersType, 
+                key === "minBudget" ? 300 : 
+                key === "maxBudget" ? 1000 : 
+                key === "skills" ? [] : 
+                "all"
+              );
+            });
+          }}
+        >
+          Réinitialiser les filtres
+        </Button>
       </div>
     </div>
   );
