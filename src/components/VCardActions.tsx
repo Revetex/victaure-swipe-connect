@@ -47,14 +47,14 @@ export function VCardActions({
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-victaure-gray-light dark:border-victaure-gray-dark"
+      className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-gray-800/20"
     >
       {isEditing ? (
         <>
           <motion.div variants={item} className="flex-1 min-w-[120px]">
             <Button 
               onClick={onSave} 
-              className="w-full bg-victaure-orange hover:bg-victaure-orange-dark text-white font-medium shadow-md transition-colors"
+              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors"
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
@@ -64,7 +64,7 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges} 
               variant="secondary" 
-              className="w-full bg-victaure-gray-light hover:bg-victaure-gray text-victaure-dark font-medium shadow-md transition-colors"
+              className="w-full bg-black/20 hover:bg-black/30 text-white font-medium shadow-md transition-colors"
             >
               Appliquer
             </Button>
@@ -75,7 +75,7 @@ export function VCardActions({
           <motion.div variants={item} className="flex-1 min-w-[100px]">
             <Button 
               onClick={onShare} 
-              className="w-full bg-victaure-orange hover:bg-victaure-orange-dark text-white font-medium shadow-md transition-colors"
+              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors"
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
@@ -85,7 +85,7 @@ export function VCardActions({
             <Button 
               onClick={() => setIsEditing(true)} 
               variant="outline" 
-              className="w-full border-victaure-blue/30 hover:border-victaure-blue hover:bg-victaure-blue/10 text-victaure-blue-dark font-medium shadow-md transition-colors"
+              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
@@ -95,7 +95,7 @@ export function VCardActions({
             <Button 
               onClick={onDownload} 
               variant="outline" 
-              className="w-full border-victaure-blue/30 hover:border-victaure-blue hover:bg-victaure-blue/10 text-victaure-blue-dark font-medium shadow-md transition-colors"
+              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
             >
               <Download className="mr-2 h-4 w-4" />
               Télécharger
@@ -105,7 +105,7 @@ export function VCardActions({
             <Button 
               onClick={onDownloadBusinessPDF} 
               variant="outline" 
-              className="w-full border-victaure-blue/30 hover:border-victaure-blue hover:bg-victaure-blue/10 text-victaure-blue-dark font-medium shadow-md transition-colors"
+              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
@@ -115,7 +115,7 @@ export function VCardActions({
             <Button 
               onClick={onDownloadCVPDF} 
               variant="outline" 
-              className="w-full border-victaure-blue/30 hover:border-victaure-blue hover:bg-victaure-blue/10 text-victaure-blue-dark font-medium shadow-md transition-colors"
+              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
@@ -125,7 +125,7 @@ export function VCardActions({
             <Button 
               onClick={onCopyLink} 
               variant="outline"
-              className="border-victaure-blue/30 hover:border-victaure-blue hover:bg-victaure-blue/10 text-victaure-blue-dark font-medium shadow-md transition-colors"
+              className="bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
             >
               <Copy className="h-4 w-4" />
             </Button>
