@@ -2,10 +2,9 @@ import type { UserProfile } from '@/types/profile';
 import { supabase } from "@/integrations/supabase/client";
 
 export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
-  // Generate code representation of the profile
+  // Generate code representation of the profile with Victaure branding
   const codeOutput = generateProfileCode(profile);
   
-  // Convert to text file instead of PDF
   try {
     const blob = new Blob([codeOutput], { type: 'text/plain' });
     const filename = `${profile.id}_${Date.now()}.txt`;
@@ -34,8 +33,18 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
 
 const generateProfileCode = (profile: UserProfile): string => {
   return `
-// Professional Profile Code Representation
-// Generated on ${new Date().toLocaleString()}
+/**
+ * Victaure Professional Profile
+ * Generated on ${new Date().toLocaleString()}
+ * 
+ * ⚡️ Powered by Victaure
+ * 🎨 Design System: Modern Glassmorphism
+ * 
+ * Background: linear-gradient(135deg, #1A1F2C 0%, #403E43 100%)
+ * Primary: #9b87f5
+ * Secondary: #7E69AB
+ * Accent: #D946EF
+ */
 
 interface ProfessionalProfile {
   personalInfo: {

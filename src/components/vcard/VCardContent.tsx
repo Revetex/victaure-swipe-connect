@@ -71,7 +71,8 @@ export function VCardContent({
       ${isExpanded ? 'fixed inset-4 z-50 m-auto max-h-[90vh] overflow-hidden' : 'w-full max-w-xl mx-auto hover:scale-[1.02]'}
       glass-card backdrop-blur-md border border-[#9b87f5]/10 shadow-2xl
       bg-gradient-to-br from-[#1A1F2C]/80 via-[#2A2F3C]/80 to-[#3A3F4C]/80
-      hover:from-[#1A1F2C]/90 hover:via-[#2A2F3C]/90 hover:to-[#3A3F4C]/90`}>
+      hover:from-[#1A1F2C]/90 hover:via-[#2A2F3C]/90 hover:to-[#3A3F4C]/90
+      ${isEditing ? 'ring-2 ring-[#D946EF]/50' : ''}`}>
       <CardContent className={`p-6 relative transition-all duration-500 h-full
         ${isExpanded ? 'overflow-hidden' : ''}`}>
         <AnimatePresence mode="wait">
