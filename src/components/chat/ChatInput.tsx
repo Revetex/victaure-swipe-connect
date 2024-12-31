@@ -12,6 +12,7 @@ interface ChatInputProps {
   isListening?: boolean;
   isThinking?: boolean;
   className?: string;
+  placeholder?: string;
 }
 
 export function ChatInput({
@@ -22,6 +23,7 @@ export function ChatInput({
   isListening = false,
   isThinking = false,
   className,
+  placeholder = "Comment puis-je vous aider aujourd'hui ?",
 }: ChatInputProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -39,7 +41,7 @@ export function ChatInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Écrivez votre message..."
+          placeholder={placeholder}
           className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground"
           disabled={isThinking}
         />

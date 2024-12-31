@@ -35,7 +35,7 @@ export const ChatMessage = memo(function ChatMessage({
     >
       <div className={cn(
         "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm",
-        isBot ? "bg-primary text-primary-foreground" : "bg-muted"
+        isBot ? "bg-primary text-primary-foreground ring-2 ring-primary/10" : "bg-muted"
       )}>
         {isBot ? (
           <Bot className="h-4 w-4" />
