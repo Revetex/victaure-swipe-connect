@@ -1,12 +1,13 @@
 import { VCardHeader } from "@/components/VCardHeader";
-import { VCardActions } from "@/components/VCardActions";
 import { VCardContactInfo } from "./VCardContactInfo";
 import { VCardSkills } from "@/components/VCardSkills";
 import { VCardCertifications } from "@/components/VCardCertifications";
 import { VCardEducation } from "@/components/VCardEducation";
 import { VCardSection } from "@/components/VCardSection";
-import { VCardBadge } from "@/components/VCardBadge";
 import { motion } from "framer-motion";
+import { QrCode, Share2, Minimize, FileText, GraduationCap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { QRCodeSVG } from "qrcode.react";
 import type { UserProfile } from "@/types/profile";
 
 interface VCardContentProps {
@@ -44,6 +45,23 @@ export function VCardContent({
   onSave,
   onApplyChanges,
 }: VCardContentProps) {
+  const handleAddSkill = () => {
+    if (newSkill && !tempProfile.skills?.includes(newSkill)) {
+      setTempProfile({
+        ...tempProfile,
+        skills: [...(tempProfile.skills || []), newSkill],
+      });
+      setNewSkill("");
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setTempProfile({
+      ...tempProfile,
+      skills: tempProfile.skills?.filter((skill) => skill !== skillToRemove),
+    });
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-4">
       <div className="flex-1">
@@ -61,9 +79,10 @@ export function VCardContent({
               setIsEditing={setIsEditing}
             />
             <VCardContactInfo
-              profile={isEditing ? tempProfile : profile}
-              isEditing={isEditing}
-              setProfile={setTempProfile}
+              email={profile.email}
+              phone={profile.phone}
+              city={profile.city}
+              state={profile.state}
             />
             <VCardSkills
               profile={isEditing ? tempProfile : profile}
@@ -71,58 +90,77 @@ export function VCardContent({
               setProfile={setTempProfile}
               newSkill={newSkill}
               setNewSkill={setNewSkill}
+              handleAddSkill={handleAddSkill}
+              handleRemoveSkill={handleRemoveSkill}
             />
-            <VCardSection title="Certifications">
+            <VCardSection title="Certifications" icon={<FileText className="h-4 w-4" />}>
               <VCardCertifications
                 profile={isEditing ? tempProfile : profile}
                 isEditing={isEditing}
                 setProfile={setTempProfile}
               />
             </VCardSection>
-            <VCardSection title="Formation">
+            <VCardSection title="Formation" icon={<GraduationCap className="h-4 w-4" />}>
               <VCardEducation
                 profile={isEditing ? tempProfile : profile}
                 isEditing={isEditing}
                 setProfile={setTempProfile}
               />
             </VCardSection>
-            <VCardActions
-              isEditing={isEditing}
-              onShare={onShare}
-              onDownload={onDownload}
-              onDownloadPDF={onDownloadPDF}
-              onCopyLink={onCopyLink}
-              onSave={onSave}
-              onApplyChanges={onApplyChanges}
-            />
           </div>
         </motion.div>
       </div>
       <div className="w-full md:w-48 space-y-2">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setIsEditing(!isEditing)}
-          className="w-full p-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+        <motion.div 
+          className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
         >
-          {isEditing ? "Annuler" : "Éditer"}
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onDownloadPDF}
-          className="w-full p-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
-        >
-          Télécharger CV PDF
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onDownloadBusinessPDF}
-          className="w-full p-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
-        >
-          Télécharger Business VCard PDF
-        </motion.button>
+          <div className="flex flex-col items-center space-y-4">
+            <QRCodeSVG
+              value={window.location.href}
+              size={160}
+              level="H"
+              includeMargin={false}
+              className="rounded-lg"
+            />
+            <div className="w-full space-y-2">
+              <Button
+                onClick={onShare}
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <Share2 className="h-4 w-4" />
+                Partager
+              </Button>
+              <Button
+                onClick={onDownloadPDF}
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                CV PDF
+              </Button>
+              <Button
+                onClick={onDownloadBusinessPDF}
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <QrCode className="h-4 w-4" />
+                VCard PDF
+              </Button>
+              <Button
+                onClick={() => setIsEditing(!isEditing)}
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <Minimize className="h-4 w-4" />
+                {isEditing ? "Réduire" : "Éditer"}
+              </Button>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

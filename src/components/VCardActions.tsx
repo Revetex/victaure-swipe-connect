@@ -41,7 +41,7 @@ export function VCardActions({
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-indigo-100 dark:border-indigo-900/30"
+      className="flex flex-wrap gap-2 sm:gap-3"
     >
       {isEditing ? (
         <>
@@ -64,48 +64,7 @@ export function VCardActions({
             </Button>
           </motion.div>
         </>
-      ) : (
-        <>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
-            <Button 
-              onClick={onShare} 
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Partager
-            </Button>
-          </motion.div>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
-            <Button 
-              onClick={onDownload} 
-              variant="outline" 
-              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              Éditer
-            </Button>
-          </motion.div>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
-            <Button 
-              onClick={onDownloadPDF} 
-              variant="outline" 
-              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              PDF
-            </Button>
-          </motion.div>
-          <motion.div variants={item}>
-            <Button 
-              onClick={onCopyLink} 
-              variant="outline"
-              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        </>
-      )}
+      ) : null}
     </motion.div>
   );
 }
