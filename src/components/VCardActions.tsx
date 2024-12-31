@@ -41,59 +41,14 @@ export function VCardActions({
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex flex-wrap gap-3"
+      className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-indigo-100 dark:border-indigo-900/30"
     >
-      {!isEditing && (
-        <>
-          <motion.div variants={item}>
-            <Button 
-              onClick={onShare} 
-              variant="secondary"
-              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Partager
-            </Button>
-          </motion.div>
-          <motion.div variants={item}>
-            <Button 
-              onClick={onDownload}
-              variant="secondary"
-              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              VCard
-            </Button>
-          </motion.div>
-          <motion.div variants={item}>
-            <Button 
-              onClick={onDownloadPDF}
-              variant="secondary"
-              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              PDF
-            </Button>
-          </motion.div>
-          <motion.div variants={item}>
-            <Button 
-              onClick={onCopyLink}
-              variant="secondary"
-              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              Copier le lien
-            </Button>
-          </motion.div>
-        </>
-      )}
-      
-      {isEditing && (
+      {isEditing ? (
         <>
           <motion.div variants={item} className="flex-1 min-w-[120px]">
             <Button 
               onClick={onSave} 
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
@@ -103,9 +58,50 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges} 
               variant="secondary" 
-              className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10"
+              className="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors"
             >
               Appliquer
+            </Button>
+          </motion.div>
+        </>
+      ) : (
+        <>
+          <motion.div variants={item} className="flex-1 min-w-[100px]">
+            <Button 
+              onClick={onShare} 
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              Partager
+            </Button>
+          </motion.div>
+          <motion.div variants={item} className="flex-1 min-w-[100px]">
+            <Button 
+              onClick={onDownload} 
+              variant="outline" 
+              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Éditer
+            </Button>
+          </motion.div>
+          <motion.div variants={item} className="flex-1 min-w-[100px]">
+            <Button 
+              onClick={onDownloadPDF} 
+              variant="outline" 
+              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              PDF
+            </Button>
+          </motion.div>
+          <motion.div variants={item}>
+            <Button 
+              onClick={onCopyLink} 
+              variant="outline"
+              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+            >
+              <Copy className="h-4 w-4" />
             </Button>
           </motion.div>
         </>

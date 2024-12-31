@@ -1,4 +1,6 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface QuickActionCardProps {
   title: string;
@@ -7,7 +9,6 @@ interface QuickActionCardProps {
   color: string;
   bgColor: string;
   gradient: string;
-  isEditing: boolean;
 }
 
 export function QuickActionCard({ 
@@ -15,22 +16,30 @@ export function QuickActionCard({
   value, 
   icon: Icon, 
   color, 
-  bgColor, 
-  gradient,
-  isEditing 
+  bgColor,
+  gradient 
 }: QuickActionCardProps) {
   return (
-    <div className={`relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 ${isEditing ? 'ring-2 ring-blue-500' : ''}`}>
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-          <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-gray-100">{value}</p>
-        </div>
-        <div className={`rounded-full ${bgColor} p-3`}>
-          <Icon className={`h-6 w-6 ${color}`} />
-        </div>
-      </div>
-      <div className={`absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r ${gradient}`} />
-    </div>
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="h-full"
+    >
+      <Card className="h-full border-none overflow-hidden bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            {title}
+          </CardTitle>
+          <div className={`${bgColor} p-2 rounded-lg backdrop-blur-sm transition-colors duration-300`}>
+            <Icon className={`h-4 w-4 ${color}`} />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            {value}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

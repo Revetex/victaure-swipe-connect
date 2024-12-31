@@ -5,37 +5,16 @@ import { Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const validatePassword = (password: string) => {
-  const minLength = password.length >= 8;
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-  return {
-    isValid: minLength && hasUpperCase && hasNumber && hasSpecialChar,
-    errors: {
-      minLength,
-      hasUpperCase,
-      hasNumber,
-      hasSpecialChar,
-    }
-  };
-};
-
 export function PasswordChangeSection() {
   const [showForm, setShowForm] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showValidation, setShowValidation] = useState(false);
-
-  const validation = validatePassword(newPassword);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validation.isValid) {
-      setShowValidation(true);
-      toast.error("Le mot de passe ne respecte pas les critères de sécurité");
+    if (newPassword.length < 6) {
+      toast.error("Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
@@ -77,38 +56,17 @@ export function PasswordChangeSection() {
         <Input
           type="password"
           value={newPassword}
-          onChange={(e) => {
-            setNewPassword(e.target.value);
-            setShowValidation(true);
-          }}
+          onChange={(e) => setNewPassword(e.target.value)}
           placeholder="Nouveau mot de passe"
           required
-          className={showValidation && !validation.isValid ? "border-destructive" : ""}
         />
-
-        {showValidation && (
-          <div className="text-xs space-y-1">
-            <p className={validation.errors.minLength ? "text-success" : "text-destructive"}>
-              ✓ Au moins 8 caractères
-            </p>
-            <p className={validation.errors.hasUpperCase ? "text-success" : "text-destructive"}>
-              ✓ Au moins une majuscule
-            </p>
-            <p className={validation.errors.hasNumber ? "text-success" : "text-destructive"}>
-              ✓ Au moins un chiffre
-            </p>
-            <p className={validation.errors.hasSpecialChar ? "text-success" : "text-destructive"}>
-              ✓ Au moins un caractère spécial
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="flex gap-2">
         <Button 
           type="submit" 
           className="flex-1"
-          disabled={loading || !validation.isValid}
+          disabled={loading}
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -125,11 +83,7 @@ export function PasswordChangeSection() {
         <Button 
           type="button" 
           variant="outline"
-          onClick={() => {
-            setShowForm(false);
-            setNewPassword("");
-            setShowValidation(false);
-          }}
+          onClick={() => setShowForm(false)}
         >
           Annuler
         </Button>

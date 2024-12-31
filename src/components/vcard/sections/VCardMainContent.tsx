@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { VCardHeader } from "../../VCardHeader";
 import { VCardContactInfo } from "../VCardContactInfo";
+import { Logo } from "@/components/Logo";
 
 interface VCardMainContentProps {
   profile: any;

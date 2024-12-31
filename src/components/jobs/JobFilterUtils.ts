@@ -14,6 +14,8 @@ export const filterSchema = z.object({
   experienceLevel: z.string().default("all"),
   province: z.string().default("all"),
   remoteType: z.string().default("all"),
+  minBudget: z.number().optional(),
+  maxBudget: z.number().optional(),
   searchTerm: z.string().default(""),
   createdAfter: z.string().optional(),
   createdBefore: z.string().optional(),
@@ -21,9 +23,6 @@ export const filterSchema = z.object({
   missionType: z.enum(["all", "company", "individual"]).default("all"),
   contractType: z.string().default("all"),
   paymentSchedule: z.string().default("all"),
-  maxDistance: z.number().optional(),
-  userLatitude: z.number().optional(),
-  userLongitude: z.number().optional(),
 });
 
 export type JobFilters = z.infer<typeof filterSchema>;
@@ -41,9 +40,6 @@ export const defaultFilters: JobFilters = {
   missionType: "all",
   contractType: "all",
   paymentSchedule: "all",
-  maxDistance: undefined,
-  userLatitude: undefined,
-  userLongitude: undefined,
 };
 
 export const applyFilters = async (
@@ -102,10 +98,12 @@ export const applyFilters = async (
     filteredQuery = filteredQuery.ilike("location", `%${filters.location}%`);
   }
 
-  // Apply distance filter if coordinates and max distance are provided
-  if (filters.maxDistance && filters.userLatitude && filters.userLongitude) {
-    // Using Postgres' earth_distance function to calculate distance in kilometers
-    filteredQuery = filteredQuery.or(`and(latitude.is.not.null,longitude.is.not.null),earth_box(ll_to_earth(${filters.userLatitude}, ${filters.userLongitude}), ${filters.maxDistance}*1000) @> ll_to_earth(latitude, longitude)`);
+  if (filters.minBudget) {
+    filteredQuery = filteredQuery.gte("budget", filters.minBudget);
+  }
+
+  if (filters.maxBudget) {
+    filteredQuery = filteredQuery.lte("budget", filters.maxBudget);
   }
 
   if (filters.searchTerm) {

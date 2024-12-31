@@ -7,15 +7,13 @@ import { PaymentBox } from "./dashboard/PaymentBox";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
 import { NotesSection } from "./todo/NotesSection";
-import { VCard } from "./VCard";
 import { 
   MessageSquare, 
   Bell, 
   StickyNote, 
   ListTodo, 
   Settings as SettingsIcon, 
-  CreditCard,
-  UserSquare2
+  CreditCard 
 } from "lucide-react";
 
 export function Messages() {
@@ -57,7 +55,7 @@ export function Messages() {
 
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
-      <TabsList className="grid w-full grid-cols-7">
+      <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="messages" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
           <span className="hidden sm:inline">Messages</span>
@@ -74,10 +72,6 @@ export function Messages() {
           <ListTodo className="h-4 w-4" />
           <span className="hidden sm:inline">Tâches</span>
         </TabsTrigger>
-        <TabsTrigger value="vcard" className="flex items-center gap-2">
-          <UserSquare2 className="h-4 w-4" />
-          <span className="hidden sm:inline">VCard</span>
-        </TabsTrigger>
         <TabsTrigger value="payments" className="flex items-center gap-2">
           <CreditCard className="h-4 w-4" />
           <span className="hidden sm:inline">Paiements</span>
@@ -88,10 +82,10 @@ export function Messages() {
         </TabsTrigger>
       </TabsList>
       <div className="flex-1 overflow-hidden">
-        <TabsContent value="messages" className="h-full bg-background/80 backdrop-blur-sm">
+        <TabsContent value="messages" className="h-full">
           <MessagesTab />
         </TabsContent>
-        <TabsContent value="notifications" className="h-full bg-background/80 backdrop-blur-sm">
+        <TabsContent value="notifications" className="h-full">
           <NotificationsTab />
         </TabsContent>
         <TabsContent value="notes" className="h-full">
@@ -123,13 +117,10 @@ export function Messages() {
             onDelete={deleteTodo}
           />
         </TabsContent>
-        <TabsContent value="vcard" className="h-full">
-          <VCard />
-        </TabsContent>
         <TabsContent value="payments" className="h-full">
           <PaymentBox />
         </TabsContent>
-        <TabsContent value="settings" className="h-full bg-background/80 backdrop-blur-sm">
+        <TabsContent value="settings" className="h-full">
           <Settings />
         </TabsContent>
       </div>

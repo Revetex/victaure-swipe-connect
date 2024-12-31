@@ -1,46 +1,16 @@
-.glass-panel {
-  @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-}
+@layer components {
+  .glass-card {
+    @apply relative overflow-hidden;
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-300;
+    }
+    &:hover::before {
+      @apply opacity-100;
+    }
+  }
 
-.glass-card {
-  @apply bg-white/90 dark:bg-gray-800/90 backdrop-blur-md;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-}
-
-.glass-button {
-  @apply bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-gray-800/60;
-  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.05);
-}
-
-.dashboard-card {
-  @apply glass-card border border-white/20 dark:border-gray-700/20;
-  transition: all 0.3s ease-in-out;
-}
-
-.dashboard-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
-}
-
-/* Custom Scrollbar */
-.scrollbar-thin {
-  scrollbar-width: thin;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-gray-500;
+  .editing-mode {
+    @apply ring-2 ring-blue-500 shadow-lg shadow-blue-500/20;
+  }
 }

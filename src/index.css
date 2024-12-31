@@ -1,8 +1,8 @@
-@import './styles/glass.css';
-@import './styles/sticky-notes.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import './styles/glass.css';
+@import './styles/sticky-notes.css';
  
 @layer base {
   :root {

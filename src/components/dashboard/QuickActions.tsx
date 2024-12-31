@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 
 interface QuickActionsProps {
   stats: DashboardStats | undefined;
-  isEditing: boolean;
 }
 
 const containerVariants = {
@@ -32,7 +31,7 @@ const itemVariants = {
   }
 };
 
-export function QuickActions({ stats, isEditing }: QuickActionsProps) {
+export function QuickActions({ stats }: QuickActionsProps) {
   const quickActions = useMemo(() => [
     {
       title: "Missions en cours",
@@ -77,7 +76,7 @@ export function QuickActions({ stats, isEditing }: QuickActionsProps) {
     >
       {quickActions.map((action, index) => (
         <motion.div key={index} variants={itemVariants}>
-          <QuickActionCard {...action} isEditing={isEditing} />
+          <QuickActionCard {...action} />
         </motion.div>
       ))}
     </motion.div>

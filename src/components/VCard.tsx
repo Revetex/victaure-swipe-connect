@@ -5,14 +5,12 @@ import { generateVCardData, updateProfile } from "@/utils/profileActions";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
-import { VCardCompact } from "./vcard/VCardCompact";
-import { VCardExpanded } from "./vcard/VCardExpanded";
-import { AnimatePresence } from "framer-motion";
+import { VCardContent } from "./vcard/VCardContent";
+import type { UserProfile } from "@/types/profile";
 
 export function VCard() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
 
@@ -83,27 +81,6 @@ export function VCard() {
     }
   };
 
-  const handleDownloadBusinessPDF = async () => {
-    if (!profile) return;
-    
-    try {
-      const pdfUrl = await generateVCardPDF(profile);
-      window.open(pdfUrl, '_blank');
-      
-      toast({
-        title: "Succès",
-        description: "Business PDF généré avec succès",
-      });
-    } catch (error) {
-      console.error('Error generating business PDF:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de générer le Business PDF",
-      });
-    }
-  };
-
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({
@@ -163,35 +140,21 @@ export function VCard() {
   }
 
   return (
-    <>
-      <VCardCompact
-        profile={profile}
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-        onExpand={() => setIsExpanded(true)}
-        onDownload={handleDownloadVCard}
-        onDownloadPDF={handleDownloadPDF}
-        onDownloadBusinessPDF={handleDownloadBusinessPDF}
-      />
-
-      <AnimatePresence>
-        {isExpanded && (
-          <VCardExpanded
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-            setIsExpanded={setIsExpanded}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
-            onShare={handleShare}
-            onDownload={handleDownloadVCard}
-            onDownloadPDF={handleDownloadPDF}
-            onCopyLink={handleCopyLink}
-            onSave={handleSave}
-            onApplyChanges={handleApplyChanges}
-          />
-        )}
-      </AnimatePresence>
-    </>
+    <VCardContent
+      profile={profile}
+      tempProfile={tempProfile}
+      isEditing={isEditing}
+      setProfile={setProfile}
+      setTempProfile={setTempProfile}
+      setIsEditing={setIsEditing}
+      newSkill={newSkill}
+      setNewSkill={setNewSkill}
+      onShare={handleShare}
+      onDownload={handleDownloadVCard}
+      onDownloadPDF={handleDownloadPDF}
+      onCopyLink={handleCopyLink}
+      onSave={handleSave}
+      onApplyChanges={handleApplyChanges}
+    />
   );
 }
