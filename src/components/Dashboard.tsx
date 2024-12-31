@@ -9,9 +9,13 @@ import type { DashboardStats } from "@/types/dashboard";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { motion, AnimatePresence } from "framer-motion";
 import { Skeleton } from "./ui/skeleton";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export function Dashboard() {
   const { data: stats, isLoading } = useDashboardStats();
+  const [isEditing, setIsEditing] = useState(false);
+  const { toast } = useToast();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -35,6 +39,22 @@ export function Dashboard() {
         damping: 15
       }
     }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    toast({
+      title: "Mode édition activé",
+      description: "Vous pouvez maintenant modifier votre tableau de bord",
+    });
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    toast({
+      title: "Modifications sauvegardées",
+      description: "Vos changements ont été enregistrés avec succès",
+    });
   };
 
   return (
@@ -64,7 +84,7 @@ export function Dashboard() {
                 ))}
               </div>
             ) : (
-              <QuickActions stats={stats} />
+              <QuickActions stats={stats} isEditing={isEditing} />
             )}
           </motion.div>
 
@@ -93,21 +113,32 @@ export function Dashboard() {
                   <Skeleton className="h-[300px] w-full" />
                 </div>
               ) : (
-                <RecentActivity />
+                <RecentActivity isEditing={isEditing} />
               )}
             </motion.div>
           </div>
 
           <motion.div 
-            className="mt-8 flex justify-end"
+            className="mt-8 flex justify-end gap-4"
             variants={itemVariants}
           >
-            <Button
-              variant="outline"
-              className="bg-white dark:bg-gray-800 border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300"
-            >
-              Voir plus de détails
-            </Button>
+            {!isEditing ? (
+              <Button
+                variant="outline"
+                onClick={handleEdit}
+                className="bg-white dark:bg-gray-800 border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300"
+              >
+                Modifier
+              </Button>
+            ) : (
+              <Button
+                variant="default"
+                onClick={handleSave}
+                className="bg-blue-500 hover:bg-blue-600 text-white transition-all duration-300"
+              >
+                Sauvegarder
+              </Button>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
