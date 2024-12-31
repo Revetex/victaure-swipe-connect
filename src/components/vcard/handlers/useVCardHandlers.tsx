@@ -1,6 +1,6 @@
 import { useToast } from "@/hooks/use-toast";
 import { generateVCardData } from "@/utils/profileActions";
-import { generateVCardPDF } from "@/utils/pdfGenerator";
+import { generateVCardPDF, generateBusinessCardPDF } from "@/utils/pdfGenerator";
 import type { UserProfile } from "@/types/profile";
 
 export function useVCardHandlers() {
@@ -76,7 +76,7 @@ export function useVCardHandlers() {
     if (!profile) return;
     
     try {
-      await generateVCardPDF(profile);
+      await generateBusinessCardPDF(profile);
       
       toast({
         title: "Succès",

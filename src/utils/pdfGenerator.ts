@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
+import QRCode from 'qrcode';
 
-export const generateVCardPDF = (profile: any) => {
+export const generateVCardPDF = async (profile: any) => {
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
@@ -47,16 +48,18 @@ export const generateVCardPDF = (profile: any) => {
   doc.text('Créé sur victaure.com', 85.6/2, 50, { align: 'center' });
 
   // Génération du QR code
-  const qrImg = document.createElement('canvas');
-  const QRCode = require('qrcode');
-  QRCode.toCanvas(qrImg, window.location.href);
-  doc.addImage(qrImg.toDataURL(), 'PNG', 65, 5, 15, 15);
+  try {
+    const qrDataUrl = await QRCode.toDataURL(window.location.href);
+    doc.addImage(qrDataUrl, 'PNG', 65, 5, 15, 15);
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
 
   // Téléchargement du PDF
   doc.save('carte-visite.pdf');
 };
 
-export const generateBusinessCardPDF = (profile: any) => {
+export const generateBusinessCardPDF = async (profile: any) => {
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
@@ -104,10 +107,12 @@ export const generateBusinessCardPDF = (profile: any) => {
   }
 
   // Génération du QR code
-  const qrImg = document.createElement('canvas');
-  const QRCode = require('qrcode');
-  QRCode.toCanvas(qrImg, window.location.href);
-  doc.addImage(qrImg.toDataURL(), 'PNG', 65, 5, 15, 15);
+  try {
+    const qrDataUrl = await QRCode.toDataURL(window.location.href);
+    doc.addImage(qrDataUrl, 'PNG', 65, 5, 15, 15);
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
 
   // Footer avec le texte Victaure
   doc.setFontSize(8);
