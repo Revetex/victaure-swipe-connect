@@ -18,6 +18,8 @@ export function VCardSkills({
   setProfile,
   newSkill,
   setNewSkill,
+  handleAddSkill,
+  handleRemoveSkill,
 }: VCardSkillsProps) {
   return (
     <VCardSection
@@ -30,6 +32,8 @@ export function VCardSkills({
         setProfile={setProfile}
         newSkill={newSkill}
         setNewSkill={setNewSkill}
+        onAddSkill={handleAddSkill}
+        onRemoveSkill={handleRemoveSkill}
       />
     </VCardSection>
   );

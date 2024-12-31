@@ -10,6 +10,8 @@ interface CategorizedSkillsProps {
   setProfile: (profile: any) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
+  onAddSkill: () => void;
+  onRemoveSkill: (skill: string) => void;
 }
 
 export function CategorizedSkills({
@@ -18,26 +20,11 @@ export function CategorizedSkills({
   setProfile,
   newSkill,
   setNewSkill,
+  onAddSkill,
+  onRemoveSkill,
 }: CategorizedSkillsProps) {
   const [selectedCategory, setSelectedCategory] = useState(Object.keys(skillCategories)[0]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const handleAddSkill = () => {
-    if (newSkill && !profile.skills?.includes(newSkill)) {
-      setProfile({
-        ...profile,
-        skills: [...(profile.skills || []), newSkill],
-      });
-      setNewSkill("");
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
-    setProfile({
-      ...profile,
-      skills: profile.skills?.filter((skill: string) => skill !== skillToRemove),
-    });
-  };
 
   // Group skills by category
   const groupedSkills: Record<string, string[]> = {};
@@ -64,7 +51,7 @@ export function CategorizedSkills({
           setSelectedCategory={setSelectedCategory}
           newSkill={newSkill}
           setNewSkill={setNewSkill}
-          handleAddSkill={handleAddSkill}
+          handleAddSkill={onAddSkill}
           skillCategories={skillCategories}
           filteredSkills={filteredSkills}
         />
@@ -83,7 +70,7 @@ export function CategorizedSkills({
             skills={skills}
             isEditing={isEditing}
             searchTerm={searchTerm}
-            onRemoveSkill={handleRemoveSkill}
+            onRemoveSkill={onRemoveSkill}
           />
         ))}
       </motion.div>

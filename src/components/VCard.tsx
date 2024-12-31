@@ -13,6 +13,7 @@ import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
 import { useProfileHandlers } from "./vcard/handlers/useProfileHandlers";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { UserProfile } from "@/types/profile";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -30,7 +31,27 @@ export function VCard({ onEditStateChange }: VCardProps) {
     onEditStateChange?.(value);
   };
 
+  const handleAddSkill = () => {
+    if (newSkill && tempProfile && !tempProfile.skills?.includes(newSkill)) {
+      setTempProfile({
+        ...tempProfile,
+        skills: [...(tempProfile.skills || []), newSkill],
+      });
+      setNewSkill("");
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    if (tempProfile) {
+      setTempProfile({
+        ...tempProfile,
+        skills: tempProfile.skills?.filter((skill: string) => skill !== skillToRemove) || [],
+      });
+    }
+  };
+
   const handleProfileUpdate = async () => {
+    if (!tempProfile) return;
     try {
       await handleSave(tempProfile);
       setProfile(tempProfile);
@@ -86,6 +107,8 @@ export function VCard({ onEditStateChange }: VCardProps) {
                 setProfile={setTempProfile}
                 newSkill={newSkill}
                 setNewSkill={setNewSkill}
+                handleAddSkill={handleAddSkill}
+                handleRemoveSkill={handleRemoveSkill}
               />
 
               <VCardCertifications
@@ -102,12 +125,12 @@ export function VCard({ onEditStateChange }: VCardProps) {
 
               <VCardActions
                 isEditing={isEditing}
-                onShare={handleShare}
-                onDownload={handleDownloadVCard}
-                onDownloadPDF={handleDownloadPDF}
-                onDownloadBusinessPDF={handleDownloadBusinessPDF}
-                onDownloadCVPDF={handleDownloadCVPDF}
-                onCopyLink={handleCopyLink}
+                onShare={() => handleShare()}
+                onDownload={() => handleDownloadVCard()}
+                onDownloadPDF={() => handleDownloadPDF()}
+                onDownloadBusinessPDF={() => handleDownloadBusinessPDF()}
+                onDownloadCVPDF={() => handleDownloadCVPDF()}
+                onCopyLink={() => handleCopyLink()}
                 onSave={handleProfileUpdate}
                 onApplyChanges={() => handleApplyChanges(tempProfile, setProfile, handleSetIsEditing)}
                 setIsEditing={handleSetIsEditing}
