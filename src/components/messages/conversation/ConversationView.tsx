@@ -93,24 +93,26 @@ export function ConversationView({
         </Button>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 h-[calc(100vh-200px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
-        <div className="space-y-4 max-w-3xl mx-auto">
-          {messages.map((message, index) => (
-            <ChatMessage
-              key={message.id}
-              content={message.content}
-              sender={message.sender}
-              thinking={message.thinking}
-              showTimestamp={
-                index === 0 || 
-                messages[index - 1]?.sender !== message.sender ||
-                new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
-              }
-              timestamp={message.timestamp}
-            />
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+      <main className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full px-4">
+          <div className="max-w-3xl mx-auto py-4 space-y-4">
+            {messages.map((message, index) => (
+              <ChatMessage
+                key={message.id}
+                content={message.content}
+                sender={message.sender}
+                thinking={message.thinking}
+                showTimestamp={
+                  index === 0 || 
+                  messages[index - 1]?.sender !== message.sender ||
+                  new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
+                }
+                timestamp={message.timestamp}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
       </main>
 
       <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0">

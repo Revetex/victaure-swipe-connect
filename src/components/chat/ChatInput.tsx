@@ -33,14 +33,14 @@ export function ChatInput({
   };
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn("flex flex-col gap-2 max-w-3xl mx-auto w-full", className)}>
       <div className="relative">
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Écrivez votre message..."
-          className="pr-24 min-h-[80px] resize-none"
+          className="pr-24 min-h-[60px] max-h-[200px] resize-none"
           disabled={isThinking}
         />
         <div className="absolute bottom-2 right-2 flex items-center gap-2">

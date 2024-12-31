@@ -28,7 +28,7 @@ export const ChatMessage = memo(function ChatMessage({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 items-start mb-4 last:mb-0",
+        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
@@ -43,7 +43,7 @@ export const ChatMessage = memo(function ChatMessage({
         )}
       </div>
       <div className={cn(
-        "flex flex-col gap-1",
+        "flex flex-col gap-1 min-w-0",
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
@@ -58,7 +58,7 @@ export const ChatMessage = memo(function ChatMessage({
           </p>
         </div>
         {showTimestamp && timestamp && (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
             {format(new Date(timestamp), "d MMMM 'à' HH:mm", { locale: fr })}
           </span>
         )}
