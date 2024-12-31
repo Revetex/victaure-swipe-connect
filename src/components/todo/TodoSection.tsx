@@ -1,15 +1,28 @@
-import { ListTodo } from "lucide-react";
-import { TodoInput } from "./TodoInput";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Todo } from "@/types/todo";
 import { useState, useEffect } from "react";
+import { TodoInput } from "./TodoInput";
+import { TodoItem } from "./TodoItem";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ListTodo } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Todo } from "@/types/todo";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { TimeSelector } from "./TimeSelector";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export function TodoSection() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedTime, setSelectedTime] = useState<string>();
+  const [allDay, setAllDay] = useState(false);
 
   useEffect(() => {
     fetchTodos();
@@ -27,7 +40,7 @@ export function TodoSection() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       const formattedTodos: Todo[] = (data || []).map(todo => ({
         id: todo.id,
         text: todo.text,
@@ -36,7 +49,7 @@ export function TodoSection() {
         dueTime: todo.due_time,
         allDay: todo.all_day
       }));
-      
+
       setTodos(formattedTodos);
     } catch (error) {
       console.error('Error fetching todos:', error);
@@ -53,13 +66,14 @@ export function TodoSection() {
 
       const { data, error } = await supabase
         .from('todos')
-        .insert([
-          {
-            user_id: user.id,
-            text: newTodo.trim(),
-            completed: false
-          }
-        ])
+        .insert([{
+          user_id: user.id,
+          text: newTodo.trim(),
+          completed: false,
+          due_date: selectedDate?.toISOString().split('T')[0],
+          due_time: allDay ? null : selectedTime,
+          all_day: allDay
+        }])
         .select()
         .single();
 
@@ -74,10 +88,14 @@ export function TodoSection() {
           dueTime: data.due_time,
           allDay: data.all_day
         };
-        
+
         setTodos([newTodoItem, ...todos]);
         setNewTodo("");
-        toast.success("Tâche ajoutée");
+        setSelectedDate(undefined);
+        setSelectedTime(undefined);
+        setAllDay(false);
+
+        toast.success("Tâche ajoutée avec succès");
       }
     } catch (error) {
       console.error('Error adding todo:', error);
@@ -116,7 +134,7 @@ export function TodoSection() {
       if (error) throw error;
 
       setTodos(todos.filter(t => t.id !== id));
-      toast.success("Tâche supprimée");
+      toast.success("Tâche supprimée avec succès");
     } catch (error) {
       console.error('Error deleting todo:', error);
       toast.error("Erreur lors de la suppression de la tâche");
@@ -130,54 +148,81 @@ export function TodoSection() {
         <h2 className="text-lg font-semibold">Tâches</h2>
       </div>
 
-      <TodoInput
-        newTodo={newTodo}
-        onTodoChange={setNewTodo}
-        onAdd={handleAdd}
-      />
+      <div className="space-y-4">
+        <TodoInput
+          newTodo={newTodo}
+          onTodoChange={setNewTodo}
+          onAdd={handleAdd}
+        />
 
-      <ScrollArea className="h-[400px]">
-        <div className="space-y-2 pr-4">
-          {todos.map((todo) => (
-            <div
-              key={todo.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-background/80 backdrop-blur-sm border"
-            >
-              <Checkbox
-                checked={todo.completed}
-                onCheckedChange={() => handleToggle(todo.id)}
-              />
-              <span className={`flex-1 ${todo.completed ? 'line-through text-muted-foreground' : ''}`}>
-                {todo.text}
-              </span>
-              <button
-                onClick={() => handleDelete(todo.id)}
-                className="text-destructive hover:text-destructive/80 transition-colors"
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M3 6h18" />
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                </svg>
-              </button>
-            </div>
-          ))}
-          {todos.length === 0 && (
-            <div className="text-center text-muted-foreground py-8">
-              Aucune tâche pour le moment
-            </div>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? (
+                  format(selectedDate, "PPP", { locale: fr })
+                ) : (
+                  <span>Choisir une date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
+          {!allDay && (
+            <TimeSelector
+              selectedTime={selectedTime}
+              onTimeChange={setSelectedTime}
+            />
           )}
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="allDay"
+              checked={allDay}
+              onCheckedChange={(checked) => {
+                setAllDay(checked === true);
+                if (checked) {
+                  setSelectedTime(undefined);
+                }
+              }}
+            />
+            <Label htmlFor="allDay">Toute la journée</Label>
+          </div>
         </div>
-      </ScrollArea>
+
+        <ScrollArea className="h-[400px]">
+          <div className="space-y-2 pr-4">
+            {todos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+              />
+            ))}
+            {todos.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                Aucune tâche pour le moment
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 }

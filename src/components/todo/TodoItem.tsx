@@ -38,7 +38,8 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
             <Clock className="h-3 w-3" />
             <span>
               {todo.dueDate && `Pour le ${format(todo.dueDate, 'dd/MM/yyyy', { locale: fr })}`}
-              {todo.dueTime && ` à ${todo.dueTime}`}
+              {todo.dueTime && !todo.allDay && ` à ${todo.dueTime}`}
+              {todo.allDay && " (toute la journée)"}
             </span>
           </div>
         )}

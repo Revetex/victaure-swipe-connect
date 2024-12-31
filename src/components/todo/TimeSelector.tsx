@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface TimeSelectorProps {
   selectedTime?: string;
@@ -8,6 +8,10 @@ interface TimeSelectorProps {
 
 export function TimeSelector({ selectedTime, onTimeChange }: TimeSelectorProps) {
   const [inputValue, setInputValue] = useState(selectedTime || "");
+
+  useEffect(() => {
+    setInputValue(selectedTime || "");
+  }, [selectedTime]);
 
   const formatTimeString = (value: string) => {
     // Remove non-numeric characters
@@ -37,13 +41,11 @@ export function TimeSelector({ selectedTime, onTimeChange }: TimeSelectorProps) 
   };
 
   return (
-    <div className="relative">
-      <Input
-        value={inputValue}
-        onChange={(e) => handleTimeChange(e.target.value)}
-        placeholder="HH:MM"
-        className="w-[120px]"
-      />
-    </div>
+    <Input
+      value={inputValue}
+      onChange={(e) => handleTimeChange(e.target.value)}
+      placeholder="HH:MM"
+      className="w-[120px]"
+    />
   );
 }
