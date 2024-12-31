@@ -5,7 +5,6 @@ import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
 import { SwipeControls } from "./jobs/swipe/SwipeControls";
 import { useSwipeJobs } from "./jobs/swipe/useSwipeJobs";
-import { toast } from "sonner";
 
 interface SwipeMatchProps {
   filters: JobFilters;
@@ -61,7 +60,6 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   };
 
   const handleSwipeWithMatch = async (direction: "left" | "right") => {
-    if (isAnimating) return;
     setIsAnimating(true);
     
     const targetX = direction === "left" ? -200 : 200;
@@ -73,19 +71,18 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     });
 
     if (direction === "right" && jobs[currentIndex]) {
-      try {
-        await onMatchSuccess(jobs[currentIndex].id);
-        toast.success("Match créé avec succès !");
-      } catch (error) {
-        console.error('Error creating match:', error);
-        toast.error("Une erreur est survenue lors du match");
-      }
+      await onMatchSuccess(jobs[currentIndex].id);
     }
-    
     await handleSwipe(direction);
+    
     x.set(0);
     setSwipeDirection(null);
     setIsAnimating(false);
+  };
+
+  const handleButtonSwipe = async (direction: "left" | "right") => {
+    if (isAnimating) return;
+    await handleSwipeWithMatch(direction);
   };
 
   if (loading) {
@@ -154,7 +151,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
         />
       </motion.div>
       
-      <SwipeControls onSwipe={handleSwipeWithMatch} isAnimating={isAnimating} />
+      <SwipeControls onSwipe={handleButtonSwipe} isAnimating={isAnimating} />
     </motion.div>
   );
 }
