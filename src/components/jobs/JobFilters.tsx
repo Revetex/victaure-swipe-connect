@@ -6,6 +6,7 @@ import { SearchFilter } from "./filters/SearchFilter";
 import { CategoryFilters } from "./filters/CategoryFilters";
 import { BudgetFilter } from "./filters/BudgetFilter";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -47,9 +48,13 @@ export function JobFilters({
 
       <ScrollArea className="h-[calc(100vh-200px)] lg:h-auto">
         <div className="p-4 space-y-6">
-          <SearchFilter filters={filters} onFilterChange={onFilterChange} />
-          <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
-          <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
+          <div className="space-y-4">
+            <SearchFilter filters={filters} onFilterChange={onFilterChange} />
+            <Separator />
+            <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
+            <Separator />
+            <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
+          </div>
         </div>
       </ScrollArea>
     </div>

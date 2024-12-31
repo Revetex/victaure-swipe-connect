@@ -1,5 +1,6 @@
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { JobFilters } from "@/types/filters";
+import { JobFilters } from "../JobFilterUtils";
 
 interface BudgetFilterProps {
   filters: JobFilters;
@@ -7,40 +8,28 @@ interface BudgetFilterProps {
 }
 
 export function BudgetFilter({ filters, onFilterChange }: BudgetFilterProps) {
-  const handleMinBudgetChange = (value: string) => {
-    const numValue = parseInt(value) || 0;
-    onFilterChange("minBudget", numValue);
-  };
-
-  const handleMaxBudgetChange = (value: string) => {
-    const numValue = parseInt(value) || 0;
-    onFilterChange("maxBudget", numValue);
-  };
-
   return (
     <div className="space-y-4">
-      <h4 className="text-sm font-medium text-foreground">Budget (CAD/jour)</h4>
+      <Label>Budget (CAD)</Label>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">Minimum</label>
+          <Label className="text-sm text-muted-foreground">Minimum</Label>
           <Input
             type="number"
-            min="0"
-            value={filters.minBudget}
-            onChange={(e) => handleMinBudgetChange(e.target.value)}
+            value={filters.minBudget || ""}
+            onChange={(e) => onFilterChange("minBudget", Number(e.target.value))}
             placeholder="Min"
-            className="w-full"
+            min={0}
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">Maximum</label>
+          <Label className="text-sm text-muted-foreground">Maximum</Label>
           <Input
             type="number"
-            min="0"
-            value={filters.maxBudget}
-            onChange={(e) => handleMaxBudgetChange(e.target.value)}
+            value={filters.maxBudget || ""}
+            onChange={(e) => onFilterChange("maxBudget", Number(e.target.value))}
             placeholder="Max"
-            className="w-full"
+            min={0}
           />
         </div>
       </div>
