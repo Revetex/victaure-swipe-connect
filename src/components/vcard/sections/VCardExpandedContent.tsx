@@ -36,34 +36,14 @@ export function VCardExpandedContent({
 }: VCardExpandedContentProps) {
   if (!isExpanded) return null;
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeInOut",
-        staggerChildren: 0.1
-      }
-    },
-    exit: { 
-      opacity: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
-    }
-  };
-
   return (
     <motion.div
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      variants={containerVariants}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-md overflow-auto"
     >
-      <div className="min-h-screen">
+      <div className="min-h-screen text-white">
         <VCardExpandedHeader 
           profile={profile}
           setIsExpanded={setIsExpanded}

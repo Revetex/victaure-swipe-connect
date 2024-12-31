@@ -1,29 +1,22 @@
-import { VCardHeader } from "@/components/VCardHeader";
-import { VCardContactInfo } from "./VCardContactInfo";
-import { VCardSkills } from "@/components/VCardSkills";
-import { VCardCertifications } from "@/components/VCardCertifications";
-import { VCardEducation } from "@/components/VCardEducation";
-import { VCardExperiences } from "@/components/VCardExperiences";
-import { VCardSection } from "@/components/VCardSection";
-import { motion } from "framer-motion";
-import { QRCodeSVG } from "qrcode.react";
-import type { UserProfile } from "@/types/profile";
-import { Button } from "../ui/button";
-import { Share2, FileText, Edit2, X } from "lucide-react";
-import { Textarea } from "../ui/textarea";
+import { VCardMainContent } from "./sections/VCardMainContent";
+import { VCardExpandedContent } from "./sections/VCardExpandedContent";
+import { VCardCompactActions } from "./VCardCompactActions";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface VCardContentProps {
-  profile: UserProfile;
-  tempProfile: UserProfile;
+  profile: any;
+  tempProfile: any;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
-  setTempProfile: (profile: UserProfile) => void;
+  setProfile: (profile: any) => void;
+  setTempProfile: (profile: any) => void;
   setIsEditing: (isEditing: boolean) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   onShare: () => void;
   onDownload: () => void;
   onDownloadPDF: () => void;
+  onDownloadBusinessPDF: () => void;
   onCopyLink: () => void;
   onSave: () => void;
   onApplyChanges: () => void;
@@ -41,151 +34,70 @@ export function VCardContent({
   onShare,
   onDownload,
   onDownloadPDF,
+  onDownloadBusinessPDF,
   onCopyLink,
   onSave,
   onApplyChanges,
 }: VCardContentProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+        className={`relative overflow-hidden rounded-xl ${
+          !isExpanded
+            ? "bg-gradient-to-br from-white/10 to-white/5 shadow-lg backdrop-blur-md border border-white/10"
+            : ""
+        }`}
       >
-        <div className="absolute inset-0 bg-circuit-pattern opacity-10" />
-        <div className="relative p-6">
-          <div className="flex justify-between items-start gap-6">
-            <div className="flex-1">
-              <VCardHeader
-                profile={isEditing ? tempProfile : profile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-                setIsEditing={setIsEditing}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="p-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
-                <QRCodeSVG
-                  value={window.location.href}
-                  size={80}
-                  level="H"
-                  includeMargin={false}
-                  className="rounded opacity-90"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Button
-                  onClick={onShare}
-                  variant="outline"
-                  size="sm"
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Partager
-                </Button>
-                <Button
-                  onClick={onDownloadPDF}
-                  variant="outline"
-                  size="sm"
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <FileText className="h-4 w-4" />
-                  CV PDF
-                </Button>
-                <Button
-                  onClick={() => setIsEditing(!isEditing)}
-                  variant="outline"
-                  size="sm"
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
-                  {isEditing ? "Réduire" : "Éditer"}
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mt-6"
-          >
-            <VCardContactInfo
-              email={profile.email}
-              phone={profile.phone}
-              city={profile.city}
-              state={profile.state}
-            />
-          </motion.div>
-
-          {isEditing && (
-            <div className="mt-8 space-y-8">
-              <VCardSection title="Description" icon={<FileText className="h-4 w-4" />}>
-                <Textarea
-                  value={tempProfile.bio || ""}
-                  onChange={(e) => setTempProfile({ ...tempProfile, bio: e.target.value })}
-                  placeholder="Décrivez votre parcours professionnel..."
-                  className="min-h-[150px]"
-                />
-              </VCardSection>
-
-              <VCardSkills
-                profile={isEditing ? tempProfile : profile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-                newSkill={newSkill}
-                setNewSkill={setNewSkill}
-                handleAddSkill={() => {
-                  if (newSkill && !tempProfile.skills?.includes(newSkill)) {
-                    setTempProfile({
-                      ...tempProfile,
-                      skills: [...(tempProfile.skills || []), newSkill],
-                    });
-                    setNewSkill("");
-                  }
-                }}
-                handleRemoveSkill={(skillToRemove: string) => {
-                  setTempProfile({
-                    ...tempProfile,
-                    skills: tempProfile.skills?.filter(
-                      (skill: string) => skill !== skillToRemove
-                    ),
-                  });
-                }}
-              />
-
-              <VCardExperiences
-                profile={isEditing ? tempProfile : profile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-              />
-
-              <VCardCertifications
-                profile={isEditing ? tempProfile : profile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-              />
-
-              <VCardEducation
-                profile={isEditing ? tempProfile : profile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-              />
-
-              {isEditing && (
-                <div className="flex justify-end gap-2 mt-8">
-                  <Button variant="outline" onClick={onApplyChanges}>
-                    Appliquer les changements
-                  </Button>
-                  <Button onClick={onSave}>Sauvegarder</Button>
-                </div>
-              )}
-            </div>
+        <div className="relative">
+          {!isExpanded && (
+            <div className="absolute inset-0 bg-circuit-pattern opacity-5" />
           )}
+          <div className="relative p-4 sm:p-6">
+            <VCardMainContent
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
+              setIsEditing={setIsEditing}
+              isExpanded={isExpanded}
+              setIsExpanded={setIsExpanded}
+            />
+
+            {!isExpanded && !isEditing && (
+              <VCardCompactActions
+                onExpand={() => setIsExpanded(true)}
+                onEdit={() => setIsEditing(true)}
+                onDownload={onDownload}
+                onDownloadPDF={onDownloadPDF}
+                onDownloadBusinessPDF={onDownloadBusinessPDF}
+              />
+            )}
+          </div>
         </div>
       </motion.div>
-    </div>
+
+      <AnimatePresence>
+        {isExpanded && (
+          <VCardExpandedContent
+            isExpanded={isExpanded}
+            isEditing={isEditing}
+            profile={profile}
+            setProfile={setProfile}
+            setIsExpanded={setIsExpanded}
+            newSkill={newSkill}
+            setNewSkill={setNewSkill}
+            onShare={onShare}
+            onDownload={onDownload}
+            onDownloadPDF={onDownloadPDF}
+            onCopyLink={onCopyLink}
+            onSave={onSave}
+            onApplyChanges={onApplyChanges}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }
