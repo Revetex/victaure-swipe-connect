@@ -18,6 +18,7 @@ interface VCardContentProps {
   onShare: () => void;
   onDownload: () => void;
   onDownloadPDF: () => void;
+  onDownloadBusinessPDF: () => void;
   onCopyLink: () => void;
   onSave: () => void;
   onApplyChanges: () => void;
@@ -35,6 +36,7 @@ export function VCardContent({
   onShare,
   onDownload,
   onDownloadPDF,
+  onDownloadBusinessPDF,
   onCopyLink,
   onSave,
   onApplyChanges,
@@ -108,6 +110,8 @@ export function VCardContent({
               onExpand={() => setIsExpanded(true)}
               onEdit={() => setIsEditing(true)}
               onDownload={onDownload}
+              onDownloadPDF={onDownloadPDF}
+              onDownloadBusinessPDF={onDownloadBusinessPDF}
             />
           )}
         </div>
