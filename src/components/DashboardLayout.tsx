@@ -33,7 +33,7 @@ export function DashboardLayout() {
       <div className="relative z-10 flex-1 overflow-auto py-2 sm:py-4">
         <div className="container mx-auto px-2 sm:px-4 lg:px-6 max-w-[2000px]">
           <motion.div 
-            className="flex flex-col gap-4 sm:gap-6 md:gap-8 max-w-[1200px] mx-auto pb-24 sm:pb-32 md:pb-40"
+            className="flex flex-col gap-2 sm:gap-3 md:gap-4 max-w-[1200px] mx-auto pb-24 sm:pb-32 md:pb-40"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
