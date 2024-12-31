@@ -20,7 +20,6 @@ export function Messages() {
   const unreadMessagesCount = userMessages.filter(m => !m.read).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
   const [activeTab, setActiveTab] = useState("messages");
-  const [activeTaskTab, setActiveTaskTab] = useState("todos");
 
   useEffect(() => {
     const fetchNotifications = async () => {
