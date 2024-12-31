@@ -5,32 +5,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { PaymentBox } from "@/components/dashboard/PaymentBox";
+import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    }
-  };
+  const { containerVariants, itemVariants } = useDashboardAnimations();
 
   const renderDashboardSection = (
     component: React.ReactNode,

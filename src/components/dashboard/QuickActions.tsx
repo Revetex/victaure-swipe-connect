@@ -1,13 +1,14 @@
 import { Briefcase, Calendar, MessageSquare, DollarSign } from "lucide-react";
 import { QuickActionCard } from "./QuickActionCard";
 import { DashboardStats } from "@/types/dashboard";
+import { useMemo } from "react";
 
 interface QuickActionsProps {
   stats: DashboardStats | undefined;
 }
 
 export function QuickActions({ stats }: QuickActionsProps) {
-  const quickActions = [
+  const quickActions = useMemo(() => [
     {
       title: "Missions en cours",
       value: stats?.activeJobs.toString() || "0",
@@ -36,7 +37,7 @@ export function QuickActions({ stats }: QuickActionsProps) {
       color: "text-victaure-blue",
       bgColor: "bg-victaure-blue/10",
     },
-  ];
+  ], [stats]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
