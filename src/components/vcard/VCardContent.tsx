@@ -51,7 +51,7 @@ export function VCardContent({
 
   return (
     <Card className={`w-full max-w-[85.6mm] mx-auto overflow-hidden border-none shadow-xl transition-all duration-300 ${
-      !isExpanded ? 'h-[53.98mm] bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm' : 
+      !isExpanded ? 'h-[53.98mm] bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm ring-1 ring-white/10' : 
       'bg-white dark:bg-gray-800'
     }`}>
       <CardContent className={`p-6 ${!isExpanded && 'relative'}`}>
