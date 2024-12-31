@@ -5,12 +5,14 @@ import { generateVCardData, updateProfile } from "@/utils/profileActions";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
-import { VCardContent } from "./vcard/VCardContent";
-import type { UserProfile } from "@/types/profile";
+import { VCardCompact } from "./vcard/VCardCompact";
+import { VCardExpanded } from "./vcard/VCardExpanded";
+import { AnimatePresence } from "framer-motion";
 
 export function VCard() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
 
@@ -85,8 +87,6 @@ export function VCard() {
     if (!profile) return;
     
     try {
-      // For now, we'll use the same PDF generator
-      // You can implement a different business PDF generator later
       const pdfUrl = await generateVCardPDF(profile);
       window.open(pdfUrl, '_blank');
       
@@ -163,22 +163,35 @@ export function VCard() {
   }
 
   return (
-    <VCardContent
-      profile={profile}
-      tempProfile={tempProfile}
-      isEditing={isEditing}
-      setProfile={setProfile}
-      setTempProfile={setTempProfile}
-      setIsEditing={setIsEditing}
-      newSkill={newSkill}
-      setNewSkill={setNewSkill}
-      onShare={handleShare}
-      onDownload={handleDownloadVCard}
-      onDownloadPDF={handleDownloadPDF}
-      onDownloadBusinessPDF={handleDownloadBusinessPDF}
-      onCopyLink={handleCopyLink}
-      onSave={handleSave}
-      onApplyChanges={handleApplyChanges}
-    />
+    <>
+      <VCardCompact
+        profile={profile}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        onExpand={() => setIsExpanded(true)}
+        onDownload={handleDownloadVCard}
+        onDownloadPDF={handleDownloadPDF}
+        onDownloadBusinessPDF={handleDownloadBusinessPDF}
+      />
+
+      <AnimatePresence>
+        {isExpanded && (
+          <VCardExpanded
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            setIsExpanded={setIsExpanded}
+            newSkill={newSkill}
+            setNewSkill={setNewSkill}
+            onShare={handleShare}
+            onDownload={handleDownloadVCard}
+            onDownloadPDF={handleDownloadPDF}
+            onCopyLink={handleCopyLink}
+            onSave={handleSave}
+            onApplyChanges={handleApplyChanges}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }
