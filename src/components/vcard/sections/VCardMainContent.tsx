@@ -29,37 +29,35 @@ export function VCardMainContent({
           setProfile={setProfile}
           setIsEditing={setIsEditing}
         />
-
-        {!isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <VCardContactInfo
-              email={profile.email}
-              phone={profile.phone}
-              city={profile.city}
-              state={profile.state}
-            />
-          </motion.div>
-        )}
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-6"
+        >
+          <VCardContactInfo
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+        </motion.div>
       </div>
 
-      {!isExpanded && (
-        <motion.div 
-          className="shrink-0 sm:ml-4"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2 }}
+      {!isEditing && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex-shrink-0"
         >
-          <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
+          <div className="p-4 bg-white rounded-lg shadow-md dark:bg-gray-700">
             <QRCodeSVG
               value={window.location.href}
-              size={80}
+              size={120}
               level="H"
-              includeMargin={false}
-              className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+              includeMargin={true}
+              className="rounded-lg"
             />
           </div>
         </motion.div>
