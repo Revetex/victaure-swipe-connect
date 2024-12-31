@@ -1,62 +1,20 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { JobList } from "@/components/jobs/JobList";
-import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
-import { toast } from "sonner";
+import { JobList } from "@/components/jobs/JobList";
 import { useNavigate } from "react-router-dom";
+import { useSwipeJobs } from "./jobs/hooks/useSwipeJobs";
 
 export function SwipeJob() {
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
   const { 
-    data: myJobs = [], 
-    refetch: refetchMyJobs, 
+    jobs, 
+    currentIndex, 
     isLoading, 
-    error 
-  } = useQuery({
-    queryKey: ['my-jobs'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          employer:profiles(
-            full_name,
-            company_name,
-            avatar_url
-          )
-        `)
-        .eq('employer_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else {
-      toast.info("Vous êtes au début de la liste");
-    }
-  };
-
-  const handleNext = () => {
-    if (currentIndex < myJobs.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      toast.info("Vous êtes à la fin de la liste");
-    }
-  };
+    error, 
+    refetch, 
+    handlePrevious, 
+    handleNext 
+  } = useSwipeJobs();
 
   const handleCreateJob = () => {
     navigate("/jobs/create");
@@ -86,16 +44,16 @@ export function SwipeJob() {
               variant="outline"
               size="icon"
               onClick={handleNext}
-              disabled={currentIndex === myJobs.length - 1}
+              disabled={currentIndex === (jobs?.length || 0) - 1}
             >
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
           <div className="aspect-[4/3] bg-muted rounded-lg flex items-center justify-center">
-            {myJobs[currentIndex] ? (
+            {jobs[currentIndex] ? (
               <div className="p-8">
-                <h3 className="text-xl font-semibold mb-4">{myJobs[currentIndex].title}</h3>
-                <p className="text-muted-foreground">{myJobs[currentIndex].description}</p>
+                <h3 className="text-xl font-semibold mb-4">{jobs[currentIndex].title}</h3>
+                <p className="text-muted-foreground">{jobs[currentIndex].description}</p>
               </div>
             ) : (
               <p className="text-muted-foreground">Aucune mission à afficher</p>
@@ -104,10 +62,10 @@ export function SwipeJob() {
         </div>
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
-          {myJobs && myJobs.length > 0 ? (
+          {jobs && jobs.length > 0 ? (
             <JobList 
-              jobs={myJobs} 
-              onJobDeleted={refetchMyJobs}
+              jobs={jobs} 
+              onJobDeleted={refetch}
               isLoading={isLoading}
               error={error}
             />

@@ -23,6 +23,11 @@ export interface Job {
   application_deadline?: string;
   created_at?: string;
   updated_at?: string;
+  employer?: {
+    full_name: string | null;
+    company_name: string | null;
+    avatar_url: string | null;
+  };
   // Virtual fields for display
   company?: string;
   salary?: string;
