@@ -1,0 +1,16 @@
+@layer components {
+  .glass-card {
+    @apply relative overflow-hidden;
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300;
+    }
+    &:hover::before {
+      @apply opacity-100;
+    }
+  }
+
+  .editing-mode {
+    @apply ring-2 ring-[#D946EF] shadow-lg shadow-[#D946EF]/20;
+  }
+}

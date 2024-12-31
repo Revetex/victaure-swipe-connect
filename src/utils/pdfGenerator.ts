@@ -1,97 +1,94 @@
+import jsPDF from 'jspdf';
 import type { UserProfile } from '@/types/profile';
 import { supabase } from "@/integrations/supabase/client";
 
 export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
-  // Generate code representation of the profile with Victaure branding
-  const codeOutput = generateProfileCode(profile);
-  
   try {
-    const blob = new Blob([codeOutput], { type: 'text/plain' });
-    const filename = `${profile.id}_${Date.now()}.txt`;
+    const doc = new jsPDF();
     
+    // Add Victaure branding
+    doc.setFillColor(26, 31, 44); // Dark background
+    doc.rect(0, 0, 210, 297, 'F');
+    
+    // Add gradient-like effect
+    doc.setFillColor(58, 63, 76);
+    doc.rect(0, 0, 210, 50, 'F');
+    
+    // Add Victaure logo if available
+    // You would need to add the logo to your assets
+    // doc.addImage('path_to_victaure_logo', 'PNG', 10, 10, 50, 20);
+    
+    // Set text colors and fonts
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    
+    // Add profile information
+    doc.setFontSize(24);
+    doc.text(profile.full_name || 'Professional Profile', 20, 40);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "normal");
+    doc.text(profile.role || '', 20, 50);
+    
+    // Add contact information
+    doc.setFontSize(12);
+    const contactInfo = [
+      `Email: ${profile.email}`,
+      `Phone: ${profile.phone || 'Not provided'}`,
+      `Location: ${[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}`,
+    ];
+    
+    contactInfo.forEach((info, index) => {
+      doc.text(info, 20, 70 + (index * 10));
+    });
+    
+    // Add skills section
+    if (profile.skills && profile.skills.length > 0) {
+      doc.setFont("helvetica", "bold");
+      doc.text('Skills', 20, 110);
+      doc.setFont("helvetica", "normal");
+      const skillsText = profile.skills.join(', ');
+      doc.text(skillsText, 20, 120);
+    }
+    
+    // Add bio if available
+    if (profile.bio) {
+      doc.setFont("helvetica", "bold");
+      doc.text('About', 20, 140);
+      doc.setFont("helvetica", "normal");
+      doc.text(profile.bio, 20, 150);
+    }
+    
+    // Add footer with Victaure branding
+    doc.setFontSize(10);
+    doc.setTextColor(155, 135, 245); // Victaure purple
+    doc.text('Powered by Victaure', 20, 280);
+    
+    // Save the PDF
+    const pdfOutput = doc.output('blob');
+    const filename = `${profile.id}_${Date.now()}.pdf`;
+    
+    // Upload to Supabase Storage
     const { data, error } = await supabase
       .storage
       .from('vcards')
-      .upload(filename, blob, {
-        contentType: 'text/plain',
-        upsert: true
+      .upload(filename, pdfOutput, {
+        contentType: 'application/pdf',
+        cacheControl: '3600'
       });
       
     if (error) throw error;
     
+    // Get the public URL
     const { data: { publicUrl } } = supabase
       .storage
       .from('vcards')
       .getPublicUrl(filename);
       
     return publicUrl;
+    
   } catch (error) {
-    console.error('Error uploading code file:', error);
+    console.error('Error generating PDF:', error);
     throw error;
   }
-};
-
-const generateProfileCode = (profile: UserProfile): string => {
-  return `
-/**
- * Victaure Professional Profile
- * Generated on ${new Date().toLocaleString()}
- * 
- * ⚡️ Powered by Victaure
- * 🎨 Design System: Modern Glassmorphism
- * 
- * Background: linear-gradient(135deg, #1A1F2C 0%, #403E43 100%)
- * Primary: #9b87f5
- * Secondary: #7E69AB
- * Accent: #D946EF
- */
-
-interface ProfessionalProfile {
-  personalInfo: {
-    fullName: string;
-    role: string;
-    email: string;
-    phone?: string;
-    location?: {
-      city?: string;
-      state?: string;
-      country?: string;
-    };
-  };
-  skills: string[];
-  education: Array<{
-    school: string;
-    degree: string;
-    fieldOfStudy?: string;
-    startDate?: string;
-    endDate?: string;
-  }>;
-  certifications: Array<{
-    title: string;
-    issuer: string;
-    issueDate?: string;
-    expiryDate?: string;
-  }>;
-}
-
-const ${profile.full_name?.replace(/\s+/g, '')}Profile: ProfessionalProfile = {
-  personalInfo: {
-    fullName: "${profile.full_name || ''}",
-    role: "${profile.role || ''}",
-    email: "${profile.email || ''}",
-    phone: "${profile.phone || ''}",
-    location: {
-      city: "${profile.city || ''}",
-      state: "${profile.state || ''}",
-      country: "${profile.country || ''}"
-    }
-  },
-  skills: ${JSON.stringify(profile.skills || [], null, 2)},
-  education: ${JSON.stringify(profile.education || [], null, 2)},
-  certifications: ${JSON.stringify(profile.certifications || [], null, 2)}
-};
-
-// Export profile for use in applications
-export default ${profile.full_name?.replace(/\s+/g, '')}Profile;
-`;
 };

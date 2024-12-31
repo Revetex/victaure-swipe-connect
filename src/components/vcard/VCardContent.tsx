@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { VCardMainInfo } from "./sections/VCardMainInfo";
+import { VCardMainContent } from "./sections/VCardMainContent";
 import { VCardExpandedContent } from "./sections/VCardExpandedContent";
-import { VCardCompactActions } from "./VCardCompactActions";
 
 interface VCardContentProps {
   profile: any;
@@ -72,7 +70,7 @@ export function VCardContent({
       glass-card backdrop-blur-md border border-[#9b87f5]/10 shadow-2xl
       bg-gradient-to-br from-[#1A1F2C]/80 via-[#2A2F3C]/80 to-[#3A3F4C]/80
       hover:from-[#1A1F2C]/90 hover:via-[#2A2F3C]/90 hover:to-[#3A3F4C]/90
-      ${isEditing ? 'ring-2 ring-[#D946EF]/50' : ''}`}>
+      ${isEditing ? 'editing-mode' : ''}`}>
       <CardContent className={`p-6 relative transition-all duration-500 h-full
         ${isExpanded ? 'overflow-hidden' : ''}`}>
         <AnimatePresence mode="wait">
@@ -84,20 +82,13 @@ export function VCardContent({
             variants={containerVariants}
             className="space-y-6 h-full"
           >
-            <VCardMainInfo
+            <VCardMainContent
               profile={tempProfile}
               isEditing={isEditing}
               setProfile={setTempProfile}
               setIsEditing={setIsEditing}
               isExpanded={isExpanded}
             />
-
-            {!isExpanded && !isEditing && (
-              <VCardCompactActions
-                onExpand={() => setIsExpanded(true)}
-                onEdit={() => setIsEditing(true)}
-              />
-            )}
 
             <AnimatePresence>
               {isExpanded && (

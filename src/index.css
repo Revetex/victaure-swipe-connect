@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import './styles/glass.css';
+@import './styles/sticky-notes.css';
  
 @layer base {
   :root {
@@ -55,60 +57,5 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-}
-
-@layer components {
-  .sticky-note {
-    @apply p-4 rounded-lg shadow-sm transition-all duration-200 
-           hover:shadow-md hover:-translate-y-0.5
-           backdrop-blur-sm;
-  }
-
-  .sticky-note-yellow {
-    @apply bg-[#FEF7CD]/80 hover:bg-[#FEF7CD];
-  }
-
-  .sticky-note-blue {
-    @apply bg-[#D3E4FD]/80 hover:bg-[#D3E4FD];
-  }
-
-  .sticky-note-green {
-    @apply bg-[#F2FCE2]/80 hover:bg-[#F2FCE2];
-  }
-
-  .sticky-note-pink {
-    @apply bg-[#FFDEE2]/80 hover:bg-[#FFDEE2];
-  }
-
-  .sticky-note-purple {
-    @apply bg-[#E5DEFF]/80 hover:bg-[#E5DEFF];
-  }
-
-  .sticky-note-peach {
-    @apply bg-[#FDE1D3]/80 hover:bg-[#FDE1D3];
-  }
-
-  .sticky-note-gray {
-    @apply bg-[#F1F0FB]/80 hover:bg-[#F1F0FB];
-  }
-
-  .sticky-note-orange {
-    @apply bg-[#FEC6A1]/80 hover:bg-[#FEC6A1];
-  }
-
-  .glass-card {
-    @apply relative overflow-hidden;
-    &::before {
-      content: '';
-      @apply absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300;
-    }
-    &:hover::before {
-      @apply opacity-100;
-    }
-  }
-
-  .editing-mode {
-    @apply ring-2 ring-[#D946EF] shadow-lg shadow-[#D946EF]/20;
   }
 }
