@@ -1,6 +1,6 @@
 import { useToast } from "@/hooks/use-toast";
 import { generateVCardData } from "@/utils/profileActions";
-import { generateVCardPDF, generateBusinessCardPDF } from "@/utils/pdfGenerator";
+import { generateVCardPDF, generateBusinessCardPDF, generateCVPDF } from "@/utils/pdfGenerator";
 import type { UserProfile } from "@/types/profile";
 
 export function useVCardHandlers() {
@@ -92,6 +92,26 @@ export function useVCardHandlers() {
     }
   };
 
+  const handleDownloadCVPDF = async (profile: UserProfile) => {
+    if (!profile) return;
+    
+    try {
+      await generateCVPDF(profile);
+      
+      toast({
+        title: "Succès",
+        description: "CV PDF téléchargé avec succès",
+      });
+    } catch (error) {
+      console.error('Error generating CV PDF:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de générer le CV PDF",
+      });
+    }
+  };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({
@@ -105,6 +125,7 @@ export function useVCardHandlers() {
     handleDownloadVCard,
     handleDownloadPDF,
     handleDownloadBusinessPDF,
+    handleDownloadCVPDF,
     handleCopyLink,
   };
 }

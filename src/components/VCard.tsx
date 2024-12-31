@@ -10,7 +10,7 @@ export function VCard() {
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
-  const { handleShare, handleDownloadVCard, handleDownloadPDF, handleDownloadBusinessPDF, handleCopyLink } = useVCardHandlers();
+  const { handleShare, handleDownloadVCard, handleDownloadPDF, handleDownloadBusinessPDF, handleDownloadCVPDF, handleCopyLink } = useVCardHandlers();
   const { handleSave, handleApplyChanges } = useProfileHandlers();
 
   if (isLoading) {
@@ -35,6 +35,7 @@ export function VCard() {
       onDownload={() => handleDownloadVCard(profile)}
       onDownloadPDF={() => handleDownloadPDF(profile)}
       onDownloadBusinessPDF={() => handleDownloadBusinessPDF(profile)}
+      onDownloadCVPDF={() => handleDownloadCVPDF(profile)}
       onCopyLink={handleCopyLink}
       onSave={() => handleSave(tempProfile, setProfile, setIsEditing)}
       onApplyChanges={() => handleApplyChanges(tempProfile, setProfile, setIsEditing)}
