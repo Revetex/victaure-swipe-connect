@@ -21,31 +21,53 @@ export const updateProfile = async (tempProfile: UserProfile) => {
 
   console.log("Updating profile with data:", tempProfile);
 
-  // Update main profile
-  const { error: profileError } = await supabase
+  // First check if profile exists
+  const { data: existingProfile, error: checkError } = await supabase
     .from('profiles')
-    .update({
-      full_name: tempProfile.full_name,
-      role: tempProfile.role,
-      email: tempProfile.email,
-      phone: tempProfile.phone,
-      city: tempProfile.city,
-      state: tempProfile.state,
-      country: tempProfile.country,
-      skills: tempProfile.skills,
-      bio: tempProfile.bio,
-      latitude: tempProfile.latitude,
-      longitude: tempProfile.longitude,
-      website: tempProfile.website,
-      company_name: tempProfile.company_name,
-      company_size: tempProfile.company_size,
-      industry: tempProfile.industry,
-    })
-    .eq('id', user.id);
+    .select('*')
+    .eq('id', user.id)
+    .single();
 
-  if (profileError) {
-    console.error("Error updating profile:", profileError);
-    throw profileError;
+  if (checkError && checkError.code !== 'PGRST116') {
+    console.error("Error checking profile:", checkError);
+    throw checkError;
+  }
+
+  // Prepare profile data, ensuring role is preserved if it exists
+  const profileData = {
+    full_name: tempProfile.full_name,
+    email: tempProfile.email,
+    phone: tempProfile.phone,
+    city: tempProfile.city,
+    state: tempProfile.state,
+    country: tempProfile.country,
+    skills: tempProfile.skills,
+    bio: tempProfile.bio,
+    latitude: tempProfile.latitude,
+    longitude: tempProfile.longitude,
+    website: tempProfile.website,
+    company_name: tempProfile.company_name,
+    company_size: tempProfile.company_size,
+    industry: tempProfile.industry,
+    // Only set role if profile doesn't exist
+    ...(existingProfile ? {} : { role: 'professional' })
+  };
+
+  console.log("Profile data to be saved:", profileData);
+
+  // Update or insert profile
+  const { error: upsertError } = await supabase
+    .from('profiles')
+    .upsert({
+      id: user.id,
+      ...profileData
+    }, {
+      onConflict: 'id'
+    });
+
+  if (upsertError) {
+    console.error("Error upserting profile:", upsertError);
+    throw upsertError;
   }
 
   // Update certifications
