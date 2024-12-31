@@ -36,9 +36,7 @@ export function ConversationView({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -63,7 +61,7 @@ export function ConversationView({
       transition={{ duration: 0.2 }}
       className="flex flex-col h-full"
     >
-      <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+      <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -93,9 +91,9 @@ export function ConversationView({
         >
           <Bot className="h-4 w-4" />
         </Button>
-      </div>
+      </header>
 
-      <div className="flex-1 overflow-y-auto p-4 h-[calc(100vh-200px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+      <main className="flex-1 overflow-y-auto p-4 h-[calc(100vh-200px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
         <div className="space-y-4 max-w-3xl mx-auto">
           {messages.map((message, index) => (
             <ChatMessage
@@ -113,9 +111,9 @@ export function ConversationView({
           ))}
           <div ref={messagesEndRef} />
         </div>
-      </div>
+      </main>
 
-      <div className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0">
+      <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
@@ -124,7 +122,7 @@ export function ConversationView({
           isListening={isListening}
           isThinking={isThinking}
         />
-      </div>
+      </footer>
     </motion.div>
   );
 }

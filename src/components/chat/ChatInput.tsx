@@ -23,20 +23,22 @@ export function ChatInput({
   isThinking = false,
   className,
 }: ChatInputProps) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (value.trim() && !isThinking) {
+        onSend();
+      }
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="relative">
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              if (value.trim() && !isThinking) {
-                onSend();
-              }
-            }
-          }}
+          onKeyDown={handleKeyDown}
           placeholder="Écrivez votre message..."
           className="pr-24 min-h-[80px] resize-none"
           disabled={isThinking}
