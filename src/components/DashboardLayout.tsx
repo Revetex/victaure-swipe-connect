@@ -33,7 +33,7 @@ export function DashboardLayout() {
       <div className="relative z-10 flex-1 overflow-auto py-2 sm:py-4">
         <div className="container mx-auto px-2 sm:px-4 lg:px-6 max-w-[2000px]">
           <motion.div 
-            className="flex flex-col gap-3 sm:gap-4 md:gap-6 max-w-[1200px] mx-auto"
+            className="flex flex-col gap-6 sm:gap-8 md:gap-12 max-w-[1200px] mx-auto"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -51,10 +51,10 @@ export function DashboardLayout() {
               false
             )}
 
-            {/* VCard Section */}
+            {/* VCard Section - Added more top margin */}
             {renderDashboardSection(
               <VCard />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px]'
+              'w-full h-[500px] sm:h-[550px] md:h-[600px] mt-8 sm:mt-12 md:mt-16'
             )}
           </motion.div>
         </div>
