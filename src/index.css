@@ -98,7 +98,7 @@
   }
 
   .responsive-padding {
-    @apply p-3 sm:p-4 lg:p-5;
+    @apply p-3 sm:p-4;
   }
 
   .dashboard-card {
@@ -114,7 +114,7 @@
   }
 
   .card-content {
-    @apply p-3 sm:p-4;
+    @apply p-3;
   }
 
   .hover-lift {
