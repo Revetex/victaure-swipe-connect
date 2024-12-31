@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { JobFormSchema, JobFormValues } from "./JobFormSchema";
+import { jobFormSchema, JobFormValues } from "./JobFormSchema";
 import { Job } from "@/types/job";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -19,7 +19,7 @@ export function useJobForm({ initialData, onSuccess }: UseJobFormProps) {
       category: initialData.category,
       subcategory: initialData.subcategory || "",
       contract_type: initialData.contract_type,
-      experience_level: initialData.experience_level,
+      experience_level: initialData.experience_level as "Entry-Level" | "Mid-Level" | "Senior" | "Expert" | "Lead",
     } : {
       title: "",
       description: "",
@@ -41,6 +41,9 @@ export function useJobForm({ initialData, onSuccess }: UseJobFormProps) {
         ...values,
         budget: parseFloat(values.budget),
         employer_id: user.id,
+        title: values.title,
+        description: values.description,
+        location: values.location,
       };
 
       if (initialData) {
