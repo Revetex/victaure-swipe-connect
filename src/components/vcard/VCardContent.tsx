@@ -69,9 +69,9 @@ export function VCardContent({
   return (
     <Card className={`transition-all duration-500 ease-out
       ${isExpanded ? 'fixed inset-4 z-50 m-auto max-h-[90vh] overflow-hidden' : 'w-full max-w-xl mx-auto hover:scale-[1.02]'}
-      glass-card backdrop-blur-md border border-white/10 shadow-2xl
-      bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10
-      hover:from-indigo-500/20 hover:via-purple-500/20 hover:to-pink-500/20`}>
+      glass-card backdrop-blur-md border border-[#9b87f5]/10 shadow-2xl
+      bg-gradient-to-br from-[#1A1F2C]/80 via-[#2A2F3C]/80 to-[#3A3F4C]/80
+      hover:from-[#1A1F2C]/90 hover:via-[#2A2F3C]/90 hover:to-[#3A3F4C]/90`}>
       <CardContent className={`p-6 relative transition-all duration-500 h-full
         ${isExpanded ? 'overflow-hidden' : ''}`}>
         <AnimatePresence mode="wait">
