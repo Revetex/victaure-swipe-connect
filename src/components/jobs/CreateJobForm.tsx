@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
 import { JobCategoryFields } from "./form/JobCategoryFields";
@@ -8,6 +8,7 @@ import { JobTypeFields } from "./form/JobTypeFields";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isValidCategory } from "@/types/job";
 import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
 
 interface CreateJobFormProps {
   onSuccess?: () => void;
@@ -126,30 +127,32 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         <CardTitle>Créer une nouvelle mission</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <JobBasicInfoFields
-            title={form.watch("title")}
-            description={form.watch("description")}
-            budget={form.watch("budget")}
-            location={form.watch("location")}
-            images={form.watch("images")}
-            onChange={(field, value) => form.setValue(field as any, value)}
-          />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <JobBasicInfoFields
+              title={form.watch("title")}
+              description={form.watch("description")}
+              budget={form.watch("budget")}
+              location={form.watch("location")}
+              images={form.watch("images")}
+              onChange={(field, value) => form.setValue(field as any, value)}
+            />
 
-          <JobCategoryFields
-            category={form.watch("category")}
-            subcategory={form.watch("subcategory")}
-            onChange={(field, value) => form.setValue(field as any, value)}
-          />
+            <JobCategoryFields
+              category={form.watch("category")}
+              subcategory={form.watch("subcategory")}
+              onChange={(field, value) => form.setValue(field as any, value)}
+            />
 
-          <JobTypeFields form={form} />
+            <JobTypeFields form={form} />
 
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Création..." : "Créer la mission"}
-            </Button>
-          </div>
-        </form>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Création..." : "Créer la mission"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );
