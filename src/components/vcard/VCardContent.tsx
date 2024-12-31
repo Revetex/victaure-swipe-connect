@@ -3,12 +3,14 @@ import { VCardContactInfo } from "./VCardContactInfo";
 import { VCardSkills } from "@/components/VCardSkills";
 import { VCardCertifications } from "@/components/VCardCertifications";
 import { VCardEducation } from "@/components/VCardEducation";
+import { VCardExperiences } from "@/components/VCardExperiences";
 import { VCardSection } from "@/components/VCardSection";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import type { UserProfile } from "@/types/profile";
 import { Button } from "../ui/button";
 import { Share2, FileText, Edit2, X } from "lucide-react";
+import { Textarea } from "../ui/textarea";
 
 interface VCardContentProps {
   profile: UserProfile;
@@ -120,6 +122,15 @@ export function VCardContent({
 
           {isEditing && (
             <div className="mt-8 space-y-8">
+              <VCardSection title="Description" icon={<FileText className="h-4 w-4" />}>
+                <Textarea
+                  value={tempProfile.bio || ""}
+                  onChange={(e) => setTempProfile({ ...tempProfile, bio: e.target.value })}
+                  placeholder="Décrivez votre parcours professionnel..."
+                  className="min-h-[150px]"
+                />
+              </VCardSection>
+
               <VCardSkills
                 profile={isEditing ? tempProfile : profile}
                 isEditing={isEditing}
@@ -144,20 +155,33 @@ export function VCardContent({
                   });
                 }}
               />
-              <VCardSection title="Certifications" icon={<FileText className="h-4 w-4" />}>
-                <VCardCertifications
-                  profile={isEditing ? tempProfile : profile}
-                  isEditing={isEditing}
-                  setProfile={setTempProfile}
-                />
-              </VCardSection>
-              <VCardSection title="Formation" icon={<FileText className="h-4 w-4" />}>
-                <VCardEducation
-                  profile={isEditing ? tempProfile : profile}
-                  isEditing={isEditing}
-                  setProfile={setTempProfile}
-                />
-              </VCardSection>
+
+              <VCardExperiences
+                profile={isEditing ? tempProfile : profile}
+                isEditing={isEditing}
+                setProfile={setTempProfile}
+              />
+
+              <VCardCertifications
+                profile={isEditing ? tempProfile : profile}
+                isEditing={isEditing}
+                setProfile={setTempProfile}
+              />
+
+              <VCardEducation
+                profile={isEditing ? tempProfile : profile}
+                isEditing={isEditing}
+                setProfile={setTempProfile}
+              />
+
+              {isEditing && (
+                <div className="flex justify-end gap-2 mt-8">
+                  <Button variant="outline" onClick={onApplyChanges}>
+                    Appliquer les changements
+                  </Button>
+                  <Button onClick={onSave}>Sauvegarder</Button>
+                </div>
+              )}
             </div>
           )}
         </div>
