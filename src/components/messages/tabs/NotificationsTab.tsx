@@ -38,7 +38,10 @@ export function NotificationsTab() {
     const fetchNotifications = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          toast.error("Vous devez être connecté pour voir vos notifications");
+          return;
+        }
 
         const { data, error } = await supabase
           .from('notifications')

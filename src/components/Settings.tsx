@@ -43,9 +43,10 @@ export function Settings() {
     try {
       setIsLoggingOut(true);
       await signOut();
+      toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Erreur de déconnexion:", error);
-      toast.error("Erreur lors de la déconnexion. Veuillez réessayer.");
+      toast.error("Erreur lors de la déconnexion");
     } finally {
       setIsLoggingOut(false);
     }
