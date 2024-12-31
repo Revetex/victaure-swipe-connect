@@ -103,24 +103,13 @@ export function VCardContent({
             )}
           </AnimatePresence>
 
-          <div className="flex justify-between items-center">
-            {isEditing ? (
-              <VCardActions
-                isEditing={isEditing}
-                onShare={onShare}
-                onDownload={onDownload}
-                onDownloadPDF={onDownloadPDF}
-                onCopyLink={onCopyLink}
-                onSave={onSave}
-                onApplyChanges={onApplyChanges}
-              />
-            ) : (
-              <VCardCompactActions
-                onExpand={() => setIsExpanded(true)}
-                onEdit={() => setIsEditing(true)}
-              />
-            )}
-          </div>
+          {!isExpanded && !isEditing && (
+            <VCardCompactActions
+              onExpand={() => setIsExpanded(true)}
+              onEdit={() => setIsEditing(true)}
+              onDownload={onDownload}
+            />
+          )}
         </div>
       </CardContent>
     </Card>
