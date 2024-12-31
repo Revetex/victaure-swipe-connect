@@ -213,7 +213,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing, isEx
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsEditing(!isEditing)}
+          onClick={() => setIsExpanded(true)}
           className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
         >
           <Maximize2 className="h-4 w-4" />
