@@ -4,6 +4,7 @@ import { pdfColors } from './colors';
 import type { UserProfile } from '@/types/profile';
 
 export const generateBusinessCardPDF = async (profile: UserProfile) => {
+  // Standard business card size in mm (85.6 x 53.98)
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
@@ -13,6 +14,13 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
   // Background
   doc.setFillColor(pdfColors.background);
   doc.rect(0, 0, 85.6, 53.98, 'F');
+
+  // Add subtle gradient effect
+  for (let i = 0; i < 85.6; i += 0.5) {
+    doc.setFillColor(pdfColors.background);
+    doc.setGState(new doc.GState({ opacity: 0.02 }));
+    doc.rect(i, 0, 0.5, 53.98, 'F');
+  }
 
   // Circuit pattern with subtle effect
   doc.setDrawColor(pdfColors.circuit.lines);
@@ -24,55 +32,87 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
     doc.line(0, i, 85.6, i);
   }
 
-  // Logo
-  const logoImg = new Image();
-  logoImg.src = '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png';
-  doc.addImage(logoImg, 'PNG', 2, 2, 10, 10);
+  // Add decorative elements
+  doc.setDrawColor(pdfColors.primary);
+  doc.setLineWidth(0.5);
+  doc.line(5, 5, 80.6, 5);
+  doc.line(5, 48.98, 80.6, 48.98);
 
-  // Main Content
+  // Main Content Area
   doc.setTextColor(pdfColors.text.primary);
   doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
   doc.text(profile.full_name || '', 15, 15);
 
   doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
   doc.setTextColor(pdfColors.text.secondary);
-  let yPos = 25;
+  let yPos = 22;
 
+  // Role
   if (profile.role) {
     doc.text(profile.role, 15, yPos);
-    yPos += 7;
+    yPos += 6;
   }
 
+  // Company
   if (profile.company_name) {
     doc.text(profile.company_name, 15, yPos);
-    yPos += 7;
+    yPos += 6;
   }
 
   // Contact Information
-  doc.setFontSize(10);
-  if (profile.email) doc.text(profile.email, 15, yPos);
-  if (profile.phone) doc.text(profile.phone, 15, yPos + 5);
-  
+  doc.setFontSize(9);
+  doc.setTextColor(pdfColors.text.muted);
+
+  // Email
+  if (profile.email) {
+    doc.text(`Email: ${profile.email}`, 15, yPos);
+    yPos += 4;
+  }
+
+  // Phone
+  if (profile.phone) {
+    doc.text(`Tél: ${profile.phone}`, 15, yPos);
+    yPos += 4;
+  }
+
   // Location
-  if (profile.city) {
+  if (profile.city || profile.state || profile.country) {
     const location = [profile.city, profile.state, profile.country]
       .filter(Boolean)
       .join(', ');
-    doc.text(location, 15, yPos + 10);
+    doc.text(location, 15, yPos);
   }
 
   // QR Code
   try {
-    const qrDataUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrDataUrl, 'PNG', 65, 5, 15, 15);
+    const qrDataUrl = await QRCode.toDataURL(window.location.href, {
+      margin: 0,
+      width: 256,
+      color: {
+        dark: pdfColors.text.primary,
+        light: '#0000' // Transparent background
+      }
+    });
+    doc.addImage(qrDataUrl, 'PNG', 65, 15, 15, 15);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
 
-  // Footer
-  doc.setFontSize(8);
-  doc.setTextColor(pdfColors.text.muted);
-  doc.text('Créé sur victaure.com', 85.6/2, 50, { align: 'center' });
+  // Website
+  if (profile.website) {
+    doc.setFontSize(8);
+    doc.setTextColor(pdfColors.text.muted);
+    doc.text(profile.website, 65, 35, { align: 'left' });
+  }
 
-  doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '-') || 'professionnel'}.pdf`);
+  // Footer
+  doc.setFontSize(7);
+  doc.setTextColor(pdfColors.text.muted);
+  doc.text('Créé sur victaure.com', 85.6/2, 51, { align: 'center' });
+
+  // Save the PDF
+  const fileName = `carte-visite-${profile.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'professionnel'}.pdf`;
+  doc.save(fileName);
 };
