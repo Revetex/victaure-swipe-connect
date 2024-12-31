@@ -9,6 +9,7 @@ interface VCardMainInfoProps {
   setProfile: (profile: any) => void;
   setIsEditing: (isEditing: boolean) => void;
   isExpanded: boolean;
+  setIsExpanded: (isExpanded: boolean) => void;
 }
 
 export function VCardMainInfo({
@@ -16,7 +17,8 @@ export function VCardMainInfo({
   isEditing,
   setProfile,
   setIsEditing,
-  isExpanded
+  isExpanded,
+  setIsExpanded
 }: VCardMainInfoProps) {
   return (
     <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
@@ -26,6 +28,8 @@ export function VCardMainInfo({
           isEditing={isEditing}
           setProfile={setProfile}
           setIsEditing={setIsEditing}
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
         />
 
         {!isExpanded && (
