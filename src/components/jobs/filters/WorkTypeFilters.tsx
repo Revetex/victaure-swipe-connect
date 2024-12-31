@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { JobFilters } from "@/types/filters";
+import { JobFilters } from "../JobFilterUtils";
 import { contractTypes, experienceLevels } from "@/data/provinces";
 
 interface WorkTypeFiltersProps {

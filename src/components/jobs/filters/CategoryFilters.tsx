@@ -13,22 +13,27 @@ export const CategoryFilters = memo(function CategoryFilters({
   onFilterChange 
 }: CategoryFiltersProps) {
   const sortedCategories = useMemo(() => {
+    if (!missionCategories) return [];
+    
     if (filters.missionType === "company") {
-      return Object.keys(missionCategories.company).sort((a, b) => a.localeCompare(b));
+      return Object.keys(missionCategories.company || {}).sort((a, b) => a.localeCompare(b));
     } else if (filters.missionType === "individual") {
-      return Object.keys(missionCategories.individual).sort((a, b) => a.localeCompare(b));
+      return Object.keys(missionCategories.individual || {}).sort((a, b) => a.localeCompare(b));
     }
-    return Object.keys(missionCategories.company)
-      .concat(Object.keys(missionCategories.individual))
-      .sort((a, b) => a.localeCompare(b));
+    return Object.keys({
+      ...(missionCategories.company || {}),
+      ...(missionCategories.individual || {})
+    }).sort((a, b) => a.localeCompare(b));
   }, [filters.missionType]);
 
-  const subcategories = useMemo(() => 
-    filters.category !== "all" && filters.missionType !== "all" ? 
-      missionCategories[filters.missionType][filters.category]?.subcategories.sort((a, b) => a.localeCompare(b)) : 
-      [],
-    [filters.category, filters.missionType]
-  );
+  const subcategories = useMemo(() => {
+    if (!missionCategories || filters.category === "all" || filters.missionType === "all") {
+      return [];
+    }
+    
+    const categoryData = missionCategories[filters.missionType]?.[filters.category];
+    return categoryData?.subcategories?.sort((a, b) => a.localeCompare(b)) || [];
+  }, [filters.category, filters.missionType]);
 
   return (
     <div className="space-y-4">
@@ -73,7 +78,7 @@ export const CategoryFilters = memo(function CategoryFilters({
         </Select>
       </div>
 
-      {filters.category !== "all" && filters.missionType !== "all" && (
+      {filters.category !== "all" && filters.missionType !== "all" && subcategories.length > 0 && (
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
             Sous-catégorie
@@ -87,7 +92,7 @@ export const CategoryFilters = memo(function CategoryFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Toutes les sous-catégories</SelectItem>
-              {subcategories?.map((subcat) => (
+              {subcategories.map((subcat) => (
                 <SelectItem key={subcat} value={subcat}>
                   {subcat}
                 </SelectItem>
