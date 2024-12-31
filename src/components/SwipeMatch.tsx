@@ -114,7 +114,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
 
   return (
     <motion.div 
-      className="relative w-full max-w-md mx-auto"
+      className="relative w-full max-w-md mx-auto px-4 sm:px-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}

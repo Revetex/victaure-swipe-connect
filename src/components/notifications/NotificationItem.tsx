@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { formatTime } from "@/utils/dateUtils";
+import { motion } from "framer-motion";
 
 interface NotificationItemProps {
   id: string;
@@ -19,11 +20,14 @@ export function NotificationItem({
   onDelete,
 }: NotificationItemProps) {
   return (
-    <div
-      className={`p-3 rounded relative group ${
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className={`p-4 rounded-lg relative group transition-all duration-200 hover:scale-[1.02] ${
         read
-          ? "bg-muted"
-          : "bg-primary/10 border-l-2 border-primary"
+          ? "bg-muted/50"
+          : "bg-primary/10 border-l-2 border-primary shadow-sm"
       }`}
     >
       <button
@@ -34,12 +38,12 @@ export function NotificationItem({
         <X className="h-4 w-4 text-muted-foreground hover:text-destructive" />
       </button>
       <div className="flex justify-between items-start pr-6">
-        <h3 className="font-medium">{title}</h3>
+        <h3 className="font-medium text-sm md:text-base">{title}</h3>
         <span className="text-xs text-muted-foreground">
           {formatTime(created_at)}
         </span>
       </div>
-      <p className="text-sm text-muted-foreground mt-1">{message}</p>
-    </div>
+      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{message}</p>
+    </motion.div>
   );
 }
