@@ -42,7 +42,7 @@ export function DashboardLayout() {
             {/* Messages Section with Notes and Tasks */}
             {renderDashboardSection(
               <Messages />,
-              "col-span-1 xl:col-span-1 h-[600px]"
+              "col-span-1 xl:col-span-1 h-[600px] md:row-span-2"
             )}
 
             {/* SwipeJob Section */}
