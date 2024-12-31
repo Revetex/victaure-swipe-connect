@@ -67,8 +67,10 @@ export function VCardContent({
   };
 
   return (
-    <Card className="w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-xl bg-card/80 backdrop-blur-sm border-primary/10">
-      <CardContent className="p-6 relative">
+    <Card className={`w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-2xl transition-all duration-500
+      ${isExpanded ? 'scale-100 bg-gradient-to-br from-indigo-900/30 to-purple-900/30' : 'hover:scale-[1.02] bg-gradient-to-br from-indigo-500/10 to-purple-500/10'}
+      backdrop-blur-md border border-white/10`}>
+      <CardContent className={`p-6 relative transition-all duration-500 ${isExpanded ? 'min-h-[600px]' : ''}`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={isEditing ? "editing" : "viewing"}

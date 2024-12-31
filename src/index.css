@@ -96,4 +96,15 @@
   .sticky-note-orange {
     @apply bg-[#FEC6A1]/80 hover:bg-[#FEC6A1];
   }
+
+  .glass-card {
+    @apply relative overflow-hidden;
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300;
+    }
+    &:hover::before {
+      @apply opacity-100;
+    }
+  }
 }

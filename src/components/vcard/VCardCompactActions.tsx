@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download, Edit2, ChevronDown } from "lucide-react";
+import { Edit2, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface VCardCompactActionsProps {
@@ -19,7 +19,7 @@ export function VCardCompactActions({ onExpand, onEdit }: VCardCompactActionsPro
         variant="outline"
         size="sm"
         onClick={onExpand}
-        className="bg-white/50 hover:bg-white/80 dark:bg-gray-900/50 dark:hover:bg-gray-900/80 backdrop-blur-sm transition-all duration-300 group"
+        className="bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 group border-white/20"
       >
         <ChevronDown className="h-4 w-4 mr-2 group-hover:translate-y-0.5 transition-transform" />
         Voir plus
@@ -28,7 +28,7 @@ export function VCardCompactActions({ onExpand, onEdit }: VCardCompactActionsPro
         variant="outline"
         size="sm"
         onClick={onEdit}
-        className="bg-white/50 hover:bg-white/80 dark:bg-gray-900/50 dark:hover:bg-gray-900/80 backdrop-blur-sm transition-all duration-300"
+        className="bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
       >
         <Edit2 className="h-4 w-4 mr-2" />
         Éditer

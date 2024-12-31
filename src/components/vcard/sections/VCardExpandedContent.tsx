@@ -79,14 +79,14 @@ export function VCardExpandedContent({
       animate="visible"
       exit="exit"
       variants={containerVariants}
-      className="space-y-6 mt-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent hover:scrollbar-thumb-primary/20"
+      className="space-y-6 mt-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30"
     >
       {!isEditing && (
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsExpanded(false)}
-          className="absolute top-2 right-2 hover:bg-primary/5 transition-colors"
+          className="absolute top-2 right-2 hover:bg-white/10 transition-colors text-white/70 hover:text-white"
         >
           <X className="h-4 w-4" />
         </Button>
@@ -95,9 +95,7 @@ export function VCardExpandedContent({
       <div className="grid gap-6">
         <motion.div
           variants={itemVariants}
-          className={`glass-card p-6 rounded-xl backdrop-blur-sm ${
-            isEditing ? 'border border-primary/20 shadow-lg' : 'shadow-md'
-          } transition-all duration-300 hover:shadow-lg`}
+          className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <VCardContact
             profile={profile}
@@ -108,9 +106,7 @@ export function VCardExpandedContent({
 
         <motion.div
           variants={itemVariants}
-          className={`glass-card p-6 rounded-xl backdrop-blur-sm ${
-            isEditing ? 'border border-primary/20 shadow-lg' : 'shadow-md'
-          } transition-all duration-300 hover:shadow-lg`}
+          className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <VCardSkills
             profile={profile}
@@ -140,9 +136,7 @@ export function VCardExpandedContent({
 
         <motion.div
           variants={itemVariants}
-          className={`glass-card p-6 rounded-xl backdrop-blur-sm ${
-            isEditing ? 'border border-primary/20 shadow-lg' : 'shadow-md'
-          } transition-all duration-300 hover:shadow-lg`}
+          className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <VCardEducation
             profile={profile}
@@ -153,9 +147,7 @@ export function VCardExpandedContent({
 
         <motion.div
           variants={itemVariants}
-          className={`glass-card p-6 rounded-xl backdrop-blur-sm ${
-            isEditing ? 'border border-primary/20 shadow-lg' : 'shadow-md'
-          } transition-all duration-300 hover:shadow-lg`}
+          className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <VCardCertifications
             profile={profile}
