@@ -3,6 +3,7 @@ import { VCardContact } from "@/components/VCardContact";
 import { VCardSkills } from "@/components/VCardSkills";
 import { VCardEducation } from "@/components/VCardEducation";
 import { VCardCertifications } from "@/components/VCardCertifications";
+import { VCardExperiences } from "@/components/VCardExperiences";
 import { VCardSection } from "@/components/VCardSection";
 import { FileText } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,8 +35,28 @@ export function VCardExpandedGrid({
     }
   };
 
+  const handleAddSkill = () => {
+    if (newSkill && !profile.skills?.includes(newSkill)) {
+      setProfile({
+        ...profile,
+        skills: [...(profile.skills || []), newSkill],
+      });
+      setNewSkill("");
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setProfile({
+      ...profile,
+      skills: profile.skills?.filter(
+        (skill: string) => skill !== skillToRemove
+      ),
+    });
+  };
+
   return (
     <div className="grid gap-8 px-6">
+      {/* Contact and Skills Section */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
           <VCardContact
@@ -52,27 +73,13 @@ export function VCardExpandedGrid({
             setProfile={setProfile}
             newSkill={newSkill}
             setNewSkill={setNewSkill}
-            handleAddSkill={() => {
-              if (newSkill && !profile.skills?.includes(newSkill)) {
-                setProfile({
-                  ...profile,
-                  skills: [...(profile.skills || []), newSkill],
-                });
-                setNewSkill("");
-              }
-            }}
-            handleRemoveSkill={(skillToRemove: string) => {
-              setProfile({
-                ...profile,
-                skills: profile.skills?.filter(
-                  (skill: string) => skill !== skillToRemove
-                ),
-              });
-            }}
+            handleAddSkill={handleAddSkill}
+            handleRemoveSkill={handleRemoveSkill}
           />
         </div>
       </motion.div>
 
+      {/* Description Section */}
       <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
         <VCardSection
           title="Description"
@@ -93,6 +100,16 @@ export function VCardExpandedGrid({
         </VCardSection>
       </motion.div>
 
+      {/* Experiences Section */}
+      <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
+        <VCardExperiences
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
+      </motion.div>
+
+      {/* Education Section */}
       <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
         <VCardEducation
           profile={profile}
@@ -101,6 +118,7 @@ export function VCardExpandedGrid({
         />
       </motion.div>
 
+      {/* Certifications Section */}
       <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
         <VCardCertifications
           profile={profile}
