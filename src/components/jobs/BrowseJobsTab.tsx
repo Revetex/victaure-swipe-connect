@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
 import { JobFilters } from "./JobFilterUtils";
 import { JobFiltersPanel } from "./JobFiltersPanel";
 import { SwipeMatch } from "../SwipeMatch";
@@ -21,7 +19,7 @@ export function BrowseJobsTab({
   openLocation, 
   setOpenLocation 
 }: BrowseJobsTabProps) {
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   return (
     <AnimatePresence>
@@ -31,34 +29,12 @@ export function BrowseJobsTab({
         exit={{ opacity: 0, y: -20 }}
         className="space-y-6"
       >
-        <Button 
-          variant="outline" 
-          onClick={() => setShowFilters(!showFilters)}
-          className="w-full justify-between hover:bg-primary/5 transition-colors duration-200"
-        >
-          <span className="flex items-center gap-2">
-            <Filter className="h-4 w-4" />
-            Filtres
-          </span>
-        </Button>
-        
-        <AnimatePresence>
-          {showFilters && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden rounded-lg border bg-card shadow-sm"
-            >
-              <JobFiltersPanel 
-                filters={filters}
-                onFilterChange={onFilterChange}
-                openLocation={openLocation}
-                setOpenLocation={setOpenLocation}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <JobFiltersPanel 
+          filters={filters}
+          onFilterChange={onFilterChange}
+          openLocation={openLocation}
+          setOpenLocation={setOpenLocation}
+        />
         
         <div className="flex justify-center mt-6">
           <SwipeMatch 
