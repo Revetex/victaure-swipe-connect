@@ -15,9 +15,9 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
   doc.setFillColor(pdfColors.background);
   doc.rect(0, 0, 85.6, 53.98, 'F');
 
-  // Add subtle gradient effect using multiple rectangles with hex colors
+  // Add gradient effect using multiple rectangles
   for (let i = 0; i < 85.6; i += 2) {
-    const shade = Math.floor((i / 85.6) * 20); // 0-20% variation
+    const shade = Math.floor((i / 85.6) * 20);
     doc.setFillColor(`#${(parseInt(pdfColors.background.slice(1), 16) + shade).toString(16).padStart(6, '0')}`);
     doc.rect(i, 0, 2, 53.98, 'F');
   }
@@ -91,8 +91,8 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
       margin: 0,
       width: 256,
       color: {
-        dark: pdfColors.text.primary.slice(1), // Remove # from hex
-        light: '#0000' // Transparent background
+        dark: pdfColors.text.primary.slice(1),
+        light: '#0000'
       }
     });
     doc.addImage(qrDataUrl, 'PNG', 65, 15, 15, 15);
