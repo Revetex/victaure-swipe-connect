@@ -19,13 +19,14 @@ export function Navigation() {
       try {
         setIsLoading(true);
         
-        // First try to recover the session from storage
+        // First clear any potentially invalid session data
+        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
+        
+        // Then try to recover the session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
-          // Clear any invalid session data
-          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
           navigate("/auth");
           return;
         }
@@ -41,16 +42,12 @@ export function Navigation() {
         
         if (userError || !user) {
           console.error("User verification error:", userError);
-          // Clear any invalid session data
-          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
           await supabase.auth.signOut();
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
-        // Clear any invalid session data
-        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       } finally {
         setIsLoading(false);
@@ -63,7 +60,6 @@ export function Navigation() {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_OUT' || !session) {
-        // Clear any stored auth data
         localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       }
@@ -76,9 +72,14 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      // Clear any stored auth data before signing out
+      // Clear session data first
       localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
-      const { error } = await supabase.auth.signOut();
+      
+      // Then attempt to sign out
+      const { error } = await supabase.auth.signOut({
+        scope: 'local'
+      });
+      
       if (error) throw error;
       
       navigate("/auth");
@@ -86,11 +87,13 @@ export function Navigation() {
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Erreur lors de la déconnexion");
+      // Force navigation to auth page even if sign out failed
+      navigate("/auth");
     }
   };
 
   if (isLoading) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   const NavLinks = () => (

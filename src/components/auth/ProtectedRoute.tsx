@@ -16,13 +16,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       try {
         setIsLoading(true);
         
-        // First try to recover the session from storage
+        // Clear any potentially invalid session data first
+        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
+        
+        // Then try to recover the session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
-          // Clear any invalid session data
-          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
           toast.error("Erreur d'authentification");
           navigate("/auth");
           return;
@@ -40,16 +41,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         
         if (userError || !user) {
           console.error("User verification error:", userError);
-          // Clear any invalid session data
-          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
-          await supabase.auth.signOut();
+          await supabase.auth.signOut({ scope: 'local' });
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth check error:", error);
-        // Clear any invalid session data
-        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       } finally {
         setIsLoading(false);
@@ -60,7 +57,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
-        // Clear any stored auth data
         localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       }
@@ -72,7 +68,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }, [navigate]);
 
   if (isLoading) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   return <>{children}</>;
