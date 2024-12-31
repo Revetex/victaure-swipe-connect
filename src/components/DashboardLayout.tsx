@@ -46,7 +46,7 @@ export function DashboardLayout() {
                   controls
                   loop
                 >
-                  <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
+                  <source src="VictaurePub.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>,
