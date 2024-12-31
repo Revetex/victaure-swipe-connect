@@ -52,22 +52,25 @@ export function VCardMainContent({
           transition={{ delay: 0.3 }}
           className="relative shrink-0"
         >
-          <div className="absolute inset-0 bg-circuit-pattern opacity-30" />
-          <div className="relative p-4 bg-victaure-metal/40 rounded-lg backdrop-blur-sm border border-victaure-blue/30 shadow-lg">
+          <div className="absolute inset-0 bg-circuit-pattern opacity-20" />
+          <div className="relative p-3 bg-victaure-metal/30 rounded-lg backdrop-blur-sm border border-victaure-blue/20 shadow-lg">
             <div className="absolute -inset-px bg-gradient-to-tr from-victaure-blue/20 to-transparent rounded-lg" />
             <div className="relative">
-              <div className="absolute -inset-4 bg-circuit-pattern opacity-20" />
-              <div className="relative bg-black/40 p-2 rounded">
+              <div className="absolute -inset-3 bg-circuit-pattern opacity-10" />
+              <div className="relative bg-black/30 p-2 rounded">
                 <QRCodeSVG
                   value={window.location.href}
-                  size={80}
+                  size={70}
                   level="H"
                   includeMargin={false}
                   className="rounded opacity-90"
                 />
+                <div className="absolute inset-0 bg-gradient-to-tr from-victaure-blue/5 to-transparent" />
               </div>
-              <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-victaure-blue/30 rounded-full animate-pulse" />
-              <div className="absolute -top-2 -left-2 w-3 h-3 bg-victaure-blue/30 rounded-full animate-pulse" />
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-victaure-blue/40 rounded-full animate-pulse" />
+              <div className="absolute -top-1 -left-1 w-2 h-2 bg-victaure-blue/40 rounded-full animate-pulse" />
+              <div className="absolute top-1/2 -right-1 w-1.5 h-1.5 bg-victaure-blue/40 rounded-full animate-pulse delay-100" />
+              <div className="absolute top-1/2 -left-1 w-1.5 h-1.5 bg-victaure-blue/40 rounded-full animate-pulse delay-100" />
             </div>
           </div>
         </motion.div>

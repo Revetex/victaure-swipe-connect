@@ -48,18 +48,21 @@ export function VCardContent({
   }, [isEditing]);
 
   return (
-    <Card className={`w-full overflow-hidden border-none shadow-lg transition-all duration-300 ${
-      !isExpanded ? 'bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm' : 
+    <Card className={`w-full max-w-[85.6mm] mx-auto overflow-hidden border-none shadow-xl transition-all duration-300 ${
+      !isExpanded ? 'h-[53.98mm] bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm' : 
       'bg-white dark:bg-gray-800'
     }`}>
       <CardContent className={`p-6 ${!isExpanded && 'relative'}`}>
         {!isExpanded && (
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-circuit-pattern opacity-10" />
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
-            <div className="absolute inset-0 border-2 border-white/20 rounded-lg" />
-            <div className="absolute top-0 left-1/4 w-20 h-1 bg-victaure-blue/30 rounded-full blur-sm" />
-            <div className="absolute bottom-0 right-1/4 w-20 h-1 bg-victaure-blue/30 rounded-full blur-sm" />
+            <div className="absolute inset-0 bg-circuit-pattern opacity-5" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-70" />
+            <div className="absolute inset-0 border border-white/30 rounded-lg" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-victaure-blue/5 to-transparent opacity-50" />
+            <div className="absolute top-0 left-1/4 w-32 h-[2px] bg-victaure-blue/20 rounded-full blur-sm" />
+            <div className="absolute bottom-0 right-1/4 w-32 h-[2px] bg-victaure-blue/20 rounded-full blur-sm" />
+            <div className="absolute -left-10 top-1/2 w-20 h-20 bg-victaure-blue/10 rounded-full blur-2xl" />
+            <div className="absolute -right-10 top-1/2 w-20 h-20 bg-victaure-blue/10 rounded-full blur-2xl" />
           </div>
         )}
         <div className="space-y-6">
