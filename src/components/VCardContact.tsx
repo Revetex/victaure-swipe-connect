@@ -10,7 +10,7 @@ interface VCardContactProps {
 
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
   const handleInputChange = (key: string, value: string) => {
-    setProfile({ ...profile, [key]: value });
+    setProfile((prev: any) => ({ ...prev, [key]: value }));
   };
 
   const contactFields = [

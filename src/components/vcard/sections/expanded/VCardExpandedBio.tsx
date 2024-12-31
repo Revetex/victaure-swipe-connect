@@ -10,7 +10,7 @@ interface VCardExpandedBioProps {
 
 export function VCardExpandedBio({ profile, isEditing, setProfile }: VCardExpandedBioProps) {
   const handleBioChange = (value: string) => {
-    setProfile({ ...profile, bio: value });
+    setProfile((prev: any) => ({ ...prev, bio: value }));
   };
 
   return (

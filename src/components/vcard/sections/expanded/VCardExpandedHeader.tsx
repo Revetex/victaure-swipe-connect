@@ -12,7 +12,7 @@ interface VCardExpandedHeaderProps {
 
 export function VCardExpandedHeader({ profile, isEditing, setProfile }: VCardExpandedHeaderProps) {
   const handleInputChange = (field: string, value: string) => {
-    setProfile({ ...profile, [field]: value });
+    setProfile((prev: any) => ({ ...prev, [field]: value }));
   };
 
   return (
