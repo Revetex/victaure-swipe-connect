@@ -21,7 +21,7 @@ export function useJobForm({ initialData, onSuccess }: UseJobFormProps) {
       category: initialData.category,
       subcategory: initialData.subcategory || "",
       contract_type: initialData.contract_type,
-      experience_level: initialData.experience_level,
+      experience_level: initialData.experience_level as "Entry-Level" | "Mid-Level" | "Senior" | "Expert" | "Lead",
     } : {
       title: "",
       description: "",
@@ -30,7 +30,7 @@ export function useJobForm({ initialData, onSuccess }: UseJobFormProps) {
       category: "",
       subcategory: "",
       contract_type: "",
-      experience_level: "",
+      experience_level: "Mid-Level",
     },
   });
 
