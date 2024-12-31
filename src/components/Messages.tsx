@@ -7,7 +7,8 @@ import { Settings } from "./Settings";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Bell, Settings2, ListTodo, StickyNote } from "lucide-react";
-import { TodoList } from "./TodoList";
+import { TodoSection } from "./todo/TodoSection";
+import { NotesSection } from "./todo/NotesSection";
 
 interface Notification {
   id: string;
@@ -61,7 +62,6 @@ export function Messages() {
     };
   }, []);
 
-  // Mark notifications as read when notifications tab is opened
   useEffect(() => {
     const markNotificationsAsRead = async () => {
       if (activeTab === "notifications" && unreadNotificationsCount > 0) {
@@ -77,7 +77,6 @@ export function Messages() {
 
           if (error) throw error;
 
-          // Update local state
           setNotifications(prev => prev.map(n => ({ ...n, read: true })));
         } catch (error) {
           console.error('Error marking notifications as read:', error);
@@ -134,13 +133,13 @@ export function Messages() {
 
           <TabsContent value="tasks" className="h-full">
             <div className="p-4">
-              <TodoList />
+              <TodoSection />
             </div>
           </TabsContent>
 
           <TabsContent value="notes" className="h-full">
             <div className="p-4">
-              <TodoList />
+              <NotesSection />
             </div>
           </TabsContent>
 
