@@ -27,8 +27,8 @@ export function VCardMainContent({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-5">
+        <div className="flex items-start justify-between gap-5">
           <div className="flex-1">
             <VCardHeader
               profile={profile}
@@ -47,10 +47,10 @@ export function VCardMainContent({
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="p-1.5 glass-card group hover:scale-105 transition-transform duration-300">
+              <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
                 <QRCodeSVG
                   value={window.location.href}
-                  size={64}
+                  size={72}
                   level="H"
                   includeMargin={false}
                   className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
