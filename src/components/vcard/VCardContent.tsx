@@ -67,10 +67,13 @@ export function VCardContent({
   };
 
   return (
-    <Card className={`w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-2xl transition-all duration-500
-      ${isExpanded ? 'scale-100 bg-gradient-to-br from-indigo-900/30 to-purple-900/30' : 'hover:scale-[1.02] bg-gradient-to-br from-indigo-500/10 to-purple-500/10'}
-      backdrop-blur-md border border-white/10`}>
-      <CardContent className={`p-6 relative transition-all duration-500 ${isExpanded ? 'min-h-[600px]' : ''}`}>
+    <Card className={`transition-all duration-500 ease-out
+      ${isExpanded ? 'fixed inset-4 z-50 m-auto max-h-[90vh] overflow-hidden' : 'w-full max-w-xl mx-auto hover:scale-[1.02]'}
+      glass-card backdrop-blur-md border border-white/10 shadow-2xl
+      bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10
+      hover:from-indigo-500/20 hover:via-purple-500/20 hover:to-pink-500/20`}>
+      <CardContent className={`p-6 relative transition-all duration-500 h-full
+        ${isExpanded ? 'overflow-hidden' : ''}`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={isEditing ? "editing" : "viewing"}
@@ -78,7 +81,7 @@ export function VCardContent({
             animate="visible"
             exit="exit"
             variants={containerVariants}
-            className="space-y-6"
+            className="space-y-6 h-full"
           >
             <VCardMainInfo
               profile={tempProfile}

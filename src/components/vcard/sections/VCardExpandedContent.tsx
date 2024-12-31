@@ -41,10 +41,10 @@ export function VCardExpandedContent({
   if (!isExpanded) return null;
 
   const containerVariants = {
-    hidden: { opacity: 0, height: 0 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: { 
       opacity: 1, 
-      height: "auto",
+      scale: 1,
       transition: {
         duration: 0.4,
         ease: "easeInOut",
@@ -53,7 +53,7 @@ export function VCardExpandedContent({
     },
     exit: { 
       opacity: 0, 
-      height: 0,
+      scale: 0.95,
       transition: {
         duration: 0.3,
         ease: "easeInOut"
@@ -62,10 +62,10 @@ export function VCardExpandedContent({
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, x: 20 },
+    hidden: { opacity: 0, y: 20 },
     visible: { 
       opacity: 1, 
-      x: 0,
+      y: 0,
       transition: {
         duration: 0.3,
         ease: "easeOut"
@@ -79,7 +79,7 @@ export function VCardExpandedContent({
       animate="visible"
       exit="exit"
       variants={containerVariants}
-      className="space-y-6 mt-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30"
+      className="absolute inset-0 bg-gradient-to-br from-indigo-900/30 via-purple-900/30 to-pink-900/30 backdrop-blur-md overflow-auto"
     >
       {!isEditing && (
         <Button
@@ -92,47 +92,49 @@ export function VCardExpandedContent({
         </Button>
       )}
 
-      <div className="grid gap-6">
-        <motion.div
-          variants={itemVariants}
-          className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          <VCardContact
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        </motion.div>
+      <div className="grid gap-6 p-6 h-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            variants={itemVariants}
+            className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <VCardContact
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
+            />
+          </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          <VCardSkills
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
-            handleAddSkill={() => {
-              if (newSkill && !profile.skills?.includes(newSkill)) {
+          <motion.div
+            variants={itemVariants}
+            className="glass-card p-6 rounded-xl backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <VCardSkills
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
+              newSkill={newSkill}
+              setNewSkill={setNewSkill}
+              handleAddSkill={() => {
+                if (newSkill && !profile.skills?.includes(newSkill)) {
+                  setProfile({
+                    ...profile,
+                    skills: [...(profile.skills || []), newSkill],
+                  });
+                  setNewSkill("");
+                }
+              }}
+              handleRemoveSkill={(skillToRemove: string) => {
                 setProfile({
                   ...profile,
-                  skills: [...(profile.skills || []), newSkill],
+                  skills: profile.skills?.filter(
+                    (skill: string) => skill !== skillToRemove
+                  ),
                 });
-                setNewSkill("");
-              }
-            }}
-            handleRemoveSkill={(skillToRemove: string) => {
-              setProfile({
-                ...profile,
-                skills: profile.skills?.filter(
-                  (skill: string) => skill !== skillToRemove
-                ),
-              });
-            }}
-          />
-        </motion.div>
+              }}
+            />
+          </motion.div>
+        </div>
 
         <motion.div
           variants={itemVariants}
@@ -155,17 +157,17 @@ export function VCardExpandedContent({
             setProfile={setProfile}
           />
         </motion.div>
-      </div>
 
-      <VCardActions
-        isEditing={isEditing}
-        onShare={onShare}
-        onDownload={onDownload}
-        onDownloadPDF={onDownloadPDF}
-        onCopyLink={onCopyLink}
-        onSave={onSave}
-        onApplyChanges={onApplyChanges}
-      />
+        <VCardActions
+          isEditing={isEditing}
+          onShare={onShare}
+          onDownload={onDownload}
+          onDownloadPDF={onDownloadPDF}
+          onCopyLink={onCopyLink}
+          onSave={onSave}
+          onApplyChanges={onApplyChanges}
+        />
+      </div>
     </motion.div>
   );
 }
