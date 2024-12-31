@@ -1,19 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { Edit2, ChevronDown, Download, FileText } from "lucide-react";
+import { Edit2, ChevronDown, FileText, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface VCardCompactActionsProps {
   onExpand: () => void;
   onEdit: () => void;
-  onDownload: () => void;
+  onShare: () => void;
   onDownloadPDF: () => void;
   onDownloadBusinessPDF: () => void;
 }
 
 export function VCardCompactActions({ 
   onExpand, 
-  onEdit, 
-  onDownload,
+  onEdit,
+  onShare,
   onDownloadPDF,
   onDownloadBusinessPDF
 }: VCardCompactActionsProps) {
@@ -48,11 +48,11 @@ export function VCardCompactActions({
         <Button
           variant="outline"
           size="sm"
-          onClick={onDownload}
+          onClick={onShare}
           className="flex-1 bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
         >
-          <Download className="h-4 w-4 mr-2" />
-          VCard
+          <Share2 className="h-4 w-4 mr-2" />
+          Partager
         </Button>
         <Button
           variant="outline"

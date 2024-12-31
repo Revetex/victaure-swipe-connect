@@ -109,7 +109,7 @@ export function VCardContent({
             <VCardCompactActions
               onExpand={() => setIsExpanded(true)}
               onEdit={() => setIsEditing(true)}
-              onDownload={onDownload}
+              onShare={onShare}
               onDownloadPDF={onDownloadPDF}
               onDownloadBusinessPDF={onDownloadBusinessPDF}
             />
