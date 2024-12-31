@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VCardCreationForm } from "@/components/VCardCreationForm";
-import { useToast } from "@/components/ui/use-toast";
 import { toast } from "sonner";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [hasProfile, setHasProfile] = useState<boolean | null>(null);
-  const { toast: uiToast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -32,11 +30,6 @@ export default function Dashboard() {
 
       if (error) {
         console.error("Error checking profile:", error);
-        uiToast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Impossible de vérifier votre profil",
-        });
         return;
       }
 
@@ -58,7 +51,7 @@ export default function Dashboard() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, uiToast]);
+  }, [navigate]);
 
   if (hasProfile === null) {
     return (

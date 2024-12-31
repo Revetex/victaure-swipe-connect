@@ -94,8 +94,8 @@ export function ConversationView({
       </header>
 
       <main className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full px-4">
-          <div className="max-w-3xl mx-auto py-4 space-y-4">
+        <ScrollArea className="h-full">
+          <div className="max-w-3xl mx-auto py-4 space-y-4 px-4">
             {messages.map((message, index) => (
               <ChatMessage
                 key={message.id}
