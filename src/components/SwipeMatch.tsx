@@ -60,9 +60,11 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   };
 
   const handleSwipeWithMatch = async (direction: "left" | "right") => {
-    setIsAnimating(true);
+    if (isAnimating) return;
     
+    setIsAnimating(true);
     const targetX = direction === "left" ? -200 : 200;
+    
     await animate(x, targetX, {
       type: "spring",
       stiffness: 300,
@@ -73,8 +75,8 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     if (direction === "right" && jobs[currentIndex]) {
       await onMatchSuccess(jobs[currentIndex].id);
     }
-    await handleSwipe(direction);
     
+    await handleSwipe(direction);
     x.set(0);
     setSwipeDirection(null);
     setIsAnimating(false);
