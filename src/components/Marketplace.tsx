@@ -5,9 +5,12 @@ import { missionCategories, Job } from "@/types/job";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
+import { Button } from "./ui/button";
+import { Filter } from "lucide-react";
 
 export function Marketplace() {
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
+  const [showFilters, setShowFilters] = useState(true);
 
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["jobs", filters],
@@ -98,11 +101,23 @@ export function Marketplace() {
   return (
     <section className="py-8 sm:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4">
+        <div className="mb-4 lg:hidden">
+          <Button
+            variant="outline"
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+          </Button>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
-          <JobFilters
-            filters={filters}
-            onFilterChange={handleFilterChange}
-          />
+          <div className={`${!showFilters && "hidden lg:block"}`}>
+            <JobFilters
+              filters={filters}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
           <JobList jobs={jobs} />
         </div>
       </div>
