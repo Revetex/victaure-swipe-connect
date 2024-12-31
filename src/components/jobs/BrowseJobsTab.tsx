@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Filter, Plus } from "lucide-react";
-import { JobFilters, defaultFilters } from "./JobFilterUtils";
+import { JobFilters } from "./JobFilterUtils";
 import { JobFiltersPanel } from "./JobFiltersPanel";
 import { SwipeMatch } from "../SwipeMatch";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,17 +29,23 @@ export function BrowseJobsTab({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
+        className="space-y-6"
       >
         <Button 
           variant="outline" 
           onClick={() => setShowFilters(!showFilters)}
-          className="w-full justify-between"
+          className="w-full justify-between hover:bg-primary/5 transition-colors duration-200"
         >
           <span className="flex items-center gap-2">
             <Filter className="h-4 w-4" />
             {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
           </span>
-          <Plus className={`h-4 w-4 transition-transform duration-200 ${showFilters ? 'rotate-45' : ''}`} />
+          <motion.div
+            animate={{ rotate: showFilters ? 45 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Plus className="h-4 w-4" />
+          </motion.div>
         </Button>
         
         <AnimatePresence>
@@ -48,7 +54,7 @@ export function BrowseJobsTab({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
+              className="overflow-hidden rounded-lg border bg-card shadow-sm"
             >
               <JobFiltersPanel 
                 filters={filters}

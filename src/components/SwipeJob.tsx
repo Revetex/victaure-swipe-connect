@@ -2,7 +2,7 @@ import { useState } from "react";
 import { JobFilters, defaultFilters } from "./jobs/JobFilterUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Filter } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { BrowseJobsTab } from "./jobs/BrowseJobsTab";
 import { MyJobsTab } from "./jobs/MyJobsTab";
@@ -22,16 +22,16 @@ export function SwipeJob() {
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="glass-card p-4 space-y-4"
+      className="glass-card p-4 space-y-4 rounded-lg shadow-lg bg-background/95 backdrop-blur-sm"
     >
       <div className="flex items-center justify-between flex-wrap gap-2">
         <motion.h2 
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          className="text-2xl font-bold text-victaure-blue"
+          className="text-2xl font-bold text-foreground"
         >
           Offres disponibles
         </motion.h2>
@@ -44,29 +44,31 @@ export function SwipeJob() {
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="browse" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="browse" className="flex items-center gap-2 data-[state=active]:bg-primary/20">
             <Search className="h-4 w-4" />
             Parcourir les offres
           </TabsTrigger>
-          <TabsTrigger value="my-jobs" className="flex items-center gap-2">
+          <TabsTrigger value="my-jobs" className="flex items-center gap-2 data-[state=active]:bg-primary/20">
             <Filter className="h-4 w-4" />
             Mes annonces
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="browse" className="space-y-4">
-          <BrowseJobsTab 
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            openLocation={openLocation}
-            setOpenLocation={setOpenLocation}
-          />
-        </TabsContent>
+        <AnimatePresence mode="wait">
+          <TabsContent value="browse" className="space-y-4">
+            <BrowseJobsTab 
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              openLocation={openLocation}
+              setOpenLocation={setOpenLocation}
+            />
+          </TabsContent>
 
-        <TabsContent value="my-jobs">
-          <MyJobsTab />
-        </TabsContent>
+          <TabsContent value="my-jobs">
+            <MyJobsTab />
+          </TabsContent>
+        </AnimatePresence>
       </Tabs>
     </motion.div>
   );
