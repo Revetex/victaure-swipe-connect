@@ -114,6 +114,10 @@ export default {
       backgroundImage: {
         'dashboard-pattern': "url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png')",
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'circuit-pattern': `
+          linear-gradient(to right, rgba(30, 174, 219, 0.1) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(30, 174, 219, 0.1) 1px, transparent 1px)
+        `,
       },
       backdropBlur: {
         xs: '2px',

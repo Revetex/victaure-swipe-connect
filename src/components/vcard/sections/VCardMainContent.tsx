@@ -45,21 +45,30 @@ export function VCardMainContent({
         </motion.div>
       </div>
 
-      {!isEditing && (
+      {!isEditing && !isExpanded && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="flex-shrink-0"
+          className="relative shrink-0"
         >
-          <div className="p-4 bg-white rounded-lg shadow-md dark:bg-gray-700">
-            <QRCodeSVG
-              value={window.location.href}
-              size={120}
-              level="H"
-              includeMargin={true}
-              className="rounded-lg"
-            />
+          <div className="absolute inset-0 bg-circuit-pattern opacity-30" />
+          <div className="relative p-4 bg-victaure-metal/40 rounded-lg backdrop-blur-sm border border-victaure-blue/30 shadow-lg">
+            <div className="absolute -inset-px bg-gradient-to-tr from-victaure-blue/20 to-transparent rounded-lg" />
+            <div className="relative">
+              <div className="absolute -inset-4 bg-circuit-pattern opacity-20" />
+              <div className="relative bg-black/40 p-2 rounded">
+                <QRCodeSVG
+                  value={window.location.href}
+                  size={80}
+                  level="H"
+                  includeMargin={false}
+                  className="rounded opacity-90"
+                />
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-victaure-blue/30 rounded-full animate-pulse" />
+              <div className="absolute -top-2 -left-2 w-3 h-3 bg-victaure-blue/30 rounded-full animate-pulse" />
+            </div>
           </div>
         </motion.div>
       )}

@@ -55,8 +55,11 @@ export function VCardContent({
       <CardContent className={`p-6 ${!isExpanded && 'relative'}`}>
         {!isExpanded && (
           <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-circuit-pattern opacity-10" />
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
             <div className="absolute inset-0 border-2 border-white/20 rounded-lg" />
+            <div className="absolute top-0 left-1/4 w-20 h-1 bg-victaure-blue/30 rounded-full blur-sm" />
+            <div className="absolute bottom-0 right-1/4 w-20 h-1 bg-victaure-blue/30 rounded-full blur-sm" />
           </div>
         )}
         <div className="space-y-6">
