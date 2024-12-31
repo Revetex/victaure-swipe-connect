@@ -5,6 +5,7 @@ import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
 import { SwipeControls } from "./jobs/swipe/SwipeControls";
 import { useSwipeJobs } from "./jobs/swipe/useSwipeJobs";
+import { toast } from "sonner";
 
 interface SwipeMatchProps {
   filters: JobFilters;
@@ -71,10 +72,15 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     });
 
     if (direction === "right" && jobs[currentIndex]) {
-      await onMatchSuccess(jobs[currentIndex].id);
+      try {
+        await onMatchSuccess(jobs[currentIndex].id);
+        toast.success("Match créé avec succès !");
+      } catch (error) {
+        toast.error("Une erreur est survenue lors du match");
+      }
     }
-    await handleSwipe(direction);
     
+    await handleSwipe(direction);
     x.set(0);
     setSwipeDirection(null);
     setIsAnimating(false);
