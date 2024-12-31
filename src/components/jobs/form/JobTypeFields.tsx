@@ -12,14 +12,33 @@ const experienceLevels = [
   "Expert"
 ];
 
-const contractTypes = [
-  "Full-time",
-  "Part-time",
-  "Contract",
-  "One-time",
-  "Temporary",
-  "Internship"
-];
+const contractTypes = {
+  company: [
+    "Full-time",
+    "Part-time",
+    "Contract",
+    "Temporary",
+    "Internship"
+  ],
+  individual: [
+    "One-time",
+    "Fixed-duration",
+    "Project-based"
+  ]
+};
+
+const paymentSchedules = {
+  company: [
+    "Monthly",
+    "Bi-weekly",
+    "Weekly"
+  ],
+  individual: [
+    "one_time",
+    "milestone",
+    "hourly"
+  ]
+};
 
 const remoteTypes = [
   "On-site",
@@ -27,25 +46,19 @@ const remoteTypes = [
   "Hybrid"
 ];
 
-const paymentTypes = [
-  "Hourly",
-  "Fixed-price",
-  "Monthly",
-  "Project-based"
-];
-
 export function JobTypeFields() {
-  const { control } = useFormContext();
+  const { control, watch } = useFormContext();
+  const missionType = watch("mission_type");
 
   return (
     <div className="space-y-6">
       <FormField
-        name="job_type"
+        name="mission_type"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Type de mission</FormLabel>
             <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value || "Contract"}>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "company"}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez le type de mission" />
                 </SelectTrigger>
@@ -66,12 +79,12 @@ export function JobTypeFields() {
           <FormItem>
             <FormLabel>Type de contrat</FormLabel>
             <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value || "One-time"}>
+              <Select onValueChange={field.onChange} defaultValue={field.value || (missionType === "individual" ? "One-time" : "Full-time")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez le type de contrat" />
                 </SelectTrigger>
                 <SelectContent>
-                  {contractTypes.map((type) => (
+                  {(missionType === "individual" ? contractTypes.individual : contractTypes.company).map((type) => (
                     <SelectItem key={type} value={type}>
                       {type}
                     </SelectItem>
@@ -85,19 +98,24 @@ export function JobTypeFields() {
       />
 
       <FormField
-        name="payment_type"
+        name="payment_schedule"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Type de paiement</FormLabel>
             <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value || "Fixed-price"}>
+              <Select 
+                onValueChange={field.onChange} 
+                defaultValue={field.value || (missionType === "individual" ? "one_time" : "Monthly")}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez le type de paiement" />
                 </SelectTrigger>
                 <SelectContent>
-                  {paymentTypes.map((type) => (
+                  {(missionType === "individual" ? paymentSchedules.individual : paymentSchedules.company).map((type) => (
                     <SelectItem key={type} value={type}>
-                      {type === "Fixed-price" ? "Paiement unique" : type}
+                      {type === "one_time" ? "Paiement unique" : 
+                       type === "milestone" ? "Par étapes" :
+                       type === "hourly" ? "Taux horaire" : type}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -108,29 +126,31 @@ export function JobTypeFields() {
         )}
       />
 
-      <FormField
-        name="experience_level"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Niveau d'expérience requis</FormLabel>
-            <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value || "Mid-Level"}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
-                </SelectTrigger>
-                <SelectContent>
-                  {experienceLevels.map((level) => (
-                    <SelectItem key={level} value={level}>
-                      {level}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {missionType === "company" && (
+        <FormField
+          name="experience_level"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Niveau d'expérience requis</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value || "Mid-Level"}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {experienceLevels.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
 
       <FormField
         name="remote_type"

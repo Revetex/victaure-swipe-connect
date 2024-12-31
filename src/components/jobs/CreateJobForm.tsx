@@ -16,13 +16,16 @@ import { toast } from "sonner";
 const jobFormSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
   description: z.string().min(1, "La description est requise"),
-  budget: z.string().transform((val) => Number(val)), // Transform string to number
+  budget: z.string().transform((val) => Number(val)),
   location: z.string().min(1, "La localisation est requise"),
   category: z.string().min(1, "La catégorie est requise"),
   subcategory: z.string().optional(),
+  mission_type: z.enum(["company", "individual"]).default("company"),
   contract_type: z.string().min(1, "Le type de contrat est requis"),
-  experience_level: z.string().min(1, "Le niveau d'expérience est requis"),
+  experience_level: z.string().optional(),
   remote_type: z.string().min(1, "Le type de travail est requis"),
+  payment_schedule: z.string().min(1, "Le type de paiement est requis"),
+  is_urgent: z.boolean().default(false),
   required_skills: z.array(z.string()).optional(),
   preferred_skills: z.array(z.string()).optional(),
   latitude: z.number().optional(),
@@ -38,27 +41,24 @@ const jobFormSchema = z.object({
   benefits: z.array(z.string()).optional(),
   responsibilities: z.array(z.string()).optional(),
   qualifications: z.array(z.string()).optional(),
-  job_type: z.string().min(1, "Le type de mission est requis"),
-  payment_type: z.string().min(1, "Le type de paiement est requis"),
-  is_urgent: z.boolean().default(false),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
 
 const defaultValues: Partial<JobFormValues> = {
-  contract_type: "One-time",
+  mission_type: "company",
+  contract_type: "Full-time",
   experience_level: "Mid-Level",
   remote_type: "on-site",
   required_skills: [],
   preferred_skills: [],
   salary_currency: "CAD",
-  salary_period: "fixed",
+  salary_period: "yearly",
   benefits: [],
   responsibilities: [],
   qualifications: [],
-  job_type: "individual",
-  payment_type: "Fixed-price",
   is_urgent: false,
+  payment_schedule: "Monthly",
 };
 
 interface CreateJobFormProps {
@@ -82,7 +82,6 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
 
       const { error } = await supabase.from("jobs").insert({
         ...data,
-        budget: Number(data.budget), // Ensure budget is a number
         employer_id: user.id,
         status: "open",
       });
@@ -115,18 +114,25 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
               });
             }}
           />
+          
+          <JobTypeFields />
+          
           <JobCategoryFields 
             category={formValues.category || ""}
-            subcategory={formValues.subcategory}
             onChange={(values) => {
               Object.entries(values).forEach(([key, value]) => {
                 form.setValue(key as keyof JobFormValues, value);
               });
             }}
           />
-          <JobTypeFields />
-          <JobCompanyFields />
-          <JobSalaryFields />
+          
+          {formValues.mission_type === "company" && (
+            <>
+              <JobCompanyFields />
+              <JobSalaryFields />
+            </>
+          )}
+          
           <JobDetailsFields />
           
           <Button type="submit" className="w-full">

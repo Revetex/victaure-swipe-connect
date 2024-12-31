@@ -198,11 +198,14 @@ export type Database = {
           id: string
           images: string[] | null
           industry: string | null
+          is_urgent: boolean | null
           job_type: string | null
           languages: string[] | null
           latitude: number | null
           location: string
           longitude: number | null
+          mission_type: string
+          payment_schedule: string | null
           preferred_skills: string[] | null
           qualifications: string[] | null
           remote_type: string | null
@@ -240,11 +243,14 @@ export type Database = {
           id?: string
           images?: string[] | null
           industry?: string | null
+          is_urgent?: boolean | null
           job_type?: string | null
           languages?: string[] | null
           latitude?: number | null
           location: string
           longitude?: number | null
+          mission_type?: string
+          payment_schedule?: string | null
           preferred_skills?: string[] | null
           qualifications?: string[] | null
           remote_type?: string | null
@@ -282,11 +288,14 @@ export type Database = {
           id?: string
           images?: string[] | null
           industry?: string | null
+          is_urgent?: boolean | null
           job_type?: string | null
           languages?: string[] | null
           latitude?: number | null
           location?: string
           longitude?: number | null
+          mission_type?: string
+          payment_schedule?: string | null
           preferred_skills?: string[] | null
           qualifications?: string[] | null
           remote_type?: string | null
@@ -735,7 +744,17 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      job_category:
+        | "technology"
+        | "design"
+        | "writing"
+        | "translation"
+        | "marketing"
+        | "business"
+        | "legal"
+        | "admin"
+        | "customer_service"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
