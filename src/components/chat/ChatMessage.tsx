@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Bot, User } from "lucide-react";
-import { memo } from "react";
+import { memo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ChatMessageProps {
@@ -21,10 +21,18 @@ export const ChatMessage = memo(function ChatMessage({
   timestamp,
 }: ChatMessageProps) {
   const isBot = sender === "assistant";
+  const messageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
+        ref={messageRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}

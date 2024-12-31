@@ -6,6 +6,7 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useEffect, useRef } from "react";
 
 interface ConversationViewProps {
   messages: any[];
@@ -32,6 +33,14 @@ export function ConversationView({
   setInputMessage,
   onClearChat,
 }: ConversationViewProps) {
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const handleClearChat = async () => {
     try {
       await onClearChat();
@@ -82,7 +91,10 @@ export function ConversationView({
         </Button>
       </div>
 
-      <ScrollArea className="flex-1 p-4">
+      <div 
+        ref={scrollAreaRef}
+        className="flex-1 overflow-y-auto p-4 h-[calc(100vh-200px)]"
+      >
         <div className="space-y-4">
           {messages.map((message, index) => (
             <ChatMessage
@@ -99,9 +111,9 @@ export function ConversationView({
             />
           ))}
         </div>
-      </ScrollArea>
+      </div>
 
-      <div className="p-4 border-t">
+      <div className="p-4 border-t mt-auto">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
