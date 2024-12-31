@@ -93,7 +93,7 @@ export function DashboardLayout() {
             {/* Jobs Management Section */}
             <motion.div 
               variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px]"
+              className="col-span-1 md:col-span-2 xl:col-span-3 min-h-[650px] md:min-h-[750px]"
             >
               <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
                 <div className="p-6 sm:p-8">
@@ -140,7 +140,7 @@ export function DashboardLayout() {
             {/* VCard Section */}
             <motion.div 
               variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px] mb-12"
+              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px]"
             >
               <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
                 <div className="p-6 sm:p-8">
