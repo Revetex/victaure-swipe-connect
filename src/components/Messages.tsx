@@ -60,7 +60,7 @@ export function Messages() {
         </TabsContent>
         <TabsContent value="notes" className="h-full">
           <TodoSection
-            type="notes"
+            type="tasks"
             todos={todos}
             newTodo={newTodo}
             selectedDate={selectedDate}
