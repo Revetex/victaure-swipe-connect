@@ -21,14 +21,21 @@ export function NotesInput({
   onColorChange,
   onAdd,
 }: NotesInputProps) {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onAdd();
+    }
+  };
+
   return (
     <div className="flex flex-col sm:flex-row gap-2 w-full">
       <Input
         value={newNote}
         onChange={(e) => onNoteChange(e.target.value)}
         placeholder="Nouvelle note..."
-        className="flex-1 min-w-0 bg-background/50"
-        onKeyPress={(e) => e.key === 'Enter' && onAdd()}
+        className="flex-1 min-w-0 bg-background/50 text-foreground"
+        onKeyPress={handleKeyPress}
       />
       <div className="flex gap-2 sm:w-auto w-full">
         <Select onValueChange={onColorChange} defaultValue={selectedColor}>

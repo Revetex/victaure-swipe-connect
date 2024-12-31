@@ -18,11 +18,13 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       exit={{ scale: 0.9, opacity: 0 }}
       className={cn(
         "sticky-note group transform rotate-1 hover:rotate-0",
-        colorClass,
+        colorClass
       )}
     >
       <div className="flex justify-between items-start gap-2">
-        <p className="flex-1 whitespace-pre-wrap text-sm">{note.text}</p>
+        <p className="flex-1 whitespace-pre-wrap text-sm text-black font-medium">
+          {note.text}
+        </p>
         <Button
           variant="ghost"
           size="icon"
