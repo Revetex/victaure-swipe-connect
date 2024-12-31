@@ -20,9 +20,17 @@ interface VCardHeaderProps {
   setProfile: (profile: any) => void;
   setIsEditing: (isEditing: boolean) => void;
   isExpanded?: boolean;
+  setIsExpanded: (isExpanded: boolean) => void;
 }
 
-export function VCardHeader({ profile, isEditing, setProfile, setIsEditing, isExpanded }: VCardHeaderProps) {
+export function VCardHeader({ 
+  profile, 
+  isEditing, 
+  setProfile, 
+  setIsEditing, 
+  isExpanded,
+  setIsExpanded 
+}: VCardHeaderProps) {
   const { toast } = useToast();
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {

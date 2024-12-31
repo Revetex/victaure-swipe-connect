@@ -31,6 +31,8 @@ export function VCardMainContent({
         isEditing={isEditing}
         setProfile={setProfile}
         setIsEditing={setIsEditing}
+        isExpanded={isExpanded}
+        setIsExpanded={setIsExpanded}
       />
       
       {!isExpanded && (
