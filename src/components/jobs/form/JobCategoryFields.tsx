@@ -1,6 +1,5 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { missionCategories } from "@/types/job";
 
 interface JobCategoryFieldsProps {
   category: string;
@@ -13,13 +12,13 @@ export function JobCategoryFields({
   subcategory,
   onChange,
 }: JobCategoryFieldsProps) {
-  const subcategories = category ? missionCategories[category]?.subcategories : [];
-
   const allCategories = {
+    "Manuel": ["Rénovation", "Installation", "Maintenance", "Artisanat", "Réparation"],
+    "Construction": ["Gros œuvre", "Second œuvre", "Finitions", "BIM", "Architecture"],
     "Technologie": ["Développement Web", "DevOps", "Mobile", "Data", "Cloud", "Sécurité", "IA", "Blockchain"],
-    "Gestion": ["Product Management", "Agile", "Conseil", "Stratégie", "Opérations", "Qualité"],
     "Design": ["UI/UX", "Graphisme", "Motion", "3D", "Web Design", "Print", "Branding"],
     "Marketing": ["Digital", "Content", "SEO", "Social Media", "Growth", "Brand", "Analytics"],
+    "Gestion": ["Product Management", "Agile", "Conseil", "Stratégie", "Opérations", "Qualité"],
     "Finance": ["Comptabilité", "Audit", "Contrôle de gestion", "Trésorerie", "Risk Management"],
     "Ressources Humaines": ["Recrutement", "Formation", "Paie", "SIRH", "Relations sociales"],
     "Vente": ["B2B", "B2C", "Account Management", "Business Development", "Export"],
@@ -29,10 +28,17 @@ export function JobCategoryFields({
     "Recherche": ["R&D", "Innovation", "Études", "Veille", "Laboratoire"],
     "Éducation": ["Formation", "E-learning", "Tutorat", "Pédagogie", "EdTech"],
     "Santé": ["Médical", "Paramédical", "Recherche", "E-santé", "Bien-être"],
-    "Construction": ["Gros œuvre", "Second œuvre", "Finitions", "BIM", "Architecture"],
-    "Manuel": ["Rénovation", "Installation", "Maintenance", "Artisanat", "Réparation"],
     "Expertise": ["Formation", "Audit", "Conseil", "Expertise technique", "Certification"]
   };
+
+  const sortedCategories = Object.keys(allCategories).sort((a, b) => {
+    // Mettre Manuel et Construction en premier
+    if (a === "Manuel") return -1;
+    if (b === "Manuel") return 1;
+    if (a === "Construction") return -1;
+    if (b === "Construction") return 1;
+    return a.localeCompare(b);
+  });
 
   return (
     <>
@@ -49,7 +55,7 @@ export function JobCategoryFields({
             <SelectValue placeholder="Sélectionnez une catégorie" />
           </SelectTrigger>
           <SelectContent>
-            {Object.keys(allCategories).map((cat) => (
+            {sortedCategories.map((cat) => (
               <SelectItem key={cat} value={cat}>
                 {cat}
               </SelectItem>
@@ -68,7 +74,7 @@ export function JobCategoryFields({
               <SelectValue placeholder="Sélectionnez une sous-catégorie" />
             </SelectTrigger>
             <SelectContent>
-              {allCategories[category]?.map((subcat) => (
+              {allCategories[category]?.sort().map((subcat) => (
                 <SelectItem key={subcat} value={subcat}>
                   {subcat}
                 </SelectItem>

@@ -7,7 +7,7 @@ import { JobCategoryFields } from "./form/JobCategoryFields";
 import { JobTypeFields } from "./form/JobTypeFields";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isValidCategory } from "@/types/job";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 
 interface CreateJobFormProps {
@@ -89,10 +89,18 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       }
 
       const { error } = await supabase.from("jobs").insert({
-        ...formData,
+        title: formData.title,
+        description: formData.description,
         budget: parseFloat(formData.budget),
+        location: formData.location,
+        category: formData.category,
+        subcategory: formData.subcategory,
+        contract_type: formData.contract_type,
+        experience_level: formData.experience_level,
         employer_id: user.id,
-        images: imageUrls
+        images: imageUrls,
+        latitude: formData.latitude,
+        longitude: formData.longitude
       });
 
       if (error) {
@@ -106,8 +114,6 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       });
 
       onSuccess?.();
-
-      // Reset form
       form.reset();
     } catch (error) {
       console.error("Error creating job:", error);
@@ -127,32 +133,34 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         <CardTitle>Créer une nouvelle mission</CardTitle>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <JobBasicInfoFields
-              title={form.watch("title")}
-              description={form.watch("description")}
-              budget={form.watch("budget")}
-              location={form.watch("location")}
-              images={form.watch("images")}
-              onChange={(field, value) => form.setValue(field as any, value)}
-            />
+        <FormProvider {...form}>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+              <JobBasicInfoFields
+                title={form.watch("title")}
+                description={form.watch("description")}
+                budget={form.watch("budget")}
+                location={form.watch("location")}
+                images={form.watch("images")}
+                onChange={(field, value) => form.setValue(field as any, value)}
+              />
 
-            <JobCategoryFields
-              category={form.watch("category")}
-              subcategory={form.watch("subcategory")}
-              onChange={(field, value) => form.setValue(field as any, value)}
-            />
+              <JobCategoryFields
+                category={form.watch("category")}
+                subcategory={form.watch("subcategory")}
+                onChange={(field, value) => form.setValue(field as any, value)}
+              />
 
-            <JobTypeFields form={form} />
+              <JobTypeFields form={form} />
 
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Création..." : "Créer la mission"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? "Création..." : "Créer la mission"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </FormProvider>
       </CardContent>
     </Card>
   );
