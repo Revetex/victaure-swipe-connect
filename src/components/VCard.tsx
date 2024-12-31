@@ -7,18 +7,27 @@ import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
 import { useProfileHandlers } from "./vcard/handlers/useProfileHandlers";
 import { toast } from "sonner";
 
-export function VCard() {
+interface VCardProps {
+  onEditStateChange?: (isEditing: boolean) => void;
+}
+
+export function VCard({ onEditStateChange }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
   const { handleShare, handleDownloadVCard, handleDownloadPDF, handleDownloadBusinessPDF, handleDownloadCVPDF, handleCopyLink } = useVCardHandlers();
   const { handleSave, handleApplyChanges } = useProfileHandlers();
 
+  const handleSetIsEditing = (value: boolean) => {
+    setIsEditing(value);
+    onEditStateChange?.(value);
+  };
+
   const handleProfileUpdate = async () => {
     try {
       await handleSave(tempProfile);
       setProfile(tempProfile);
-      setIsEditing(false);
+      handleSetIsEditing(false);
       toast.success("Modifications enregistrées avec succès");
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -41,7 +50,7 @@ export function VCard() {
       isEditing={isEditing}
       setProfile={setProfile}
       setTempProfile={setTempProfile}
-      setIsEditing={setIsEditing}
+      setIsEditing={handleSetIsEditing}
       newSkill={newSkill}
       setNewSkill={setNewSkill}
       onShare={() => handleShare(profile)}
@@ -51,7 +60,7 @@ export function VCard() {
       onDownloadCVPDF={() => handleDownloadCVPDF(profile)}
       onCopyLink={handleCopyLink}
       onSave={handleProfileUpdate}
-      onApplyChanges={() => handleApplyChanges(tempProfile, setProfile, setIsEditing)}
+      onApplyChanges={() => handleApplyChanges(tempProfile, setProfile, handleSetIsEditing)}
     />
   );
 }

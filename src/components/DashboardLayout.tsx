@@ -12,8 +12,10 @@ export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleSwipe = (direction: number) => {
+    if (isEditing) return; // Prevent swiping when editing
     let newPage = currentPage + direction;
     if (newPage < 1) newPage = 3;
     if (newPage > 3) newPage = 1;
@@ -62,32 +64,37 @@ export function DashboardLayout() {
   };
 
   const paginate = (newDirection: number) => {
+    if (isEditing) return; // Prevent pagination when editing
     handleSwipe(newDirection);
   };
 
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       <div className="relative z-10 flex-1 overflow-hidden">
-        <div className="absolute top-1/2 left-4 z-20">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-background/80 backdrop-blur-sm"
-            onClick={() => paginate(-1)}
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </Button>
-        </div>
-        <div className="absolute top-1/2 right-4 z-20">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-background/80 backdrop-blur-sm"
-            onClick={() => paginate(1)}
-          >
-            <ChevronRight className="h-6 w-6" />
-          </Button>
-        </div>
+        {!isEditing && (
+          <>
+            <div className="absolute top-1/2 left-4 z-20">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-background/80 backdrop-blur-sm"
+                onClick={() => paginate(-1)}
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+            </div>
+            <div className="absolute top-1/2 right-4 z-20">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-background/80 backdrop-blur-sm"
+                onClick={() => paginate(1)}
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            </div>
+          </>
+        )}
 
         <AnimatePresence initial={false} custom={currentPage}>
           <motion.div
@@ -101,10 +108,11 @@ export function DashboardLayout() {
               x: { type: "spring", stiffness: 300, damping: 30 },
               opacity: { duration: 0.2 }
             }}
-            drag="x"
+            drag={!isEditing ? "x" : false}
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={1}
             onDragEnd={(e, { offset, velocity }) => {
+              if (isEditing) return;
               const swipe = swipePower(offset.x, velocity.x);
 
               if (swipe < -swipeConfidenceThreshold) {
@@ -123,7 +131,7 @@ export function DashboardLayout() {
                 animate="visible"
               >
                 {currentPage === 1 && renderDashboardSection(
-                  <VCard />,
+                  <VCard onEditStateChange={setIsEditing} />,
                   'w-full h-full'
                 )}
                 
@@ -142,20 +150,21 @@ export function DashboardLayout() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Page Indicators */}
-        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
-          {[1, 2, 3].map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                currentPage === page 
-                  ? 'bg-primary w-6' 
-                  : 'bg-primary/50 hover:bg-primary/75'
-              }`}
-            />
-          ))}
-        </div>
+        {!isEditing && (
+          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
+            {[1, 2, 3].map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  currentPage === page 
+                    ? 'bg-primary w-6' 
+                    : 'bg-primary/50 hover:bg-primary/75'
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
