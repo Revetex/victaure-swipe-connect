@@ -50,7 +50,7 @@ export const updateProfile = async (tempProfile: UserProfile) => {
     company_name: tempProfile.company_name || null,
     company_size: tempProfile.company_size || null,
     industry: tempProfile.industry || null,
-    role: existingProfile?.role || 'professional' // Always ensure role has a value
+    role: tempProfile.role || existingProfile?.role || 'professional'
   };
 
   console.log("Profile data to be saved:", profileData);
@@ -119,35 +119,6 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       if (eduError) {
         console.error("Error inserting education:", eduError);
         throw eduError;
-      }
-    }
-  }
-
-  // Update experiences
-  if (tempProfile.experiences) {
-    // Delete existing experiences
-    const { error: deleteError } = await supabase
-      .from('experiences')
-      .delete()
-      .eq('profile_id', user.id);
-
-    if (deleteError) {
-      console.error("Error deleting experiences:", deleteError);
-      throw deleteError;
-    }
-
-    // Insert new experiences
-    if (tempProfile.experiences.length > 0) {
-      const { error: expError } = await supabase
-        .from('experiences')
-        .insert(tempProfile.experiences.map(exp => ({
-          ...exp,
-          profile_id: user.id
-        })));
-
-      if (expError) {
-        console.error("Error inserting experiences:", expError);
-        throw expError;
       }
     }
   }
