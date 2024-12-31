@@ -47,60 +47,53 @@ export function VCardContent({
   }, [isEditing]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full px-2 sm:px-4"
-    >
-      <Card className="w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-lg border border-primary/20 dark:border-primary/10">
-        <CardContent className="p-3 sm:p-4 relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isEditing ? "editing" : "viewing"}
-              initial={{ opacity: 0, x: isEditing ? 20 : -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: isEditing ? -20 : 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <VCardMainInfo
-                profile={tempProfile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-                setIsEditing={setIsEditing}
-                isExpanded={isExpanded}
-              />
+    <Card className="w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-lg bg-card">
+      <CardContent className="p-4 relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isEditing ? "editing" : "viewing"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <VCardMainInfo
+              profile={tempProfile}
+              isEditing={isEditing}
+              setProfile={setTempProfile}
+              setIsEditing={setIsEditing}
+              isExpanded={isExpanded}
+            />
 
-              {!isExpanded && !isEditing && (
-                <VCardCompactActions
-                  onExpand={() => setIsExpanded(true)}
-                  onEdit={() => setIsEditing(true)}
+            {!isExpanded && !isEditing && (
+              <VCardCompactActions
+                onExpand={() => setIsExpanded(true)}
+                onEdit={() => setIsEditing(true)}
+              />
+            )}
+
+            <AnimatePresence>
+              {isExpanded && (
+                <VCardExpandedContent
+                  isExpanded={isExpanded}
+                  isEditing={isEditing}
+                  profile={tempProfile}
+                  setProfile={setTempProfile}
+                  setIsExpanded={setIsExpanded}
+                  newSkill={newSkill}
+                  setNewSkill={setNewSkill}
+                  onShare={onShare}
+                  onDownload={onDownload}
+                  onDownloadPDF={onDownloadPDF}
+                  onCopyLink={onCopyLink}
+                  onSave={onSave}
+                  onApplyChanges={onApplyChanges}
                 />
               )}
-
-              <AnimatePresence>
-                {isExpanded && (
-                  <VCardExpandedContent
-                    isExpanded={isExpanded}
-                    isEditing={isEditing}
-                    profile={tempProfile}
-                    setProfile={setTempProfile}
-                    setIsExpanded={setIsExpanded}
-                    newSkill={newSkill}
-                    setNewSkill={setNewSkill}
-                    onShare={onShare}
-                    onDownload={onDownload}
-                    onDownloadPDF={onDownloadPDF}
-                    onCopyLink={onCopyLink}
-                    onSave={onSave}
-                    onApplyChanges={onApplyChanges}
-                  />
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </AnimatePresence>
-        </CardContent>
-      </Card>
-    </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+      </CardContent>
+    </Card>
   );
 }

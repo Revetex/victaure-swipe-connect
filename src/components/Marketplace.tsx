@@ -21,9 +21,9 @@ export function Marketplace() {
         .order("created_at", { ascending: false });
 
       // Apply filters using the utility function
-      query = applyFilters(query, filters);
+      const filteredQuery = applyFilters(query, filters);
 
-      const { data, error } = await query;
+      const { data, error } = await filteredQuery;
 
       if (error) throw error;
 
@@ -38,7 +38,6 @@ export function Marketplace() {
 
   const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
     setFilters(prev => {
-      // Reset subcategory when changing category or mission type
       if (key === "category" && value !== prev.category) {
         return { ...prev, [key]: value, subcategory: "all" };
       }
@@ -52,7 +51,7 @@ export function Marketplace() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-victaure-blue"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
