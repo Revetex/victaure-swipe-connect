@@ -1,16 +1,8 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Todo, StickyNote as StickyNoteType } from "@/types/todo";
+import { Todo } from "@/types/todo";
 import { TodoSection } from "./todo/TodoSection";
-import { NotesSection } from "./todo/NotesSection";
 import { supabase } from "@/integrations/supabase/client";
-
-const colors = [
-  { value: "yellow", label: "Jaune", class: "bg-yellow-100" },
-  { value: "green", label: "Vert", class: "bg-green-100" },
-  { value: "blue", label: "Bleu", class: "bg-blue-100" },
-  { value: "pink", label: "Rose", class: "bg-pink-100" },
-];
 
 export function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -18,9 +10,6 @@ export function TodoList() {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>();
   const [allDay, setAllDay] = useState(false);
-  const [notes, setNotes] = useState<StickyNoteType[]>([]);
-  const [newNote, setNewNote] = useState("");
-  const [selectedColor, setSelectedColor] = useState("yellow");
   const { toast } = useToast();
 
   const addTodo = async () => {
@@ -62,23 +51,6 @@ export function TodoList() {
     }
   };
 
-  const addNote = () => {
-    if (newNote.trim()) {
-      const note = {
-        id: Date.now(),
-        text: newNote,
-        color: selectedColor,
-      };
-      setNotes([...notes, note]);
-      setNewNote("");
-      
-      toast({
-        title: "Note ajoutée",
-        description: "Votre note a été ajoutée avec succès.",
-      });
-    }
-  };
-
   const toggleTodo = (id: number) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
@@ -93,14 +65,6 @@ export function TodoList() {
     toast({
       title: "Tâche supprimée",
       description: "La tâche a été supprimée avec succès.",
-    });
-  };
-
-  const deleteNote = (id: number) => {
-    setNotes(notes.filter(note => note.id !== id));
-    toast({
-      title: "Note supprimée",
-      description: "La note a été supprimée avec succès.",
     });
   };
 
