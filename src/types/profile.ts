@@ -10,6 +10,7 @@ export interface Certification {
   issue_date?: string | null;
   expiry_date?: string | null;
   issuer: string;
+  description?: string | null;
 }
 
 export interface Education {
