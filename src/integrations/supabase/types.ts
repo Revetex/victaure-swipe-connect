@@ -180,8 +180,13 @@ export type Database = {
       jobs: {
         Row: {
           application_deadline: string | null
+          benefits: string[] | null
           budget: number
           category: string
+          company_description: string | null
+          company_logo: string | null
+          company_name: string | null
+          company_website: string | null
           contract_type: string
           created_at: string | null
           description: string
@@ -193,8 +198,14 @@ export type Database = {
           location: string
           longitude: number | null
           preferred_skills: string[] | null
+          qualifications: string[] | null
           remote_type: string | null
           required_skills: string[] | null
+          responsibilities: string[] | null
+          salary_currency: string | null
+          salary_max: number | null
+          salary_min: number | null
+          salary_period: string | null
           status: string
           subcategory: string | null
           title: string
@@ -202,8 +213,13 @@ export type Database = {
         }
         Insert: {
           application_deadline?: string | null
+          benefits?: string[] | null
           budget: number
           category?: string
+          company_description?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          company_website?: string | null
           contract_type?: string
           created_at?: string | null
           description: string
@@ -215,8 +231,14 @@ export type Database = {
           location: string
           longitude?: number | null
           preferred_skills?: string[] | null
+          qualifications?: string[] | null
           remote_type?: string | null
           required_skills?: string[] | null
+          responsibilities?: string[] | null
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string | null
           status?: string
           subcategory?: string | null
           title: string
@@ -224,8 +246,13 @@ export type Database = {
         }
         Update: {
           application_deadline?: string | null
+          benefits?: string[] | null
           budget?: number
           category?: string
+          company_description?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          company_website?: string | null
           contract_type?: string
           created_at?: string | null
           description?: string
@@ -237,8 +264,14 @@ export type Database = {
           location?: string
           longitude?: number | null
           preferred_skills?: string[] | null
+          qualifications?: string[] | null
           remote_type?: string | null
           required_skills?: string[] | null
+          responsibilities?: string[] | null
+          salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          salary_period?: string | null
           status?: string
           subcategory?: string | null
           title?: string

@@ -6,6 +6,9 @@ import { Form } from "@/components/ui/form";
 import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
 import { JobTypeFields } from "./form/JobTypeFields";
 import { JobCategoryFields } from "./form/JobCategoryFields";
+import { JobCompanyFields } from "./form/JobCompanyFields";
+import { JobSalaryFields } from "./form/JobSalaryFields";
+import { JobDetailsFields } from "./form/JobDetailsFields";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -24,6 +27,17 @@ const jobFormSchema = z.object({
   preferred_skills: z.array(z.string()).optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  company_name: z.string().optional(),
+  company_logo: z.string().optional(),
+  company_website: z.string().optional(),
+  company_description: z.string().optional(),
+  salary_min: z.number().min(0, "Le salaire minimum doit être positif"),
+  salary_max: z.number().min(0, "Le salaire maximum doit être positif"),
+  salary_currency: z.string().default("CAD"),
+  salary_period: z.string().default("yearly"),
+  benefits: z.array(z.string()).optional(),
+  responsibilities: z.array(z.string()).optional(),
+  qualifications: z.array(z.string()).optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
@@ -34,6 +48,11 @@ const defaultValues: Partial<JobFormValues> = {
   remote_type: "on-site",
   required_skills: [],
   preferred_skills: [],
+  salary_currency: "CAD",
+  salary_period: "yearly",
+  benefits: [],
+  responsibilities: [],
+  qualifications: [],
 };
 
 interface CreateJobFormProps {
@@ -56,19 +75,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       }
 
       const { error } = await supabase.from("jobs").insert({
-        title: data.title,
-        description: data.description,
-        budget: parseFloat(data.budget),
-        location: data.location,
-        category: data.category,
-        subcategory: data.subcategory,
-        contract_type: data.contract_type,
-        experience_level: data.experience_level,
-        remote_type: data.remote_type,
-        required_skills: data.required_skills,
-        preferred_skills: data.preferred_skills,
-        latitude: data.latitude,
-        longitude: data.longitude,
+        ...data,
         employer_id: user.id,
         status: "open",
       });
@@ -88,27 +95,12 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     <FormProvider {...form}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <JobBasicInfoFields 
-            title={form.watch("title")}
-            description={form.watch("description")}
-            budget={form.watch("budget")}
-            location={form.watch("location")}
-            onChange={(values) => {
-              Object.entries(values).forEach(([key, value]) => {
-                form.setValue(key as keyof JobFormValues, value as string);
-              });
-            }}
-          />
-          <JobCategoryFields 
-            category={form.watch("category")}
-            subcategory={form.watch("subcategory")}
-            onChange={(values) => {
-              Object.entries(values).forEach(([key, value]) => {
-                form.setValue(key as keyof JobFormValues, value as string);
-              });
-            }}
-          />
+          <JobBasicInfoFields />
+          <JobCategoryFields />
           <JobTypeFields />
+          <JobCompanyFields />
+          <JobSalaryFields />
+          <JobDetailsFields />
           
           <Button type="submit" className="w-full">
             Créer la mission
