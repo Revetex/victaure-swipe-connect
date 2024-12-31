@@ -14,9 +14,23 @@ export function Navigation() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check initial session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log("No initial session found, redirecting to auth");
+        navigate("/auth");
+      }
+    };
+    
+    checkSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event);
-      if (event === 'SIGNED_OUT') {
+      console.log("Auth state changed:", event, session);
+      
+      if (event === 'SIGNED_OUT' || !session) {
+        // Clear any stored auth data
+        localStorage.removeItem('supabase.auth.token');
         navigate("/auth");
       }
     });
@@ -30,6 +44,9 @@ export function Navigation() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Clear any stored auth data
+      localStorage.removeItem('supabase.auth.token');
       navigate("/auth");
       toast.success("Déconnexion réussie");
     } catch (error) {
