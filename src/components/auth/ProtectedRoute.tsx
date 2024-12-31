@@ -12,30 +12,48 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAuth = async () => {
       try {
         setIsLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (!session) {
-          console.log("No session found, redirecting to auth");
-          toast.info("Veuillez vous connecter pour accéder à cette page");
-          navigate("/auth");
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          if (mounted) {
+            toast.error("Erreur d'authentification");
+            navigate("/auth");
+          }
           return;
         }
 
-        // Simple session check
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log("No user found, redirecting to auth");
-          navigate("/auth");
+        if (!session) {
+          console.log("No session found, redirecting to auth");
+          if (mounted) {
+            toast.info("Veuillez vous connecter pour accéder à cette page");
+            navigate("/auth");
+          }
+          return;
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          console.error("User verification error:", userError);
+          if (mounted) {
+            navigate("/auth");
+          }
           return;
         }
       } catch (error) {
         console.error("Auth check error:", error);
-        navigate("/auth");
+        if (mounted) {
+          navigate("/auth");
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -43,11 +61,14 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
-        navigate("/auth");
+        if (mounted) {
+          navigate("/auth");
+        }
       }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate]);

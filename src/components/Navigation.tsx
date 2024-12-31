@@ -18,24 +18,29 @@ export function Navigation() {
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          await handleSignOut();
+          return;
+        }
+
         if (!session) {
           console.log("No session found, redirecting to auth");
           navigate("/auth");
           return;
         }
 
-        // Simple session check is enough since onAuthStateChange will handle invalid sessions
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log("No user found, redirecting to auth");
-          navigate("/auth");
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          console.error("User verification error:", userError);
+          await handleSignOut();
           return;
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
-        navigate("/auth");
+        await handleSignOut();
       } finally {
         setIsLoading(false);
       }
@@ -43,12 +48,11 @@ export function Navigation() {
 
     initializeAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
       if (event === 'SIGNED_OUT' || !session) {
-        localStorage.clear();
-        navigate("/auth");
+        await handleSignOut();
       }
     });
 
@@ -59,8 +63,19 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
+      // First clear local storage to ensure no stale data remains
       localStorage.clear();
-      await supabase.auth.signOut();
+      
+      // Then attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Sign out error:", error);
+        // Even if there's an error, we'll redirect to auth
+        navigate("/auth");
+        toast.error("Erreur lors de la déconnexion");
+        return;
+      }
+      
       navigate("/auth");
       toast.success("Déconnexion réussie");
     } catch (error) {
