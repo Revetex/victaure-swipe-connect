@@ -15,7 +15,6 @@ export function useAuth() {
       // First, get current session to verify
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        // If no session exists, just clear everything
         console.log('No active session found, clearing storage');
         localStorage.clear();
         sessionStorage.clear();
@@ -28,13 +27,8 @@ export function useAuth() {
       localStorage.clear();
       sessionStorage.clear();
       
-      // Attempt both local and global signout
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (error) {
-        console.warn('Global signout failed, attempting local signout:', error);
-        await supabase.auth.signOut({ scope: 'local' });
-      }
+      // Attempt signout
+      await supabase.auth.signOut();
       
       setIsAuthenticated(false);
       navigate('/auth');
@@ -93,13 +87,13 @@ export function useAuth() {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (mounted) {
-        if (event === 'SIGNED_IN' && session) {
-          setIsAuthenticated(true);
-          navigate('/dashboard');
-        } else if (event === 'SIGNED_OUT' || !session) {
-          await signOut();
-        }
+      console.log("Auth state changed:", event);
+      
+      if (event === 'SIGNED_IN' && session) {
+        setIsAuthenticated(true);
+        navigate('/dashboard');
+      } else if (event === 'SIGNED_OUT' || !session) {
+        await signOut();
       }
     });
 
