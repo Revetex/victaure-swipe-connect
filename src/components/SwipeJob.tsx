@@ -17,6 +17,7 @@ export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
   const [openLocation, setOpenLocation] = useState(false);
   const [filters, setFilters] = useState<JobFilters>(defaultFilters);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: myJobs, refetch: refetchMyJobs } = useQuery({
     queryKey: ['my-jobs'],
@@ -60,7 +61,6 @@ export function SwipeJob() {
         return;
       }
 
-      // Get employer_id from the job
       const { data: jobData } = await supabase
         .from('jobs')
         .select('employer_id')
@@ -72,7 +72,6 @@ export function SwipeJob() {
         return;
       }
 
-      // Create match
       const { error: matchError } = await supabase
         .from('matches')
         .insert({
@@ -80,12 +79,11 @@ export function SwipeJob() {
           professional_id: user.id,
           employer_id: jobData.employer_id,
           status: 'pending',
-          match_score: 0.8 // TODO: Implement real matching score
+          match_score: 0.8
         });
 
       if (matchError) throw matchError;
 
-      // Create notification for employer
       const { error: notifError } = await supabase
         .from('notifications')
         .insert({
@@ -106,7 +104,7 @@ export function SwipeJob() {
   return (
     <div className="glass-card p-4 space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-2xl font-bold">Offres disponibles</h2>
+        <h2 className="text-2xl font-bold text-victaure-blue">Offres disponibles</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" size="sm">
@@ -140,15 +138,26 @@ export function SwipeJob() {
           <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="browse">
-          <JobFiltersPanel 
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            openLocation={openLocation}
-            setOpenLocation={setOpenLocation}
-          />
+        <TabsContent value="browse" className="space-y-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full justify-between"
+          >
+            {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+            <Plus className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-45' : ''}`} />
+          </Button>
           
-          <div className="flex justify-center">
+          {showFilters && (
+            <JobFiltersPanel 
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              openLocation={openLocation}
+              setOpenLocation={setOpenLocation}
+            />
+          )}
+          
+          <div className="flex justify-center mt-6">
             <SwipeMatch 
               filters={filters} 
               onMatchSuccess={handleMatchSuccess}
