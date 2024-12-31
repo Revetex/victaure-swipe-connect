@@ -48,8 +48,17 @@ export function VCardContent({
   }, [isEditing]);
 
   return (
-    <Card className="w-full overflow-hidden bg-white dark:bg-gray-800 border-none shadow-lg">
-      <CardContent className="p-6">
+    <Card className={`w-full overflow-hidden border-none shadow-lg transition-all duration-300 ${
+      !isExpanded ? 'bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm' : 
+      'bg-white dark:bg-gray-800'
+    }`}>
+      <CardContent className={`p-6 ${!isExpanded && 'relative'}`}>
+        {!isExpanded && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
+            <div className="absolute inset-0 border-2 border-white/20 rounded-lg" />
+          </div>
+        )}
         <div className="space-y-6">
           <VCardMainContent
             profile={tempProfile}
