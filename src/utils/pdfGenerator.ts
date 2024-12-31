@@ -113,7 +113,7 @@ export const generateBusinessVCardPDF = async (profile: UserProfile): Promise<st
     
     // Add header with company info
     doc.setFillColor(31, 41, 55);
-    doc.rect(0, 0, 70, 'F');
+    doc.rect(0, 0, 210, 60, 'F'); // Fixed: Added proper height parameter (60)
     
     // Add Victaure logo
     const logoImg = new Image();
