@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface VCardActionsProps {
   isEditing: boolean;
@@ -28,46 +28,36 @@ export function VCardActions({
   onApplyChanges,
   setIsEditing,
 }: VCardActionsProps) {
-  const { toast } = useToast();
-  
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
-
   return (
     <motion.div 
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-indigo-100 dark:border-indigo-900/30"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex flex-wrap gap-3 pt-4 border-t border-white/20"
     >
       {isEditing ? (
         <>
-          <motion.div variants={item} className="flex-1 min-w-[120px]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[120px]"
+          >
             <Button 
               onClick={onSave}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
             </Button>
           </motion.div>
-          <motion.div variants={item} className="flex-1 min-w-[120px]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[120px]"
+          >
             <Button 
-              onClick={onApplyChanges} 
-              variant="secondary" 
-              className="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors"
+              onClick={onApplyChanges}
+              variant="outline" 
+              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
             >
               Appliquer
             </Button>
@@ -75,60 +65,83 @@ export function VCardActions({
         </>
       ) : (
         <>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[100px]"
+          >
             <Button 
-              onClick={onShare} 
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+              onClick={onShare}
+              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
             </Button>
           </motion.div>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[100px]"
+          >
             <Button 
-              onClick={() => setIsEditing(true)} 
-              variant="outline" 
-              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+              onClick={() => setIsEditing(true)}
+              variant="outline"
+              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
             </Button>
           </motion.div>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[100px]"
+          >
             <Button 
-              onClick={onDownload} 
-              variant="outline" 
-              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+              onClick={onDownload}
+              variant="outline"
+              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
             >
               <Download className="mr-2 h-4 w-4" />
               Télécharger
             </Button>
           </motion.div>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[100px]"
+          >
             <Button 
-              onClick={onDownloadBusinessPDF} 
-              variant="outline" 
-              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+              onClick={onDownloadBusinessPDF}
+              variant="outline"
+              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
             </Button>
           </motion.div>
-          <motion.div variants={item} className="flex-1 min-w-[100px]">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[100px]"
+          >
             <Button 
-              onClick={onDownloadCVPDF} 
-              variant="outline" 
-              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+              onClick={onDownloadCVPDF}
+              variant="outline"
+              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
             </Button>
           </motion.div>
-          <motion.div variants={item}>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             <Button 
-              onClick={onCopyLink} 
+              onClick={onCopyLink}
               variant="outline"
-              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
+              className="border-white/20 hover:bg-white/10 text-white transition-colors"
             >
               <Copy className="h-4 w-4" />
             </Button>

@@ -40,38 +40,23 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     }
   ];
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0 }
-  };
-
   return (
     <div className="space-y-4">
-      <h3 className="text-base sm:text-lg font-semibold text-white">Contact</h3>
+      <h3 className="text-lg font-semibold text-white">Contact</h3>
       <motion.div 
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid gap-3 sm:gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="grid gap-4"
       >
         {contactFields.map((field) => (
           <motion.div 
-            key={field.key} 
-            variants={item}
-            className="flex items-center gap-2 sm:gap-3"
+            key={field.key}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3"
           >
-            <div className="p-1.5 sm:p-2 rounded-full bg-white/10">
-              <field.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+            <div className="p-2 rounded-full bg-white/10">
+              <field.icon className="h-4 w-4 text-white" />
             </div>
             {isEditing ? (
               <Input
@@ -79,10 +64,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
-                className="flex-1 text-sm sm:text-base bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
+                className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50"
               />
             ) : (
-              <span className="text-sm sm:text-base text-white/90">
+              <span className="text-white/90">
                 {field.value || "Non défini"}
               </span>
             )}
