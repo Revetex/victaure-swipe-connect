@@ -14,9 +14,10 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
   const missionType = watch("mission_type");
 
   // Fetch categories from the database
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isError: isCategoriesError } = useQuery({
     queryKey: ["jobCategories", missionType],
     queryFn: async () => {
+      console.log("Fetching categories for mission type:", missionType);
       const query = supabase
         .from('job_categories')
         .select('*')
@@ -27,28 +28,42 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching categories:", error);
+        throw error;
+      }
+      console.log("Fetched categories:", data);
       return data || [];
     },
   });
 
   // Fetch subcategories when a category is selected
-  const { data: subcategories = [] } = useQuery({
+  const { data: subcategories = [], isError: isSubcategoriesError } = useQuery({
     queryKey: ["jobSubcategories", category],
     queryFn: async () => {
       if (!category || category === "all") return [];
 
+      console.log("Fetching subcategories for category:", category);
       const { data, error } = await supabase
         .from('job_subcategories')
         .select('*')
         .eq('category_id', category)
         .order('name');
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching subcategories:", error);
+        throw error;
+      }
+      console.log("Fetched subcategories:", data);
       return data || [];
     },
     enabled: !!category && category !== "all",
   });
+
+  if (isCategoriesError) {
+    console.error("Error loading categories");
+    return <div>Erreur lors du chargement des catégories</div>;
+  }
 
   return (
     <div className="space-y-4">
