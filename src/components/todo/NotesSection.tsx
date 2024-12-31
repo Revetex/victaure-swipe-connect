@@ -38,7 +38,14 @@ export function NotesSection() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setNotes(data || []);
+      
+      const formattedNotes: StickyNoteType[] = (data || []).map(note => ({
+        id: note.id,
+        text: note.text,
+        color: note.color
+      }));
+      
+      setNotes(formattedNotes);
     } catch (error) {
       console.error('Error fetching notes:', error);
       toast.error("Erreur lors du chargement des notes");
@@ -52,7 +59,7 @@ export function NotesSection() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('notes')
         .insert([
           {
@@ -60,20 +67,30 @@ export function NotesSection() {
             text: newNote.trim(),
             color: selectedColor,
           }
-        ]);
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
 
-      setNewNote("");
-      fetchNotes();
-      toast.success("Note ajoutée");
+      if (data) {
+        const newNoteItem: StickyNoteType = {
+          id: data.id,
+          text: data.text,
+          color: data.color
+        };
+        
+        setNotes([newNoteItem, ...notes]);
+        setNewNote("");
+        toast.success("Note ajoutée");
+      }
     } catch (error) {
       console.error('Error adding note:', error);
       toast.error("Erreur lors de l'ajout de la note");
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       const { error } = await supabase
         .from('notes')

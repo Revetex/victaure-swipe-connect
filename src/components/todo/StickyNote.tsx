@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface StickyNoteProps {
   note: StickyNoteType;
   colorClass: string;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {

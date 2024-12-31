@@ -27,7 +27,17 @@ export function TodoSection() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTodos(data || []);
+      
+      const formattedTodos: Todo[] = (data || []).map(todo => ({
+        id: todo.id,
+        text: todo.text,
+        completed: todo.completed || false,
+        dueDate: todo.due_date ? new Date(todo.due_date) : undefined,
+        dueTime: todo.due_time,
+        allDay: todo.all_day
+      }));
+      
+      setTodos(formattedTodos);
     } catch (error) {
       console.error('Error fetching todos:', error);
       toast.error("Erreur lors du chargement des tâches");
@@ -41,7 +51,7 @@ export function TodoSection() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('todos')
         .insert([
           {
@@ -49,20 +59,33 @@ export function TodoSection() {
             text: newTodo.trim(),
             completed: false
           }
-        ]);
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
 
-      setNewTodo("");
-      fetchTodos();
-      toast.success("Tâche ajoutée");
+      if (data) {
+        const newTodoItem: Todo = {
+          id: data.id,
+          text: data.text,
+          completed: false,
+          dueDate: data.due_date ? new Date(data.due_date) : undefined,
+          dueTime: data.due_time,
+          allDay: data.all_day
+        };
+        
+        setTodos([newTodoItem, ...todos]);
+        setNewTodo("");
+        toast.success("Tâche ajoutée");
+      }
     } catch (error) {
       console.error('Error adding todo:', error);
       toast.error("Erreur lors de l'ajout de la tâche");
     }
   };
 
-  const handleToggle = async (id: number) => {
+  const handleToggle = async (id: string) => {
     try {
       const todo = todos.find(t => t.id === id);
       if (!todo) return;
@@ -83,7 +106,7 @@ export function TodoSection() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       const { error } = await supabase
         .from('todos')
