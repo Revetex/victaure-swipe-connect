@@ -54,7 +54,7 @@ export function VCardActions({
           <motion.div variants={item} className="flex-1 min-w-[120px]">
             <Button 
               onClick={onSave} 
-              className="w-full bg-victaure-blue hover:bg-victaure-blue-dark text-white font-medium shadow-md transition-colors"
+              className="w-full bg-victaure-orange hover:bg-victaure-orange-dark text-white font-medium shadow-md transition-colors"
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
@@ -75,7 +75,7 @@ export function VCardActions({
           <motion.div variants={item} className="flex-1 min-w-[100px]">
             <Button 
               onClick={onShare} 
-              className="w-full bg-victaure-blue hover:bg-victaure-blue-dark text-white font-medium shadow-md transition-colors"
+              className="w-full bg-victaure-orange hover:bg-victaure-orange-dark text-white font-medium shadow-md transition-colors"
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
