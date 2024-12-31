@@ -15,17 +15,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
+        const { data: { session } } = await supabase.auth.getSession();
         
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          await supabase.auth.signOut({ scope: 'local' });
-          toast.error("Erreur d'authentification");
-          navigate("/auth");
-          return;
-        }
-
         if (!session) {
           console.log("No session found, redirecting to auth");
           toast.info("Veuillez vous connecter pour accéder à cette page");
@@ -33,18 +24,15 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
           return;
         }
 
-        // Verify the session is still valid
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError || !user) {
-          console.error("User verification error:", userError);
-          await supabase.auth.signOut({ scope: 'local' });
+        // Simple session check
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log("No user found, redirecting to auth");
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth check error:", error);
-        await supabase.auth.signOut({ scope: 'local' });
         navigate("/auth");
       } finally {
         setIsLoading(false);

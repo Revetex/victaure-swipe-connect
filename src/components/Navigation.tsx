@@ -18,33 +18,23 @@ export function Navigation() {
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
-        
-        // Get the current session
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
           console.log("No session found, redirecting to auth");
-          localStorage.clear(); // Clear any stale data
           navigate("/auth");
           return;
         }
 
-        // Verify the session is still valid
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError || !user) {
-          console.error("User verification error:", userError);
-          // Clear the invalid session
-          await supabase.auth.signOut();
-          localStorage.clear();
+        // Simple session check is enough since onAuthStateChange will handle invalid sessions
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log("No user found, redirecting to auth");
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
-        // Clear any invalid session data
-        await supabase.auth.signOut();
-        localStorage.clear();
         navigate("/auth");
       } finally {
         setIsLoading(false);
@@ -53,11 +43,11 @@ export function Navigation() {
 
     initializeAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
       
       if (event === 'SIGNED_OUT' || !session) {
-        localStorage.clear(); // Clear all local storage
+        localStorage.clear();
         navigate("/auth");
       }
     });
@@ -69,15 +59,12 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      localStorage.clear(); // Clear all local storage before signing out
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
+      localStorage.clear();
+      await supabase.auth.signOut();
       navigate("/auth");
       toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Error signing out:", error);
-      // Force navigation to auth page even if there's an error
       localStorage.clear();
       navigate("/auth");
       toast.error("Erreur lors de la déconnexion");
