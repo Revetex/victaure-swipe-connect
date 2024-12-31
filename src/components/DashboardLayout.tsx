@@ -33,7 +33,7 @@ export function DashboardLayout() {
       <div className="relative z-10 flex-1 overflow-auto py-2 sm:py-4">
         <div className="container mx-auto px-2 sm:px-4 lg:px-6 max-w-[2000px]">
           <motion.div 
-            className="flex flex-col gap-4 max-w-[1200px] mx-auto pb-24 sm:pb-32 md:pb-40"
+            className="flex flex-col gap-6 max-w-[1200px] mx-auto pb-24 sm:pb-32 md:pb-40"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -41,20 +41,20 @@ export function DashboardLayout() {
             {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px]',
+              'w-full h-[450px] sm:h-[500px] md:h-[550px]',
               false
             )}
 
             {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px]'
+              'w-full h-[450px] sm:h-[500px] md:h-[550px]'
             )}
 
             {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
-              'w-full h-[700px] sm:h-[800px] md:h-[900px]'
+              'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
           </motion.div>
         </div>
