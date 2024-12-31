@@ -1,6 +1,7 @@
 import { VCardHeader } from "@/components/VCardHeader";
 import { VCardContactInfo } from "../VCardContactInfo";
 import { motion } from "framer-motion";
+import { QRCodeSVG } from "qrcode.react";
 
 interface VCardMainContentProps {
   profile: any;
@@ -40,7 +41,7 @@ export function VCardMainContent({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mt-6"
+          className="mt-6 space-y-6"
         >
           <VCardContactInfo
             email={profile.email}
@@ -48,6 +49,17 @@ export function VCardMainContent({
             city={profile.city}
             state={profile.state}
           />
+          <div className="flex justify-center">
+            <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
+              <QRCodeSVG
+                value={window.location.href}
+                size={80}
+                level="H"
+                includeMargin={false}
+                className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+              />
+            </div>
+          </div>
         </motion.div>
       )}
     </motion.div>
