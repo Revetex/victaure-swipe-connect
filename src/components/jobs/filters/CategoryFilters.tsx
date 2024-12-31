@@ -1,14 +1,21 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobFilters } from "../JobFilterUtils";
 import { missionCategories } from "@/types/job";
+import { memo, useMemo } from "react";
 
 interface CategoryFiltersProps {
   filters: JobFilters;
   onFilterChange: (key: keyof JobFilters, value: any) => void;
 }
 
-export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProps) {
-  const subcategories = filters.category !== "all" ? missionCategories[filters.category]?.subcategories : [];
+export const CategoryFilters = memo(function CategoryFilters({ 
+  filters, 
+  onFilterChange 
+}: CategoryFiltersProps) {
+  const subcategories = useMemo(() => 
+    filters.category !== "all" ? missionCategories[filters.category]?.subcategories : [],
+    [filters.category]
+  );
 
   return (
     <div className="space-y-4">
@@ -59,4 +66,4 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
       )}
     </div>
   );
-}
+});

@@ -2,8 +2,9 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "next-themes";
+import { memo } from "react";
 
-export function AuthForm() {
+export const AuthForm = memo(function AuthForm() {
   const { theme } = useTheme();
 
   return (
@@ -49,6 +50,10 @@ export function AuthForm() {
             height: '2.75rem',
             fontSize: '0.875rem',
             fontWeight: 500,
+            transition: 'all 0.2s',
+            '&:hover': {
+              transform: 'translateY(-1px)',
+            },
           },
           input: {
             width: '100%',
@@ -56,6 +61,11 @@ export function AuthForm() {
             fontSize: '0.875rem',
             backgroundColor: 'transparent',
             border: '1px solid hsl(var(--border))',
+            transition: 'border-color 0.2s',
+            '&:focus': {
+              borderColor: 'hsl(var(--primary))',
+              outline: 'none',
+            },
           },
           label: {
             fontSize: '0.875rem',
@@ -65,6 +75,13 @@ export function AuthForm() {
           message: {
             fontSize: '0.875rem',
             color: 'hsl(var(--muted-foreground))',
+          },
+          anchor: {
+            color: 'hsl(var(--primary))',
+            textDecoration: 'none',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
           },
         },
       }}
@@ -89,4 +106,4 @@ export function AuthForm() {
       }}
     />
   );
-}
+});
