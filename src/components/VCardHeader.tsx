@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Edit2, X, Briefcase, User, Upload, UserRound } from "lucide-react";
+import { Edit2, X, Briefcase, Upload, UserRound } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,8 +11,9 @@ import {
 import { jobTitles } from "@/data/jobTitles";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface VCardHeaderProps {
   profile: any;
@@ -87,12 +88,12 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
 
   return (
     <motion.div 
-      className="flex flex-col items-center sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 relative w-full"
+      className="flex flex-col sm:flex-row sm:items-start gap-6 relative w-full"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4 w-full">
+      <div className="flex flex-col sm:flex-row gap-6 w-full">
         <div className="relative group">
           <Avatar className="h-24 w-24 ring-2 ring-background">
             <AvatarImage 
@@ -120,13 +121,13 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
             </label>
           )}
         </div>
-        <div className="space-y-2 w-full text-center sm:text-left">
-          <div className="text-2xl sm:text-3xl font-bold text-foreground">
+        <div className="space-y-4 w-full">
+          <div className="space-y-2">
             {isEditing ? (
               <Input
                 value={profile.full_name || ""}
                 onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                className="text-xl sm:text-2xl font-bold"
+                className="text-xl font-semibold"
                 placeholder="Votre nom"
               />
             ) : (
@@ -134,14 +135,14 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-2xl sm:text-3xl font-bold"
+                className="text-2xl font-semibold"
               >
                 {profile.full_name || "Nom non défini"}
               </motion.h2>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2 text-muted-foreground">
-            <Briefcase className="h-5 w-5" />
+          <div className="flex items-center gap-2">
+            <Briefcase className="h-5 w-5 text-muted-foreground" />
             {isEditing ? (
               <Select
                 value={profile.role || ""}
@@ -163,7 +164,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-base sm:text-lg"
+                className="text-muted-foreground"
               >
                 {profile.role || "Titre non défini"}
               </motion.span>
@@ -175,7 +176,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         variant="ghost"
         size="icon"
         onClick={() => setIsEditing(!isEditing)}
-        className="text-muted-foreground hover:text-foreground transition-colors absolute top-0 right-0 sm:static"
+        className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors"
       >
         {isEditing ? <X className="h-5 w-5" /> : <Edit2 className="h-5 w-5" />}
       </Button>
