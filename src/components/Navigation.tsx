@@ -19,17 +19,12 @@ export function Navigation() {
       try {
         setIsLoading(true);
         
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // Get the current session
+        const { data: { session } } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          await supabase.auth.signOut({ scope: 'local' });
-          navigate("/auth");
-          return;
-        }
-
         if (!session) {
           console.log("No session found, redirecting to auth");
+          localStorage.clear(); // Clear any stale data
           navigate("/auth");
           return;
         }
@@ -39,13 +34,17 @@ export function Navigation() {
         
         if (userError || !user) {
           console.error("User verification error:", userError);
-          await supabase.auth.signOut({ scope: 'local' });
+          // Clear the invalid session
+          await supabase.auth.signOut();
+          localStorage.clear();
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
-        await supabase.auth.signOut({ scope: 'local' });
+        // Clear any invalid session data
+        await supabase.auth.signOut();
+        localStorage.clear();
         navigate("/auth");
       } finally {
         setIsLoading(false);
@@ -58,7 +57,7 @@ export function Navigation() {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_OUT' || !session) {
-        await supabase.auth.signOut({ scope: 'local' });
+        localStorage.clear(); // Clear all local storage
         navigate("/auth");
       }
     });
@@ -70,13 +69,18 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut({ scope: 'local' });
+      localStorage.clear(); // Clear all local storage before signing out
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       navigate("/auth");
       toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast.error("Erreur lors de la déconnexion");
+      // Force navigation to auth page even if there's an error
+      localStorage.clear();
       navigate("/auth");
+      toast.error("Erreur lors de la déconnexion");
     }
   };
 
