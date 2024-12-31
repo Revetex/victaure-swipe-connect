@@ -67,10 +67,12 @@ export function JobFiltersPanel({
           Actualiser
         </Button>
       </div>
-      <JobFiltersComponent
-        filters={filters}
-        onFilterChange={onFilterChange}
-      />
+      <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
+        <JobFiltersComponent
+          filters={filters}
+          onFilterChange={onFilterChange}
+        />
+      </ScrollArea>
     </div>
   );
 }
