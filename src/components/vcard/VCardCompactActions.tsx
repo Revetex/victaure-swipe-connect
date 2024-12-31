@@ -19,7 +19,7 @@ export function VCardCompactActions({
 }: VCardCompactActionsProps) {
   return (
     <motion.div 
-      className="absolute -bottom-[120px] left-0 right-0 flex flex-col gap-2 p-4 bg-gradient-to-t from-black/20 to-transparent rounded-b-xl"
+      className="flex flex-col gap-2 mt-4 px-2"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
@@ -29,7 +29,7 @@ export function VCardCompactActions({
           variant="outline"
           size="sm"
           onClick={onExpand}
-          className="flex-1 bg-black/30 hover:bg-black/40 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 group border-white/20"
+          className="flex-1 bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 group border-white/20"
         >
           <ChevronDown className="h-4 w-4 mr-2 group-hover:translate-y-0.5 transition-transform" />
           Voir plus
@@ -38,7 +38,7 @@ export function VCardCompactActions({
           variant="outline"
           size="sm"
           onClick={onEdit}
-          className="flex-1 bg-black/30 hover:bg-black/40 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
+          className="flex-1 bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
         >
           <Edit2 className="h-4 w-4 mr-2" />
           Éditer
@@ -49,7 +49,7 @@ export function VCardCompactActions({
           variant="outline"
           size="sm"
           onClick={onShare}
-          className="flex-1 bg-black/30 hover:bg-black/40 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
+          className="flex-1 bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
         >
           <Share2 className="h-4 w-4 mr-2" />
           Partager
@@ -58,7 +58,7 @@ export function VCardCompactActions({
           variant="outline"
           size="sm"
           onClick={onDownloadPDF}
-          className="flex-1 bg-black/30 hover:bg-black/40 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
+          className="flex-1 bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
         >
           <FileText className="h-4 w-4 mr-2" />
           CV PDF
@@ -67,7 +67,7 @@ export function VCardCompactActions({
           variant="outline"
           size="sm"
           onClick={onDownloadBusinessPDF}
-          className="flex-1 bg-black/30 hover:bg-black/40 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
+          className="flex-1 bg-white/5 hover:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm transition-all duration-300 border-white/20"
         >
           <FileText className="h-4 w-4 mr-2" />
           Business PDF

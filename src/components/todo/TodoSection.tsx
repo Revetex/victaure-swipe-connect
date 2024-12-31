@@ -1,52 +1,78 @@
+import { ListTodo } from "lucide-react";
 import { TodoInput } from "./TodoInput";
 import { TodoItem } from "./TodoItem";
-import { useTodoList } from "@/hooks/useTodoList";
-import { motion } from "framer-motion";
+import { Todo } from "@/types/todo";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function TodoSection() {
-  const { 
-    todos, 
-    newTodo,
-    selectedDate,
-    selectedTime,
-    allDay,
-    setNewTodo,
-    setSelectedDate,
-    setSelectedTime,
-    setAllDay,
-    addTodo, 
-    toggleTodo, 
-    deleteTodo 
-  } = useTodoList();
+interface TodoSectionProps {
+  todos: Todo[];
+  newTodo: string;
+  selectedDate?: Date;
+  selectedTime?: string;
+  allDay?: boolean;
+  onTodoChange: (value: string) => void;
+  onDateChange: (date?: Date) => void;
+  onTimeChange: (time?: string) => void;
+  onAllDayChange: (checked: boolean) => void;
+  onAdd: () => void;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
+  type?: 'notes' | 'tasks';
+}
 
+export function TodoSection({
+  todos,
+  newTodo,
+  selectedDate,
+  selectedTime,
+  allDay,
+  onTodoChange,
+  onDateChange,
+  onTimeChange,
+  onAllDayChange,
+  onAdd,
+  onToggle,
+  onDelete,
+  type = 'tasks'
+}: TodoSectionProps) {
+  const title = type === 'notes' ? 'Notes' : 'Tâches';
+  
   return (
-    <motion.div 
-      className="h-full flex flex-col gap-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 shadow-sm"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <TodoInput 
+    <div className="space-y-4 h-full flex flex-col">
+      <div className="flex items-center gap-2 text-primary">
+        <ListTodo className="h-5 w-5" />
+        <h2 className="text-lg font-semibold">{title}</h2>
+      </div>
+
+      <TodoInput
         newTodo={newTodo}
         selectedDate={selectedDate}
         selectedTime={selectedTime}
         allDay={allDay}
-        onTodoChange={setNewTodo}
-        onDateChange={setSelectedDate}
-        onTimeChange={setSelectedTime}
-        onAllDayChange={setAllDay}
-        onAdd={addTodo}
+        onTodoChange={onTodoChange}
+        onDateChange={onDateChange}
+        onTimeChange={onTimeChange}
+        onAllDayChange={onAllDayChange}
+        onAdd={onAdd}
       />
-      <div className="flex-1 overflow-y-auto space-y-2">
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={() => toggleTodo(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
-          />
-        ))}
-      </div>
-    </motion.div>
+
+      <ScrollArea className="flex-1 pr-4">
+        <div className="space-y-2">
+          {todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onToggle={onToggle}
+              onDelete={onDelete}
+            />
+          ))}
+          {todos.length === 0 && (
+            <div className="text-center text-muted-foreground py-8">
+              Aucune {type === 'notes' ? 'note' : 'tâche'} pour le moment
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+    </div>
   );
 }

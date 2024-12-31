@@ -47,14 +47,14 @@ export function VCardActions({
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-gray-800/20"
+      className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-indigo-100 dark:border-indigo-900/30"
     >
       {isEditing ? (
         <>
           <motion.div variants={item} className="flex-1 min-w-[120px]">
             <Button 
               onClick={onSave} 
-              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
@@ -64,7 +64,7 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges} 
               variant="secondary" 
-              className="w-full bg-black/20 hover:bg-black/30 text-white font-medium shadow-md transition-colors"
+              className="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors"
             >
               Appliquer
             </Button>
@@ -75,7 +75,7 @@ export function VCardActions({
           <motion.div variants={item} className="flex-1 min-w-[100px]">
             <Button 
               onClick={onShare} 
-              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
@@ -85,7 +85,7 @@ export function VCardActions({
             <Button 
               onClick={() => setIsEditing(true)} 
               variant="outline" 
-              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
+              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
@@ -95,7 +95,7 @@ export function VCardActions({
             <Button 
               onClick={onDownload} 
               variant="outline" 
-              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
+              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
               <Download className="mr-2 h-4 w-4" />
               Télécharger
@@ -105,7 +105,7 @@ export function VCardActions({
             <Button 
               onClick={onDownloadBusinessPDF} 
               variant="outline" 
-              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
+              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
@@ -115,7 +115,7 @@ export function VCardActions({
             <Button 
               onClick={onDownloadCVPDF} 
               variant="outline" 
-              className="w-full bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
+              className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
@@ -125,7 +125,7 @@ export function VCardActions({
             <Button 
               onClick={onCopyLink} 
               variant="outline"
-              className="bg-black/30 hover:bg-black/40 text-white font-medium shadow-md transition-colors border-white/20"
+              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
               <Copy className="h-4 w-4" />
             </Button>
