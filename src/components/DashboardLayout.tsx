@@ -4,21 +4,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useEffect, useRef } from "react";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    // Ensure video plays on component mount
-    if (videoRef.current) {
-      videoRef.current.play().catch(error => {
-        console.log("Video autoplay failed:", error);
-      });
-    }
-  }, []);
 
   const renderDashboardSection = (
     component: React.ReactNode,
@@ -53,12 +42,8 @@ export function DashboardLayout() {
             {renderDashboardSection(
               <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
                 <video 
-                  ref={videoRef}
                   className="w-full h-full object-cover"
                   controls
-                  autoPlay
-                  muted
-                  playsInline
                   loop
                 >
                   <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
