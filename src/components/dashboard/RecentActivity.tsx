@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Briefcase, Bell } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { motion } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Activity {
   id: string;
@@ -11,6 +13,21 @@ interface Activity {
   description: string;
   created_at: string;
 }
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, x: -20 },
+  show: { opacity: 1, x: 0 }
+};
 
 export function RecentActivity() {
   const { data: activities, isLoading } = useQuery({
@@ -114,28 +131,38 @@ export function RecentActivity() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Activité récente</h3>
-      <div className="space-y-4">
-        {activities?.map((activity) => (
-          <div 
-            key={activity.id}
-            className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-          >
-            <div className="p-2 rounded-full bg-muted">
-              {getIcon(activity.type)}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm">{activity.title}</p>
-              <p className="text-sm text-muted-foreground truncate">
-                {activity.description}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {format(new Date(activity.created_at), "d MMMM 'à' HH:mm", { locale: fr })}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Activité récente</h3>
+      <ScrollArea className="h-[500px] pr-4">
+        <motion.div 
+          className="space-y-4"
+          variants={container}
+          initial="hidden"
+          animate="show"
+        >
+          {activities?.map((activity) => (
+            <motion.div 
+              key={activity.id}
+              variants={item}
+              className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <div className="p-2 rounded-full bg-gray-100 dark:bg-gray-800">
+                {getIcon(activity.type)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm text-gray-900 dark:text-white">
+                  {activity.title}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                  {activity.description}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {format(new Date(activity.created_at), "d MMMM 'à' HH:mm", { locale: fr })}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </ScrollArea>
     </div>
   );
 }

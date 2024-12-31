@@ -20,14 +20,14 @@ export function QuickActionCard({
   gradient 
 }: QuickActionCardProps) {
   return (
-    <Card className="border-none overflow-hidden">
-      <motion.div 
-        className={`relative h-full bg-gradient-to-br ${gradient} hover:scale-[1.02] transition-transform duration-300`}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
+    <motion.div 
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="h-full"
+    >
+      <Card className="h-full border-none overflow-hidden bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium">
+          <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
             {title}
           </CardTitle>
           <div className={`${bgColor} p-2 rounded-lg`}>
@@ -35,12 +35,9 @@ export function QuickActionCard({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{value}</div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">{value}</div>
         </CardContent>
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent dark:from-gray-900/50 backdrop-blur-[2px] pointer-events-none"
-        />
-      </motion.div>
-    </Card>
+      </Card>
+    </motion.div>
   );
 }
