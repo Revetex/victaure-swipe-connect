@@ -88,10 +88,10 @@ export function Messages() {
         </TabsTrigger>
       </TabsList>
       <div className="flex-1 overflow-hidden">
-        <TabsContent value="messages" className="h-full">
+        <TabsContent value="messages" className="h-full bg-background/80 backdrop-blur-sm">
           <MessagesTab />
         </TabsContent>
-        <TabsContent value="notifications" className="h-full">
+        <TabsContent value="notifications" className="h-full bg-background/80 backdrop-blur-sm">
           <NotificationsTab />
         </TabsContent>
         <TabsContent value="notes" className="h-full">
@@ -129,7 +129,7 @@ export function Messages() {
         <TabsContent value="payments" className="h-full">
           <PaymentBox />
         </TabsContent>
-        <TabsContent value="settings" className="h-full">
+        <TabsContent value="settings" className="h-full bg-background/80 backdrop-blur-sm">
           <Settings />
         </TabsContent>
       </div>
