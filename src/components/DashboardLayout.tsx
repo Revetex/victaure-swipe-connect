@@ -32,9 +32,24 @@ export function DashboardLayout() {
     }
   };
 
+  const renderDashboardSection = (
+    component: React.ReactNode,
+    className: string,
+    padding: boolean = true
+  ) => (
+    <motion.div variants={itemVariants} className={className}>
+      <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+        {padding ? (
+          <div className="p-6 sm:p-8 h-full">{component}</div>
+        ) : (
+          component
+        )}
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      {/* Content */}
       <div className="relative z-10 flex-1 overflow-auto py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px] pb-12">
           <motion.div 
@@ -43,63 +58,31 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {/* Messages Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 h-[650px] md:h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <div className="p-6 sm:p-8 h-full">
-                  <Messages />
-                </div>
-              </div>
-            </motion.div>
+            {renderDashboardSection(
+              <Messages />,
+              "col-span-1 h-[650px] md:h-[750px]"
+            )}
 
-            {/* SwipeJob Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 md:col-span-1 xl:col-span-2 h-[650px] md:h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <SwipeJob />
-              </div>
-            </motion.div>
+            {renderDashboardSection(
+              <SwipeJob />,
+              "col-span-1 md:col-span-1 xl:col-span-2 h-[650px] md:h-[750px]",
+              false
+            )}
 
-            {/* TodoList Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 h-[650px] md:h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <div className="p-6 sm:p-8 h-full">
-                  <TodoList />
-                </div>
-              </div>
-            </motion.div>
+            {renderDashboardSection(
+              <TodoList />,
+              "col-span-1 h-[650px] md:h-[750px]"
+            )}
 
-            {/* VCard Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px] mb-12"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
-                <div className="p-6 sm:p-8">
-                  <VCard />
-                </div>
-              </div>
-            </motion.div>
+            {renderDashboardSection(
+              <VCard />,
+              "col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px] mb-12"
+            )}
 
-            {/* Payment Box Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-4 h-[450px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <div className="p-6 sm:p-8 h-full">
-                  <PaymentBox />
-                </div>
-              </div>
-            </motion.div>
+            {renderDashboardSection(
+              <PaymentBox />,
+              "col-span-1 md:col-span-2 xl:col-span-4 h-[450px]"
+            )}
           </motion.div>
         </div>
       </div>
