@@ -24,18 +24,21 @@ export function DistanceFilter({ filters, onFilterChange }: DistanceFilterProps)
         }
       );
     }
-  }, []);
+  }, [onFilterChange]);
+
+  const handleDistanceChange = (value: number[]) => {
+    const newDistance = value[0];
+    setDistance(newDistance);
+    onFilterChange("maxDistance", newDistance);
+  };
 
   return (
     <div className="space-y-4">
       <Label>Distance maximale (km)</Label>
       <div className="space-y-2">
         <Slider
-          value={[distance]}
-          onValueChange={(value) => {
-            setDistance(value[0]);
-            onFilterChange("maxDistance", value[0]);
-          }}
+          defaultValue={[distance]}
+          onValueChange={handleDistanceChange}
           max={100}
           step={5}
           className="w-full"
