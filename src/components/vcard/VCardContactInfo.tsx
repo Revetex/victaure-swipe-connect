@@ -34,10 +34,10 @@ export function VCardContactInfo({ email, phone, city, state }: VCardContactInfo
       {email && (
         <motion.div 
           variants={item}
-          className="flex items-center gap-2 text-sm text-muted-foreground/90 hover:text-foreground transition-colors group"
+          className="flex items-center gap-2 text-sm text-white/90 hover:text-white transition-colors group"
         >
-          <div className="p-1.5 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
-            <Mail className="h-4 w-4" />
+          <div className="p-1.5 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
+            <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
           <span className="truncate">{email}</span>
         </motion.div>
@@ -45,10 +45,10 @@ export function VCardContactInfo({ email, phone, city, state }: VCardContactInfo
       {phone && (
         <motion.div 
           variants={item}
-          className="flex items-center gap-2 text-sm text-muted-foreground/90 hover:text-foreground transition-colors group"
+          className="flex items-center gap-2 text-sm text-white/90 hover:text-white transition-colors group"
         >
-          <div className="p-1.5 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
-            <Phone className="h-4 w-4" />
+          <div className="p-1.5 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
+            <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
           <span className="truncate">{phone}</span>
         </motion.div>
@@ -56,10 +56,10 @@ export function VCardContactInfo({ email, phone, city, state }: VCardContactInfo
       {(city || state) && (
         <motion.div 
           variants={item}
-          className="flex items-center gap-2 text-sm text-muted-foreground/90 hover:text-foreground transition-colors group"
+          className="flex items-center gap-2 text-sm text-white/90 hover:text-white transition-colors group"
         >
-          <div className="p-1.5 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors">
-            <MapPin className="h-4 w-4" />
+          <div className="p-1.5 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
+            <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
           <span className="truncate">
             {city}{state && `, ${state}`}

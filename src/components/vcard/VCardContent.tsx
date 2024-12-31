@@ -51,9 +51,9 @@ export function VCardContent({
   return (
     <Card className={`w-full max-w-[95mm] mx-auto overflow-hidden border-none shadow-xl transition-all duration-300 ${
       !isExpanded ? 'h-[60mm] bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm ring-1 ring-white/10' : 
-      'bg-white dark:bg-gray-800'
+      'min-h-screen sm:min-h-0 bg-white dark:bg-gray-800'
     }`}>
-      <CardContent className={`p-6 ${!isExpanded && 'relative'}`}>
+      <CardContent className={`p-4 sm:p-6 ${!isExpanded && 'relative'}`}>
         {!isExpanded && (
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-0 bg-circuit-pattern opacity-5" />
@@ -62,7 +62,7 @@ export function VCardContent({
             <div className="absolute inset-0 bg-gradient-to-tr from-victaure-blue/5 to-transparent opacity-50" />
           </div>
         )}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <VCardMainContent
             profile={tempProfile}
             isEditing={isEditing}
@@ -72,7 +72,7 @@ export function VCardContent({
             setIsExpanded={setIsExpanded}
           />
 
-          <AnimatePresence>
+          <AnimatePresence mode="sync">
             {isExpanded && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}

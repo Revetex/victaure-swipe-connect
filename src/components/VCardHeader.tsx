@@ -23,12 +23,12 @@ export function VCardHeader({
 }: VCardHeaderProps) {
   return (
     <motion.div 
-      className="flex flex-col sm:flex-row sm:items-start gap-3 relative w-full"
+      className="flex flex-col gap-3 relative w-full"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col sm:flex-row gap-3 w-full">
+      <div className="flex items-start gap-3">
         <VCardAvatar
           profile={profile}
           isEditing={isEditing}

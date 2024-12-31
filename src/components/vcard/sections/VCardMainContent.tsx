@@ -27,7 +27,7 @@ export function VCardMainContent({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex justify-between items-start gap-4">
+      <div className="flex flex-col sm:flex-row items-start gap-4">
         <div className="flex-1 min-w-0">
           <VCardHeader
             profile={profile}
@@ -57,7 +57,7 @@ export function VCardMainContent({
 
         {!isExpanded && (
           <motion.div 
-            className="shrink-0"
+            className="hidden sm:block shrink-0"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
