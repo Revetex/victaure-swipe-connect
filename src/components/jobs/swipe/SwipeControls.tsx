@@ -1,36 +1,37 @@
 import { Button } from "@/components/ui/button";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
+import { X, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface SwipeControlsProps {
   onSwipe: (direction: "left" | "right") => void;
-  isAnimating?: boolean;
+  isAnimating: boolean;
 }
 
 export function SwipeControls({ onSwipe, isAnimating }: SwipeControlsProps) {
   return (
     <motion.div 
-      className="flex justify-center gap-4 mt-6"
+      className="flex justify-center gap-4 mt-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ delay: 0.2 }}
     >
       <Button
-        variant="outline"
         size="lg"
-        className="border-destructive text-destructive hover:bg-destructive/10 transition-all duration-200 shadow-sm disabled:opacity-50"
+        variant="outline"
+        className="rounded-full w-16 h-16 p-0 border-2 hover:border-red-500 hover:text-red-500 transition-colors"
         onClick={() => onSwipe("left")}
         disabled={isAnimating}
       >
-        <ThumbsDown className="h-5 w-5" />
+        <X className="h-8 w-8" />
       </Button>
+      
       <Button
         size="lg"
-        className="bg-green-500 hover:bg-green-600 text-white transition-all duration-200 shadow-sm disabled:opacity-50"
+        className="rounded-full w-16 h-16 p-0 bg-green-500 hover:bg-green-600 border-0"
         onClick={() => onSwipe("right")}
         disabled={isAnimating}
       >
-        <ThumbsUp className="h-5 w-5" />
+        <Heart className="h-8 w-8" />
       </Button>
     </motion.div>
   );
