@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Job } from "@/types/job";
+import { Job, JobStatus } from "@/types/job";
 import { JobFilters } from "../JobFilterUtils";
 import { toast } from "sonner";
 
@@ -52,9 +52,10 @@ export function useSwipeJobs(filters: JobFilters) {
 
       if (fetchError) throw fetchError;
 
-      // Format jobs with virtual fields
+      // Format jobs with virtual fields and ensure status is of type JobStatus
       const formattedJobs = data.map(job => ({
         ...job,
+        status: job.status as JobStatus, // Type assertion here is safe because we know the values from the database
         company: job.employer?.company_name || "Entreprise",
         salary: `${job.budget} CAD`,
         skills: job.required_skills || [],
