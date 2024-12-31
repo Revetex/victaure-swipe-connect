@@ -19,9 +19,9 @@ export function DashboardLayout() {
       variants={itemVariants} 
       className={`transform transition-all duration-300 ${className}`}
     >
-      <div className="dashboard-card hover-lift h-full">
+      <div className="dashboard-card h-full">
         {padding ? (
-          <div className="responsive-padding h-full">{component}</div>
+          <div className="responsive-padding h-full overflow-hidden">{component}</div>
         ) : (
           component
         )}
@@ -31,10 +31,10 @@ export function DashboardLayout() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      <div className="relative z-10 flex-1 overflow-auto py-4 sm:py-6 lg:py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px] pb-6 sm:pb-8">
+      <div className="relative z-10 flex-1 overflow-auto py-4 sm:py-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px]">
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 auto-rows-[minmax(400px,_1fr)]"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -48,7 +48,7 @@ export function DashboardLayout() {
             {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
-              "col-span-1 md:col-span-1 xl:col-span-1 h-[600px]",
+              "col-span-1 xl:col-span-1 h-[600px]",
               false
             )}
 
