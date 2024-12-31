@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 
 interface TodoItemProps {
   todo: Todo;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
@@ -38,8 +38,7 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
             <Clock className="h-3 w-3" />
             <span>
               {todo.dueDate && `Pour le ${format(todo.dueDate, 'dd/MM/yyyy', { locale: fr })}`}
-              {todo.dueTime && !todo.allDay && ` à ${todo.dueTime}`}
-              {todo.allDay && " (toute la journée)"}
+              {todo.dueTime && ` à ${todo.dueTime}`}
             </span>
           </div>
         )}

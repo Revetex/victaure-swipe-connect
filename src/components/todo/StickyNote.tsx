@@ -6,28 +6,10 @@ import { cn } from "@/lib/utils";
 interface StickyNoteProps {
   note: StickyNoteType;
   colorClass: string;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
-  // Function to determine text color based on background color
-  const getTextColor = (bgColorClass: string) => {
-    switch (bgColorClass) {
-      case "bg-[#FEF7CD]": // Yellow
-      case "bg-[#F2FCE2]": // Green
-      case "bg-[#D3E4FD]": // Blue
-      case "bg-[#E5DEFF]": // Purple
-      case "bg-[#FFDEE2]": // Pink
-      case "bg-[#FDE1D3]": // Orange
-      case "bg-[#F1F0FB]": // Gray
-        return "text-gray-800";
-      default:
-        return "text-gray-900";
-    }
-  };
-
-  const textColorClass = getTextColor(colorClass);
-
   return (
     <div className={cn(
       "p-4 rounded-lg shadow-sm group transition-all duration-200",
@@ -36,13 +18,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       colorClass
     )}>
       <div className="flex justify-between items-start gap-2">
-        <p className={cn(
-          "flex-1 whitespace-pre-wrap text-sm",
-          textColorClass,
-          "font-medium"
-        )}>
-          {note.text}
-        </p>
+        <p className="flex-1 whitespace-pre-wrap text-sm">{note.text}</p>
         <Button
           variant="ghost"
           size="icon"

@@ -60,11 +60,9 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   };
 
   const handleSwipeWithMatch = async (direction: "left" | "right") => {
-    if (isAnimating) return;
-    
     setIsAnimating(true);
-    const targetX = direction === "left" ? -200 : 200;
     
+    const targetX = direction === "left" ? -200 : 200;
     await animate(x, targetX, {
       type: "spring",
       stiffness: 300,
@@ -75,11 +73,16 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     if (direction === "right" && jobs[currentIndex]) {
       await onMatchSuccess(jobs[currentIndex].id);
     }
-    
     await handleSwipe(direction);
+    
     x.set(0);
     setSwipeDirection(null);
     setIsAnimating(false);
+  };
+
+  const handleButtonSwipe = async (direction: "left" | "right") => {
+    if (isAnimating) return;
+    await handleSwipeWithMatch(direction);
   };
 
   if (loading) {
@@ -95,11 +98,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   }
 
   if (!jobs || jobs.length === 0) {
-    return (
-      <SwipeEmptyState 
-        onRefresh={fetchJobs}
-      />
-    );
+    return <SwipeEmptyState onRefresh={fetchJobs} />;
   }
 
   if (currentIndex >= jobs.length) {
@@ -108,14 +107,14 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
         onRefresh={() => {
           setCurrentIndex(0);
           fetchJobs();
-        }}
+        }} 
       />
     );
   }
 
   return (
     <motion.div 
-      className="relative w-full max-w-md mx-auto px-4 sm:px-0"
+      className="relative w-full max-w-md mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -152,11 +151,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
         />
       </motion.div>
       
-      <SwipeControls 
-        onSwipeLeft={() => handleSwipeWithMatch("left")}
-        onSwipeRight={() => handleSwipeWithMatch("right")}
-        isAnimating={isAnimating}
-      />
+      <SwipeControls onSwipe={handleButtonSwipe} isAnimating={isAnimating} />
     </motion.div>
   );
 }

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 import { UserProfile, Certification, Experience, Education } from "@/types/profile";
 
 export function useProfile() {
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
@@ -114,13 +116,18 @@ export function useProfile() {
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de charger votre profil",
+        });
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchProfile();
-  }, []);
+  }, [toast]);
 
   return { profile, setProfile, tempProfile, setTempProfile, isLoading };
 }

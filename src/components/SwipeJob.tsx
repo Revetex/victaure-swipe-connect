@@ -1,162 +1,182 @@
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useSwipeJobs } from "./jobs/hooks/useSwipeJobs";
-import { SwipeControls } from "./jobs/swipe/SwipeControls";
-import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
-import { Badge } from "./ui/badge";
-import { Card } from "./ui/card";
-import { defaultFilters } from "./jobs/JobFilterUtils";
-import { 
-  MapPin, 
-  Calendar, 
-  Briefcase, 
-  Building2,
-  GraduationCap,
-  XCircle
-} from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { SwipeMatch } from "./SwipeMatch";
+import { CreateJobForm } from "./jobs/CreateJobForm";
+import { JobFilters } from "./jobs/JobFilterUtils";
+import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { JobList } from "./jobs/JobList";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Job } from "@/types/job";
+import { toast } from "sonner";
 
 export function SwipeJob() {
-  const { 
-    currentJob,
-    loading: isLoading,
-    error,
-    handleSwipe,
-    fetchJobs
-  } = useSwipeJobs(defaultFilters);
+  const [isOpen, setIsOpen] = useState(false);
+  const [openLocation, setOpenLocation] = useState(false);
+  const [filters, setFilters] = useState<JobFilters>({
+    category: "all",
+    subcategory: "all",
+    duration: "all",
+    experienceLevel: "all",
+    location: "",
+    province: "",
+    searchTerm: ""
+  });
 
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const { data: myJobs, refetch: refetchMyJobs } = useQuery({
+    queryKey: ['my-jobs'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('employer_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching my jobs:', error);
+        return [];
+      }
+      
+      return data?.map(job => ({
+        ...job,
+        company: "Votre entreprise",
+        salary: `${job.budget} CAD`,
+        skills: job.required_skills || []
+      })) as Job[];
+    }
+  });
 
-  const handleSwipeAction = async (direction: 'left' | 'right') => {
-    setSwipeDirection(direction);
-    await new Promise(resolve => setTimeout(resolve, 300));
-    await handleSwipe(direction);
-    setSwipeDirection(null);
+  const handleFilterChange = (key: keyof JobFilters, value: any) => {
+    if (key === "category" && value !== filters.category) {
+      setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
+    } else {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  const handleMatchSuccess = async (jobId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour effectuer cette action");
+        return;
+      }
 
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-        <XCircle className="h-12 w-12 text-destructive mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Une erreur est survenue</h3>
-        <p className="text-muted-foreground">
-          Impossible de charger les missions. Veuillez réessayer plus tard.
-        </p>
-      </div>
-    );
-  }
+      // Get employer_id from the job
+      const { data: jobData } = await supabase
+        .from('jobs')
+        .select('employer_id')
+        .eq('id', jobId)
+        .single();
 
-  if (!currentJob) {
-    return <SwipeEmptyState onRefresh={fetchJobs} />;
-  }
+      if (!jobData) {
+        toast.error("Cette offre n'existe plus");
+        return;
+      }
+
+      // Create match
+      const { error: matchError } = await supabase
+        .from('matches')
+        .insert({
+          job_id: jobId,
+          professional_id: user.id,
+          employer_id: jobData.employer_id,
+          status: 'pending',
+          match_score: 0.8 // TODO: Implement real matching score
+        });
+
+      if (matchError) throw matchError;
+
+      // Create notification for employer
+      const { error: notifError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: jobData.employer_id,
+          title: "Nouveau match !",
+          message: "Un professionnel a manifesté son intérêt pour votre offre",
+        });
+
+      if (notifError) throw notifError;
+
+      toast.success("Match créé avec succès !");
+    } catch (error) {
+      console.error('Error creating match:', error);
+      toast.error("Une erreur est survenue lors du match");
+    }
+  };
 
   return (
-    <div className="relative h-full flex flex-col">
-      <AnimatePresence mode="wait">
-        <motion.div 
-          key={currentJob.id}
-          className="flex-1 p-6"
-          initial={{ opacity: 0, x: swipeDirection === 'left' ? -100 : swipeDirection === 'right' ? 100 : 0 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ 
-            opacity: 0, 
-            x: swipeDirection === 'left' ? 100 : swipeDirection === 'right' ? -100 : 0,
-            transition: { duration: 0.3 }
-          }}
-        >
-          <Card className="h-full overflow-auto glass-card">
-            <div className="p-6 space-y-6">
-              {/* Header */}
-              <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <h2 className="text-2xl font-bold">{currentJob.title}</h2>
-                  <Badge variant="outline" className="bg-primary/10 text-primary">
-                    {currentJob.contract_type}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center text-muted-foreground">
-                  <Building2 className="h-4 w-4 mr-2" />
-                  <span>{currentJob.company}</span>
-                </div>
-              </div>
-
-              {/* Key Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center text-muted-foreground">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  <span>{currentJob.location}</span>
-                </div>
-                <div className="flex items-center text-muted-foreground">
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  <span>{currentJob.salary}</span>
-                </div>
-                <div className="flex items-center text-muted-foreground">
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  <span>{currentJob.experience_level}</span>
-                </div>
-                {currentJob.application_deadline && (
-                  <div className="flex items-center text-muted-foreground">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span>Date limite: {new Date(currentJob.application_deadline).toLocaleDateString()}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Description */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Description</h3>
-                <p className="text-muted-foreground whitespace-pre-wrap">
-                  {currentJob.description}
-                </p>
-              </div>
-
-              {/* Skills */}
-              {currentJob.required_skills && currentJob.required_skills.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Compétences requises</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {currentJob.required_skills.map((skill, index) => (
-                      <Badge key={index} variant="secondary">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Preferred Skills */}
-              {currentJob.preferred_skills && currentJob.preferred_skills.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Compétences souhaitées</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {currentJob.preferred_skills.map((skill, index) => (
-                      <Badge key={index} variant="outline" className="border-primary/20">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
+    <div className="glass-card p-4 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="text-2xl font-bold">Offres disponibles</h2>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Ajouter une mission
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-victaure-blue">
+                Ajouter une mission
+              </DialogTitle>
+              <DialogDescription className="text-victaure-gray-dark">
+                Créez une nouvelle mission en remplissant les informations ci-dessous.
+                Les professionnels pourront la consulter et y postuler.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-6">
+              <CreateJobForm onSuccess={() => {
+                setIsOpen(false);
+                refetchMyJobs();
+              }} />
             </div>
-          </Card>
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Controls */}
-      <div className="p-6 border-t bg-background/50 backdrop-blur-sm">
-        <SwipeControls
-          onSwipeLeft={() => handleSwipe('left')}
-          onSwipeRight={() => handleSwipe('right')}
-        />
+          </DialogContent>
+        </Dialog>
       </div>
+
+      <Tabs defaultValue="browse" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="browse">Parcourir les offres</TabsTrigger>
+          <TabsTrigger value="my-jobs">Mes annonces</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="browse">
+          <JobFiltersPanel 
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            openLocation={openLocation}
+            setOpenLocation={setOpenLocation}
+          />
+          
+          <div className="flex justify-center">
+            <SwipeMatch 
+              filters={filters} 
+              onMatchSuccess={handleMatchSuccess}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="my-jobs">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Mes annonces publiées</h3>
+            {myJobs && myJobs.length > 0 ? (
+              <JobList jobs={myJobs} onJobDeleted={refetchMyJobs} />
+            ) : (
+              <p className="text-muted-foreground text-center py-8">
+                Vous n'avez pas encore publié d'annonces.
+              </p>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

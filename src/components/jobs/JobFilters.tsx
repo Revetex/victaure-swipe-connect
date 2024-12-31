@@ -5,9 +5,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { SlidersHorizontal } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { missionCategories } from "@/types/job";
+import { provinceData } from "@/data/provinces";
 
 interface JobFiltersProps {
   category: string;
@@ -16,6 +17,8 @@ interface JobFiltersProps {
   setSubcategory: (subcategory: string) => void;
   duration: string;
   setDuration: (duration: string) => void;
+  salaryRange: number[];
+  setSalaryRange: (range: number[]) => void;
   missionCategories: Record<string, { icon: any; subcategories: string[] }>;
 }
 
@@ -26,6 +29,8 @@ export function JobFilters({
   setSubcategory,
   duration,
   setDuration,
+  salaryRange,
+  setSalaryRange,
   missionCategories,
 }: JobFiltersProps) {
   const isMobile = useIsMobile();
@@ -44,6 +49,7 @@ export function JobFilters({
 
       <div className="p-4 space-y-6">
         <div className="grid grid-cols-1 gap-6">
+          {/* Category Section */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-foreground">Catégorie</h4>
             <Select value={category} onValueChange={setCategory}>
@@ -67,6 +73,7 @@ export function JobFilters({
             </Select>
           </div>
 
+          {/* Subcategory Section - Only show if category is selected */}
           {category && subcategories && category !== "all" && (
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-foreground">Sous-catégorie</h4>
@@ -86,6 +93,7 @@ export function JobFilters({
             </div>
           )}
 
+          {/* Duration Section */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-foreground">Durée</h4>
             <Select value={duration} onValueChange={setDuration}>
@@ -101,6 +109,25 @@ export function JobFilters({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Salary Range Section */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium text-foreground">
+              Rémunération (CAD/jour)
+            </h4>
+            <Slider
+              defaultValue={salaryRange}
+              max={1000}
+              min={300}
+              step={50}
+              onValueChange={setSalaryRange}
+              className="mt-6"
+            />
+            <div className="flex justify-between mt-2 text-sm text-muted-foreground">
+              <span>{salaryRange[0]} CAD</span>
+              <span>{salaryRange[1]} CAD</span>
+            </div>
           </div>
         </div>
       </div>

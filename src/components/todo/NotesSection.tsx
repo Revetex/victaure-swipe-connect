@@ -3,110 +3,28 @@ import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
 import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
-const colors: ColorOption[] = [
-  { value: "yellow", label: "Jaune", class: "bg-[#FEF7CD]" },
-  { value: "green", label: "Vert", class: "bg-[#F2FCE2]" },
-  { value: "blue", label: "Bleu", class: "bg-[#D3E4FD]" },
-  { value: "purple", label: "Violet", class: "bg-[#E5DEFF]" },
-  { value: "pink", label: "Rose", class: "bg-[#FFDEE2]" },
-  { value: "orange", label: "Orange", class: "bg-[#FDE1D3]" },
-  { value: "gray", label: "Gris", class: "bg-[#F1F0FB]" },
-];
+interface NotesSectionProps {
+  notes: StickyNoteType[];
+  newNote: string;
+  selectedColor: string;
+  colors: ColorOption[];
+  onNoteChange: (value: string) => void;
+  onColorChange: (color: string) => void;
+  onAdd: () => void;
+  onDelete: (id: number) => void;
+}
 
-export function NotesSection() {
-  const [notes, setNotes] = useState<StickyNoteType[]>([]);
-  const [newNote, setNewNote] = useState("");
-  const [selectedColor, setSelectedColor] = useState(colors[0].value);
-
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-
-  const fetchNotes = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('notes')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      
-      const formattedNotes: StickyNoteType[] = (data || []).map(note => ({
-        id: note.id,
-        text: note.text,
-        color: note.color
-      }));
-      
-      setNotes(formattedNotes);
-    } catch (error) {
-      console.error('Error fetching notes:', error);
-      toast.error("Erreur lors du chargement des notes");
-    }
-  };
-
-  const handleAdd = async () => {
-    if (!newNote.trim()) return;
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('notes')
-        .insert([
-          {
-            user_id: user.id,
-            text: newNote.trim(),
-            color: selectedColor,
-          }
-        ])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      if (data) {
-        const newNoteItem: StickyNoteType = {
-          id: data.id,
-          text: data.text,
-          color: data.color
-        };
-        
-        setNotes([newNoteItem, ...notes]);
-        setNewNote("");
-        toast.success("Note ajoutée");
-      }
-    } catch (error) {
-      console.error('Error adding note:', error);
-      toast.error("Erreur lors de l'ajout de la note");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('notes')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setNotes(notes.filter(note => note.id !== id));
-      toast.success("Note supprimée");
-    } catch (error) {
-      console.error('Error deleting note:', error);
-      toast.error("Erreur lors de la suppression de la note");
-    }
-  };
-
+export function NotesSection({
+  notes,
+  newNote,
+  selectedColor,
+  colors,
+  onNoteChange,
+  onColorChange,
+  onAdd,
+  onDelete,
+}: NotesSectionProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-primary">
@@ -118,9 +36,9 @@ export function NotesSection() {
         newNote={newNote}
         selectedColor={selectedColor}
         colors={colors}
-        onNoteChange={setNewNote}
-        onColorChange={setSelectedColor}
-        onAdd={handleAdd}
+        onNoteChange={onNoteChange}
+        onColorChange={onColorChange}
+        onAdd={onAdd}
       />
 
       <ScrollArea className="h-[400px]">
@@ -132,7 +50,7 @@ export function NotesSection() {
                 key={note.id}
                 note={note}
                 colorClass={colorClass}
-                onDelete={handleDelete}
+                onDelete={onDelete}
               />
             );
           })}

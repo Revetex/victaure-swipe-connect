@@ -1,8 +1,6 @@
 import { Code, Palette, TrendingUp, ClipboardList, Headphones, MoreHorizontal } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-export type JobStatus = 'open' | 'closed' | 'in-progress';
-
 export interface Job {
   id: string;
   title: string;
@@ -10,7 +8,7 @@ export interface Job {
   budget: number;
   location: string;
   employer_id: string;
-  status: JobStatus;
+  status: 'open' | 'closed' | 'in-progress';
   category: string;
   contract_type: string;
   experience_level: string;
@@ -25,11 +23,6 @@ export interface Job {
   application_deadline?: string;
   created_at?: string;
   updated_at?: string;
-  employer?: {
-    full_name: string | null;
-    company_name: string | null;
-    avatar_url: string | null;
-  };
   // Virtual fields for display
   company?: string;
   salary?: string;

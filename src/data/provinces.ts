@@ -15,25 +15,13 @@ export const provinceData = {
     "Toronto",
     "Ottawa",
     "Mississauga",
-    "Brampton",
     "Hamilton",
     "London",
-    "Markham",
-    "Vaughan",
+    "Brampton",
+    "Windsor",
+    "Kingston",
     "Kitchener",
-    "Windsor"
-  ],
-  "British Columbia": [
-    "Vancouver",
-    "Victoria",
-    "Surrey",
-    "Burnaby",
-    "Richmond",
-    "Abbotsford",
-    "Coquitlam",
-    "Kelowna",
-    "Saanich",
-    "Nanaimo"
+    "Waterloo"
   ],
   "Alberta": [
     "Calgary",
@@ -46,21 +34,48 @@ export const provinceData = {
     "Airdrie",
     "Spruce Grove",
     "Leduc"
+  ],
+  "Colombie-Britannique": [
+    "Vancouver",
+    "Victoria",
+    "Surrey",
+    "Burnaby",
+    "Richmond",
+    "Abbotsford",
+    "Kelowna",
+    "Nanaimo",
+    "Kamloops",
+    "Prince George"
+  ],
+  "Manitoba": [
+    "Winnipeg",
+    "Brandon",
+    "Steinbach",
+    "Thompson",
+    "Portage la Prairie",
+    "Selkirk",
+    "Dauphin",
+    "Winkler",
+    "Morden",
+    "The Pas"
   ]
 };
 
-export const experienceLevels = [
-  "Entry-Level",
-  "Mid-Level", 
-  "Senior",
-  "Expert",
-  "Lead"
+export const contractTypes = [
+  'CDI',
+  'CDD',
+  'Stage',
+  'Freelance',
+  'Temps partiel',
+  'Temps plein'
 ] as const;
 
-export const contractTypes = [
-  "Full-Time",
-  "Part-Time",
-  "Contract",
-  "Internship",
-  "Freelance"
+export const experienceLevels = [
+  "Débutant",
+  "Junior (1-3 ans)",
+  "Intermédiaire (3-5 ans)",
+  "Senior (5-8 ans)",
+  "Expert (8+ ans)",
+  "Lead",
+  "Directeur"
 ] as const;

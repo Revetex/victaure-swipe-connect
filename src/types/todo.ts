@@ -1,5 +1,5 @@
 export interface Todo {
-  id: string;
+  id: number;
   text: string;
   completed: boolean;
   dueDate?: Date;
@@ -8,7 +8,7 @@ export interface Todo {
 }
 
 export interface StickyNote {
-  id: string;
+  id: number;
   text: string;
   color: string;
 }

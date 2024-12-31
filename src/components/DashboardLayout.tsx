@@ -1,36 +1,13 @@
+import { TodoList } from "@/components/TodoList";
+import { Messages } from "@/components/Messages";
+import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { CreateJobForm } from "./jobs/CreateJobForm";
-import { defaultFilters } from "@/components/jobs/JobFilterUtils";
-import { useJobsQuery } from "@/components/marketplace/hooks/useJobsQuery";
-import { toast } from "sonner";
-import { MessagesSection } from "./dashboard/sections/MessagesSection";
-import { SwipeSection } from "./dashboard/sections/SwipeSection";
-import { JobsSection } from "./dashboard/sections/JobsSection";
-import { VCardSection } from "./dashboard/sections/VCardSection";
-import { PaymentSection } from "./dashboard/sections/PaymentSection";
-import type { JobFilters } from "./jobs/JobFilterUtils";
+import { PaymentBox } from "@/components/dashboard/PaymentBox";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<JobFilters>(defaultFilters);
-  const [openLocation, setOpenLocation] = useState(false);
-  
-  const { data: jobs = [], isLoading, error, refetch } = useJobsQuery(filters);
-
-  const handleFilterChange = (key: keyof JobFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleCreateSuccess = () => {
-    setIsCreateDialogOpen(false);
-    refetch();
-    toast.success("Mission créée avec succès");
-  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -57,6 +34,7 @@ export function DashboardLayout() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
+      {/* Content */}
       <div className="relative z-10 flex-1 overflow-auto py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px] pb-12">
           <motion.div 
@@ -65,36 +43,66 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            <MessagesSection variants={itemVariants} />
-            <SwipeSection variants={itemVariants} />
-            <JobsSection 
+            {/* Messages Section */}
+            <motion.div 
               variants={itemVariants}
-              showFilters={showFilters}
-              setShowFilters={setShowFilters}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              openLocation={openLocation}
-              setOpenLocation={setOpenLocation}
-              jobs={jobs}
-              isLoading={isLoading}
-              error={error}
-              onJobDeleted={refetch}
-              onCreateClick={() => setIsCreateDialogOpen(true)}
-            />
-            <VCardSection variants={itemVariants} />
-            <PaymentSection variants={itemVariants} />
+              className="col-span-1 h-[650px] md:h-[750px]"
+            >
+              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+                <div className="p-6 sm:p-8 h-full">
+                  <Messages />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* SwipeJob Section */}
+            <motion.div 
+              variants={itemVariants}
+              className="col-span-1 md:col-span-1 xl:col-span-2 h-[650px] md:h-[750px]"
+            >
+              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+                <SwipeJob />
+              </div>
+            </motion.div>
+
+            {/* TodoList Section */}
+            <motion.div 
+              variants={itemVariants}
+              className="col-span-1 h-[650px] md:h-[750px]"
+            >
+              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+                <div className="p-6 sm:p-8 h-full">
+                  <TodoList />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* VCard Section */}
+            <motion.div 
+              variants={itemVariants}
+              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px] mb-12"
+            >
+              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
+                <div className="p-6 sm:p-8">
+                  <VCard />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Payment Box Section */}
+            <motion.div 
+              variants={itemVariants}
+              className="col-span-1 md:col-span-2 xl:col-span-4 h-[450px]"
+            >
+              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+                <div className="p-6 sm:p-8 h-full">
+                  <PaymentBox />
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
-
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Créer une nouvelle mission</DialogTitle>
-          </DialogHeader>
-          <CreateJobForm onSuccess={handleCreateSuccess} />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
