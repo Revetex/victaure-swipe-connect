@@ -14,44 +14,67 @@ export function TodoList() {
 
   const addTodo = async () => {
     if (newTodo.trim()) {
-      const todo = {
-        id: Date.now(),
-        text: newTodo,
-        completed: false,
-        dueDate: selectedDate,
-        dueTime: allDay ? undefined : selectedTime,
-        allDay,
-      };
-      setTodos([...todos, todo]);
-      setNewTodo("");
-      setSelectedDate(undefined);
-      setSelectedTime(undefined);
-      setAllDay(false);
-      
-      toast({
-        title: "Tâche ajoutée",
-        description: "Votre nouvelle tâche a été ajoutée avec succès.",
-      });
-
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        await supabase
-          .from('notifications')
+        const { data, error } = await supabase
+          .from('todos')
           .insert([{
             user_id: user.id,
-            title: "Nouvelle tâche",
-            message: newTodo,
-            read: false
-          }]);
+            text: newTodo.trim(),
+            completed: false,
+            due_date: selectedDate,
+            due_time: allDay ? undefined : selectedTime,
+            all_day: allDay,
+          }])
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          const newTodoItem: Todo = {
+            id: data.id,
+            text: data.text,
+            completed: false,
+            dueDate: data.due_date ? new Date(data.due_date) : undefined,
+            dueTime: data.due_time,
+            allDay: data.all_day
+          };
+          
+          setTodos([newTodoItem, ...todos]);
+          setNewTodo("");
+          setSelectedDate(undefined);
+          setSelectedTime(undefined);
+          setAllDay(false);
+          
+          toast({
+            title: "Tâche ajoutée",
+            description: "Votre nouvelle tâche a été ajoutée avec succès.",
+          });
+
+          await supabase
+            .from('notifications')
+            .insert([{
+              user_id: user.id,
+              title: "Nouvelle tâche",
+              message: newTodo,
+              read: false
+            }]);
+        }
       } catch (error) {
-        console.error('Error adding notification:', error);
+        console.error('Error adding todo:', error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de l'ajout de la tâche.",
+          variant: "destructive",
+        });
       }
     }
   };
 
-  const toggleTodo = (id: number) => {
+  const toggleTodo = (id: string) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
         return { ...todo, completed: !todo.completed };
@@ -60,7 +83,7 @@ export function TodoList() {
     }));
   };
 
-  const deleteTodo = (id: number) => {
+  const deleteTodo = (id: string) => {
     setTodos(todos.filter(todo => todo.id !== id));
     toast({
       title: "Tâche supprimée",
