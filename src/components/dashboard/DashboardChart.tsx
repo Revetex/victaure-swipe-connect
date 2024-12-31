@@ -3,6 +3,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useTheme } from "next-themes";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useMemo } from "react";
+
+interface ActivityData {
+  date: string;
+  matches: number;
+  messages: number;
+}
 
 export function DashboardChart() {
   const { theme } = useTheme();
@@ -16,49 +23,51 @@ export function DashboardChart() {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const { data: matches } = await supabase
-        .from('matches')
-        .select('created_at')
-        .gte('created_at', thirtyDaysAgo.toISOString())
-        .order('created_at');
+      const [matchesResponse, messagesResponse] = await Promise.all([
+        supabase
+          .from('matches')
+          .select('created_at')
+          .gte('created_at', thirtyDaysAgo.toISOString())
+          .order('created_at'),
+        supabase
+          .from('messages')
+          .select('created_at')
+          .gte('created_at', thirtyDaysAgo.toISOString())
+          .order('created_at')
+      ]);
 
-      const { data: messages } = await supabase
-        .from('messages')
-        .select('created_at')
-        .gte('created_at', thirtyDaysAgo.toISOString())
-        .order('created_at');
-
-      // Group by day
-      const activityByDay = new Map();
+      const activityByDay = new Map<string, { matches: number; messages: number }>();
       
-      matches?.forEach(match => {
+      matchesResponse.data?.forEach(match => {
         const date = new Date(match.created_at).toLocaleDateString();
-        activityByDay.set(date, {
-          ...activityByDay.get(date),
-          matches: (activityByDay.get(date)?.matches || 0) + 1
-        });
+        const current = activityByDay.get(date) || { matches: 0, messages: 0 };
+        activityByDay.set(date, { ...current, matches: current.matches + 1 });
       });
 
-      messages?.forEach(message => {
+      messagesResponse.data?.forEach(message => {
         const date = new Date(message.created_at).toLocaleDateString();
-        activityByDay.set(date, {
-          ...activityByDay.get(date),
-          messages: (activityByDay.get(date)?.messages || 0) + 1
-        });
+        const current = activityByDay.get(date) || { matches: 0, messages: 0 };
+        activityByDay.set(date, { ...current, messages: current.messages + 1 });
       });
 
-      return Array.from(activityByDay.entries()).map(([date, data]) => ({
+      return Array.from(activityByDay.entries()).map(([date, data]): ActivityData => ({
         date,
-        matches: data.matches || 0,
-        messages: data.messages || 0
+        matches: data.matches,
+        messages: data.messages
       }));
     }
   });
 
+  const chartTheme = useMemo(() => ({
+    gridColor: theme === 'dark' ? '#374151' : '#E5E7EB',
+    textColor: theme === 'dark' ? '#9CA3AF' : '#6B7280',
+    tooltipBg: theme === 'dark' ? '#1F2937' : '#FFFFFF'
+  }), [theme]);
+
   if (isLoading) {
     return (
       <Card className="p-6 h-[400px] animate-pulse">
-        <div className="h-full bg-muted/50 rounded-lg"></div>
+        <div className="h-full bg-muted/50 rounded-lg" />
       </Card>
     );
   }
@@ -69,26 +78,21 @@ export function DashboardChart() {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#374151' : '#E5E7EB'} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} />
           <XAxis 
             dataKey="date" 
-            stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'}
-            tick={{ fill: theme === 'dark' ? '#9CA3AF' : '#6B7280' }}
+            stroke={chartTheme.textColor}
+            tick={{ fill: chartTheme.textColor }}
           />
           <YAxis 
-            stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'}
-            tick={{ fill: theme === 'dark' ? '#9CA3AF' : '#6B7280' }}
+            stroke={chartTheme.textColor}
+            tick={{ fill: chartTheme.textColor }}
           />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: theme === 'dark' ? '#1F2937' : '#FFFFFF',
+              backgroundColor: chartTheme.tooltipBg,
               border: 'none',
               borderRadius: '0.5rem',
               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
@@ -100,6 +104,8 @@ export function DashboardChart() {
             stroke="#3B82F6" 
             name="Matches"
             strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
           />
           <Line 
             type="monotone" 
@@ -107,6 +113,8 @@ export function DashboardChart() {
             stroke="#10B981" 
             name="Messages"
             strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4 }}
           />
         </LineChart>
       </ResponsiveContainer>

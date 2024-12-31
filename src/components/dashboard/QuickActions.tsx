@@ -2,10 +2,34 @@ import { Briefcase, Calendar, MessageSquare, DollarSign } from "lucide-react";
 import { QuickActionCard } from "./QuickActionCard";
 import { DashboardStats } from "@/types/dashboard";
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 
 interface QuickActionsProps {
   stats: DashboardStats | undefined;
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
 
 export function QuickActions({ stats }: QuickActionsProps) {
   const quickActions = useMemo(() => [
@@ -40,10 +64,17 @@ export function QuickActions({ stats }: QuickActionsProps) {
   ], [stats]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <motion.div 
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {quickActions.map((action, index) => (
-        <QuickActionCard key={index} {...action} />
+        <motion.div key={index} variants={itemVariants}>
+          <QuickActionCard {...action} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
