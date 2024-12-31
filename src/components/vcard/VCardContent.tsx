@@ -46,17 +46,37 @@ export function VCardContent({
     }
   }, [isEditing]);
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -20,
+      transition: {
+        duration: 0.3,
+        ease: "easeIn"
+      }
+    }
+  };
+
   return (
-    <Card className="w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-lg bg-card">
-      <CardContent className="p-4 relative">
+    <Card className="w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-xl bg-card/80 backdrop-blur-sm border-primary/10">
+      <CardContent className="p-6 relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={isEditing ? "editing" : "viewing"}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-4"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={containerVariants}
+            className="space-y-6"
           >
             <VCardMainInfo
               profile={tempProfile}
