@@ -41,48 +41,12 @@ export const AuthForm = memo(function AuthForm() {
             },
           },
         },
-        style: {
-          container: {
-            width: '100%',
-          },
-          button: {
-            width: '100%',
-            height: '2.75rem',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            transition: 'all 0.2s',
-            '&:hover': {
-              transform: 'translateY(-1px)',
-            },
-          },
-          input: {
-            width: '100%',
-            height: '2.75rem',
-            fontSize: '0.875rem',
-            backgroundColor: 'transparent',
-            border: '1px solid hsl(var(--border))',
-            transition: 'border-color 0.2s',
-            '&:focus': {
-              borderColor: 'hsl(var(--primary))',
-              outline: 'none',
-            },
-          },
-          label: {
-            fontSize: '0.875rem',
-            color: 'hsl(var(--foreground))',
-            marginBottom: '0.5rem',
-          },
-          message: {
-            fontSize: '0.875rem',
-            color: 'hsl(var(--muted-foreground))',
-          },
-          anchor: {
-            color: 'hsl(var(--primary))',
-            textDecoration: 'none',
-            '&:hover': {
-              textDecoration: 'underline',
-            },
-          },
+        className: {
+          button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px]",
+          input: "w-full h-11 text-sm bg-transparent border border-border transition-colors focus:border-primary focus:outline-none",
+          label: "text-sm text-foreground mb-2",
+          message: "text-sm text-muted-foreground",
+          anchor: "text-primary no-underline hover:underline",
         },
       }}
       providers={[]}
