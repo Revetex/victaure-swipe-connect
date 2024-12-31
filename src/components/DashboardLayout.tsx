@@ -38,10 +38,11 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {/* VCard Section */}
+            {/* SwipeJob Section */}
             {renderDashboardSection(
-              <VCard />,
-              'w-full h-[600px] sm:h-[650px] md:h-[700px]'
+              <SwipeJob />,
+              'w-full h-[500px] sm:h-[550px] md:h-[600px]',
+              false
             )}
 
             {/* Messages Section with Notes, Tasks, and Settings */}
@@ -50,11 +51,10 @@ export function DashboardLayout() {
               'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
 
-            {/* SwipeJob Section */}
+            {/* VCard Section */}
             {renderDashboardSection(
-              <SwipeJob />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px]',
-              false
+              <VCard />,
+              'w-full h-[400px] sm:h-[450px] md:h-[500px]'
             )}
           </motion.div>
         </div>
