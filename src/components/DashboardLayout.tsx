@@ -1,20 +1,17 @@
-import { Messages } from "@/components/Messages";
-import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
-import { PaymentBox } from "@/components/dashboard/PaymentBox";
-import { JobList } from "@/components/jobs/JobList";
-import { useJobsQuery } from "@/components/marketplace/hooks/useJobsQuery";
-import { defaultFilters } from "@/components/jobs/JobFilterUtils";
-import { Button } from "./ui/button";
-import { Plus, Filter } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { CreateJobForm } from "./jobs/CreateJobForm";
-import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
-import { JobFilters } from "./jobs/JobFilterUtils";
+import { defaultFilters } from "@/components/jobs/JobFilterUtils";
+import { useJobsQuery } from "@/components/marketplace/hooks/useJobsQuery";
 import { toast } from "sonner";
+import { MessagesSection } from "./dashboard/sections/MessagesSection";
+import { SwipeSection } from "./dashboard/sections/SwipeSection";
+import { JobsSection } from "./dashboard/sections/JobsSection";
+import { VCardSection } from "./dashboard/sections/VCardSection";
+import { PaymentSection } from "./dashboard/sections/PaymentSection";
+import type { JobFilters } from "./jobs/JobFilterUtils";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -68,103 +65,28 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {/* Messages Section */}
-            <motion.div 
+            <MessagesSection variants={itemVariants} />
+            <SwipeSection variants={itemVariants} />
+            <JobsSection 
               variants={itemVariants}
-              className="col-span-1 md:col-span-1 xl:col-span-1 h-[650px] md:h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <div className="p-6 sm:p-8 h-full">
-                  <Messages />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* SwipeJob Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 md:col-span-1 xl:col-span-2 h-[650px] md:h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <SwipeJob />
-              </div>
-            </motion.div>
-
-            {/* Jobs Management Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-3 min-h-[650px] md:min-h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
-                <div className="p-6 sm:p-8">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">Mes Missions</h2>
-                    <div className="flex gap-2 w-full sm:w-auto">
-                      <Button
-                        onClick={() => setShowFilters(!showFilters)}
-                        variant="outline"
-                        className="flex-1 sm:flex-none"
-                      >
-                        <Filter className="h-4 w-4 mr-2" />
-                        Filtrer
-                      </Button>
-                      <Button
-                        onClick={() => setIsCreateDialogOpen(true)}
-                        className="flex-1 sm:flex-none bg-victaure-blue hover:bg-victaure-blue-dark"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nouvelle Mission
-                      </Button>
-                    </div>
-                  </div>
-
-                  {showFilters && (
-                    <JobFiltersPanel
-                      filters={filters}
-                      onFilterChange={handleFilterChange}
-                      openLocation={openLocation}
-                      setOpenLocation={setOpenLocation}
-                    />
-                  )}
-
-                  <JobList 
-                    jobs={jobs} 
-                    isLoading={isLoading}
-                    error={error}
-                    onJobDeleted={() => refetch()} 
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* VCard Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
-                <div className="p-6 sm:p-8">
-                  <VCard />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Payment Box Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 md:col-span-2 xl:col-span-4 h-[450px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <div className="p-6 sm:p-8 h-full">
-                  <PaymentBox />
-                </div>
-              </div>
-            </motion.div>
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              openLocation={openLocation}
+              setOpenLocation={setOpenLocation}
+              jobs={jobs}
+              isLoading={isLoading}
+              error={error}
+              onJobDeleted={refetch}
+              onCreateClick={() => setIsCreateDialogOpen(true)}
+            />
+            <VCardSection variants={itemVariants} />
+            <PaymentSection variants={itemVariants} />
           </motion.div>
         </div>
       </div>
 
-      {/* Create Job Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
