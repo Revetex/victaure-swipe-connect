@@ -41,16 +41,34 @@ export const defaultFilters: JobFilters = {
   paymentSchedule: "all",
 };
 
-export const applyFilters = (
+export const applyFilters = async (
   query: PostgrestFilterBuilder<any, any, any>,
   filters: JobFilters
 ) => {
+  // If a category is selected, first get its name from the database
   if (filters.category !== "all") {
-    query = query.eq("category", filters.category);
+    const { data: categoryData } = await supabase
+      .from('job_categories')
+      .select('name')
+      .eq('id', filters.category)
+      .single();
+    
+    if (categoryData) {
+      query = query.eq("category", categoryData.name);
+    }
   }
 
+  // If a subcategory is selected, get its name from the database
   if (filters.subcategory !== "all") {
-    query = query.eq("subcategory", filters.subcategory);
+    const { data: subcategoryData } = await supabase
+      .from('job_subcategories')
+      .select('name')
+      .eq('id', filters.subcategory)
+      .single();
+    
+    if (subcategoryData) {
+      query = query.eq("subcategory", subcategoryData.name);
+    }
   }
 
   if (filters.experienceLevel !== "all") {
