@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { SwipeMatch } from "./SwipeMatch";
 import { CreateJobForm } from "./jobs/CreateJobForm";
-import { JobFilters } from "./jobs/JobFilterUtils";
+import { JobFilters, defaultFilters } from "./jobs/JobFilterUtils";
 import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JobList } from "./jobs/JobList";
@@ -16,15 +16,7 @@ import { toast } from "sonner";
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
   const [openLocation, setOpenLocation] = useState(false);
-  const [filters, setFilters] = useState<JobFilters>({
-    category: "all",
-    subcategory: "all",
-    duration: "all",
-    experienceLevel: "all",
-    location: "",
-    province: "",
-    searchTerm: ""
-  });
+  const [filters, setFilters] = useState<JobFilters>(defaultFilters);
 
   const { data: myJobs, refetch: refetchMyJobs } = useQuery({
     queryKey: ['my-jobs'],
