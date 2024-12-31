@@ -1,7 +1,12 @@
 import { motion } from "framer-motion";
 import { SearchX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export function SwipeEmptyState() {
+interface SwipeEmptyStateProps {
+  onRefresh: () => void;
+}
+
+export function SwipeEmptyState({ onRefresh }: SwipeEmptyStateProps) {
   return (
     <motion.div 
       className="flex flex-col items-center justify-center h-full p-6 text-center"
@@ -15,10 +20,13 @@ export function SwipeEmptyState() {
       <h3 className="text-xl font-semibold mb-2">
         Aucune mission disponible
       </h3>
-      <p className="text-muted-foreground max-w-md">
+      <p className="text-muted-foreground max-w-md mb-6">
         Il n'y a plus de missions correspondant à vos critères pour le moment. 
         Revenez plus tard ou ajustez vos filtres pour voir plus d'opportunités.
       </p>
+      <Button onClick={onRefresh} variant="outline">
+        Rafraîchir
+      </Button>
     </motion.div>
   );
 }

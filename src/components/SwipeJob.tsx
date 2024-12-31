@@ -4,43 +4,31 @@ import { useSwipeJobs } from "./jobs/hooks/useSwipeJobs";
 import { SwipeControls } from "./jobs/swipe/SwipeControls";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { 
   MapPin, 
   Calendar, 
   Briefcase, 
-  Clock,
   Building2,
   GraduationCap,
-  CheckCircle2,
   XCircle
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export function SwipeJob() {
   const { 
     currentJob,
-    isLoading,
-    handleSwipeLeft,
-    handleSwipeRight,
-    error 
-  } = useSwipeJobs();
+    loading: isLoading,
+    error,
+    handleSwipe,
+    fetchJobs
+  } = useSwipeJobs({});
 
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
 
-  const handleSwipe = async (direction: 'left' | 'right') => {
+  const handleSwipeAction = async (direction: 'left' | 'right') => {
     setSwipeDirection(direction);
-    
-    // Wait for animation to complete
     await new Promise(resolve => setTimeout(resolve, 300));
-    
-    if (direction === 'left') {
-      await handleSwipeLeft();
-    } else {
-      await handleSwipeRight();
-    }
-    
+    await handleSwipe(direction);
     setSwipeDirection(null);
   };
 
@@ -65,7 +53,7 @@ export function SwipeJob() {
   }
 
   if (!currentJob) {
-    return <SwipeEmptyState />;
+    return <SwipeEmptyState onRefresh={fetchJobs} />;
   }
 
   return (

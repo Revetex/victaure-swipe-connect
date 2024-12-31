@@ -7,12 +7,12 @@ import { toast } from "sonner";
 export function useSwipeJobs(filters: JobFilters) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchJobs = async () => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       setError(null);
       
       let query = supabase
@@ -52,13 +52,13 @@ export function useSwipeJobs(filters: JobFilters) {
 
       if (fetchError) throw fetchError;
 
-      // Format jobs with virtual fields and ensure status is of type JobStatus
+      // Format jobs with virtual fields
       const formattedJobs = data.map(job => ({
         ...job,
-        status: job.status as JobStatus, // Type assertion here is safe because we know the values from the database
         company: job.employer?.company_name || "Entreprise",
         salary: `${job.budget} CAD`,
         skills: job.required_skills || [],
+        status: job.status as JobStatus,
       }));
 
       setJobs(formattedJobs);
@@ -68,7 +68,7 @@ export function useSwipeJobs(filters: JobFilters) {
       setError(err as Error);
       toast.error("Impossible de charger les offres");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -76,25 +76,22 @@ export function useSwipeJobs(filters: JobFilters) {
     fetchJobs();
   }, [filters]);
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentIndex < jobs.length - 1) {
+  const handleSwipe = async (direction: "left" | "right") => {
+    if (currentIndex < jobs.length) {
       setCurrentIndex(prev => prev + 1);
     }
   };
 
+  const currentJob = jobs[currentIndex];
+
   return {
     jobs,
+    currentJob,
     currentIndex,
-    isLoading,
-    error,
-    refetch: fetchJobs,
-    handlePrevious,
-    handleNext
+    handleSwipe,
+    fetchJobs,
+    setCurrentIndex,
+    loading,
+    error
   };
 }
