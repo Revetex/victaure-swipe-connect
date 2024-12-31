@@ -15,13 +15,25 @@ export const provinceData = {
     "Toronto",
     "Ottawa",
     "Mississauga",
+    "Brampton",
     "Hamilton",
     "London",
-    "Brampton",
-    "Windsor",
-    "Kingston",
+    "Markham",
+    "Vaughan",
     "Kitchener",
-    "Waterloo"
+    "Windsor"
+  ],
+  "British Columbia": [
+    "Vancouver",
+    "Victoria",
+    "Surrey",
+    "Burnaby",
+    "Richmond",
+    "Abbotsford",
+    "Coquitlam",
+    "Kelowna",
+    "Saanich",
+    "Nanaimo"
   ],
   "Alberta": [
     "Calgary",
@@ -34,36 +46,21 @@ export const provinceData = {
     "Airdrie",
     "Spruce Grove",
     "Leduc"
-  ],
-  "Colombie-Britannique": [
-    "Vancouver",
-    "Victoria",
-    "Surrey",
-    "Burnaby",
-    "Richmond",
-    "Abbotsford",
-    "Kelowna",
-    "Nanaimo",
-    "Kamloops",
-    "Prince George"
   ]
 };
 
-export type ExperienceLevel = "Entry-Level" | "Mid-Level" | "Senior" | "Expert" | "Lead";
-export type ContractType = "Full-Time" | "Part-Time" | "Contract" | "Internship" | "Freelance";
-
-export const experienceLevels: ExperienceLevel[] = [
+export const experienceLevels = [
   "Entry-Level",
-  "Mid-Level",
+  "Mid-Level", 
   "Senior",
   "Expert",
   "Lead"
-];
+] as const;
 
-export const contractTypes: ContractType[] = [
+export const contractTypes = [
   "Full-Time",
   "Part-Time",
   "Contract",
   "Internship",
   "Freelance"
-];
+] as const;
