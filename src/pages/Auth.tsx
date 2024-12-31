@@ -11,10 +11,34 @@ export default function Auth() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        console.log("User already logged in, redirecting to dashboard");
-        navigate("/dashboard");
+      try {
+        // First check if there's a stored session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          return;
+        }
+
+        if (session) {
+          // Verify the session is still valid by getting the user
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          
+          if (userError) {
+            console.error("User verification error:", userError);
+            // Clear invalid session
+            await supabase.auth.signOut();
+            return;
+          }
+
+          if (user) {
+            console.log("User already logged in, redirecting to dashboard");
+            navigate("/dashboard");
+          }
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        toast.error("Erreur lors de la vérification de l'authentification");
       }
     };
 

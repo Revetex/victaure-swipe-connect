@@ -13,7 +13,13 @@ export function useAuth() {
       setIsLoading(true);
       
       // First, get current session to verify
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        throw sessionError;
+      }
+
       if (!session) {
         console.log('No active session found, clearing storage');
         localStorage.clear();
@@ -28,7 +34,12 @@ export function useAuth() {
       sessionStorage.clear();
       
       // Attempt signout
-      await supabase.auth.signOut();
+      const { error: signOutError } = await supabase.auth.signOut();
+      
+      if (signOutError) {
+        console.error("Sign out error:", signOutError);
+        throw signOutError;
+      }
       
       setIsAuthenticated(false);
       navigate('/auth');
@@ -49,7 +60,10 @@ export function useAuth() {
         // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) throw sessionError;
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          throw sessionError;
+        }
         
         if (!session) {
           if (mounted) {
@@ -64,8 +78,13 @@ export function useAuth() {
         // Verify the session is valid
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
-        if (userError || !user) {
-          throw userError || new Error('No user found');
+        if (userError) {
+          console.error("User verification error:", userError);
+          throw userError;
+        }
+
+        if (!user) {
+          throw new Error('No user found');
         }
 
         if (mounted) {
