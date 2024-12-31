@@ -64,12 +64,11 @@ export function VCard() {
     if (!profile) return;
     
     try {
-      const pdfUrl = await generateVCardPDF(profile);
-      window.open(pdfUrl, '_blank');
+      await generateVCardPDF(profile);
       
       toast({
         title: "Succès",
-        description: "PDF généré avec succès",
+        description: "PDF téléchargé avec succès",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);

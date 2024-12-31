@@ -1,9 +1,8 @@
 import jsPDF from 'jspdf';
 import type { UserProfile } from '@/types/profile';
-import { supabase } from "@/integrations/supabase/client";
 import QRCode from 'qrcode';
 
-export const generateVCardPDF = async (profile: UserProfile): Promise<string> => {
+export const generateVCardPDF = async (profile: UserProfile): Promise<void> => {
   try {
     const doc = new jsPDF();
     
@@ -75,28 +74,8 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
       currentY += (bioLines.length * 7) + 15;
     }
 
-    // Generate the PDF blob
-    const pdfBlob = doc.output('blob');
-    const storageFileName = `${profile.id}_${Date.now()}.pdf`;
-    
-    // Upload to Supabase Storage
-    const { error: uploadError } = await supabase
-      .storage
-      .from('vcards')
-      .upload(storageFileName, pdfBlob, {
-        contentType: 'application/pdf',
-        cacheControl: '3600'
-      });
-      
-    if (uploadError) throw uploadError;
-
-    // Get and return the Supabase storage URL
-    const { data: { publicUrl } } = supabase
-      .storage
-      .from('vcards')
-      .getPublicUrl(storageFileName);
-    
-    return publicUrl;
+    // Download the PDF directly
+    doc.save(`${profile.full_name?.replace(/\s+/g, '_')}_profile.pdf`);
   } catch (error) {
     console.error('Error generating PDF:', error);
     throw error;
