@@ -84,12 +84,11 @@ export function VCard() {
     if (!profile) return;
     
     try {
-      const pdfUrl = await generateVCardPDF(profile);
-      window.open(pdfUrl, '_blank');
+      await generateVCardPDF(profile);
       
       toast({
         title: "Succès",
-        description: "Business PDF généré avec succès",
+        description: "Business PDF téléchargé avec succès",
       });
     } catch (error) {
       console.error('Error generating business PDF:', error);
