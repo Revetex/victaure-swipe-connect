@@ -82,10 +82,10 @@ export function DashboardLayout() {
               false
             )}
 
-            {/* VCard Section - Moved to bottom with extra spacing */}
+            {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px] mt-16 sm:mt-24 md:mt-32'
+              'w-full h-[500px] sm:h-[550px] md:h-[600px]'
             )}
           </motion.div>
         </div>
