@@ -6,7 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { CategoryIcon } from "./CategoryIcon";
+import { motion } from "framer-motion";
 
 interface SkillEditorProps {
   selectedCategory: string;
@@ -27,33 +28,41 @@ export function SkillEditor({
   skillCategories,
   filteredSkills,
 }: SkillEditorProps) {
-  const isMobile = useIsMobile();
-
   return (
-    <div className="flex flex-col sm:flex-row gap-2 mt-4">
-      <div className="w-full sm:w-[200px]">
-        <Select
-          value={selectedCategory}
-          onValueChange={setSelectedCategory}
-        >
-          <SelectTrigger className="bg-white dark:bg-gray-800">
+    <motion.div 
+      className="flex flex-col sm:flex-row gap-3"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Select
+        value={selectedCategory}
+        onValueChange={setSelectedCategory}
+      >
+        <SelectTrigger className="w-full sm:w-[200px] bg-card">
+          <div className="flex items-center gap-2">
+            <CategoryIcon category={selectedCategory} />
             <SelectValue placeholder="Catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(skillCategories).map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          </div>
+        </SelectTrigger>
+        <SelectContent>
+          {Object.keys(skillCategories).map((category) => (
+            <SelectItem key={category} value={category}>
+              <div className="flex items-center gap-2">
+                <CategoryIcon category={category} />
+                <span>{category}</span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       <div className="flex-1">
         <Select
           value={newSkill}
           onValueChange={setNewSkill}
         >
-          <SelectTrigger className="bg-white dark:bg-gray-800">
+          <SelectTrigger className="w-full bg-card">
             <SelectValue placeholder="Sélectionnez une compétence" />
           </SelectTrigger>
           <SelectContent>
@@ -65,14 +74,15 @@ export function SkillEditor({
           </SelectContent>
         </Select>
       </div>
+
       <Button 
-        onClick={handleAddSkill} 
+        onClick={handleAddSkill}
         variant="secondary"
-        className={`${isMobile ? "w-full" : ""} bg-indigo-600 hover:bg-indigo-700 text-white`}
+        className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white"
         disabled={!newSkill}
       >
         Ajouter
       </Button>
-    </div>
+    </motion.div>
   );
 }

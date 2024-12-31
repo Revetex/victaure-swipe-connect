@@ -1,4 +1,4 @@
-import { Brain, Briefcase, Code, Palette, Hammer, Users, Wrench } from "lucide-react";
+import { Brain, Briefcase, Code, Palette, Hammer, Users, Wrench, Folder } from "lucide-react";
 
 interface CategoryIconProps {
   category: string;
@@ -6,20 +6,24 @@ interface CategoryIconProps {
 }
 
 export function CategoryIcon({ category, className }: CategoryIconProps) {
+  const defaultClass = className || "h-4 w-4";
+  
   switch (category.toLowerCase()) {
     case "développement":
-      return <Code className={className || "h-4 w-4 text-indigo-600 dark:text-indigo-400"} />;
+      return <Code className={`${defaultClass} text-indigo-600 dark:text-indigo-400`} />;
     case "design":
-      return <Palette className={className || "h-4 w-4 text-pink-600 dark:text-pink-400"} />;
+      return <Palette className={`${defaultClass} text-pink-600 dark:text-pink-400`} />;
     case "gestion":
-      return <Briefcase className={className || "h-4 w-4 text-blue-600 dark:text-blue-400"} />;
+      return <Briefcase className={`${defaultClass} text-blue-600 dark:text-blue-400`} />;
     case "construction":
-      return <Hammer className={className || "h-4 w-4 text-orange-600 dark:text-orange-400"} />;
+      return <Hammer className={`${defaultClass} text-orange-600 dark:text-orange-400`} />;
     case "manuel":
-      return <Wrench className={className || "h-4 w-4 text-green-600 dark:text-green-400"} />;
+      return <Wrench className={`${defaultClass} text-green-600 dark:text-green-400`} />;
     case "soft skills":
-      return <Users className={className || "h-4 w-4 text-purple-600 dark:text-purple-400"} />;
+      return <Users className={`${defaultClass} text-purple-600 dark:text-purple-400`} />;
+    case "autres":
+      return <Folder className={`${defaultClass} text-gray-600 dark:text-gray-400`} />;
     default:
-      return <Brain className={className || "h-4 w-4 text-gray-600 dark:text-gray-400"} />;
+      return <Brain className={`${defaultClass} text-gray-600 dark:text-gray-400`} />;
   }
 }

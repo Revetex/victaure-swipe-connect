@@ -1,5 +1,6 @@
 import { VCardBadge } from "../VCardBadge";
 import { CategoryIcon } from "./CategoryIcon";
+import { motion } from "framer-motion";
 
 interface SkillCategoryProps {
   category: string;
@@ -23,21 +24,28 @@ export function SkillCategory({
   if (filteredSkills.length === 0) return null;
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 text-sm text-indigo-700 dark:text-indigo-400 font-medium">
+    <motion.div 
+      className="space-y-3"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex items-center gap-2 text-sm font-medium border-b pb-2 dark:border-gray-800">
         <CategoryIcon category={category} />
-        <span>{category}</span>
+        <span className="text-foreground/80">{category}</span>
+        <span className="text-xs text-muted-foreground">({filteredSkills.length})</span>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 pl-2">
         {filteredSkills.map((skill: string) => (
           <VCardBadge
             key={skill}
             text={skill}
             isEditing={isEditing}
             onRemove={() => onRemoveSkill?.(skill)}
+            variant={category.toLowerCase() === "soft skills" ? "secondary" : "default"}
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
