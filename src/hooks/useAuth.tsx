@@ -11,12 +11,30 @@ export function useAuth() {
   const signOut = async () => {
     try {
       setIsLoading(true);
+      
+      // First, get current session to verify
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // If no session exists, just clear everything
+        console.log('No active session found, clearing storage');
+        localStorage.clear();
+        sessionStorage.clear();
+        setIsAuthenticated(false);
+        navigate('/auth');
+        return;
+      }
+
       // Clear all storage first
       localStorage.clear();
       sessionStorage.clear();
       
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Attempt both local and global signout
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (error) {
+        console.warn('Global signout failed, attempting local signout:', error);
+        await supabase.auth.signOut({ scope: 'local' });
+      }
       
       setIsAuthenticated(false);
       navigate('/auth');

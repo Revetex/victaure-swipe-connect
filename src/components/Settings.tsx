@@ -4,50 +4,28 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { SettingsSection } from "./settings/SettingsSection";
 import { Separator } from "./ui/separator";
 import { PasswordChangeSection } from "./settings/PasswordChangeSection";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Settings() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { signOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
-    
-    // Check session on mount
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error || !session) {
-        console.error("Session error:", error);
-        navigate("/auth", { replace: true });
-      }
-    };
-    
-    checkSession();
-  }, [navigate]);
+  }, []);
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      
-      // Clear any stored session data first
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-      
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Logout error:", error);
-        throw error;
-      }
-      
-      toast.success("Déconnexion réussie");
-      navigate("/auth", { replace: true });
+      await signOut();
     } catch (error) {
       console.error("Erreur de déconnexion:", error);
       toast.error("Erreur lors de la déconnexion. Veuillez réessayer.");
