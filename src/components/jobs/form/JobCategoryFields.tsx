@@ -1,88 +1,84 @@
-import { Label } from "@/components/ui/label";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useFormContext } from "react-hook-form";
 
-interface JobCategoryFieldsProps {
-  category: string;
-  subcategory: string;
-  onChange: (field: string, value: string) => void;
-}
+const categories = [
+  "Technology",
+  "Design",
+  "Marketing",
+  "Business",
+  "Writing",
+  "Customer Service",
+  "Other"
+];
 
-export function JobCategoryFields({
-  category,
-  subcategory,
-  onChange,
-}: JobCategoryFieldsProps) {
-  const allCategories = {
-    "Manuel": ["Rénovation", "Installation", "Maintenance", "Artisanat", "Réparation"],
-    "Construction": ["Gros œuvre", "Second œuvre", "Finitions", "BIM", "Architecture"],
-    "Technologie": ["Développement Web", "DevOps", "Mobile", "Data", "Cloud", "Sécurité", "IA", "Blockchain"],
-    "Design": ["UI/UX", "Graphisme", "Motion", "3D", "Web Design", "Print", "Branding"],
-    "Marketing": ["Digital", "Content", "SEO", "Social Media", "Growth", "Brand", "Analytics"],
-    "Gestion": ["Product Management", "Agile", "Conseil", "Stratégie", "Opérations", "Qualité"],
-    "Finance": ["Comptabilité", "Audit", "Contrôle de gestion", "Trésorerie", "Risk Management"],
-    "Ressources Humaines": ["Recrutement", "Formation", "Paie", "SIRH", "Relations sociales"],
-    "Vente": ["B2B", "B2C", "Account Management", "Business Development", "Export"],
-    "Service Client": ["Support", "SAV", "Relation client", "Help Desk", "CRM"],
-    "Logistique": ["Supply Chain", "Transport", "Achats", "Stock", "Planning"],
-    "Production": ["Industrie", "Qualité", "Maintenance", "R&D", "Méthodes"],
-    "Recherche": ["R&D", "Innovation", "Études", "Veille", "Laboratoire"],
-    "Éducation": ["Formation", "E-learning", "Tutorat", "Pédagogie", "EdTech"],
-    "Santé": ["Médical", "Paramédical", "Recherche", "E-santé", "Bien-être"],
-    "Expertise": ["Formation", "Audit", "Conseil", "Expertise technique", "Certification"]
-  };
+const subcategories: Record<string, string[]> = {
+  Technology: ["Web Development", "Mobile Development", "Data Science", "DevOps", "Other"],
+  Design: ["UI/UX", "Graphic Design", "Product Design", "Other"],
+  Marketing: ["Digital Marketing", "Content Marketing", "Social Media", "SEO", "Other"],
+  Business: ["Consulting", "Project Management", "Sales", "Other"],
+  Writing: ["Technical Writing", "Copywriting", "Content Writing", "Other"],
+  "Customer Service": ["Support", "Account Management", "Other"],
+  Other: ["Other"]
+};
 
-  const sortedCategories = Object.keys(allCategories).sort((a, b) => {
-    // Mettre Manuel et Construction en premier
-    if (a === "Manuel") return -1;
-    if (b === "Manuel") return 1;
-    if (a === "Construction") return -1;
-    if (b === "Construction") return 1;
-    return a.localeCompare(b);
-  });
+export function JobCategoryFields() {
+  const { control, watch } = useFormContext();
+  const selectedCategory = watch("category");
 
   return (
-    <>
-      <div className="space-y-2">
-        <Label htmlFor="category">Catégorie</Label>
-        <Select
-          value={category}
-          onValueChange={(value) => {
-            onChange("category", value);
-            onChange("subcategory", ""); // Reset subcategory when category changes
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez une catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            {sortedCategories.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {cat}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      {category && (
-        <div className="space-y-2">
-          <Label htmlFor="subcategory">Sous-catégorie</Label>
-          <Select
-            value={subcategory}
-            onValueChange={(value) => onChange("subcategory", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une sous-catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-              {allCategories[category]?.sort().map((subcat) => (
-                <SelectItem key={subcat} value={subcat}>
-                  {subcat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <div className="space-y-4">
+      <FormField
+        control={control}
+        name="category"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Catégorie</FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez une catégorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {selectedCategory && (
+        <FormField
+          control={control}
+          name="subcategory"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Sous-catégorie</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez une sous-catégorie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subcategories[selectedCategory]?.map((subcategory) => (
+                      <SelectItem key={subcategory} value={subcategory}>
+                        {subcategory}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       )}
-    </>
+    </div>
   );
 }

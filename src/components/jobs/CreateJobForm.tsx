@@ -36,7 +36,11 @@ const defaultValues: Partial<JobFormValues> = {
   preferred_skills: [],
 };
 
-export function CreateJobForm() {
+interface CreateJobFormProps {
+  onSuccess: () => void;
+}
+
+export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
   const navigate = useNavigate();
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
@@ -52,15 +56,27 @@ export function CreateJobForm() {
       }
 
       const { error } = await supabase.from("jobs").insert({
-        ...data,
-        employer_id: user.id,
+        title: data.title,
+        description: data.description,
         budget: parseFloat(data.budget),
+        location: data.location,
+        category: data.category,
+        subcategory: data.subcategory,
+        contract_type: data.contract_type,
+        experience_level: data.experience_level,
+        remote_type: data.remote_type,
+        required_skills: data.required_skills,
+        preferred_skills: data.preferred_skills,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        employer_id: user.id,
         status: "open",
       });
 
       if (error) throw error;
 
       toast.success("Mission créée avec succès");
+      onSuccess();
       navigate("/dashboard");
     } catch (error) {
       console.error("Error creating job:", error);
