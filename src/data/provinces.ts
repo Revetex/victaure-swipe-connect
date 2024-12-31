@@ -49,18 +49,21 @@ export const provinceData = {
   ]
 };
 
-export const experienceLevels = [
+export type ExperienceLevel = "Entry-Level" | "Mid-Level" | "Senior" | "Expert" | "Lead";
+export type ContractType = "Full-Time" | "Part-Time" | "Contract" | "Internship" | "Freelance";
+
+export const experienceLevels: ExperienceLevel[] = [
   "Entry-Level",
-  "Mid-Level", 
+  "Mid-Level",
   "Senior",
   "Expert",
   "Lead"
-] as const;
+];
 
-export const contractTypes = [
+export const contractTypes: ContractType[] = [
   "Full-Time",
   "Part-Time",
   "Contract",
   "Internship",
   "Freelance"
-] as const;
+];
