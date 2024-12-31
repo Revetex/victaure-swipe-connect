@@ -1,4 +1,3 @@
-import { TodoList } from "@/components/TodoList";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,32 +39,26 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {/* Messages Section - Adjusted height for better mobile view */}
+            {/* Messages Section with Notes and Tasks */}
             {renderDashboardSection(
               <Messages />,
-              "col-span-1 h-[500px] sm:h-[600px] lg:h-[700px]"
+              "col-span-1 xl:col-span-2 h-[700px] sm:h-[800px] lg:h-[900px]"
             )}
 
-            {/* SwipeJob Section - Improved responsive heights */}
+            {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
               "col-span-1 md:col-span-1 xl:col-span-2 h-[500px] sm:h-[600px] lg:h-[700px]",
               false
             )}
 
-            {/* TodoList Section - Consistent heights */}
-            {renderDashboardSection(
-              <TodoList />,
-              "col-span-1 h-[500px] sm:h-[600px] lg:h-[700px]"
-            )}
-
-            {/* VCard Section - Adjusted for better proportions */}
+            {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
               "col-span-1 md:col-span-2 xl:col-span-4 min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] mb-4 sm:mb-6"
             )}
 
-            {/* PaymentBox Section - More compact on mobile */}
+            {/* PaymentBox Section */}
             {renderDashboardSection(
               <PaymentBox />,
               "col-span-1 md:col-span-2 xl:col-span-4 h-[300px] sm:h-[350px] lg:h-[400px]"
