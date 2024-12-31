@@ -58,16 +58,6 @@ export function DashboardLayout() {
     })
   };
 
-  const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset: number, velocity: number) => {
-    return Math.abs(offset) * velocity;
-  };
-
-  const paginate = (newDirection: number) => {
-    if (isEditing) return; // Prevent pagination when editing
-    handleSwipe(newDirection);
-  };
-
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       <div className="relative z-10 flex-1 overflow-hidden">
@@ -78,7 +68,7 @@ export function DashboardLayout() {
                 variant="ghost"
                 size="icon"
                 className="rounded-full bg-background/80 backdrop-blur-sm"
-                onClick={() => paginate(-1)}
+                onClick={() => handleSwipe(-1)}
               >
                 <ChevronLeft className="h-6 w-6" />
               </Button>
@@ -88,7 +78,7 @@ export function DashboardLayout() {
                 variant="ghost"
                 size="icon"
                 className="rounded-full bg-background/80 backdrop-blur-sm"
-                onClick={() => paginate(1)}
+                onClick={() => handleSwipe(1)}
               >
                 <ChevronRight className="h-6 w-6" />
               </Button>
@@ -96,59 +86,30 @@ export function DashboardLayout() {
           </>
         )}
 
-        <AnimatePresence initial={false} custom={currentPage}>
-          <motion.div
-            key={currentPage}
-            custom={currentPage}
-            variants={pageVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 }
-            }}
-            drag={!isEditing ? "x" : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={1}
-            onDragEnd={(e, { offset, velocity }) => {
-              if (isEditing) return;
-              const swipe = swipePower(offset.x, velocity.x);
-
-              if (swipe < -swipeConfidenceThreshold) {
-                paginate(1);
-              } else if (swipe > swipeConfidenceThreshold) {
-                paginate(-1);
-              }
-            }}
-            className="absolute inset-0 flex items-center justify-center"
+        <div className="container mx-auto px-4 h-full py-6">
+          <motion.div 
+            className="h-full max-w-[1200px] mx-auto"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
           >
-            <div className="container mx-auto px-4 h-full py-6">
-              <motion.div 
-                className="h-full max-w-[1200px] mx-auto"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {currentPage === 1 && renderDashboardSection(
-                  <VCard onEditStateChange={setIsEditing} />,
-                  'w-full h-full'
-                )}
-                
-                {currentPage === 2 && renderDashboardSection(
-                  <Messages />,
-                  'w-full h-full'
-                )}
-                
-                {currentPage === 3 && renderDashboardSection(
-                  <SwipeJob />,
-                  'w-full h-full',
-                  false
-                )}
-              </motion.div>
-            </div>
+            {currentPage === 1 && renderDashboardSection(
+              <VCard onEditStateChange={setIsEditing} />,
+              'w-full h-full'
+            )}
+            
+            {currentPage === 2 && !isEditing && renderDashboardSection(
+              <Messages />,
+              'w-full h-full'
+            )}
+            
+            {currentPage === 3 && !isEditing && renderDashboardSection(
+              <SwipeJob />,
+              'w-full h-full',
+              false
+            )}
           </motion.div>
-        </AnimatePresence>
+        </div>
 
         {!isEditing && (
           <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
