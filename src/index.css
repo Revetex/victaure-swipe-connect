@@ -138,26 +138,40 @@
   }
 
   .sticky-note {
-    @apply p-4 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md;
+    @apply p-4 rounded-lg shadow-sm transition-all duration-200 
+           hover:shadow-md hover:-translate-y-0.5
+           backdrop-blur-sm;
   }
 
   .sticky-note-yellow {
-    @apply bg-yellow-100 hover:bg-yellow-200;
+    @apply bg-[#FEF7CD]/80 hover:bg-[#FEF7CD];
   }
 
   .sticky-note-blue {
-    @apply bg-blue-100 hover:bg-blue-200;
+    @apply bg-[#D3E4FD]/80 hover:bg-[#D3E4FD];
   }
 
   .sticky-note-green {
-    @apply bg-green-100 hover:bg-green-200;
+    @apply bg-[#F2FCE2]/80 hover:bg-[#F2FCE2];
   }
 
   .sticky-note-pink {
-    @apply bg-pink-100 hover:bg-pink-200;
+    @apply bg-[#FFDEE2]/80 hover:bg-[#FFDEE2];
   }
 
   .sticky-note-purple {
-    @apply bg-purple-100 hover:bg-purple-200;
+    @apply bg-[#E5DEFF]/80 hover:bg-[#E5DEFF];
+  }
+
+  .sticky-note-peach {
+    @apply bg-[#FDE1D3]/80 hover:bg-[#FDE1D3];
+  }
+
+  .sticky-note-gray {
+    @apply bg-[#F1F0FB]/80 hover:bg-[#F1F0FB];
+  }
+
+  .sticky-note-orange {
+    @apply bg-[#FEC6A1]/80 hover:bg-[#FEC6A1];
   }
 }

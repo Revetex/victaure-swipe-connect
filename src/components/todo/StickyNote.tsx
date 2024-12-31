@@ -10,33 +10,14 @@ interface StickyNoteProps {
 }
 
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
-  // Function to determine text color based on background color
-  const getTextColor = (colorClass: string) => {
-    switch (colorClass) {
-      case "bg-yellow-100":
-      case "bg-green-100":
-      case "bg-blue-100":
-      case "bg-pink-100":
-        return "text-gray-900"; // Dark text for light backgrounds
-      case "bg-purple-600":
-      case "bg-blue-600":
-      case "bg-indigo-600":
-        return "text-white"; // Light text for dark backgrounds
-      default:
-        return "text-gray-900"; // Default to dark text
-    }
-  };
-
   return (
     <div className={cn(
-      "p-4 rounded-lg shadow-sm group transition-all duration-200",
-      "hover:shadow hover:scale-[1.02]",
-      "animate-in slide-in-from-left",
+      "sticky-note group",
       colorClass,
-      getTextColor(colorClass)
+      "animate-in slide-in-from-left"
     )}>
       <div className="flex justify-between items-start gap-2">
-        <p className="flex-1 whitespace-pre-wrap text-sm">{note.text}</p>
+        <p className="flex-1 whitespace-pre-wrap text-sm text-gray-800">{note.text}</p>
         <Button
           variant="ghost"
           size="icon"

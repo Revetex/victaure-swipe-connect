@@ -25,6 +25,20 @@ export function NotesSection({
   onAdd,
   onDelete,
 }: NotesSectionProps) {
+  const getColorClass = (colorValue: string) => {
+    switch (colorValue) {
+      case 'yellow': return 'sticky-note-yellow';
+      case 'blue': return 'sticky-note-blue';
+      case 'green': return 'sticky-note-green';
+      case 'pink': return 'sticky-note-pink';
+      case 'purple': return 'sticky-note-purple';
+      case 'peach': return 'sticky-note-peach';
+      case 'gray': return 'sticky-note-gray';
+      case 'orange': return 'sticky-note-orange';
+      default: return 'sticky-note-yellow';
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-primary">
@@ -43,17 +57,14 @@ export function NotesSection({
 
       <ScrollArea className="h-[400px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-4">
-          {notes.map((note) => {
-            const colorClass = colors.find(c => c.value === note.color)?.class || "bg-yellow-100";
-            return (
-              <StickyNote
-                key={note.id}
-                note={note}
-                colorClass={colorClass}
-                onDelete={onDelete}
-              />
-            );
-          })}
+          {notes.map((note) => (
+            <StickyNote
+              key={note.id}
+              note={note}
+              colorClass={getColorClass(note.color)}
+              onDelete={onDelete}
+            />
+          ))}
           {notes.length === 0 && (
             <div className="text-center text-muted-foreground py-8 col-span-2">
               Aucune note pour le moment
