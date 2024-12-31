@@ -1,7 +1,6 @@
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 
@@ -49,12 +48,6 @@ export function DashboardLayout() {
               <SwipeJob />,
               'w-full h-[500px] sm:h-[550px] md:h-[600px]',
               false
-            )}
-
-            {/* VCard Section - Moved to bottom with extra spacing */}
-            {renderDashboardSection(
-              <VCard />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px] mt-16 sm:mt-24 md:mt-32'
             )}
           </motion.div>
         </div>
