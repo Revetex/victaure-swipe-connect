@@ -45,16 +45,16 @@ export function DashboardLayout() {
               false
             )}
 
-            {/* Messages Section with Notes, Tasks, and Settings */}
-            {renderDashboardSection(
-              <Messages />,
-              'w-full h-[600px] sm:h-[700px] md:h-[800px]'
-            )}
-
             {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
               'w-full h-[400px] sm:h-[450px] md:h-[500px]'
+            )}
+
+            {/* Messages Section with Notes, Tasks, and Settings */}
+            {renderDashboardSection(
+              <Messages />,
+              'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
           </motion.div>
         </div>
