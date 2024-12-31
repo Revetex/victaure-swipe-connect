@@ -18,7 +18,7 @@ export function JobList({ jobs, onJobDeleted }: JobListProps) {
     <div className="space-y-4">
       {jobs.map((job) => (
         <div key={job.id} className="bg-card rounded-lg p-4 shadow-sm">
-          <JobCard job={job} />
+          <JobCard {...job} />
           <JobActions
             jobId={job.id}
             employerId={job.employer_id}

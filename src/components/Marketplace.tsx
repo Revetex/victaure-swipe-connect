@@ -11,7 +11,7 @@ export function Marketplace() {
   const [duration, setDuration] = useState<string>("");
   const [salaryRange, setSalaryRange] = useState<number[]>([300, 1000]);
 
-  const { data: jobs = [], isLoading } = useQuery({
+  const { data: jobs = [], isLoading, refetch } = useQuery({
     queryKey: ["jobs", category, subcategory, duration, salaryRange],
     queryFn: async () => {
       let query = supabase
@@ -59,7 +59,7 @@ export function Marketplace() {
             setSalaryRange={setSalaryRange}
             missionCategories={missionCategories}
           />
-          <JobList jobs={jobs} />
+          <JobList jobs={jobs} onJobDeleted={() => refetch()} />
         </div>
       </div>
     </section>
