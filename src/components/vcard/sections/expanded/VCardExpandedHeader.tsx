@@ -11,6 +11,10 @@ interface VCardExpandedHeaderProps {
 }
 
 export function VCardExpandedHeader({ profile, isEditing, setProfile }: VCardExpandedHeaderProps) {
+  const handleInputChange = (field: string, value: string) => {
+    setProfile({ ...profile, [field]: value });
+  };
+
   return (
     <div className="flex items-center gap-6">
       <Avatar className="h-32 w-32 ring-4 ring-white/10 shadow-xl">
@@ -28,13 +32,13 @@ export function VCardExpandedHeader({ profile, isEditing, setProfile }: VCardExp
           <>
             <Input
               value={profile.full_name || ""}
-              onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+              onChange={(e) => handleInputChange('full_name', e.target.value)}
               className="text-2xl font-bold bg-gray-800/50 border-gray-700 text-white"
               placeholder="Votre nom"
             />
             <Select
               value={profile.role || ""}
-              onValueChange={(value) => setProfile({ ...profile, role: value })}
+              onValueChange={(value) => handleInputChange('role', value)}
             >
               <SelectTrigger className="w-full bg-gray-800/50 border-gray-700 text-white">
                 <SelectValue placeholder="Sélectionnez un titre" />

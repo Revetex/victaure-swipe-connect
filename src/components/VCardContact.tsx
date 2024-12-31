@@ -9,6 +9,10 @@ interface VCardContactProps {
 }
 
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
+  const handleInputChange = (key: string, value: string) => {
+    setProfile({ ...profile, [key]: value });
+  };
+
   const contactFields = [
     {
       icon: Mail,
@@ -51,10 +55,6 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     show: { opacity: 1, x: 0 }
   };
 
-  const handleInputChange = (key: string, value: string) => {
-    setProfile({ ...profile, [key]: value });
-  };
-
   return (
     <div className="space-y-4">
       <h3 className="text-base sm:text-lg font-semibold text-white">Contact</h3>
@@ -79,7 +79,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
-                className="flex-1 text-sm sm:text-base bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="flex-1 text-sm sm:text-base bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
               />
             ) : (
               <span className="text-sm sm:text-base text-white/90">

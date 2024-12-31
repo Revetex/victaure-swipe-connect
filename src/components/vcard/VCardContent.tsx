@@ -57,6 +57,7 @@ export function VCardContent({
       toast.success("Modifications enregistrées avec succès");
       setIsEditing(false);
     } catch (error) {
+      console.error('Error saving profile:', error);
       toast.error("Erreur lors de l'enregistrement des modifications");
     }
   };
@@ -64,7 +65,7 @@ export function VCardContent({
   return (
     <Card className={`w-full max-w-[95mm] mx-auto overflow-hidden border-none shadow-xl transition-all duration-300 ${
       !isExpanded ? 'h-[60mm] bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm ring-1 ring-white/10' : 
-      'min-h-screen sm:min-h-0 bg-white dark:bg-gray-800'
+      'min-h-screen sm:min-h-0 bg-gray-900'
     }`}>
       <CardContent className={`p-4 sm:p-6 ${!isExpanded && 'relative'}`}>
         {!isExpanded && (

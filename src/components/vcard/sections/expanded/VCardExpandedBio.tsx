@@ -9,6 +9,10 @@ interface VCardExpandedBioProps {
 }
 
 export function VCardExpandedBio({ profile, isEditing, setProfile }: VCardExpandedBioProps) {
+  const handleBioChange = (value: string) => {
+    setProfile({ ...profile, bio: value });
+  };
+
   return (
     <VCardSection 
       title="Description" 
@@ -17,7 +21,7 @@ export function VCardExpandedBio({ profile, isEditing, setProfile }: VCardExpand
       {isEditing ? (
         <Textarea
           value={profile.bio || ""}
-          onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+          onChange={(e) => handleBioChange(e.target.value)}
           placeholder="Décrivez votre parcours professionnel..."
           className="min-h-[150px] bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500"
         />
