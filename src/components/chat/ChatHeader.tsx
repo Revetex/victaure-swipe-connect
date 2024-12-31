@@ -15,7 +15,7 @@ export function ChatHeader({
   onBack,
   title = "Mr. Victaure",
   subtitle = "Assistant IA Personnel",
-  avatarUrl = "/bot-avatar.png",
+  avatarUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
   isThinking = false,
 }: ChatHeaderProps) {
   return (
