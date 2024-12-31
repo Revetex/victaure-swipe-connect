@@ -5,6 +5,7 @@ import { SwipeControls } from "./jobs/swipe/SwipeControls";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
+import { defaultFilters } from "./jobs/JobFilterUtils";
 import { 
   MapPin, 
   Calendar, 
@@ -21,7 +22,7 @@ export function SwipeJob() {
     error,
     handleSwipe,
     fetchJobs
-  } = useSwipeJobs({});
+  } = useSwipeJobs(defaultFilters);
 
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
 

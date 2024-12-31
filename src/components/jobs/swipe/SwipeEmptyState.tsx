@@ -1,6 +1,5 @@
-import { motion } from "framer-motion";
-import { SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 interface SwipeEmptyStateProps {
   onRefresh: () => void;
@@ -8,25 +7,28 @@ interface SwipeEmptyStateProps {
 
 export function SwipeEmptyState({ onRefresh }: SwipeEmptyStateProps) {
   return (
-    <motion.div 
-      className="flex flex-col items-center justify-center h-full p-6 text-center"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="rounded-full bg-primary/10 p-4 mb-4">
-        <SearchX className="h-12 w-12 text-primary" />
+    <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+      <div className="mb-6">
+        <img 
+          src="/placeholder.svg" 
+          alt="No jobs found" 
+          className="w-48 h-48 opacity-50"
+        />
       </div>
       <h3 className="text-xl font-semibold mb-2">
         Aucune mission disponible
       </h3>
-      <p className="text-muted-foreground max-w-md mb-6">
-        Il n'y a plus de missions correspondant à vos critères pour le moment. 
-        Revenez plus tard ou ajustez vos filtres pour voir plus d'opportunités.
+      <p className="text-muted-foreground mb-6">
+        Il n'y a plus de missions correspondant à vos critères pour le moment.
       </p>
-      <Button onClick={onRefresh} variant="outline">
+      <Button 
+        variant="outline" 
+        onClick={onRefresh}
+        className="gap-2"
+      >
+        <RefreshCw className="h-4 w-4" />
         Rafraîchir
       </Button>
-    </motion.div>
+    </div>
   );
 }
