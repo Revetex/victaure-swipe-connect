@@ -3,7 +3,6 @@ import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
-import { PaymentBox } from "@/components/dashboard/PaymentBox";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 
 export function DashboardLayout() {
@@ -39,10 +38,10 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {/* Messages Section with Notes and Tasks */}
+            {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
-              "col-span-1 xl:col-span-1 h-[600px] md:row-span-2"
+              "col-span-1 xl:col-span-1 h-[800px] md:row-span-2"
             )}
 
             {/* SwipeJob Section */}
@@ -55,13 +54,7 @@ export function DashboardLayout() {
             {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
-              "col-span-1 md:col-span-2 xl:col-span-2 h-[500px]"
-            )}
-
-            {/* PaymentBox Section */}
-            {renderDashboardSection(
-              <PaymentBox />,
-              "col-span-1 md:col-span-2 xl:col-span-2 h-[400px]"
+              "col-span-1 md:col-span-2 xl:col-span-2 h-[600px]"
             )}
           </motion.div>
         </div>

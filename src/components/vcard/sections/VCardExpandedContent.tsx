@@ -46,7 +46,7 @@ export function VCardExpandedContent({
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 mt-4"
+      className="space-y-6 mt-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2"
     >
       {!isEditing && (
         <Button
@@ -64,7 +64,7 @@ export function VCardExpandedContent({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="glass-card p-4 rounded-lg"
+          className={`glass-card p-4 rounded-lg ${isEditing ? 'border border-primary/20' : ''}`}
         >
           <VCardContact
             profile={profile}
@@ -77,7 +77,7 @@ export function VCardExpandedContent({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="glass-card p-4 rounded-lg"
+          className={`glass-card p-4 rounded-lg ${isEditing ? 'border border-primary/20' : ''}`}
         >
           <VCardSkills
             profile={profile}
@@ -109,7 +109,7 @@ export function VCardExpandedContent({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="glass-card p-4 rounded-lg"
+          className={`glass-card p-4 rounded-lg ${isEditing ? 'border border-primary/20' : ''}`}
         >
           <VCardEducation
             profile={profile}
@@ -122,7 +122,7 @@ export function VCardExpandedContent({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="glass-card p-4 rounded-lg"
+          className={`glass-card p-4 rounded-lg ${isEditing ? 'border border-primary/20' : ''}`}
         >
           <VCardCertifications
             profile={profile}
