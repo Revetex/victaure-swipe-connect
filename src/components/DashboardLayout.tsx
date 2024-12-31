@@ -31,7 +31,7 @@ export function DashboardLayout() {
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       <div className="relative z-10 flex-1 overflow-auto py-4 sm:py-6">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[2000px]">
           <motion.div 
             className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6"
             variants={containerVariants}
@@ -41,7 +41,7 @@ export function DashboardLayout() {
             {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
-              'col-span-1 xl:col-span-1 h-[900px] md:row-span-2'
+              'col-span-1 xl:col-span-1 h-[800px] md:row-span-2'
             )}
 
             {/* SwipeJob Section */}
