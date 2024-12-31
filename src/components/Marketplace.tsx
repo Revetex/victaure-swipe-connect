@@ -4,7 +4,7 @@ import { JobList } from "./jobs/JobList";
 import { Job } from "@/types/job";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { JobFilters as JobFiltersType, defaultFilters, applyJobFilters } from "./jobs/JobFilterUtils";
+import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
 import { Filter } from "lucide-react";
 
@@ -21,7 +21,7 @@ export function Marketplace() {
         .order("created_at", { ascending: false });
 
       // Apply filters using the utility function
-      query = applyJobFilters(query, filters);
+      query = applyFilters(query, filters);
 
       const { data, error } = await query;
 
