@@ -1,18 +1,41 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobFilters } from "../JobFilterUtils";
-import { contractTypes, experienceLevels } from "@/data/provinces";
 
 interface WorkTypeFiltersProps {
   filters: JobFilters;
   onFilterChange: (key: keyof JobFilters, value: any) => void;
 }
 
+const contractTypes = {
+  company: [
+    { value: "full-time", label: "Temps plein" },
+    { value: "part-time", label: "Temps partiel" },
+    { value: "contract", label: "Contrat" },
+    { value: "internship", label: "Stage" }
+  ],
+  individual: [
+    { value: "one-time", label: "Unique" },
+    { value: "fixed-duration", label: "Durée fixe" },
+    { value: "project-based", label: "Projet" }
+  ]
+};
+
+const experienceLevels = [
+  { value: "entry", label: "Débutant" },
+  { value: "junior", label: "Junior (1-3 ans)" },
+  { value: "mid-level", label: "Intermédiaire (3-5 ans)" },
+  { value: "senior", label: "Senior (5-8 ans)" },
+  { value: "expert", label: "Expert (8+ ans)" },
+  { value: "lead", label: "Lead" },
+  { value: "director", label: "Directeur" }
+];
+
 const paymentSchedules = [
   { value: "weekly", label: "Hebdomadaire" },
   { value: "biweekly", label: "Bimensuel" },
   { value: "monthly", label: "Mensuel" },
   { value: "quarterly", label: "Trimestriel" },
-  { value: "completion", label: "À la livraison" },
+  { value: "completion", label: "À la livraison" }
 ];
 
 export function WorkTypeFilters({ filters, onFilterChange }: WorkTypeFiltersProps) {
@@ -31,7 +54,7 @@ export function WorkTypeFilters({ filters, onFilterChange }: WorkTypeFiltersProp
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
-            {contractTypes.map((type) => (
+            {(filters.missionType === "individual" ? contractTypes.individual : contractTypes.company).map((type) => (
               <SelectItem key={type.value} value={type.value}>
                 {type.label}
               </SelectItem>

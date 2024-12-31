@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
-import { Job } from "@/types/job";
 
 export const filterSchema = z.object({
   category: z.string().default("all"),

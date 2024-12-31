@@ -177,6 +177,56 @@ export type Database = {
           },
         ]
       }
+      job_categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          mission_type: Database["public"]["Enums"]["mission_type"]
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          mission_type: Database["public"]["Enums"]["mission_type"]
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          mission_type?: Database["public"]["Enums"]["mission_type"]
+          name?: string
+        }
+        Relationships: []
+      }
+      job_subcategories: {
+        Row: {
+          category_id: string | null
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_subcategories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "job_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           application_deadline: string | null
@@ -755,6 +805,7 @@ export type Database = {
         | "admin"
         | "customer_service"
         | "other"
+      mission_type: "company" | "individual"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -2,23 +2,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { JobFilters } from "../JobFilterUtils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
 
 interface CategoryFiltersProps {
   filters: JobFilters;
   onFilterChange: (key: keyof JobFilters, value: any) => void;
 }
 
+type JobCategory = Database['public']['Tables']['job_categories']['Row'];
+type JobSubcategory = Database['public']['Tables']['job_subcategories']['Row'];
+
 export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProps) {
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [] } = useQuery<JobCategory[]>({
     queryKey: ["jobCategories", filters.missionType],
     queryFn: async () => {
       const query = supabase
-        .from("job_categories")
-        .select("id, name")
-        .order("name");
+        .from('job_categories')
+        .select('*')
+        .order('name');
 
       if (filters.missionType !== "all") {
-        query.eq("mission_type", filters.missionType);
+        query.eq('mission_type', filters.missionType);
       }
 
       const { data, error } = await query;
@@ -27,16 +31,16 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
     },
   });
 
-  const { data: subcategories = [] } = useQuery({
+  const { data: subcategories = [] } = useQuery<JobSubcategory[]>({
     queryKey: ["jobSubcategories", filters.category],
     queryFn: async () => {
       if (filters.category === "all") return [];
 
       const { data, error } = await supabase
-        .from("job_subcategories")
-        .select("id, name")
-        .eq("category_id", filters.category)
-        .order("name");
+        .from('job_subcategories')
+        .select('*')
+        .eq('category_id', filters.category)
+        .order('name');
 
       if (error) throw error;
       return data;
