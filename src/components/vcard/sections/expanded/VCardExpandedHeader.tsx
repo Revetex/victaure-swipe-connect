@@ -23,7 +23,7 @@ export function VCardExpandedHeader({ profile, isEditing, setProfile }: VCardExp
           <UserRound className="h-16 w-16 text-gray-400" />
         </AvatarFallback>
       </Avatar>
-      <div className="space-y-4">
+      <div className="space-y-4 flex-1">
         {isEditing ? (
           <>
             <Input
