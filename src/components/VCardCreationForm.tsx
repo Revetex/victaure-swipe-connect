@@ -76,7 +76,7 @@ export function VCardCreationForm() {
             full_name: values.full_name,
             bio: values.bio || null,
             email: user.email,
-            role: "professional",
+            role: "professional", // Explicitly set the role to a valid value
             skills: values.skills,
           })
           .eq('id', user.id);
@@ -94,7 +94,7 @@ export function VCardCreationForm() {
             full_name: values.full_name,
             bio: values.bio || null,
             email: user.email,
-            role: "professional",
+            role: "professional", // Explicitly set the role to a valid value
             skills: values.skills,
           });
 
