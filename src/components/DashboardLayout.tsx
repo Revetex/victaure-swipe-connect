@@ -38,6 +38,23 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
+            {/* Victaure Promotional Video */}
+            {renderDashboardSection(
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
+                <video 
+                  className="w-full h-full object-cover"
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                >
+                  <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>,
+              'w-full'
+            )}
+
             {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
