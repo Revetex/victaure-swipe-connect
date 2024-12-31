@@ -4,10 +4,19 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
+  const [videoError, setVideoError] = useState(false);
+
+  const handleVideoError = () => {
+    setVideoError(true);
+    toast.error("La vidéo n'a pas pu être chargée");
+    console.error("Video loading error: /lovable-uploads/VictaurePub.mp4 not found");
+  };
 
   const renderDashboardSection = (
     component: React.ReactNode,
@@ -41,14 +50,21 @@ export function DashboardLayout() {
             {/* Victaure Promotional Video */}
             {renderDashboardSection(
               <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
-                <video 
-                  className="w-full h-full object-cover"
-                  controls
-                  loop
-                >
-                  <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
-                  Votre navigateur ne prend pas en charge la lecture de vidéos.
-                </video>
+                {!videoError ? (
+                  <video 
+                    className="w-full h-full object-cover"
+                    controls
+                    loop
+                    onError={handleVideoError}
+                  >
+                    <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
+                    Votre navigateur ne prend pas en charge la lecture de vidéos.
+                  </video>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
+                    <p>La vidéo n'est pas disponible pour le moment</p>
+                  </div>
+                )}
               </div>,
               'w-full'
             )}
