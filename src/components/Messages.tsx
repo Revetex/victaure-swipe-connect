@@ -18,6 +18,7 @@ export function Messages() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const unreadMessagesCount = userMessages.filter(m => !m.read).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
+  const [activeTab, setActiveTab] = useState("messages");
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -59,9 +60,40 @@ export function Messages() {
     };
   }, []);
 
+  // Mark notifications as read when notifications tab is opened
+  useEffect(() => {
+    const markNotificationsAsRead = async () => {
+      if (activeTab === "notifications" && unreadNotificationsCount > 0) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const { error } = await supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('user_id', user.id)
+            .eq('read', false);
+
+          if (error) throw error;
+
+          // Update local state
+          setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        } catch (error) {
+          console.error('Error marking notifications as read:', error);
+        }
+      }
+    };
+
+    markNotificationsAsRead();
+  }, [activeTab, unreadNotificationsCount]);
+
   return (
     <div className="h-full flex flex-col">
-      <Tabs defaultValue="messages" className="flex-1 flex flex-col">
+      <Tabs 
+        defaultValue="messages" 
+        className="flex-1 flex flex-col"
+        onValueChange={setActiveTab}
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="messages" className="relative">
             <MessageSquare className="h-5 w-5" />
