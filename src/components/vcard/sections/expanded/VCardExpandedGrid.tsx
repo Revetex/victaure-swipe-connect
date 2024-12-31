@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { VCardContact } from "../../VCardContact";
-import { VCardSkills } from "../../VCardSkills";
-import { VCardEducation } from "../../VCardEducation";
-import { VCardCertifications } from "../../VCardCertifications";
-import { VCardSection } from "../../VCardSection";
+import { VCardContact } from "@/components/VCardContact";
+import { VCardSkills } from "@/components/VCardSkills";
+import { VCardEducation } from "@/components/VCardEducation";
+import { VCardCertifications } from "@/components/VCardCertifications";
+import { VCardSection } from "@/components/VCardSection";
 import { FileText } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
