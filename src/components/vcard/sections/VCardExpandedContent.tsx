@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VCardContact } from "../../VCardContact";
 import { VCardSkills } from "../../VCardSkills";
@@ -146,7 +146,10 @@ export function VCardExpandedContent({
           </motion.div>
 
           <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-            <VCardSection title="Description">
+            <VCardSection 
+              title="Description" 
+              icon={<FileText className="h-5 w-5 text-muted-foreground" />}
+            >
               {isEditing ? (
                 <Textarea
                   value={profile.bio || ""}
