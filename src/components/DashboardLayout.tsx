@@ -4,9 +4,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { PaymentBox } from "@/components/dashboard/PaymentBox";
+import { JobList } from "@/components/jobs/JobList";
+import { useJobsQuery } from "@/components/marketplace/hooks/useJobsQuery";
+import { defaultFilters } from "@/components/jobs/JobFilterUtils";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
+  const { data: jobs = [], isLoading, error, refetch } = useJobsQuery(defaultFilters);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -61,6 +65,23 @@ export function DashboardLayout() {
             >
               <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
                 <SwipeJob />
+              </div>
+            </motion.div>
+
+            {/* Jobs Section */}
+            <motion.div 
+              variants={itemVariants}
+              className="col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px]"
+            >
+              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 overflow-auto">
+                <div className="p-6 sm:p-8">
+                  <JobList 
+                    jobs={jobs} 
+                    isLoading={isLoading}
+                    error={error}
+                    onJobDeleted={() => refetch()} 
+                  />
+                </div>
               </div>
             </motion.div>
 
