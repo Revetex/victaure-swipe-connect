@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "next-themes";
 import { memo } from "react";
 import { BiometricAuth } from "./BiometricAuth";
-import { Separator } from "@/components/ui/separator";
 
 export const AuthForm = memo(function AuthForm() {
   const { theme } = useTheme();
