@@ -61,6 +61,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   };
 
   const handleSwipeWithMatch = async (direction: "left" | "right") => {
+    if (isAnimating) return;
     setIsAnimating(true);
     
     const targetX = direction === "left" ? -200 : 200;
@@ -76,6 +77,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
         await onMatchSuccess(jobs[currentIndex].id);
         toast.success("Match créé avec succès !");
       } catch (error) {
+        console.error('Error creating match:', error);
         toast.error("Une erreur est survenue lors du match");
       }
     }
@@ -84,11 +86,6 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     x.set(0);
     setSwipeDirection(null);
     setIsAnimating(false);
-  };
-
-  const handleButtonSwipe = async (direction: "left" | "right") => {
-    if (isAnimating) return;
-    await handleSwipeWithMatch(direction);
   };
 
   if (loading) {
@@ -157,7 +154,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
         />
       </motion.div>
       
-      <SwipeControls onSwipe={handleButtonSwipe} isAnimating={isAnimating} />
+      <SwipeControls onSwipe={handleSwipeWithMatch} isAnimating={isAnimating} />
     </motion.div>
   );
 }
