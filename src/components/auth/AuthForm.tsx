@@ -58,6 +58,7 @@ export const AuthForm = memo(function AuthForm() {
             button_label: "Se connecter",
             email_input_placeholder: "Votre adresse email",
             password_input_placeholder: "Votre mot de passe",
+            link_text: "Vous avez déjà un compte ? Connectez-vous",
           },
           sign_up: {
             email_label: "Email",
@@ -65,6 +66,11 @@ export const AuthForm = memo(function AuthForm() {
             button_label: "S'inscrire",
             email_input_placeholder: "Votre adresse email",
             password_input_placeholder: "Choisissez un mot de passe",
+            link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
+          },
+          forgotten_password: {
+            button_label: "Réinitialiser le mot de passe",
+            link_text: "Mot de passe oublié ?",
           },
         },
       }}
