@@ -94,14 +94,41 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         return;
       }
 
+      // Get the category name from the job_categories table
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('job_categories')
+        .select('name')
+        .eq('id', data.category)
+        .single();
+
+      if (categoryError) {
+        console.error("Error fetching category:", categoryError);
+        toast.error("Erreur lors de la récupération de la catégorie");
+        return;
+      }
+
+      // Get the subcategory name if one was selected
+      let subcategoryName = "";
+      if (data.subcategory) {
+        const { data: subcategoryData, error: subcategoryError } = await supabase
+          .from('job_subcategories')
+          .select('name')
+          .eq('id', data.subcategory)
+          .single();
+
+        if (subcategoryError) {
+          console.error("Error fetching subcategory:", subcategoryError);
+        } else {
+          subcategoryName = subcategoryData.name;
+        }
+      }
+
       const jobData = {
         ...data,
         employer_id: user.id,
         status: "open",
-        title: data.title,
-        description: data.description,
-        location: data.location,
-        category: data.category,
+        category: categoryData.name, // Use the category name instead of ID
+        subcategory: subcategoryName, // Use the subcategory name instead of ID
         budget: Number(data.budget),
         salary_min: Number(data.salary_min),
         salary_max: Number(data.salary_max),
@@ -109,7 +136,10 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
 
       const { error } = await supabase.from("jobs").insert(jobData);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error creating job:", error);
+        throw error;
+      }
 
       toast.success("Mission créée avec succès");
       onSuccess?.();
