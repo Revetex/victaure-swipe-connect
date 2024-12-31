@@ -11,8 +11,8 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     doc.setFillColor(248, 250, 252);
     doc.rect(0, 0, 210, 297, 'F');
     
-    // Add header
-    doc.setFillColor(79, 70, 229);
+    // Add header with professional styling
+    doc.setFillColor(30, 41, 59);
     doc.rect(0, 0, 210, 60, 'F');
     
     // Add profile information
@@ -46,7 +46,7 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     
     // Generate QR Code
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrCodeUrl, 'PNG', 150, currentY - 50, 40, 40);
+    doc.addImage(qrCodeUrl, 'PNG', 150, 20, 40, 40);
     
     // Skills Section
     currentY += 20;
@@ -86,103 +86,6 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
     return publicUrl;
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw error;
-  }
-};
-
-export const generateBusinessVCardPDF = async (profile: UserProfile): Promise<string> => {
-  try {
-    const doc = new jsPDF();
-    
-    // Set background
-    doc.setFillColor(248, 250, 252);
-    doc.rect(0, 0, 210, 297, 'F');
-    
-    // Add header with company branding
-    doc.setFillColor(30, 41, 59);
-    doc.rect(0, 0, 210, 60, 'F');
-    
-    // Add profile information
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
-    doc.text(profile.full_name || 'Professional Profile', 20, 30);
-    
-    if (profile.company_name) {
-      doc.setFontSize(18);
-      doc.text(profile.company_name, 20, 45);
-    }
-    
-    // Role and industry
-    doc.setTextColor(31, 41, 55);
-    doc.setFontSize(16);
-    doc.text('Professional Information', 20, 80);
-    
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    let currentY = 95;
-    
-    const info = [
-      `Role: ${profile.role || ''}`,
-      `Industry: ${profile.industry || ''}`,
-      `Company Size: ${profile.company_size || ''}`,
-      `Location: ${[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}`,
-    ].filter(item => item.split(': ')[1]);
-    
-    info.forEach((item) => {
-      doc.text(item, 20, currentY);
-      currentY += 10;
-    });
-    
-    // Contact Information
-    currentY += 10;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text('Contact Information', 20, currentY);
-    currentY += 15;
-    
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    
-    const contactInfo = [
-      `Email: ${profile.email || ''}`,
-      `Phone: ${profile.phone || ''}`,
-      `Website: ${profile.website || ''}`,
-    ].filter(item => item.split(': ')[1]);
-    
-    contactInfo.forEach((info) => {
-      doc.text(info, 20, currentY);
-      currentY += 10;
-    });
-    
-    // Generate QR Code
-    const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrCodeUrl, 'PNG', 150, currentY - 50, 40, 40);
-    
-    // Generate the PDF blob
-    const pdfBlob = doc.output('blob');
-    const storageFileName = `${profile.id}_business_${Date.now()}.pdf`;
-    
-    // Upload to Supabase Storage
-    const { error: uploadError } = await supabase
-      .storage
-      .from('vcards')
-      .upload(storageFileName, pdfBlob, {
-        contentType: 'application/pdf',
-        cacheControl: '3600'
-      });
-      
-    if (uploadError) throw uploadError;
-
-    // Get and return the Supabase storage URL
-    const { data: { publicUrl } } = supabase
-      .storage
-      .from('vcards')
-      .getPublicUrl(storageFileName);
-    
-    return publicUrl;
-  } catch (error) {
-    console.error('Error generating business PDF:', error);
     throw error;
   }
 };
