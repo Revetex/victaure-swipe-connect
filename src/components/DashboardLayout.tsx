@@ -15,7 +15,7 @@ export function DashboardLayout() {
   const handleVideoError = () => {
     setVideoError(true);
     toast.error("La vidéo n'a pas pu être chargée");
-    console.error("Video loading error: Video file not found");
+    console.error("Video loading error");
   };
 
   const renderDashboardSection = (
@@ -59,15 +59,24 @@ export function DashboardLayout() {
               )}
 
               {renderDashboardSection(
-                <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
+                <div className="relative w-full h-full rounded-xl overflow-hidden shadow-lg">
                   {!videoError ? (
                     <video 
                       className="w-full h-full object-cover"
                       controls
+                      autoPlay
+                      muted
                       loop
                       onError={handleVideoError}
                     >
                       <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+                      <track 
+                        kind="subtitles" 
+                        src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.srt" 
+                        srcLang="fr" 
+                        label="Français"
+                        default
+                      />
                       Votre navigateur ne prend pas en charge la lecture de vidéos.
                     </video>
                   ) : (
@@ -76,7 +85,7 @@ export function DashboardLayout() {
                     </div>
                   )}
                 </div>,
-                'w-full'
+                'w-full h-[500px] sm:h-[550px] md:h-[600px]'
               )}
             </div>
 
