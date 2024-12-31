@@ -26,6 +26,7 @@ export function VCardCreationForm() {
   const onSubmit = async (values: VCardFormValues) => {
     try {
       setIsLoading(true);
+      console.log("Submitting form with values:", values);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -40,22 +41,26 @@ export function VCardCreationForm() {
         .eq('id', user.id)
         .single();
 
+      const profileData = {
+        full_name: values.full_name,
+        email: user.email,
+        role: "professional", // Explicitly set to a valid role value
+        skills: values.skills,
+        phone: values.phone || null,
+      };
+
+      console.log("Profile data to be saved:", profileData);
+
       if (existingProfile) {
         // Update existing profile
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({
-            full_name: values.full_name,
-            email: user.email,
-            role: "professional", // Explicitly set the role to a valid value
-            skills: values.skills,
-            phone: values.phone || null,
-          })
+          .update(profileData)
           .eq('id', user.id);
 
         if (updateError) {
+          console.error("Error updating profile:", updateError);
           toast.error("Erreur lors de la mise à jour du profil");
-          console.error(updateError);
           return;
         }
       } else {
@@ -64,16 +69,12 @@ export function VCardCreationForm() {
           .from('profiles')
           .insert({
             id: user.id,
-            full_name: values.full_name,
-            email: user.email,
-            role: "professional", // Explicitly set the role to a valid value
-            skills: values.skills,
-            phone: values.phone || null,
+            ...profileData,
           });
 
         if (insertError) {
+          console.error("Error creating profile:", insertError);
           toast.error("Erreur lors de la création du profil");
-          console.error(insertError);
           return;
         }
       }
