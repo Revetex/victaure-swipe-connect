@@ -15,8 +15,8 @@ interface TodoItemProps {
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
   return (
     <div className={cn(
-      "flex items-center gap-3 p-4 rounded-lg transition-all duration-200",
-      "bg-background/50 hover:bg-background shadow-sm hover:shadow",
+      "flex items-center gap-3 p-4 rounded-lg",
+      "bg-background/50 dark:bg-gray-800/50",
       "border border-border/50 hover:border-border",
       "group animate-in slide-in-from-left"
     )}>

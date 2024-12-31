@@ -38,7 +38,7 @@ export function TodoSection({
   const title = type === 'notes' ? 'Notes' : 'Tâches';
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full flex flex-col">
       <div className="flex items-center gap-2 text-primary">
         <ListTodo className="h-5 w-5" />
         <h2 className="text-lg font-semibold">{title}</h2>
@@ -56,7 +56,7 @@ export function TodoSection({
         onAdd={onAdd}
       />
 
-      <ScrollArea className="h-[400px] pr-4">
+      <ScrollArea className="flex-1 pr-4">
         <div className="space-y-2">
           {todos.map((todo) => (
             <TodoItem
