@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { VCardMainInfo } from "./VCardMainInfo";
-import { VCardContactInfo } from "../VCardContactInfo";
 import { QRCodeSVG } from "qrcode.react";
+import { VCardHeader } from "../../VCardHeader";
+import { VCardContactInfo } from "../VCardContactInfo";
 
 interface VCardMainContentProps {
   profile: any;
@@ -9,6 +9,7 @@ interface VCardMainContentProps {
   setProfile: (profile: any) => void;
   setIsEditing: (isEditing: boolean) => void;
   isExpanded: boolean;
+  setIsExpanded: (isExpanded: boolean) => void;
 }
 
 export function VCardMainContent({
@@ -16,12 +17,13 @@ export function VCardMainContent({
   isEditing,
   setProfile,
   setIsEditing,
-  isExpanded
+  isExpanded,
+  setIsExpanded
 }: VCardMainContentProps) {
   return (
     <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
       <div className="flex-1 min-w-0">
-        <VCardMainInfo
+        <VCardHeader
           profile={profile}
           isEditing={isEditing}
           setProfile={setProfile}

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { VCardMainContent } from "./sections/VCardMainContent";
@@ -88,6 +89,7 @@ export function VCardContent({
               setProfile={setTempProfile}
               setIsEditing={setIsEditing}
               isExpanded={isExpanded}
+              setIsExpanded={setIsExpanded}
             />
 
             <AnimatePresence>
