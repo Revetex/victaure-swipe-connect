@@ -21,6 +21,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          // Clear any invalid session data
+          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
           toast.error("Erreur d'authentification");
           navigate("/auth");
           return;
@@ -38,12 +40,16 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         
         if (userError || !user) {
           console.error("User verification error:", userError);
+          // Clear any invalid session data
+          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
           await supabase.auth.signOut();
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth check error:", error);
+        // Clear any invalid session data
+        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       } finally {
         setIsLoading(false);
@@ -54,6 +60,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
+        // Clear any stored auth data
+        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       }
     });

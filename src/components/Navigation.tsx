@@ -24,6 +24,8 @@ export function Navigation() {
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          // Clear any invalid session data
+          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
           navigate("/auth");
           return;
         }
@@ -39,12 +41,16 @@ export function Navigation() {
         
         if (userError || !user) {
           console.error("User verification error:", userError);
+          // Clear any invalid session data
+          localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
           await supabase.auth.signOut();
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
+        // Clear any invalid session data
+        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       } finally {
         setIsLoading(false);
@@ -53,12 +59,12 @@ export function Navigation() {
 
     initializeAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_OUT' || !session) {
         // Clear any stored auth data
-        localStorage.removeItem('supabase.auth.token');
+        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
         navigate("/auth");
       }
     });
@@ -70,11 +76,11 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
+      // Clear any stored auth data before signing out
+      localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Clear any stored auth data
-      localStorage.removeItem('supabase.auth.token');
       navigate("/auth");
       toast.success("Déconnexion réussie");
     } catch (error) {
