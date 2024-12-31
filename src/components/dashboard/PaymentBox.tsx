@@ -13,6 +13,19 @@ const containerVariants = {
     y: 0,
     transition: {
       duration: 0.3,
+      ease: "easeOut",
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: {
+      duration: 0.3,
       ease: "easeOut"
     }
   }
@@ -25,16 +38,16 @@ export function PaymentBox() {
   if (isLoading) {
     return (
       <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+        <CardHeader className="space-y-1">
+          <CardTitle className="flex items-center gap-2 text-xl">
             <Lock className="h-5 w-5" />
             Paiements sécurisés
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
-            <div className="h-10 bg-muted rounded" />
-            <div className="h-20 bg-muted rounded" />
+            <div className="h-10 bg-muted rounded-lg" />
+            <div className="h-20 bg-muted rounded-lg" />
           </div>
         </CardContent>
       </Card>
@@ -46,26 +59,32 @@ export function PaymentBox() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="w-full"
+      className="w-full h-full"
     >
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <Card className="h-full">
+        <CardHeader className="space-y-1">
+          <CardTitle className="flex items-center gap-2 text-xl">
             <Lock className="h-5 w-5" />
             Paiements sécurisés
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
+        <CardContent className="space-y-6">
+          <motion.div variants={itemVariants}>
             <PaymentTypeSelector
               selectedPaymentType={selectedPaymentType}
               onSelect={setSelectedPaymentType}
             />
+          </motion.div>
+          
+          <motion.div 
+            variants={itemVariants}
+            className="overflow-auto max-h-[calc(100vh-400px)] rounded-lg"
+          >
             <TransactionList
               transactions={transactions || []}
               onRelease={handlePayment}
             />
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
     </motion.div>

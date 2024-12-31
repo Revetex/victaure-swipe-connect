@@ -3,6 +3,30 @@ import { Briefcase, MessageSquare, DollarSign, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { DashboardStats as DashboardStatsType } from "@/types/dashboard";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
 
 export function DashboardStats() {
   const { data: stats, isLoading } = useQuery({
@@ -51,10 +75,16 @@ export function DashboardStats() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="p-6 bg-muted/50">
-            <div className="h-16"></div>
+          <Card key={i} className="p-6">
+            <div className="animate-pulse space-y-4">
+              <div className="h-10 w-10 rounded-lg bg-muted" />
+              <div className="space-y-2">
+                <div className="h-4 w-24 bg-muted rounded" />
+                <div className="h-6 w-16 bg-muted rounded" />
+              </div>
+            </div>
           </Card>
         ))}
       </div>
@@ -93,23 +123,31 @@ export function DashboardStats() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <motion.div 
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {quickActions.map((action, index) => (
-        <Card 
-          key={index}
-          className="p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
-        >
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-lg ${action.bgColor}`}>
-              <action.icon className={`h-6 w-6 ${action.color}`} />
+        <motion.div key={index} variants={itemVariants}>
+          <Card className="p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-sm">
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${action.bgColor} transition-colors duration-300`}>
+                <action.icon className={`h-6 w-6 ${action.color}`} />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {action.title}
+                </p>
+                <h3 className="text-2xl font-bold mt-1 tracking-tight">
+                  {action.value}
+                </h3>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{action.title}</p>
-              <h3 className="text-2xl font-semibold mt-1">{action.value}</h3>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

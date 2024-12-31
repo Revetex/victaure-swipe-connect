@@ -16,10 +16,13 @@ export function DashboardLayout() {
     className: string,
     padding: boolean = true
   ) => (
-    <motion.div variants={itemVariants} className={className}>
-      <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+    <motion.div 
+      variants={itemVariants} 
+      className={`transform transition-all duration-300 ${className}`}
+    >
+      <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
         {padding ? (
-          <div className="p-6 sm:p-8 h-full">{component}</div>
+          <div className="p-4 sm:p-6 lg:p-8 h-full">{component}</div>
         ) : (
           component
         )}
@@ -29,38 +32,43 @@ export function DashboardLayout() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      <div className="relative z-10 flex-1 overflow-auto py-8 sm:py-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px] pb-12">
+      <div className="relative z-10 flex-1 overflow-auto py-4 sm:py-6 lg:py-8">
+        <div className="container mx-auto px-3 sm:px-4 lg:px-6 max-w-[1920px] pb-8 sm:pb-10">
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 md:gap-10"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
+            {/* Messages Section */}
             {renderDashboardSection(
               <Messages />,
-              "col-span-1 h-[650px] md:h-[750px]"
+              "col-span-1 h-[600px] sm:h-[700px] lg:h-[800px]"
             )}
 
+            {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
-              "col-span-1 md:col-span-1 xl:col-span-2 h-[650px] md:h-[750px]",
+              "col-span-1 md:col-span-1 xl:col-span-2 h-[600px] sm:h-[700px] lg:h-[800px]",
               false
             )}
 
+            {/* TodoList Section */}
             {renderDashboardSection(
               <TodoList />,
-              "col-span-1 h-[650px] md:h-[750px]"
+              "col-span-1 h-[600px] sm:h-[700px] lg:h-[800px]"
             )}
 
+            {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
-              "col-span-1 md:col-span-2 xl:col-span-4 min-h-[650px] md:min-h-[750px] mb-12"
+              "col-span-1 md:col-span-2 xl:col-span-4 min-h-[600px] sm:min-h-[700px] lg:min-h-[800px] mb-8 sm:mb-10"
             )}
 
+            {/* PaymentBox Section */}
             {renderDashboardSection(
               <PaymentBox />,
-              "col-span-1 md:col-span-2 xl:col-span-4 h-[450px]"
+              "col-span-1 md:col-span-2 xl:col-span-4 h-[400px] sm:h-[450px]"
             )}
           </motion.div>
         </div>
