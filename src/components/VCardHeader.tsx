@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Maximize2, X, Briefcase, Upload, UserRound } from "lucide-react";
+import { Maximize2, X, Briefcase, Upload, UserRound, Edit2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -19,9 +19,10 @@ interface VCardHeaderProps {
   isEditing: boolean;
   setProfile: (profile: any) => void;
   setIsEditing: (isEditing: boolean) => void;
+  isExpanded?: boolean;
 }
 
-export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VCardHeaderProps) {
+export function VCardHeader({ profile, isEditing, setProfile, setIsEditing, isExpanded }: VCardHeaderProps) {
   const { toast } = useToast();
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +123,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         </div>
         <div className="space-y-2 w-full text-center sm:text-left">
           <div className="space-y-1">
-            {isEditing ? (
+            {isEditing && isExpanded ? (
               <Input
                 value={profile.full_name || ""}
                 onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
@@ -142,7 +143,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
           </div>
           <div className="flex items-center justify-center sm:justify-start gap-1.5">
             <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
-            {isEditing ? (
+            {isEditing && isExpanded ? (
               <Select
                 value={profile.role || ""}
                 onValueChange={(value) => setProfile({ ...profile, role: value })}
@@ -171,14 +172,25 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
           </div>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setIsEditing(!isEditing)}
-        className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
-      >
-        {isEditing ? <X className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-      </Button>
+      {isExpanded ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsEditing(!isEditing)}
+          className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
+        >
+          {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsEditing(!isEditing)}
+          className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
+        >
+          <Maximize2 className="h-4 w-4" />
+        </Button>
+      )}
     </motion.div>
   );
 }
