@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { VCardFormSchema, VCardFormValues } from "./vcard/form/VCardFormSchema";
+import { vCardFormSchema, type VCardFormValues } from "./vcard/form/VCardFormSchema";
 import { BasicInfoFields } from "./vcard/form/BasicInfoFields";
 import { SkillsFields } from "./vcard/form/SkillsFields";
 import { useToast } from "./ui/use-toast";
@@ -17,7 +17,7 @@ export function VCardCreationForm() {
   const { toast } = useToast();
 
   const form = useForm<VCardFormValues>({
-    resolver: zodResolver(VCardFormSchema),
+    resolver: zodResolver(vCardFormSchema),
     defaultValues: {
       full_name: "",
       phone: "",
@@ -60,7 +60,7 @@ export function VCardCreationForm() {
       const profileData = {
         full_name: values.full_name,
         email: user.email,
-        role: "professional", // Explicitly set to a valid role value
+        role: "professional",
         skills: values.skills,
         phone: values.phone || null,
       };
@@ -124,8 +124,8 @@ export function VCardCreationForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <BasicInfoFields />
-        <SkillsFields />
+        <BasicInfoFields form={form} />
+        <SkillsFields form={form} />
         
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Création en cours..." : "Créer ma carte de visite"}
