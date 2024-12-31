@@ -52,36 +52,38 @@ export function DashboardLayout() {
               'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
 
-            {renderDashboardSection(
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
-                {!videoError ? (
-                  <video 
-                    className="w-full h-full object-cover"
-                    controls
-                    loop
-                    onError={handleVideoError}
-                  >
-                    <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
-                    Votre navigateur ne prend pas en charge la lecture de vidéos.
-                  </video>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
-                    <p>La vidéo n'est pas disponible pour le moment</p>
-                  </div>
-                )}
-              </div>,
-              'w-full'
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
+              {renderDashboardSection(
+                <VCard />,
+                'w-full h-[500px] sm:h-[550px] md:h-[600px]'
+              )}
+
+              {renderDashboardSection(
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
+                  {!videoError ? (
+                    <video 
+                      className="w-full h-full object-cover"
+                      controls
+                      loop
+                      onError={handleVideoError}
+                    >
+                      <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+                      Votre navigateur ne prend pas en charge la lecture de vidéos.
+                    </video>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
+                      <p>La vidéo n'est pas disponible pour le moment</p>
+                    </div>
+                  )}
+                </div>,
+                'w-full'
+              )}
+            </div>
 
             {renderDashboardSection(
               <SwipeJob />,
               'w-full h-[500px] sm:h-[550px] md:h-[600px]',
               false
-            )}
-
-            {renderDashboardSection(
-              <VCard />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px]'
             )}
           </motion.div>
         </div>
