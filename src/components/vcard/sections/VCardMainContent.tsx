@@ -37,9 +37,10 @@ export function VCardMainContent({
           className="mt-6"
         >
           <VCardContactInfo
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
+            email={profile.email}
+            phone={profile.phone}
+            city={profile.city}
+            state={profile.state}
           />
         </motion.div>
       </div>

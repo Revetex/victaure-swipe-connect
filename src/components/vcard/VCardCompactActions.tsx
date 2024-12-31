@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Edit2, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
-interface VCardCompactActionsProps {
+export interface VCardCompactActionsProps {
   onExpand: () => void;
   onEdit: () => void;
 }

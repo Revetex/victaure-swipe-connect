@@ -75,6 +75,14 @@ export function VCardContent({
                   setProfile={setTempProfile}
                   newSkill={newSkill}
                   setNewSkill={setNewSkill}
+                  isExpanded={isExpanded}
+                  setIsExpanded={setIsExpanded}
+                  onShare={onShare}
+                  onDownload={onDownload}
+                  onDownloadPDF={onDownloadPDF}
+                  onCopyLink={onCopyLink}
+                  onSave={onSave}
+                  onApplyChanges={onApplyChanges}
                 />
               </motion.div>
             )}
@@ -83,19 +91,18 @@ export function VCardContent({
           <div className="flex justify-between items-center">
             {isEditing ? (
               <VCardActions
-                onSave={onSave}
-                onCancel={() => setIsEditing(false)}
-                onApplyChanges={onApplyChanges}
-              />
-            ) : (
-              <VCardCompactActions
+                isEditing={isEditing}
                 onShare={onShare}
                 onDownload={onDownload}
                 onDownloadPDF={onDownloadPDF}
                 onCopyLink={onCopyLink}
+                onSave={onSave}
+                onApplyChanges={onApplyChanges}
+              />
+            ) : (
+              <VCardCompactActions
+                onExpand={() => setIsExpanded(true)}
                 onEdit={() => setIsEditing(true)}
-                isExpanded={isExpanded}
-                setIsExpanded={setIsExpanded}
               />
             )}
           </div>

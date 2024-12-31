@@ -1,7 +1,7 @@
 import { Mail, Phone, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 
-interface VCardContactInfoProps {
+export interface VCardContactInfoProps {
   email?: string;
   phone?: string;
   city?: string;
