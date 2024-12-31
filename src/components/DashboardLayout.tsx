@@ -15,7 +15,7 @@ export function DashboardLayout() {
   const handleVideoError = () => {
     setVideoError(true);
     toast.error("La vidéo n'a pas pu être chargée");
-    console.error("Video loading error: /lovable-uploads/VictaurePub.mp4 not found");
+    console.error("Video loading error: Video file not found");
   };
 
   const renderDashboardSection = (
@@ -57,7 +57,7 @@ export function DashboardLayout() {
                     loop
                     onError={handleVideoError}
                   >
-                    <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
+                    <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
                     Votre navigateur ne prend pas en charge la lecture de vidéos.
                   </video>
                 ) : (
