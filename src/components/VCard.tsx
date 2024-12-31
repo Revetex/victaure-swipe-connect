@@ -81,6 +81,29 @@ export function VCard() {
     }
   };
 
+  const handleDownloadBusinessPDF = async () => {
+    if (!profile) return;
+    
+    try {
+      // For now, we'll use the same PDF generator
+      // You can implement a different business PDF generator later
+      const pdfUrl = await generateVCardPDF(profile);
+      window.open(pdfUrl, '_blank');
+      
+      toast({
+        title: "Succès",
+        description: "Business PDF généré avec succès",
+      });
+    } catch (error) {
+      console.error('Error generating business PDF:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de générer le Business PDF",
+      });
+    }
+  };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({
@@ -152,6 +175,7 @@ export function VCard() {
       onShare={handleShare}
       onDownload={handleDownloadVCard}
       onDownloadPDF={handleDownloadPDF}
+      onDownloadBusinessPDF={handleDownloadBusinessPDF}
       onCopyLink={handleCopyLink}
       onSave={handleSave}
       onApplyChanges={handleApplyChanges}
