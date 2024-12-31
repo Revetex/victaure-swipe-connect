@@ -1,4 +1,3 @@
-import { TodoList } from "@/components/TodoList";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -62,18 +61,6 @@ export function DashboardLayout() {
             >
               <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
                 <SwipeJob />
-              </div>
-            </motion.div>
-
-            {/* TodoList Section */}
-            <motion.div 
-              variants={itemVariants}
-              className="col-span-1 h-[650px] md:h-[750px]"
-            >
-              <div className="glass-card rounded-3xl shadow-xl shadow-black/5 h-full transform transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
-                <div className="p-6 sm:p-8 h-full">
-                  <TodoList />
-                </div>
               </div>
             </motion.div>
 
