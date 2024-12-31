@@ -53,21 +53,21 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Contact</h3>
+      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">Contact</h3>
       <motion.div 
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid gap-4"
+        className="grid gap-3 sm:gap-4"
       >
-        {contactFields.map((field, index) => (
+        {contactFields.map((field) => (
           <motion.div 
             key={field.key} 
             variants={item}
-            className="flex items-center gap-3"
+            className="flex items-center gap-2 sm:gap-3"
           >
-            <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
-              <field.icon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            <div className="p-1.5 sm:p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
+              <field.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400" />
             </div>
             {isEditing ? (
               <Input
@@ -75,10 +75,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => setProfile({ ...profile, [field.key]: e.target.value })}
                 placeholder={field.placeholder}
-                className="flex-1 border-indigo-200 focus:border-indigo-400 dark:border-indigo-800 dark:focus:border-indigo-600"
+                className="flex-1 text-sm sm:text-base border-indigo-200 focus:border-indigo-400 dark:border-indigo-800 dark:focus:border-indigo-600"
               />
             ) : (
-              <span className="text-gray-600 dark:text-gray-300">
+              <span className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                 {field.value || "Non défini"}
               </span>
             )}

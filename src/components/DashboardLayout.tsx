@@ -20,7 +20,7 @@ export function DashboardLayout() {
     >
       <div className="dashboard-card h-full">
         {padding ? (
-          <div className="responsive-padding h-full overflow-hidden">{component}</div>
+          <div className="p-3 sm:p-4 md:p-6 h-full overflow-hidden">{component}</div>
         ) : (
           component
         )}
@@ -30,10 +30,10 @@ export function DashboardLayout() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      <div className="relative z-10 flex-1 overflow-auto py-4 sm:py-6">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[2000px]">
+      <div className="relative z-10 flex-1 overflow-auto py-2 sm:py-4">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6 max-w-[2000px]">
           <motion.div 
-            className="flex flex-col gap-4 sm:gap-6 max-w-[1200px] mx-auto"
+            className="flex flex-col gap-3 sm:gap-4 md:gap-6 max-w-[1200px] mx-auto"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -41,20 +41,20 @@ export function DashboardLayout() {
             {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
-              'w-full h-[800px]'
+              'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
 
             {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
-              'w-full h-[600px]',
+              'w-full h-[500px] sm:h-[550px] md:h-[600px]',
               false
             )}
 
             {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
-              'w-full h-[600px]'
+              'w-full h-[500px] sm:h-[550px] md:h-[600px]'
             )}
           </motion.div>
         </div>

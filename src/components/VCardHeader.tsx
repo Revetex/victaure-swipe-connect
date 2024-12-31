@@ -13,7 +13,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 
 interface VCardHeaderProps {
   profile: any;
@@ -88,21 +87,21 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
 
   return (
     <motion.div 
-      className="flex flex-col sm:flex-row sm:items-start gap-6 relative w-full"
+      className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 relative w-full"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col sm:flex-row gap-6 w-full">
-        <div className="relative group">
-          <Avatar className="h-24 w-24 ring-2 ring-background">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full">
+        <div className="relative group mx-auto sm:mx-0">
+          <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-2 ring-background">
             <AvatarImage 
               src={profile.avatar_url} 
               alt={profile.full_name}
               className="object-cover"
             />
             <AvatarFallback className="bg-muted">
-              <UserRound className="h-10 w-10 text-muted-foreground/50" />
+              <UserRound className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/50" />
             </AvatarFallback>
           </Avatar>
           {isEditing && (
@@ -110,7 +109,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
               className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
               htmlFor="avatar-upload"
             >
-              <Upload className="h-8 w-8 text-white" />
+              <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               <input
                 id="avatar-upload"
                 type="file"
@@ -121,13 +120,13 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
             </label>
           )}
         </div>
-        <div className="space-y-4 w-full">
+        <div className="space-y-3 sm:space-y-4 w-full text-center sm:text-left">
           <div className="space-y-2">
             {isEditing ? (
               <Input
                 value={profile.full_name || ""}
                 onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                className="text-xl font-semibold"
+                className="text-lg sm:text-xl font-semibold"
                 placeholder="Votre nom"
               />
             ) : (
@@ -135,20 +134,20 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-2xl font-semibold"
+                className="text-xl sm:text-2xl font-semibold"
               >
                 {profile.full_name || "Nom non défini"}
               </motion.h2>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-muted-foreground" />
+          <div className="flex items-center justify-center sm:justify-start gap-2">
+            <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             {isEditing ? (
               <Select
                 value={profile.role || ""}
                 onValueChange={(value) => setProfile({ ...profile, role: value })}
               >
-                <SelectTrigger className="w-full sm:w-[300px]">
+                <SelectTrigger className="w-full max-w-[300px]">
                   <SelectValue placeholder="Sélectionnez un titre" />
                 </SelectTrigger>
                 <SelectContent>
@@ -164,7 +163,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-muted-foreground"
+                className="text-sm sm:text-base text-muted-foreground"
               >
                 {profile.role || "Titre non défini"}
               </motion.span>
@@ -178,7 +177,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         onClick={() => setIsEditing(!isEditing)}
         className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors"
       >
-        {isEditing ? <X className="h-5 w-5" /> : <Edit2 className="h-5 w-5" />}
+        {isEditing ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Edit2 className="h-4 w-4 sm:h-5 sm:w-5" />}
       </Button>
     </motion.div>
   );
