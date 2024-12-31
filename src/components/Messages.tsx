@@ -4,8 +4,24 @@ import { NotificationsTab } from "./messages/tabs/NotificationsTab";
 import { TodoSection } from "./todo/TodoSection";
 import { Settings } from "./Settings";
 import { PaymentBox } from "./dashboard/PaymentBox";
+import { useTodoList } from "@/hooks/useTodoList";
 
 export function Messages() {
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
+
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
       <TabsList className="grid w-full grid-cols-5">
@@ -23,10 +39,38 @@ export function Messages() {
           <NotificationsTab />
         </TabsContent>
         <TabsContent value="notes" className="h-full">
-          <TodoSection type="notes" />
+          <TodoSection
+            type="notes"
+            todos={todos}
+            newTodo={newTodo}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
+            onTodoChange={setNewTodo}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
+            onAllDayChange={setAllDay}
+            onAdd={addTodo}
+            onToggle={toggleTodo}
+            onDelete={deleteTodo}
+          />
         </TabsContent>
         <TabsContent value="tasks" className="h-full">
-          <TodoSection type="tasks" />
+          <TodoSection
+            type="tasks"
+            todos={todos}
+            newTodo={newTodo}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
+            onTodoChange={setNewTodo}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
+            onAllDayChange={setAllDay}
+            onAdd={addTodo}
+            onToggle={toggleTodo}
+            onDelete={deleteTodo}
+          />
         </TabsContent>
         <TabsContent value="settings" className="h-full">
           <Settings />

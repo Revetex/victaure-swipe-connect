@@ -17,6 +17,7 @@ interface TodoSectionProps {
   onAdd: () => void;
   onToggle: (id: number) => void;
   onDelete: (id: number) => void;
+  type?: 'notes' | 'tasks';
 }
 
 export function TodoSection({
@@ -32,12 +33,15 @@ export function TodoSection({
   onAdd,
   onToggle,
   onDelete,
+  type = 'tasks'
 }: TodoSectionProps) {
+  const title = type === 'notes' ? 'Notes' : 'Tâches';
+  
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-primary">
         <ListTodo className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Tâches</h2>
+        <h2 className="text-lg font-semibold">{title}</h2>
       </div>
 
       <TodoInput
@@ -64,7 +68,7 @@ export function TodoSection({
           ))}
           {todos.length === 0 && (
             <div className="text-center text-muted-foreground py-8">
-              Aucune tâche pour le moment
+              Aucune {type === 'notes' ? 'note' : 'tâche'} pour le moment
             </div>
           )}
         </div>
