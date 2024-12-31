@@ -17,7 +17,7 @@ export function VCard() {
   const handleProfileUpdate = async (updatedProfile: any) => {
     try {
       setTempProfile(updatedProfile);
-      await handleSave();
+      await handleSave(updatedProfile);
       toast.success("Modifications enregistrées avec succès");
     } catch (error) {
       console.error('Error updating profile:', error);
