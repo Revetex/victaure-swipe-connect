@@ -47,13 +47,11 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
               'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
 
-            {/* Victaure Promotional Video */}
             {renderDashboardSection(
               <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
                 {!videoError ? (
@@ -75,14 +73,12 @@ export function DashboardLayout() {
               'w-full'
             )}
 
-            {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
               'w-full h-[500px] sm:h-[550px] md:h-[600px]',
               false
             )}
 
-            {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
               'w-full h-[500px] sm:h-[550px] md:h-[600px]'
