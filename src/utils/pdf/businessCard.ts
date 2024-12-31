@@ -15,15 +15,13 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
   doc.setFillColor(pdfColors.background);
   doc.rect(0, 0, 85.6, 53.98, 'F');
 
-  // Add subtle gradient effect
+  // Add subtle gradient effect using multiple rectangles with varying opacity
   for (let i = 0; i < 85.6; i += 0.5) {
-    doc.setFillColor(pdfColors.background);
-    doc.setGlobalAlpha(0.02);  // Using setGlobalAlpha instead of GState
+    const opacity = 0.02; // 2% opacity
+    const rgbaColor = `rgba(${parseInt(pdfColors.background.slice(1, 3), 16)}, ${parseInt(pdfColors.background.slice(3, 5), 16)}, ${parseInt(pdfColors.background.slice(5, 7), 16)}, ${opacity})`;
+    doc.setFillColor(rgbaColor);
     doc.rect(i, 0, 0.5, 53.98, 'F');
   }
-
-  // Reset alpha for other elements
-  doc.setGlobalAlpha(1);
 
   // Circuit pattern with subtle effect
   doc.setDrawColor(pdfColors.circuit.lines);
