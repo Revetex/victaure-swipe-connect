@@ -48,7 +48,7 @@ export function VCardContent({
 
   return (
     <Card className="w-full max-w-xl mx-auto overflow-hidden rounded-xl shadow-lg bg-card">
-      <CardContent className="p-4 relative">
+      <CardContent className={`p-6 relative ${isEditing ? 'space-y-8' : 'space-y-4'}`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={isEditing ? "editing" : "viewing"}
@@ -56,6 +56,7 @@ export function VCardContent({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            className={`space-y-6 ${isEditing ? 'pt-4' : ''}`}
           >
             <VCardMainInfo
               profile={tempProfile}

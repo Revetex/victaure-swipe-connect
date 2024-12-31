@@ -46,25 +46,25 @@ export function VCardExpandedContent({
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 sm:space-y-8 mt-6"
+      className="space-y-8"
     >
       {!isEditing && (
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsExpanded(false)}
-          className="absolute top-2 right-2 hover:bg-primary/5 transition-colors"
+          className="absolute top-4 right-4 hover:bg-primary/5 transition-colors"
         >
           <X className="h-4 w-4" />
         </Button>
       )}
 
-      <div className="grid gap-6 sm:gap-8">
+      <div className="grid gap-8">
         <motion.div
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="glass-card p-6"
+          className={`glass-card p-6 ${isEditing ? 'border border-primary/20 rounded-lg' : ''}`}
         >
           <VCardContact
             profile={profile}
@@ -77,7 +77,7 @@ export function VCardExpandedContent({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="glass-card p-6"
+          className={`glass-card p-6 ${isEditing ? 'border border-primary/20 rounded-lg' : ''}`}
         >
           <VCardSkills
             profile={profile}
@@ -109,7 +109,7 @@ export function VCardExpandedContent({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="glass-card p-6"
+          className={`glass-card p-6 ${isEditing ? 'border border-primary/20 rounded-lg' : ''}`}
         >
           <VCardEducation
             profile={profile}
@@ -122,7 +122,7 @@ export function VCardExpandedContent({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="glass-card p-6"
+          className={`glass-card p-6 ${isEditing ? 'border border-primary/20 rounded-lg' : ''}`}
         >
           <VCardCertifications
             profile={profile}
