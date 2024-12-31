@@ -1,24 +1,21 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
+import { JobFilters } from "../JobFilterUtils";
 import { toast } from "sonner";
 
-export function useSwipeJobs() {
+export function useSwipeJobs(filters: JobFilters) {
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const { 
-    data: jobs = [], 
-    isLoading, 
-    error,
-    refetch 
-  } = useQuery({
-    queryKey: ['my-jobs'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
+  const fetchJobs = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      let query = supabase
         .from('jobs')
         .select(`
           *,
@@ -28,34 +25,65 @@ export function useSwipeJobs() {
             avatar_url
           )
         `)
-        .eq('employer_id', user.id)
+        .eq('status', 'open')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      // Apply filters
+      if (filters.category && filters.category !== "all") {
+        query = query.eq("category", filters.category);
+      }
+      if (filters.subcategory && filters.subcategory !== "all") {
+        query = query.eq("subcategory", filters.subcategory);
+      }
+      if (filters.duration && filters.duration !== "all") {
+        query = query.eq("contract_type", filters.duration);
+      }
+      if (filters.experienceLevel && filters.experienceLevel !== "all") {
+        query = query.eq("experience_level", filters.experienceLevel);
+      }
+      if (filters.location && filters.location !== "all") {
+        query = query.eq("location", filters.location);
+      }
+      if (filters.searchTerm) {
+        query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
+      }
 
-      return data.map(job => ({
+      const { data, error: fetchError } = await query;
+
+      if (fetchError) throw fetchError;
+
+      // Format jobs with virtual fields
+      const formattedJobs = data.map(job => ({
         ...job,
         company: job.employer?.company_name || "Entreprise",
         salary: `${job.budget} CAD`,
         skills: job.required_skills || [],
-        status: job.status as Job['status']
-      })) as Job[];
+      }));
+
+      setJobs(formattedJobs);
+      setCurrentIndex(0);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setError(err as Error);
+      toast.error("Impossible de charger les offres");
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, [filters]);
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    } else {
-      toast.info("Vous êtes au début de la liste");
+      setCurrentIndex(prev => prev - 1);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < (jobs?.length || 0) - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      toast.info("Vous êtes à la fin de la liste");
+    if (currentIndex < jobs.length - 1) {
+      setCurrentIndex(prev => prev + 1);
     }
   };
 
@@ -64,7 +92,7 @@ export function useSwipeJobs() {
     currentIndex,
     isLoading,
     error,
-    refetch,
+    refetch: fetchJobs,
     handlePrevious,
     handleNext
   };

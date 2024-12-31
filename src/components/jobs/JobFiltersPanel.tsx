@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FilterSection } from "./filters/FilterSection";
 
 interface JobFiltersPanelProps {
   filters: JobFilters;
@@ -52,6 +53,11 @@ export function JobFiltersPanel({
           >
             <ScrollArea className="h-[calc(100vh-300px)] sm:h-auto">
               <div className="p-4 space-y-6">
+                <FilterSection 
+                  filters={filters}
+                  onFilterChange={onFilterChange}
+                />
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <CategoryFilters 
                     filters={filters} 

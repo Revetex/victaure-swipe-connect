@@ -17,3 +17,18 @@ export const defaultFilters: JobFilters = {
   province: "",
   searchTerm: ""
 };
+
+export const experienceLevels = [
+  "Junior",
+  "Mid-Level",
+  "Senior",
+  "Expert"
+];
+
+export const contractTypes = [
+  "Full-time",
+  "Part-time",
+  "Contract",
+  "Freelance",
+  "Internship"
+];
