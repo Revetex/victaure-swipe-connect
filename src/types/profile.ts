@@ -49,4 +49,7 @@ export interface UserProfile {
   education?: Education[];
   experiences?: Experience[];
   website?: string | null;
+  company_name?: string | null;
+  company_size?: string | null;
+  industry?: string | null;
 }
