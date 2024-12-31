@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Filter, Plus } from "lucide-react";
+import { Filter } from "lucide-react";
 import { JobFilters } from "./JobFilterUtils";
 import { JobFiltersPanel } from "./JobFiltersPanel";
 import { SwipeMatch } from "../SwipeMatch";
@@ -38,14 +38,8 @@ export function BrowseJobsTab({
         >
           <span className="flex items-center gap-2">
             <Filter className="h-4 w-4" />
-            {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+            Filtres
           </span>
-          <motion.div
-            animate={{ rotate: showFilters ? 45 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Plus className="h-4 w-4" />
-          </motion.div>
         </Button>
         
         <AnimatePresence>
