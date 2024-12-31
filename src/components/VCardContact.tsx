@@ -36,19 +36,38 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     }
   ];
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, x: -20 },
+    show: { opacity: 1, x: 0 }
+  };
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Contact</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Contact</h3>
       <motion.div 
+        variants={container}
+        initial="hidden"
+        animate="show"
         className="grid gap-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
       >
         {contactFields.map((field, index) => (
-          <div key={field.key} className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-primary/5">
-              <field.icon className="h-4 w-4 text-primary" />
+          <motion.div 
+            key={field.key} 
+            variants={item}
+            className="flex items-center gap-3"
+          >
+            <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
+              <field.icon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             </div>
             {isEditing ? (
               <Input
@@ -56,14 +75,14 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => setProfile({ ...profile, [field.key]: e.target.value })}
                 placeholder={field.placeholder}
-                className="flex-1"
+                className="flex-1 border-indigo-200 focus:border-indigo-400 dark:border-indigo-800 dark:focus:border-indigo-600"
               />
             ) : (
-              <span className="text-muted-foreground">
+              <span className="text-gray-600 dark:text-gray-300">
                 {field.value || "Non défini"}
               </span>
             )}
-          </div>
+          </motion.div>
         ))}
       </motion.div>
     </div>
