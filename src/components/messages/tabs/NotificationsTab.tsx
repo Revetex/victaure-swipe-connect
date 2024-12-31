@@ -4,6 +4,8 @@ import { NotificationItem } from "../../notifications/NotificationItem";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface Notification {
   id: string;
@@ -13,8 +15,24 @@ interface Notification {
   read: boolean;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { opacity: 1, x: 0 }
+};
+
 export function NotificationsTab() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -32,6 +50,9 @@ export function NotificationsTab() {
         setNotifications(data || []);
       } catch (error) {
         console.error('Error fetching notifications:', error);
+        toast.error("Impossible de charger les notifications");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -74,29 +95,63 @@ export function NotificationsTab() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <div className="flex items-center gap-2 text-primary mb-4">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="p-4"
+    >
+      <motion.div 
+        variants={itemVariants}
+        className={cn(
+          "flex items-center gap-2 text-primary mb-4",
+          "border-b pb-2"
+        )}
+      >
         <Bell className="h-5 w-5" />
         <h2 className="text-lg font-semibold">Notifications</h2>
-      </div>
-      <ScrollArea className="h-[300px] pr-4">
-        <div className="space-y-2">
-          {notifications.map((notification) => (
-            <NotificationItem
-              key={notification.id}
-              {...notification}
-              onDelete={deleteNotification}
-            />
-          ))}
-          {notifications.length === 0 && (
-            <div className="text-center text-muted-foreground py-8">
+      </motion.div>
+
+      <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
+        <AnimatePresence mode="popLayout">
+          {notifications.length > 0 ? (
+            <motion.div className="space-y-2">
+              {notifications.map((notification) => (
+                <motion.div
+                  key={notification.id}
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit={{ opacity: 0, x: -20 }}
+                  layout
+                >
+                  <NotificationItem
+                    {...notification}
+                    onDelete={deleteNotification}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div 
+              variants={itemVariants}
+              className="text-center text-muted-foreground py-8"
+            >
               <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>Aucune notification</p>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </ScrollArea>
-    </div>
+    </motion.div>
   );
 }
