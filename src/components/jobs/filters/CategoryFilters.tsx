@@ -1,39 +1,48 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobFilters } from "../JobFilterUtils";
-import { memo, useMemo } from "react";
-import { missionCategories } from "@/types/job";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CategoryFiltersProps {
   filters: JobFilters;
   onFilterChange: (key: keyof JobFilters, value: any) => void;
 }
 
-export const CategoryFilters = memo(function CategoryFilters({ 
-  filters, 
-  onFilterChange 
-}: CategoryFiltersProps) {
-  const sortedCategories = useMemo(() => {
-    if (!missionCategories) return [];
-    
-    if (filters.missionType === "company") {
-      return Object.keys(missionCategories.company || {}).sort((a, b) => a.localeCompare(b));
-    } else if (filters.missionType === "individual") {
-      return Object.keys(missionCategories.individual || {}).sort((a, b) => a.localeCompare(b));
-    }
-    return Object.keys({
-      ...(missionCategories.company || {}),
-      ...(missionCategories.individual || {})
-    }).sort((a, b) => a.localeCompare(b));
-  }, [filters.missionType]);
+export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProps) {
+  const { data: categories = [] } = useQuery({
+    queryKey: ["jobCategories", filters.missionType],
+    queryFn: async () => {
+      const query = supabase
+        .from("job_categories")
+        .select("id, name")
+        .order("name");
 
-  const subcategories = useMemo(() => {
-    if (!missionCategories || filters.category === "all" || filters.missionType === "all") {
-      return [];
-    }
-    
-    const categoryData = missionCategories[filters.missionType]?.[filters.category];
-    return categoryData?.subcategories?.sort((a, b) => a.localeCompare(b)) || [];
-  }, [filters.category, filters.missionType]);
+      if (filters.missionType !== "all") {
+        query.eq("mission_type", filters.missionType);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: subcategories = [] } = useQuery({
+    queryKey: ["jobSubcategories", filters.category],
+    queryFn: async () => {
+      if (filters.category === "all") return [];
+
+      const { data, error } = await supabase
+        .from("job_subcategories")
+        .select("id, name")
+        .eq("category_id", filters.category)
+        .order("name");
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: filters.category !== "all",
+  });
 
   return (
     <div className="space-y-4">
@@ -46,12 +55,12 @@ export const CategoryFilters = memo(function CategoryFilters({
           onValueChange={(value) => onFilterChange("missionType", value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Tous les types" />
+            <SelectValue placeholder="Sélectionnez un type" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
             <SelectItem value="company">Entreprise</SelectItem>
-            <SelectItem value="individual">Particulier</SelectItem>
+            <SelectItem value="individual">Individuel</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -65,20 +74,20 @@ export const CategoryFilters = memo(function CategoryFilters({
           onValueChange={(value) => onFilterChange("category", value)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Toutes les catégories" />
+            <SelectValue placeholder="Sélectionnez une catégorie" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Toutes les catégories</SelectItem>
-            {sortedCategories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {filters.category !== "all" && filters.missionType !== "all" && subcategories.length > 0 && (
+      {filters.category !== "all" && subcategories.length > 0 && (
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
             Sous-catégorie
@@ -88,13 +97,13 @@ export const CategoryFilters = memo(function CategoryFilters({
             onValueChange={(value) => onFilterChange("subcategory", value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Toutes les sous-catégories" />
+              <SelectValue placeholder="Sélectionnez une sous-catégorie" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Toutes les sous-catégories</SelectItem>
               {subcategories.map((subcat) => (
-                <SelectItem key={subcat} value={subcat}>
-                  {subcat}
+                <SelectItem key={subcat.id} value={subcat.id}>
+                  {subcat.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -103,4 +112,4 @@ export const CategoryFilters = memo(function CategoryFilters({
       )}
     </div>
   );
-});
+}

@@ -7,70 +7,84 @@ interface WorkTypeFiltersProps {
   onFilterChange: (key: keyof JobFilters, value: any) => void;
 }
 
+const paymentSchedules = [
+  { value: "weekly", label: "Hebdomadaire" },
+  { value: "biweekly", label: "Bimensuel" },
+  { value: "monthly", label: "Mensuel" },
+  { value: "quarterly", label: "Trimestriel" },
+  { value: "completion", label: "À la livraison" },
+];
+
 export function WorkTypeFilters({ filters, onFilterChange }: WorkTypeFiltersProps) {
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium text-foreground">Type de contrat</h4>
-        <Select value={filters.duration} onValueChange={(value) => onFilterChange("duration", value)}>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2">
+          Type de contrat
+        </label>
+        <Select
+          value={filters.duration}
+          onValueChange={(value) => onFilterChange("duration", value)}
+        >
           <SelectTrigger>
-            <SelectValue placeholder="Tous les types" />
+            <SelectValue placeholder="Sélectionnez un type" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
             {contractTypes.map((type) => (
-              <SelectItem key={type} value={type}>{type}</SelectItem>
+              <SelectItem key={type.value} value={type.value}>
+                {type.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium text-foreground">Niveau d'expérience</h4>
-        <Select value={filters.experienceLevel} onValueChange={(value) => onFilterChange("experienceLevel", value)}>
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2">
+          Niveau d'expérience
+        </label>
+        <Select
+          value={filters.experienceLevel}
+          onValueChange={(value) => onFilterChange("experienceLevel", value)}
+        >
           <SelectTrigger>
-            <SelectValue placeholder="Tous les niveaux" />
+            <SelectValue placeholder="Sélectionnez un niveau" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous les niveaux</SelectItem>
             {experienceLevels.map((level) => (
-              <SelectItem key={level} value={level}>{level}</SelectItem>
+              <SelectItem key={level.value} value={level.value}>
+                {level.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium text-foreground">Type de travail</h4>
-        <Select value={filters.remoteType} onValueChange={(value) => onFilterChange("remoteType", value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Tous les types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les types</SelectItem>
-            <SelectItem value="on-site">Sur site</SelectItem>
-            <SelectItem value="remote">Télétravail</SelectItem>
-            <SelectItem value="hybrid">Hybride</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium text-foreground">Fréquence de paiement</h4>
-        <Select value={filters.paymentSchedule} onValueChange={(value) => onFilterChange("paymentSchedule", value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Toutes les fréquences" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les fréquences</SelectItem>
-            <SelectItem value="hourly">Par heure</SelectItem>
-            <SelectItem value="daily">Par jour</SelectItem>
-            <SelectItem value="weekly">Par semaine</SelectItem>
-            <SelectItem value="monthly">Par mois</SelectItem>
-            <SelectItem value="project">Par projet</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {filters.missionType === "individual" && (
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Fréquence de paiement
+          </label>
+          <Select
+            value={filters.paymentSchedule}
+            onValueChange={(value) => onFilterChange("paymentSchedule", value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sélectionnez une fréquence" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les fréquences</SelectItem>
+              {paymentSchedules.map((schedule) => (
+                <SelectItem key={schedule.value} value={schedule.value}>
+                  {schedule.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   );
 }
