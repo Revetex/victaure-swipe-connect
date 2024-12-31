@@ -6,63 +6,146 @@ export const generateVCardPDF = async (profile: UserProfile): Promise<string> =>
   try {
     const doc = new jsPDF();
     
-    // Add Victaure branding
-    doc.setFillColor(26, 31, 44); // Dark background
+    // Set background
+    doc.setFillColor(248, 250, 252); // Light gray background
     doc.rect(0, 0, 210, 297, 'F');
     
-    // Add gradient-like effect
-    doc.setFillColor(58, 63, 76);
-    doc.rect(0, 0, 210, 50, 'F');
-    
-    // Add Victaure logo if available
-    // You would need to add the logo to your assets
-    // doc.addImage('path_to_victaure_logo', 'PNG', 10, 10, 50, 20);
-    
-    // Set text colors and fonts
-    doc.setTextColor(255, 255, 255);
-    doc.setFont("helvetica", "bold");
+    // Add header
+    doc.setFillColor(31, 41, 55); // Dark header
+    doc.rect(0, 0, 210, 60, 'F');
     
     // Add profile information
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
-    doc.text(profile.full_name || 'Professional Profile', 20, 40);
+    doc.text(profile.full_name || 'Professional Profile', 20, 30);
     
+    doc.setFontSize(16);
+    doc.text(profile.role || '', 20, 45);
+    
+    // Contact Information Section
+    doc.setTextColor(31, 41, 55);
     doc.setFontSize(14);
-    doc.setFont("helvetica", "normal");
-    doc.text(profile.role || '', 20, 50);
+    doc.text('Contact Information', 20, 80);
     
-    // Add contact information
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
     const contactInfo = [
-      `Email: ${profile.email}`,
-      `Phone: ${profile.phone || 'Not provided'}`,
+      `Email: ${profile.email || ''}`,
+      `Phone: ${profile.phone || ''}`,
       `Location: ${[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}`,
-    ];
+      profile.website ? `Website: ${profile.website}` : '',
+    ].filter(Boolean);
     
     contactInfo.forEach((info, index) => {
-      doc.text(info, 20, 70 + (index * 10));
+      doc.text(info, 20, 95 + (index * 10));
     });
     
-    // Add skills section
+    // Skills Section
+    let currentY = 95 + (contactInfo.length * 10) + 20;
+    
     if (profile.skills && profile.skills.length > 0) {
       doc.setFont("helvetica", "bold");
-      doc.text('Skills', 20, 110);
+      doc.text('Skills', 20, currentY);
+      currentY += 15;
+      
       doc.setFont("helvetica", "normal");
       const skillsText = profile.skills.join(', ');
-      doc.text(skillsText, 20, 120);
+      const splitSkills = doc.splitTextToSize(skillsText, 170);
+      doc.text(splitSkills, 20, currentY);
+      currentY += (splitSkills.length * 7) + 15;
     }
     
-    // Add bio if available
-    if (profile.bio) {
+    // Experience Section
+    if (profile.experiences && profile.experiences.length > 0) {
       doc.setFont("helvetica", "bold");
-      doc.text('About', 20, 140);
-      doc.setFont("helvetica", "normal");
-      doc.text(profile.bio, 20, 150);
+      doc.text('Professional Experience', 20, currentY);
+      currentY += 15;
+      
+      profile.experiences.forEach(exp => {
+        doc.setFont("helvetica", "bold");
+        doc.text(`${exp.position} at ${exp.company}`, 20, currentY);
+        currentY += 10;
+        
+        doc.setFont("helvetica", "normal");
+        const dateText = `${exp.start_date || ''} - ${exp.end_date || 'Present'}`;
+        doc.text(dateText, 20, currentY);
+        currentY += 10;
+        
+        if (exp.description) {
+          const splitDesc = doc.splitTextToSize(exp.description, 170);
+          doc.text(splitDesc, 20, currentY);
+          currentY += (splitDesc.length * 7) + 10;
+        }
+      });
     }
     
-    // Add footer with Victaure branding
+    // Education Section
+    if (profile.education && profile.education.length > 0) {
+      currentY += 10;
+      doc.setFont("helvetica", "bold");
+      doc.text('Education', 20, currentY);
+      currentY += 15;
+      
+      profile.education.forEach(edu => {
+        doc.setFont("helvetica", "bold");
+        doc.text(edu.school_name, 20, currentY);
+        currentY += 10;
+        
+        doc.setFont("helvetica", "normal");
+        doc.text(`${edu.degree}${edu.field_of_study ? ` in ${edu.field_of_study}` : ''}`, 20, currentY);
+        currentY += 10;
+        
+        if (edu.start_date || edu.end_date) {
+          const dateText = `${edu.start_date || ''} - ${edu.end_date || 'Present'}`;
+          doc.text(dateText, 20, currentY);
+          currentY += 10;
+        }
+        
+        if (edu.description) {
+          const splitDesc = doc.splitTextToSize(edu.description, 170);
+          doc.text(splitDesc, 20, currentY);
+          currentY += (splitDesc.length * 7) + 10;
+        }
+      });
+    }
+    
+    // Certifications Section
+    if (profile.certifications && profile.certifications.length > 0) {
+      currentY += 10;
+      doc.setFont("helvetica", "bold");
+      doc.text('Certifications', 20, currentY);
+      currentY += 15;
+      
+      profile.certifications.forEach(cert => {
+        doc.setFont("helvetica", "bold");
+        doc.text(cert.title, 20, currentY);
+        currentY += 10;
+        
+        doc.setFont("helvetica", "normal");
+        doc.text(`Issued by: ${cert.issuer}`, 20, currentY);
+        currentY += 10;
+        
+        if (cert.issue_date) {
+          doc.text(`Issued: ${cert.issue_date}`, 20, currentY);
+          currentY += 10;
+        }
+        
+        if (cert.credential_url) {
+          doc.setTextColor(0, 0, 255);
+          doc.text('View Credential', 20, currentY);
+          doc.link(20, currentY - 5, 50, 10, { url: cert.credential_url });
+          doc.setTextColor(31, 41, 55);
+          currentY += 15;
+        }
+      });
+    }
+    
+    // Add footer
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.setTextColor(155, 135, 245); // Victaure purple
-    doc.text('Powered by Victaure', 20, 280);
+    doc.setTextColor(156, 163, 175);
+    doc.text('Generated by Victaure', 20, 280);
     
     // Save the PDF
     const pdfOutput = doc.output('blob');
