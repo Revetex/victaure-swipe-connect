@@ -23,7 +23,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       )}
     >
       <div className="flex justify-between items-start gap-2">
-        <p className="flex-1 whitespace-pre-wrap text-sm text-gray-800">{note.text}</p>
+        <p className="flex-1 whitespace-pre-wrap text-sm text-black">{note.text}</p>
         <Button
           variant="ghost"
           size="icon"

@@ -79,7 +79,7 @@
   .sticky-note {
     @apply p-4 rounded-lg shadow-sm transition-all duration-200 
            hover:shadow-md hover:-translate-y-0.5
-           backdrop-blur-sm;
+           backdrop-blur-sm text-black;
   }
 
   .sticky-note-yellow {
@@ -112,66 +112,5 @@
 
   .sticky-note-orange {
     @apply bg-[#FEC6A1]/80 hover:bg-[#FEC6A1];
-  }
-
-  .glass-card {
-    @apply relative overflow-hidden bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl 
-           border border-white/20 dark:border-gray-800/20 
-           transition-all duration-300 ease-in-out
-           hover:bg-white/70 dark:hover:bg-gray-900/70
-           hover:border-white/30 dark:hover:border-gray-800/30;
-  }
-
-  .text-responsive {
-    @apply text-sm sm:text-base lg:text-lg tracking-wide;
-  }
-
-  .card-shadow {
-    @apply shadow-lg hover:shadow-xl transition-shadow duration-300
-           shadow-black/5 hover:shadow-black/10;
-  }
-
-  .section-spacing {
-    @apply space-y-2 sm:space-y-3;
-  }
-
-  .responsive-padding {
-    @apply p-3 sm:p-4;
-  }
-
-  .dashboard-card {
-    @apply rounded-xl bg-gradient-to-br from-white/80 to-white/40 
-           dark:from-gray-900/80 dark:to-gray-900/40 
-           backdrop-blur-lg border border-white/20 dark:border-gray-800/20
-           transition-all duration-300 ease-in-out
-           hover:shadow-lg hover:shadow-black/5;
-  }
-
-  .card-header {
-    @apply flex items-center gap-2 px-3 py-2 border-b border-gray-100/20 dark:border-gray-800/20;
-  }
-
-  .card-content {
-    @apply p-3;
-  }
-
-  .hover-lift {
-    @apply transition-transform duration-300 ease-in-out hover:-translate-y-0.5;
-  }
-
-  .subtle-border {
-    @apply border border-white/10 dark:border-gray-800/10;
-  }
-
-  .glass-blur {
-    @apply backdrop-blur-xl bg-white/60 dark:bg-gray-900/60;
-  }
-
-  .fixed-height-section {
-    @apply h-[500px] overflow-auto;
-  }
-
-  .compact-section {
-    @apply h-[400px] overflow-auto;
   }
 }
