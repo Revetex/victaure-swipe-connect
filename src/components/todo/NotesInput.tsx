@@ -27,12 +27,12 @@ export function NotesInput({
         value={newNote}
         onChange={(e) => onNoteChange(e.target.value)}
         placeholder="Nouvelle note..."
-        className="glass-card flex-1 min-w-0 text-black"
+        className="flex-1 min-w-0 bg-background/50"
         onKeyPress={(e) => e.key === 'Enter' && onAdd()}
       />
       <div className="flex gap-2 sm:w-auto w-full">
         <Select onValueChange={onColorChange} defaultValue={selectedColor}>
-          <SelectTrigger className="w-[120px] glass-card text-black">
+          <SelectTrigger className="w-[120px] bg-background/50">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -40,7 +40,7 @@ export function NotesInput({
               <SelectItem 
                 key={color.value} 
                 value={color.value}
-                className={`sticky-note-${color.value} text-black`}
+                className={`sticky-note-${color.value}`}
               >
                 {color.label}
               </SelectItem>
@@ -48,10 +48,10 @@ export function NotesInput({
           </SelectContent>
         </Select>
         <Button 
-          onClick={onAdd}
+          onClick={onAdd} 
           size="icon"
           variant="outline"
-          className="glass-card hover:bg-primary hover:text-white transition-colors"
+          className="hover:bg-primary hover:text-primary-foreground transition-colors"
         >
           <Plus className="h-4 w-4" />
         </Button>
