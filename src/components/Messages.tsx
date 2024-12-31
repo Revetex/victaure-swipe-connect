@@ -6,7 +6,8 @@ import { NotificationsTab } from "./messages/tabs/NotificationsTab";
 import { Settings } from "./Settings";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageSquare, Bell, Settings2 } from "lucide-react";
+import { MessageSquare, Bell, Settings2, ListTodo, StickyNote } from "lucide-react";
+import { TodoList } from "./TodoList";
 
 interface Notification {
   id: string;
@@ -94,7 +95,7 @@ export function Messages() {
         className="flex-1 flex flex-col"
         onValueChange={setActiveTab}
       >
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="messages" className="relative">
             <MessageSquare className="h-5 w-5" />
             {unreadMessagesCount > 0 && (
@@ -111,6 +112,12 @@ export function Messages() {
               </Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="todos">
+            <ListTodo className="h-5 w-5" />
+          </TabsTrigger>
+          <TabsTrigger value="notes">
+            <StickyNote className="h-5 w-5" />
+          </TabsTrigger>
           <TabsTrigger value="settings">
             <Settings2 className="h-5 w-5" />
           </TabsTrigger>
@@ -123,6 +130,17 @@ export function Messages() {
 
           <TabsContent value="notifications" className="h-full">
             <NotificationsTab />
+          </TabsContent>
+
+          <TabsContent value="todos" className="h-full">
+            <TodoList />
+          </TabsContent>
+
+          <TabsContent value="notes" className="h-full">
+            <div className="p-4">
+              <h2 className="text-2xl font-semibold mb-4">Notes</h2>
+              <TodoList />
+            </div>
           </TabsContent>
 
           <TabsContent value="settings" className="h-full">
