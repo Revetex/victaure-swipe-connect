@@ -4,9 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { JobFilters as JobFiltersType, defaultFilters } from "./JobFilterUtils";
 import { SearchFilter } from "./filters/SearchFilter";
 import { CategoryFilters } from "./filters/CategoryFilters";
-import { WorkTypeFilters } from "./filters/WorkTypeFilters";
 import { BudgetFilter } from "./filters/BudgetFilter";
-import { DateFilters } from "./filters/DateFilters";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -49,9 +47,7 @@ export function JobFilters({
       <div className="p-4 space-y-6">
         <SearchFilter filters={filters} onFilterChange={onFilterChange} />
         <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
-        <WorkTypeFilters filters={filters} onFilterChange={onFilterChange} />
         <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
-        <DateFilters filters={filters} onFilterChange={onFilterChange} />
       </div>
     </div>
   );

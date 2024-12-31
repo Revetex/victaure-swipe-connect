@@ -1,4 +1,4 @@
-import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import { JobFilters } from "@/types/filters";
 
 interface BudgetFilterProps {
@@ -7,22 +7,42 @@ interface BudgetFilterProps {
 }
 
 export function BudgetFilter({ filters, onFilterChange }: BudgetFilterProps) {
+  const handleMinBudgetChange = (value: string) => {
+    const numValue = parseInt(value) || 0;
+    onFilterChange("minBudget", numValue);
+  };
+
+  const handleMaxBudgetChange = (value: string) => {
+    const numValue = parseInt(value) || 0;
+    onFilterChange("maxBudget", numValue);
+  };
+
   return (
     <div className="space-y-4">
       <h4 className="text-sm font-medium text-foreground">Budget (CAD/jour)</h4>
-      <Slider
-        defaultValue={[filters.minBudget, filters.maxBudget]}
-        max={1000}
-        min={300}
-        step={50}
-        onValueChange={(value) => {
-          onFilterChange("minBudget", value[0]);
-          onFilterChange("maxBudget", value[1]);
-        }}
-      />
-      <div className="flex justify-between text-sm text-muted-foreground">
-        <span>{filters.minBudget} CAD</span>
-        <span>{filters.maxBudget} CAD</span>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm text-muted-foreground">Minimum</label>
+          <Input
+            type="number"
+            min="0"
+            value={filters.minBudget}
+            onChange={(e) => handleMinBudgetChange(e.target.value)}
+            placeholder="Min"
+            className="w-full"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm text-muted-foreground">Maximum</label>
+          <Input
+            type="number"
+            min="0"
+            value={filters.maxBudget}
+            onChange={(e) => handleMaxBudgetChange(e.target.value)}
+            placeholder="Max"
+            className="w-full"
+          />
+        </div>
       </div>
     </div>
   );
