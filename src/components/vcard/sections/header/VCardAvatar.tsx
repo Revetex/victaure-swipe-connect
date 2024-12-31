@@ -17,6 +17,7 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
     if (!file) return;
 
     try {
+      // Validate file type and size
       if (!file.type.startsWith('image/')) {
         toast({
           variant: "destructive",
@@ -35,21 +36,27 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
         return;
       }
 
+      // Generate unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+      // Upload file to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('vcards')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('vcards')
         .getPublicUrl(fileName);
 
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No authenticated user");
 
+      // Update profile with new avatar URL
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -57,6 +64,7 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
 
       if (updateError) throw updateError;
 
+      // Update local state
       setProfile({ ...profile, avatar_url: publicUrl });
       
       toast({

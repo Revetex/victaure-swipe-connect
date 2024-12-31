@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 interface VCardActionsProps {
   isEditing: boolean;
@@ -27,6 +28,8 @@ export function VCardActions({
   onApplyChanges,
   setIsEditing,
 }: VCardActionsProps) {
+  const { toast } = useToast();
+  
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -42,6 +45,22 @@ export function VCardActions({
     show: { opacity: 1, y: 0 }
   };
 
+  const handleSave = async () => {
+    try {
+      await onSave();
+      toast({
+        title: "Succès",
+        description: "Modifications sauvegardées avec succès",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de sauvegarder les modifications",
+      });
+    }
+  };
+
   return (
     <motion.div 
       variants={container}
@@ -53,7 +72,7 @@ export function VCardActions({
         <>
           <motion.div variants={item} className="flex-1 min-w-[120px]">
             <Button 
-              onClick={onSave} 
+              onClick={handleSave}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
             >
               <Save className="mr-2 h-4 w-4" />

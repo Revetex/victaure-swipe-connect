@@ -51,6 +51,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     show: { opacity: 1, x: 0 }
   };
 
+  const handleInputChange = (key: string, value: string) => {
+    setProfile({ ...profile, [key]: value });
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">Contact</h3>
@@ -73,7 +77,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
               <Input
                 type={field.type}
                 value={field.value || ""}
-                onChange={(e) => setProfile({ ...profile, [field.key]: e.target.value })}
+                onChange={(e) => handleInputChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
                 className="flex-1 text-sm sm:text-base border-indigo-200 focus:border-indigo-400 dark:border-indigo-800 dark:focus:border-indigo-600"
               />
