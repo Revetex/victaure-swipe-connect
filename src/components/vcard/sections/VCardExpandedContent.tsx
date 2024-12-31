@@ -18,6 +18,7 @@ interface VCardExpandedContentProps {
   profile: any;
   setProfile: (profile: any) => void;
   setIsExpanded: (isExpanded: boolean) => void;
+  setIsEditing: (isEditing: boolean) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   onShare: () => void;
@@ -34,6 +35,7 @@ export function VCardExpandedContent({
   profile,
   setProfile,
   setIsExpanded,
+  setIsEditing,
   newSkill,
   setNewSkill,
   onShare,
@@ -205,6 +207,7 @@ export function VCardExpandedContent({
 
           <VCardActions
             isEditing={isEditing}
+            setIsEditing={setIsEditing}
             onShare={onShare}
             onDownload={onDownload}
             onDownloadPDF={onDownloadPDF}
