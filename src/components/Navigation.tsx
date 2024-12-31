@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -12,18 +12,46 @@ import { toast } from "sonner";
 export function Navigation() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check initial session
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        console.log("No initial session found, redirecting to auth");
+    const initializeAuth = async () => {
+      try {
+        setIsLoading(true);
+        
+        // First try to recover the session from storage
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          navigate("/auth");
+          return;
+        }
+
+        if (!session) {
+          console.log("No session found, redirecting to auth");
+          navigate("/auth");
+          return;
+        }
+
+        // Verify the session is still valid
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          console.error("User verification error:", userError);
+          await supabase.auth.signOut();
+          navigate("/auth");
+          return;
+        }
+      } catch (error) {
+        console.error("Auth initialization error:", error);
         navigate("/auth");
+      } finally {
+        setIsLoading(false);
       }
     };
-    
-    checkSession();
+
+    initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
@@ -54,6 +82,10 @@ export function Navigation() {
       toast.error("Erreur lors de la déconnexion");
     }
   };
+
+  if (isLoading) {
+    return null; // Or a loading spinner
+  }
 
   const NavLinks = () => (
     <nav className="flex gap-6 items-center">
