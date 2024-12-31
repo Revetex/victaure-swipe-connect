@@ -56,7 +56,7 @@ export function NotesSection({
       />
 
       <ScrollArea className="h-[400px]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pr-4">
           {notes.map((note) => (
             <StickyNote
               key={note.id}
@@ -66,7 +66,7 @@ export function NotesSection({
             />
           ))}
           {notes.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 col-span-2">
+            <div className="text-center text-muted-foreground py-8 col-span-3">
               Aucune note pour le moment
             </div>
           )}
