@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { skills as skillsList } from "@/data/skills";
+import { predefinedSkills } from "@/data/skills";
 
 interface VCardSkillsProps {
   profile: any;
@@ -48,7 +48,7 @@ export function VCardSkills({
               <SelectValue placeholder="Sélectionnez une compétence" />
             </SelectTrigger>
             <SelectContent>
-              {skillsList.map((skill) => (
+              {predefinedSkills.map((skill) => (
                 <SelectItem key={skill} value={skill}>
                   {skill}
                 </SelectItem>
