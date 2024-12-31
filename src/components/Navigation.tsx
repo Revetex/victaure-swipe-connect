@@ -19,14 +19,11 @@ export function Navigation() {
       try {
         setIsLoading(true);
         
-        // First clear any potentially invalid session data
-        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
-        
-        // Then try to recover the session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          await supabase.auth.signOut({ scope: 'local' });
           navigate("/auth");
           return;
         }
@@ -42,12 +39,13 @@ export function Navigation() {
         
         if (userError || !user) {
           console.error("User verification error:", userError);
-          await supabase.auth.signOut();
+          await supabase.auth.signOut({ scope: 'local' });
           navigate("/auth");
           return;
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
+        await supabase.auth.signOut({ scope: 'local' });
         navigate("/auth");
       } finally {
         setIsLoading(false);
@@ -60,7 +58,7 @@ export function Navigation() {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_OUT' || !session) {
-        localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
+        await supabase.auth.signOut({ scope: 'local' });
         navigate("/auth");
       }
     });
@@ -72,22 +70,12 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      // Clear session data first
-      localStorage.removeItem('sb-mfjllillnpleasclqabb-auth-token');
-      
-      // Then attempt to sign out
-      const { error } = await supabase.auth.signOut({
-        scope: 'local'
-      });
-      
-      if (error) throw error;
-      
+      await supabase.auth.signOut({ scope: 'local' });
       navigate("/auth");
       toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Erreur lors de la déconnexion");
-      // Force navigation to auth page even if sign out failed
       navigate("/auth");
     }
   };
