@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Share2, Download, Copy, Save, FileText } from "lucide-react";
+import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface VCardActionsProps {
@@ -81,8 +81,8 @@ export function VCardActions({
               variant="outline" 
               className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
-              <Download className="mr-2 h-4 w-4" />
-              VCard
+              <Edit className="mr-2 h-4 w-4" />
+              Éditer
             </Button>
           </motion.div>
           <motion.div variants={item} className="flex-1 min-w-[100px]">
