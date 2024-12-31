@@ -20,6 +20,7 @@ export function Messages() {
   const unreadMessagesCount = userMessages.filter(m => !m.read).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
   const [activeTab, setActiveTab] = useState("messages");
+  const [activeTaskTab, setActiveTaskTab] = useState("todos");
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -112,7 +113,7 @@ export function Messages() {
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="todos">
+          <TabsTrigger value="tasks">
             <ListTodo className="h-5 w-5" />
           </TabsTrigger>
           <TabsTrigger value="notes">
@@ -132,13 +133,14 @@ export function Messages() {
             <NotificationsTab />
           </TabsContent>
 
-          <TabsContent value="todos" className="h-full">
-            <TodoList />
+          <TabsContent value="tasks" className="h-full">
+            <div className="p-4">
+              <TodoList />
+            </div>
           </TabsContent>
 
           <TabsContent value="notes" className="h-full">
             <div className="p-4">
-              <h2 className="text-2xl font-semibold mb-4">Notes</h2>
               <TodoList />
             </div>
           </TabsContent>
