@@ -4,19 +4,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [videoError, setVideoError] = useState(false);
-
-  const handleVideoError = () => {
-    setVideoError(true);
-    toast.error("La vidéo n'a pas pu être chargée");
-    console.error("Video loading error");
-  };
 
   const renderDashboardSection = (
     component: React.ReactNode,
@@ -47,52 +38,38 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
+            {/* Victaure Promotional Video */}
+            {renderDashboardSection(
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
+                <video 
+                  className="w-full h-full object-cover"
+                  controls
+                  loop
+                >
+                  <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
+                  Votre navigateur ne prend pas en charge la lecture de vidéos.
+                </video>
+              </div>,
+              'w-full'
+            )}
+
+            {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
               'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
-              {renderDashboardSection(
-                <VCard />,
-                'w-full h-[500px] sm:h-[550px] md:h-[600px]'
-              )}
-
-              {renderDashboardSection(
-                <div className="relative w-full h-full rounded-xl overflow-hidden shadow-lg">
-                  {!videoError ? (
-                    <video 
-                      className="w-full h-full object-cover"
-                      controls
-                      autoPlay
-                      muted
-                      loop
-                      onError={handleVideoError}
-                    >
-                      <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
-                      <track 
-                        kind="subtitles" 
-                        src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.srt" 
-                        srcLang="fr" 
-                        label="Français"
-                        default
-                      />
-                      Votre navigateur ne prend pas en charge la lecture de vidéos.
-                    </video>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
-                      <p>La vidéo n'est pas disponible pour le moment</p>
-                    </div>
-                  )}
-                </div>,
-                'w-full h-[500px] sm:h-[550px] md:h-[600px]'
-              )}
-            </div>
-
+            {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
               'w-full h-[500px] sm:h-[550px] md:h-[600px]',
               false
+            )}
+
+            {/* VCard Section - Moved to bottom with extra spacing */}
+            {renderDashboardSection(
+              <VCard />,
+              'w-full h-[500px] sm:h-[550px] md:h-[600px] mt-16 sm:mt-24 md:mt-32'
             )}
           </motion.div>
         </div>
