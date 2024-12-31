@@ -7,34 +7,47 @@ import { JobCategoryFields } from "./form/JobCategoryFields";
 import { JobTypeFields } from "./form/JobTypeFields";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isValidCategory } from "@/types/job";
+import { useForm } from "react-hook-form";
 
 interface CreateJobFormProps {
   onSuccess?: () => void;
 }
 
+interface JobFormData {
+  title: string;
+  description: string;
+  budget: string;
+  location: string;
+  category: string;
+  subcategory: string;
+  contract_type: string;
+  experience_level: string;
+  images: File[];
+  latitude: number | null;
+  longitude: number | null;
+}
+
 export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    budget: "",
-    location: "",
-    category: "Technologie",
-    subcategory: "",
-    contract_type: "CDI",
-    experience_level: "Intermédiaire (3-5 ans)",
-    images: [] as File[],
-    latitude: null as number | null,
-    longitude: null as number | null,
+  
+  const form = useForm<JobFormData>({
+    defaultValues: {
+      title: "",
+      description: "",
+      budget: "",
+      location: "",
+      category: "Technologie",
+      subcategory: "",
+      contract_type: "Full-time",
+      experience_level: "Mid-Level",
+      images: [],
+      latitude: null,
+      longitude: null,
+    }
   });
 
-  const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: JobFormData) => {
     setIsLoading(true);
 
     try {
@@ -94,19 +107,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       onSuccess?.();
 
       // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        budget: "",
-        location: "",
-        category: "Technologie",
-        subcategory: "",
-        contract_type: "CDI",
-        experience_level: "Intermédiaire (3-5 ans)",
-        images: [],
-        latitude: null,
-        longitude: null,
-      });
+      form.reset();
     } catch (error) {
       console.error("Error creating job:", error);
       toast({
@@ -125,27 +126,23 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         <CardTitle>Créer une nouvelle mission</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <JobBasicInfoFields
-            title={formData.title}
-            description={formData.description}
-            budget={formData.budget}
-            location={formData.location}
-            images={formData.images}
-            onChange={handleChange}
+            title={form.watch("title")}
+            description={form.watch("description")}
+            budget={form.watch("budget")}
+            location={form.watch("location")}
+            images={form.watch("images")}
+            onChange={(field, value) => form.setValue(field as any, value)}
           />
 
           <JobCategoryFields
-            category={formData.category}
-            subcategory={formData.subcategory}
-            onChange={handleChange}
+            category={form.watch("category")}
+            subcategory={form.watch("subcategory")}
+            onChange={(field, value) => form.setValue(field as any, value)}
           />
 
-          <JobTypeFields
-            contractType={formData.contract_type}
-            experienceLevel={formData.experience_level}
-            onChange={handleChange}
-          />
+          <JobTypeFields form={form} />
 
           <div className="flex justify-end">
             <Button type="submit" disabled={isLoading}>
