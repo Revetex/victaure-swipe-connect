@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { JobFilters } from "./jobs/JobFilterUtils";
+import { JobFilters } from "./JobFilterUtils";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
 import { SwipeControls } from "./jobs/swipe/SwipeControls";
@@ -95,7 +95,11 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   }
 
   if (!jobs || jobs.length === 0) {
-    return <SwipeEmptyState onRefresh={fetchJobs} />;
+    return (
+      <SwipeEmptyState 
+        onRefresh={fetchJobs}
+      />
+    );
   }
 
   if (currentIndex >= jobs.length) {
@@ -104,7 +108,7 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
         onRefresh={() => {
           setCurrentIndex(0);
           fetchJobs();
-        }} 
+        }}
       />
     );
   }
