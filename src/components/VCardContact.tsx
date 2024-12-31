@@ -70,8 +70,8 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             variants={item}
             className="flex items-center gap-2 sm:gap-3"
           >
-            <div className="p-1.5 sm:p-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
-              <field.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400" />
+            <div className="p-1.5 sm:p-2 rounded-full bg-white/10">
+              <field.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
             </div>
             {isEditing ? (
               <Input
@@ -79,10 +79,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
-                className="flex-1 text-sm sm:text-base border-indigo-200 focus:border-indigo-400 dark:border-indigo-800 dark:focus:border-indigo-600"
+                className="flex-1 text-sm sm:text-base bg-white/10 border-white/20 text-white placeholder:text-white/50"
               />
             ) : (
-              <span className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+              <span className="text-sm sm:text-base text-white/90">
                 {field.value || "Non défini"}
               </span>
             )}
