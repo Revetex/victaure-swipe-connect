@@ -1,4 +1,4 @@
-import { StickyNote as StickyNoteIcon } from "lucide-react";
+import { StickyNoteIcon } from "lucide-react";
 import { TodoInput } from "./TodoInput";
 import { StickyNote } from "./StickyNote";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -57,7 +57,11 @@ export function TodoSection({
           {todos.map((todo, index) => (
             <StickyNote
               key={todo.id}
-              note={{ id: todo.id, text: todo.text }}
+              note={{ 
+                id: todo.id, 
+                text: todo.text,
+                color: colorClasses[index % colorClasses.length]
+              }}
               colorClass={colorClasses[index % colorClasses.length]}
               onDelete={onDelete}
             />
