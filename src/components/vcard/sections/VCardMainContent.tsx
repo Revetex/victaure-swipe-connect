@@ -28,7 +28,7 @@ export function VCardMainContent({
       transition={{ duration: 0.3 }}
     >
       <div className="flex justify-between items-start gap-4">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <VCardHeader
             profile={profile}
             isEditing={isEditing}
@@ -43,7 +43,7 @@ export function VCardMainContent({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="mt-6"
+              className="mt-4"
             >
               <VCardContactInfo
                 email={profile.email}
@@ -65,7 +65,7 @@ export function VCardMainContent({
             <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
               <QRCodeSVG
                 value={window.location.href}
-                size={80}
+                size={85}
                 level="H"
                 includeMargin={false}
                 className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
