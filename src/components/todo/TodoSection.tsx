@@ -4,7 +4,20 @@ import { useTodoList } from "@/hooks/useTodoList";
 import { motion } from "framer-motion";
 
 export function TodoSection() {
-  const { todos, addTodo, toggleTodo, deleteTodo } = useTodoList();
+  const { 
+    todos, 
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo, 
+    toggleTodo, 
+    deleteTodo 
+  } = useTodoList();
 
   return (
     <motion.div 
@@ -13,7 +26,17 @@ export function TodoSection() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <TodoInput onAdd={addTodo} />
+      <TodoInput 
+        newTodo={newTodo}
+        selectedDate={selectedDate}
+        selectedTime={selectedTime}
+        allDay={allDay}
+        onTodoChange={setNewTodo}
+        onDateChange={setSelectedDate}
+        onTimeChange={setSelectedTime}
+        onAllDayChange={setAllDay}
+        onAdd={addTodo}
+      />
       <div className="flex-1 overflow-y-auto space-y-2">
         {todos.map((todo) => (
           <TodoItem

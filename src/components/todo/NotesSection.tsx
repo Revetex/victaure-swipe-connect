@@ -4,7 +4,16 @@ import { useNotes } from "@/hooks/useNotes";
 import { motion } from "framer-motion";
 
 export function NotesSection() {
-  const { notes, addNote, deleteNote } = useNotes();
+  const { 
+    notes, 
+    newNote, 
+    selectedColor,
+    colors,
+    setNewNote,
+    setSelectedColor,
+    addNote, 
+    deleteNote 
+  } = useNotes();
 
   return (
     <motion.div 
@@ -13,13 +22,21 @@ export function NotesSection() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <NotesInput onAdd={addNote} />
+      <NotesInput 
+        newNote={newNote}
+        selectedColor={selectedColor}
+        colors={colors}
+        onNoteChange={setNewNote}
+        onColorChange={setSelectedColor}
+        onAdd={addNote}
+      />
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {notes.map((note) => (
             <StickyNote
               key={note.id}
               note={note}
+              colorClass={`sticky-note-${note.color}`}
               onDelete={() => deleteNote(note.id)}
             />
           ))}
