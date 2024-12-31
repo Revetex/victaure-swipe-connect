@@ -1,15 +1,12 @@
 import { motion } from "framer-motion";
-import { X, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { VCardContact } from "../../VCardContact";
-import { VCardSkills } from "../../VCardSkills";
-import { VCardEducation } from "../../VCardEducation";
-import { VCardCertifications } from "../../VCardCertifications";
-import { VCardActions } from "../../VCardActions";
-import { VCardSection } from "../../VCardSection";
-import { Textarea } from "@/components/ui/textarea";
+import { VCardActions } from "@/components/VCardActions";
 import { VCardExpandedHeader } from "./expanded/VCardExpandedHeader";
 import { VCardExpandedQR } from "./expanded/VCardExpandedQR";
+import { VCardExpandedGrid } from "./expanded/VCardExpandedGrid";
+import { VCardExpandedBio } from "./expanded/VCardExpandedBio";
+import { VCardExpandedEducation } from "./expanded/VCardExpandedEducation";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 interface VCardExpandedContentProps {
   isExpanded: boolean;
@@ -71,18 +68,6 @@ export function VCardExpandedContent({
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    }
-  };
-
   return (
     <motion.div
       initial="hidden"
@@ -112,78 +97,25 @@ export function VCardExpandedContent({
         </div>
 
         <div className="grid gap-8">
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-              <VCardContact
-                profile={profile}
-                isEditing={isEditing}
-                setProfile={setProfile}
-              />
-            </div>
+          <VCardExpandedGrid
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            newSkill={newSkill}
+            setNewSkill={setNewSkill}
+          />
 
-            <div className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-              <VCardSkills
-                profile={profile}
-                isEditing={isEditing}
-                setProfile={setProfile}
-                newSkill={newSkill}
-                setNewSkill={setNewSkill}
-                handleAddSkill={() => {
-                  if (newSkill && !profile.skills?.includes(newSkill)) {
-                    setProfile({
-                      ...profile,
-                      skills: [...(profile.skills || []), newSkill],
-                    });
-                    setNewSkill("");
-                  }
-                }}
-                handleRemoveSkill={(skillToRemove: string) => {
-                  setProfile({
-                    ...profile,
-                    skills: profile.skills?.filter(
-                      (skill: string) => skill !== skillToRemove
-                    ),
-                  });
-                }}
-              />
-            </div>
-          </motion.div>
+          <VCardExpandedBio
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
 
-          <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-            <VCardSection 
-              title="Description" 
-              icon={<FileText className="h-5 w-5 text-muted-foreground" />}
-            >
-              {isEditing ? (
-                <Textarea
-                  value={profile.bio || ""}
-                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                  placeholder="Décrivez votre parcours professionnel..."
-                  className="min-h-[150px] bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500"
-                />
-              ) : (
-                <p className="text-gray-300">
-                  {profile.bio || "Aucune description disponible"}
-                </p>
-              )}
-            </VCardSection>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-            <VCardEducation
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-            />
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-            <VCardCertifications
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-            />
-          </motion.div>
+          <VCardExpandedEducation
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
 
           <VCardActions
             isEditing={isEditing}
