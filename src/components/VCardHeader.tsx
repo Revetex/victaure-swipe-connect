@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Edit2, X, Briefcase, Upload, UserRound } from "lucide-react";
+import { Maximize2, X, Briefcase, Upload, UserRound } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -177,7 +177,7 @@ export function VCardHeader({ profile, isEditing, setProfile, setIsEditing }: VC
         onClick={() => setIsEditing(!isEditing)}
         className="absolute top-0 right-0 text-muted-foreground hover:text-foreground transition-colors h-8 w-8"
       >
-        {isEditing ? <X className="h-4 w-4" /> : <Edit2 className="h-4 w-4" />}
+        {isEditing ? <X className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
       </Button>
     </motion.div>
   );
