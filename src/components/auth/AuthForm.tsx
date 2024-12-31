@@ -65,10 +65,6 @@ export function AuthForm() {
             opacity: 1,
             backgroundColor: '#1EAEDB',
             color: 'white',
-            ':hover': {
-              opacity: 0.9,
-              backgroundColor: '#0FA0CE',
-            },
           },
           input: {
             width: '100%',
@@ -77,10 +73,6 @@ export function AuthForm() {
             backgroundColor: 'transparent',
             border: '1px solid hsl(var(--border))',
             transition: 'border-color 150ms',
-            ':focus': {
-              borderColor: 'hsl(var(--ring))',
-              outline: 'none',
-            },
           },
           label: {
             fontSize: '0.875rem',
@@ -97,9 +89,6 @@ export function AuthForm() {
             fontSize: '0.875rem',
             color: 'hsl(var(--primary))',
             textDecoration: 'none',
-            ':hover': {
-              textDecoration: 'underline',
-            },
           },
           divider: {
             backgroundColor: 'hsl(var(--border))',
