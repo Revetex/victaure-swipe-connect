@@ -19,7 +19,7 @@ export function DashboardLayout() {
       variants={itemVariants} 
       className={`transform transition-all duration-300 ${className}`}
     >
-      <div className="dashboard-card hover-lift">
+      <div className="dashboard-card hover-lift h-full">
         {padding ? (
           <div className="responsive-padding h-full">{component}</div>
         ) : (
@@ -34,7 +34,7 @@ export function DashboardLayout() {
       <div className="relative z-10 flex-1 overflow-auto py-4 sm:py-6 lg:py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1920px] pb-6 sm:pb-8">
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 auto-rows-[minmax(400px,_1fr)]"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -42,26 +42,26 @@ export function DashboardLayout() {
             {/* Messages Section with Notes and Tasks */}
             {renderDashboardSection(
               <Messages />,
-              "col-span-1 xl:col-span-2 h-[700px] sm:h-[800px] lg:h-[900px]"
+              "col-span-1 xl:col-span-2 h-[600px]"
             )}
 
             {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
-              "col-span-1 md:col-span-1 xl:col-span-2 h-[700px] sm:h-[800px] lg:h-[900px]",
+              "col-span-1 md:col-span-1 xl:col-span-1 h-[600px]",
               false
             )}
 
             {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
-              "col-span-1 md:col-span-2 xl:col-span-4 min-h-[500px] sm:min-h-[600px] lg:min-h-[700px]"
+              "col-span-1 md:col-span-2 xl:col-span-2 h-[500px]"
             )}
 
             {/* PaymentBox Section */}
             {renderDashboardSection(
               <PaymentBox />,
-              "col-span-1 md:col-span-2 xl:col-span-4 h-[400px] sm:h-[450px] lg:h-[500px]"
+              "col-span-1 md:col-span-2 xl:col-span-2 h-[400px]"
             )}
           </motion.div>
         </div>
