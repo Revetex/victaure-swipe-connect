@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X, Briefcase, GraduationCap, Code, FileText } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VCardContact } from "../../VCardContact";
 import { VCardSkills } from "../../VCardSkills";
@@ -8,9 +8,8 @@ import { VCardCertifications } from "../../VCardCertifications";
 import { VCardActions } from "../../VCardActions";
 import { VCardSection } from "../../VCardSection";
 import { Textarea } from "@/components/ui/textarea";
-import { QRCodeSVG } from "qrcode.react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { UserRound } from "lucide-react";
+import { VCardExpandedHeader } from "./expanded/VCardExpandedHeader";
+import { VCardExpandedQR } from "./expanded/VCardExpandedQR";
 
 interface VCardExpandedContentProps {
   isExpanded: boolean;
@@ -90,36 +89,13 @@ export function VCardExpandedContent({
     >
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-start mb-8">
-          <div className="flex items-center gap-6">
-            <Avatar className="h-32 w-32 ring-4 ring-white/10 shadow-xl">
-              <AvatarImage 
-                src={profile.avatar_url} 
-                alt={profile.full_name}
-                className="object-cover"
-              />
-              <AvatarFallback className="bg-gray-800">
-                <UserRound className="h-16 w-16 text-gray-400" />
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-4xl font-bold text-white mb-2">
-                {profile.full_name || "Nom non défini"}
-              </h1>
-              <p className="text-xl text-gray-300">
-                {profile.role || "Rôle non défini"}
-              </p>
-            </div>
-          </div>
+          <VCardExpandedHeader
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
           <div className="flex gap-4">
-            <div className="p-4 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
-              <QRCodeSVG
-                value={window.location.href}
-                size={120}
-                level="H"
-                includeMargin={true}
-                className="rounded-lg"
-              />
-            </div>
+            <VCardExpandedQR />
             <Button
               variant="ghost"
               size="icon"
@@ -170,10 +146,7 @@ export function VCardExpandedContent({
           </motion.div>
 
           <motion.div variants={itemVariants} className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
-            <VCardSection
-              title="Description"
-              icon={<FileText className="h-4 w-4" />}
-            >
+            <VCardSection title="Description">
               {isEditing ? (
                 <Textarea
                   value={profile.bio || ""}
