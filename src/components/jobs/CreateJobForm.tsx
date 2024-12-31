@@ -16,7 +16,7 @@ import { toast } from "sonner";
 const jobFormSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
   description: z.string().min(1, "La description est requise"),
-  budget: z.string().min(1, "Le budget est requis"),
+  budget: z.string().transform((val) => Number(val)), // Transform string to number
   location: z.string().min(1, "La localisation est requise"),
   category: z.string().min(1, "La catégorie est requise"),
   subcategory: z.string().optional(),
@@ -82,6 +82,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
 
       const { error } = await supabase.from("jobs").insert({
         ...data,
+        budget: Number(data.budget), // Ensure budget is a number
         employer_id: user.id,
         status: "open",
       });
@@ -97,12 +98,32 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     }
   };
 
+  const formValues = form.watch();
+
   return (
     <FormProvider {...form}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <JobBasicInfoFields />
-          <JobCategoryFields />
+          <JobBasicInfoFields 
+            title={formValues.title || ""}
+            description={formValues.description || ""}
+            budget={formValues.budget?.toString() || ""}
+            location={formValues.location || ""}
+            onChange={(values) => {
+              Object.entries(values).forEach(([key, value]) => {
+                form.setValue(key as keyof JobFormValues, value);
+              });
+            }}
+          />
+          <JobCategoryFields 
+            category={formValues.category || ""}
+            subcategory={formValues.subcategory}
+            onChange={(values) => {
+              Object.entries(values).forEach(([key, value]) => {
+                form.setValue(key as keyof JobFormValues, value);
+              });
+            }}
+          />
           <JobTypeFields />
           <JobCompanyFields />
           <JobSalaryFields />
