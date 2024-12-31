@@ -23,12 +23,12 @@ const subcategories: Record<string, string[]> = {
 };
 
 export interface JobCategoryFieldsProps {
-  category?: string;
+  category: string;
   subcategory?: string;
-  onChange?: (field: string, value: string) => void;
+  onChange: (values: { [key: string]: string }) => void;
 }
 
-export function JobCategoryFields() {
+export function JobCategoryFields({ category, subcategory, onChange }: JobCategoryFieldsProps) {
   const { control, watch } = useFormContext();
   const selectedCategory = watch("category");
 

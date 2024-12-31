@@ -4,13 +4,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFormContext } from "react-hook-form";
 
 export interface JobBasicInfoFieldsProps {
-  title?: string;
-  description?: string;
-  budget?: string;
-  location?: string;
+  title: string;
+  description: string;
+  budget: string;
+  location: string;
+  onChange: (values: { [key: string]: string }) => void;
 }
 
-export function JobBasicInfoFields() {
+export function JobBasicInfoFields({ title, description, budget, location, onChange }: JobBasicInfoFieldsProps) {
   const { control } = useFormContext();
 
   return (

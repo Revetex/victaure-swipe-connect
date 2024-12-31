@@ -28,20 +28,6 @@ const jobFormSchema = z.object({
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
 
-interface JobBasicInfoFieldsProps {
-  title: string;
-  description: string;
-  budget: string;
-  location: string;
-  onChange: (values: Partial<JobFormValues>) => void;
-}
-
-interface JobCategoryFieldsProps {
-  category: string;
-  subcategory?: string;
-  onChange: (values: Partial<JobFormValues>) => void;
-}
-
 const defaultValues: Partial<JobFormValues> = {
   contract_type: "Full-time",
   experience_level: "Mid-Level",
@@ -109,7 +95,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
             location={form.watch("location")}
             onChange={(values) => {
               Object.entries(values).forEach(([key, value]) => {
-                form.setValue(key as keyof JobFormValues, value);
+                form.setValue(key as keyof JobFormValues, value as string);
               });
             }}
           />
@@ -118,7 +104,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
             subcategory={form.watch("subcategory")}
             onChange={(values) => {
               Object.entries(values).forEach(([key, value]) => {
-                form.setValue(key as keyof JobFormValues, value);
+                form.setValue(key as keyof JobFormValues, value as string);
               });
             }}
           />
