@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { CreateJobForm } from "./CreateJobForm";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface JobListProps {
   jobs: Job[];
@@ -26,6 +27,7 @@ export function JobList({ jobs, isLoading, error, onJobDeleted }: JobListProps) 
   const handleEditSuccess = () => {
     setIsEditDialogOpen(false);
     onJobDeleted();
+    toast.success("Mission mise à jour avec succès");
   };
 
   if (isLoading) {

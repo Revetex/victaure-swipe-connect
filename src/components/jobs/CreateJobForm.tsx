@@ -10,6 +10,7 @@ import { JobTypeFields } from "./form/JobTypeFields";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Job } from "@/types/job";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
@@ -51,6 +52,17 @@ export function CreateJobForm({ onSuccess, initialData }: CreateJobFormProps) {
     },
   });
 
+  useEffect(() => {
+    // Check authentication status when component mounts
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Vous devez être connecté pour créer ou modifier une mission");
+      }
+    };
+    checkAuth();
+  }, []);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -78,7 +90,10 @@ export function CreateJobForm({ onSuccess, initialData }: CreateJobFormProps) {
           .update(jobData)
           .eq('id', initialData.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating job:', error);
+          throw error;
+        }
         toast.success("Mission mise à jour avec succès");
       } else {
         // Create new job
@@ -86,7 +101,10 @@ export function CreateJobForm({ onSuccess, initialData }: CreateJobFormProps) {
           .from('jobs')
           .insert([jobData]);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error creating job:', error);
+          throw error;
+        }
         toast.success("Mission créée avec succès");
       }
 
