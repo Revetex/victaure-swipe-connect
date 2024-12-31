@@ -20,14 +20,14 @@ export function TodoList() {
 
         const { data, error } = await supabase
           .from('todos')
-          .insert([{
+          .insert({
             user_id: user.id,
             text: newTodo.trim(),
             completed: false,
-            due_date: selectedDate,
-            due_time: allDay ? undefined : selectedTime,
+            due_date: selectedDate?.toISOString().split('T')[0],
+            due_time: allDay ? null : selectedTime,
             all_day: allDay,
-          }])
+          })
           .select()
           .single();
 
@@ -53,15 +53,6 @@ export function TodoList() {
             title: "Tâche ajoutée",
             description: "Votre nouvelle tâche a été ajoutée avec succès.",
           });
-
-          await supabase
-            .from('notifications')
-            .insert([{
-              user_id: user.id,
-              title: "Nouvelle tâche",
-              message: newTodo,
-              read: false
-            }]);
         }
       } catch (error) {
         console.error('Error adding todo:', error);

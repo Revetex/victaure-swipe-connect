@@ -17,7 +17,35 @@ import { TimeSelector } from "./TimeSelector";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
-export function TodoSection() {
+interface TodoSectionProps {
+  todos: Todo[];
+  newTodo: string;
+  selectedDate?: Date;
+  selectedTime?: string;
+  allDay: boolean;
+  onTodoChange: (value: string) => void;
+  onDateChange: (date?: Date) => void;
+  onTimeChange: (time?: string) => void;
+  onAllDayChange: (value: boolean) => void;
+  onAdd: () => void;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
+export function TodoSection({
+  todos,
+  newTodo,
+  selectedDate,
+  selectedTime,
+  allDay,
+  onTodoChange,
+  onDateChange,
+  onTimeChange,
+  onAllDayChange,
+  onAdd,
+  onToggle,
+  onDelete
+}: TodoSectionProps) {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -151,8 +179,8 @@ export function TodoSection() {
       <div className="space-y-4">
         <TodoInput
           newTodo={newTodo}
-          onTodoChange={setNewTodo}
-          onAdd={handleAdd}
+          onTodoChange={onTodoChange}
+          onAdd={onAdd}
         />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -177,7 +205,7 @@ export function TodoSection() {
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={setSelectedDate}
+                onSelect={onDateChange}
                 initialFocus
               />
             </PopoverContent>
@@ -186,7 +214,7 @@ export function TodoSection() {
           {!allDay && (
             <TimeSelector
               selectedTime={selectedTime}
-              onTimeChange={setSelectedTime}
+              onTimeChange={onTimeChange}
             />
           )}
 
@@ -195,9 +223,9 @@ export function TodoSection() {
               id="allDay"
               checked={allDay}
               onCheckedChange={(checked) => {
-                setAllDay(checked === true);
+                onAllDayChange(checked === true);
                 if (checked) {
-                  setSelectedTime(undefined);
+                  onTimeChange(undefined);
                 }
               }}
             />
@@ -211,8 +239,8 @@ export function TodoSection() {
               <TodoItem
                 key={todo.id}
                 todo={todo}
-                onToggle={handleToggle}
-                onDelete={handleDelete}
+                onToggle={onToggle}
+                onDelete={onDelete}
               />
             ))}
             {todos.length === 0 && (
