@@ -10,6 +10,7 @@ interface VCardActionsProps {
   onCopyLink: () => void;
   onSave: () => void;
   onApplyChanges: () => void;
+  setIsEditing: (isEditing: boolean) => void;
 }
 
 export function VCardActions({
@@ -20,6 +21,7 @@ export function VCardActions({
   onCopyLink,
   onSave,
   onApplyChanges,
+  setIsEditing,
 }: VCardActionsProps) {
   const container = {
     hidden: { opacity: 0 },
@@ -77,7 +79,7 @@ export function VCardActions({
           </motion.div>
           <motion.div variants={item} className="flex-1 min-w-[100px]">
             <Button 
-              onClick={onDownload} 
+              onClick={() => setIsEditing(true)} 
               variant="outline" 
               className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
