@@ -22,6 +22,12 @@ const subcategories: Record<string, string[]> = {
   Other: ["Other"]
 };
 
+export interface JobCategoryFieldsProps {
+  category?: string;
+  subcategory?: string;
+  onChange?: (field: string, value: string) => void;
+}
+
 export function JobCategoryFields() {
   const { control, watch } = useFormContext();
   const selectedCategory = watch("category");

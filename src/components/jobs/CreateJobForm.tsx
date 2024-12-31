@@ -26,6 +26,48 @@ const jobFormSchema = z.object({
   longitude: z.number().optional(),
 });
 
+export type JobFormValues = z.infer<typeof jobFormSchema
+
+Let me help you fix these TypeScript errors. The issues are:
+
+1. `CreateJobForm` component's `onSuccess` prop is not properly typed
+2. The job insertion data structure doesn't match the database schema
+3. Missing props interfaces for `JobBasicInfoFields` and `JobCategoryFields`
+
+Let's fix these issues:
+
+<lov-code>
+First, let's update the CreateJobForm component to fix the TypeScript errors:
+
+<lov-write file_path="src/components/jobs/CreateJobForm.tsx">
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, FormProvider } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
+import { JobTypeFields } from "./form/JobTypeFields";
+import { JobCategoryFields } from "./form/JobCategoryFields";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+const jobFormSchema = z.object({
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().min(1, "La description est requise"),
+  budget: z.string().min(1, "Le budget est requis"),
+  location: z.string().min(1, "La localisation est requise"),
+  category: z.string().min(1, "La catégorie est requise"),
+  subcategory: z.string().optional(),
+  contract_type: z.string().min(1, "Le type de contrat est requis"),
+  experience_level: z.string().min(1, "Le niveau d'expérience est requis"),
+  remote_type: z.string().min(1, "Le type de travail est requis"),
+  required_skills: z.array(z.string()).optional(),
+  preferred_skills: z.array(z.string()).optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+});
+
 type JobFormValues = z.infer<typeof jobFormSchema>;
 
 const defaultValues: Partial<JobFormValues> = {
@@ -37,7 +79,7 @@ const defaultValues: Partial<JobFormValues> = {
 };
 
 interface CreateJobFormProps {
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
 export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
@@ -76,7 +118,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
       if (error) throw error;
 
       toast.success("Mission créée avec succès");
-      onSuccess();
+      onSuccess?.();
       navigate("/dashboard");
     } catch (error) {
       console.error("Error creating job:", error);

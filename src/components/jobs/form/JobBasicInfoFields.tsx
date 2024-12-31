@@ -3,6 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormContext } from "react-hook-form";
 
+export interface JobBasicInfoFieldsProps {
+  title?: string;
+  description?: string;
+  budget?: string;
+  location?: string;
+}
+
 export function JobBasicInfoFields() {
   const { control } = useFormContext();
 
