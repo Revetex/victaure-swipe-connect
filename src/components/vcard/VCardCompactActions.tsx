@@ -19,7 +19,7 @@ export function VCardCompactActions({
 }: VCardCompactActionsProps) {
   return (
     <motion.div 
-      className="absolute bottom-0 left-0 right-0 flex flex-col gap-2 p-4 bg-gradient-to-t from-black/20 to-transparent"
+      className="absolute -bottom-[120px] left-0 right-0 flex flex-col gap-2 p-4 bg-gradient-to-t from-black/20 to-transparent rounded-b-xl"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
