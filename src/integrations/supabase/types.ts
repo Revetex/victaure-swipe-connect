@@ -183,17 +183,23 @@ export type Database = {
           benefits: string[] | null
           budget: number
           category: string
+          certifications_required: string[] | null
           company_description: string | null
           company_logo: string | null
           company_name: string | null
           company_website: string | null
           contract_type: string
           created_at: string | null
+          department: string | null
           description: string
+          education_level: string | null
           employer_id: string
           experience_level: string
           id: string
           images: string[] | null
+          industry: string | null
+          job_type: string | null
+          languages: string[] | null
           latitude: number | null
           location: string
           longitude: number | null
@@ -209,24 +215,33 @@ export type Database = {
           status: string
           subcategory: string | null
           title: string
+          tools_and_technologies: string[] | null
           updated_at: string | null
+          work_schedule: string[] | null
+          years_of_experience: number | null
         }
         Insert: {
           application_deadline?: string | null
           benefits?: string[] | null
           budget: number
           category?: string
+          certifications_required?: string[] | null
           company_description?: string | null
           company_logo?: string | null
           company_name?: string | null
           company_website?: string | null
           contract_type?: string
           created_at?: string | null
+          department?: string | null
           description: string
+          education_level?: string | null
           employer_id: string
           experience_level?: string
           id?: string
           images?: string[] | null
+          industry?: string | null
+          job_type?: string | null
+          languages?: string[] | null
           latitude?: number | null
           location: string
           longitude?: number | null
@@ -242,24 +257,33 @@ export type Database = {
           status?: string
           subcategory?: string | null
           title: string
+          tools_and_technologies?: string[] | null
           updated_at?: string | null
+          work_schedule?: string[] | null
+          years_of_experience?: number | null
         }
         Update: {
           application_deadline?: string | null
           benefits?: string[] | null
           budget?: number
           category?: string
+          certifications_required?: string[] | null
           company_description?: string | null
           company_logo?: string | null
           company_name?: string | null
           company_website?: string | null
           contract_type?: string
           created_at?: string | null
+          department?: string | null
           description?: string
+          education_level?: string | null
           employer_id?: string
           experience_level?: string
           id?: string
           images?: string[] | null
+          industry?: string | null
+          job_type?: string | null
+          languages?: string[] | null
           latitude?: number | null
           location?: string
           longitude?: number | null
@@ -275,7 +299,10 @@ export type Database = {
           status?: string
           subcategory?: string | null
           title?: string
+          tools_and_technologies?: string[] | null
           updated_at?: string | null
+          work_schedule?: string[] | null
+          years_of_experience?: number | null
         }
         Relationships: [
           {

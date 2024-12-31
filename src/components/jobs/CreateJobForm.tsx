@@ -38,21 +38,27 @@ const jobFormSchema = z.object({
   benefits: z.array(z.string()).optional(),
   responsibilities: z.array(z.string()).optional(),
   qualifications: z.array(z.string()).optional(),
+  job_type: z.string().min(1, "Le type de mission est requis"),
+  payment_type: z.string().min(1, "Le type de paiement est requis"),
+  is_urgent: z.boolean().default(false),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
 
 const defaultValues: Partial<JobFormValues> = {
-  contract_type: "Full-time",
+  contract_type: "One-time",
   experience_level: "Mid-Level",
   remote_type: "on-site",
   required_skills: [],
   preferred_skills: [],
   salary_currency: "CAD",
-  salary_period: "yearly",
+  salary_period: "fixed",
   benefits: [],
   responsibilities: [],
   qualifications: [],
+  job_type: "individual",
+  payment_type: "Fixed-price",
+  is_urgent: false,
 };
 
 interface CreateJobFormProps {
