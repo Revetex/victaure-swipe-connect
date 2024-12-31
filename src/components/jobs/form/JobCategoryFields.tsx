@@ -1,40 +1,8 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFormContext } from "react-hook-form";
-
-const categories = {
-  company: [
-    "technology",
-    "design",
-    "writing",
-    "translation",
-    "marketing",
-    "business",
-    "legal",
-    "admin",
-    "customer_service",
-    "other"
-  ],
-  individual: [
-    "home_improvement",
-    "gardening",
-    "cleaning",
-    "moving",
-    "tutoring",
-    "personal_assistance",
-    "events",
-    "repairs",
-    "other"
-  ]
-};
-
-const subcategories = {
-  technology: ["Web Development", "Mobile Development", "DevOps", "Data Science"],
-  design: ["UI/UX", "Graphic Design", "Product Design", "Brand Design"],
-  home_improvement: ["Painting", "Plumbing", "Electrical", "Carpentry"],
-  gardening: ["Maintenance", "Landscaping", "Tree Service", "Lawn Care"],
-  // ... add other subcategories as needed
-};
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface JobCategoryFieldsProps {
   category: string;
@@ -44,7 +12,43 @@ interface JobCategoryFieldsProps {
 export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps) {
   const { control, watch } = useFormContext();
   const missionType = watch("mission_type");
-  const selectedCategory = watch("category");
+
+  // Fetch categories from the database
+  const { data: categories = [] } = useQuery({
+    queryKey: ["jobCategories", missionType],
+    queryFn: async () => {
+      const query = supabase
+        .from('job_categories')
+        .select('*')
+        .order('name');
+      
+      if (missionType !== "all") {
+        query.eq('mission_type', missionType);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch subcategories when a category is selected
+  const { data: subcategories = [] } = useQuery({
+    queryKey: ["jobSubcategories", category],
+    queryFn: async () => {
+      if (!category || category === "all") return [];
+
+      const { data, error } = await supabase
+        .from('job_subcategories')
+        .select('*')
+        .eq('category_id', category)
+        .order('name');
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!category && category !== "all",
+  });
 
   return (
     <div className="space-y-4">
@@ -60,15 +64,15 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                   field.onChange(value);
                   onChange({ category: value, subcategory: null });
                 }}
-                value={field.value}
+                value={field.value || ""}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories[missionType as keyof typeof categories].map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat.charAt(0).toUpperCase() + cat.slice(1).replace('_', ' ')}
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -79,7 +83,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
         )}
       />
 
-      {selectedCategory && subcategories[selectedCategory as keyof typeof subcategories] && (
+      {category && subcategories.length > 0 && (
         <FormField
           control={control}
           name="subcategory"
@@ -98,9 +102,9 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                     <SelectValue placeholder="Sélectionnez une sous-catégorie" />
                   </SelectTrigger>
                   <SelectContent>
-                    {subcategories[selectedCategory as keyof typeof subcategories].map((subcat) => (
-                      <SelectItem key={subcat} value={subcat}>
-                        {subcat}
+                    {subcategories.map((subcat) => (
+                      <SelectItem key={subcat.id} value={subcat.id}>
+                        {subcat.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
