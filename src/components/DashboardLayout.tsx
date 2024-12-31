@@ -47,6 +47,12 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
+            {/* Messages Section with Notes, Tasks, and Settings */}
+            {renderDashboardSection(
+              <Messages />,
+              'w-full h-[600px] sm:h-[700px] md:h-[800px]'
+            )}
+
             {/* Victaure Promotional Video */}
             {renderDashboardSection(
               <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
@@ -67,12 +73,6 @@ export function DashboardLayout() {
                 )}
               </div>,
               'w-full'
-            )}
-
-            {/* Messages Section with Notes, Tasks, and Settings */}
-            {renderDashboardSection(
-              <Messages />,
-              'w-full h-[600px] sm:h-[700px] md:h-[800px]'
             )}
 
             {/* SwipeJob Section */}
