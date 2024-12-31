@@ -22,7 +22,6 @@ export function Messages() {
   const unreadMessagesCount = userMessages.filter(m => !m.read).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
-  // Add notes functionality using the useNotes hook
   const {
     notes,
     newNote,
@@ -33,7 +32,6 @@ export function Messages() {
     deleteNote
   } = useNotes();
 
-  // Define color options for notes
   const colors = [
     { value: "yellow", label: "Yellow", class: "bg-yellow-100" },
     { value: "blue", label: "Blue", class: "bg-blue-100" },
