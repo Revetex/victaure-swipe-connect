@@ -14,22 +14,45 @@ import { PasswordChangeSection } from "./settings/PasswordChangeSection";
 export function Settings() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Check session on mount
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        console.error("Session error:", error);
+        navigate("/auth", { replace: true });
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {
+      setIsLoggingOut(true);
+      
+      // Clear any stored session data first
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
+      
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error("Logout error:", error);
+        throw error;
+      }
       
       toast.success("Déconnexion réussie");
       navigate("/auth", { replace: true });
     } catch (error) {
       console.error("Erreur de déconnexion:", error);
-      toast.error("Erreur lors de la déconnexion");
+      toast.error("Erreur lors de la déconnexion. Veuillez réessayer.");
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -84,9 +107,10 @@ export function Settings() {
         <Button 
           variant="destructive" 
           onClick={handleLogout}
+          disabled={isLoggingOut}
           className="w-full flex items-center justify-center gap-2"
         >
-          <span>Déconnexion</span>
+          <span>{isLoggingOut ? "Déconnexion en cours..." : "Déconnexion"}</span>
           <LogOut className="h-5 w-5" />
         </Button>
       </div>
