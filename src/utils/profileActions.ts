@@ -83,8 +83,10 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       const { error: certError } = await supabase
         .from('certifications')
         .insert(tempProfile.certifications.map(cert => ({
-          ...cert,
-          profile_id: user.id
+          profile_id: user.id,
+          title: cert.title,
+          issuer: cert.institution,
+          issue_date: cert.year ? `${cert.year}-01-01` : null
         })));
 
       if (certError) {
@@ -112,8 +114,13 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       const { error: eduError } = await supabase
         .from('education')
         .insert(tempProfile.education.map(edu => ({
-          ...edu,
-          profile_id: user.id
+          profile_id: user.id,
+          school_name: edu.school_name,
+          degree: edu.degree,
+          field_of_study: edu.field_of_study,
+          start_date: edu.start_date,
+          end_date: edu.end_date,
+          description: edu.description
         })));
 
       if (eduError) {
