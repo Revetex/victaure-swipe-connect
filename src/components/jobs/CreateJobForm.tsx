@@ -45,7 +45,12 @@ const jobFormSchema = z.object({
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
 
-const defaultValues: Partial<JobFormValues> = {
+const defaultValues: JobFormValues = {
+  title: "",
+  description: "",
+  budget: 0,
+  location: "",
+  category: "",
   mission_type: "company",
   contract_type: "Full-time",
   experience_level: "Mid-Level",
@@ -59,7 +64,6 @@ const defaultValues: Partial<JobFormValues> = {
   qualifications: [],
   is_urgent: false,
   payment_schedule: "Monthly",
-  budget: 0,
   salary_min: 0,
   salary_max: 0,
 };
@@ -109,17 +113,15 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
     }
   };
 
-  const formValues = form.watch();
-
   return (
     <FormProvider {...form}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <JobBasicInfoFields 
-            title={formValues.title || ""}
-            description={formValues.description || ""}
-            budget={formValues.budget?.toString() || ""}
-            location={formValues.location || ""}
+            title={form.watch("title") || ""}
+            description={form.watch("description") || ""}
+            budget={form.watch("budget")?.toString() || ""}
+            location={form.watch("location") || ""}
             onChange={(values) => {
               Object.entries(values).forEach(([key, value]) => {
                 form.setValue(key as keyof JobFormValues, value);
@@ -130,7 +132,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
           <JobTypeFields />
           
           <JobCategoryFields 
-            category={formValues.category || ""}
+            category={form.watch("category") || ""}
             onChange={(values) => {
               Object.entries(values).forEach(([key, value]) => {
                 form.setValue(key as keyof JobFormValues, value);
@@ -138,7 +140,7 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
             }}
           />
           
-          {formValues.mission_type === "company" && (
+          {form.watch("mission_type") === "company" && (
             <>
               <JobCompanyFields />
               <JobSalaryFields />
