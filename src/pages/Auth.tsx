@@ -94,6 +94,17 @@ export default function Auth() {
             {/* Auth Form */}
             <AuthForm />
           </div>
+
+          {/* Advertisement */}
+          <div className="mt-8 w-full max-w-sm mx-auto">
+            <div className="rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <img 
+                src="/lovable-uploads/a1c77b1c-dd3c-45fc-b11c-70785ef9c63c.png" 
+                alt="Advertisement" 
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
