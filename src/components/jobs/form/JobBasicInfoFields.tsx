@@ -4,14 +4,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useFormContext } from "react-hook-form";
 
 export interface JobBasicInfoFieldsProps {
-  title: string;
-  description: string;
-  budget: string;
-  location: string;
-  onChange: (values: { [key: string]: string }) => void;
+  title?: string;
+  description?: string;
+  budget?: string;
+  location?: string;
+  onChange?: (values: { [key: string]: string }) => void;
 }
 
-export function JobBasicInfoFields({ title, description, budget, location, onChange }: JobBasicInfoFieldsProps) {
+export function JobBasicInfoFields({ onChange }: JobBasicInfoFieldsProps) {
   const { control } = useFormContext();
 
   return (
@@ -29,7 +29,7 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 value={field.value || ""}
                 onChange={(e) => {
                   field.onChange(e);
-                  onChange({ title: e.target.value });
+                  onChange?.({ title: e.target.value });
                 }}
               />
             </FormControl>
@@ -52,7 +52,7 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 value={field.value || ""}
                 onChange={(e) => {
                   field.onChange(e);
-                  onChange({ description: e.target.value });
+                  onChange?.({ description: e.target.value });
                 }}
               />
             </FormControl>
@@ -75,7 +75,7 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 value={field.value || ""}
                 onChange={(e) => {
                   field.onChange(e);
-                  onChange({ budget: e.target.value });
+                  onChange?.({ budget: e.target.value });
                 }}
               />
             </FormControl>
@@ -97,7 +97,7 @@ export function JobBasicInfoFields({ title, description, budget, location, onCha
                 value={field.value || ""}
                 onChange={(e) => {
                   field.onChange(e);
-                  onChange({ location: e.target.value });
+                  onChange?.({ location: e.target.value });
                 }}
               />
             </FormControl>

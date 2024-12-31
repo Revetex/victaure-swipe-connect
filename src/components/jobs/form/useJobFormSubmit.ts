@@ -2,12 +2,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { JobFormValues } from "./jobFormSchema";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export const useJobFormSubmit = (onSuccess?: () => void) => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: JobFormValues) => {
     try {
+      setIsSubmitting(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Vous devez être connecté pour créer une mission");
@@ -56,8 +59,8 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
         location: data.location,
         employer_id: user.id,
         status: "open",
-        category: categoryData.name, // Use the name from the database
-        subcategory: subcategoryName, // Use the name from the database
+        category: categoryData.name,
+        subcategory: subcategoryName,
         mission_type: data.mission_type,
         contract_type: data.contract_type,
         experience_level: data.experience_level,
@@ -98,8 +101,10 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
     } catch (error) {
       console.error("Error creating job:", error);
       toast.error("Erreur lors de la création de la mission");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  return { handleSubmit };
+  return { handleSubmit, isSubmitting };
 };

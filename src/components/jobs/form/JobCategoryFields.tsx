@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface JobCategoryFieldsProps {
-  category: string;
-  onChange: (values: { [key: string]: any }) => void;
+  category?: string;
+  onChange?: (values: { [key: string]: any }) => void;
 }
 
 export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps) {
@@ -77,7 +77,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
-                  onChange({ category: value, subcategory: null });
+                  onChange?.({ category: value, subcategory: null });
                 }}
                 value={field.value || ""}
               >
@@ -109,7 +109,7 @@ export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps
                 <Select
                   onValueChange={(value) => {
                     field.onChange(value);
-                    onChange({ subcategory: value });
+                    onChange?.({ subcategory: value });
                   }}
                   value={field.value || ""}
                 >
