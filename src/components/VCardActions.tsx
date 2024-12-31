@@ -82,7 +82,7 @@ export function VCardActions({
               className="w-full border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-700 transition-colors"
             >
               <Edit className="mr-2 h-4 w-4" />
-              Éditer
+              Mode édition
             </Button>
           </motion.div>
           <motion.div variants={item} className="flex-1 min-w-[100px]">
