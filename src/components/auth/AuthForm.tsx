@@ -15,8 +15,8 @@ export const AuthForm = memo(function AuthForm() {
         variables: {
           default: {
             colors: {
-              brand: 'hsl(var(--primary))',
-              brandAccent: 'hsl(var(--primary))',
+              brand: 'rgb(30, 174, 219)',
+              brandAccent: 'rgb(15, 160, 206)',
               inputBackground: 'transparent',
               inputText: 'hsl(var(--foreground))',
               inputPlaceholder: 'hsl(var(--muted-foreground))',
