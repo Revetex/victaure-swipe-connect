@@ -41,14 +41,59 @@ export function VCardActions({
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex flex-wrap gap-2 sm:gap-3"
+      className="flex flex-wrap gap-3"
     >
-      {isEditing ? (
+      {!isEditing && (
+        <>
+          <motion.div variants={item}>
+            <Button 
+              onClick={onShare} 
+              variant="secondary"
+              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              Partager
+            </Button>
+          </motion.div>
+          <motion.div variants={item}>
+            <Button 
+              onClick={onDownload}
+              variant="secondary"
+              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              VCard
+            </Button>
+          </motion.div>
+          <motion.div variants={item}>
+            <Button 
+              onClick={onDownloadPDF}
+              variant="secondary"
+              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              PDF
+            </Button>
+          </motion.div>
+          <motion.div variants={item}>
+            <Button 
+              onClick={onCopyLink}
+              variant="secondary"
+              className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+            >
+              <Copy className="mr-2 h-4 w-4" />
+              Copier le lien
+            </Button>
+          </motion.div>
+        </>
+      )}
+      
+      {isEditing && (
         <>
           <motion.div variants={item} className="flex-1 min-w-[120px]">
             <Button 
               onClick={onSave} 
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
@@ -58,13 +103,13 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges} 
               variant="secondary" 
-              className="w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition-colors"
+              className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10"
             >
               Appliquer
             </Button>
           </motion.div>
         </>
-      ) : null}
+      )}
     </motion.div>
   );
 }
