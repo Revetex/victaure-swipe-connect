@@ -111,7 +111,7 @@ export function NotificationsTab() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="p-4"
+      className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
       <motion.div 
         variants={itemVariants}

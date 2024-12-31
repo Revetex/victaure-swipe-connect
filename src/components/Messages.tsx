@@ -55,7 +55,7 @@ export function Messages() {
 
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
-      <TabsList className="grid w-full grid-cols-6">
+      <TabsList className="grid w-full grid-cols-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
         <TabsTrigger value="messages" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
           <span className="hidden sm:inline">Messages</span>
@@ -81,7 +81,7 @@ export function Messages() {
           <span className="hidden sm:inline">Paramètres</span>
         </TabsTrigger>
       </TabsList>
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
         <TabsContent value="messages" className="h-full">
           <MessagesTab />
         </TabsContent>
