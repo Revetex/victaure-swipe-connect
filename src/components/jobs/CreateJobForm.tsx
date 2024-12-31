@@ -1,159 +1,188 @@
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { JobCategoryFields } from "./form/JobCategoryFields";
 import { JobTypeFields } from "./form/JobTypeFields";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isValidCategory } from "@/types/job";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Job } from "@/types/job";
+
+const formSchema = z.object({
+  title: z.string().min(1, "Le titre est requis"),
+  description: z.string().min(1, "La description est requise"),
+  budget: z.string().min(1, "Le budget est requis"),
+  location: z.string().min(1, "La localisation est requise"),
+  category: z.string().min(1, "La catégorie est requise"),
+  subcategory: z.string().min(1, "La sous-catégorie est requise"),
+  contract_type: z.string().min(1, "Le type de contrat est requis"),
+  experience_level: z.string().min(1, "Le niveau d'expérience est requis"),
+});
 
 interface CreateJobFormProps {
-  onSuccess?: () => void;
+  onSuccess: () => void;
+  initialData?: Job;
 }
 
-export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    budget: "",
-    location: "",
-    category: "Technologie",
-    subcategory: "",
-    contract_type: "CDI",
-    experience_level: "Intermédiaire (3-5 ans)",
-    images: [] as File[],
-    latitude: null as number | null,
-    longitude: null as number | null,
+export function CreateJobForm({ onSuccess, initialData }: CreateJobFormProps) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: initialData ? {
+      title: initialData.title,
+      description: initialData.description,
+      budget: initialData.budget.toString(),
+      location: initialData.location,
+      category: initialData.category,
+      subcategory: initialData.subcategory || "",
+      contract_type: initialData.contract_type,
+      experience_level: initialData.experience_level,
+    } : {
+      title: "",
+      description: "",
+      budget: "",
+      location: "",
+      category: "",
+      subcategory: "",
+      contract_type: "",
+      experience_level: "",
+    },
   });
 
-  const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Non authentifié");
-
-      if (!isValidCategory(formData.category)) {
-        throw new Error("Catégorie invalide");
+      if (!user) {
+        toast.error("Vous devez être connecté pour créer une mission");
+        return;
       }
 
-      // Upload images if any
-      const imageUrls = [];
-      if (formData.images.length > 0) {
-        for (const image of formData.images) {
-          const fileExt = image.name.split('.').pop();
-          const fileName = `${crypto.randomUUID()}.${fileExt}`;
-          const { error: uploadError, data } = await supabase.storage
-            .from('jobs')
-            .upload(`images/${fileName}`, image);
-
-          if (uploadError) {
-            console.error('Error uploading image:', uploadError);
-            toast({
-              variant: "destructive",
-              title: "Erreur",
-              description: "Impossible de télécharger l'image",
-            });
-            continue;
-          }
-          
-          if (data) {
-            const { data: { publicUrl } } = supabase.storage
-              .from('jobs')
-              .getPublicUrl(`images/${fileName}`);
-            imageUrls.push(publicUrl);
-          }
-        }
-      }
-
-      const { error } = await supabase.from("jobs").insert({
-        ...formData,
-        budget: parseFloat(formData.budget),
+      const jobData = {
+        title: values.title,
+        description: values.description,
+        budget: parseFloat(values.budget),
+        location: values.location,
         employer_id: user.id,
-        images: imageUrls
-      });
+        category: values.category,
+        subcategory: values.subcategory,
+        contract_type: values.contract_type,
+        experience_level: values.experience_level,
+      };
 
-      if (error) {
-        console.error("Error creating job:", error);
-        throw error;
+      if (initialData) {
+        // Update existing job
+        const { error } = await supabase
+          .from('jobs')
+          .update(jobData)
+          .eq('id', initialData.id);
+
+        if (error) throw error;
+        toast.success("Mission mise à jour avec succès");
+      } else {
+        // Create new job
+        const { error } = await supabase
+          .from('jobs')
+          .insert([jobData]);
+
+        if (error) throw error;
+        toast.success("Mission créée avec succès");
       }
 
-      toast({
-        title: "Succès",
-        description: "Mission créée avec succès",
-      });
-
-      onSuccess?.();
-
-      // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        budget: "",
-        location: "",
-        category: "Technologie",
-        subcategory: "",
-        contract_type: "CDI",
-        experience_level: "Intermédiaire (3-5 ans)",
-        images: [],
-        latitude: null,
-        longitude: null,
-      });
+      onSuccess();
+      form.reset();
     } catch (error) {
-      console.error("Error creating job:", error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de créer la mission",
-      });
-    } finally {
-      setIsLoading(false);
+      console.error('Error submitting job:', error);
+      toast.error("Une erreur est survenue lors de la soumission");
     }
-  };
+  }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Créer une nouvelle mission</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <JobBasicInfoFields
-            title={formData.title}
-            description={formData.description}
-            budget={formData.budget}
-            location={formData.location}
-            images={formData.images}
-            onChange={handleChange}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Titre de la mission</FormLabel>
+              <FormControl>
+                <Input placeholder="Ex: Développeur React Senior" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Décrivez la mission en détail..."
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="budget"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Budget (CAD)</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="Ex: 5000" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Localisation</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Montréal, QC" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <JobCategoryFields
-            category={formData.category}
-            subcategory={formData.subcategory}
-            onChange={handleChange}
+            category={form.watch("category")}
+            subcategory={form.watch("subcategory")}
+            onChange={(field, value) => form.setValue(field as any, value)}
           />
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <JobTypeFields
-            contractType={formData.contract_type}
-            experienceLevel={formData.experience_level}
-            onChange={handleChange}
+            contractType={form.watch("contract_type")}
+            experienceLevel={form.watch("experience_level")}
+            onChange={(field, value) => form.setValue(field as any, value)}
           />
+        </div>
 
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Création..." : "Créer la mission"}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        <Button type="submit" className="w-full">
+          {initialData ? "Mettre à jour la mission" : "Créer la mission"}
+        </Button>
+      </form>
+    </Form>
   );
 }
