@@ -38,20 +38,29 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {/* Victaure Promotional Video */}
-            {renderDashboardSection(
-              <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
-                <video 
-                  className="w-full h-full object-cover"
-                  controls
-                  loop
-                >
-                  <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
-                  Votre navigateur ne prend pas en charge la lecture de vidéos.
-                </video>
-              </div>,
-              'w-full'
-            )}
+            {/* Top Section with Video and VCard */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
+              {/* Victaure Promotional Video */}
+              {renderDashboardSection(
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
+                  <video 
+                    className="w-full h-full object-cover"
+                    controls
+                    loop
+                  >
+                    <source src="/lovable-uploads/VictaurePub.mp4" type="video/mp4" />
+                    Votre navigateur ne prend pas en charge la lecture de vidéos.
+                  </video>
+                </div>,
+                'w-full'
+              )}
+
+              {/* VCard Section */}
+              {renderDashboardSection(
+                <VCard />,
+                'w-full h-[500px] sm:h-[550px] md:h-[600px]'
+              )}
+            </div>
 
             {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
@@ -64,12 +73,6 @@ export function DashboardLayout() {
               <SwipeJob />,
               'w-full h-[500px] sm:h-[550px] md:h-[600px]',
               false
-            )}
-
-            {/* VCard Section - Moved to bottom with extra spacing */}
-            {renderDashboardSection(
-              <VCard />,
-              'w-full h-[500px] sm:h-[550px] md:h-[600px] mt-16 sm:mt-24 md:mt-32'
             )}
           </motion.div>
         </div>
