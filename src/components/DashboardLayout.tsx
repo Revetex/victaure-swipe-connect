@@ -30,10 +30,10 @@ export function DashboardLayout() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      <div className="relative z-10 flex-1 overflow-auto py-2 sm:py-4">
+      <div className="relative z-10 flex-1 overflow-auto py-4 sm:py-6">
         <div className="container mx-auto px-2 sm:px-4 lg:px-6 max-w-[2000px]">
           <motion.div 
-            className="flex flex-col gap-6 max-w-[1200px] mx-auto pb-24 sm:pb-32 md:pb-40"
+            className="flex flex-col gap-8 max-w-[1200px] mx-auto pb-32 sm:pb-40"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -41,20 +41,20 @@ export function DashboardLayout() {
             {/* SwipeJob Section */}
             {renderDashboardSection(
               <SwipeJob />,
-              'w-full h-[450px] sm:h-[500px] md:h-[550px]',
+              'w-full h-[400px] sm:h-[450px] md:h-[500px] mb-4',
               false
             )}
 
             {/* VCard Section */}
             {renderDashboardSection(
               <VCard />,
-              'w-full h-[450px] sm:h-[500px] md:h-[550px]'
+              'w-full h-[400px] sm:h-[450px] md:h-[500px] mb-4'
             )}
 
             {/* Messages Section with Notes, Tasks, and Settings */}
             {renderDashboardSection(
               <Messages />,
-              'w-full h-[600px] sm:h-[700px] md:h-[800px]'
+              'w-full h-[500px] sm:h-[600px] md:h-[700px]'
             )}
           </motion.div>
         </div>
