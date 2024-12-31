@@ -15,13 +15,13 @@ export function VCardBadge({ text, isEditing, onRemove }: VCardBadgeProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ scale: 1.05 }}
-      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors"
+      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-blue-500/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/20 dark:hover:bg-blue-900/50 transition-colors border border-blue-500/20 dark:border-blue-400/20 shadow-sm"
     >
       {text}
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className="p-0.5 hover:bg-indigo-300/50 dark:hover:bg-indigo-800/50 rounded-full transition-colors"
+          className="p-0.5 hover:bg-blue-600/20 dark:hover:bg-blue-800/50 rounded-full transition-colors"
         >
           <X className="h-3 w-3" />
         </button>
