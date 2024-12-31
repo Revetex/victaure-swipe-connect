@@ -12,8 +12,15 @@ export const CategoryFilters = memo(function CategoryFilters({
   filters, 
   onFilterChange 
 }: CategoryFiltersProps) {
+  const sortedCategories = useMemo(() => 
+    Object.keys(missionCategories).sort((a, b) => a.localeCompare(b)),
+    []
+  );
+
   const subcategories = useMemo(() => 
-    filters.category !== "all" ? missionCategories[filters.category]?.subcategories : [],
+    filters.category !== "all" ? 
+      [...missionCategories[filters.category]?.subcategories].sort((a, b) => a.localeCompare(b)) : 
+      [],
     [filters.category]
   );
 
@@ -32,7 +39,7 @@ export const CategoryFilters = memo(function CategoryFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Toutes les catégories</SelectItem>
-            {Object.keys(missionCategories).map((category) => (
+            {sortedCategories.map((category) => (
               <SelectItem key={category} value={category}>
                 {category}
               </SelectItem>

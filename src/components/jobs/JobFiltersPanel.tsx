@@ -50,13 +50,13 @@ export function JobFiltersPanel({
             filters={filters} 
             onFilterChange={onFilterChange} 
           />
-          <LocationFilter 
-            filters={filters} 
-            onFilterChange={onFilterChange}
-          />
           <ExperienceFilter 
             filters={filters} 
             onFilterChange={onFilterChange} 
+          />
+          <LocationFilter 
+            filters={filters} 
+            onFilterChange={onFilterChange}
           />
         </div>
       )}
