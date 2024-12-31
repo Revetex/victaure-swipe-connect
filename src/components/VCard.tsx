@@ -5,6 +5,7 @@ import { VCardEmpty } from "./vcard/VCardEmpty";
 import { VCardContent } from "./vcard/VCardContent";
 import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
 import { useProfileHandlers } from "./vcard/handlers/useProfileHandlers";
+import { toast } from "sonner";
 
 export function VCard() {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,6 +13,17 @@ export function VCard() {
   const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
   const { handleShare, handleDownloadVCard, handleDownloadPDF, handleDownloadBusinessPDF, handleDownloadCVPDF, handleCopyLink } = useVCardHandlers();
   const { handleSave, handleApplyChanges } = useProfileHandlers();
+
+  const handleProfileUpdate = async (updatedProfile: any) => {
+    try {
+      setTempProfile(updatedProfile);
+      await handleSave();
+      toast.success("Modifications enregistrées avec succès");
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error("Erreur lors de l'enregistrement des modifications");
+    }
+  };
 
   if (isLoading) {
     return <VCardSkeleton />;
@@ -37,7 +49,7 @@ export function VCard() {
       onDownloadBusinessPDF={() => handleDownloadBusinessPDF(profile)}
       onDownloadCVPDF={() => handleDownloadCVPDF(profile)}
       onCopyLink={handleCopyLink}
-      onSave={() => handleSave(tempProfile, setProfile, setIsEditing)}
+      onSave={() => handleProfileUpdate(tempProfile)}
       onApplyChanges={() => handleApplyChanges(tempProfile, setProfile, setIsEditing)}
     />
   );
