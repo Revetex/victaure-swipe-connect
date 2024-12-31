@@ -5,6 +5,8 @@ import { TodoSection } from "./todo/TodoSection";
 import { Settings } from "./Settings";
 import { PaymentBox } from "./dashboard/PaymentBox";
 import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
+import { NotesSection } from "./todo/NotesSection";
 import { MessageSquare, Bell, StickyNote, ListTodo, Settings as SettingsIcon, CreditCard } from "lucide-react";
 
 export function Messages() {
@@ -22,6 +24,27 @@ export function Messages() {
     toggleTodo,
     deleteTodo
   } = useTodoList();
+
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
+  const colors = [
+    { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
+    { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
+    { value: 'green', label: 'Vert', class: 'bg-green-200' },
+    { value: 'pink', label: 'Rose', class: 'bg-pink-200' },
+    { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
+    { value: 'peach', label: 'Pêche', class: 'bg-orange-200' },
+    { value: 'gray', label: 'Gris', class: 'bg-gray-200' },
+    { value: 'orange', label: 'Orange', class: 'bg-orange-300' },
+  ];
 
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
@@ -59,20 +82,15 @@ export function Messages() {
           <NotificationsTab />
         </TabsContent>
         <TabsContent value="notes" className="h-full">
-          <TodoSection
-            type="tasks"
-            todos={todos}
-            newTodo={newTodo}
-            selectedDate={selectedDate}
-            selectedTime={selectedTime}
-            allDay={allDay}
-            onTodoChange={setNewTodo}
-            onDateChange={setSelectedDate}
-            onTimeChange={setSelectedTime}
-            onAllDayChange={setAllDay}
-            onAdd={addTodo}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
+          <NotesSection
+            notes={notes}
+            newNote={newNote}
+            selectedColor={selectedColor}
+            colors={colors}
+            onNoteChange={setNewNote}
+            onColorChange={setSelectedColor}
+            onAdd={addNote}
+            onDelete={deleteNote}
           />
         </TabsContent>
         <TabsContent value="tasks" className="h-full">
