@@ -1,4 +1,3 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { JobFilters } from "../JobFilterUtils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +26,7 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 
@@ -43,7 +42,7 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .order('name');
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
     enabled: filters.category !== "all",
   });
@@ -51,67 +50,40 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Type de mission
-        </label>
-        <Select
-          value={filters.missionType}
-          onValueChange={(value) => onFilterChange("missionType", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez un type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les types</SelectItem>
-            <SelectItem value="company">Entreprise</SelectItem>
-            <SelectItem value="individual">Individuel</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           Catégorie
         </label>
-        <Select
+        <select
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600"
           value={filters.category}
-          onValueChange={(value) => onFilterChange("category", value)}
+          onChange={(e) => onFilterChange("category", e.target.value)}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez une catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <option value="all">Toutes les catégories</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       {filters.category !== "all" && subcategories.length > 0 && (
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Sous-catégorie
           </label>
-          <Select
+          <select
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600"
             value={filters.subcategory}
-            onValueChange={(value) => onFilterChange("subcategory", value)}
+            onChange={(e) => onFilterChange("subcategory", e.target.value)}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une sous-catégorie" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Toutes les sous-catégories</SelectItem>
-              {subcategories.map((subcat) => (
-                <SelectItem key={subcat.id} value={subcat.id}>
-                  {subcat.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <option value="all">Toutes les sous-catégories</option>
+            {subcategories.map((subcategory) => (
+              <option key={subcategory.id} value={subcategory.id}>
+                {subcategory.name}
+              </option>
+            ))}
+          </select>
         </div>
       )}
     </div>

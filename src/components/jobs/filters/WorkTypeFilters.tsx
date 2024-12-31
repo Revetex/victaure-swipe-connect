@@ -42,12 +42,10 @@ export function WorkTypeFilters({ filters, onFilterChange }: WorkTypeFiltersProp
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Type de contrat
-        </label>
+        <label className="block text-sm font-medium mb-2">Type de contrat</label>
         <Select
-          value={filters.duration}
-          onValueChange={(value) => onFilterChange("duration", value)}
+          value={filters.contractType}
+          onValueChange={(value) => onFilterChange("contractType", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Sélectionnez un type" />
@@ -63,51 +61,47 @@ export function WorkTypeFilters({ filters, onFilterChange }: WorkTypeFiltersProp
         </Select>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Niveau d'expérience
-        </label>
-        <Select
-          value={filters.experienceLevel}
-          onValueChange={(value) => onFilterChange("experienceLevel", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez un niveau" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les niveaux</SelectItem>
-            {experienceLevels.map((level) => (
-              <SelectItem key={level.value} value={level.value}>
-                {level.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {filters.missionType === "individual" && (
+      {filters.missionType === "company" && (
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Fréquence de paiement
-          </label>
+          <label className="block text-sm font-medium mb-2">Niveau d'expérience</label>
           <Select
-            value={filters.paymentSchedule}
-            onValueChange={(value) => onFilterChange("paymentSchedule", value)}
+            value={filters.experienceLevel}
+            onValueChange={(value) => onFilterChange("experienceLevel", value)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez une fréquence" />
+              <SelectValue placeholder="Sélectionnez un niveau" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Toutes les fréquences</SelectItem>
-              {paymentSchedules.map((schedule) => (
-                <SelectItem key={schedule.value} value={schedule.value}>
-                  {schedule.label}
+              <SelectItem value="all">Tous les niveaux</SelectItem>
+              {experienceLevels.map((level) => (
+                <SelectItem key={level.value} value={level.value}>
+                  {level.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       )}
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Type de paiement</label>
+        <Select
+          value={filters.paymentSchedule}
+          onValueChange={(value) => onFilterChange("paymentSchedule", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez un type de paiement" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous les types</SelectItem>
+            {paymentSchedules.map((schedule) => (
+              <SelectItem key={schedule.value} value={schedule.value}>
+                {schedule.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }
