@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
@@ -52,6 +53,14 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     });
 
     if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Hugging Face API Error:", errorData);
+      
+      if (response.status === 400 && errorData.error?.includes("token")) {
+        toast.error("Erreur d'authentification avec Hugging Face. Veuillez vérifier votre token d'accès.");
+        throw new Error("Invalid Hugging Face token");
+      }
+      
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -61,9 +70,19 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     // Extract the assistant's response (everything after the last [/INST] tag)
     const assistantResponse = generatedText.split("[/INST]").pop().trim();
 
+    if (!assistantResponse) {
+      throw new Error("Réponse invalide de l'API");
+    }
+
     return assistantResponse;
   } catch (error) {
     console.error("Error generating AI response:", error);
+    
+    // Gestion spécifique des erreurs
+    if (error.message === "Invalid Hugging Face token") {
+      throw new Error("Token Hugging Face invalide. Veuillez le mettre à jour dans les paramètres.");
+    }
+    
     throw error;
   }
 }
