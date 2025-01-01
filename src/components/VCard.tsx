@@ -1,10 +1,5 @@
-import { Messages } from "@/components/Messages";
-import { SwipeJob } from "@/components/SwipeJob";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
-import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
@@ -142,12 +137,12 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
 
               <VCardActions
                 isEditing={isEditing}
-                onShare={() => handleShare(tempProfile)}
-                onDownload={() => handleDownloadVCard(tempProfile)}
-                onDownloadPDF={() => handleDownloadPDF(tempProfile)}
-                onDownloadBusinessPDF={() => handleDownloadBusinessPDF(tempProfile)}
-                onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
-                onCopyLink={() => handleCopyLink(tempProfile)}
+                onShare={handleShare}
+                onDownload={handleDownloadVCard}
+                onDownloadPDF={handleDownloadPDF}
+                onDownloadBusinessPDF={handleDownloadBusinessPDF}
+                onDownloadCVPDF={handleDownloadCVPDF}
+                onCopyLink={handleCopyLink}
                 onSave={handleProfileUpdate}
                 onApplyChanges={localHandleApplyChanges}
                 setIsEditing={handleSetIsEditing}
