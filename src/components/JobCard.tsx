@@ -5,32 +5,28 @@ import { CategoryIcon } from "./skills/CategoryIcon";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { Building2, MapPin, Clock, Briefcase, GraduationCap, Globe, DollarSign } from "lucide-react";
-import { Tooltip } from "./ui/tooltip";
+import { Building2 } from "lucide-react";
+import { JobBadges } from "./jobs/badges/JobBadges";
 
 type JobCardProps = Job;
 
-export function JobCard({ 
-  title, 
-  company, 
-  location, 
-  salary, 
-  category,
-  contract_type,
-  experience_level,
-  description,
-  created_at,
-  images,
-  budget,
-  company_name,
-  company_website,
-  company_description,
-  remote_type,
-  education_level,
-  years_of_experience,
-  required_skills = [],
-  preferred_skills = []
-}: JobCardProps) {
+export function JobCard(props: JobCardProps) {
+  const { 
+    title, 
+    company,
+    company_name,
+    company_website,
+    company_description,
+    category,
+    description,
+    created_at,
+    images,
+    salary,
+    budget,
+    required_skills = [],
+    preferred_skills = []
+  } = props;
+  
   const displaySalary = salary || (budget ? `${budget} CAD` : undefined);
   
   return (
@@ -78,55 +74,7 @@ export function JobCard({
           <CategoryIcon category={category} className="h-5 w-5 text-primary" />
         </CardHeader>
         <CardContent>
-          <motion.div 
-            className="flex flex-wrap gap-2 mb-4"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Tooltip content={remote_type === 'remote' ? 'Travail à distance' : 'Sur site'}>
-              <Badge variant="secondary" className="flex items-center gap-1 bg-primary/10 hover:bg-primary/20 transition-colors">
-                {remote_type === 'remote' ? <Globe className="h-3 w-3" /> : <MapPin className="h-3 w-3" />}
-                {location}
-                {remote_type && remote_type !== 'on-site' && (
-                  <span className="ml-1">({remote_type})</span>
-                )}
-              </Badge>
-            </Tooltip>
-            
-            {displaySalary && (
-              <Tooltip content="Budget/Salaire">
-                <Badge variant="secondary" className="flex items-center gap-1 bg-green-500/10 hover:bg-green-500/20 transition-colors">
-                  <DollarSign className="h-3 w-3" />
-                  {displaySalary}
-                </Badge>
-              </Tooltip>
-            )}
-
-            <Tooltip content="Type de contrat">
-              <Badge variant="secondary" className="flex items-center gap-1 bg-blue-500/10 hover:bg-blue-500/20 transition-colors">
-                <Briefcase className="h-3 w-3" />
-                {contract_type}
-              </Badge>
-            </Tooltip>
-
-            <Tooltip content="Expérience requise">
-              <Badge variant="secondary" className="flex items-center gap-1 bg-purple-500/10 hover:bg-purple-500/20 transition-colors">
-                <Clock className="h-3 w-3" />
-                {experience_level}
-                {years_of_experience > 0 && ` (${years_of_experience}+ ans)`}
-              </Badge>
-            </Tooltip>
-
-            {education_level && (
-              <Tooltip content="Niveau d'études">
-                <Badge variant="secondary" className="flex items-center gap-1 bg-orange-500/10 hover:bg-orange-500/20 transition-colors">
-                  <GraduationCap className="h-3 w-3" />
-                  {education_level}
-                </Badge>
-              </Tooltip>
-            )}
-          </motion.div>
+          <JobBadges job={props} displaySalary={displaySalary} />
           
           {images && images.length > 0 && (
             <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/20 hover:scrollbar-thumb-primary/30">
