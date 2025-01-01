@@ -5,6 +5,7 @@ import { CategoryIcon } from "./skills/CategoryIcon";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
+import { Building2, MapPin, Clock, Briefcase, GraduationCap } from "lucide-react";
 
 type JobCardProps = Job;
 
@@ -19,7 +20,13 @@ export function JobCard({
   description,
   created_at,
   images,
-  budget
+  budget,
+  company_name,
+  company_website,
+  company_description,
+  remote_type,
+  education_level,
+  years_of_experience
 }: JobCardProps) {
   const displaySalary = salary || (budget ? `${budget} CAD` : undefined);
   
@@ -42,15 +49,26 @@ export function JobCard({
             >
               {title}
             </motion.h3>
-            {company && (
-              <motion.p 
-                className="text-sm text-muted-foreground"
+            {(company || company_name) && (
+              <motion.div 
+                className="flex items-center gap-2 text-sm text-muted-foreground"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                {company}
-              </motion.p>
+                <Building2 className="h-4 w-4" />
+                <span>{company || company_name}</span>
+                {company_website && (
+                  <a 
+                    href={company_website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    Site web
+                  </a>
+                )}
+              </motion.div>
             )}
           </div>
           <CategoryIcon category={category} className="h-5 w-5 text-primary" />
@@ -62,20 +80,33 @@ export function JobCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Badge variant="secondary" className="bg-primary/10 hover:bg-primary/20 transition-colors">
+            <Badge variant="secondary" className="flex items-center gap-1 bg-primary/10 hover:bg-primary/20 transition-colors">
+              <MapPin className="h-3 w-3" />
               {location}
+              {remote_type && remote_type !== 'on-site' && (
+                <span className="ml-1">({remote_type})</span>
+              )}
             </Badge>
             {displaySalary && (
               <Badge variant="secondary" className="bg-green-500/10 hover:bg-green-500/20 transition-colors">
                 {displaySalary}
               </Badge>
             )}
-            <Badge variant="secondary" className="bg-blue-500/10 hover:bg-blue-500/20 transition-colors">
+            <Badge variant="secondary" className="flex items-center gap-1 bg-blue-500/10 hover:bg-blue-500/20 transition-colors">
+              <Briefcase className="h-3 w-3" />
               {contract_type}
             </Badge>
-            <Badge variant="secondary" className="bg-purple-500/10 hover:bg-purple-500/20 transition-colors">
+            <Badge variant="secondary" className="flex items-center gap-1 bg-purple-500/10 hover:bg-purple-500/20 transition-colors">
+              <Clock className="h-3 w-3" />
               {experience_level}
+              {years_of_experience > 0 && ` (${years_of_experience}+ ans)`}
             </Badge>
+            {education_level && (
+              <Badge variant="secondary" className="flex items-center gap-1 bg-orange-500/10 hover:bg-orange-500/20 transition-colors">
+                <GraduationCap className="h-3 w-3" />
+                {education_level}
+              </Badge>
+            )}
           </motion.div>
           
           {images && images.length > 0 && (
@@ -95,18 +126,25 @@ export function JobCard({
             </div>
           )}
 
-          <motion.p 
-            className="text-sm text-muted-foreground line-clamp-2 mb-4"
+          <motion.div 
+            className="space-y-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            {description}
-          </motion.p>
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {description}
+            </p>
+            {company_description && (
+              <p className="text-sm text-muted-foreground line-clamp-2 italic">
+                {company_description}
+              </p>
+            )}
+          </motion.div>
           
           {created_at && (
             <motion.p 
-              className="text-xs text-muted-foreground"
+              className="text-xs text-muted-foreground mt-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
