@@ -98,6 +98,7 @@ export function VCardContent({
                   profile={tempProfile}
                   isEditing={isEditing}
                   setProfile={setTempProfile}
+                  setIsEditing={setIsEditing}
                   newSkill={newSkill}
                   setNewSkill={setNewSkill}
                   isExpanded={isExpanded}

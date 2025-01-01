@@ -142,7 +142,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
                 onDownloadPDF={() => handleDownloadPDF(tempProfile)}
                 onDownloadBusinessPDF={() => handleDownloadBusinessPDF(tempProfile)}
                 onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
-                onCopyLink={() => handleCopyLink(tempProfile)}
+                onCopyLink={() => handleCopyLink()}
                 onSave={handleProfileUpdate}
                 onApplyChanges={localHandleApplyChanges}
                 setIsEditing={handleSetIsEditing}
