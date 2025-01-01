@@ -1,8 +1,7 @@
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { VCard } from "@/components/VCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -26,7 +25,7 @@ interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
 }
 
-export function VCard({ onEditStateChange }: VCardProps) {
+export function VCardComponent({ onEditStateChange }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
@@ -60,7 +59,7 @@ export function VCard({ onEditStateChange }: VCardProps) {
   const handleProfileUpdate = async () => {
     if (!tempProfile) return;
     try {
-      await handleSave(tempProfile);
+      await handleSave();
       setProfile(tempProfile);
       handleSetIsEditing(false);
       toast.success("Modifications enregistrées avec succès");
@@ -73,7 +72,7 @@ export function VCard({ onEditStateChange }: VCardProps) {
   const localHandleApplyChanges = async () => {
     if (!tempProfile) return;
     try {
-      await handleApplyChanges(tempProfile, setProfile, handleSetIsEditing);
+      await handleApplyChanges();
       toast.success("Changements appliqués avec succès");
     } catch (error) {
       console.error('Error applying changes:', error);
@@ -143,12 +142,12 @@ export function VCard({ onEditStateChange }: VCardProps) {
 
               <VCardActions
                 isEditing={isEditing}
-                onShare={() => handleShare(tempProfile)}
-                onDownload={() => handleDownloadVCard(tempProfile)}
-                onDownloadPDF={() => handleDownloadPDF(tempProfile)}
-                onDownloadBusinessPDF={() => handleDownloadBusinessPDF(tempProfile)}
-                onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
-                onCopyLink={() => handleCopyLink(tempProfile)}
+                onShare={() => handleShare()}
+                onDownload={() => handleDownloadVCard()}
+                onDownloadPDF={() => handleDownloadPDF()}
+                onDownloadBusinessPDF={() => handleDownloadBusinessPDF()}
+                onDownloadCVPDF={() => handleDownloadCVPDF()}
+                onCopyLink={() => handleCopyLink()}
                 onSave={handleProfileUpdate}
                 onApplyChanges={localHandleApplyChanges}
                 setIsEditing={handleSetIsEditing}
@@ -160,3 +159,5 @@ export function VCard({ onEditStateChange }: VCardProps) {
     </motion.div>
   );
 }
+
+export { VCardComponent as VCard };
