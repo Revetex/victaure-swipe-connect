@@ -20,6 +20,11 @@ export interface Job {
   application_deadline?: string;
   created_at?: string;
   updated_at?: string;
+  company_name?: string;
+  company_website?: string;
+  company_description?: string;
+  education_level?: string;
+  years_of_experience?: number;
   // Virtual fields for display
   company?: string;
   salary?: string;
