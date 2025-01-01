@@ -25,6 +25,10 @@ export function DashboardLayout() {
     setCurrentPage(newPage);
   };
 
+  const handleRequestChat = () => {
+    setCurrentPage(2); // Switch to chat page
+  };
+
   const renderDashboardSection = (
     component: React.ReactNode,
     className: string,
@@ -92,7 +96,10 @@ export function DashboardLayout() {
             {currentPage === 1 && (
               <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : ""}>
                 {renderDashboardSection(
-                  <VCard onEditStateChange={setIsEditing} />,
+                  <VCard 
+                    onEditStateChange={setIsEditing}
+                    onRequestChat={handleRequestChat}
+                  />,
                   'w-full h-full'
                 )}
               </div>

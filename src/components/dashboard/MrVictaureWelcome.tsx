@@ -1,4 +1,4 @@
-import { Bot, MessageSquare, BrainCircuit, Sparkles } from "lucide-react";
+import { Bot, MessageSquare, BrainCircuit, Sparkles, UserCog } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,11 +34,16 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
 
         <div className="space-y-6 mb-6">
           <p className="text-lg">
-            Bonjour ! Je suis M. Victaure, votre assistant virtuel intelligent. Je suis là pour vous aider dans votre parcours professionnel.
+            Bonjour ! Je suis M. Victaure, votre assistant virtuel intelligent. Je gère votre profil et vous accompagne dans votre parcours professionnel.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
+              {
+                icon: UserCog,
+                title: "Gestion de Profil",
+                description: "Je m'occupe de toutes les modifications de votre profil"
+              },
               {
                 icon: MessageSquare,
                 title: "Conversation Naturelle",

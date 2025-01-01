@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
@@ -10,67 +10,22 @@ import { VCardSkills } from "./VCardSkills";
 import { VCardCertifications } from "./VCardCertifications";
 import { VCardEducation } from "./VCardEducation";
 import { VCardActions } from "./VCardActions";
-import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
-import { useProfileHandlers } from "./vcard/handlers/useProfileHandlers";
+import { Button } from "./ui/button";
+import { MessageSquare } from "lucide-react";
 import { toast } from "sonner";
-import { UserProfile } from "@/types/profile";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
+  onRequestChat?: () => void;
 }
 
-export function VCardComponent({ onEditStateChange }: VCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [newSkill, setNewSkill] = useState("");
-  const { profile, setProfile, tempProfile, setTempProfile, isLoading } = useProfile();
-  const { handleShare, handleDownloadVCard, handleDownloadPDF, handleDownloadBusinessPDF, handleDownloadCVPDF, handleCopyLink } = useVCardHandlers();
-  const { handleSave, handleApplyChanges } = useProfileHandlers();
+export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps) {
+  const { profile, isLoading } = useProfile();
 
-  const handleSetIsEditing = (value: boolean) => {
-    setIsEditing(value);
-    onEditStateChange?.(value);
-  };
-
-  const handleAddSkill = () => {
-    if (newSkill && tempProfile && !tempProfile.skills?.includes(newSkill)) {
-      setTempProfile({
-        ...tempProfile,
-        skills: [...(tempProfile.skills || []), newSkill],
-      });
-      setNewSkill("");
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
-    if (tempProfile) {
-      setTempProfile({
-        ...tempProfile,
-        skills: tempProfile.skills?.filter((skill: string) => skill !== skillToRemove) || [],
-      });
-    }
-  };
-
-  const handleProfileUpdate = async () => {
-    if (!tempProfile) return;
-    try {
-      await handleSave(tempProfile);
-      setProfile(tempProfile);
-      handleSetIsEditing(false);
-      toast.success("Modifications enregistrées avec succès");
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      toast.error("Erreur lors de l'enregistrement des modifications");
-    }
-  };
-
-  const localHandleApplyChanges = async () => {
-    if (!tempProfile) return;
-    try {
-      await handleApplyChanges(tempProfile, setProfile, handleSetIsEditing);
-      toast.success("Changements appliqués avec succès");
-    } catch (error) {
-      console.error('Error applying changes:', error);
-      toast.error("Erreur lors de l'application des changements");
+  const handleEditRequest = () => {
+    toast.info("Pour modifier votre profil, discutez avec M. Victaure !");
+    if (onRequestChat) {
+      onRequestChat();
     }
   };
 
@@ -78,7 +33,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
     return <VCardSkeleton />;
   }
 
-  if (!profile || !tempProfile) {
+  if (!profile) {
     return <VCardEmpty />;
   }
 
@@ -92,62 +47,52 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
       <Card className="border-none shadow-lg bg-gradient-to-br from-indigo-600 to-indigo-800">
         <CardContent className="p-6 space-y-8">
           <VCardHeader
-            profile={tempProfile}
-            isEditing={isEditing}
-            setProfile={setTempProfile}
+            profile={profile}
+            isEditing={false}
+            setProfile={() => {}}
           />
 
           <VCardContact
-            profile={tempProfile}
-            isEditing={isEditing}
-            setProfile={setTempProfile}
+            profile={profile}
+            isEditing={false}
+            setProfile={() => {}}
           />
 
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={isEditing ? "editing" : "viewing"}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-8 pt-6"
-            >
-              <VCardSkills
-                profile={tempProfile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-                newSkill={newSkill}
-                setNewSkill={setNewSkill}
-                handleAddSkill={handleAddSkill}
-                handleRemoveSkill={handleRemoveSkill}
-              />
+          <motion.div 
+            className="space-y-8 pt-6"
+          >
+            <VCardSkills
+              profile={profile}
+              isEditing={false}
+              setProfile={() => {}}
+              newSkill=""
+              setNewSkill={() => {}}
+              handleAddSkill={() => {}}
+              handleRemoveSkill={() => {}}
+            />
 
-              <VCardCertifications
-                profile={tempProfile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-              />
+            <VCardCertifications
+              profile={profile}
+              isEditing={false}
+              setProfile={() => {}}
+            />
 
-              <VCardEducation
-                profile={tempProfile}
-                isEditing={isEditing}
-                setProfile={setTempProfile}
-              />
+            <VCardEducation
+              profile={profile}
+              isEditing={false}
+              setProfile={() => {}}
+            />
 
-              <VCardActions
-                isEditing={isEditing}
-                onShare={() => handleShare(tempProfile)}
-                onDownload={() => handleDownloadVCard(tempProfile)}
-                onDownloadPDF={() => handleDownloadPDF(tempProfile)}
-                onDownloadBusinessPDF={() => handleDownloadBusinessPDF(tempProfile)}
-                onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
-                onCopyLink={handleCopyLink}
-                onSave={handleProfileUpdate}
-                onApplyChanges={localHandleApplyChanges}
-                setIsEditing={handleSetIsEditing}
-              />
-            </motion.div>
-          </AnimatePresence>
+            <div className="flex justify-center pt-4 border-t border-white/20">
+              <Button
+                onClick={handleEditRequest}
+                className="bg-white hover:bg-white/90 text-indigo-600 transition-colors"
+              >
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Modifier mon profil avec M. Victaure
+              </Button>
+            </div>
+          </motion.div>
         </CardContent>
       </Card>
     </motion.div>
