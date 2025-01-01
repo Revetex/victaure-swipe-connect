@@ -59,7 +59,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const handleProfileUpdate = async () => {
     if (!tempProfile) return;
     try {
-      await handleSave();
+      await handleSave(tempProfile);
       setProfile(tempProfile);
       handleSetIsEditing(false);
       toast.success("Modifications enregistrées avec succès");
@@ -72,7 +72,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const localHandleApplyChanges = async () => {
     if (!tempProfile) return;
     try {
-      await handleApplyChanges();
+      await handleApplyChanges(tempProfile, setProfile, handleSetIsEditing);
       toast.success("Changements appliqués avec succès");
     } catch (error) {
       console.error('Error applying changes:', error);
@@ -142,12 +142,12 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
 
               <VCardActions
                 isEditing={isEditing}
-                onShare={() => handleShare()}
-                onDownload={() => handleDownloadVCard()}
-                onDownloadPDF={() => handleDownloadPDF()}
-                onDownloadBusinessPDF={() => handleDownloadBusinessPDF()}
-                onDownloadCVPDF={() => handleDownloadCVPDF()}
-                onCopyLink={() => handleCopyLink()}
+                onShare={() => handleShare(tempProfile)}
+                onDownload={() => handleDownloadVCard(tempProfile)}
+                onDownloadPDF={() => handleDownloadPDF(tempProfile)}
+                onDownloadBusinessPDF={() => handleDownloadBusinessPDF(tempProfile)}
+                onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
+                onCopyLink={() => handleCopyLink(tempProfile)}
                 onSave={handleProfileUpdate}
                 onApplyChanges={localHandleApplyChanges}
                 setIsEditing={handleSetIsEditing}
