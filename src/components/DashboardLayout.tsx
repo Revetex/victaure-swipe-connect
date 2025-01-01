@@ -5,17 +5,19 @@ import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Bot } from "lucide-react";
 import { Button } from "./ui/button";
+import { Card } from "./ui/card";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
+  const [showMVictor, setShowMVictor] = useState(true);
 
   const handleSwipe = (direction: number) => {
-    if (isEditing) return; // Prevent swiping when editing
+    if (isEditing) return;
     let newPage = currentPage + direction;
     if (newPage < 1) newPage = 3;
     if (newPage > 3) newPage = 1;
@@ -43,6 +45,44 @@ export function DashboardLayout() {
 
   return (
     <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
+      {showMVictor && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute bottom-20 right-4 z-50"
+        >
+          <Card className="p-6 max-w-sm bg-white/95 backdrop-blur-sm shadow-lg">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-full bg-primary/10">
+                <Bot className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold">M. Victor</h3>
+                <p className="text-sm text-muted-foreground">Assistant virtuel</p>
+              </div>
+            </div>
+            <p className="text-sm mb-4">
+              Bonjour ! Je suis M. Victor, votre assistant virtuel. Comment puis-je vous aider aujourd'hui ?
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowMVictor(false)}
+              >
+                Plus tard
+              </Button>
+              <Button 
+                size="sm"
+                onClick={() => setCurrentPage(2)}
+              >
+                Discuter
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
+      )}
+
       <div className="relative z-10 flex-1 overflow-hidden">
         {!isEditing && (
           <>
