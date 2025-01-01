@@ -53,12 +53,16 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.clone().json().catch(() => null);
       console.error("Hugging Face API Error:", errorData);
       
-      if (response.status === 400 && errorData.error?.includes("token")) {
-        toast.error("Erreur d'authentification avec Hugging Face. Veuillez vérifier votre token d'accès.");
-        throw new Error("Invalid Hugging Face token");
+      if (response.status === 400) {
+        const errorMessage = errorData?.error || "Erreur d'authentification avec Hugging Face";
+        if (errorMessage.includes("token")) {
+          toast.error("Erreur d'authentification avec Hugging Face. Veuillez vérifier votre token d'accès.");
+        } else {
+          toast.error(errorMessage);
+        }
       }
       
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -68,7 +72,7 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     const generatedText = Array.isArray(result) ? result[0].generated_text : result.generated_text;
 
     // Extract the assistant's response (everything after the last [/INST] tag)
-    const assistantResponse = generatedText.split("[/INST]").pop().trim();
+    const assistantResponse = generatedText.split("[/INST]").pop()?.trim();
 
     if (!assistantResponse) {
       throw new Error("Réponse invalide de l'API");
@@ -79,8 +83,10 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     console.error("Error generating AI response:", error);
     
     // Gestion spécifique des erreurs
-    if (error.message === "Invalid Hugging Face token") {
-      throw new Error("Token Hugging Face invalide. Veuillez le mettre à jour dans les paramètres.");
+    if (error instanceof Error) {
+      if (error.message.includes("token")) {
+        throw new Error("Token Hugging Face invalide. Veuillez le mettre à jour dans les paramètres.");
+      }
     }
     
     throw error;
