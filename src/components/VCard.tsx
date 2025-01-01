@@ -63,6 +63,17 @@ export function VCard({ onEditStateChange }: VCardProps) {
     }
   };
 
+  const localHandleApplyChanges = async () => {
+    if (!tempProfile) return;
+    try {
+      await handleApplyChanges(tempProfile, setProfile, setIsEditing);
+      toast.success("Changements appliqués avec succès");
+    } catch (error) {
+      console.error('Error applying changes:', error);
+      toast.error("Erreur lors de l'application des changements");
+    }
+  };
+
   if (isLoading) {
     return <VCardSkeleton />;
   }
@@ -132,7 +143,7 @@ export function VCard({ onEditStateChange }: VCardProps) {
                 onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
                 onCopyLink={() => handleCopyLink(tempProfile)}
                 onSave={handleProfileUpdate}
-                onApplyChanges={handleApplyChanges}
+                onApplyChanges={localHandleApplyChanges}
                 setIsEditing={handleSetIsEditing}
               />
             </motion.div>

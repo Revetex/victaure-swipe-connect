@@ -2,16 +2,17 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { UserCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { UserProfile } from "@/types/profile";
 
 interface VCardHeaderProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps) {
   const handleInputChange = (key: string, value: string) => {
-    setProfile((prev: any) => ({ ...prev, [key]: value }));
+    setProfile({ ...profile, [key]: value });
   };
 
   return (
@@ -21,7 +22,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       className="flex items-start gap-4"
     >
       <Avatar className="h-20 w-20 ring-2 ring-white/20">
-        <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
+        <AvatarImage src={profile.avatar_url || ''} alt={profile.full_name || ''} />
         <AvatarFallback>
           <UserCircle2 className="h-12 w-12 text-muted-foreground" />
         </AvatarFallback>
