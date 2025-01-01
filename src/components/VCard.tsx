@@ -132,7 +132,7 @@ export function VCard({ onEditStateChange }: VCardProps) {
                 onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
                 onCopyLink={() => handleCopyLink(tempProfile)}
                 onSave={handleProfileUpdate}
-                onApplyChanges={() => handleApplyChanges()}
+                onApplyChanges={handleApplyChanges}
                 setIsEditing={handleSetIsEditing}
               />
             </motion.div>
