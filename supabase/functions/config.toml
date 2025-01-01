@@ -1,0 +1,8 @@
+project_id = "mfjllillnpleasclqabb"
+
+[global.env]
+HUGGING_FACE_ACCESS_TOKEN = "env(HUGGING_FACE_ACCESS_TOKEN)"
+
+[[functions]]
+name = "fetch-jobs"
+verify_jwt = false
