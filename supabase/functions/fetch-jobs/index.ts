@@ -10,12 +10,71 @@ interface JobPosting {
   platform: string;
   description: string;
   posted_at: string;
+  salary_range?: string;
 }
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+function extractSalaryRange(text: string): string | undefined {
+  // Common salary patterns
+  const patterns = [
+    /\$(\d{1,3}(,\d{3})*(\.\d{2})?)\s*-\s*\$(\d{1,3}(,\d{3})*(\.\d{2})?)/i,
+    /(\d{2,3}k)\s*-\s*(\d{2,3}k)/i,
+    /\$(\d{1,3}(,\d{3})*(\.\d{2})?)/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) {
+      return match[0];
+    }
+  }
+  return undefined;
+}
+
+function parseLocation(location: string): string {
+  // Clean up and standardize location
+  const cleaned = location.trim()
+    .replace(/\s+/g, ' ')
+    .replace(/\([^)]*\)/g, '')
+    .trim();
+
+  // Extract city and province/state if possible
+  const parts = cleaned.split(',').map(part => part.trim());
+  if (parts.length >= 2) {
+    return `${parts[0]}, ${parts[1]}`;
+  }
+  return cleaned;
+}
+
+function parseDatePosted(dateText: string): string {
+  const now = new Date();
+  const text = dateText.toLowerCase();
+
+  if (text.includes('just posted') || text.includes('today')) {
+    return now.toISOString();
+  }
+
+  if (text.includes('yesterday')) {
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    return yesterday.toISOString();
+  }
+
+  const daysAgoMatch = text.match(/(\d+)\s*days?\s*ago/);
+  if (daysAgoMatch) {
+    const daysAgo = parseInt(daysAgoMatch[1]);
+    const date = new Date(now);
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString();
+  }
+
+  // Default to current date if we can't parse
+  return now.toISOString();
+}
 
 async function fetchLinkedInJobs(): Promise<JobPosting[]> {
   try {
@@ -44,21 +103,31 @@ async function fetchLinkedInJobs(): Promise<JobPosting[]> {
     jobCards.forEach((card) => {
       const title = card.querySelector('.job-card-list__title')?.textContent?.trim() || '';
       const company = card.querySelector('.job-card-container__company-name')?.textContent?.trim() || '';
-      const location = card.querySelector('.job-card-container__metadata-item')?.textContent?.trim() || '';
+      const locationRaw = card.querySelector('.job-card-container__metadata-item')?.textContent?.trim() || '';
+      const datePosted = card.querySelector('.job-card-container__listed-time')?.textContent?.trim() || '';
+      const description = card.querySelector('.job-card-list__description')?.textContent?.trim() || '';
       const url = card.querySelector('a')?.getAttribute('href') || '';
-
-      jobs.push({
-        title,
-        company,
-        location,
-        url: `https://www.linkedin.com${url}`,
-        platform: 'LinkedIn',
-        description: '',
-        posted_at: new Date().toISOString(),
-      });
+      
+      // Extract salary if present in description or title
+      const salaryRange = extractSalaryRange(description + ' ' + title);
+      
+      // Only add jobs that have all required information and are in Canada
+      const location = parseLocation(locationRaw);
+      if (location.toLowerCase().includes('canada')) {
+        jobs.push({
+          title,
+          company,
+          location,
+          url: `https://www.linkedin.com${url}`,
+          platform: 'LinkedIn',
+          description,
+          posted_at: parseDatePosted(datePosted),
+          salary_range: salaryRange
+        });
+      }
     });
 
-    console.log(`Found ${jobs.length} LinkedIn jobs`);
+    console.log(`Found ${jobs.length} LinkedIn jobs in Canada`);
     return jobs;
   } catch (error) {
     console.error('Error fetching LinkedIn jobs:', error);
@@ -93,21 +162,30 @@ async function fetchIndeedJobs(): Promise<JobPosting[]> {
     jobCards.forEach((card) => {
       const title = card.querySelector('.jobTitle')?.textContent?.trim() || '';
       const company = card.querySelector('.companyName')?.textContent?.trim() || '';
-      const location = card.querySelector('.companyLocation')?.textContent?.trim() || '';
+      const locationRaw = card.querySelector('.companyLocation')?.textContent?.trim() || '';
+      const datePosted = card.querySelector('.date')?.textContent?.trim() || '';
+      const description = card.querySelector('.job-snippet')?.textContent?.trim() || '';
       const url = card.querySelector('a')?.getAttribute('href') || '';
+      const salaryElem = card.querySelector('.salary-snippet') || card.querySelector('.estimated-salary');
+      const salaryRange = salaryElem ? extractSalaryRange(salaryElem.textContent || '') : undefined;
 
-      jobs.push({
-        title,
-        company,
-        location,
-        url: `https://ca.indeed.com${url}`,
-        platform: 'Indeed',
-        description: '',
-        posted_at: new Date().toISOString(),
-      });
+      // Only add jobs that have all required information and are in Canada
+      const location = parseLocation(locationRaw);
+      if (location.toLowerCase().includes('canada')) {
+        jobs.push({
+          title,
+          company,
+          location,
+          url: `https://ca.indeed.com${url}`,
+          platform: 'Indeed',
+          description,
+          posted_at: parseDatePosted(datePosted),
+          salary_range: salaryRange
+        });
+      }
     });
 
-    console.log(`Found ${jobs.length} Indeed jobs`);
+    console.log(`Found ${jobs.length} Indeed jobs in Canada`);
     return jobs;
   } catch (error) {
     console.error('Error fetching Indeed jobs:', error);
@@ -132,15 +210,35 @@ serve(async (req) => {
 
     const allJobs = [...linkedInJobs, ...indeedJobs];
     
+    // Filter out jobs with very high salaries (over $200k) or suspicious looking salaries
+    const filteredJobs = allJobs.filter(job => {
+      if (job.salary_range) {
+        const salary = job.salary_range.replace(/[^0-9]/g, '');
+        const maxSalary = parseInt(salary);
+        return !maxSalary || maxSalary < 200000; // Filter out if salary > 200k
+      }
+      return true;
+    });
+
     // Sort by most recent
-    allJobs.sort((a, b) => 
+    filteredJobs.sort((a, b) => 
       new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime()
     );
 
-    console.log(`Found ${allJobs.length} jobs from all platforms`);
+    console.log(`Found ${filteredJobs.length} valid jobs from all platforms`);
 
     return new Response(
-      JSON.stringify({ jobs: allJobs }),
+      JSON.stringify({ 
+        jobs: filteredJobs,
+        metadata: {
+          total: filteredJobs.length,
+          sources: {
+            linkedin: linkedInJobs.length,
+            indeed: indeedJobs.length
+          },
+          timestamp: new Date().toISOString()
+        }
+      }),
       { 
         headers: { 
           ...corsHeaders,
@@ -151,7 +249,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error fetching jobs:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        timestamp: new Date().toISOString()
+      }),
       { 
         status: 500,
         headers: { 
