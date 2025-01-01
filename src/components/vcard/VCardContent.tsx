@@ -45,6 +45,7 @@ export function VCardContent({
 }: VCardContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Automatically expand when entering edit mode
   useEffect(() => {
     if (isEditing) {
       setIsExpanded(true);
@@ -63,19 +64,11 @@ export function VCardContent({
   };
 
   return (
-    <Card className={`w-full max-w-[95mm] mx-auto overflow-hidden border-none shadow-xl transition-all duration-300 ${
-      !isExpanded ? 'h-[60mm] bg-gradient-to-br from-victaure-metal/90 to-victaure-metal/70 backdrop-blur-sm ring-1 ring-white/10' : 
-      'min-h-screen sm:min-h-0 bg-gray-900'
+    <Card className={`w-full max-w-4xl mx-auto overflow-visible border-none shadow-xl transition-all duration-300 ${
+      !isExpanded ? 'bg-gradient-to-br from-indigo-600 to-indigo-800' : 
+      'min-h-screen sm:min-h-0 bg-gradient-to-br from-indigo-600 to-indigo-800'
     }`}>
-      <CardContent className={`p-4 sm:p-6 ${!isExpanded && 'relative'}`}>
-        {!isExpanded && (
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-circuit-pattern opacity-5" />
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-70" />
-            <div className="absolute inset-0 border border-white/30 rounded-lg" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-victaure-blue/5 to-transparent opacity-50" />
-          </div>
-        )}
+      <CardContent className="p-4 sm:p-6">
         <div className="space-y-4 sm:space-y-6">
           <VCardMainContent
             profile={tempProfile}
@@ -85,14 +78,14 @@ export function VCardContent({
             setIsExpanded={setIsExpanded}
           />
 
-          <AnimatePresence mode="sync">
-            {isExpanded && (
+          <AnimatePresence mode="wait">
+            {(isExpanded || isEditing) && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="overflow-hidden"
+                className="overflow-visible"
               >
                 <VCardExpandedContent
                   profile={tempProfile}
