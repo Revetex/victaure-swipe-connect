@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { Button } from "./ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
@@ -142,7 +141,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
                 onDownloadPDF={() => handleDownloadPDF(tempProfile)}
                 onDownloadBusinessPDF={() => handleDownloadBusinessPDF(tempProfile)}
                 onDownloadCVPDF={() => handleDownloadCVPDF(tempProfile)}
-                onCopyLink={() => handleCopyLink()}
+                onCopyLink={handleCopyLink}
                 onSave={handleProfileUpdate}
                 onApplyChanges={localHandleApplyChanges}
                 setIsEditing={handleSetIsEditing}
