@@ -8,9 +8,70 @@ import { RecentActivity } from "./dashboard/RecentActivity";
 import type { DashboardStats } from "@/types/dashboard";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
-  const { data: stats } = useDashboardStats();
+  const { data: stats, isLoading, error } = useDashboardStats();
+  const navigate = useNavigate();
+
+  // Fonction pour gérer les erreurs
+  const handleError = (error: Error) => {
+    console.error("Erreur du tableau de bord:", error);
+    toast.error("Une erreur est survenue lors du chargement des données");
+  };
+
+  // Fonction pour exporter les données
+  const handleExport = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Utilisateur non authentifié");
+
+      const { data: jobsData, error: jobsError } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('employer_id', user.id);
+
+      if (jobsError) throw jobsError;
+
+      const csvContent = "data:text/csv;charset=utf-8," + 
+        "Titre,Description,Budget,Statut,Date de création\n" +
+        jobsData.map(job => 
+          `${job.title},${job.description},${job.budget},${job.status},${job.created_at}`
+        ).join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "missions.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Export réussi !");
+    } catch (error) {
+      handleError(error as Error);
+    }
+  };
+
+  // Fonction pour rafraîchir les données
+  const handleRefresh = async () => {
+    try {
+      await useDashboardStats();
+      toast.success("Données actualisées !");
+    } catch (error) {
+      handleError(error as Error);
+    }
+  };
+
+  // Fonction pour naviguer vers la création de mission
+  const handleCreateJob = () => {
+    navigate("/jobs/create");
+  };
+
+  if (error) {
+    handleError(error as Error);
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -63,7 +124,7 @@ export function Dashboard() {
         </div>
 
         <motion.div 
-          className="mt-8 flex justify-end"
+          className="mt-8 flex justify-end gap-4"
           variants={{
             hidden: { opacity: 0, x: -20 },
             visible: { opacity: 1, x: 0 }
@@ -71,9 +132,23 @@ export function Dashboard() {
         >
           <Button
             variant="outline"
-            className="bg-white dark:bg-gray-800 border-victaure-blue text-victaure-blue hover:bg-victaure-blue/10 transition-all duration-300"
+            onClick={handleRefresh}
+            className="bg-white dark:bg-gray-800 border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-300"
           >
-            Voir plus de détails
+            Actualiser
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleExport}
+            className="bg-white dark:bg-gray-800 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-gray-700 transition-all duration-300"
+          >
+            Exporter
+          </Button>
+          <Button
+            onClick={handleCreateJob}
+            className="bg-victaure-blue text-white hover:bg-victaure-blue/90 transition-all duration-300"
+          >
+            Créer une mission
           </Button>
         </motion.div>
       </div>
