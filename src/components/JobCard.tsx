@@ -5,7 +5,8 @@ import { CategoryIcon } from "./skills/CategoryIcon";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { Building2, MapPin, Clock, Briefcase, GraduationCap } from "lucide-react";
+import { Building2, MapPin, Clock, Briefcase, GraduationCap, Globe, DollarSign } from "lucide-react";
+import { Tooltip } from "./ui/tooltip";
 
 type JobCardProps = Job;
 
@@ -26,7 +27,9 @@ export function JobCard({
   company_description,
   remote_type,
   education_level,
-  years_of_experience
+  years_of_experience,
+  required_skills = [],
+  preferred_skills = []
 }: JobCardProps) {
   const displaySalary = salary || (budget ? `${budget} CAD` : undefined);
   
@@ -37,12 +40,13 @@ export function JobCard({
       exit={{ opacity: 0, y: -20 }}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
+      className="group"
     >
-      <Card className="w-full hover:shadow-lg transition-all duration-200 bg-card/50 backdrop-blur-sm border-primary/10">
+      <Card className="w-full hover:shadow-lg transition-all duration-200 bg-card/50 backdrop-blur-sm border-primary/10 group-hover:border-primary/30">
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <motion.h3 
-              className="font-semibold leading-none tracking-tight text-lg text-foreground"
+              className="font-semibold leading-none tracking-tight text-lg text-foreground group-hover:text-primary transition-colors"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
@@ -80,32 +84,47 @@ export function JobCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Badge variant="secondary" className="flex items-center gap-1 bg-primary/10 hover:bg-primary/20 transition-colors">
-              <MapPin className="h-3 w-3" />
-              {location}
-              {remote_type && remote_type !== 'on-site' && (
-                <span className="ml-1">({remote_type})</span>
-              )}
-            </Badge>
+            <Tooltip content={remote_type === 'remote' ? 'Travail à distance' : 'Sur site'}>
+              <Badge variant="secondary" className="flex items-center gap-1 bg-primary/10 hover:bg-primary/20 transition-colors">
+                {remote_type === 'remote' ? <Globe className="h-3 w-3" /> : <MapPin className="h-3 w-3" />}
+                {location}
+                {remote_type && remote_type !== 'on-site' && (
+                  <span className="ml-1">({remote_type})</span>
+                )}
+              </Badge>
+            </Tooltip>
+            
             {displaySalary && (
-              <Badge variant="secondary" className="bg-green-500/10 hover:bg-green-500/20 transition-colors">
-                {displaySalary}
-              </Badge>
+              <Tooltip content="Budget/Salaire">
+                <Badge variant="secondary" className="flex items-center gap-1 bg-green-500/10 hover:bg-green-500/20 transition-colors">
+                  <DollarSign className="h-3 w-3" />
+                  {displaySalary}
+                </Badge>
+              </Tooltip>
             )}
-            <Badge variant="secondary" className="flex items-center gap-1 bg-blue-500/10 hover:bg-blue-500/20 transition-colors">
-              <Briefcase className="h-3 w-3" />
-              {contract_type}
-            </Badge>
-            <Badge variant="secondary" className="flex items-center gap-1 bg-purple-500/10 hover:bg-purple-500/20 transition-colors">
-              <Clock className="h-3 w-3" />
-              {experience_level}
-              {years_of_experience > 0 && ` (${years_of_experience}+ ans)`}
-            </Badge>
-            {education_level && (
-              <Badge variant="secondary" className="flex items-center gap-1 bg-orange-500/10 hover:bg-orange-500/20 transition-colors">
-                <GraduationCap className="h-3 w-3" />
-                {education_level}
+
+            <Tooltip content="Type de contrat">
+              <Badge variant="secondary" className="flex items-center gap-1 bg-blue-500/10 hover:bg-blue-500/20 transition-colors">
+                <Briefcase className="h-3 w-3" />
+                {contract_type}
               </Badge>
+            </Tooltip>
+
+            <Tooltip content="Expérience requise">
+              <Badge variant="secondary" className="flex items-center gap-1 bg-purple-500/10 hover:bg-purple-500/20 transition-colors">
+                <Clock className="h-3 w-3" />
+                {experience_level}
+                {years_of_experience > 0 && ` (${years_of_experience}+ ans)`}
+              </Badge>
+            </Tooltip>
+
+            {education_level && (
+              <Tooltip content="Niveau d'études">
+                <Badge variant="secondary" className="flex items-center gap-1 bg-orange-500/10 hover:bg-orange-500/20 transition-colors">
+                  <GraduationCap className="h-3 w-3" />
+                  {education_level}
+                </Badge>
+              </Tooltip>
             )}
           </motion.div>
           
@@ -139,6 +158,37 @@ export function JobCard({
               <p className="text-sm text-muted-foreground line-clamp-2 italic">
                 {company_description}
               </p>
+            )}
+
+            {(required_skills.length > 0 || preferred_skills.length > 0) && (
+              <div className="mt-4 space-y-2">
+                {required_skills.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {required_skills.map((skill, index) => (
+                      <Badge 
+                        key={index}
+                        variant="secondary"
+                        className="bg-red-500/10 hover:bg-red-500/20 text-xs"
+                      >
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {preferred_skills.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {preferred_skills.map((skill, index) => (
+                      <Badge 
+                        key={index}
+                        variant="secondary"
+                        className="bg-blue-500/10 hover:bg-blue-500/20 text-xs"
+                      >
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
           </motion.div>
           
