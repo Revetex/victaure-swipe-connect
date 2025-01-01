@@ -6,8 +6,15 @@ export async function generateAIResponse(message: string, profile?: any) {
     let jobContext = "";
     if (message.toLowerCase().includes("emploi") || 
         message.toLowerCase().includes("job") || 
-        message.toLowerCase().includes("travail")) {
-      const { data: { jobs } } = await supabase.functions.invoke('fetch-jobs');
+        message.toLowerCase().includes("travail") ||
+        message.toLowerCase().includes("offre") ||
+        message.toLowerCase().includes("poste")) {
+      const { data: { jobs }, error } = await supabase.functions.invoke('fetch-jobs');
+      
+      if (error) {
+        console.error('Error fetching jobs:', error);
+      }
+      
       if (jobs && jobs.length > 0) {
         jobContext = `Voici les dernières offres d'emploi que j'ai trouvées :
 ${jobs.map((job: any) => `- ${job.title} chez ${job.company} à ${job.location} (via ${job.platform})`).join('\n')}`;

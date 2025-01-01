@@ -18,35 +18,63 @@ interface JobPosting {
 }
 
 async function fetchLinkedInJobs(): Promise<JobPosting[]> {
-  // Simulate LinkedIn jobs for now
-  // In production, this would use LinkedIn's API
-  return [
-    {
-      title: "Développeur Full Stack",
-      company: "Tech Company",
-      location: "Montréal, QC",
-      url: "https://linkedin.com/jobs/...",
-      platform: "LinkedIn",
-      description: "Nous recherchons un développeur full stack...",
-      posted_at: new Date().toISOString()
+  try {
+    const response = await fetch('https://api.linkedin.com/v2/jobs', {
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('LINKEDIN_ACCESS_TOKEN')}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('LinkedIn API error:', await response.text());
+      return [];
     }
-  ];
+
+    const data = await response.json();
+    return data.elements.map((job: any) => ({
+      title: job.title.text,
+      company: job.companyName,
+      location: job.locationName,
+      url: job.applyUrl,
+      platform: 'LinkedIn',
+      description: job.description.text,
+      posted_at: job.postedAt,
+    }));
+  } catch (error) {
+    console.error('Error fetching LinkedIn jobs:', error);
+    return [];
+  }
 }
 
 async function fetchIndeedJobs(): Promise<JobPosting[]> {
-  // Simulate Indeed jobs for now
-  // In production, this would use Indeed's API
-  return [
-    {
-      title: "Développeur Frontend",
-      company: "Startup Inc",
-      location: "Québec, QC",
-      url: "https://indeed.com/jobs/...",
-      platform: "Indeed",
-      description: "Startup en croissance cherche...",
-      posted_at: new Date().toISOString()
+  try {
+    const response = await fetch('https://api.indeed.com/ads/apisearch', {
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('INDEED_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Indeed API error:', await response.text());
+      return [];
     }
-  ];
+
+    const data = await response.json();
+    return data.results.map((job: any) => ({
+      title: job.jobtitle,
+      company: job.company,
+      location: job.formattedLocation,
+      url: job.url,
+      platform: 'Indeed',
+      description: job.snippet,
+      posted_at: job.date,
+    }));
+  } catch (error) {
+    console.error('Error fetching Indeed jobs:', error);
+    return [];
+  }
 }
 
 serve(async (req) => {
