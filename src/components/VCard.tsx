@@ -1,4 +1,12 @@
+import { Messages } from "@/components/Messages";
+import { SwipeJob } from "@/components/SwipeJob";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { VCard } from "@/components/VCard";
+import { motion } from "framer-motion";
+import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "./ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
@@ -12,7 +20,6 @@ import { VCardActions } from "./VCardActions";
 import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
 import { useProfileHandlers } from "./vcard/handlers/useProfileHandlers";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
 import { UserProfile } from "@/types/profile";
 
 interface VCardProps {
@@ -66,7 +73,7 @@ export function VCard({ onEditStateChange }: VCardProps) {
   const localHandleApplyChanges = async () => {
     if (!tempProfile) return;
     try {
-      await handleApplyChanges(tempProfile, setProfile, setIsEditing);
+      await handleApplyChanges(tempProfile, setProfile, handleSetIsEditing);
       toast.success("Changements appliqués avec succès");
     } catch (error) {
       console.error('Error applying changes:', error);

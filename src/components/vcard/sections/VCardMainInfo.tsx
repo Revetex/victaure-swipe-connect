@@ -2,12 +2,12 @@ import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { VCardHeader } from "../../VCardHeader";
 import { VCardContactInfo } from "../VCardContactInfo";
+import { UserProfile } from "@/types/profile";
 
 interface VCardMainInfoProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
-  setIsEditing: (isEditing: boolean) => void;
+  setProfile: (profile: UserProfile) => void;
   isExpanded: boolean;
   setIsExpanded: (isExpanded: boolean) => void;
 }
@@ -16,7 +16,6 @@ export function VCardMainInfo({
   profile,
   isEditing,
   setProfile,
-  setIsEditing,
   isExpanded,
   setIsExpanded
 }: VCardMainInfoProps) {
@@ -27,9 +26,6 @@ export function VCardMainInfo({
           profile={profile}
           isEditing={isEditing}
           setProfile={setProfile}
-          setIsEditing={setIsEditing}
-          isExpanded={isExpanded}
-          setIsExpanded={setIsExpanded}
         />
 
         {!isExpanded && (
