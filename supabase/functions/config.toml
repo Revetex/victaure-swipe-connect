@@ -2,8 +2,6 @@ project_id = "mfjllillnpleasclqabb"
 
 [global.env]
 HUGGING_FACE_ACCESS_TOKEN = "env(HUGGING_FACE_ACCESS_TOKEN)"
-LINKEDIN_ACCESS_TOKEN = "env(LINKEDIN_ACCESS_TOKEN)"
-INDEED_API_KEY = "env(INDEED_API_KEY)"
 
 [[functions]]
 name = "fetch-jobs"
