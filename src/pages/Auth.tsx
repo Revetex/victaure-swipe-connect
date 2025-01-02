@@ -57,13 +57,13 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-y-auto">
+    <div className="min-h-screen w-full bg-background">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-dashboard-pattern opacity-5" />
+      <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       
-      {/* Content */}
-      <div className="relative flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-sm space-y-8">
+      {/* Scrollable Content Container */}
+      <div className="relative w-full min-h-screen py-8 px-4 overflow-y-auto">
+        <div className="container max-w-sm mx-auto space-y-8">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <Logo size="lg" className="mb-2" />
@@ -80,10 +80,12 @@ export default function Auth() {
           </div>
 
           {/* Video Section */}
-          <AuthVideo />
+          <div className="w-full">
+            <AuthVideo />
+          </div>
 
           {/* Legal Links */}
-          <div className="text-center text-sm text-muted-foreground mt-4">
+          <div className="text-center text-sm text-muted-foreground pb-8">
             <div className="space-x-2">
               <a href="/privacy" className="hover:text-primary hover:underline">
                 Politique de confidentialité
