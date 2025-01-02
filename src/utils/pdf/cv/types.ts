@@ -1,5 +1,7 @@
-import type { UserProfile } from '@/types/profile';
 import type { ExtendedJsPDF } from '../types';
+import type { UserProfile } from '@/types/profile';
+
+export type { ExtendedJsPDF };
 
 export interface CVGeneratorOptions {
   profile: UserProfile;
