@@ -14,6 +14,19 @@ interface Activity {
   created_at: string;
 }
 
+interface MessageSender {
+  full_name: string;
+}
+
+interface JobMatch {
+  professional: {
+    full_name: string;
+  };
+  job: {
+    title: string;
+  };
+}
+
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -76,14 +89,14 @@ export function RecentActivity() {
           id: msg.id,
           type: 'message' as const,
           title: 'Nouveau message',
-          description: `${msg.sender.full_name} vous a envoyé un message`,
+          description: `${(msg.sender as MessageSender).full_name} vous a envoyé un message`,
           created_at: msg.created_at
         })) || []),
         ...(matches?.map(match => ({
           id: match.id,
           type: 'match' as const,
           title: 'Nouveau match',
-          description: `${match.professional.full_name} a postulé pour "${match.job.title}"`,
+          description: `${(match as unknown as JobMatch).professional.full_name} a postulé pour "${(match as unknown as JobMatch).job.title}"`,
           created_at: match.created_at
         })) || []),
         ...(notifications?.map(notif => ({

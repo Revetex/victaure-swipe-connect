@@ -25,7 +25,7 @@ export function usePayments() {
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from('payment_transactions')
+        .from('payments')
         .select(`
           id,
           match_id,
@@ -41,7 +41,14 @@ export function usePayments() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as PaymentTransaction[];
+      
+      return (data as any[]).map(payment => ({
+        ...payment,
+        match: Array.isArray(payment.match) ? payment.match[0] : payment.match,
+        job: payment.match?.job && Array.isArray(payment.match.job) 
+          ? payment.match.job[0] 
+          : payment.match?.job
+      })) as PaymentTransaction[];
     }
   });
 

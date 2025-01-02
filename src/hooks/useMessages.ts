@@ -24,7 +24,7 @@ export function useMessages() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: messages, error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .select(`
           id,
@@ -41,7 +41,11 @@ export function useMessages() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return messages as Message[];
+      
+      return (data as any[]).map(msg => ({
+        ...msg,
+        sender: Array.isArray(msg.sender) ? msg.sender[0] : msg.sender
+      })) as Message[];
     },
   });
 
