@@ -102,6 +102,7 @@ export default function Auth() {
               playsInline
               preload="auto"
               controls
+              onError={(e) => console.error("Erreur de chargement vidéo:", e)}
             >
               <source src="lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
               Votre navigateur ne supporte pas la lecture de vidéos.
