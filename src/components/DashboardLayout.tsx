@@ -41,7 +41,7 @@ export function DashboardLayout() {
     >
       <div className="dashboard-card h-full relative">
         {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto">
+          <div className="p-3 sm:p-4 md:p-6 h-full">
             {component}
             {currentPage === 1 && (
               <div className="mt-6">
@@ -57,7 +57,7 @@ export function DashboardLayout() {
   );
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed overflow-hidden">
+    <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       {showMVictor && (
         <MrVictaureWelcome 
           onDismiss={() => setShowMVictor(false)}
@@ -68,7 +68,7 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="relative flex-1 overflow-y-auto">
+      <div className="relative flex-1">
         {!isEditing && (
           <>
             <div className="absolute top-1/2 left-4 z-20">
