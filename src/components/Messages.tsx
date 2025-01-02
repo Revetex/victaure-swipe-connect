@@ -55,7 +55,7 @@ export function Messages() {
 
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
-      <TabsList className="grid w-full grid-cols-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30">
+      <TabsList className="grid w-full grid-cols-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <TabsTrigger value="messages" className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
           <span className="hidden sm:inline">Messages</span>
@@ -82,13 +82,13 @@ export function Messages() {
         </TabsTrigger>
       </TabsList>
       <div className="flex-1 overflow-hidden">
-        <TabsContent value="messages" className="h-full">
+        <TabsContent value="messages" className="h-full mt-0">
           <MessagesTab />
         </TabsContent>
-        <TabsContent value="notifications" className="h-full">
+        <TabsContent value="notifications" className="h-full mt-0">
           <NotificationsTab />
         </TabsContent>
-        <TabsContent value="notes" className="h-full">
+        <TabsContent value="notes" className="h-full mt-0">
           <NotesSection
             notes={notes}
             newNote={newNote}
@@ -100,7 +100,7 @@ export function Messages() {
             onDelete={deleteNote}
           />
         </TabsContent>
-        <TabsContent value="tasks" className="h-full">
+        <TabsContent value="tasks" className="h-full mt-0">
           <TodoSection
             type="tasks"
             todos={todos}
@@ -117,10 +117,10 @@ export function Messages() {
             onDelete={deleteTodo}
           />
         </TabsContent>
-        <TabsContent value="payments" className="h-full">
+        <TabsContent value="payments" className="h-full mt-0">
           <PaymentBox />
         </TabsContent>
-        <TabsContent value="settings" className="h-full">
+        <TabsContent value="settings" className="h-full mt-0 overflow-y-auto">
           <Settings />
         </TabsContent>
       </div>

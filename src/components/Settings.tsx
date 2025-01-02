@@ -61,7 +61,7 @@ export function Settings() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="space-y-6 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 h-full overflow-y-auto"
     >
       <motion.h2 
         variants={itemVariants}
