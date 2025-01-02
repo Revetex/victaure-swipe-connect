@@ -51,7 +51,7 @@ export function JobFiltersPanel({
   }
 
   return (
-    <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 border rounded-lg">
+    <div className="hidden">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4" />
