@@ -26,7 +26,7 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
+    <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       {showMVictor && (
         <MrVictaureWelcome 
           onDismiss={() => setShowMVictor(false)}
@@ -37,20 +37,22 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="relative flex-1 overflow-y-auto">
+      <div className="flex-1 flex flex-col relative">
         {!isEditing && (
           <DashboardNavigationArrows onSwipe={handleSwipe} />
         )}
 
-        <div className="container mx-auto px-4 h-full py-6 pb-72">
-          <DashboardContent 
-            currentPage={currentPage}
-            isEditing={isEditing}
-            containerVariants={containerVariants}
-            itemVariants={itemVariants}
-            onEditStateChange={setIsEditing}
-            onRequestChat={handleRequestChat}
-          />
+        <div className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-4 py-6 mb-24">
+            <DashboardContent 
+              currentPage={currentPage}
+              isEditing={isEditing}
+              containerVariants={containerVariants}
+              itemVariants={itemVariants}
+              onEditStateChange={setIsEditing}
+              onRequestChat={handleRequestChat}
+            />
+          </div>
         </div>
 
         {!isEditing && (
