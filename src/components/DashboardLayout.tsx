@@ -5,7 +5,6 @@ import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
@@ -16,14 +15,6 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [showMVictor, setShowMVictor] = useState(true);
-
-  const handleSwipe = (direction: number) => {
-    if (isEditing) return;
-    let newPage = currentPage + direction;
-    if (newPage < 1) newPage = 3;
-    if (newPage > 3) newPage = 1;
-    setCurrentPage(newPage);
-  };
 
   const handleRequestChat = () => {
     setCurrentPage(2);
@@ -63,31 +54,6 @@ export function DashboardLayout() {
       )}
 
       <div className="relative flex-1 overflow-y-auto pb-20">
-        {!isEditing && (
-          <>
-            <div className="fixed top-1/2 left-4 z-20">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-background/80 backdrop-blur-sm"
-                onClick={() => handleSwipe(-1)}
-              >
-                <ChevronLeft className="h-6 w-6" />
-              </Button>
-            </div>
-            <div className="fixed top-1/2 right-4 z-20">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-background/80 backdrop-blur-sm"
-                onClick={() => handleSwipe(1)}
-              >
-                <ChevronRight className="h-6 w-6" />
-              </Button>
-            </div>
-          </>
-        )}
-
         <div className="container mx-auto px-4 h-full py-6">
           <motion.div 
             className="h-full max-w-[1200px] mx-auto"
