@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
+import { Play } from "lucide-react";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isScrubbing, setIsScrubbing] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -73,6 +77,32 @@ export default function Auth() {
     setIsVideoLoading(false);
   };
 
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      } else {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current && !isScrubbing) {
+      setIsPlaying(!videoRef.current.paused);
+    }
+  };
+
+  const handleScrubStart = () => {
+    setIsScrubbing(true);
+  };
+
+  const handleScrubEnd = () => {
+    setIsScrubbing(false);
+  };
+
   return (
     <div className="min-h-[100dvh] bg-background relative">
       {/* Background Pattern */}
@@ -122,19 +152,56 @@ export default function Auth() {
                 <p>La vidéo n'a pas pu être chargée</p>
               </div>
             ) : (
-              <video
-                className="w-full aspect-video object-cover"
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                controls
-                onError={handleVideoError}
-                onLoadedData={handleVideoLoad}
-              >
-                <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
-                Votre navigateur ne supporte pas la lecture de vidéos.
-              </video>
+              <div className="relative group">
+                <video
+                  ref={videoRef}
+                  className="w-full aspect-video object-cover"
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  onError={handleVideoError}
+                  onLoadedData={handleVideoLoad}
+                  onTimeUpdate={handleTimeUpdate}
+                >
+                  <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
+                  Votre navigateur ne supporte pas la lecture de vidéos.
+                </video>
+                
+                {/* Video Overlay */}
+                <div 
+                  className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}
+                  onClick={togglePlay}
+                >
+                  <Logo size="lg" className="mb-4" />
+                  <button
+                    className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    onClick={togglePlay}
+                  >
+                    <Play className="w-8 h-8 text-white" />
+                  </button>
+                </div>
+
+                {/* Custom Video Controls */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                  <input
+                    type="range"
+                    className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
+                    min="0"
+                    max={videoRef.current?.duration || 100}
+                    value={videoRef.current?.currentTime || 0}
+                    onChange={(e) => {
+                      if (videoRef.current) {
+                        videoRef.current.currentTime = Number(e.target.value);
+                      }
+                    }}
+                    onMouseDown={handleScrubStart}
+                    onMouseUp={handleScrubEnd}
+                    onTouchStart={handleScrubStart}
+                    onTouchEnd={handleScrubEnd}
+                  />
+                </div>
+              </div>
             )}
           </div>
         </div>
