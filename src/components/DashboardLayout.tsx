@@ -40,7 +40,7 @@ export function DashboardLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      <main className="flex-1">
+      <main className="flex-1 overflow-y-auto">
         <div className="container mx-auto px-4 py-6 pb-24">
           <motion.div 
             className="max-w-[1200px] mx-auto"
