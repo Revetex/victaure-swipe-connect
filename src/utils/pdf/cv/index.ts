@@ -2,10 +2,14 @@ import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from './styles';
-import { drawHeader, drawSection, drawTimeline, drawTimelineDot } from '../helpers';
+import { drawHeader } from '../helpers';
 import type { ExtendedJsPDF } from '../types';
 import { renderHeader } from './sections/header';
 import { renderContactInfo } from './sections/contact';
+import { renderSkills } from './sections/skills';
+import { renderExperiences } from './sections/experiences';
+import { renderEducation } from './sections/education';
+import { renderCertifications } from './sections/certifications';
 
 export const generateVCardPDF = async (profile: UserProfile, accentColor: string = '#1E40AF') => {
   const doc = new jsPDF({
@@ -14,119 +18,34 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     format: 'a4'
   }) as ExtendedJsPDF;
 
-  // Mise à jour des styles avec la couleur d'accent personnalisée
+  // Update styles with custom accent color
   const styles = {
     ...pdfStyles,
     colors: {
       ...pdfStyles.colors,
       primary: accentColor,
-      secondary: accentColor + '80', // Ajouter 80 pour 50% d'opacité
+      secondary: accentColor + '80', // Add 80 for 50% opacity
       background: '#FFFFFF'
     }
   };
 
-  // Fond blanc pour s'assurer que le contenu est visible
+  // White background
   doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, 210, 297, 'F');
 
-  // En-tête avec la couleur personnalisée
+  // Header with custom color
   const headerHeight = 50;
   drawHeader(doc, headerHeight, styles.colors.primary, styles.colors.secondary);
 
   let yPos = styles.margins.top + 15;
 
-  // Rendu de l'en-tête
+  // Render each section and update yPos
   yPos = await renderHeader(doc, profile, yPos);
-
-  // Rendu des informations de contact
   yPos = renderContactInfo(doc, profile, yPos);
-
-  // Section bio si elle existe
-  if (profile.bio) {
-    yPos += 10;
-    drawSection(doc, yPos, 180, 30, styles.colors.primary);
-
-    doc.setFontSize(styles.fonts.subheader.size);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0); // Noir pour le texte
-    doc.text('À propos', styles.margins.left, yPos);
-    
-    yPos += 8;
-    doc.setFontSize(styles.fonts.body.size);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(51, 51, 51); // Gris foncé pour le texte
-    const bioLines = doc.splitTextToSize(profile.bio, 170);
-    doc.text(bioLines, styles.margins.left, yPos);
-    yPos += (bioLines.length * 5) + 15;
-  }
-
-  // Section compétences
-  if (profile.skills && profile.skills.length > 0) {
-    drawSection(doc, yPos, 180, 20, styles.colors.accent);
-
-    doc.setFontSize(styles.fonts.subheader.size);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
-    doc.text('Compétences', styles.margins.left, yPos);
-    
-    yPos += 8;
-    doc.setFontSize(styles.fonts.body.size);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(51, 51, 51);
-    
-    const skillsPerRow = 4;
-    const skillChunks = [];
-    for (let i = 0; i < profile.skills.length; i += skillsPerRow) {
-      skillChunks.push(profile.skills.slice(i, i + skillsPerRow));
-    }
-
-    skillChunks.forEach(chunk => {
-      const skillsText = chunk.join(' • ');
-      doc.text(skillsText, styles.margins.left, yPos);
-      yPos += 6;
-    });
-    yPos += 10;
-  }
-
-  // Section expérience
-  if (profile.experiences && profile.experiences.length > 0) {
-    doc.setFontSize(styles.fonts.subheader.size);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0);
-    doc.text('Expérience professionnelle', styles.margins.left, yPos);
-    yPos += 8;
-
-    profile.experiences.forEach((exp, index) => {
-      drawTimelineDot(doc, styles.margins.left - 2, yPos - 2, styles.colors.primary);
-      
-      if (index < profile.experiences!.length - 1) {
-        drawTimeline(doc, yPos, yPos + 20, styles.margins.left - 2, styles.colors.primary);
-      }
-
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${exp.position} - ${exp.company}`, styles.margins.left + 2, yPos);
-      yPos += 6;
-
-      if (exp.start_date) {
-        doc.setFontSize(styles.fonts.body.size);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(128, 128, 128);
-        const dateText = exp.end_date 
-          ? `${new Date(exp.start_date).toLocaleDateString('fr-FR')} - ${new Date(exp.end_date).toLocaleDateString('fr-FR')}`
-          : `${new Date(exp.start_date).toLocaleDateString('fr-FR')} - Présent`;
-        doc.text(dateText, styles.margins.left + 2, yPos);
-        yPos += 6;
-      }
-
-      if (exp.description) {
-        doc.setTextColor(51, 51, 51);
-        const descLines = doc.splitTextToSize(exp.description, 165);
-        doc.text(descLines, styles.margins.left + 2, yPos);
-        yPos += (descLines.length * 5) + 10;
-      }
-    });
-  }
+  yPos = renderSkills(doc, profile.skills, yPos, styles);
+  yPos = renderExperiences(doc, profile.experiences, yPos, styles);
+  yPos = renderEducation(doc, profile.education, yPos, styles);
+  yPos = renderCertifications(doc, profile.certifications, yPos, styles);
 
   // QR Code
   try {
@@ -143,8 +62,8 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     console.error('Error generating QR code:', error);
   }
 
-  // Pied de page
-  const footerColor = styles.colors.primary + '1A'; // 1A = 10% opacité en hex
+  // Footer
+  const footerColor = styles.colors.primary + '1A'; // 1A = 10% opacity in hex
   doc.setFillColor(footerColor);
   doc.rect(0, 280, 210, 17, 'F');
   
@@ -152,9 +71,9 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
   doc.setTextColor(128, 128, 128);
   doc.text('Créé sur victaure.com', 105, 285, { align: 'center' });
 
-  // Sauvegarde du PDF
+  // Save the PDF
   doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '-') || 'professionnel'}.pdf`);
 };
 
-// Alias pour la rétrocompatibilité
+// Alias for backward compatibility
 export const generateCVPDF = generateVCardPDF;
