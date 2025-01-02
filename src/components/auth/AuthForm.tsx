@@ -1,104 +1,170 @@
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useTheme } from "next-themes";
-import { memo } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const AuthForm = memo(function AuthForm() {
-  const { theme } = useTheme();
+export function AuthForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    try {
+      if (isSignUp) {
+        if (password !== confirmPassword) {
+          toast.error("Les mots de passe ne correspondent pas");
+          return;
+        }
+
+        const firstName = formData.get("firstName") as string;
+        const lastName = formData.get("lastName") as string;
+        const phone = formData.get("phone") as string;
+
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              first_name: firstName,
+              last_name: lastName,
+              phone: phone,
+            },
+          },
+        });
+
+        if (error) throw error;
+        
+        toast.success("Inscription réussie!");
+        navigate("/dashboard");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+        
+        toast.success("Connexion réussie!");
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Auth error:", error);
+      toast.error(error instanceof Error ? error.message : "Une erreur est survenue");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="w-full max-w-md mx-auto overflow-y-auto max-h-[calc(100vh-4rem)]">
-      <Auth
-        supabaseClient={supabase}
-        appearance={{
-          theme: ThemeSupa,
-          variables: {
-            default: {
-              colors: {
-                brand: 'rgb(30, 174, 219)',
-                brandAccent: 'rgb(15, 160, 206)',
-                inputBackground: 'transparent',
-                inputText: 'hsl(var(--foreground))',
-                inputPlaceholder: 'hsl(var(--muted-foreground))',
-              },
-              space: {
-                inputPadding: '1rem',
-                buttonPadding: '1.25rem',
-              },
-              borderWidths: {
-                buttonBorderWidth: '1px',
-                inputBorderWidth: '1px',
-              },
-              radii: {
-                borderRadiusButton: '0.5rem',
-                buttonBorderRadius: '0.5rem',
-                inputBorderRadius: '0.5rem',
-              },
-              fonts: {
-                bodyFontFamily: `var(--font-sans)`,
-                buttonFontFamily: `var(--font-sans)`,
-                inputFontFamily: `var(--font-sans)`,
-              },
-            },
-          },
-          className: {
-            button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px]",
-            input: "w-full h-11 text-sm bg-transparent border border-border transition-colors focus:border-primary focus:outline-none",
-            label: "text-sm text-foreground mb-2",
-            message: "text-sm text-muted-foreground",
-            anchor: "text-primary no-underline hover:underline",
-          },
-        }}
-        providers={[]}
-        redirectTo={window.location.origin + "/dashboard"}
-        localization={{
-          variables: {
-            sign_up: {
-              email_label: "Email",
-              password_label: "Mot de passe",
-              button_label: "S'inscrire",
-              email_input_placeholder: "Votre adresse email",
-              password_input_placeholder: "Choisissez un mot de passe",
-              link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
-            },
-            sign_in: {
-              email_label: "Email",
-              password_label: "Mot de passe",
-              button_label: "Se connecter",
-              email_input_placeholder: "Votre adresse email",
-              password_input_placeholder: "Votre mot de passe",
-              link_text: "Vous avez déjà un compte ? Connectez-vous",
-            },
-            forgotten_password: {
-              button_label: "Réinitialiser le mot de passe",
-              link_text: "Mot de passe oublié ?",
-            },
-          },
-        }}
-        view="sign_up"
-        showLinks={true}
-        additionalData={{
-          first_name: {
-            label: "Prénom",
-            placeholder: "Votre prénom",
-            type: "text",
-            required: true,
-          },
-          last_name: {
-            label: "Nom",
-            placeholder: "Votre nom",
-            type: "text",
-            required: true,
-          },
-          phone: {
-            label: "Téléphone",
-            placeholder: "Votre numéro de téléphone",
-            type: "tel",
-            required: true,
-          },
-        }}
-      />
-    </div>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle>{isSignUp ? "Inscription" : "Connexion"}</CardTitle>
+        <CardDescription>
+          {isSignUp
+            ? "Créez votre compte pour commencer"
+            : "Connectez-vous à votre compte"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {isSignUp && (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">Prénom</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Nom</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Mot de passe</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              required
+              disabled={isLoading}
+            />
+          </div>
+          {isSignUp && (
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                disabled={isLoading}
+              />
+            </div>
+          )}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading
+              ? "Chargement..."
+              : isSignUp
+              ? "S'inscrire"
+              : "Se connecter"}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full"
+            onClick={() => setIsSignUp(!isSignUp)}
+            disabled={isLoading}
+          >
+            {isSignUp
+              ? "Déjà un compte ? Se connecter"
+              : "Pas de compte ? S'inscrire"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
-});
+}
