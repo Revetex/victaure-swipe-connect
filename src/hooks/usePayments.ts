@@ -17,6 +17,21 @@ interface PaymentTransaction {
   } | null;
 }
 
+interface PaymentResponse {
+  id: string;
+  match_id: string | null;
+  amount: number;
+  payment_type: 'interac' | 'credit_card';
+  status: 'frozen' | 'released' | 'cancelled';
+  created_at: string;
+  match: {
+    id: string;
+    job: {
+      title: string | null;
+    } | null;
+  } | null;
+}
+
 export function usePayments() {
   const { data: transactions, isLoading } = useQuery({
     queryKey: ['payment-transactions'],
@@ -44,8 +59,21 @@ export function usePayments() {
 
       if (error) throw error;
       
-      // Type assertion to ensure the returned data matches our interface
-      return (data || []) as PaymentTransaction[];
+      // Transform the response to match our expected type
+      const transformedData: PaymentTransaction[] = (data || []).map((item: PaymentResponse) => ({
+        id: item.id,
+        match_id: item.match_id,
+        amount: item.amount,
+        payment_type: item.payment_type,
+        status: item.status,
+        created_at: item.created_at,
+        match: item.match ? {
+          id: item.match.id,
+          job: item.match.job
+        } : null
+      }));
+
+      return transformedData;
     }
   });
 

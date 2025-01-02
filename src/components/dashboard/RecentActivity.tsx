@@ -35,6 +35,20 @@ interface Match {
   job: Job | null;
 }
 
+interface MessageResponse {
+  id: string;
+  content: string;
+  created_at: string;
+  sender: Sender;
+}
+
+interface MatchResponse {
+  id: string;
+  created_at: string;
+  job: Job;
+  professional: Professional;
+}
+
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -102,14 +116,14 @@ export function RecentActivity() {
 
       // Combine and format activities
       const formattedActivities: Activity[] = [
-        ...(messages?.map(msg => ({
+        ...(messages?.map((msg: MessageResponse) => ({
           id: msg.id,
           type: 'message' as const,
           title: 'Nouveau message',
           description: `${msg.sender?.full_name || 'Utilisateur'} vous a envoyé un message`,
           created_at: msg.created_at
         })) || []),
-        ...(matches?.map(match => ({
+        ...(matches?.map((match: MatchResponse) => ({
           id: match.id,
           type: 'match' as const,
           title: 'Nouveau match',
