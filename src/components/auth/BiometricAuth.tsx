@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { UserRound, Fingerprint } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export function BiometricAuth() {
@@ -78,24 +76,5 @@ export function BiometricAuth() {
     return null;
   }
 
-  return (
-    <div className="grid grid-cols-2 gap-4">
-      <Button
-        variant="outline"
-        className="flex items-center justify-center gap-2 h-12"
-        onClick={handleBiometricAuth}
-      >
-        <UserRound className="h-4 w-4" />
-        <span className="sr-only sm:not-sr-only">Face ID</span>
-      </Button>
-      <Button
-        variant="outline"
-        className="flex items-center justify-center gap-2 h-12"
-        onClick={handleBiometricAuth}
-      >
-        <Fingerprint className="h-4 w-4" />
-        <span className="sr-only sm:not-sr-only">Touch ID</span>
-      </Button>
-    </div>
-  );
+  return null;
 }
