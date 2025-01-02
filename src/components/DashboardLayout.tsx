@@ -62,7 +62,7 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="relative flex-1 overflow-y-auto pb-20">
+      <div className="relative flex-1 overflow-y-auto pb-32">
         {!isEditing && (
           <>
             <div className="fixed top-1/2 left-4 z-20">
