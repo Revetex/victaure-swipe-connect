@@ -44,9 +44,12 @@ export function VCardEducation({
       title="Formation"
       icon={<GraduationCap className="h-4 w-4 text-muted-foreground" />}
     >
-      <div className="space-y-4">
+      <div className="space-y-6">
         {(profile.education || []).map((edu: Education, index: number) => (
-          <div key={index} className="relative border-l-2 border-primary/30 pl-4 py-2 space-y-2 hover:bg-muted/50 rounded-r transition-colors">
+          <div 
+            key={index} 
+            className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-white/10 hover:border-white/20 transition-colors"
+          >
             {isEditing ? (
               <>
                 <div className="flex items-center gap-2">
@@ -87,8 +90,8 @@ export function VCardEducation({
                     className="flex-1"
                   />
                 </div>
-                <div className="flex gap-2">
-                  <div className="flex items-center gap-2 flex-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                     <Input
                       type="date"
@@ -100,7 +103,9 @@ export function VCardEducation({
                       }}
                       className="flex-1"
                     />
-                    <span className="mx-2">-</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                     <Input
                       type="date"
                       value={edu.end_date}
@@ -112,6 +117,8 @@ export function VCardEducation({
                       className="flex-1"
                     />
                   </div>
+                </div>
+                <div className="absolute top-2 right-2">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -133,7 +140,7 @@ export function VCardEducation({
                   <p className="text-sm text-muted-foreground">{edu.degree || "Diplôme non défini"}</p>
                 </div>
                 {edu.field_of_study && (
-                  <p className="text-sm text-muted-foreground">{edu.field_of_study}</p>
+                  <p className="text-sm text-muted-foreground pl-6">{edu.field_of_study}</p>
                 )}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
@@ -151,7 +158,7 @@ export function VCardEducation({
           <Button 
             onClick={handleAddEducation} 
             variant="outline" 
-            className="w-full mt-4"
+            className="w-full mt-4 border-white/10 hover:border-white/20 bg-white/5 backdrop-blur-sm"
           >
             Ajouter une formation
           </Button>
