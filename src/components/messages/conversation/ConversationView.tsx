@@ -63,8 +63,8 @@ export function ConversationView({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="flex flex-col h-screen">
+      <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-20">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -97,7 +97,7 @@ export function ConversationView({
         </Button>
       </header>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <ScrollArea 
           className="h-full px-4" 
           onScroll={handleScroll}
@@ -129,7 +129,7 @@ export function ConversationView({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-4 right-4 z-10"
+              className="absolute bottom-20 right-4 z-10"
             >
               <Button
                 size="icon"
@@ -143,7 +143,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="border-t bg-background p-4">
+      <div className="sticky bottom-0 border-t bg-background p-4 mt-auto">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
