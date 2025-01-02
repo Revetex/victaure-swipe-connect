@@ -8,6 +8,8 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
 import "./App.css";
 
 const queryClient = new QueryClient({
@@ -28,6 +30,8 @@ export default function App() {
             <div className="h-screen w-full overflow-hidden">
               <Routes>
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route 
                   path="/" 
                   element={
