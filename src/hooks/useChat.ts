@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { generateAIResponse, saveMessage, loadMessages } from "@/services/aiChatService";
 import { Message, ChatState, ChatActions } from "@/types/chat";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useChat(): ChatState & ChatActions {
   const [messages, setMessages] = useState<Message[]>([]);
