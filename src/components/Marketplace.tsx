@@ -101,9 +101,7 @@ export function Marketplace() {
               </div>
             </div>
           ) : (
-            <div className="col-span-1">
-              <JobList jobs={jobs} isLoading={isLoading} />
-            </div>
+            <JobList jobs={jobs} isLoading={isLoading} />
           )}
         </div>
       </div>
