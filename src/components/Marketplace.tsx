@@ -88,13 +88,13 @@ export function Marketplace() {
           </Button>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
-          <div className={`${!showFilters && "hidden"} lg:sticky lg:top-4 lg:h-[calc(100vh-6rem)] lg:overflow-auto`}>
+          <div className={`${!showFilters ? "hidden" : ""} lg:block lg:col-span-1 lg:sticky lg:top-4 lg:h-[calc(100vh-6rem)] lg:overflow-auto`}>
             <JobFilters
               filters={filters}
               onFilterChange={handleFilterChange}
             />
           </div>
-          <div className="lg:col-span-3">
+          <div className={`${showFilters ? "lg:col-span-3" : "lg:col-span-4"}`}>
             <JobList jobs={jobs} isLoading={isLoading} />
           </div>
         </div>
