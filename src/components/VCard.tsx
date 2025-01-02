@@ -9,6 +9,7 @@ import { VCardContact } from "./VCardContact";
 import { VCardSkills } from "./VCardSkills";
 import { VCardCertifications } from "./VCardCertifications";
 import { VCardEducation } from "./VCardEducation";
+import { VCardExperiences } from "./VCardExperiences";
 import { Button } from "./ui/button";
 import { MessageSquare, Download, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -121,6 +122,12 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
               setNewSkill={setNewSkill}
               handleAddSkill={handleAddSkill}
               handleRemoveSkill={handleRemoveSkill}
+            />
+
+            <VCardExperiences
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
             />
 
             <VCardCertifications
