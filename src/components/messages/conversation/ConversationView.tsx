@@ -63,47 +63,51 @@ export function ConversationView({
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] max-h-[100dvh] bg-background">
-      <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-3">
+    <div className="fixed inset-0 bg-background flex flex-col">
+      {/* Header */}
+      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
+        <div className="flex items-center justify-between max-w-5xl mx-auto">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <Avatar className="h-10 w-10 shrink-0">
+              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
+              <AvatarFallback className="bg-primary/20">
+                <Bot className="h-5 w-5 text-primary" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+              <p className="text-sm text-muted-foreground truncate">
+                {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
+              </p>
+            </div>
+          </div>
           <Button
             variant="ghost"
             size="icon"
-            onClick={onBack}
-            className="shrink-0"
+            onClick={handleClearChat}
+            className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
-          <Avatar className="h-10 w-10 shrink-0">
-            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
-            <AvatarFallback className="bg-primary/20">
-              <Bot className="h-5 w-5 text-primary" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
-            <p className="text-sm text-muted-foreground truncate">
-              {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
-            </p>
-          </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleClearChat}
-          className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
       </header>
 
-      <div className="flex-1 min-h-0 relative">
+      {/* Messages */}
+      <div className="flex-1 overflow-hidden">
         <ScrollArea 
-          className="h-full px-4" 
+          className="h-full px-4 py-4" 
           onScroll={handleScroll}
         >
-          <AnimatePresence mode="popLayout">
-            <div className="space-y-4 py-4">
+          <div className="max-w-5xl mx-auto space-y-4">
+            <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
                 <ChatMessage
                   key={message.id}
@@ -118,9 +122,9 @@ export function ConversationView({
                   timestamp={message.timestamp}
                 />
               ))}
-              <div ref={messagesEndRef} />
-            </div>
-          </AnimatePresence>
+            </AnimatePresence>
+            <div ref={messagesEndRef} />
+          </div>
         </ScrollArea>
 
         <AnimatePresence>
@@ -129,7 +133,7 @@ export function ConversationView({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-4 right-4"
+              className="fixed bottom-24 right-4"
             >
               <Button
                 size="icon"
@@ -143,17 +147,20 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="border-t bg-background p-4">
-        <ChatInput
-          value={inputMessage}
-          onChange={setInputMessage}
-          onSend={() => onSendMessage(inputMessage, profile)}
-          onVoiceInput={onVoiceInput}
-          isListening={isListening}
-          isThinking={isThinking}
-          placeholder="Écrivez votre message..."
-          className="w-full"
-        />
+      {/* Input */}
+      <div className="shrink-0 border-t bg-background p-4">
+        <div className="max-w-5xl mx-auto">
+          <ChatInput
+            value={inputMessage}
+            onChange={setInputMessage}
+            onSend={() => onSendMessage(inputMessage, profile)}
+            onVoiceInput={onVoiceInput}
+            isListening={isListening}
+            isThinking={isThinking}
+            placeholder="Écrivez votre message..."
+            className="w-full"
+          />
+        </div>
       </div>
     </div>
   );
