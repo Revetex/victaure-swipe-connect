@@ -88,7 +88,7 @@ export function Marketplace() {
           </Button>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:gap-8">
-          {showFilters ? (
+          {showFilters && (
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               <div className="lg:col-span-1">
                 <JobFilters
@@ -100,7 +100,8 @@ export function Marketplace() {
                 <JobList jobs={jobs} isLoading={isLoading} />
               </div>
             </div>
-          ) : (
+          )}
+          {!showFilters && (
             <JobList jobs={jobs} isLoading={isLoading} />
           )}
         </div>
