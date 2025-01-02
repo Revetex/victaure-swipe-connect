@@ -74,7 +74,6 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
       }}
-      redirectTo={window.location.origin + "/auth/callback"}
     />
   );
 });

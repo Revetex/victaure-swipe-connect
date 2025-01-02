@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
-import { VideoPlayer } from "@/components/auth/VideoPlayer";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -64,6 +65,12 @@ export default function Auth() {
     console.log("Video network state:", video.networkState);
     console.log("Video error:", video.error?.message);
     setVideoError(true);
+    setIsVideoLoading(false);
+  };
+
+  const handleVideoLoad = () => {
+    console.log("Vidéo chargée avec succès");
+    setIsVideoLoading(false);
   };
 
   return (
@@ -85,20 +92,52 @@ export default function Auth() {
 
           {/* Auth Card */}
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
+            <BiometricAuth />
+            
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card/50 px-2 text-muted-foreground backdrop-blur-sm">
+                  ou continuez avec
+                </span>
+              </div>
+            </div>
+
+            {/* Auth Form */}
             <AuthForm />
           </div>
 
           {/* Video Section */}
-          {videoError ? (
-            <div className="mt-8 w-full aspect-video bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
-              <p>La vidéo n'a pas pu être chargée</p>
-            </div>
-          ) : (
-            <VideoPlayer 
-              onError={handleVideoError}
-              onLoad={() => {}}
-            />
-          )}
+          <div className="mt-8 w-full rounded-xl overflow-hidden shadow-lg relative">
+            {isVideoLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )}
+            {videoError ? (
+              <div className="aspect-video bg-muted flex items-center justify-center text-muted-foreground">
+                <p>La vidéo n'a pas pu être chargée</p>
+              </div>
+            ) : (
+              <video
+                className="w-full aspect-video object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                controls
+                onError={handleVideoError}
+                onLoadedData={handleVideoLoad}
+              >
+                <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
+                Votre navigateur ne supporte pas la lecture de vidéos.
+              </video>
+            )}
+          </div>
         </div>
       </div>
     </div>

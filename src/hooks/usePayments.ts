@@ -12,22 +12,7 @@ interface PaymentTransaction {
   match?: {
     id: string;
     job?: {
-      title: string | null;
-    } | null;
-  } | null;
-}
-
-interface PaymentResponse {
-  id: string;
-  match_id: string | null;
-  amount: number;
-  payment_type: 'interac' | 'credit_card';
-  status: 'frozen' | 'released' | 'cancelled';
-  created_at: string;
-  match: {
-    id: string;
-    job: {
-      title: string | null;
+      title: string;
     } | null;
   } | null;
 }
@@ -50,30 +35,13 @@ export function usePayments() {
           created_at,
           match:matches (
             id,
-            job:jobs(
-              title
-            )
+            job:jobs(title)
           )
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      // Transform the response to match our expected type
-      const transformedData: PaymentTransaction[] = (data || []).map((item: any) => ({
-        id: item.id,
-        match_id: item.match_id,
-        amount: item.amount,
-        payment_type: item.payment_type,
-        status: item.status,
-        created_at: item.created_at,
-        match: item.match ? {
-          id: item.match.id,
-          job: item.match.job
-        } : null
-      }));
-
-      return transformedData;
+      return data as PaymentTransaction[];
     }
   });
 

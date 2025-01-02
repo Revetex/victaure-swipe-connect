@@ -6,14 +6,14 @@ import { cn } from "@/lib/utils";
 
 interface MessageSender {
   id: string;
-  full_name: string | null;
-  avatar_url: string | null;
+  full_name: string;
+  avatar_url: string;
 }
 
 interface MessageItemProps {
   id: string;
   content: string;
-  sender?: MessageSender; // Made optional to match Message type
+  sender: MessageSender;
   created_at: string;
   read: boolean;
   onMarkAsRead: (messageId: string) => void;
@@ -44,15 +44,15 @@ export function MessageItem({
     >
       <div className="flex gap-3">
         <Avatar className="h-10 w-10">
-          <AvatarImage src={sender?.avatar_url || ''} alt={sender?.full_name || 'User'} />
+          <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
           <AvatarFallback>
-            {sender?.full_name?.slice(0, 2).toUpperCase() || "??"}
+            {sender.full_name?.slice(0, 2).toUpperCase() || "??"}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start gap-2">
             <h3 className="font-medium truncate text-foreground">
-              {sender?.full_name || 'User'}
+              {sender.full_name}
             </h3>
             <span className="text-xs text-muted-foreground whitespace-nowrap">
               {formatDistanceToNow(new Date(created_at), { 
