@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JobFilters as JobFiltersComponent } from "./JobFilters";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
 
 interface JobFiltersPanelProps {
   filters: JobFilters;
@@ -20,6 +21,7 @@ export function JobFiltersPanel({
   setOpenLocation
 }: JobFiltersPanelProps) {
   const isMobile = useIsMobile();
+  const [showFilters, setShowFilters] = useState(false);
 
   if (isMobile) {
     return (
@@ -51,28 +53,42 @@ export function JobFiltersPanel({
   }
 
   return (
-    <div className="hidden">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4" />
-          <h3 className="font-semibold">Filtres</h3>
+    <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 border-b">
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={() => setShowFilters(!showFilters)}
+        className="w-full mb-4"
+      >
+        <Filter className="w-4 h-4 mr-2" />
+        {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+      </Button>
+
+      {showFilters && (
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4" />
+              <h3 className="font-semibold">Filtres</h3>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => window.location.reload()}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Actualiser
+            </Button>
+          </div>
+          <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
+            <JobFiltersComponent
+              filters={filters}
+              onFilterChange={onFilterChange}
+            />
+          </ScrollArea>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => window.location.reload()}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Actualiser
-        </Button>
-      </div>
-      <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
-        <JobFiltersComponent
-          filters={filters}
-          onFilterChange={onFilterChange}
-        />
-      </ScrollArea>
+      )}
     </div>
   );
 }
