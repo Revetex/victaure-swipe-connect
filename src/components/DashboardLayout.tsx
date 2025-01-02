@@ -41,7 +41,7 @@ export function DashboardLayout() {
     >
       <div className="dashboard-card h-full relative">
         {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 h-full overflow-hidden">
+          <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto">
             {component}
             {currentPage === 1 && (
               <div className="mt-6">
@@ -57,7 +57,7 @@ export function DashboardLayout() {
   );
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
+    <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed overflow-hidden">
       {showMVictor && (
         <MrVictaureWelcome 
           onDismiss={() => setShowMVictor(false)}
@@ -68,7 +68,7 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="relative z-10 flex-1 overflow-hidden">
+      <div className="relative flex-1 overflow-y-auto">
         {!isEditing && (
           <>
             <div className="absolute top-1/2 left-4 z-20">
@@ -94,7 +94,7 @@ export function DashboardLayout() {
           </>
         )}
 
-        <div className="container mx-auto px-4 h-full py-6">
+        <div className="container mx-auto px-4 h-full py-6 overflow-y-auto">
           <motion.div 
             className="h-full max-w-[1200px] mx-auto"
             variants={containerVariants}
