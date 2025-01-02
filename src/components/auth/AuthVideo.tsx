@@ -47,6 +47,20 @@ export const AuthVideo = () => {
     }
   };
 
+  const handleSeeking = () => {
+    setIsScrubbing(true);
+  };
+
+  const handleSeeked = () => {
+    setIsScrubbing(false);
+    // Resume playback if it was playing before seeking
+    if (isPlaying && videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.error("Error resuming video after seeking:", error);
+      });
+    }
+  };
+
   return (
     <div className="mt-8 w-full rounded-xl overflow-hidden shadow-lg relative">
       {isVideoLoading && (
@@ -70,6 +84,8 @@ export const AuthVideo = () => {
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
             onTimeUpdate={handleTimeUpdate}
+            onSeeking={handleSeeking}
+            onSeeked={handleSeeked}
             controls={isPlaying}
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
