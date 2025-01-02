@@ -14,7 +14,7 @@ import { ScrapedJobs } from "./dashboard/ScrapedJobs";
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(2); // Start with M. Victaure page
+  const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [showMVictor, setShowMVictor] = useState(true);
 
@@ -27,7 +27,7 @@ export function DashboardLayout() {
   };
 
   const handleRequestChat = () => {
-    setCurrentPage(2); // Switch to chat page
+    setCurrentPage(2);
   };
 
   const renderDashboardSection = (
@@ -39,11 +39,15 @@ export function DashboardLayout() {
       variants={itemVariants} 
       className={`transform transition-all duration-300 ${className}`}
     >
-      <div className="dashboard-card h-full">
+      <div className="dashboard-card h-full relative">
         {padding ? (
           <div className="p-3 sm:p-4 md:p-6 h-full overflow-hidden">
             {component}
-            {currentPage === 1 && <ScrapedJobs />}
+            {currentPage === 1 && (
+              <div className="mt-6">
+                <ScrapedJobs />
+              </div>
+            )}
           </div>
         ) : (
           component
@@ -98,7 +102,7 @@ export function DashboardLayout() {
             animate="visible"
           >
             {currentPage === 1 && (
-              <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : ""}>
+              <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : "relative"}>
                 {renderDashboardSection(
                   <VCard 
                     onEditStateChange={setIsEditing}
