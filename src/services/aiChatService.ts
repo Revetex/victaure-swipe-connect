@@ -51,7 +51,7 @@ ${message}
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Hugging Face API Error:", errorText);
-      throw new Error(errorText);
+      throw new Error("Erreur de l'API Hugging Face: " + errorText);
     }
 
     const result = await response.json();
@@ -68,6 +68,7 @@ ${message}
 
   } catch (error) {
     console.error("Error generating AI response:", error);
+    toast.error("Désolé, je n'ai pas pu générer une réponse. Veuillez réessayer.");
     throw error;
   }
 }
