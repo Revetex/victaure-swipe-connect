@@ -1,20 +1,16 @@
-import { ExtendedJsPDF } from '../types';
+import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
-import { drawSection } from '../../helpers';
 
 export const renderEducation = (
   doc: ExtendedJsPDF,
   profile: UserProfile,
-  yPos: number,
-  accentColor: string
+  yPos: number
 ): number => {
   let currentY = yPos;
 
   if (profile.education && profile.education.length > 0) {
     currentY += 10;
-    drawSection(doc, currentY, 180, 15 + (profile.education.length * 25), accentColor);
-
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(pdfStyles.colors.text.primary);
@@ -51,4 +47,4 @@ export const renderEducation = (
   }
 
   return currentY;
-};
+}

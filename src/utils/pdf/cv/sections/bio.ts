@@ -1,20 +1,16 @@
-import { ExtendedJsPDF } from '../types';
+import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
-import { drawSection } from '../../helpers';
 
 export const renderBio = (
   doc: ExtendedJsPDF,
   profile: UserProfile,
-  yPos: number,
-  accentColor: string
+  yPos: number
 ): number => {
   let currentY = yPos;
 
   if (profile.bio) {
     currentY += 10;
-    drawSection(doc, currentY, 180, 30, accentColor);
-
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(pdfStyles.colors.text.primary);
@@ -30,4 +26,4 @@ export const renderBio = (
   }
 
   return currentY;
-};
+}

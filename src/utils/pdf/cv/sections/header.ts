@@ -1,19 +1,13 @@
-import { ExtendedJsPDF } from '../types';
+import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
 import { loadImage } from '../utils';
-import { drawHeader } from '../../helpers';
 
 export const renderHeader = async (
   doc: ExtendedJsPDF,
   profile: UserProfile,
-  yPos: number,
-  accentColor: string = '#1E40AF'
+  yPos: number
 ): Promise<number> => {
-  // Add header with custom color
-  const headerHeight = 50;
-  drawHeader(doc, headerHeight, accentColor, accentColor + '80');
-
   let currentY = yPos;
 
   // Add profile picture if available
@@ -38,7 +32,7 @@ export const renderHeader = async (
   }
 
   // Header with name and role
-  doc.setTextColor(pdfStyles.colors.background);
+  doc.setTextColor(pdfStyles.colors.text.primary);
   doc.setFontSize(pdfStyles.fonts.header.size);
   doc.setFont('helvetica', pdfStyles.fonts.header.style);
   doc.text(profile.full_name || '', profile.avatar_url ? pdfStyles.margins.left + 35 : pdfStyles.margins.left, currentY);
@@ -52,4 +46,4 @@ export const renderHeader = async (
   }
 
   return currentY;
-};
+}

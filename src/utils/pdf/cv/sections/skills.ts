@@ -1,7 +1,6 @@
-import { ExtendedJsPDF } from '../types';
+import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
-import { drawSection } from '../../helpers';
 
 export const renderSkills = (
   doc: ExtendedJsPDF,
@@ -36,4 +35,4 @@ export const renderSkills = (
   }
 
   return currentY;
-};
+}

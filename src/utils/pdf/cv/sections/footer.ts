@@ -1,5 +1,4 @@
-import { ExtendedJsPDF } from '../types';
-import { pdfStyles } from '../styles';
+import { ExtendedJsPDF } from '../../types';
 import QRCode from 'qrcode';
 
 export const renderFooter = async (
@@ -11,8 +10,8 @@ export const renderFooter = async (
       margin: 0,
       width: 256,
       color: {
-        dark: pdfStyles.colors.text.primary.slice(1),
-        light: '#0000'
+        dark: '#000000',
+        light: '#FFFFFF'
       }
     });
     doc.addImage(qrDataUrl, 'PNG', 170, 260, 30, 30);
@@ -25,6 +24,6 @@ export const renderFooter = async (
   doc.rect(0, 280, 210, 17, 'F');
   
   doc.setFontSize(8);
-  doc.setTextColor(pdfStyles.colors.text.muted);
+  doc.setTextColor(128, 128, 128);
   doc.text('Créé sur victaure.com', 105, 285, { align: 'center' });
-};
+}

@@ -1,4 +1,4 @@
-import { ExtendedJsPDF } from '../types';
+import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
 
@@ -27,4 +27,4 @@ export const renderContact = (
   });
 
   return currentY;
-};
+}
