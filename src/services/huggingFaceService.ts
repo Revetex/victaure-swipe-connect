@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export async function generateAIResponse(message: string) {
+export async function generateAIResponse(message: string, profile?: any) {
   console.info("Sending request to Hugging Face API...");
   
   try {
@@ -15,6 +15,10 @@ export async function generateAIResponse(message: string) {
     }
 
     const API_TOKEN = secretData;
+
+    // Include profile context if provided
+    const contextPrompt = profile ? 
+      `Context: User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : '';
     
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -25,8 +29,13 @@ export async function generateAIResponse(message: string) {
           "Authorization": `Bearer ${API_TOKEN}`
         },
         body: JSON.stringify({
-          inputs: `<|im_start|>user
-${message}<|im_end|>
+          inputs: `<|im_start|>system
+You are Mr. Victaure, a professional and friendly AI assistant. You help users with their job search and career development.
+${contextPrompt}
+<|im_end|>
+<|im_start|>user
+${message}
+<|im_end|>
 <|im_start|>assistant
 `,
           parameters: {
