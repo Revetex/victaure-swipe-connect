@@ -1,14 +1,14 @@
+import { ExtendedJsPDF } from '../types';
+import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
-import type { ExtendedJsPDF } from '../../types';
-import type { UserProfile } from '@/types/profile';
 
-export const renderContactInfo = (
-  doc: ExtendedJsPDF, 
-  profile: UserProfile, 
+export const renderContact = (
+  doc: ExtendedJsPDF,
+  profile: UserProfile,
   yPos: number
 ): number => {
   let currentY = yPos + 10;
-  
+
   doc.setTextColor(pdfStyles.colors.text.primary);
   doc.setFontSize(pdfStyles.fonts.body.size);
   doc.setFont('helvetica', pdfStyles.fonts.body.style);

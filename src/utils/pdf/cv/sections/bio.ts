@@ -3,7 +3,7 @@ import { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
 import { drawSection } from '../../helpers';
 
-export const renderSkills = (
+export const renderBio = (
   doc: ExtendedJsPDF,
   profile: UserProfile,
   yPos: number,
@@ -11,31 +11,22 @@ export const renderSkills = (
 ): number => {
   let currentY = yPos;
 
-  if (profile.skills && profile.skills.length > 0) {
-    drawSection(doc, currentY, 180, 20, accentColor);
+  if (profile.bio) {
+    currentY += 10;
+    drawSection(doc, currentY, 180, 30, accentColor);
 
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(pdfStyles.colors.text.primary);
-    doc.text('Compétences', pdfStyles.margins.left, currentY);
+    doc.text('À propos', pdfStyles.margins.left, currentY);
     
     currentY += 8;
     doc.setFontSize(pdfStyles.fonts.body.size);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(pdfStyles.colors.text.secondary);
-    
-    const skillsPerRow = 3;
-    const skillChunks = [];
-    for (let i = 0; i < profile.skills.length; i += skillsPerRow) {
-      skillChunks.push(profile.skills.slice(i, i + skillsPerRow));
-    }
-
-    skillChunks.forEach(chunk => {
-      const skillsText = chunk.join(' • ');
-      doc.text(skillsText, pdfStyles.margins.left, currentY);
-      currentY += 6;
-    });
-    currentY += 10;
+    const bioLines = doc.splitTextToSize(profile.bio, 170);
+    doc.text(bioLines, pdfStyles.margins.left, currentY);
+    currentY += (bioLines.length * 5) + 15;
   }
 
   return currentY;
