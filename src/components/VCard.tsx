@@ -18,6 +18,7 @@ import { generateVCardPDF } from "@/utils/pdfGenerator";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
+  onRequestChat?: () => void;
 }
 
 interface StyleOption {
@@ -66,7 +67,7 @@ const styleOptions: StyleOption[] = [
   }
 ];
 
-export function VCardComponent({ onEditStateChange }: VCardProps) {
+export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
