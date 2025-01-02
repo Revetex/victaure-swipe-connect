@@ -10,7 +10,7 @@ import { VCardSkills } from "./VCardSkills";
 import { VCardCertifications } from "./VCardCertifications";
 import { VCardEducation } from "./VCardEducation";
 import { Button } from "./ui/button";
-import { MessageSquare, Download } from "lucide-react";
+import { MessageSquare, Download, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
@@ -21,12 +21,28 @@ interface VCardProps {
 }
 
 export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps) {
-  const { profile, isLoading } = useProfile();
+  const { profile, setProfile, isLoading } = useProfile();
+  const [isEditing, setIsEditing] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
 
-  const handleEditRequest = () => {
-    toast.info("Pour modifier votre profil, discutez avec M. Victaure !");
-    if (onRequestChat) {
-      onRequestChat();
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+    if (onEditStateChange) {
+      onEditStateChange(!isEditing);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      // Save changes will be handled by the useProfile hook
+      setIsEditing(false);
+      if (onEditStateChange) {
+        onEditStateChange(false);
+      }
+      toast.success("Profil mis à jour avec succès");
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast.error("Erreur lors de la sauvegarde du profil");
     }
   };
 
@@ -39,6 +55,21 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
       console.error('Error generating PDF:', error);
       toast.error("Erreur lors de la génération du PDF");
     }
+  };
+
+  const handleAddSkill = () => {
+    if (!newSkill.trim() || !profile) return;
+    
+    const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+    setProfile({ ...profile, skills: updatedSkills });
+    setNewSkill("");
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    if (!profile) return;
+    
+    const updatedSkills = profile.skills?.filter(skill => skill !== skillToRemove) || [];
+    setProfile({ ...profile, skills: updatedSkills });
   };
 
   if (isLoading) {
@@ -61,8 +92,8 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
           <div className="flex items-start justify-between gap-4">
             <VCardHeader
               profile={profile}
-              isEditing={false}
-              setProfile={() => {}}
+              isEditing={isEditing}
+              setProfile={setProfile}
             />
             <div className="shrink-0">
               <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
@@ -78,8 +109,8 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
           <VCardContact
             profile={profile}
-            isEditing={false}
-            setProfile={() => {}}
+            isEditing={isEditing}
+            setProfile={setProfile}
           />
 
           <motion.div 
@@ -87,34 +118,44 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
           >
             <VCardSkills
               profile={profile}
-              isEditing={false}
-              setProfile={() => {}}
-              newSkill=""
-              setNewSkill={() => {}}
-              handleAddSkill={() => {}}
-              handleRemoveSkill={() => {}}
+              isEditing={isEditing}
+              setProfile={setProfile}
+              newSkill={newSkill}
+              setNewSkill={setNewSkill}
+              handleAddSkill={handleAddSkill}
+              handleRemoveSkill={handleRemoveSkill}
             />
 
             <VCardCertifications
               profile={profile}
-              isEditing={false}
-              setProfile={() => {}}
+              isEditing={isEditing}
+              setProfile={setProfile}
             />
 
             <VCardEducation
               profile={profile}
-              isEditing={false}
-              setProfile={() => {}}
+              isEditing={isEditing}
+              setProfile={setProfile}
             />
 
             <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/20">
-              <Button
-                onClick={handleEditRequest}
-                className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
-              >
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Modifier mon profil
-              </Button>
+              {isEditing ? (
+                <Button
+                  onClick={handleSave}
+                  className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Sauvegarder
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleEditToggle}
+                  className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
+                >
+                  <Edit2 className="mr-2 h-4 w-4" />
+                  Modifier mon profil
+                </Button>
+              )}
 
               <Button
                 onClick={handleDownloadPDF}
@@ -122,6 +163,14 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
               >
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger PDF
+              </Button>
+
+              <Button
+                onClick={onRequestChat}
+                className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
+              >
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Discuter avec M. Victaure
               </Button>
             </div>
           </motion.div>
