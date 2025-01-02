@@ -157,7 +157,7 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
       className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.font}`}
       style={{ '--accent-color': selectedStyle.color } as React.CSSProperties}
     >
-      <Card className="border-none shadow-lg bg-victaure-metal">
+      <Card className="border-none shadow-lg bg-gradient-to-br from-indigo-600 to-indigo-800">
         <CardContent className="p-6 space-y-8">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
             <VCardHeader
