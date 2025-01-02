@@ -11,7 +11,7 @@ export function useNotes() {
   const addNote = () => {
     if (newNote.trim()) {
       const note = {
-        id: Date.now(),
+        id: Date.now().toString(), // Convert to string
         text: newNote,
         color: selectedColor,
       };
@@ -25,7 +25,7 @@ export function useNotes() {
     }
   };
 
-  const deleteNote = (id: number) => {
+  const deleteNote = (id: string) => {
     setNotes(notes.filter(note => note.id !== id));
     toast({
       title: "Note supprimée",

@@ -15,8 +15,8 @@ interface TodoSectionProps {
   onTimeChange: (time?: string) => void;
   onAllDayChange: (checked: boolean) => void;
   onAdd: () => void;
-  onToggle: (id: number) => void;
-  onDelete: (id: number) => void;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
   type?: 'notes' | 'tasks';
 }
 

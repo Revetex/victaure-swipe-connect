@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Todo, StickyNote } from "@/types/todo";
-import { supabase } from "@/integrations/supabase/client";
+import { Todo } from "@/types/todo";
 
 export function useTodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -14,7 +13,7 @@ export function useTodoList() {
   const addTodo = async () => {
     if (newTodo.trim()) {
       const todo = {
-        id: Date.now(),
+        id: Date.now().toString(), // Convert to string
         text: newTodo,
         completed: false,
         dueDate: selectedDate,
@@ -31,26 +30,10 @@ export function useTodoList() {
         title: "Tâche ajoutée",
         description: "Votre nouvelle tâche a été ajoutée avec succès.",
       });
-
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        await supabase
-          .from('notifications')
-          .insert([{
-            user_id: user.id,
-            title: "Nouvelle tâche",
-            message: newTodo,
-            read: false
-          }]);
-      } catch (error) {
-        console.error('Error adding notification:', error);
-      }
     }
   };
 
-  const toggleTodo = (id: number) => {
+  const toggleTodo = (id: string) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
         return { ...todo, completed: !todo.completed };
@@ -59,7 +42,7 @@ export function useTodoList() {
     }));
   };
 
-  const deleteTodo = (id: number) => {
+  const deleteTodo = (id: string) => {
     setTodos(todos.filter(todo => todo.id !== id));
     toast({
       title: "Tâche supprimée",

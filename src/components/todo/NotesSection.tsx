@@ -13,7 +13,7 @@ interface NotesSectionProps {
   onNoteChange: (value: string) => void;
   onColorChange: (color: string) => void;
   onAdd: () => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 export function NotesSection({
