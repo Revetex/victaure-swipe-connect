@@ -158,7 +158,7 @@ export function VCardEducation({
           <Button 
             onClick={handleAddEducation} 
             variant="outline" 
-            className="w-full mt-4 border-white/10 hover:border-white/20 bg-white/5 backdrop-blur-sm"
+            className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             Ajouter une formation
           </Button>

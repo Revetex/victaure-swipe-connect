@@ -136,7 +136,7 @@ export function VCardExperiences({
           <Button
             onClick={handleAddExperience}
             variant="outline"
-            className="w-full border-white/10 hover:border-white/20 bg-white/5 backdrop-blur-sm"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             Ajouter une expérience
           </Button>
