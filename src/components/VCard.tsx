@@ -50,7 +50,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const handleDownloadPDF = async () => {
     if (!profile) return;
     try {
-      await generateVCardPDF(profile, accentColor);
+      await generateVCardPDF(profile);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
