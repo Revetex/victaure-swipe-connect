@@ -77,7 +77,7 @@ export function Marketplace() {
   return (
     <section className="py-8 sm:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-4 lg:hidden">
+        <div className="mb-4">
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
@@ -88,7 +88,7 @@ export function Marketplace() {
           </Button>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
-          <div className={`${!showFilters && "hidden lg:block"} lg:sticky lg:top-4 lg:h-[calc(100vh-6rem)] lg:overflow-auto`}>
+          <div className={`${!showFilters && "hidden"} lg:sticky lg:top-4 lg:h-[calc(100vh-6rem)] lg:overflow-auto`}>
             <JobFilters
               filters={filters}
               onFilterChange={handleFilterChange}
