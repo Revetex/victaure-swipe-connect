@@ -1,12 +1,12 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bot, Trash2 } from "lucide-react";
+import { ArrowLeft, Bot, Trash2, ArrowDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ConversationViewProps {
   messages: any[];
@@ -34,14 +34,23 @@ export function ConversationView({
   onClearChat,
 }: ConversationViewProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    setShowScrollButton(!isNearBottom);
+  };
+
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (!showScrollButton) {
+      scrollToBottom();
+    }
+  }, [messages, showScrollButton]);
 
   const handleClearChat = async () => {
     try {
@@ -59,7 +68,7 @@ export function ConversationView({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.2 }}
-      className="flex flex-col h-full"
+      className="flex flex-col h-full relative"
     >
       <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
         <div className="flex items-center gap-3">
@@ -94,26 +103,50 @@ export function ConversationView({
         </Button>
       </header>
 
-      <main className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full px-4">
-          <div className="space-y-4 py-4">
-            {messages.map((message, index) => (
-              <ChatMessage
-                key={message.id}
-                content={message.content}
-                sender={message.sender}
-                thinking={message.thinking}
-                showTimestamp={
-                  index === 0 || 
-                  messages[index - 1]?.sender !== message.sender ||
-                  new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
-                }
-                timestamp={message.timestamp}
-              />
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
+      <main className="flex-1 overflow-hidden relative">
+        <ScrollArea 
+          className="h-full px-4" 
+          onScroll={handleScroll}
+        >
+          <AnimatePresence mode="popLayout">
+            <div className="space-y-4 py-4">
+              {messages.map((message, index) => (
+                <ChatMessage
+                  key={message.id}
+                  content={message.content}
+                  sender={message.sender}
+                  thinking={message.thinking}
+                  showTimestamp={
+                    index === 0 || 
+                    messages[index - 1]?.sender !== message.sender ||
+                    new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
+                  }
+                  timestamp={message.timestamp}
+                />
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </AnimatePresence>
         </ScrollArea>
+
+        <AnimatePresence>
+          {showScrollButton && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute bottom-4 right-4"
+            >
+              <Button
+                size="icon"
+                className="rounded-full shadow-lg"
+                onClick={scrollToBottom}
+              >
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0">

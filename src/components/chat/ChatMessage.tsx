@@ -54,7 +54,7 @@ export const ChatMessage = memo(function ChatMessage({
             : "bg-primary text-primary-foreground",
           thinking && "animate-pulse"
         )}>
-          <p className="text-sm whitespace-pre-wrap break-words">
+          <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {content}
           </p>
         </div>

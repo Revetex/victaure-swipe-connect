@@ -42,7 +42,7 @@ export function ChatInput({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground"
+          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary"
           disabled={isThinking}
         />
         <div className="absolute bottom-2 right-2 flex items-center gap-2">
@@ -67,7 +67,10 @@ export function ChatInput({
             type="button"
             size="icon"
             onClick={onSend}
-            className="h-8 w-8"
+            className={cn(
+              "h-8 w-8 transition-transform",
+              value.trim() && !isThinking && "hover:scale-105"
+            )}
             disabled={!value.trim() || isThinking}
           >
             <Send className="h-4 w-4" />
