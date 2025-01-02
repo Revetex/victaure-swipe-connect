@@ -1,9 +1,8 @@
 import jsPDF from 'jspdf';
-import QRCode from 'qrcode';
 import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from './styles';
 import { drawHeader } from '../helpers';
-import type { ExtendedJsPDF } from './types';
+import type { ExtendedJsPDF } from '../types';
 import { renderHeader } from './sections/header';
 import { renderContact } from './sections/contact';
 import { renderBio } from './sections/bio';
@@ -43,10 +42,10 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
   // Render each section and update yPos
   yPos = await renderHeader(doc, profile, yPos);
   yPos = renderContact(doc, profile, yPos);
-  yPos = renderBio(doc, profile, yPos, accentColor);
+  yPos = renderBio(doc, profile, yPos);
   yPos = renderSkills(doc, profile, yPos);
   yPos = renderExperiences(doc, profile, yPos);
-  yPos = renderEducation(doc, profile, yPos, accentColor);
+  yPos = renderEducation(doc, profile, yPos);
   await renderFooter(doc, accentColor);
 
   // Save the PDF
