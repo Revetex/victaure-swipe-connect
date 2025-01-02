@@ -17,12 +17,12 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        // Fetch profile data
+        // Fetch profile data using maybeSingle() instead of single()
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         if (profileError) throw profileError;
 
