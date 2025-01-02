@@ -27,6 +27,8 @@ ${jobs.map((job: any) => `- ${job.title} chez ${job.company} à ${job.location} 
       `${message}\n\nContext des offres d'emploi actuelles:\n${jobContext}` : 
       message;
 
+    console.log("Sending request to Hugging Face API...");
+    
     const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
       method: "POST",
       headers: {
@@ -52,25 +54,33 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
       }),
     });
 
+    console.log("Response status:", response.status);
+
     if (!response.ok) {
-      // Clone the response before reading it as JSON
-      const errorData = await response.clone().json().catch(() => null);
-      console.error("Hugging Face API Error:", errorData);
+      const errorText = await response.text();
+      console.error("Hugging Face API Error:", errorText);
       
-      if (response.status === 400) {
-        const errorMessage = errorData?.error || "Erreur d'authentification avec Hugging Face";
-        if (errorMessage.includes("token")) {
+      try {
+        const errorData = JSON.parse(errorText);
+        if (response.status === 400 && errorData.error?.includes("token")) {
           toast.error("Le token Hugging Face semble invalide. Veuillez vérifier votre configuration.");
           throw new Error("Invalid Hugging Face token");
         }
+      } catch (e) {
+        console.error("Error parsing error response:", e);
       }
       
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Read the response only once
     const result = await response.json();
+    console.log("API Response:", result);
+
     const generatedText = Array.isArray(result) ? result[0].generated_text : result.generated_text;
+
+    if (!generatedText) {
+      throw new Error("Réponse invalide de l'API");
+    }
 
     // Extract the assistant's response (everything after the last [/INST] tag)
     const assistantResponse = generatedText.split("[/INST]").pop()?.trim();
@@ -85,7 +95,7 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     
     if (error instanceof Error) {
       if (error.message.includes("token")) {
-        throw new Error("Token Hugging Face invalide. Veuillez le mettre à jour.");
+        throw new Error("Token Hugging Face invalide");
       }
     }
     
