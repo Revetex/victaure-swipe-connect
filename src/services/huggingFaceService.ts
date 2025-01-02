@@ -46,12 +46,14 @@ Message de l'utilisateur : ${message} [/INST]`,
     console.log("Response status:", response.status);
 
     if (!response.ok) {
+      const responseText = await response.text();
       let errorMessage;
+      
       try {
-        const errorData = await response.json();
+        const errorData = JSON.parse(responseText);
         errorMessage = errorData.error || 'Unknown error';
       } catch {
-        errorMessage = await response.text();
+        errorMessage = responseText;
       }
 
       console.error("Hugging Face API Error:", errorMessage);
