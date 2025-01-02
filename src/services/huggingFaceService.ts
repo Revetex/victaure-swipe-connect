@@ -46,12 +46,9 @@ Message de l'utilisateur : ${message} [/INST]`,
     console.log("Response status:", response.status);
 
     if (!response.ok) {
-      // Clone the response before attempting to read it
-      const clonedResponse = response.clone();
       let errorMessage;
-
       try {
-        const errorData = await clonedResponse.json();
+        const errorData = await response.json();
         errorMessage = errorData.error || 'Unknown error';
       } catch {
         errorMessage = await response.text();
