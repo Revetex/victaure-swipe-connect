@@ -43,20 +43,17 @@ Message de l'utilisateur : ${message} [/INST]`,
       }),
     });
 
-    console.log("Response status:", response.status);
-
     if (!response.ok) {
-      const responseText = await response.text();
-      let errorMessage;
+      const errorText = await response.text();
+      console.error("Hugging Face API Error Response:", errorText);
       
+      let errorMessage;
       try {
-        const errorData = JSON.parse(responseText);
+        const errorData = JSON.parse(errorText);
         errorMessage = errorData.error || 'Unknown error';
       } catch {
-        errorMessage = responseText;
+        errorMessage = errorText;
       }
-
-      console.error("Hugging Face API Error:", errorMessage);
       
       if (response.status === 400 && errorMessage.includes("Authorization")) {
         toast.error("Le token d'API semble invalide. Veuillez vérifier votre configuration.");
