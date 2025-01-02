@@ -68,10 +68,10 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="relative flex-1 overflow-y-auto">
+      <div className="relative flex-1 overflow-y-auto pb-20">
         {!isEditing && (
           <>
-            <div className="absolute top-1/2 left-4 z-20">
+            <div className="fixed top-1/2 left-4 z-20">
               <Button
                 variant="ghost"
                 size="icon"
@@ -81,7 +81,7 @@ export function DashboardLayout() {
                 <ChevronLeft className="h-6 w-6" />
               </Button>
             </div>
-            <div className="absolute top-1/2 right-4 z-20">
+            <div className="fixed top-1/2 right-4 z-20">
               <Button
                 variant="ghost"
                 size="icon"
@@ -127,10 +127,12 @@ export function DashboardLayout() {
         </div>
 
         {!isEditing && (
-          <DashboardNavigation 
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
+          <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4">
+            <DashboardNavigation 
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         )}
       </div>
     </div>

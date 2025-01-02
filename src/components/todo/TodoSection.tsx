@@ -36,9 +36,10 @@ export function TodoSection({
   type = 'tasks'
 }: TodoSectionProps) {
   const title = type === 'notes' ? 'Notes' : 'Tâches';
+  const sectionClass = type === 'notes' ? 'notes-section' : 'task-section';
   
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className={`space-y-4 h-full flex flex-col ${sectionClass}`}>
       <div className="flex items-center gap-2 text-primary">
         <ListTodo className="h-5 w-5" />
         <h2 className="text-lg font-semibold">{title}</h2>

@@ -1,16 +1,22 @@
-@layer components {
-  .glass-card {
-    @apply relative overflow-hidden;
-    &::before {
-      content: '';
-      @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-300;
-    }
-    &:hover::before {
-      @apply opacity-100;
-    }
-  }
+.dashboard-card {
+  @apply bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
+}
 
-  .editing-mode {
-    @apply ring-2 ring-blue-500 shadow-lg shadow-blue-500/20;
-  }
+.task-section {
+  @apply bg-background/80 backdrop-blur-sm p-6 rounded-lg border border-border/50;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.notes-section {
+  @apply bg-background/80 backdrop-blur-sm p-6 rounded-lg border border-border/50;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

@@ -41,7 +41,7 @@ export function NotesSection({
   };
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className="space-y-4 h-full flex flex-col notes-section">
       <div className="flex items-center gap-2 text-primary">
         <StickyNoteIcon className="h-5 w-5" />
         <h2 className="text-lg font-semibold">Notes</h2>
