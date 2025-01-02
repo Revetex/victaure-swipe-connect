@@ -35,7 +35,9 @@ export function usePayments() {
           created_at,
           match:matches (
             id,
-            job:jobs(title)
+            job:jobs(
+              title
+            )
           )
         `)
         .order('created_at', { ascending: false });

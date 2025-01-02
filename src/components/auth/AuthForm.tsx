@@ -65,7 +65,7 @@ export const AuthForm = memo(function AuthForm() {
             password_label: "Mot de passe",
             button_label: "S'inscrire",
             email_input_placeholder: "Votre adresse email",
-            password_input_placeholder: "Choisissez un mot de passe (min. 8 caractères + 1 chiffre)",
+            password_input_placeholder: "Choisissez un mot de passe",
             link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
           },
           forgotten_password: {
@@ -75,14 +75,6 @@ export const AuthForm = memo(function AuthForm() {
         },
       }}
       redirectTo={window.location.origin + "/auth/callback"}
-      onPasswordChange={({ password }) => {
-        if (password.length < 8) {
-          throw new Error("Le mot de passe doit contenir au moins 8 caractères");
-        }
-        if (!/\d/.test(password)) {
-          throw new Error("Le mot de passe doit contenir au moins 1 chiffre");
-        }
-      }}
     />
   );
 });

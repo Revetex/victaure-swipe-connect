@@ -43,7 +43,10 @@ export function RecentActivity() {
           id,
           content,
           created_at,
-          sender:profiles!messages_sender_id_fkey(full_name)
+          sender:profiles!messages_sender_id_fkey(
+            id,
+            full_name
+          )
         `)
         .eq('receiver_id', user.id)
         .order('created_at', { ascending: false })
@@ -55,8 +58,14 @@ export function RecentActivity() {
         .select(`
           id,
           created_at,
-          job:jobs(title),
-          professional:profiles!matches_professional_id_fkey(full_name)
+          job:jobs(
+            id,
+            title
+          ),
+          professional:profiles!matches_professional_id_fkey(
+            id,
+            full_name
+          )
         `)
         .eq('employer_id', user.id)
         .order('created_at', { ascending: false })
@@ -76,14 +85,14 @@ export function RecentActivity() {
           id: msg.id,
           type: 'message' as const,
           title: 'Nouveau message',
-          description: `${msg.sender.full_name} vous a envoyé un message`,
+          description: `${msg.sender?.full_name || 'Utilisateur'} vous a envoyé un message`,
           created_at: msg.created_at
         })) || []),
         ...(matches?.map(match => ({
           id: match.id,
           type: 'match' as const,
           title: 'Nouveau match',
-          description: `${match.professional.full_name} a postulé pour "${match.job.title}"`,
+          description: `${match.professional?.full_name || 'Un professionnel'} a postulé pour "${match.job?.title || 'une offre'}"`,
           created_at: match.created_at
         })) || []),
         ...(notifications?.map(notif => ({
