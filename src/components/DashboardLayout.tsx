@@ -2,7 +2,7 @@ import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
@@ -38,6 +38,39 @@ export function DashboardLayout() {
     </motion.div>
   );
 
+  const renderCurrentPage = () => {
+    if (currentPage === 1) {
+      return (
+        <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : "relative"}>
+          {renderDashboardSection(
+            <VCard 
+              onEditStateChange={setIsEditing}
+              onRequestChat={handleRequestChat}
+            />,
+            'w-full h-full'
+          )}
+        </div>
+      );
+    }
+
+    if (currentPage === 2 && !isEditing) {
+      return renderDashboardSection(
+        <Messages />,
+        'w-full h-full'
+      );
+    }
+
+    if (currentPage === 3 && !isEditing) {
+      return renderDashboardSection(
+        <SwipeJob />,
+        'w-full h-full',
+        false
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       <main className="flex-1 relative">
@@ -48,28 +81,9 @@ export function DashboardLayout() {
             initial="hidden"
             animate="visible"
           >
-            {currentPage === 1 && (
-              <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : "relative"}>
-                {renderDashboardSection(
-                  <VCard 
-                    onEditStateChange={setIsEditing}
-                    onRequestChat={handleRequestChat}
-                  />,
-                  'w-full h-full'
-                )}
-              </div>
-            )}
-            
-            {currentPage === 2 && !isEditing && renderDashboardSection(
-              <Messages />,
-              'w-full h-full'
-            )}
-            
-            {currentPage === 3 && !isEditing && renderDashboardSection(
-              <SwipeJob />,
-              'w-full h-full',
-              false
-            )}
+            <AnimatePresence mode="sync">
+              {renderCurrentPage()}
+            </AnimatePresence>
           </motion.div>
         </div>
       </main>
