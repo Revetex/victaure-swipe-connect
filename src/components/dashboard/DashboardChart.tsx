@@ -24,7 +24,8 @@ export function DashboardChart() {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const [matchesResponse, messagesResponse] = await Promise.all([
+      // Use Promise.all to fetch data concurrently
+      const [{ data: matchesData, error: matchesError }, { data: messagesData, error: messagesError }] = await Promise.all([
         supabase
           .from('matches')
           .select('created_at')
@@ -37,15 +38,18 @@ export function DashboardChart() {
           .order('created_at')
       ]);
 
+      if (matchesError) throw matchesError;
+      if (messagesError) throw messagesError;
+
       const activityByDay = new Map<string, { matches: number; messages: number }>();
       
-      matchesResponse.data?.forEach(match => {
+      matchesData?.forEach(match => {
         const date = new Date(match.created_at).toLocaleDateString();
         const current = activityByDay.get(date) || { matches: 0, messages: 0 };
         activityByDay.set(date, { ...current, matches: current.matches + 1 });
       });
 
-      messagesResponse.data?.forEach(message => {
+      messagesData?.forEach(message => {
         const date = new Date(message.created_at).toLocaleDateString();
         const current = activityByDay.get(date) || { matches: 0, messages: 0 };
         activityByDay.set(date, { ...current, messages: current.messages + 1 });
