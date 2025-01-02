@@ -6,6 +6,7 @@ import { Briefcase, Building2, MapPin, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import type { ScrapedJob } from "@/types/database/scrapedJobs";
 
 export function ScrapedJobs() {
   const { data: jobs, isLoading } = useQuery({
@@ -18,7 +19,7 @@ export function ScrapedJobs() {
         .limit(10);
 
       if (error) throw error;
-      return data;
+      return data as ScrapedJob[];
     }
   });
 
