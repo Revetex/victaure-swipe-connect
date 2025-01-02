@@ -46,22 +46,25 @@ Message de l'utilisateur : ${message} [/INST]`,
     console.log("Response status:", response.status);
 
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
+      // Clone the response before reading it
+      const clonedResponse = response.clone();
+      
       try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText };
+        const errorData = await response.json();
+        console.error("Hugging Face API Error:", errorData);
+        
+        if (response.status === 400 && errorData.error?.includes("token")) {
+          toast.error("Le token d'API semble invalide. Veuillez vérifier votre configuration.");
+          throw new Error("Invalid Hugging Face token");
+        }
+        
+        throw new Error(`Erreur de l'API Hugging Face: ${errorData.error || 'Erreur inconnue'}`);
+      } catch (parseError) {
+        // If JSON parsing fails, try to get the raw text
+        const errorText = await clonedResponse.text();
+        console.error("Raw error response:", errorText);
+        throw new Error(`Erreur de l'API Hugging Face: ${errorText}`);
       }
-      
-      console.error("Hugging Face API Error:", errorData);
-      
-      if (response.status === 400 && errorData.error?.includes("token")) {
-        toast.error("Le token d'API semble invalide. Veuillez vérifier votre configuration.");
-        throw new Error("Invalid Hugging Face token");
-      }
-      
-      throw new Error(`Erreur de l'API Hugging Face: ${errorData.error || 'Erreur inconnue'}`);
     }
 
     const result = await response.json();
