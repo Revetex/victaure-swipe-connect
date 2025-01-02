@@ -9,9 +9,8 @@ import { VCardContact } from "./VCardContact";
 import { VCardSkills } from "./VCardSkills";
 import { VCardCertifications } from "./VCardCertifications";
 import { VCardEducation } from "./VCardEducation";
-import { VCardActions } from "./VCardActions";
 import { Button } from "./ui/button";
-import { MessageSquare, Download, QrCode } from "lucide-react";
+import { MessageSquare, Download } from "lucide-react";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
@@ -23,7 +22,6 @@ interface VCardProps {
 
 export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, isLoading } = useProfile();
-  const [showQR, setShowQR] = useState(false);
 
   const handleEditRequest = () => {
     toast.info("Pour modifier votre profil, discutez avec M. Victaure !");
@@ -58,13 +56,25 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
       transition={{ duration: 0.3 }}
       className="w-full max-w-4xl mx-auto"
     >
-      <Card className="border-none shadow-lg bg-gradient-to-br from-[#9b87f5] to-[#7E69AB]">
+      <Card className="border-none shadow-lg bg-victaure-metal">
         <CardContent className="p-6 space-y-8">
-          <VCardHeader
-            profile={profile}
-            isEditing={false}
-            setProfile={() => {}}
-          />
+          <div className="flex items-start justify-between gap-4">
+            <VCardHeader
+              profile={profile}
+              isEditing={false}
+              setProfile={() => {}}
+            />
+            <div className="shrink-0">
+              <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
+                <QRCodeSVG
+                  value={window.location.href}
+                  size={100}
+                  level="H"
+                  includeMargin={false}
+                />
+              </div>
+            </div>
+          </div>
 
           <VCardContact
             profile={profile}
@@ -100,7 +110,7 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
             <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/20">
               <Button
                 onClick={handleEditRequest}
-                className="bg-white hover:bg-white/90 text-[#7E69AB] transition-colors"
+                className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
               >
                 <MessageSquare className="mr-2 h-4 w-4" />
                 Modifier mon profil
@@ -108,37 +118,12 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
               <Button
                 onClick={handleDownloadPDF}
-                className="bg-white hover:bg-white/90 text-[#7E69AB] transition-colors"
+                className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger PDF
               </Button>
-
-              <Button
-                onClick={() => setShowQR(!showQR)}
-                className="bg-white hover:bg-white/90 text-[#7E69AB] transition-colors"
-              >
-                <QrCode className="mr-2 h-4 w-4" />
-                {showQR ? 'Masquer QR' : 'Afficher QR'}
-              </Button>
             </div>
-
-            {showQR && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex justify-center pt-4"
-              >
-                <div className="p-4 bg-white rounded-xl shadow-lg">
-                  <QRCodeSVG
-                    value={window.location.href}
-                    size={200}
-                    level="H"
-                    includeMargin={true}
-                  />
-                </div>
-              </motion.div>
-            )}
           </motion.div>
         </CardContent>
       </Card>
