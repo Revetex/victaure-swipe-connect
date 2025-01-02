@@ -8,6 +8,7 @@ export const AuthVideo = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isScrubbing, setIsScrubbing] = useState(false);
+  const [wasPlayingBeforeScrub, setWasPlayingBeforeScrub] = useState(false);
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     console.error("Erreur de chargement vidéo:", e);
@@ -48,13 +49,15 @@ export const AuthVideo = () => {
   };
 
   const handleSeeking = () => {
-    setIsScrubbing(true);
+    if (!isScrubbing) {
+      setWasPlayingBeforeScrub(isPlaying);
+      setIsScrubbing(true);
+    }
   };
 
   const handleSeeked = () => {
     setIsScrubbing(false);
-    // Resume playback if it was playing before seeking
-    if (isPlaying && videoRef.current) {
+    if (wasPlayingBeforeScrub && videoRef.current) {
       videoRef.current.play().catch(error => {
         console.error("Error resuming video after seeking:", error);
       });
