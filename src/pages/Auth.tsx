@@ -103,7 +103,7 @@ export default function Auth() {
               preload="auto"
               controls
             >
-              <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+              <source src="lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
               Votre navigateur ne supporte pas la lecture de vidéos.
             </video>
           </div>
