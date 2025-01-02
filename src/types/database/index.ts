@@ -1,14 +1,9 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+import type { ScrapedJobsTable } from './tables/scraped-jobs';
 
-export type Database = {
+export interface Database {
   public: {
     Tables: {
+      scraped_jobs: ScrapedJobsTable
       ai_chat_messages: {
         Row: {
           content: string
@@ -568,7 +563,7 @@ export type Database = {
           id?: string
           match_id?: string | null
           payment_type?: string | null
-          status?: string | null
+          status?: string
           stripe_payment_id?: string | null
           transaction_status?: string | null
           updated_at?: string | null
@@ -649,9 +644,9 @@ export type Database = {
           company_size?: string | null
           country?: string | null
           created_at?: string | null
-          email?: string
+          email: string
           full_name?: string | null
-          id?: string
+          id: string
           industry?: string | null
           last_seen?: string | null
           latitude?: number | null
@@ -666,135 +661,16 @@ export type Database = {
         }
         Relationships: []
       }
-      scraped_jobs: {
-        Row: {
-          id: string
-          title: string
-          company: string
-          location: string
-          description: string | null
-          url: string | null
-          posted_at: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          title: string
-          company: string
-          location: string
-          description?: string | null
-          url?: string | null
-          posted_at?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          title?: string
-          company?: string
-          location?: string
-          description?: string | null
-          url?: string | null
-          posted_at?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      skills: {
-        Row: {
-          category: string
-          created_at: string | null
-          id: string
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          category: string
-          created_at?: string | null
-          id?: string
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          category?: string
-          created_at?: string | null
-          id?: string
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      todos: {
-        Row: {
-          all_day: boolean | null
-          category: string | null
-          completed: boolean | null
-          created_at: string | null
-          due_date: string | null
-          due_time: string | null
-          id: string
-          priority: string | null
-          text: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          all_day?: boolean | null
-          category?: string | null
-          completed?: boolean | null
-          created_at?: string | null
-          due_date?: string | null
-          due_time?: string | null
-          id?: string
-          priority?: string | null
-          text: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          all_day?: boolean | null
-          category?: string | null
-          completed?: boolean | null
-          created_at?: string | null
-          due_date?: string | null
-          due_time?: string | null
-          id?: string
-          priority?: string | null
-          text?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "todos_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
-    Views: {
-      [_ in never]: never
-    }
+    Views: Record<string, never>
     Functions: {
       change_user_password: {
-        Args: {
-          current_password: string
-          new_password: string
-        }
+        Args: { current_password: string; new_password: string }
         Returns: boolean
       }
       get_secret: {
-        Args: {
-          secret_name: string
-        }
-        Returns: {
-          secret: string
-        }[]
+        Args: { secret_name: string }
+        Returns: { secret: string }[]
       }
     }
     Enums: {
@@ -812,105 +688,8 @@ export type Database = {
       job_source: "linkedin" | "indeed" | "direct"
       mission_type: "company" | "individual"
     }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+    CompositeTypes: Record<string, never>
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
-
-export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
-
-export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
-
-export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
-
-export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
-    | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
-    | { schema: keyof Database },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+export type * from './tables/scraped-jobs';
