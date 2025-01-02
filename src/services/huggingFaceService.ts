@@ -53,21 +53,22 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     });
 
     if (!response.ok) {
+      // Clone the response before reading it as JSON
       const errorData = await response.clone().json().catch(() => null);
       console.error("Hugging Face API Error:", errorData);
       
       if (response.status === 400) {
         const errorMessage = errorData?.error || "Erreur d'authentification avec Hugging Face";
         if (errorMessage.includes("token")) {
-          toast.error("Erreur d'authentification avec Hugging Face. Veuillez vérifier votre token d'accès.");
-        } else {
-          toast.error(errorMessage);
+          toast.error("Le token Hugging Face semble invalide. Veuillez vérifier votre configuration.");
+          throw new Error("Invalid Hugging Face token");
         }
       }
       
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
+    // Read the response only once
     const result = await response.json();
     const generatedText = Array.isArray(result) ? result[0].generated_text : result.generated_text;
 
@@ -82,10 +83,9 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
   } catch (error) {
     console.error("Error generating AI response:", error);
     
-    // Gestion spécifique des erreurs
     if (error instanceof Error) {
       if (error.message.includes("token")) {
-        throw new Error("Token Hugging Face invalide. Veuillez le mettre à jour dans les paramètres.");
+        throw new Error("Token Hugging Face invalide. Veuillez le mettre à jour.");
       }
     }
     
