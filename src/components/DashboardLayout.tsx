@@ -5,7 +5,6 @@ import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
-import { Button } from "./ui/button";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 
@@ -31,7 +30,7 @@ export function DashboardLayout() {
     >
       <div className="dashboard-card h-full relative">
         {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto">
+          <div className="p-3 sm:p-4 md:p-6 h-full">
             {component}
           </div>
         ) : (
@@ -53,8 +52,8 @@ export function DashboardLayout() {
         />
       )}
 
-      <main className="flex-1 relative">
-        <div className="container mx-auto px-4 py-6 mb-24">
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-6 pb-24">
           <motion.div 
             className="max-w-[1200px] mx-auto"
             variants={containerVariants}
@@ -88,7 +87,7 @@ export function DashboardLayout() {
       </main>
 
       {!isEditing && (
-        <nav className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4 z-50">
+        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4 z-50">
           <div className="container mx-auto px-4">
             <DashboardNavigation 
               currentPage={currentPage}
