@@ -37,12 +37,12 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="relative flex-1 overflow-y-auto pb-40">
+      <div className="relative flex-1 overflow-y-auto">
         {!isEditing && (
           <DashboardNavigationArrows onSwipe={handleSwipe} />
         )}
 
-        <div className="container mx-auto px-4 h-full py-6">
+        <div className="container mx-auto px-4 h-full py-6 pb-32">
           <DashboardContent 
             currentPage={currentPage}
             isEditing={isEditing}
