@@ -126,20 +126,21 @@ export default function Auth() {
                   controls={isPlaying}
                   onError={handleVideoError}
                   onLoadedData={handleVideoLoad}
+                  onPause={() => setIsPlaying(false)}
                 >
                   <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
                   Votre navigateur ne supporte pas la lecture de vidéos.
                 </video>
                 {!isPlaying && (
                   <div 
-                    className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer group"
+                    className="absolute inset-0 bg-[#0F1319]/90 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer group transition-all duration-300"
                     onClick={handlePlayClick}
                   >
-                    <Logo size="lg" className="mb-4 opacity-75" />
-                    <div className="bg-[#1A1F2C] rounded-full p-4 transform transition-transform group-hover:scale-110">
+                    <Logo size="lg" className="mb-4 opacity-90" />
+                    <div className="bg-[#1A1F2C] rounded-full p-4 transform transition-all duration-300 group-hover:scale-110 group-hover:bg-[#232936]">
                       <Play className="w-8 h-8 text-white" />
                     </div>
-                    <p className="mt-4 text-white font-medium">Découvrez Victaure en vidéo</p>
+                    <p className="mt-4 text-white/90 font-medium">Découvrez Victaure en vidéo</p>
                   </div>
                 )}
               </div>
