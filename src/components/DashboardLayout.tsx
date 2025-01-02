@@ -1,10 +1,14 @@
+import { Messages } from "@/components/Messages";
+import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { VCard } from "@/components/VCard";
+import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "./ui/button";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
-import { DashboardNavigationArrows } from "./dashboard/DashboardNavigationArrows";
-import { DashboardContent } from "./dashboard/DashboardContent";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -25,8 +29,29 @@ export function DashboardLayout() {
     setCurrentPage(2);
   };
 
+  const renderDashboardSection = (
+    component: React.ReactNode,
+    className: string,
+    padding: boolean = true
+  ) => (
+    <motion.div 
+      variants={itemVariants} 
+      className={`transform transition-all duration-300 ${className}`}
+    >
+      <div className="dashboard-card h-full relative">
+        {padding ? (
+          <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto">
+            {component}
+          </div>
+        ) : (
+          component
+        )}
+      </div>
+    </motion.div>
+  );
+
   return (
-    <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
+    <div className="fixed inset-0 flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       {showMVictor && (
         <MrVictaureWelcome 
           onDismiss={() => setShowMVictor(false)}
@@ -37,31 +62,71 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="flex-1 flex flex-col relative">
+      <div className="relative flex-1 overflow-y-auto pb-20">
         {!isEditing && (
-          <DashboardNavigationArrows onSwipe={handleSwipe} />
+          <>
+            <div className="fixed top-1/2 left-4 z-20">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-background/80 backdrop-blur-sm"
+                onClick={() => handleSwipe(-1)}
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+            </div>
+            <div className="fixed top-1/2 right-4 z-20">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-background/80 backdrop-blur-sm"
+                onClick={() => handleSwipe(1)}
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            </div>
+          </>
         )}
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6 pb-32">
-            <DashboardContent 
-              currentPage={currentPage}
-              isEditing={isEditing}
-              containerVariants={containerVariants}
-              itemVariants={itemVariants}
-              onEditStateChange={setIsEditing}
-              onRequestChat={handleRequestChat}
-            />
-          </div>
-        </main>
+        <div className="container mx-auto px-4 h-full py-6">
+          <motion.div 
+            className="h-full max-w-[1200px] mx-auto"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {currentPage === 1 && (
+              <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : "relative"}>
+                {renderDashboardSection(
+                  <VCard 
+                    onEditStateChange={setIsEditing}
+                    onRequestChat={handleRequestChat}
+                  />,
+                  'w-full h-full'
+                )}
+              </div>
+            )}
+            
+            {currentPage === 2 && !isEditing && renderDashboardSection(
+              <Messages />,
+              'w-full h-full'
+            )}
+            
+            {currentPage === 3 && !isEditing && renderDashboardSection(
+              <SwipeJob />,
+              'w-full h-full',
+              false
+            )}
+          </motion.div>
+        </div>
 
         {!isEditing && (
-          <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4">
+          <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4">
             <DashboardNavigation 
               currentPage={currentPage}
               onPageChange={setCurrentPage}
             />
-          </nav>
+          </div>
         )}
       </div>
     </div>
