@@ -1,34 +1,15 @@
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/database.types'
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = 'https://mfjllillnpleasclqabb.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mamxsaWxsbnBsZWFzY2xxYWJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQyMTI0NTUsImV4cCI6MjAxOTc4ODQ1NX0.0sTtXqBaXHxRtZNqhqbIY9mTGnl9mF7Ae_IMZZ-JkEY';
 
-if (!supabaseUrl) {
-  throw new Error('Missing VITE_SUPABASE_URL environment variable')
-}
+if (!supabaseUrl) throw new Error('Missing env.SUPABASE_URL');
+if (!supabaseAnonKey) throw new Error('Missing env.SUPABASE_ANON_KEY');
 
-if (!supabaseAnonKey) {
-  throw new Error('Missing VITE_SUPABASE_ANON_KEY environment variable')
-}
-
-// Validate URL format
-try {
-  new URL(supabaseUrl)
-} catch (error) {
-  throw new Error(`Invalid VITE_SUPABASE_URL: ${supabaseUrl}. Must be a valid URL.`)
-}
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce'
-  },
-  global: {
-    headers: {
-      'x-application-name': 'victaure'
-    }
+    autoRefreshToken: true,
+    detectSessionInUrl: true
   }
-})
+});
