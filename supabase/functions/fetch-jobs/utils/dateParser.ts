@@ -1,24 +1,29 @@
-export function parseDatePosted(dateText: string): string {
-  const now = new Date();
-  const text = dateText.toLowerCase();
+export function parseDate(dateStr: string): Date | undefined {
+  if (!dateStr) return undefined;
 
-  if (text.includes('just posted') || text.includes('today')) {
-    return now.toISOString();
+  try {
+    // Handle relative dates
+    if (dateStr.includes('today')) {
+      return new Date();
+    }
+    if (dateStr.includes('yesterday')) {
+      const date = new Date();
+      date.setDate(date.getDate() - 1);
+      return date;
+    }
+    if (dateStr.includes('days ago')) {
+      const days = parseInt(dateStr);
+      if (!isNaN(days)) {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        return date;
+      }
+    }
+
+    // Try parsing as regular date
+    return new Date(dateStr);
+  } catch (error) {
+    console.error('Error parsing date:', error);
+    return undefined;
   }
-
-  if (text.includes('yesterday')) {
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday.toISOString();
-  }
-
-  const daysAgoMatch = text.match(/(\d+)\s*days?\s*ago/);
-  if (daysAgoMatch) {
-    const daysAgo = parseInt(daysAgoMatch[1]);
-    const date = new Date(now);
-    date.setDate(date.getDate() - daysAgo);
-    return date.toISOString();
-  }
-
-  return now.toISOString();
 }
