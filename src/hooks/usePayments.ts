@@ -12,7 +12,7 @@ interface PaymentTransaction {
   match?: {
     id: string;
     job?: {
-      title: string;
+      title: string | null;
     } | null;
   } | null;
 }
