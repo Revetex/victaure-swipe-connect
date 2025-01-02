@@ -25,11 +25,15 @@ export const AuthVideo = () => {
     setIsVideoLoading(false);
   };
 
-  const togglePlay = () => {
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event from bubbling up
     if (videoRef.current) {
       if (videoRef.current.paused) {
-        videoRef.current.play();
-        setIsPlaying(true);
+        videoRef.current.play().then(() => {
+          setIsPlaying(true);
+        }).catch(error => {
+          console.error("Error playing video:", error);
+        });
       } else {
         videoRef.current.pause();
         setIsPlaying(false);
@@ -75,7 +79,6 @@ export const AuthVideo = () => {
           {/* Video Overlay - Now completely hidden when playing */}
           <div 
             className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-            onClick={togglePlay}
           >
             <Logo size="lg" className="mb-4" />
             <button
