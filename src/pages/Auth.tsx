@@ -132,12 +132,12 @@ export default function Auth() {
                 </video>
                 {!isPlaying && (
                   <div 
-                    className="absolute inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer group"
+                    className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer group"
                     onClick={handlePlayClick}
                   >
                     <Logo size="lg" className="mb-4 opacity-75" />
-                    <div className="bg-white/90 rounded-full p-4 transform transition-transform group-hover:scale-110">
-                      <Play className="w-8 h-8 text-primary" />
+                    <div className="bg-primary/90 rounded-full p-4 transform transition-transform group-hover:scale-110">
+                      <Play className="w-8 h-8 text-white" />
                     </div>
                     <p className="mt-4 text-white font-medium">Découvrez Victaure en vidéo</p>
                   </div>
