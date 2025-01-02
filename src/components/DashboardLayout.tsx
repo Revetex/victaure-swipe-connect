@@ -42,7 +42,7 @@ export function DashboardLayout() {
           <DashboardNavigationArrows onSwipe={handleSwipe} />
         )}
 
-        <div className="container mx-auto px-4 h-full py-6 pb-48">
+        <div className="container mx-auto px-4 h-full py-6 pb-72">
           <DashboardContent 
             currentPage={currentPage}
             isEditing={isEditing}
