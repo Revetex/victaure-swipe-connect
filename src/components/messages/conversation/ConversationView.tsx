@@ -63,7 +63,7 @@ export function ConversationView({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[calc(100vh-16rem)] relative bg-background">
       <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-20">
         <div className="flex items-center gap-3">
           <Button
