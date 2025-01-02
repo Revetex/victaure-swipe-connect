@@ -57,7 +57,7 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-auto">
+    <div className="min-h-screen bg-background relative overflow-y-auto">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-dashboard-pattern opacity-5" />
       
@@ -79,8 +79,11 @@ export default function Auth() {
             <AuthForm />
           </div>
 
+          {/* Video Section */}
+          <AuthVideo />
+
           {/* Legal Links */}
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-muted-foreground mt-4">
             <div className="space-x-2">
               <a href="/privacy" className="hover:text-primary hover:underline">
                 Politique de confidentialité
@@ -94,9 +97,6 @@ export default function Auth() {
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
             </div>
           </div>
-
-          {/* Video Section */}
-          <AuthVideo />
         </div>
       </div>
     </div>
