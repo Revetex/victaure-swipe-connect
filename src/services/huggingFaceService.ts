@@ -28,15 +28,17 @@ ${jobs.map((job: any) => `- ${job.title} chez ${job.company} à ${job.location} 
       message;
 
     // Get the API token from Supabase secrets
-    const { data: { secret }, error: secretError } = await supabase.rpc('get_secret', {
+    const { data, error: secretError } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_ACCESS_TOKEN'
     });
 
-    if (secretError || !secret) {
+    if (secretError || !data || data.length === 0) {
       console.error('Error fetching Hugging Face token:', secretError);
       toast.error("Token d'API manquant. Veuillez configurer votre token Hugging Face.");
       throw new Error("Missing Hugging Face token");
     }
+
+    const secret = data[0].secret;
 
     console.log("Sending request to Hugging Face API...");
     
