@@ -63,14 +63,8 @@ export function ConversationView({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.2 }}
-      className="flex flex-col h-full relative"
-    >
-      <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+    <div className="flex flex-col h-full relative bg-background">
+      <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-20">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -135,7 +129,7 @@ export function ConversationView({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-4 right-4"
+              className="absolute bottom-4 right-4 z-10"
             >
               <Button
                 size="icon"
@@ -149,7 +143,7 @@ export function ConversationView({
         </AnimatePresence>
       </main>
 
-      <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0 z-10">
+      <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0 z-20">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
@@ -161,6 +155,6 @@ export function ConversationView({
           className="w-full"
         />
       </footer>
-    </motion.div>
+    </div>
   );
 }
