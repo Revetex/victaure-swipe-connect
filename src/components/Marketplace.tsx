@@ -42,6 +42,11 @@ export function Marketplace() {
         throw error;
       }
 
+      if (!data || data.length === 0) {
+        console.log("No jobs found");
+        return [];
+      }
+
       console.log("Fetched jobs:", data);
       return data.map(job => ({
         ...job,
@@ -53,7 +58,8 @@ export function Marketplace() {
       })) as Job[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    retry: 2
   });
 
   const handleFilterChange = (key: keyof JobFiltersType, value: any) => {

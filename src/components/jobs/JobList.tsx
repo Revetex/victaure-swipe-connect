@@ -2,7 +2,7 @@ import { JobCard } from "@/components/JobCard";
 import { Job } from "@/types/job";
 import { JobActions } from "./JobActions";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface JobListProps {
@@ -17,9 +17,10 @@ export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps)
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex justify-center items-center py-8"
+        className="flex flex-col items-center justify-center py-8 space-y-4"
       >
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">Chargement des offres...</p>
       </motion.div>
     );
   }
@@ -29,10 +30,15 @@ export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps)
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-8 space-y-2"
+        className="flex flex-col items-center justify-center py-8 space-y-4"
       >
-        <p className="text-muted-foreground">Aucune annonce disponible</p>
-        <p className="text-sm text-muted-foreground">Ajustez vos filtres pour voir plus d'offres</p>
+        <Search className="h-12 w-12 text-muted-foreground" />
+        <div className="text-center space-y-2">
+          <p className="text-lg font-medium">Aucune annonce disponible</p>
+          <p className="text-sm text-muted-foreground">
+            Essayez d'ajuster vos filtres pour voir plus d'offres
+          </p>
+        </div>
       </motion.div>
     );
   }
