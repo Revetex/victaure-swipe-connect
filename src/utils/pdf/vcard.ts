@@ -5,54 +5,36 @@ import type { UserProfile } from '@/types/profile';
 
 export const generateVCardPDF = async (profile: UserProfile) => {
   const doc = new jsPDF({
-    orientation: 'landscape',
+    orientation: 'portrait',
     unit: 'mm',
-    format: [85.6, 53.98] // Standard business card size
+    format: 'a4'
   });
 
   // Background
   doc.setFillColor(pdfColors.background);
-  doc.rect(0, 0, 85.6, 53.98, 'F');
+  doc.rect(0, 0, 210, 297, 'F');
 
-  // Circuit pattern with subtle effect
-  doc.setDrawColor(pdfColors.circuit.lines);
-  doc.setLineWidth(0.1);
-  for (let i = 0; i < 85.6; i += 5) {
-    doc.line(i, 0, i, 53.98);
-  }
-  for (let i = 0; i < 53.98; i += 5) {
-    doc.line(0, i, 85.6, i);
-  }
-
-  // Add gradient-like effect using multiple rectangles
-  doc.setFillColor(255, 255, 255);
-  for (let i = 0; i < 85.6; i += 0.5) {
-    const opacity = 0.02; // 2% opacity
-    doc.setFillColor(`rgba(255, 255, 255, ${opacity})`);
-    doc.rect(i, 0, 0.5, 53.98, 'F');
-  }
-
-  // Name and Role
+  // Header section
+  doc.setFontSize(24);
   doc.setTextColor(pdfColors.text.primary);
-  doc.setFontSize(14);
-  doc.text(profile.full_name || 'Nom complet', 10, 15);
+  doc.text(profile.full_name || 'Nom complet', 20, 30);
 
-  doc.setFontSize(10);
+  doc.setFontSize(16);
   doc.setTextColor(pdfColors.text.secondary);
-  doc.text(profile.role || 'Rôle', 10, 22);
+  doc.text(profile.role || 'Rôle professionnel', 20, 40);
 
   // Contact Information
-  doc.setFontSize(8);
-  let yPosition = 30;
-  const lineHeight = 4;
+  doc.setFontSize(12);
+  let yPosition = 60;
+  const lineHeight = 8;
 
   if (profile.email) {
-    doc.text(`Email: ${profile.email}`, 10, yPosition);
+    doc.text(`Email: ${profile.email}`, 20, yPosition);
     yPosition += lineHeight;
   }
 
   if (profile.phone) {
-    doc.text(`Tél: ${profile.phone}`, 10, yPosition);
+    doc.text(`Téléphone: ${profile.phone}`, 20, yPosition);
     yPosition += lineHeight;
   }
 
@@ -60,31 +42,97 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     const location = [profile.city, profile.state, profile.country]
       .filter(Boolean)
       .join(', ');
-    doc.text(`Adresse: ${location}`, 10, yPosition);
-    yPosition += lineHeight;
+    doc.text(`Adresse: ${location}`, 20, yPosition);
+    yPosition += lineHeight * 2;
   }
 
-  // Skills section if available
+  // Bio section if available
+  if (profile.bio) {
+    doc.setFontSize(14);
+    doc.setTextColor(pdfColors.text.primary);
+    doc.text('À propos', 20, yPosition);
+    yPosition += lineHeight;
+
+    doc.setFontSize(12);
+    doc.setTextColor(pdfColors.text.secondary);
+    const bioLines = doc.splitTextToSize(profile.bio, 170);
+    doc.text(bioLines, 20, yPosition);
+    yPosition += (bioLines.length * lineHeight) + lineHeight;
+  }
+
+  // Skills section
   if (profile.skills && profile.skills.length > 0) {
-    doc.setFontSize(8);
-    doc.setTextColor(pdfColors.text.muted);
-    const skills = profile.skills.slice(0, 3).join(' • ');
-    doc.text(`Compétences: ${skills}`, 10, yPosition);
+    doc.setFontSize(14);
+    doc.setTextColor(pdfColors.text.primary);
+    doc.text('Compétences', 20, yPosition);
+    yPosition += lineHeight;
+
+    doc.setFontSize(12);
+    doc.setTextColor(pdfColors.text.secondary);
+    const skillsText = profile.skills.join(' • ');
+    const skillsLines = doc.splitTextToSize(skillsText, 170);
+    doc.text(skillsLines, 20, yPosition);
+    yPosition += (skillsLines.length * lineHeight) + lineHeight;
+  }
+
+  // Education section
+  if (profile.education && profile.education.length > 0) {
+    doc.setFontSize(14);
+    doc.setTextColor(pdfColors.text.primary);
+    doc.text('Formation', 20, yPosition);
+    yPosition += lineHeight;
+
+    doc.setFontSize(12);
+    doc.setTextColor(pdfColors.text.secondary);
+    
+    profile.education.forEach((edu) => {
+      doc.text(edu.school_name, 20, yPosition);
+      yPosition += lineHeight;
+      
+      doc.text(`${edu.degree}${edu.field_of_study ? ` - ${edu.field_of_study}` : ''}`, 25, yPosition);
+      yPosition += lineHeight;
+      
+      if (edu.start_date || edu.end_date) {
+        const dateText = `${edu.start_date || ''} - ${edu.end_date || 'Présent'}`;
+        doc.text(dateText, 25, yPosition);
+        yPosition += lineHeight * 1.5;
+      }
+    });
+  }
+
+  // Certifications section
+  if (profile.certifications && profile.certifications.length > 0) {
+    doc.setFontSize(14);
+    doc.setTextColor(pdfColors.text.primary);
+    doc.text('Certifications', 20, yPosition);
+    yPosition += lineHeight;
+
+    doc.setFontSize(12);
+    doc.setTextColor(pdfColors.text.secondary);
+    
+    profile.certifications.forEach((cert) => {
+      doc.text(cert.title, 20, yPosition);
+      yPosition += lineHeight;
+      
+      doc.text(`${cert.issuer}${cert.year ? ` (${cert.year})` : ''}`, 25, yPosition);
+      yPosition += lineHeight * 1.5;
+    });
   }
 
   // QR Code
   try {
     const qrDataUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrDataUrl, 'PNG', 65, 10, 15, 15);
+    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
 
   // Footer
-  doc.setFontSize(6);
+  doc.setFontSize(10);
   doc.setTextColor(pdfColors.text.muted);
-  doc.text('Créé sur victaure.com', 85.6/2, 50, { align: 'center' });
+  doc.text('Généré sur victaure.com', 20, 285);
 
   // Save the PDF
-  doc.save(`${profile.full_name?.replace(/\s+/g, '_').toLowerCase() || 'carte-visite'}.pdf`);
+  const fileName = `${profile.full_name?.replace(/\s+/g, '_').toLowerCase() || 'vcard'}.pdf`;
+  doc.save(fileName);
 };
