@@ -4,13 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
-import { Play } from "lucide-react";
+import { VideoPlayer } from "@/components/auth/VideoPlayer";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState(false);
-  const [isVideoLoading, setIsVideoLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -66,38 +64,6 @@ export default function Auth() {
     console.log("Video network state:", video.networkState);
     console.log("Video error:", video.error?.message);
     setVideoError(true);
-    setIsVideoLoading(false);
-  };
-
-  const handleVideoLoad = () => {
-    console.log("Vidéo chargée avec succès");
-    setIsVideoLoading(false);
-  };
-
-  const handlePlayClick = () => {
-    const video = document.querySelector('video');
-    if (video) {
-      video.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const handleVideoSeeking = () => {
-    const video = document.querySelector('video');
-    if (video) {
-      // Si la vidéo était en lecture avant la recherche, on la remet en lecture
-      if (isPlaying) {
-        video.play();
-      }
-    }
-  };
-
-  const handleVideoPause = () => {
-    // On ne met à jour l'état isPlaying que si la vidéo n'est pas en train d'être recherchée
-    const video = document.querySelector('video');
-    if (video && !video.seeking) {
-      setIsPlaying(false);
-    }
   };
 
   return (
@@ -123,49 +89,16 @@ export default function Auth() {
           </div>
 
           {/* Video Section */}
-          <div className="mt-8 w-full rounded-xl overflow-hidden shadow-lg relative">
-            {isVideoLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            )}
-            {videoError ? (
-              <div className="aspect-video bg-muted flex items-center justify-center text-muted-foreground">
-                <p>La vidéo n'a pas pu être chargée</p>
-              </div>
-            ) : (
-              <div className="relative">
-                <video
-                  className="w-full aspect-video object-cover"
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  controls={isPlaying}
-                  onError={handleVideoError}
-                  onLoadedData={handleVideoLoad}
-                  onPause={handleVideoPause}
-                  onSeeking={handleVideoSeeking}
-                  onSeeked={handleVideoSeeking}
-                >
-                  <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
-                  Votre navigateur ne supporte pas la lecture de vidéos.
-                </video>
-                {!isPlaying && (
-                  <div 
-                    className="absolute inset-0 bg-[#0F1319]/90 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer group transition-all duration-300"
-                    onClick={handlePlayClick}
-                  >
-                    <Logo size="lg" className="mb-4 opacity-90" />
-                    <div className="bg-[#1A1F2C] rounded-full p-4 transform transition-all duration-300 group-hover:scale-110 group-hover:bg-[#232936]">
-                      <Play className="w-8 h-8 text-white" />
-                    </div>
-                    <p className="mt-4 text-white/90 font-medium">Découvrez Victaure en vidéo</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {videoError ? (
+            <div className="mt-8 w-full aspect-video bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
+              <p>La vidéo n'a pas pu être chargée</p>
+            </div>
+          ) : (
+            <VideoPlayer 
+              onError={handleVideoError}
+              onLoad={() => {}}
+            />
+          )}
         </div>
       </div>
     </div>
