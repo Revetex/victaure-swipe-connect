@@ -83,10 +83,20 @@ export default function Auth() {
   };
 
   const handleVideoSeeking = () => {
-    // Keep isPlaying state when seeking
     const video = document.querySelector('video');
-    if (video && !video.paused) {
-      setIsPlaying(true);
+    if (video) {
+      // Si la vidéo était en lecture avant la recherche, on la remet en lecture
+      if (isPlaying) {
+        video.play();
+      }
+    }
+  };
+
+  const handleVideoPause = () => {
+    // On ne met à jour l'état isPlaying que si la vidéo n'est pas en train d'être recherchée
+    const video = document.querySelector('video');
+    if (video && !video.seeking) {
+      setIsPlaying(false);
     }
   };
 
@@ -134,7 +144,7 @@ export default function Auth() {
                   controls={isPlaying}
                   onError={handleVideoError}
                   onLoadedData={handleVideoLoad}
-                  onPause={() => setIsPlaying(false)}
+                  onPause={handleVideoPause}
                   onSeeking={handleVideoSeeking}
                   onSeeked={handleVideoSeeking}
                 >
