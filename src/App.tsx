@@ -19,11 +19,11 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function App() {
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <BrowserRouter>
           <TooltipProvider>
             <div className="h-screen w-full overflow-hidden">
               <Routes>
@@ -48,8 +48,10 @@ export default function App() {
               <Toaster />
             </div>
           </TooltipProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
+
+export default App;

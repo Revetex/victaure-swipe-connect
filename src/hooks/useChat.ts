@@ -10,22 +10,22 @@ export function useChat() {
   const [inputMessage, setInputMessage] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const { session } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const loadMessages = useCallback(async () => {
-    if (!session?.user?.id) return;
+    if (!isAuthenticated) return;
     
     try {
-      const loadedMessages = await chatService.loadMessages(session.user.id);
+      const loadedMessages = await chatService.loadMessages();
       setMessages(loadedMessages);
     } catch (error) {
       console.error("Erreur lors du chargement des messages:", error);
       toast.error("Impossible de charger les messages");
     }
-  }, [session?.user?.id]);
+  }, [isAuthenticated]);
 
   const handleSendMessage = useCallback(async (content: string) => {
-    if (!session?.user?.id || !content.trim()) return;
+    if (!isAuthenticated || !content.trim()) return;
 
     const userMessage: Message = {
       id: uuidv4(),
@@ -39,7 +39,7 @@ export function useChat() {
     setIsThinking(true);
 
     try {
-      await chatService.saveMessage(session.user.id, content, "user");
+      await chatService.saveMessage(content, "user");
       
       const aiResponse = await chatService.generateAIResponse(content);
       const assistantMessage: Message = {
@@ -49,7 +49,7 @@ export function useChat() {
         timestamp: new Date(),
       };
       
-      await chatService.saveMessage(session.user.id, aiResponse, "assistant");
+      await chatService.saveMessage(aiResponse, "assistant");
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
@@ -57,7 +57,7 @@ export function useChat() {
     } finally {
       setIsThinking(false);
     }
-  }, [session?.user?.id]);
+  }, [isAuthenticated]);
 
   const handleVoiceInput = useCallback(() => {
     if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
@@ -95,10 +95,10 @@ export function useChat() {
   }, [handleSendMessage]);
 
   const clearChat = useCallback(async () => {
-    if (!session?.user?.id) return;
+    if (!isAuthenticated) return;
     setMessages([]);
     toast.success("Conversation effacée");
-  }, [session?.user?.id]);
+  }, [isAuthenticated]);
 
   return {
     messages,

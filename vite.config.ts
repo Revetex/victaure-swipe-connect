@@ -18,24 +18,13 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     strictPort: true,
     hmr: {
-      protocol: 'wss',
-      host: process.env.VITE_DEV_SERVER_HOST || 'localhost',
-      port: Number(process.env.VITE_DEV_SERVER_PORT) || 8080,
-      clientPort: Number(process.env.VITE_DEV_SERVER_PORT) || 8080,
+      protocol: 'ws',
+      host: 'localhost',
+      port: 8080,
     },
     watch: {
       usePolling: true,
     },
-    cors: {
-      origin: '*',
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-      credentials: true,
-    },
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
-      'Access-Control-Allow-Credentials': 'true'
-    }
+    cors: true,
   },
 }));
