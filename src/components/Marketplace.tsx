@@ -15,18 +15,24 @@ export function Marketplace() {
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["jobs", filters],
     queryFn: async () => {
+      console.log("Fetching jobs with filters:", filters);
       let query = supabase
         .from("jobs")
         .select("*")
         .order("created_at", { ascending: false });
 
       // Apply filters using the utility function
-      const filteredQuery = applyFilters(query, filters);
+      const filteredQuery = await applyFilters(query, filters);
+      console.log("Filtered query:", filteredQuery);
 
       const { data, error } = await filteredQuery;
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching jobs:", error);
+        throw error;
+      }
 
+      console.log("Fetched jobs:", data);
       return data.map(job => ({
         ...job,
         company: job.company_name || "Entreprise",
@@ -47,14 +53,6 @@ export function Marketplace() {
       return { ...prev, [key]: value };
     });
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[200px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <section className="py-8 sm:py-16 bg-background">
@@ -77,7 +75,7 @@ export function Marketplace() {
             />
           </div>
           <div className="lg:col-span-3">
-            <JobList jobs={jobs} />
+            <JobList jobs={jobs} isLoading={isLoading} />
           </div>
         </div>
       </div>
