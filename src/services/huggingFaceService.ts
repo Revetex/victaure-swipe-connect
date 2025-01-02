@@ -3,30 +3,6 @@ import { toast } from "sonner";
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
-    // Fetch real-time job data when message mentions jobs
-    let jobContext = "";
-    if (message.toLowerCase().includes("emploi") || 
-        message.toLowerCase().includes("job") || 
-        message.toLowerCase().includes("travail") ||
-        message.toLowerCase().includes("offre") ||
-        message.toLowerCase().includes("poste")) {
-      const { data: { jobs }, error } = await supabase.functions.invoke('fetch-jobs');
-      
-      if (error) {
-        console.error('Error fetching jobs:', error);
-      }
-      
-      if (jobs && jobs.length > 0) {
-        jobContext = `Voici les dernières offres d'emploi que j'ai trouvées :
-${jobs.map((job: any) => `- ${job.title} chez ${job.company} à ${job.location} (via ${job.platform})`).join('\n')}`;
-      }
-    }
-
-    // Add job context to the conversation if available
-    const contextualizedMessage = jobContext ? 
-      `${message}\n\nContext des offres d'emploi actuelles:\n${jobContext}` : 
-      message;
-
     console.log("Sending request to Hugging Face API...");
     
     const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
@@ -43,7 +19,7 @@ ${profile ? `Contexte sur l'utilisateur :
 - Entreprise : ${profile.company_name}
 - Industrie : ${profile.industry}` : ''}
 
-Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
+Message de l'utilisateur : ${message} [/INST]`,
         parameters: {
           max_new_tokens: 1024,
           temperature: 0.7,
@@ -56,11 +32,9 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
 
     console.log("Response status:", response.status);
 
-    // Clone response immediately for error handling
-    const responseClone = response.clone();
-
+    // Handle non-OK responses first
     if (!response.ok) {
-      const errorText = await responseClone.text();
+      const errorText = await response.text();
       console.error("Hugging Face API Error:", errorText);
       
       try {
@@ -76,6 +50,7 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
+    // Parse successful response
     const result = await response.json();
     console.log("API Response:", result);
 
