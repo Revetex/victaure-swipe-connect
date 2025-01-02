@@ -88,13 +88,13 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background relative overflow-auto">
+    <div className="min-h-[100dvh] bg-background relative overflow-y-auto">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-dashboard-pattern opacity-5" />
       
       {/* Content */}
-      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-sm space-y-8">
+      <div className="relative flex min-h-[100dvh] flex-col items-center justify-start px-4 py-8">
+        <div className="w-full max-w-sm space-y-8 mb-8">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <Logo size="lg" className="mb-2" />
