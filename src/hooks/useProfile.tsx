@@ -17,12 +17,12 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        // Fetch profile data
+        // Fetch profile data with maybeSingle() instead of single()
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         if (profileError) throw profileError;
 
@@ -75,14 +75,8 @@ export function useProfile() {
           description: edu.description
         }));
 
-        const fullProfile: UserProfile = {
-          ...profileData,
-          certifications: mappedCertifications,
-          education: mappedEducation,
-          experiences: experiences || [],
-        };
-
         if (!profileData) {
+          // Create a default profile if none exists
           const defaultProfile: UserProfile = {
             id: user.id,
             email: user.email || '',
@@ -106,11 +100,24 @@ export function useProfile() {
             .from('profiles')
             .insert(defaultProfile);
 
-          if (insertError) throw insertError;
-
-          setProfile(defaultProfile);
-          setTempProfile(defaultProfile);
+          if (insertError) {
+            console.error('Error creating default profile:', insertError);
+            toast({
+              variant: "destructive",
+              title: "Erreur",
+              description: "Impossible de créer votre profil",
+            });
+          } else {
+            setProfile(defaultProfile);
+            setTempProfile(defaultProfile);
+          }
         } else {
+          const fullProfile: UserProfile = {
+            ...profileData,
+            certifications: mappedCertifications,
+            education: mappedEducation,
+            experiences: experiences || [],
+          };
           setProfile(fullProfile);
           setTempProfile(fullProfile);
         }
