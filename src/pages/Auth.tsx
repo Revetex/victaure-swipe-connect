@@ -59,11 +59,17 @@ export default function Auth() {
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     console.error("Erreur de chargement vidéo:", e);
+    const video = e.target as HTMLVideoElement;
+    console.log("Video source:", video.currentSrc);
+    console.log("Video ready state:", video.readyState);
+    console.log("Video network state:", video.networkState);
+    console.log("Video error:", video.error?.message);
     setVideoError(true);
     setIsVideoLoading(false);
   };
 
   const handleVideoLoad = () => {
+    console.log("Vidéo chargée avec succès");
     setIsVideoLoading(false);
   };
 
@@ -127,7 +133,7 @@ export default function Auth() {
                 onError={handleVideoError}
                 onLoadedData={handleVideoLoad}
               >
-                <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+                <source src="VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
                 Votre navigateur ne supporte pas la lecture de vidéos.
               </video>
             )}
