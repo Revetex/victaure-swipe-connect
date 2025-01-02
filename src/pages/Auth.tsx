@@ -12,7 +12,6 @@ export default function Auth() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // First check if there's a stored session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -21,12 +20,10 @@ export default function Auth() {
         }
 
         if (session) {
-          // Verify the session is still valid by getting the user
           const { data: { user }, error: userError } = await supabase.auth.getUser();
           
           if (userError) {
             console.error("User verification error:", userError);
-            // Clear invalid session
             await supabase.auth.signOut();
             return;
           }
@@ -63,14 +60,28 @@ export default function Auth() {
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-dashboard-pattern opacity-5" />
       
+      {/* Video Background */}
+      <div className="absolute inset-0 w-full h-full">
+        <video
+          className="w-full h-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-black/50" /> {/* Overlay to ensure text remains readable */}
+      </div>
+      
       {/* Content */}
       <div className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 py-8">
         <div className="w-full max-w-sm space-y-8">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <Logo size="lg" className="mb-2" />
-            <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-2xl font-bold tracking-tight text-white">Bienvenue sur Victaure</h1>
+            <p className="text-sm text-gray-300">
               Connectez-vous ou créez un compte pour continuer
             </p>
           </div>
