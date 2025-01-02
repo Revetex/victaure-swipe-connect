@@ -89,7 +89,7 @@ export function Marketplace() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
           {showFilters && (
-            <aside className="hidden lg:block col-span-1 sticky top-4 h-[calc(100vh-6rem)] overflow-auto">
+            <aside className="col-span-1 sticky top-4 h-[calc(100vh-6rem)] overflow-auto">
               <JobFilters
                 filters={filters}
                 onFilterChange={handleFilterChange}
