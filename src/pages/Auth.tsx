@@ -82,6 +82,14 @@ export default function Auth() {
     }
   };
 
+  const handleVideoSeeking = () => {
+    // Keep isPlaying state when seeking
+    const video = document.querySelector('video');
+    if (video && !video.paused) {
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <div className="min-h-[100dvh] bg-background relative">
       {/* Background Pattern */}
@@ -127,6 +135,8 @@ export default function Auth() {
                   onError={handleVideoError}
                   onLoadedData={handleVideoLoad}
                   onPause={() => setIsPlaying(false)}
+                  onSeeking={handleVideoSeeking}
+                  onSeeked={handleVideoSeeking}
                 >
                   <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
                   Votre navigateur ne supporte pas la lecture de vidéos.
