@@ -98,7 +98,7 @@ export default function Auth() {
               className="w-full aspect-video object-cover"
               autoPlay
               loop
-              muted={false}
+              muted
               playsInline
               preload="auto"
               controls
