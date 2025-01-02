@@ -42,8 +42,8 @@ export function DashboardLayout() {
           <DashboardNavigationArrows onSwipe={handleSwipe} />
         )}
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6 mb-24">
+        <div className="flex-1 overflow-y-auto pb-24">
+          <div className="container mx-auto px-4 py-6">
             <DashboardContent 
               currentPage={currentPage}
               isEditing={isEditing}
