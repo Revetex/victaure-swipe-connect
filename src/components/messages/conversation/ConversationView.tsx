@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bot } from "lucide-react";
+import { ArrowLeft, Bot, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -67,18 +67,19 @@ export function ConversationView({
             variant="ghost"
             size="icon"
             onClick={onBack}
+            className="shrink-0"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <Avatar className="h-10 w-10">
-            <AvatarImage src="/bot-avatar.png" alt="Mr. Victaure" />
-            <AvatarFallback className="bg-victaure-blue/20">
-              <Bot className="h-5 w-5 text-victaure-blue" />
+          <Avatar className="h-10 w-10 shrink-0">
+            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
+            <AvatarFallback className="bg-primary/20">
+              <Bot className="h-5 w-5 text-primary" />
             </AvatarFallback>
           </Avatar>
-          <div>
-            <h2 className="text-lg font-semibold">Mr. Victaure</h2>
-            <p className="text-sm text-muted-foreground">
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+            <p className="text-sm text-muted-foreground truncate">
               {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
             </p>
           </div>
@@ -87,15 +88,15 @@ export function ConversationView({
           variant="ghost"
           size="icon"
           onClick={handleClearChat}
-          className="hover:bg-destructive/10 hover:text-destructive"
+          className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
         >
-          <Bot className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" />
         </Button>
       </header>
 
       <main className="flex-1 overflow-hidden">
-        <ScrollArea className="h-[calc(100vh-16rem)] lg:col-span-3">
-          <div className="max-w-7xl mx-auto py-4 space-y-4 px-4 sm:px-6">
+        <ScrollArea className="h-full px-4">
+          <div className="space-y-4 py-4">
             {messages.map((message, index) => (
               <ChatMessage
                 key={message.id}
@@ -123,6 +124,7 @@ export function ConversationView({
           onVoiceInput={onVoiceInput}
           isListening={isListening}
           isThinking={isThinking}
+          placeholder="Écrivez votre message..."
         />
       </footer>
     </motion.div>

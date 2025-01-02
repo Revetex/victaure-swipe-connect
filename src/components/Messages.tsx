@@ -81,7 +81,7 @@ export function Messages() {
           <span className="hidden sm:inline">Paramètres</span>
         </TabsTrigger>
       </TabsList>
-      <div className="flex-1 overflow-hidden bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-1 overflow-hidden">
         <TabsContent value="messages" className="h-full">
           <MessagesTab />
         </TabsContent>

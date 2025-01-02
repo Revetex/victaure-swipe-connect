@@ -27,8 +27,8 @@ export function MessagesList({
       transition={{ duration: 0.2 }}
       className="h-full flex flex-col overflow-hidden"
     >
-      <ScrollArea className="flex-1">
-        <div className="space-y-4 p-4">
+      <ScrollArea className="flex-1 px-4">
+        <div className="space-y-4 py-4">
           {/* Assistant Message Item */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -39,10 +39,10 @@ export function MessagesList({
             className="p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] bg-muted hover:bg-muted/80"
           >
             <div className="flex gap-3">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src="/bot-avatar.png" alt="Mr. Victaure" />
-                <AvatarFallback className="bg-victaure-blue/20">
-                  <Bot className="h-5 w-5 text-victaure-blue" />
+              <Avatar className="h-10 w-10 shrink-0">
+                <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
+                <AvatarFallback className="bg-primary/20">
+                  <Bot className="h-5 w-5 text-primary" />
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
@@ -60,21 +60,23 @@ export function MessagesList({
           </motion.div>
 
           {/* User Messages Section */}
-          <div>
-            <div className="flex items-center gap-2 text-primary mb-4">
-              <MessageSquare className="h-5 w-5" />
-              <h2 className="text-lg font-semibold">Messages</h2>
+          {messages.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 text-primary mb-4">
+                <MessageSquare className="h-5 w-5" />
+                <h2 className="text-lg font-semibold">Messages</h2>
+              </div>
+              <div className="space-y-2">
+                {messages.map((message) => (
+                  <MessageItem
+                    key={message.id}
+                    {...message}
+                    onMarkAsRead={onMarkAsRead}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {messages.map((message) => (
-                <MessageItem
-                  key={message.id}
-                  {...message}
-                  onMarkAsRead={onMarkAsRead}
-                />
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       </ScrollArea>
     </motion.div>
