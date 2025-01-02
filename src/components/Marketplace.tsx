@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
 import { Filter } from "lucide-react";
+import { toast } from "sonner";
 
 export function Marketplace() {
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
@@ -18,7 +19,15 @@ export function Marketplace() {
       console.log("Fetching jobs with filters:", filters);
       let query = supabase
         .from("jobs")
-        .select("*")
+        .select(`
+          *,
+          employer:profiles(
+            full_name,
+            company_name,
+            avatar_url
+          )
+        `)
+        .eq('status', 'open')
         .order("created_at", { ascending: false });
 
       // Apply filters using the utility function
@@ -29,17 +38,22 @@ export function Marketplace() {
 
       if (error) {
         console.error("Error fetching jobs:", error);
+        toast.error("Erreur lors du chargement des offres");
         throw error;
       }
 
       console.log("Fetched jobs:", data);
       return data.map(job => ({
         ...job,
-        company: job.company_name || "Entreprise",
+        company: job.employer?.company_name || job.company_name || "Entreprise",
+        employer_name: job.employer?.full_name || "Employeur",
+        employer_avatar: job.employer?.avatar_url,
         skills: job.required_skills || [],
-        salary: `${job.budget} CAD`
+        salary: job.budget ? `${job.budget} ${job.salary_currency || 'CAD'}` : 'À discuter'
       })) as Job[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false
   });
 
   const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
