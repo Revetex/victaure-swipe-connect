@@ -666,42 +666,6 @@ export type Database = {
         }
         Relationships: []
       }
-      scraped_jobs: {
-        Row: {
-          company: string
-          created_at: string | null
-          description: string | null
-          id: string
-          location: string
-          posted_at: string | null
-          title: string
-          updated_at: string | null
-          url: string | null
-        }
-        Insert: {
-          company: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          location: string
-          posted_at?: string | null
-          title: string
-          updated_at?: string | null
-          url?: string | null
-        }
-        Update: {
-          company?: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          location?: string
-          posted_at?: string | null
-          title?: string
-          updated_at?: string | null
-          url?: string | null
-        }
-        Relationships: []
-      }
       skills: {
         Row: {
           category: string

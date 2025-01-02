@@ -5,13 +5,11 @@ import { toast } from "sonner";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
-import { Play } from "lucide-react";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
-  const [isVideoPaused, setIsVideoPaused] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -75,26 +73,14 @@ export default function Auth() {
     setIsVideoLoading(false);
   };
 
-  const handlePlayPause = (video: HTMLVideoElement) => {
-    if (video.paused) {
-      video.play();
-      setIsVideoPaused(false);
-    }
-  };
-
-  const handleVideoStateChange = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    const video = e.target as HTMLVideoElement;
-    setIsVideoPaused(video.paused);
-  };
-
   return (
-    <div className="min-h-screen bg-background relative overflow-y-auto">
+    <div className="min-h-[100dvh] bg-background relative">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-dashboard-pattern opacity-5" />
       
       {/* Content */}
-      <div className="relative flex min-h-screen flex-col items-center px-4 py-8">
-        <div className="w-full max-w-sm space-y-8 mb-8">
+      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 py-8">
+        <div className="w-full max-w-sm space-y-8">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <Logo size="lg" className="mb-2" />
@@ -136,44 +122,19 @@ export default function Auth() {
                 <p>La vidéo n'a pas pu être chargée</p>
               </div>
             ) : (
-              <div className="relative">
-                <video
-                  className="w-full aspect-video object-cover"
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  controls
-                  onError={handleVideoError}
-                  onLoadedData={handleVideoLoad}
-                  onPlay={() => setIsVideoPaused(false)}
-                  onPause={() => setIsVideoPaused(true)}
-                  onSeeking={(e) => e.currentTarget.play()}
-                  onTimeUpdate={handleVideoStateChange}
-                >
-                  <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
-                  Votre navigateur ne supporte pas la lecture de vidéos.
-                </video>
-                
-                {/* Custom Video Overlay */}
-                {isVideoPaused && (
-                  <div 
-                    className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-4 cursor-pointer transition-opacity duration-300"
-                    onClick={(e) => {
-                      const video = e.currentTarget.previousElementSibling as HTMLVideoElement;
-                      handlePlayPause(video);
-                    }}
-                  >
-                    <Logo size="lg" className="text-white" />
-                    <p className="text-white text-xl font-semibold">
-                      Découvrez Victaure en vidéo
-                    </p>
-                    <div className="rounded-full bg-white/20 p-4 backdrop-blur-sm hover:bg-white/30 transition-colors">
-                      <Play className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                )}
-              </div>
+              <video
+                className="w-full aspect-video object-cover"
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                controls
+                onError={handleVideoError}
+                onLoadedData={handleVideoLoad}
+              >
+                <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
+                Votre navigateur ne supporte pas la lecture de vidéos.
+              </video>
             )}
           </div>
         </div>
