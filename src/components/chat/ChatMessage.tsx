@@ -4,6 +4,7 @@ import { fr } from "date-fns/locale";
 import { Bot, User } from "lucide-react";
 import { memo } from "react";
 import { motion } from "framer-motion";
+import { ChatThinking } from "./ChatThinking";
 
 interface ChatMessageProps {
   content: string;
@@ -21,6 +22,10 @@ export const ChatMessage = memo(function ChatMessage({
   timestamp,
 }: ChatMessageProps) {
   const isBot = sender === "assistant";
+
+  if (thinking && isBot) {
+    return <ChatThinking />;
+  }
 
   return (
     <motion.div
@@ -51,8 +56,7 @@ export const ChatMessage = memo(function ChatMessage({
           "rounded-lg px-4 py-2 max-w-[80%] shadow-sm",
           isBot 
             ? "bg-muted/80 text-foreground backdrop-blur-sm" 
-            : "bg-primary text-primary-foreground",
-          thinking && "animate-pulse"
+            : "bg-primary text-primary-foreground"
         )}>
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {content}

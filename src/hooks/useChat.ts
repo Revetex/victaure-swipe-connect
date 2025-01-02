@@ -1,87 +1,28 @@
 import { useState, useEffect } from "react";
-import { generateAIResponse } from "@/services/huggingFaceService";
+import { generateAIResponse, saveMessage, loadMessages } from "@/services/aiChatService";
+import { Message, ChatState, ChatActions } from "@/types/chat";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
-export interface Message {
-  id: string;
-  content: string;
-  sender: "user" | "assistant";
-  thinking?: boolean;
-  timestamp: Date;
-}
-
-export function useChat() {
+export function useChat(): ChatState & ChatActions {
   const [messages, setMessages] = useState<Message[]>([]);
   const [deletedMessages, setDeletedMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
 
-  // Load messages from Supabase on mount
   useEffect(() => {
-    const loadMessages = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('ai_chat_messages')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.error('Error loading messages:', error);
-        return;
-      }
-
-      if (data) {
-        const formattedMessages: Message[] = data.map(msg => ({
-          id: msg.id,
-          content: msg.content,
-          sender: msg.sender as "user" | "assistant",
-          timestamp: new Date(msg.created_at),
-        }));
-        setMessages(formattedMessages);
-      }
+    const initializeChat = async () => {
+      const savedMessages = await loadMessages();
+      setMessages(savedMessages);
     };
-
-    loadMessages();
+    initializeChat();
   }, []);
-
-  const saveMessage = async (message: Message) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
-
-      const { error } = await supabase
-        .from('ai_chat_messages')
-        .insert({
-          id: message.id,
-          content: message.content,
-          sender: message.sender,
-          user_id: user.id,
-          created_at: message.timestamp.toISOString(),
-        });
-
-      if (error) {
-        console.error('Error saving message:', error);
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error in saveMessage:', error);
-      toast.error("Erreur lors de l'enregistrement du message");
-      throw error;
-    }
-  };
 
   const handleSendMessage = async (message: string, profile?: any) => {
     if (!message.trim()) return;
 
     try {
-      // Save user message
+      // Sauvegarder le message de l'utilisateur
       const newUserMessage: Message = {
         id: crypto.randomUUID(),
         content: message,
@@ -94,7 +35,7 @@ export function useChat() {
       setInputMessage("");
       setIsThinking(true);
 
-      // Add thinking message
+      // Ajouter un message "thinking"
       const thinkingMessage: Message = {
         id: crypto.randomUUID(),
         content: "...",
@@ -104,40 +45,36 @@ export function useChat() {
       };
       setMessages(prev => [...prev, thinkingMessage]);
 
-      // Generate AI response
+      // Générer la réponse de l'IA
+      console.log("Génération de la réponse...");
       const response = await generateAIResponse(message, profile);
       
       if (!response) {
-        throw new Error("No response from AI");
+        throw new Error("Pas de réponse de l'IA");
       }
 
-      // Remove thinking message and add actual response
-      setMessages(prev => {
-        const filtered = prev.filter(msg => msg.id !== thinkingMessage.id);
-        const newAssistantMessage: Message = {
-          id: crypto.randomUUID(),
-          content: response,
-          sender: "assistant",
-          timestamp: new Date(),
-        };
-        return [...filtered, newAssistantMessage];
-      });
+      console.log("Réponse générée:", response);
 
-      // Save assistant message
+      // Remplacer le message "thinking" par la vraie réponse
       const newAssistantMessage: Message = {
         id: crypto.randomUUID(),
         content: response,
         sender: "assistant",
         timestamp: new Date(),
       };
+
+      setMessages(prev => {
+        const filtered = prev.filter(msg => msg.id !== thinkingMessage.id);
+        return [...filtered, newAssistantMessage];
+      });
+
+      // Sauvegarder la réponse
       await saveMessage(newAssistantMessage);
 
     } catch (error) {
-      console.error("Error in handleSendMessage:", error);
+      console.error("Erreur dans handleSendMessage:", error);
       setMessages(prev => prev.filter(msg => !msg.thinking));
-      toast.error("Désolé, je n'ai pas pu générer une réponse");
-      setIsThinking(false);
-      throw error;
+      toast.error("Désolé, je n'ai pas pu générer une réponse. Veuillez réessayer.");
     } finally {
       setIsThinking(false);
     }
@@ -154,9 +91,7 @@ export function useChat() {
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
+    recognition.onstart = () => setIsListening(true);
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript = event.results[0][0].transcript;
@@ -164,14 +99,12 @@ export function useChat() {
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error("Speech recognition error:", event.error);
+      console.error("Erreur de reconnaissance vocale:", event.error);
       setIsListening(false);
       toast.error("Erreur lors de la reconnaissance vocale");
     };
 
-    recognition.onend = () => {
-      setIsListening(false);
-    };
+    recognition.onend = () => setIsListening(false);
 
     recognition.start();
   };
@@ -180,7 +113,7 @@ export function useChat() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        throw new Error("User not authenticated");
+        throw new Error("Utilisateur non authentifié");
       }
 
       setDeletedMessages(messages);
@@ -190,15 +123,12 @@ export function useChat() {
         .delete()
         .eq('user_id', user.id);
 
-      if (error) {
-        console.error('Error clearing chat:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       setMessages([]);
       toast.success("Conversation effacée avec succès");
     } catch (error) {
-      console.error('Error in clearChat:', error);
+      console.error('Erreur dans clearChat:', error);
       toast.error("Erreur lors de l'effacement de la conversation");
       throw error;
     }
@@ -218,7 +148,7 @@ export function useChat() {
       setDeletedMessages([]);
       toast.success("Conversation restaurée avec succès");
     } catch (error) {
-      console.error('Error restoring chat:', error);
+      console.error('Erreur dans restoreChat:', error);
       toast.error("Erreur lors de la restauration de la conversation");
       throw error;
     }
@@ -235,5 +165,6 @@ export function useChat() {
     handleVoiceInput,
     clearChat,
     restoreChat,
+    deletedMessages
   };
 }
