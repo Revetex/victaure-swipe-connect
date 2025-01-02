@@ -11,7 +11,7 @@ export async function generateAIResponse(message: string, profile?: any) {
     if (secretError || !secretData) {
       console.error("Error fetching API token:", secretError);
       toast.error("Erreur lors de la récupération du token API");
-      return null;
+      throw new Error("Failed to fetch API token");
     }
 
     const API_TOKEN = secretData;
@@ -30,7 +30,7 @@ export async function generateAIResponse(message: string, profile?: any) {
         },
         body: JSON.stringify({
           inputs: `<|im_start|>system
-You are Mr. Victaure, a professional and friendly AI assistant. You help users with their job search and career development.
+You are Mr. Victaure, a professional and friendly AI assistant. You help users with their job search and career development. Always respond in French.
 ${contextPrompt}
 <|im_end|>
 <|im_start|>user
@@ -58,7 +58,7 @@ ${message}
       } else {
         toast.error("Erreur lors de la génération de la réponse");
       }
-      return null;
+      throw new Error(errorText);
     }
 
     const result = await response.json();
@@ -70,11 +70,11 @@ ${message}
     }
 
     console.error("Unexpected API response format:", result);
-    return null;
+    throw new Error("Invalid response format from API");
 
   } catch (error) {
     console.error("Error generating AI response:", error);
     toast.error("Erreur lors de la génération de la réponse");
-    return null;
+    throw error;
   }
 }
