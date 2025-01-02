@@ -53,10 +53,10 @@ export function DashboardLayout() {
         />
       )}
 
-      <div className="flex-1 overflow-hidden">
-        <div className="container mx-auto px-4 h-full py-6 overflow-y-auto pb-32">
+      <main className="flex-1 relative">
+        <div className="container mx-auto px-4 py-6 mb-24">
           <motion.div 
-            className="h-full max-w-[1200px] mx-auto mb-24"
+            className="max-w-[1200px] mx-auto"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -85,17 +85,17 @@ export function DashboardLayout() {
             )}
           </motion.div>
         </div>
-      </div>
+      </main>
 
       {!isEditing && (
-        <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4 z-50">
+        <nav className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4 z-50">
           <div className="container mx-auto px-4">
             <DashboardNavigation 
               currentPage={currentPage}
               onPageChange={setCurrentPage}
             />
           </div>
-        </div>
+        </nav>
       )}
     </div>
   );
