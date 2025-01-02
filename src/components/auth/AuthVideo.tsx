@@ -43,14 +43,6 @@ export const AuthVideo = () => {
     }
   };
 
-  const handleScrubStart = () => {
-    setIsScrubbing(true);
-  };
-
-  const handleScrubEnd = () => {
-    setIsScrubbing(false);
-  };
-
   return (
     <div className="mt-8 w-full rounded-xl overflow-hidden shadow-lg relative">
       {isVideoLoading && (
@@ -74,6 +66,7 @@ export const AuthVideo = () => {
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
             onTimeUpdate={handleTimeUpdate}
+            controls={isPlaying}
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
             Votre navigateur ne supporte pas la lecture de vidéos.
@@ -91,26 +84,6 @@ export const AuthVideo = () => {
             >
               <Play className="w-8 h-8 text-white" />
             </button>
-          </div>
-
-          {/* Custom Video Controls */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
-            <input
-              type="range"
-              className="w-full h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
-              min="0"
-              max={videoRef.current?.duration || 100}
-              value={videoRef.current?.currentTime || 0}
-              onChange={(e) => {
-                if (videoRef.current) {
-                  videoRef.current.currentTime = Number(e.target.value);
-                }
-              }}
-              onMouseDown={handleScrubStart}
-              onMouseUp={handleScrubEnd}
-              onTouchStart={handleScrubStart}
-              onTouchEnd={handleScrubEnd}
-            />
           </div>
         </div>
       )}
