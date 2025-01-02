@@ -27,6 +27,7 @@ interface StyleOption {
   color: string;
   font: string;
   displayStyle: string;
+  bgGradient: string;
 }
 
 const styleOptions: StyleOption[] = [
@@ -35,35 +36,40 @@ const styleOptions: StyleOption[] = [
     name: "Classique",
     color: "#1E40AF",
     font: "poppins",
-    displayStyle: "default"
+    displayStyle: "default",
+    bgGradient: "from-blue-600 to-blue-800"
   },
   {
     id: 2,
     name: "Chaleureux",
     color: "#F59E0B",
     font: "montserrat",
-    displayStyle: "warm"
+    displayStyle: "warm",
+    bgGradient: "from-amber-600 to-amber-800"
   },
   {
     id: 3,
     name: "Moderne",
     color: "#10B981",
     font: "roboto",
-    displayStyle: "modern"
+    displayStyle: "modern",
+    bgGradient: "from-emerald-600 to-emerald-800"
   },
   {
     id: 4,
     name: "Élégant",
     color: "#3B82F6",
     font: "playfair",
-    displayStyle: "elegant"
+    displayStyle: "elegant",
+    bgGradient: "from-blue-600 to-blue-800"
   },
   {
     id: 5,
     name: "Audacieux",
     color: "#6D28D9",
     font: "opensans",
-    displayStyle: "bold"
+    displayStyle: "bold",
+    bgGradient: "from-purple-600 to-purple-800"
   }
 ];
 
@@ -157,7 +163,7 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
       className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.font}`}
       style={{ '--accent-color': selectedStyle.color } as React.CSSProperties}
     >
-      <Card className="border-none shadow-lg bg-gradient-to-br from-indigo-600 to-indigo-800">
+      <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient}`}>
         <CardContent className="p-6 space-y-8">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
             <VCardHeader
