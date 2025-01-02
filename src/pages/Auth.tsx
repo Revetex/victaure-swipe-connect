@@ -98,11 +98,13 @@ export default function Auth() {
               className="w-full aspect-video object-cover"
               autoPlay
               loop
-              muted
+              muted={false}
               playsInline
+              preload="auto"
               controls
             >
               <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+              Votre navigateur ne supporte pas la lecture de vidéos.
             </video>
           </div>
         </div>
