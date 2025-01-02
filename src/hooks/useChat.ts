@@ -13,8 +13,15 @@ export function useChat(): ChatState & ChatActions {
 
   useEffect(() => {
     const initializeChat = async () => {
-      const savedMessages = await loadMessages();
-      setMessages(savedMessages);
+      try {
+        console.log("Initializing chat...");
+        const savedMessages = await loadMessages();
+        setMessages(savedMessages);
+        console.log("Chat initialized with messages:", savedMessages);
+      } catch (error) {
+        console.error("Error initializing chat:", error);
+        toast.error("Erreur lors du chargement des messages");
+      }
     };
     initializeChat();
   }, []);
@@ -23,7 +30,9 @@ export function useChat(): ChatState & ChatActions {
     if (!message.trim()) return;
 
     try {
-      // Sauvegarder le message de l'utilisateur
+      console.log("Sending message:", message);
+      
+      // Save user message
       const newUserMessage: Message = {
         id: crypto.randomUUID(),
         content: message,
@@ -36,7 +45,7 @@ export function useChat(): ChatState & ChatActions {
       setInputMessage("");
       setIsThinking(true);
 
-      // Ajouter un message "thinking"
+      // Add thinking message
       const thinkingMessage: Message = {
         id: crypto.randomUUID(),
         content: "...",
@@ -46,17 +55,17 @@ export function useChat(): ChatState & ChatActions {
       };
       setMessages(prev => [...prev, thinkingMessage]);
 
-      // Générer la réponse de l'IA
-      console.log("Génération de la réponse...");
+      // Generate AI response
+      console.log("Generating AI response...");
       const response = await generateAIResponse(message, profile);
       
       if (!response) {
         throw new Error("Pas de réponse de l'IA");
       }
 
-      console.log("Réponse générée:", response);
+      console.log("AI response generated:", response);
 
-      // Remplacer le message "thinking" par la vraie réponse
+      // Replace thinking message with actual response
       const newAssistantMessage: Message = {
         id: crypto.randomUUID(),
         content: response,
@@ -69,11 +78,11 @@ export function useChat(): ChatState & ChatActions {
         return [...filtered, newAssistantMessage];
       });
 
-      // Sauvegarder la réponse
+      // Save AI response
       await saveMessage(newAssistantMessage);
 
     } catch (error) {
-      console.error("Erreur dans handleSendMessage:", error);
+      console.error("Error in handleSendMessage:", error);
       setMessages(prev => prev.filter(msg => !msg.thinking));
       toast.error("Désolé, je n'ai pas pu générer une réponse. Veuillez réessayer.");
     } finally {

@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Mic, Send } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface ChatInputProps {
   value: string;
@@ -29,7 +30,23 @@ export function ChatInput({
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim() && !isThinking) {
+        try {
+          onSend();
+        } catch (error) {
+          console.error("Error sending message:", error);
+          toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
+        }
+      }
+    }
+  };
+
+  const handleSendClick = () => {
+    if (value.trim() && !isThinking) {
+      try {
         onSend();
+      } catch (error) {
+        console.error("Error sending message:", error);
+        toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
       }
     }
   };
@@ -66,7 +83,7 @@ export function ChatInput({
           <Button
             type="button"
             size="icon"
-            onClick={onSend}
+            onClick={handleSendClick}
             className={cn(
               "h-8 w-8 transition-transform",
               value.trim() && !isThinking && "hover:scale-105"
