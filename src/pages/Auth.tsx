@@ -136,7 +136,7 @@ export default function Auth() {
                     onClick={handlePlayClick}
                   >
                     <Logo size="lg" className="mb-4 opacity-75" />
-                    <div className="bg-primary/90 rounded-full p-4 transform transition-transform group-hover:scale-110">
+                    <div className="bg-primary/95 rounded-full p-4 transform transition-transform group-hover:scale-110">
                       <Play className="w-8 h-8 text-white" />
                     </div>
                     <p className="mt-4 text-white font-medium">Découvrez Victaure en vidéo</p>
