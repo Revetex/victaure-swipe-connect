@@ -133,7 +133,7 @@ export default function Auth() {
                 onError={handleVideoError}
                 onLoadedData={handleVideoLoad}
               >
-                <source src="VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+                <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
                 Votre navigateur ne supporte pas la lecture de vidéos.
               </video>
             )}
