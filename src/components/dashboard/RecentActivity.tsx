@@ -31,8 +31,8 @@ interface Job {
 
 interface Match {
   id: string;
-  professional: Professional | null;
-  job: Job | null;
+  professional: Professional;
+  job: Job;
 }
 
 interface MessageResponse {
@@ -78,7 +78,7 @@ export function RecentActivity() {
           id,
           content,
           created_at,
-          sender:profiles!messages_sender_id_fkey(
+          sender:profiles!messages_sender_id_fkey (
             id,
             full_name
           )
@@ -93,11 +93,11 @@ export function RecentActivity() {
         .select(`
           id,
           created_at,
-          job:jobs(
+          job:jobs (
             id,
             title
           ),
-          professional:profiles!matches_professional_id_fkey(
+          professional:profiles!matches_professional_id_fkey (
             id,
             full_name
           )
@@ -114,16 +114,16 @@ export function RecentActivity() {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      // Combine and format activities
+      // Transform and combine activities
       const formattedActivities: Activity[] = [
-        ...(messages?.map((msg: MessageResponse) => ({
+        ...(messages?.map((msg: any) => ({
           id: msg.id,
           type: 'message' as const,
           title: 'Nouveau message',
           description: `${msg.sender?.full_name || 'Utilisateur'} vous a envoyé un message`,
           created_at: msg.created_at
         })) || []),
-        ...(matches?.map((match: MatchResponse) => ({
+        ...(matches?.map((match: any) => ({
           id: match.id,
           type: 'match' as const,
           title: 'Nouveau match',

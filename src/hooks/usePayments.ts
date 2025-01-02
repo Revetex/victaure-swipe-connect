@@ -60,7 +60,7 @@ export function usePayments() {
       if (error) throw error;
       
       // Transform the response to match our expected type
-      const transformedData: PaymentTransaction[] = (data || []).map((item: PaymentResponse) => ({
+      const transformedData: PaymentTransaction[] = (data || []).map((item: any) => ({
         id: item.id,
         match_id: item.match_id,
         amount: item.amount,
