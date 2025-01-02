@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from './styles';
-import { drawHeader, drawSection } from '../helpers';
+import { drawHeader, drawSection, drawTimeline, drawTimelineDot } from '../helpers';
 import type { ExtendedJsPDF } from '../types';
 import { renderHeader } from './sections/header';
 import { renderContactInfo } from './sections/contact';
