@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
+import { DashboardContainer } from "./dashboard/DashboardContainer";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -72,22 +73,11 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      <main className="flex-1 relative">
-        <div className="container mx-auto px-4 py-6 pb-24 h-[calc(100vh-8rem)] overflow-y-auto">
-          <motion.div 
-            className="max-w-[1200px] mx-auto h-full"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <AnimatePresence mode="sync">
-              {renderCurrentPage()}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-      </main>
-
+    <DashboardContainer containerVariants={containerVariants}>
+      <AnimatePresence mode="sync">
+        {renderCurrentPage()}
+      </AnimatePresence>
+      
       {!isEditing && (
         <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4 z-50">
           <div className="container mx-auto px-4">
@@ -98,6 +88,6 @@ export function DashboardLayout() {
           </div>
         </nav>
       )}
-    </div>
+    </DashboardContainer>
   );
 }

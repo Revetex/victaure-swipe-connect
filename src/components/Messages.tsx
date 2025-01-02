@@ -1,20 +1,8 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessagesTab } from "./messages/tabs/MessagesTab";
-import { NotificationsTab } from "./messages/tabs/NotificationsTab";
-import { TodoSection } from "./todo/TodoSection";
-import { Settings } from "./Settings";
-import { PaymentBox } from "./dashboard/PaymentBox";
+import { Tabs } from "@/components/ui/tabs";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
-import { NotesSection } from "./todo/NotesSection";
-import { 
-  MessageSquare, 
-  Bell, 
-  StickyNote, 
-  ListTodo, 
-  Settings as SettingsIcon, 
-  CreditCard 
-} from "lucide-react";
+import { MessagesTabs } from "./messages/MessagesTabs";
+import { MessagesContent } from "./messages/MessagesContent";
 
 export function Messages() {
   const {
@@ -55,75 +43,29 @@ export function Messages() {
 
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
-      <TabsList className="grid w-full grid-cols-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-50">
-        <TabsTrigger value="messages" className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4" />
-          <span className="hidden sm:inline">Messages</span>
-        </TabsTrigger>
-        <TabsTrigger value="notifications" className="flex items-center gap-2">
-          <Bell className="h-4 w-4" />
-          <span className="hidden sm:inline">Notifications</span>
-        </TabsTrigger>
-        <TabsTrigger value="notes" className="flex items-center gap-2">
-          <StickyNote className="h-4 w-4" />
-          <span className="hidden sm:inline">Notes</span>
-        </TabsTrigger>
-        <TabsTrigger value="tasks" className="flex items-center gap-2">
-          <ListTodo className="h-4 w-4" />
-          <span className="hidden sm:inline">Tâches</span>
-        </TabsTrigger>
-        <TabsTrigger value="payments" className="flex items-center gap-2">
-          <CreditCard className="h-4 w-4" />
-          <span className="hidden sm:inline">Paiements</span>
-        </TabsTrigger>
-        <TabsTrigger value="settings" className="flex items-center gap-2">
-          <SettingsIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Paramètres</span>
-        </TabsTrigger>
-      </TabsList>
-      <div className="flex-1 overflow-hidden pt-14">
-        <TabsContent value="messages" className="h-full mt-0">
-          <MessagesTab />
-        </TabsContent>
-        <TabsContent value="notifications" className="h-full mt-0">
-          <NotificationsTab />
-        </TabsContent>
-        <TabsContent value="notes" className="h-full mt-0">
-          <NotesSection
-            notes={notes}
-            newNote={newNote}
-            selectedColor={selectedColor}
-            colors={colors}
-            onNoteChange={setNewNote}
-            onColorChange={setSelectedColor}
-            onAdd={addNote}
-            onDelete={deleteNote}
-          />
-        </TabsContent>
-        <TabsContent value="tasks" className="h-full mt-0">
-          <TodoSection
-            type="tasks"
-            todos={todos}
-            newTodo={newTodo}
-            selectedDate={selectedDate}
-            selectedTime={selectedTime}
-            allDay={allDay}
-            onTodoChange={setNewTodo}
-            onDateChange={setSelectedDate}
-            onTimeChange={setSelectedTime}
-            onAllDayChange={setAllDay}
-            onAdd={addTodo}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
-          />
-        </TabsContent>
-        <TabsContent value="payments" className="h-full mt-0">
-          <PaymentBox />
-        </TabsContent>
-        <TabsContent value="settings" className="h-full mt-0 overflow-y-auto">
-          <Settings />
-        </TabsContent>
-      </div>
+      <MessagesTabs />
+      <MessagesContent
+        todos={todos}
+        notes={notes}
+        newTodo={newTodo}
+        newNote={newNote}
+        selectedDate={selectedDate}
+        selectedTime={selectedTime}
+        selectedColor={selectedColor}
+        allDay={allDay}
+        onTodoChange={setNewTodo}
+        onNoteChange={setNewNote}
+        onDateChange={setSelectedDate}
+        onTimeChange={setSelectedTime}
+        onColorChange={setSelectedColor}
+        onAllDayChange={setAllDay}
+        onAddTodo={addTodo}
+        onAddNote={addNote}
+        onToggleTodo={toggleTodo}
+        onDeleteTodo={deleteTodo}
+        onDeleteNote={deleteNote}
+        colors={colors}
+      />
     </Tabs>
   );
 }
