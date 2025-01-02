@@ -149,7 +149,7 @@ export function ConversationView({
         </AnimatePresence>
       </main>
 
-      <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0">
+      <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0 z-10">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
@@ -158,6 +158,7 @@ export function ConversationView({
           isListening={isListening}
           isThinking={isThinking}
           placeholder="Écrivez votre message..."
+          className="w-full"
         />
       </footer>
     </motion.div>
