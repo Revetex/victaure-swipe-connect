@@ -25,6 +25,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
+  const [accentColor, setAccentColor] = useState("#9b87f5");
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -49,7 +50,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const handleDownloadPDF = async () => {
     if (!profile) return;
     try {
-      await generateVCardPDF(profile);
+      await generateVCardPDF(profile, accentColor);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -112,6 +113,21 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
           />
 
           <motion.div className="space-y-8 pt-6">
+            {isEditing && (
+              <div className="flex items-center gap-4">
+                <label htmlFor="accentColor" className="text-white">
+                  Couleur d'accent du PDF:
+                </label>
+                <input
+                  type="color"
+                  id="accentColor"
+                  value={accentColor}
+                  onChange={(e) => setAccentColor(e.target.value)}
+                  className="h-8 w-20 cursor-pointer rounded border-none bg-transparent"
+                />
+              </div>
+            )}
+
             <VCardSkills
               profile={profile}
               isEditing={isEditing}

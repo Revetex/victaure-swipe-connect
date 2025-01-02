@@ -5,7 +5,7 @@ import { pdfStyles } from './styles';
 import { drawHeader, drawSection, drawTimeline, drawTimelineDot } from './helpers';
 import type { ExtendedJsPDF } from './types';
 
-export const generateCVPDF = async (profile: UserProfile) => {
+export const generateVCardPDF = async (profile: UserProfile, accentColor: string = '#9b87f5') => {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -16,23 +16,45 @@ export const generateCVPDF = async (profile: UserProfile) => {
   doc.setFillColor(pdfStyles.colors.background);
   doc.rect(0, 0, 210, 297, 'F');
 
-  // Add header
+  // Add header with custom color
   const headerHeight = 50;
-  drawHeader(doc, headerHeight, pdfStyles.colors.primary, pdfStyles.colors.secondary);
+  drawHeader(doc, headerHeight, accentColor, pdfStyles.colors.secondary);
 
   let yPos = pdfStyles.margins.top + 15;
+
+  // Add profile picture if available
+  if (profile.avatar_url) {
+    try {
+      const img = await loadImage(profile.avatar_url);
+      const imgSize = 30;
+      doc.addImage(
+        img,
+        'JPEG',
+        pdfStyles.margins.left,
+        yPos - 10,
+        imgSize,
+        imgSize,
+        undefined,
+        'MEDIUM'
+      );
+      // Adjust text position when image is present
+      yPos += 5;
+    } catch (error) {
+      console.error('Error loading profile picture:', error);
+    }
+  }
 
   // Header with name and role
   doc.setTextColor(pdfStyles.colors.background);
   doc.setFontSize(pdfStyles.fonts.header.size);
   doc.setFont('helvetica', pdfStyles.fonts.header.style);
-  doc.text(profile.full_name || '', pdfStyles.margins.left, yPos);
+  doc.text(profile.full_name || '', profile.avatar_url ? pdfStyles.margins.left + 35 : pdfStyles.margins.left, yPos);
 
   yPos += 10;
   doc.setFontSize(pdfStyles.fonts.subheader.size);
   doc.setFont('helvetica', pdfStyles.fonts.subheader.style);
   if (profile.role) {
-    doc.text(profile.role, pdfStyles.margins.left, yPos);
+    doc.text(profile.role, profile.avatar_url ? pdfStyles.margins.left + 35 : pdfStyles.margins.left, yPos);
     yPos += 10;
   }
 
@@ -58,7 +80,7 @@ export const generateCVPDF = async (profile: UserProfile) => {
   // Bio section
   if (profile.bio) {
     yPos += 10;
-    drawSection(doc, yPos, 180, 30, pdfStyles.colors.accent);
+    drawSection(doc, yPos, 180, 30, accentColor);
 
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
@@ -197,8 +219,8 @@ export const generateCVPDF = async (profile: UserProfile) => {
     console.error('Error generating QR code:', error);
   }
 
-  // Footer
-  const footerColor = pdfStyles.colors.accent + '1A'; // 1A = 10% opacity in hex
+  // Footer with custom color
+  const footerColor = accentColor + '1A'; // 1A = 10% opacity in hex
   doc.setFillColor(footerColor);
   doc.rect(0, 280, 210, 17, 'F');
   
@@ -208,4 +230,15 @@ export const generateCVPDF = async (profile: UserProfile) => {
 
   // Save the PDF
   doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '-') || 'professionnel'}.pdf`);
+};
+
+// Helper function to load image
+const loadImage = (url: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
 };
