@@ -46,7 +46,14 @@ Message de l'utilisateur : ${message} [/INST]`,
     console.log("Response status:", response.status);
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText };
+      }
+      
       console.error("Hugging Face API Error:", errorData);
       
       if (response.status === 400 && errorData.error?.includes("token")) {
@@ -74,13 +81,11 @@ Message de l'utilisateur : ${message} [/INST]`,
     return assistantResponse;
   } catch (error) {
     console.error("Error generating AI response:", error);
-    
     if (error instanceof Error) {
       if (error.message.includes("token")) {
         throw new Error("Token Hugging Face invalide");
       }
     }
-    
     throw error;
   }
 }
