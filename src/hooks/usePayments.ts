@@ -43,7 +43,9 @@ export function usePayments() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as PaymentTransaction[];
+      
+      // Type assertion to ensure the returned data matches our interface
+      return (data || []) as PaymentTransaction[];
     }
   });
 
