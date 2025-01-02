@@ -242,3 +242,6 @@ const loadImage = (url: string): Promise<HTMLImageElement> => {
     img.src = url;
   });
 };
+
+// Alias for backward compatibility
+export const generateCVPDF = generateVCardPDF;
