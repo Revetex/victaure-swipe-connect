@@ -36,13 +36,13 @@ export function ChatInput({
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <div className="relative">
+      <div className="relative w-full">
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background"
+          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full"
           disabled={isThinking}
         />
         <div className="absolute bottom-2 right-2 flex items-center gap-2">
