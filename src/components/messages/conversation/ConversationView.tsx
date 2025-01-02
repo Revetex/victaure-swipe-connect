@@ -63,7 +63,7 @@ export function ConversationView({
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-background">
+    <div className="flex flex-col h-[100dvh] max-h-[100dvh] bg-background">
       <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center gap-3">
           <Button
@@ -97,7 +97,7 @@ export function ConversationView({
         </Button>
       </header>
 
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex-1 min-h-0 relative">
         <ScrollArea 
           className="h-full px-4" 
           onScroll={handleScroll}
