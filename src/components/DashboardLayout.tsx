@@ -26,9 +26,9 @@ export function DashboardLayout() {
       variants={itemVariants} 
       className={`transform transition-all duration-300 ${className}`}
     >
-      <div className="dashboard-card h-full relative overflow-y-auto">
+      <div className="dashboard-card h-full">
         {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 h-full">
+          <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto">
             {component}
           </div>
         ) : (
@@ -39,9 +39,9 @@ export function DashboardLayout() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed overflow-hidden">
-      <main className="flex-1 overflow-y-auto relative">
-        <div className="container mx-auto px-4 py-6 pb-24 min-h-full">
+    <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
+      <main className="flex-1 relative">
+        <div className="container mx-auto px-4 py-6 pb-24 h-[calc(100vh-8rem)] overflow-y-auto">
           <motion.div 
             className="max-w-[1200px] mx-auto h-full"
             variants={containerVariants}
