@@ -11,33 +11,32 @@ import { renderExperiences } from './sections/experiences';
 import { renderEducation } from './sections/education';
 import { renderFooter } from './sections/footer';
 
-export const generateVCardPDF = async (profile: UserProfile, accentColor: string = '#1E40AF') => {
+export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
+  // Initialize PDF document
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
   }) as ExtendedJsPDF;
 
-  // Update styles with custom accent color
-  const styles = {
-    ...pdfStyles,
-    colors: {
-      ...pdfStyles.colors,
-      primary: accentColor,
-      secondary: accentColor + '80', // Add 80 for 50% opacity
-      background: '#FFFFFF'
-    }
-  };
+  // Set document properties
+  doc.setProperties({
+    title: `CV - ${profile.full_name}`,
+    subject: 'Curriculum Vitae',
+    author: profile.full_name,
+    keywords: 'cv, resume, curriculum vitae',
+    creator: 'Lovable CV Generator'
+  });
 
-  // White background
-  doc.setFillColor(255, 255, 255);
-  doc.rect(0, 0, 210, 297, 'F');
+  // Set initial y position
+  let yPos = pdfStyles.margins.top;
 
-  // Header with custom color
-  const headerHeight = 50;
-  drawHeader(doc, headerHeight, styles.colors.primary, styles.colors.secondary);
+  // Set document styles
+  doc.setFont('helvetica');
+  doc.setFontSize(pdfStyles.fonts.body.size);
+  doc.setTextColor(pdfStyles.colors.text.primary);
 
-  let yPos = styles.margins.top + 15;
+  const accentColor = pdfStyles.colors.primary;
 
   // Render each section and update yPos
   yPos = await renderHeader(doc, profile, yPos);
@@ -49,8 +48,5 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
   await renderFooter(doc, accentColor);
 
   // Save the PDF
-  doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '-') || 'professionnel'}.pdf`);
+  return doc.output('arraybuffer');
 };
-
-// Alias for backward compatibility
-export const generateCVPDF = generateVCardPDF;

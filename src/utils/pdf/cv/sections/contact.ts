@@ -1,30 +1,40 @@
-import { ExtendedJsPDF } from '../../types';
-import { UserProfile } from '@/types/profile';
+import type { ExtendedJsPDF } from '../../types';
+import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
 
 export const renderContact = (
   doc: ExtendedJsPDF,
   profile: UserProfile,
-  yPos: number
+  startY: number
 ): number => {
-  let currentY = yPos + 10;
+  const { margins, fonts, colors } = pdfStyles;
 
-  doc.setTextColor(pdfStyles.colors.text.primary);
-  doc.setFontSize(pdfStyles.fonts.body.size);
-  doc.setFont('helvetica', pdfStyles.fonts.body.style);
+  // Set font for contact section
+  doc.setFont('helvetica', fonts.body.style);
+  doc.setFontSize(fonts.body.size);
+  doc.setTextColor(colors.text.primary);
 
-  const contactInfo = [];
-  if (profile.email) contactInfo.push(`Email: ${profile.email}`);
-  if (profile.phone) contactInfo.push(`Téléphone: ${profile.phone}`);
-  if (profile.city) {
-    const location = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
-    contactInfo.push(`Localisation: ${location}`);
-  }
+  const contactInfo = [
+    { label: 'Email:', value: profile.email },
+    { label: 'Phone:', value: profile.phone },
+    { label: 'Location:', value: `${profile.city || ''}, ${profile.state || ''}, ${profile.country || ''}` }
+  ];
 
-  contactInfo.forEach(info => {
-    doc.text(info, pdfStyles.margins.left, currentY);
-    currentY += 6;
+  let currentY = startY;
+  const lineHeight = 7;
+
+  contactInfo.forEach(({ label, value }) => {
+    if (value) {
+      doc.setFont('helvetica', 'bold');
+      doc.text(label, margins.left, currentY);
+      
+      const labelWidth = doc.getTextWidth(label);
+      doc.setFont('helvetica', 'normal');
+      doc.text(value, margins.left + labelWidth + 5, currentY);
+      
+      currentY += lineHeight;
+    }
   });
 
-  return currentY;
-}
+  return currentY + 5;
+};

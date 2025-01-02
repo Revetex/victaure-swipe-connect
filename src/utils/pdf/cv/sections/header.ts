@@ -1,49 +1,30 @@
-import { ExtendedJsPDF } from '../../types';
-import { UserProfile } from '@/types/profile';
+import type { ExtendedJsPDF } from '../../types';
+import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
-import { loadImage } from '../utils';
 
 export const renderHeader = async (
   doc: ExtendedJsPDF,
   profile: UserProfile,
-  yPos: number
+  startY: number
 ): Promise<number> => {
-  let currentY = yPos;
+  const { margins, fonts, colors } = pdfStyles;
+  
+  // Set font for header
+  doc.setFont('helvetica', fonts.header.style);
+  doc.setFontSize(fonts.header.size);
+  doc.setTextColor(colors.primary);
 
-  // Add profile picture if available
-  if (profile.avatar_url) {
-    try {
-      const img = await loadImage(profile.avatar_url);
-      const imgSize = 30;
-      doc.addImage(
-        img,
-        'JPEG',
-        pdfStyles.margins.left,
-        currentY - 10,
-        imgSize,
-        imgSize,
-        undefined,
-        'MEDIUM'
-      );
-      currentY += 5;
-    } catch (error) {
-      console.error('Error loading profile picture:', error);
-    }
-  }
+  // Draw name
+  doc.text(profile.full_name || 'No Name', margins.left, startY);
+  
+  // Set font for role
+  doc.setFont('helvetica', fonts.subheader.style);
+  doc.setFontSize(fonts.subheader.size);
+  doc.setTextColor(colors.text.secondary);
 
-  // Header with name and role
-  doc.setTextColor(pdfStyles.colors.text.primary);
-  doc.setFontSize(pdfStyles.fonts.header.size);
-  doc.setFont('helvetica', pdfStyles.fonts.header.style);
-  doc.text(profile.full_name || '', profile.avatar_url ? pdfStyles.margins.left + 35 : pdfStyles.margins.left, currentY);
+  // Draw role
+  const roleY = startY + 10;
+  doc.text(profile.role || 'No Role', margins.left, roleY);
 
-  currentY += 10;
-  doc.setFontSize(pdfStyles.fonts.subheader.size);
-  doc.setFont('helvetica', pdfStyles.fonts.subheader.style);
-  if (profile.role) {
-    doc.text(profile.role, profile.avatar_url ? pdfStyles.margins.left + 35 : pdfStyles.margins.left, currentY);
-    currentY += 10;
-  }
-
-  return currentY;
-}
+  return roleY + 10; // Return next Y position
+};
