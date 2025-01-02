@@ -9,7 +9,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
-import { ScrapedJobs } from "./dashboard/ScrapedJobs";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -43,11 +42,6 @@ export function DashboardLayout() {
         {padding ? (
           <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto">
             {component}
-            {currentPage === 1 && (
-              <div className="mt-6">
-                <ScrapedJobs />
-              </div>
-            )}
           </div>
         ) : (
           component
