@@ -112,7 +112,7 @@ export function VCardCertifications({
           <Button 
             onClick={handleAddCertification} 
             variant="outline" 
-            className="w-full mt-4"
+            className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             Ajouter une certification/diplôme
           </Button>
