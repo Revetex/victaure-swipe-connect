@@ -88,7 +88,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background relative">
+    <div className="min-h-[100dvh] bg-background relative overflow-auto">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-dashboard-pattern opacity-5" />
       
