@@ -2,41 +2,54 @@ import { useState, useCallback } from "react";
 import { useAuth } from "./useAuth";
 import { chatService } from "@/services/ai/chatService";
 import { toast } from "sonner";
+import { Message } from "@/types/chat";
+import { v4 as uuidv4 } from "uuid";
 
 export function useChat() {
-  const [messages, setMessages] = useState<Array<{ content: string; sender: string }>>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const { user } = useAuth();
+  const { session } = useAuth();
 
   const loadMessages = useCallback(async () => {
-    if (!user?.id) return;
+    if (!session?.user?.id) return;
     
     try {
-      const loadedMessages = await chatService.loadMessages(user.id);
+      const loadedMessages = await chatService.loadMessages(session.user.id);
       setMessages(loadedMessages);
     } catch (error) {
       console.error("Erreur lors du chargement des messages:", error);
       toast.error("Impossible de charger les messages");
     }
-  }, [user?.id]);
+  }, [session?.user?.id]);
 
   const handleSendMessage = useCallback(async (content: string) => {
-    if (!user?.id || !content.trim()) return;
+    if (!session?.user?.id || !content.trim()) return;
 
-    const userMessage = { content, sender: "user" };
+    const userMessage: Message = {
+      id: uuidv4(),
+      content,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
     setIsThinking(true);
 
     try {
-      await chatService.saveMessage(user.id, content, "user");
+      await chatService.saveMessage(session.user.id, content, "user");
       
-      const aiResponse = await chatService.generateAIResponse([...messages, userMessage]);
-      const assistantMessage = { content: aiResponse, sender: "assistant" };
+      const aiResponse = await chatService.generateAIResponse(content);
+      const assistantMessage: Message = {
+        id: uuidv4(),
+        content: aiResponse,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
       
-      await chatService.saveMessage(user.id, aiResponse, "assistant");
+      await chatService.saveMessage(session.user.id, aiResponse, "assistant");
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
@@ -44,7 +57,7 @@ export function useChat() {
     } finally {
       setIsThinking(false);
     }
-  }, [messages, user?.id]);
+  }, [session?.user?.id]);
 
   const handleVoiceInput = useCallback(() => {
     if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
@@ -82,10 +95,10 @@ export function useChat() {
   }, [handleSendMessage]);
 
   const clearChat = useCallback(async () => {
-    if (!user?.id) return;
+    if (!session?.user?.id) return;
     setMessages([]);
     toast.success("Conversation effacée");
-  }, [user?.id]);
+  }, [session?.user?.id]);
 
   return {
     messages,

@@ -1,4 +1,4 @@
-import { Bot, Trash2, RotateCcw } from "lucide-react";
+import { Bot, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ChatMessage } from "@/components/chat/ChatMessage";
@@ -12,7 +12,7 @@ export function AssistantTab() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { profile } = useProfile();
   const {
-    messages: chatMessages,
+    messages,
     inputMessage,
     isListening,
     isThinking,
@@ -20,7 +20,6 @@ export function AssistantTab() {
     handleSendMessage,
     handleVoiceInput,
     clearChat,
-    restoreChat,
   } = useChat();
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export function AssistantTab() {
       const scrollArea = scrollAreaRef.current;
       scrollArea.scrollTop = scrollArea.scrollHeight;
     }
-  }, [chatMessages]);
+  }, [messages]);
 
   const handleClearChat = async () => {
     try {
@@ -37,16 +36,6 @@ export function AssistantTab() {
     } catch (error) {
       console.error("Error clearing chat:", error);
       toast.error("Erreur lors de l'effacement de la conversation");
-    }
-  };
-
-  const handleRestoreChat = async () => {
-    try {
-      await restoreChat();
-      toast.success("Conversation restaurée avec succès");
-    } catch (error) {
-      console.error("Error restoring chat:", error);
-      toast.error("Erreur lors de la restauration de la conversation");
     }
   };
 
@@ -67,31 +56,21 @@ export function AssistantTab() {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleRestoreChat}
-            className="hover:bg-primary/10 hover:text-primary"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClearChat}
-            className="hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleClearChat}
+          className="hover:bg-destructive/10 hover:text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           <div className="space-y-4 p-4">
-            {chatMessages.map((message, index) => (
+            {messages.map((message, index) => (
               <ChatMessage
                 key={message.id}
                 content={message.content}
@@ -99,8 +78,8 @@ export function AssistantTab() {
                 thinking={message.thinking}
                 showTimestamp={
                   index === 0 || 
-                  chatMessages[index - 1]?.sender !== message.sender ||
-                  new Date(message.timestamp).getTime() - new Date(chatMessages[index - 1]?.timestamp).getTime() > 300000
+                  messages[index - 1]?.sender !== message.sender ||
+                  new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
                 }
                 timestamp={message.timestamp?.toString()}
               />
@@ -114,7 +93,7 @@ export function AssistantTab() {
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
-          onSend={() => handleSendMessage(inputMessage, profile)}
+          onSend={() => handleSendMessage(inputMessage)}
           onVoiceInput={handleVoiceInput}
           isListening={isListening}
           isThinking={isThinking}
