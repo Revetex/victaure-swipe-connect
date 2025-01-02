@@ -47,6 +47,7 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
   yPos = renderEducation(doc, profile, yPos);
   await renderFooter(doc, accentColor);
 
-  // Save the PDF
-  return doc.output('arraybuffer');
+  // Convert ArrayBuffer to Uint8Array before returning
+  const arrayBuffer = doc.output('arraybuffer');
+  return new Uint8Array(arrayBuffer);
 };
