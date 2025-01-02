@@ -76,21 +76,23 @@ export default function Auth() {
           {/* Auth Card */}
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
             <BiometricAuth />
-            
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card/50 px-2 text-muted-foreground backdrop-blur-sm">
-                  ou continuez avec
-                </span>
-              </div>
-            </div>
-
-            {/* Auth Form */}
             <AuthForm />
+          </div>
+
+          {/* Legal Links */}
+          <div className="text-center text-sm text-muted-foreground">
+            <div className="space-x-2">
+              <a href="/privacy" className="hover:text-primary hover:underline">
+                Politique de confidentialité
+              </a>
+              <span>•</span>
+              <a href="/terms" className="hover:text-primary hover:underline">
+                Conditions d'utilisation
+              </a>
+            </div>
+            <div className="mt-2">
+              © {new Date().getFullYear()} Victaure. Tous droits réservés.
+            </div>
           </div>
 
           {/* Video Section */}
