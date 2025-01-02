@@ -63,7 +63,7 @@ export function ConversationView({
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] bg-background">
+    <div className="flex flex-col h-full">
       <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-20">
         <div className="flex items-center gap-3">
           <Button
@@ -143,7 +143,7 @@ export function ConversationView({
         </AnimatePresence>
       </main>
 
-      <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-20">
+      <footer className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0 z-20">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
