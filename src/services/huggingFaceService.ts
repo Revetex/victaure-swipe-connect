@@ -27,13 +27,24 @@ ${jobs.map((job: any) => `- ${job.title} chez ${job.company} à ${job.location} 
       `${message}\n\nContext des offres d'emploi actuelles:\n${jobContext}` : 
       message;
 
+    // Get the API token from Supabase secrets
+    const { data: { secret }, error: secretError } = await supabase.rpc('get_secret', {
+      secret_name: 'HUGGING_FACE_ACCESS_TOKEN'
+    });
+
+    if (secretError || !secret) {
+      console.error('Error fetching Hugging Face token:', secretError);
+      toast.error("Token d'API manquant. Veuillez configurer votre token Hugging Face.");
+      throw new Error("Missing Hugging Face token");
+    }
+
     console.log("Sending request to Hugging Face API...");
     
     const response = await fetch("https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_HUGGING_FACE_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${secret}`,
       },
       body: JSON.stringify({
         inputs: `<s>[INST] Tu es Mr. Victaure, un assistant IA professionnel et sympathique. Tu dois répondre en français de manière concise et professionnelle.
@@ -57,22 +68,15 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
     console.log("Response status:", response.status);
 
     if (!response.ok) {
-      let errorMessage = "Une erreur est survenue lors de la génération de la réponse.";
+      const responseData = await response.json();
+      console.error("Hugging Face API Error:", responseData);
       
-      try {
-        const errorData = await response.json();
-        console.error("Hugging Face API Error:", errorData);
-        
-        if (response.status === 400 && errorData.error?.includes("token")) {
-          errorMessage = "Le token d'API semble invalide. Veuillez vérifier votre configuration.";
-          toast.error(errorMessage);
-          throw new Error("Invalid Hugging Face token");
-        }
-      } catch (e) {
-        console.error("Error parsing error response:", e);
+      if (response.status === 400 && responseData.error?.includes("token")) {
+        toast.error("Le token d'API semble invalide. Veuillez vérifier votre configuration.");
+        throw new Error("Invalid Hugging Face token");
       }
       
-      throw new Error(`HTTP error! status: ${response.status} - ${errorMessage}`);
+      throw new Error(`Erreur de l'API Hugging Face: ${responseData.error || 'Erreur inconnue'}`);
     }
 
     const result = await response.json();
