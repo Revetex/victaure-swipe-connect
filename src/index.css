@@ -59,3 +59,45 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Styles spécifiques pour chaque thème */
+.style-default {
+  @apply text-gray-900;
+}
+
+.style-warm {
+  @apply text-amber-900;
+}
+
+.style-modern {
+  @apply text-emerald-900;
+}
+
+.style-elegant {
+  @apply text-blue-900;
+}
+
+.style-bold {
+  @apply text-purple-900;
+}
+
+/* Classes de police personnalisées */
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif !important;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+.font-opensans {
+  font-family: 'Open Sans', sans-serif !important;
+}

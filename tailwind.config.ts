@@ -1,14 +1,13 @@
-import type { Config } from "tailwindcss";
+import { type Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -19,37 +18,13 @@ export default {
     },
     extend: {
       fontFamily: {
-        'poppins': ['Poppins', 'sans-serif'],
-        'montserrat': ['Montserrat', 'sans-serif'],
-        'playfair': ['Playfair Display', 'serif'],
-        'roboto': ['Roboto', 'sans-serif'],
-        'opensans': ['Open Sans', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
+        playfair: ['Playfair Display', 'serif'],
+        roboto: ['Roboto', 'sans-serif'],
+        opensans: ['Open Sans', 'sans-serif'],
       },
       colors: {
-        'style-1': '#1E40AF', // Default - Indigo
-        'style-2': '#F59E0B', // Warm - Amber
-        'style-3': '#10B981', // Fresh - Emerald
-        'style-4': '#3B82F6', // Modern - Blue
-        'style-5': '#6D28D9', // Bold - Purple
-        victaure: {
-          dark: "#1A1F2C",
-          metal: "#403E43",
-          blue: {
-            light: "#33C3F0",
-            DEFAULT: "#1EAEDB",
-            dark: "#0FA0CE",
-          },
-          orange: {
-            light: "#F97316",
-            DEFAULT: "#EA580C",
-            dark: "#C2410C",
-          },
-          gray: {
-            light: "#F1F1F1",
-            DEFAULT: "#C8C8C9",
-            dark: "#555555",
-          },
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -84,6 +59,11 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -93,48 +73,12 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "slide-in": {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(0)" },
-        },
-        "slide-out": {
-          "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-100%)" },
-        },
-        glow: {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.5" },
-        },
-        pulse: {
-          "0%, 100%": { transform: "scale(1)" },
-          "50%": { transform: "scale(1.05)" },
-        },
-        rotate: {
-          "0%": { transform: "rotate(0deg)" },
-          "100%": { transform: "rotate(360deg)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "slide-in": "slide-in 0.3s ease-out",
-        "slide-out": "slide-out 0.3s ease-out",
-        glow: "glow 2s ease-in-out infinite",
-        pulse: "pulse 2s ease-in-out infinite",
-        rotate: "rotate 10s linear infinite",
-      },
-      backgroundImage: {
-        'dashboard-pattern': "url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png')",
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'circuit-pattern': `
-          linear-gradient(to right, rgba(30, 174, 219, 0.1) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(30, 174, 219, 0.1) 1px, transparent 1px)
-        `,
-      },
-      backdropBlur: {
-        xs: '2px',
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+} satisfies Config

@@ -18,7 +18,6 @@ import { generateVCardPDF } from "@/utils/pdfGenerator";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
-  onRequestChat?: () => void;
 }
 
 interface StyleOption {
@@ -121,7 +120,11 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const handleStyleSelect = (style: StyleOption) => {
     setSelectedStyle(style);
     document.documentElement.style.setProperty('--accent-color', style.color);
-    document.body.className = `font-${style.font} style-${style.displayStyle}`;
+    // Appliquer la police à l'élément racine du VCard
+    const vCardElement = document.querySelector('.vcard-root');
+    if (vCardElement) {
+      vCardElement.className = `vcard-root font-${style.font} style-${style.displayStyle}`;
+    }
   };
 
   const handleAddSkill = () => {
@@ -150,7 +153,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`w-full max-w-4xl mx-auto font-${selectedStyle.font}`}
+      className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.font}`}
       style={{ '--accent-color': selectedStyle.color } as React.CSSProperties}
     >
       <Card className="border-none shadow-lg bg-victaure-metal">
