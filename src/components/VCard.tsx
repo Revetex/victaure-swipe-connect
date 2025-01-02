@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
@@ -21,11 +21,71 @@ interface VCardProps {
   onRequestChat?: () => void;
 }
 
+interface StyleOption {
+  id: number;
+  name: string;
+  color: string;
+  font: string;
+  displayStyle: string;
+}
+
+const styleOptions: StyleOption[] = [
+  {
+    id: 1,
+    name: "Classique",
+    color: "#1E40AF",
+    font: "poppins",
+    displayStyle: "default"
+  },
+  {
+    id: 2,
+    name: "Chaleureux",
+    color: "#F59E0B",
+    font: "montserrat",
+    displayStyle: "warm"
+  },
+  {
+    id: 3,
+    name: "Moderne",
+    color: "#10B981",
+    font: "roboto",
+    displayStyle: "modern"
+  },
+  {
+    id: 4,
+    name: "Élégant",
+    color: "#3B82F6",
+    font: "playfair",
+    displayStyle: "elegant"
+  },
+  {
+    id: 5,
+    name: "Audacieux",
+    color: "#6D28D9",
+    font: "opensans",
+    displayStyle: "bold"
+  }
+];
+
 export function VCardComponent({ onEditStateChange }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-  const [accentColor, setAccentColor] = useState("#1E40AF"); // Changed default color to match indigo-600
+  const [selectedStyle, setSelectedStyle] = useState<StyleOption>(styleOptions[0]);
+
+  useEffect(() => {
+    // Charger les polices
+    const loadFonts = async () => {
+      await Promise.all([
+        document.fonts.load("1em Poppins"),
+        document.fonts.load("1em Montserrat"),
+        document.fonts.load("1em Playfair Display"),
+        document.fonts.load("1em Roboto"),
+        document.fonts.load("1em Open Sans"),
+      ]);
+    };
+    loadFonts();
+  }, []);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -50,12 +110,18 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const handleDownloadPDF = async () => {
     if (!profile) return;
     try {
-      await generateVCardPDF(profile, accentColor);
+      await generateVCardPDF(profile, selectedStyle.color);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error("Erreur lors de la génération du PDF");
     }
+  };
+
+  const handleStyleSelect = (style: StyleOption) => {
+    setSelectedStyle(style);
+    document.documentElement.style.setProperty('--accent-color', style.color);
+    document.body.className = `font-${style.font} style-${style.displayStyle}`;
   };
 
   const handleAddSkill = () => {
@@ -84,7 +150,8 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full max-w-4xl mx-auto"
+      className={`w-full max-w-4xl mx-auto font-${selectedStyle.font}`}
+      style={{ '--accent-color': selectedStyle.color } as React.CSSProperties}
     >
       <Card className="border-none shadow-lg bg-victaure-metal">
         <CardContent className="p-6 space-y-8">
@@ -106,6 +173,27 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
             </div>
           </div>
 
+          {isEditing && (
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              {styleOptions.map((style) => (
+                <Button
+                  key={style.id}
+                  onClick={() => handleStyleSelect(style)}
+                  className={`p-4 rounded-lg transition-all duration-300 ${
+                    selectedStyle.id === style.id 
+                    ? 'ring-2 ring-white' 
+                    : 'hover:ring-2 hover:ring-white/50'
+                  }`}
+                  style={{ backgroundColor: style.color }}
+                >
+                  <span className="text-white text-sm font-medium">
+                    {style.name}
+                  </span>
+                </Button>
+              ))}
+            </div>
+          )}
+
           <VCardContact
             profile={profile}
             isEditing={isEditing}
@@ -113,21 +201,6 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
           />
 
           <motion.div className="space-y-8 pt-6">
-            {isEditing && (
-              <div className="flex items-center gap-4">
-                <label htmlFor="accentColor" className="text-white">
-                  Couleur d'accent du PDF:
-                </label>
-                <input
-                  type="color"
-                  id="accentColor"
-                  value={accentColor}
-                  onChange={(e) => setAccentColor(e.target.value)}
-                  className="h-8 w-20 cursor-pointer rounded border-none bg-transparent"
-                />
-              </div>
-            )}
-
             <VCardSkills
               profile={profile}
               isEditing={isEditing}
@@ -160,7 +233,8 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
               {isEditing ? (
                 <Button
                   onClick={handleSave}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                  style={{ backgroundColor: selectedStyle.color }}
+                  className="text-white transition-colors"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   Sauvegarder
@@ -168,7 +242,8 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
               ) : (
                 <Button
                   onClick={handleEditToggle}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                  style={{ backgroundColor: selectedStyle.color }}
+                  className="text-white transition-colors"
                 >
                   <Edit2 className="mr-2 h-4 w-4" />
                   Modifier mon profil
@@ -177,7 +252,8 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
 
               <Button
                 onClick={handleDownloadPDF}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                style={{ backgroundColor: selectedStyle.color }}
+                className="text-white transition-colors"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger PDF

@@ -18,7 +18,19 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'poppins': ['Poppins', 'sans-serif'],
+        'montserrat': ['Montserrat', 'sans-serif'],
+        'playfair': ['Playfair Display', 'serif'],
+        'roboto': ['Roboto', 'sans-serif'],
+        'opensans': ['Open Sans', 'sans-serif'],
+      },
       colors: {
+        'style-1': '#1E40AF', // Default - Indigo
+        'style-2': '#F59E0B', // Warm - Amber
+        'style-3': '#10B981', // Fresh - Emerald
+        'style-4': '#3B82F6', // Modern - Blue
+        'style-5': '#6D28D9', // Bold - Purple
         victaure: {
           dark: "#1A1F2C",
           metal: "#403E43",
