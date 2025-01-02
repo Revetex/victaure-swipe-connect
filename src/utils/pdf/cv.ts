@@ -1,63 +1,24 @@
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import type { UserProfile } from '@/types/profile';
-
-const pdfStyles = {
-  colors: {
-    primary: '#9b87f5',
-    secondary: '#7E69AB',
-    background: '#FFFFFF',
-    text: {
-      primary: '#1A1F2C',
-      secondary: '#555555',
-      muted: '#8E9196'
-    },
-    accent: '#E5DEFF'
-  },
-  margins: {
-    top: 20,
-    left: 20,
-    right: 20
-  },
-  fonts: {
-    header: {
-      size: 24,
-      style: 'bold'
-    },
-    subheader: {
-      size: 16,
-      style: 'normal'
-    },
-    body: {
-      size: 10,
-      style: 'normal'
-    }
-  }
-};
+import { pdfStyles } from './styles';
+import { drawHeader, drawSection, drawTimeline, drawTimelineDot } from './helpers';
+import type { ExtendedJsPDF } from './types';
 
 export const generateCVPDF = async (profile: UserProfile) => {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
-  });
+  }) as ExtendedJsPDF;
 
   // Add gradient background
   doc.setFillColor(pdfStyles.colors.background);
   doc.rect(0, 0, 210, 297, 'F');
 
-  // Add decorative header
-  doc.setFillColor(pdfStyles.colors.primary);
+  // Add header
   const headerHeight = 50;
-  doc.rect(0, 0, 210, headerHeight, 'F');
-
-  // Add subtle pattern to header
-  for (let i = 0; i < headerHeight; i += 2) {
-    doc.setFillColor(pdfStyles.colors.secondary);
-    doc.setGlobalAlpha(0.1);
-    doc.rect(0, i, 210, 1, 'F');
-    doc.setGlobalAlpha(1);
-  }
+  drawHeader(doc, headerHeight, pdfStyles.colors.primary, pdfStyles.colors.secondary);
 
   let yPos = pdfStyles.margins.top + 15;
 
@@ -94,13 +55,10 @@ export const generateCVPDF = async (profile: UserProfile) => {
     yPos += 6;
   });
 
-  // Bio section with accent background
+  // Bio section
   if (profile.bio) {
     yPos += 10;
-    doc.setFillColor(pdfStyles.colors.accent);
-    doc.setGlobalAlpha(0.2);
-    doc.roundedRect(pdfStyles.margins.left - 5, yPos - 5, 180, 30, 3, 3, 'F');
-    doc.setGlobalAlpha(1);
+    drawSection(doc, yPos, 180, 30, pdfStyles.colors.accent);
 
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
@@ -116,12 +74,9 @@ export const generateCVPDF = async (profile: UserProfile) => {
     yPos += (bioLines.length * 5) + 15;
   }
 
-  // Skills with visual enhancement
+  // Skills section
   if (profile.skills && profile.skills.length > 0) {
-    doc.setFillColor(pdfStyles.colors.accent);
-    doc.setGlobalAlpha(0.1);
-    doc.roundedRect(pdfStyles.margins.left - 5, yPos - 5, 180, 20, 3, 3, 'F');
-    doc.setGlobalAlpha(1);
+    drawSection(doc, yPos, 180, 20, pdfStyles.colors.accent);
 
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
@@ -147,7 +102,7 @@ export const generateCVPDF = async (profile: UserProfile) => {
     yPos += 10;
   }
 
-  // Experience section with timeline design
+  // Experience section
   if (profile.experiences && profile.experiences.length > 0) {
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
@@ -156,15 +111,10 @@ export const generateCVPDF = async (profile: UserProfile) => {
     yPos += 8;
 
     profile.experiences.forEach((exp, index) => {
-      // Timeline dot
-      doc.setFillColor(pdfStyles.colors.primary);
-      doc.circle(pdfStyles.margins.left - 2, yPos - 2, 1, 'F');
+      drawTimelineDot(doc, pdfStyles.margins.left - 2, yPos - 2, pdfStyles.colors.primary);
       
-      // Vertical timeline line
       if (index < profile.experiences!.length - 1) {
-        doc.setDrawColor(pdfStyles.colors.primary);
-        doc.setLineWidth(0.2);
-        doc.line(pdfStyles.margins.left - 2, yPos, pdfStyles.margins.left - 2, yPos + 20);
+        drawTimeline(doc, yPos, yPos + 20, pdfStyles.margins.left - 2, pdfStyles.colors.primary);
       }
 
       doc.setFontSize(12);
@@ -192,13 +142,10 @@ export const generateCVPDF = async (profile: UserProfile) => {
     });
   }
 
-  // Education section with modern design
+  // Education section
   if (profile.education && profile.education.length > 0) {
     yPos += 10;
-    doc.setFillColor(pdfStyles.colors.accent);
-    doc.setGlobalAlpha(0.1);
-    doc.roundedRect(pdfStyles.margins.left - 5, yPos - 5, 180, 15 + (profile.education.length * 25), 3, 3, 'F');
-    doc.setGlobalAlpha(1);
+    drawSection(doc, yPos, 180, 15 + (profile.education.length * 25), pdfStyles.colors.accent);
 
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
@@ -235,7 +182,7 @@ export const generateCVPDF = async (profile: UserProfile) => {
     });
   }
 
-  // QR Code at the bottom
+  // QR Code
   try {
     const qrDataUrl = await QRCode.toDataURL(window.location.href, {
       margin: 0,
@@ -250,11 +197,10 @@ export const generateCVPDF = async (profile: UserProfile) => {
     console.error('Error generating QR code:', error);
   }
 
-  // Footer with subtle design
-  doc.setFillColor(pdfStyles.colors.accent);
-  doc.setGlobalAlpha(0.1);
+  // Footer
+  const footerColor = pdfStyles.colors.accent + '1A'; // 1A = 10% opacity in hex
+  doc.setFillColor(footerColor);
   doc.rect(0, 280, 210, 17, 'F');
-  doc.setGlobalAlpha(1);
   
   doc.setFontSize(8);
   doc.setTextColor(pdfStyles.colors.text.muted);
