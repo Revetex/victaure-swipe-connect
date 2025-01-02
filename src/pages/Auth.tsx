@@ -4,11 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
+import { Play } from "lucide-react";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [videoError, setVideoError] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -72,6 +74,14 @@ export default function Auth() {
     setIsVideoLoading(false);
   };
 
+  const handlePlayClick = () => {
+    const video = document.querySelector('video');
+    if (video) {
+      video.play();
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <div className="min-h-[100dvh] bg-background relative">
       {/* Background Pattern */}
@@ -106,19 +116,33 @@ export default function Auth() {
                 <p>La vidéo n'a pas pu être chargée</p>
               </div>
             ) : (
-              <video
-                className="w-full aspect-video object-cover"
-                loop
-                muted
-                playsInline
-                preload="auto"
-                controls
-                onError={handleVideoError}
-                onLoadedData={handleVideoLoad}
-              >
-                <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
-                Votre navigateur ne supporte pas la lecture de vidéos.
-              </video>
+              <div className="relative">
+                <video
+                  className="w-full aspect-video object-cover"
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  controls={isPlaying}
+                  onError={handleVideoError}
+                  onLoadedData={handleVideoLoad}
+                >
+                  <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
+                  Votre navigateur ne supporte pas la lecture de vidéos.
+                </video>
+                {!isPlaying && (
+                  <div 
+                    className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center cursor-pointer group"
+                    onClick={handlePlayClick}
+                  >
+                    <Logo size="lg" className="mb-4 opacity-75" />
+                    <div className="bg-white/90 rounded-full p-4 transform transition-transform group-hover:scale-110">
+                      <Play className="w-8 h-8 text-primary" />
+                    </div>
+                    <p className="mt-4 text-white font-medium">Découvrez Victaure en vidéo</p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
