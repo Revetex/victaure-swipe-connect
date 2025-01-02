@@ -65,7 +65,7 @@ export const AuthForm = memo(function AuthForm() {
             password_label: "Mot de passe",
             button_label: "S'inscrire",
             email_input_placeholder: "Votre adresse email",
-            password_input_placeholder: "Choisissez un mot de passe",
+            password_input_placeholder: "Choisissez un mot de passe (min. 8 caractères)",
             link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
           },
           forgotten_password: {

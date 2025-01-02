@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
 
@@ -92,21 +91,6 @@ export default function Auth() {
 
           {/* Auth Card */}
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
-            <BiometricAuth />
-            
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card/50 px-2 text-muted-foreground backdrop-blur-sm">
-                  ou continuez avec
-                </span>
-              </div>
-            </div>
-
-            {/* Auth Form */}
             <AuthForm />
           </div>
 
