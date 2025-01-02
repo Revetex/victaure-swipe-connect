@@ -14,6 +14,27 @@ interface Activity {
   created_at: string;
 }
 
+interface Sender {
+  id: string;
+  full_name: string | null;
+}
+
+interface Professional {
+  id: string;
+  full_name: string | null;
+}
+
+interface Job {
+  id: string;
+  title: string | null;
+}
+
+interface Match {
+  id: string;
+  professional: Professional | null;
+  job: Job | null;
+}
+
 const container = {
   hidden: { opacity: 0 },
   show: {

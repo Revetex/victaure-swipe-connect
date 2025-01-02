@@ -3,7 +3,7 @@ import { MessageSquare, Bot } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageItem } from "../MessageItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { Message } from "@/hooks/useMessages";
+import type { Message } from "@/types/message";
 
 interface MessagesListProps {
   messages: Message[];

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { UserProfile } from "@/types/profile";
+import type { Database } from "@/integrations/supabase/types";
 
 export function useProfile() {
   const { toast } = useToast();
