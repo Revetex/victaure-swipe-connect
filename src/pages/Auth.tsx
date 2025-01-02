@@ -48,7 +48,7 @@ export default function Auth() {
       
       if (event === 'SIGNED_IN' && session) {
         toast.success("Connexion réussie");
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }
     });
 
@@ -124,11 +124,10 @@ export default function Auth() {
             ) : (
               <video
                 className="w-full aspect-video object-cover"
-                autoPlay
                 loop
                 muted
                 playsInline
-                preload="auto"
+                preload="metadata"
                 controls
                 onError={handleVideoError}
                 onLoadedData={handleVideoLoad}

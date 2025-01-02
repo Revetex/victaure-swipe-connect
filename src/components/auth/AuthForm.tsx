@@ -50,6 +50,7 @@ export const AuthForm = memo(function AuthForm() {
         },
       }}
       providers={[]}
+      redirectTo={window.location.origin + "/dashboard"}
       localization={{
         variables: {
           sign_in: {
