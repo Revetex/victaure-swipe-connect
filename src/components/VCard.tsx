@@ -25,7 +25,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-  const [accentColor, setAccentColor] = useState("#9b87f5");
+  const [accentColor, setAccentColor] = useState("#1E40AF"); // Changed default color to match indigo-600
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -50,7 +50,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
   const handleDownloadPDF = async () => {
     if (!profile) return;
     try {
-      await generateVCardPDF(profile);
+      await generateVCardPDF(profile, accentColor);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -160,7 +160,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
               {isEditing ? (
                 <Button
                   onClick={handleSave}
-                  className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   Sauvegarder
@@ -168,7 +168,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
               ) : (
                 <Button
                   onClick={handleEditToggle}
-                  className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
                 >
                   <Edit2 className="mr-2 h-4 w-4" />
                   Modifier mon profil
@@ -177,7 +177,7 @@ export function VCardComponent({ onEditStateChange }: VCardProps) {
 
               <Button
                 onClick={handleDownloadPDF}
-                className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger PDF
