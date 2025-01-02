@@ -108,7 +108,6 @@ export default function Auth() {
             ) : (
               <video
                 className="w-full aspect-video object-cover"
-                autoPlay
                 loop
                 muted
                 playsInline
