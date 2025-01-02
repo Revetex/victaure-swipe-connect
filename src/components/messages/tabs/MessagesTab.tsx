@@ -1,15 +1,12 @@
-import { useMessages } from "@/hooks/useMessages";
+import { useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import { useProfile } from "@/hooks/useProfile";
-import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
-import { ConversationView } from "../conversation/ConversationView";
 import { MessagesList } from "../conversation/MessagesList";
+import { ConversationView } from "../conversation/ConversationView";
 
 export function MessagesTab() {
-  const { messages: userMessages, isLoading, markAsRead } = useMessages();
-  const { profile } = useProfile();
   const [selectedConversation, setSelectedConversation] = useState<"assistant" | null>(null);
+  const { profile } = useProfile();
   const {
     messages: chatMessages,
     inputMessage,
@@ -25,39 +22,29 @@ export function MessagesTab() {
     setSelectedConversation(null);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
-
   return (
     <div className="relative h-full overflow-hidden">
-      <AnimatePresence mode="wait">
-        {!selectedConversation ? (
-          <MessagesList
-            messages={userMessages}
-            chatMessages={chatMessages}
-            onSelectConversation={setSelectedConversation}
-            onMarkAsRead={markAsRead.mutate}
-          />
-        ) : (
-          <ConversationView
-            messages={chatMessages}
-            inputMessage={inputMessage}
-            isListening={isListening}
-            isThinking={isThinking}
-            profile={profile}
-            onBack={handleBackClick}
-            onSendMessage={handleSendMessage}
-            onVoiceInput={handleVoiceInput}
-            setInputMessage={setInputMessage}
-            onClearChat={clearChat}
-          />
-        )}
-      </AnimatePresence>
+      {!selectedConversation ? (
+        <MessagesList
+          messages={[]}
+          chatMessages={chatMessages}
+          onSelectConversation={setSelectedConversation}
+          onMarkAsRead={() => {}}
+        />
+      ) : (
+        <ConversationView
+          messages={chatMessages}
+          inputMessage={inputMessage}
+          isListening={isListening}
+          isThinking={isThinking}
+          profile={profile}
+          onBack={handleBackClick}
+          onSendMessage={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
+          setInputMessage={setInputMessage}
+          onClearChat={clearChat}
+        />
+      )}
     </div>
   );
 }
