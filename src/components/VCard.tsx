@@ -11,7 +11,7 @@ import { VCardCertifications } from "./VCardCertifications";
 import { VCardEducation } from "./VCardEducation";
 import { VCardExperiences } from "./VCardExperiences";
 import { Button } from "./ui/button";
-import { MessageSquare, Download, Edit2, Save } from "lucide-react";
+import { Download, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
@@ -21,7 +21,7 @@ interface VCardProps {
   onRequestChat?: () => void;
 }
 
-export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps) {
+export function VCardComponent({ onEditStateChange }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
@@ -111,9 +111,7 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
             setProfile={setProfile}
           />
 
-          <motion.div 
-            className="space-y-8 pt-6"
-          >
+          <motion.div className="space-y-8 pt-6">
             <VCardSkills
               profile={profile}
               isEditing={isEditing}
@@ -167,14 +165,6 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
               >
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger PDF
-              </Button>
-
-              <Button
-                onClick={onRequestChat}
-                className="bg-white hover:bg-white/90 text-victaure-metal transition-colors"
-              >
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Discuter avec M. Victaure
               </Button>
             </div>
           </motion.div>
