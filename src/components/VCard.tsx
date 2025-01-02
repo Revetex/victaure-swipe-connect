@@ -34,7 +34,6 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
   const handleSave = async () => {
     try {
-      // Save changes will be handled by the useProfile hook
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -59,7 +58,6 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
   const handleAddSkill = () => {
     if (!newSkill.trim() || !profile) return;
-    
     const updatedSkills = [...(profile.skills || []), newSkill.trim()];
     setProfile({ ...profile, skills: updatedSkills });
     setNewSkill("");
@@ -67,7 +65,6 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
   const handleRemoveSkill = (skillToRemove: string) => {
     if (!profile) return;
-    
     const updatedSkills = profile.skills?.filter(skill => skill !== skillToRemove) || [];
     setProfile({ ...profile, skills: updatedSkills });
   };
@@ -89,13 +86,13 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
     >
       <Card className="border-none shadow-lg bg-victaure-metal">
         <CardContent className="p-6 space-y-8">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
             <VCardHeader
               profile={profile}
               isEditing={isEditing}
               setProfile={setProfile}
             />
-            <div className="shrink-0">
+            <div className="w-full sm:w-auto flex justify-center sm:block">
               <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
                 <QRCodeSVG
                   value={window.location.href}
