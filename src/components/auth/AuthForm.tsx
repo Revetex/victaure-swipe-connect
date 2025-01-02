@@ -64,9 +64,11 @@ export const AuthForm = memo(function AuthForm() {
           sign_up: {
             email_label: "Email",
             password_label: "Mot de passe",
+            password_label_confirmation: "Confirmation du mot de passe",
             button_label: "S'inscrire",
             email_input_placeholder: "Votre adresse email",
             password_input_placeholder: "Choisissez un mot de passe",
+            password_input_placeholder_confirmation: "Confirmez votre mot de passe",
             link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
           },
           forgotten_password: {
@@ -75,6 +77,7 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
       }}
+      view="sign_up"
     />
   );
 });
