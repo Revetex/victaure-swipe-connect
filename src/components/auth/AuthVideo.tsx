@@ -65,7 +65,7 @@ export const AuthVideo = () => {
   };
 
   return (
-    <div className="mt-8 w-full rounded-xl overflow-hidden shadow-lg relative">
+    <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
       {isVideoLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
