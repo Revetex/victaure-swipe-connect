@@ -5,7 +5,6 @@ import { VCard } from "@/components/VCard";
 import { motion } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState } from "react";
-import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 
 export function DashboardLayout() {
@@ -13,7 +12,6 @@ export function DashboardLayout() {
   const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
-  const [showMVictor, setShowMVictor] = useState(true);
 
   const handleRequestChat = () => {
     setCurrentPage(2);
@@ -42,16 +40,6 @@ export function DashboardLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      {showMVictor && (
-        <MrVictaureWelcome 
-          onDismiss={() => setShowMVictor(false)}
-          onStartChat={() => {
-            setCurrentPage(2);
-            setShowMVictor(false);
-          }}
-        />
-      )}
-
       <main className="flex-1">
         <div className="container mx-auto px-4 py-6 pb-24">
           <motion.div 
