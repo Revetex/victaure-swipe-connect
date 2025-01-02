@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -8,6 +8,8 @@ import { Logo } from "@/components/Logo";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [videoError, setVideoError] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -55,6 +57,16 @@ export default function Auth() {
     };
   }, [navigate]);
 
+  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    console.error("Erreur de chargement vidéo:", e);
+    setVideoError(true);
+    setIsVideoLoading(false);
+  };
+
+  const handleVideoLoad = () => {
+    setIsVideoLoading(false);
+  };
+
   return (
     <div className="min-h-[100dvh] bg-background relative">
       {/* Background Pattern */}
@@ -93,20 +105,32 @@ export default function Auth() {
           </div>
 
           {/* Video Section */}
-          <div className="mt-8 w-full rounded-xl overflow-hidden shadow-lg">
-            <video
-              className="w-full aspect-video object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              controls
-              onError={(e) => console.error("Erreur de chargement vidéo:", e)}
-            >
-              <source src="lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
-              Votre navigateur ne supporte pas la lecture de vidéos.
-            </video>
+          <div className="mt-8 w-full rounded-xl overflow-hidden shadow-lg relative">
+            {isVideoLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )}
+            {videoError ? (
+              <div className="aspect-video bg-muted flex items-center justify-center text-muted-foreground">
+                <p>La vidéo n'a pas pu être chargée</p>
+              </div>
+            ) : (
+              <video
+                className="w-full aspect-video object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                controls
+                onError={handleVideoError}
+                onLoadedData={handleVideoLoad}
+              >
+                <source src="/lovable-uploads/VictaurePub – Réalisée avec Clipchamp.mp4" type="video/mp4" />
+                Votre navigateur ne supporte pas la lecture de vidéos.
+              </video>
+            )}
           </div>
         </div>
       </div>
