@@ -1,180 +1,101 @@
-import { useState, useEffect } from "react";
-import { generateAIResponse, saveMessage, loadMessages } from "@/services/aiChatService";
-import { Message, ChatState, ChatActions } from "@/types/chat";
+import { useState, useCallback } from "react";
+import { useAuth } from "./useAuth";
+import { chatService } from "@/services/ai/chatService";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
-export function useChat(): ChatState & ChatActions {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [deletedMessages, setDeletedMessages] = useState<Message[]>([]);
+export function useChat() {
+  const [messages, setMessages] = useState<Array<{ content: string; sender: string }>>([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const initializeChat = async () => {
-      try {
-        console.log("Initializing chat...");
-        const savedMessages = await loadMessages();
-        setMessages(savedMessages);
-        console.log("Chat initialized with messages:", savedMessages);
-      } catch (error) {
-        console.error("Error initializing chat:", error);
-        toast.error("Erreur lors du chargement des messages");
-      }
-    };
-    initializeChat();
-  }, []);
+  const loadMessages = useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      const loadedMessages = await chatService.loadMessages(user.id);
+      setMessages(loadedMessages);
+    } catch (error) {
+      console.error("Erreur lors du chargement des messages:", error);
+      toast.error("Impossible de charger les messages");
+    }
+  }, [user?.id]);
 
-  const handleSendMessage = async (message: string, profile?: any) => {
-    if (!message.trim()) return;
+  const handleSendMessage = useCallback(async (content: string) => {
+    if (!user?.id || !content.trim()) return;
+
+    const userMessage = { content, sender: "user" };
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage("");
+    setIsThinking(true);
 
     try {
-      console.log("Sending message:", message);
+      await chatService.saveMessage(user.id, content, "user");
       
-      // Save user message
-      const newUserMessage: Message = {
-        id: crypto.randomUUID(),
-        content: message,
-        sender: "user",
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, newUserMessage]);
-      await saveMessage(newUserMessage);
-      setInputMessage("");
-      setIsThinking(true);
-
-      // Add thinking message
-      const thinkingMessage: Message = {
-        id: crypto.randomUUID(),
-        content: "...",
-        sender: "assistant",
-        thinking: true,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, thinkingMessage]);
-
-      // Generate AI response
-      console.log("Generating AI response...");
-      const response = await generateAIResponse(message, profile);
+      const aiResponse = await chatService.generateAIResponse([...messages, userMessage]);
+      const assistantMessage = { content: aiResponse, sender: "assistant" };
       
-      if (!response) {
-        throw new Error("Pas de réponse de l'IA");
-      }
-
-      console.log("AI response generated:", response);
-
-      // Replace thinking message with actual response
-      const newAssistantMessage: Message = {
-        id: crypto.randomUUID(),
-        content: response,
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => {
-        const filtered = prev.filter(msg => msg.id !== thinkingMessage.id);
-        return [...filtered, newAssistantMessage];
-      });
-
-      // Save AI response
-      await saveMessage(newAssistantMessage);
-
+      await chatService.saveMessage(user.id, aiResponse, "assistant");
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error("Error in handleSendMessage:", error);
-      setMessages(prev => prev.filter(msg => !msg.thinking));
-      toast.error("Désolé, je n'ai pas pu générer une réponse. Veuillez réessayer.");
+      console.error("Erreur lors de l'envoi du message:", error);
+      toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsThinking(false);
     }
-  };
+  }, [messages, user?.id]);
 
-  const handleVoiceInput = () => {
-    if (!("webkitSpeechRecognition" in window)) {
+  const handleVoiceInput = useCallback(() => {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
       toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
       return;
     }
 
-    const recognition = new webkitSpeechRecognition();
-    recognition.lang = "fr-FR";
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    recognition.onstart = () => setIsListening(true);
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setInputMessage(transcript);
+      handleSendMessage(transcript);
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error("Erreur de reconnaissance vocale:", event.error);
-      setIsListening(false);
+    recognition.onerror = (event) => {
+      console.error('Erreur de reconnaissance vocale:', event.error);
       toast.error("Erreur lors de la reconnaissance vocale");
+      setIsListening(false);
     };
 
-    recognition.onend = () => setIsListening(false);
+    recognition.onend = () => {
+      setIsListening(false);
+    };
 
     recognition.start();
-  };
+  }, [handleSendMessage]);
 
-  const clearChat = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("Utilisateur non authentifié");
-      }
-
-      setDeletedMessages(messages);
-
-      const { error } = await supabase
-        .from('ai_chat_messages')
-        .delete()
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      setMessages([]);
-      toast.success("Conversation effacée avec succès");
-    } catch (error) {
-      console.error('Erreur dans clearChat:', error);
-      toast.error("Erreur lors de l'effacement de la conversation");
-      throw error;
-    }
-  };
-
-  const restoreChat = async () => {
-    if (deletedMessages.length === 0) {
-      toast.error("Aucune conversation à restaurer");
-      return;
-    }
-
-    try {
-      for (const message of deletedMessages) {
-        await saveMessage(message);
-      }
-      setMessages(deletedMessages);
-      setDeletedMessages([]);
-      toast.success("Conversation restaurée avec succès");
-    } catch (error) {
-      console.error('Erreur dans restoreChat:', error);
-      toast.error("Erreur lors de la restauration de la conversation");
-      throw error;
-    }
-  };
+  const clearChat = useCallback(async () => {
+    if (!user?.id) return;
+    setMessages([]);
+    toast.success("Conversation effacée");
+  }, [user?.id]);
 
   return {
     messages,
     inputMessage,
-    isListening,
     isThinking,
-    setMessages,
+    isListening,
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,
     clearChat,
-    restoreChat,
-    deletedMessages
+    loadMessages,
   };
 }
