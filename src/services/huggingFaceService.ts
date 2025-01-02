@@ -56,9 +56,11 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
 
     console.log("Response status:", response.status);
 
+    // Clone response immediately for error handling
+    const responseClone = response.clone();
+
     if (!response.ok) {
-      const clonedResponse = response.clone();
-      const errorText = await clonedResponse.text();
+      const errorText = await responseClone.text();
       console.error("Hugging Face API Error:", errorText);
       
       try {
@@ -74,8 +76,7 @@ Message de l'utilisateur : ${contextualizedMessage} [/INST]`,
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const clonedResponse = response.clone();
-    const result = await clonedResponse.json();
+    const result = await response.json();
     console.log("API Response:", result);
 
     const generatedText = Array.isArray(result) ? result[0].generated_text : result.generated_text;
