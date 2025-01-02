@@ -42,8 +42,8 @@ export function DashboardLayout() {
           <DashboardNavigationArrows onSwipe={handleSwipe} />
         )}
 
-        <div className="flex-1 overflow-y-auto pb-24">
-          <div className="container mx-auto px-4 py-6">
+        <main className="flex-1 overflow-y-auto">
+          <div className="container mx-auto px-4 py-6 pb-32">
             <DashboardContent 
               currentPage={currentPage}
               isEditing={isEditing}
@@ -53,15 +53,15 @@ export function DashboardLayout() {
               onRequestChat={handleRequestChat}
             />
           </div>
-        </div>
+        </main>
 
         {!isEditing && (
-          <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4">
+          <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4">
             <DashboardNavigation 
               currentPage={currentPage}
               onPageChange={setCurrentPage}
             />
-          </div>
+          </nav>
         )}
       </div>
     </div>
