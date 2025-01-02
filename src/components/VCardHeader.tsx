@@ -21,9 +21,13 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       animate={{ opacity: 1, y: 0 }}
       className="flex items-start gap-4"
     >
-      <Avatar className="h-20 w-20 ring-2 ring-white/20">
-        <AvatarImage src={profile.avatar_url || ''} alt={profile.full_name || ''} />
-        <AvatarFallback>
+      <Avatar className="h-20 w-20 ring-2 ring-white/20 shrink-0">
+        <AvatarImage 
+          src={profile.avatar_url || ''} 
+          alt={profile.full_name || ''}
+          className="object-cover w-full h-full"
+        />
+        <AvatarFallback className="bg-muted">
           <UserCircle2 className="h-12 w-12 text-muted-foreground" />
         </AvatarFallback>
       </Avatar>

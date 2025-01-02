@@ -56,7 +56,7 @@ export function DashboardLayout() {
       <div className="relative flex-1 overflow-y-auto pb-32">
         <div className="container mx-auto px-4 h-full py-6">
           <motion.div 
-            className="h-full max-w-[1200px] mx-auto"
+            className="h-full max-w-[1200px] mx-auto mb-24"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -88,11 +88,13 @@ export function DashboardLayout() {
       </div>
 
       {!isEditing && (
-        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4">
-          <DashboardNavigation 
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
+        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4 z-50">
+          <div className="container mx-auto px-4">
+            <DashboardNavigation 
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       )}
     </div>
