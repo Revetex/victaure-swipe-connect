@@ -132,7 +132,7 @@ export default function Auth() {
                 </video>
                 {!isPlaying && (
                   <div 
-                    className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center cursor-pointer group"
+                    className="absolute inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer group"
                     onClick={handlePlayClick}
                   >
                     <Logo size="lg" className="mb-4 opacity-75" />
