@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 export function Marketplace() {
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["jobs", filters],

@@ -63,7 +63,7 @@ export function ConversationView({
   };
 
   return (
-    <div className="fixed inset-0 bg-background flex flex-col">
+    <div className="fixed inset-0 bg-background flex flex-col pt-14">
       {/* Header */}
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
