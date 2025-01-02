@@ -198,6 +198,36 @@ export type Database = {
         }
         Relationships: []
       }
+      job_sources: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_checked: string | null
+          source: Database["public"]["Enums"]["job_source"]
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_checked?: string | null
+          source: Database["public"]["Enums"]["job_source"]
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_checked?: string | null
+          source?: Database["public"]["Enums"]["job_source"]
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
       job_subcategories: {
         Row: {
           category_id: string | null
@@ -698,6 +728,62 @@ export type Database = {
         }
         Relationships: []
       }
+      scraped_jobs: {
+        Row: {
+          company: string
+          created_at: string | null
+          description: string | null
+          external_id: string | null
+          id: string
+          is_processed: boolean | null
+          location: string
+          posted_at: string | null
+          salary_range: string | null
+          source_id: string | null
+          title: string
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          company: string
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          is_processed?: boolean | null
+          location: string
+          posted_at?: string | null
+          salary_range?: string | null
+          source_id?: string | null
+          title: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          company?: string
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          id?: string
+          is_processed?: boolean | null
+          location?: string
+          posted_at?: string | null
+          salary_range?: string | null
+          source_id?: string | null
+          title?: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scraped_jobs_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "job_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       skills: {
         Row: {
           category: string
@@ -805,6 +891,7 @@ export type Database = {
         | "admin"
         | "customer_service"
         | "other"
+      job_source: "linkedin" | "indeed" | "direct"
       mission_type: "company" | "individual"
     }
     CompositeTypes: {
