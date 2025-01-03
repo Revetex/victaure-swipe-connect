@@ -58,7 +58,7 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen w-full overflow-auto bg-background">
+    <div className="min-h-screen w-full overflow-y-auto bg-background">
       {/* Background Pattern */}
       <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       

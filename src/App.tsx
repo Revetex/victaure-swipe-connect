@@ -25,7 +25,7 @@ export default function App() {
       <BrowserRouter>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <div className="h-screen w-full overflow-hidden">
+            <div className="min-h-screen w-full overflow-y-auto">
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route 
