@@ -24,19 +24,22 @@ export const AuthVideo = () => {
     setIsVideoLoading(false);
   };
 
-  const togglePlay = (e: React.MouseEvent) => {
+  const togglePlay = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    if (videoRef.current) {
+    
+    if (!videoRef.current) return;
+
+    try {
       if (videoRef.current.paused) {
-        videoRef.current.play().then(() => {
-          setIsPlaying(true);
-        }).catch(error => {
-          console.error("Error playing video:", error);
-        });
+        await videoRef.current.play();
+        setIsPlaying(true);
       } else {
         videoRef.current.pause();
         setIsPlaying(false);
       }
+    } catch (error) {
+      console.error("Error playing video:", error);
     }
   };
 
@@ -72,7 +75,6 @@ export const AuthVideo = () => {
             onLoadedData={handleVideoLoad}
             onPause={handlePause}
             onPlay={handlePlay}
-            controls={isPlaying}
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
             Votre navigateur ne supporte pas la lecture de vidéos.
@@ -81,6 +83,7 @@ export const AuthVideo = () => {
           {/* Video Overlay - Now shown when not playing */}
           <div 
             className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            onClick={togglePlay}
           >
             <Logo size="lg" className="mb-4" />
             <button
