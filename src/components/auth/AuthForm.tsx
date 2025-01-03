@@ -15,8 +15,8 @@ export const AuthForm = memo(function AuthForm() {
         variables: {
           default: {
             colors: {
-              brand: 'rgb(30, 174, 219)',
-              brandAccent: 'rgb(15, 160, 206)',
+              brand: 'hsl(var(--primary))',
+              brandAccent: 'hsl(var(--primary))',
               inputBackground: 'transparent',
               inputText: 'hsl(var(--foreground))',
               inputPlaceholder: 'hsl(var(--muted-foreground))',
@@ -42,11 +42,11 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
         className: {
-          button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px]",
-          input: "w-full h-11 text-sm bg-transparent border border-border transition-colors focus:border-primary focus:outline-none",
-          label: "text-sm text-foreground mb-2",
+          button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px] bg-primary text-primary-foreground hover:bg-primary/90",
+          input: "w-full h-11 text-sm glass-input",
+          label: "text-sm text-foreground font-medium mb-2",
           message: "text-sm text-muted-foreground",
-          anchor: "text-primary no-underline hover:underline",
+          anchor: "text-primary hover:text-primary/90 no-underline hover:underline",
         },
       }}
       providers={[]}

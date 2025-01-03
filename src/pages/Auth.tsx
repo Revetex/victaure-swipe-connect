@@ -5,15 +5,15 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Auth() {
   return (
-    <div className="auth-container">
-      <div className="fixed top-4 right-4">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
       
-      <div className="auth-card space-y-6">
+      <div className="w-full max-w-md space-y-6 relative z-10">
         <div className="flex flex-col items-center space-y-2 text-center">
           <Logo size="lg" className="mb-2" />
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="text-2xl font-semibold tracking-tight">
             Bienvenue sur Victaure
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -21,9 +21,11 @@ export default function Auth() {
           </p>
         </div>
 
-        <AuthForm />
+        <div className="glass-card p-6 rounded-lg shadow-lg">
+          <AuthForm />
+        </div>
         
-        <div className="relative mt-8">
+        <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
           <AuthVideo />
         </div>
       </div>
