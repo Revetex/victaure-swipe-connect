@@ -58,12 +58,12 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen w-full bg-background overflow-y-auto">
+    <div className="min-h-screen flex flex-col overflow-y-auto">
       {/* Background Pattern */}
       <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       
       {/* Main Content Container */}
-      <div className="container max-w-sm mx-auto py-8 px-4 space-y-8">
+      <div className="flex-1 container relative max-w-sm mx-auto py-8 px-4 space-y-8">
         {/* Header */}
         <div className="flex flex-col items-center space-y-2 text-center">
           <Logo size="lg" className="mb-2" />
@@ -80,12 +80,12 @@ export default function Auth() {
         </div>
 
         {/* Video Section */}
-        <div className="w-full">
+        <div className="w-full mb-8">
           <AuthVideo />
         </div>
 
         {/* Legal Links */}
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center text-sm text-muted-foreground pb-8">
           <div className="space-x-2">
             <Dialog>
               <DialogTrigger className="hover:text-primary hover:underline">
