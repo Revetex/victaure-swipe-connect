@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { User } from '@supabase/supabase-js';
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   const signOut = async () => {
@@ -27,7 +25,6 @@ export function useAuth() {
         localStorage.clear();
         sessionStorage.clear();
         setIsAuthenticated(false);
-        setUser(null);
         navigate('/auth');
         return;
       }
@@ -45,7 +42,6 @@ export function useAuth() {
       }
       
       setIsAuthenticated(false);
-      setUser(null);
       navigate('/auth');
       toast.success('Déconnexion réussie');
     } catch (error) {
@@ -72,7 +68,6 @@ export function useAuth() {
         if (!session) {
           if (mounted) {
             setIsAuthenticated(false);
-            setUser(null);
             if (window.location.pathname !== '/auth') {
               navigate('/auth');
             }
@@ -81,26 +76,24 @@ export function useAuth() {
         }
 
         // Verify the session is valid
-        const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
           console.error("User verification error:", userError);
           throw userError;
         }
 
-        if (!currentUser) {
+        if (!user) {
           throw new Error('No user found');
         }
 
         if (mounted) {
           setIsAuthenticated(true);
-          setUser(currentUser);
         }
       } catch (error) {
         console.error('Auth check error:', error);
         if (mounted) {
           setIsAuthenticated(false);
-          setUser(null);
           await signOut();
         }
       } finally {
@@ -117,7 +110,6 @@ export function useAuth() {
       
       if (event === 'SIGNED_IN' && session) {
         setIsAuthenticated(true);
-        setUser(session.user);
         navigate('/dashboard');
       } else if (event === 'SIGNED_OUT' || !session) {
         await signOut();
@@ -130,5 +122,5 @@ export function useAuth() {
     };
   }, [navigate]);
 
-  return { isLoading, isAuthenticated, user, signOut };
+  return { isLoading, isAuthenticated, signOut };
 }

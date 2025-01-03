@@ -19,13 +19,13 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <BrowserRouter>
+      <BrowserRouter>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <div className="min-h-screen w-full overflow-y-auto">
+            <div className="h-screen w-full overflow-hidden">
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route 
@@ -48,10 +48,8 @@ function App() {
               <Toaster />
             </div>
           </TooltipProvider>
-        </BrowserRouter>
-      </ThemeProvider>
+        </ThemeProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
-
-export default App;

@@ -18,9 +18,6 @@ export function MessagesList({
   onSelectConversation,
   onMarkAsRead,
 }: MessagesListProps) {
-  const lastMessage = chatMessages[chatMessages.length - 1];
-  const previewContent = lastMessage?.content || "Comment puis-je vous aider ?";
-
   return (
     <motion.div
       key="message-list"
@@ -55,8 +52,8 @@ export function MessagesList({
                     Assistant IA
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2 text-left">
-                  {previewContent}
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                  {chatMessages[chatMessages.length - 1]?.content || "Comment puis-je vous aider ?"}
                 </p>
               </div>
             </div>
