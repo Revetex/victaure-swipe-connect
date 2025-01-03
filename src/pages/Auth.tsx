@@ -59,12 +59,12 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen w-full bg-background">
-      {/* Background Pattern with fixed position */}
+      {/* Background Pattern */}
       <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       
-      {/* Scrollable Content Container */}
-      <div className="relative min-h-screen w-full overflow-y-auto py-8 px-4">
-        <div className="container max-w-sm mx-auto space-y-8 pb-16">
+      {/* Main Content Container - Modified for better scrolling */}
+      <div className="relative min-h-screen w-full overflow-auto">
+        <div className="container max-w-sm mx-auto py-8 px-4 space-y-8">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <Logo size="lg" className="mb-2" />
