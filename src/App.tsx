@@ -8,7 +8,6 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
-import "./App.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +24,7 @@ export default function App() {
       <BrowserRouter>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
-            <div className="min-h-screen w-full overflow-y-auto">
+            <div className="min-h-screen w-full overflow-y-auto scrollbar safari-fix">
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route 

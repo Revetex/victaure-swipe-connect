@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    /* ... keep existing code (CSS variables) */
+  }
+
+  * {
+    @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  html {
+    height: -webkit-fill-available;
+    font-size: 16px;
+    @screen lg {
+      font-size: 18px;
+    }
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    background-image: url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: -webkit-fill-available;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  h1 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold;
+    line-height: 1.2;
+  }
+
+  h2 {
+    @apply text-xl md:text-2xl lg:text-3xl font-semibold;
+    line-height: 1.3;
+  }
+
+  h3 {
+    @apply text-lg md:text-xl lg:text-2xl font-medium;
+    line-height: 1.4;
+  }
+
+  p {
+    @apply text-base md:text-lg;
+    line-height: 1.6;
+  }
+}

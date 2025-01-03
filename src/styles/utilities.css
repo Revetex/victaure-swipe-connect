@@ -1,0 +1,28 @@
+@layer utilities {
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    @apply bg-black/10 rounded;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-black/20 rounded hover:bg-black/30;
+  }
+
+  .safari-fix {
+    @supports (-webkit-touch-callout: none) {
+      min-height: -webkit-fill-available;
+    }
+  }
+
+  .container-fluid {
+    @apply w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
