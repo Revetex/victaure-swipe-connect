@@ -2,7 +2,7 @@ import type jsPDF from 'jspdf';
 
 export interface ExtendedJsPDF extends jsPDF {
   splitTextToSize: (text: string, maxWidth: number) => string[];
-  setGlobalAlpha: (alpha: number) => void;
+  setGlobalAlpha: (alpha: number) => jsPDF;
   setFillColor: (color: string | number, g?: number, b?: number) => jsPDF;
   setDrawColor: (color: string | number, g?: number, b?: number) => jsPDF;
   setLineWidth: (width: number) => jsPDF;
