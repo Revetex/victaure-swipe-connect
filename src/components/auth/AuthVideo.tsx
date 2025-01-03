@@ -25,7 +25,7 @@ export const AuthVideo = () => {
   };
 
   const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event from bubbling up
+    e.stopPropagation();
     if (videoRef.current) {
       if (videoRef.current.paused) {
         videoRef.current.play().then(() => {
