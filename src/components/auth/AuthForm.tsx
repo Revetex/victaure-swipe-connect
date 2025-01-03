@@ -15,8 +15,8 @@ export const AuthForm = memo(function AuthForm() {
         variables: {
           default: {
             colors: {
-              brand: '#22d3ee',
-              brandAccent: '#06b6d4',
+              brand: '#0ea5e9',
+              brandAccent: '#0284c7',
               inputBackground: 'white',
               inputText: 'rgb(75, 85, 99)',
               inputPlaceholder: 'rgb(156, 163, 175)',
@@ -30,9 +30,9 @@ export const AuthForm = memo(function AuthForm() {
               inputBorderWidth: '1px',
             },
             radii: {
-              borderRadiusButton: '0.5rem',
-              buttonBorderRadius: '0.5rem',
-              inputBorderRadius: '0.5rem',
+              borderRadiusButton: '0.75rem',
+              buttonBorderRadius: '0.75rem',
+              inputBorderRadius: '0.75rem',
             },
             fonts: {
               bodyFontFamily: `system-ui, -apple-system, sans-serif`,
@@ -42,11 +42,11 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
         className: {
-          button: "w-full bg-[#22d3ee] hover:bg-[#06b6d4] text-white transition-colors",
-          input: "w-full border border-gray-200 focus:border-[#22d3ee] focus:ring-1 focus:ring-[#22d3ee]",
-          label: "text-gray-600 font-medium",
-          message: "text-sm text-gray-500",
-          anchor: "text-[#22d3ee] hover:text-[#06b6d4] no-underline hover:underline",
+          button: "w-full bg-sky-500 hover:bg-sky-600 text-white transition-colors",
+          input: "w-full border border-gray-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+          label: "text-gray-600 dark:text-gray-300 font-medium",
+          message: "text-sm text-gray-500 dark:text-gray-400",
+          anchor: "text-sky-500 hover:text-sky-600 no-underline hover:underline",
         },
       }}
       providers={[]}

@@ -18,10 +18,10 @@ export function AuthVideo() {
   }, [isPlaying]);
 
   return (
-    <div className="relative rounded-lg overflow-hidden group">
+    <div className="relative rounded-xl overflow-hidden group bg-gray-900">
       <video
         ref={videoRef}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover opacity-90"
         onEnded={() => setIsPlaying(false)}
         poster="/lovable-uploads/decouvrez-victaure-en-video.png"
       >
@@ -30,14 +30,14 @@ export function AuthVideo() {
       </video>
       
       {/* Video Overlay */}
-      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-        <Logo size="md" className="absolute top-4 right-4 w-8 h-8" />
+      <div className={`absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-gray-900/30 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>
+        <Logo size="md" className="absolute top-4 right-4 w-8 h-8 text-white" />
         
         <button
-          className="p-4 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+          className="p-6 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 transition-all duration-300 hover:scale-110 group-hover:scale-110"
           onClick={togglePlay}
         >
-          <Play className="w-8 h-8 text-white" />
+          <Play className="w-12 h-12 text-white" />
         </button>
       </div>
     </div>

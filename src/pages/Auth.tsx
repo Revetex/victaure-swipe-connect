@@ -2,65 +2,93 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Logo } from "@/components/Logo";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Auth() {
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/dashboard');
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate('/dashboard');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center px-4 py-8 bg-background">
+    <div className="min-h-screen w-full flex flex-col items-center px-4 py-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
       {/* Logo */}
       <div className="w-full max-w-md flex justify-center mb-8">
-        <Logo size="lg" className="w-20 h-20" />
+        <Logo size="lg" className="w-24 h-24" />
       </div>
 
       {/* Welcome Text */}
       <div className="w-full max-w-md text-center mb-8">
-        <h1 className="text-2xl font-bold mb-2">
+        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
           Bienvenue sur Victaure
         </h1>
-        <p className="text-gray-500">
+        <p className="text-gray-500 dark:text-gray-400">
           Connectez-vous ou créez un compte pour continuer
         </p>
       </div>
 
       {/* Auth Form */}
-      <div className="w-full max-w-md mb-8">
-        <AuthForm />
+      <div className="w-full max-w-md mb-12">
+        <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-lg rounded-xl p-6 shadow-xl border border-gray-200/20 dark:border-gray-700/20">
+          <AuthForm />
+        </div>
       </div>
 
       {/* Video Section */}
-      <div className="w-full max-w-md mb-8">
+      <div className="w-full max-w-2xl mb-12">
         <AuthVideo />
       </div>
 
       {/* Footer */}
       <div className="w-full max-w-md text-center space-y-4">
-        <div className="text-sm text-gray-500 space-x-2">
+        <div className="text-sm text-gray-500 dark:text-gray-400 space-x-2">
           <button 
             onClick={() => setShowPrivacy(true)}
-            className="hover:text-gray-700 transition-colors"
+            className="hover:text-cyan-500 transition-colors"
           >
             Politique de confidentialité
           </button>
           <span>•</span>
           <button
             onClick={() => setShowTerms(true)}
-            className="hover:text-gray-700 transition-colors"
+            className="hover:text-cyan-500 transition-colors"
           >
             Conditions d'utilisation
           </button>
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           © 2025 Victaure. Tous droits réservés.
         </div>
       </div>
 
       {/* Terms Modal */}
       {showTerms && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg max-h-[80vh] overflow-y-auto relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto relative animate-fade-in">
             <button 
               onClick={() => setShowTerms(false)}
               className="absolute right-4 top-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
@@ -112,8 +140,8 @@ export default function Auth() {
 
       {/* Privacy Modal */}
       {showPrivacy && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg max-h-[80vh] overflow-y-auto relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto relative animate-fade-in">
             <button 
               onClick={() => setShowPrivacy(false)}
               className="absolute right-4 top-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
