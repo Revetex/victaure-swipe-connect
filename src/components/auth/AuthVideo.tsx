@@ -40,12 +40,6 @@ export const AuthVideo = () => {
     }
   };
 
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      setIsPlaying(!videoRef.current.paused);
-    }
-  };
-
   return (
     <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
       {isVideoLoading && (
@@ -68,7 +62,6 @@ export const AuthVideo = () => {
             preload="metadata"
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
-            onTimeUpdate={handleTimeUpdate}
             controls={isPlaying}
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
