@@ -25,6 +25,14 @@ export function Navigation() {
         <span className="relative z-10">Formation</span>
         <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
+      <a href="#" className="text-foreground hover:text-primary transition-colors relative group">
+        <span className="relative z-10">Judiciaire</span>
+        <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </a>
+      <a href="#" className="text-foreground hover:text-primary transition-colors relative group">
+        <span className="relative z-10">Politique</span>
+        <span className="absolute inset-0 bg-primary/10 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </a>
       <div className={`flex ${isMobile ? 'justify-between mt-2' : ''} items-center gap-4`}>
         <ThemeToggle />
         <Button 
