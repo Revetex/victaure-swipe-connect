@@ -11,22 +11,22 @@ interface VCardProps {
   onRequestChat: () => void;
 }
 
-export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
+export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(styleOptions[0]);
 
   useEffect(() => {
     if (profile?.id) {
-    const loadFonts = async () => {
-      await Promise.all([
-        document.fonts.load("1em Poppins"),
-        document.fonts.load("1em Montserrat"),
-        document.fonts.load("1em Playfair Display"),
-        document.fonts.load("1em Roboto"),
-        document.fonts.load("1em Open Sans"),
-      ]);
-    };
-    loadFonts();
+      const loadFonts = async () => {
+        await Promise.all([
+          document.fonts.load("1em Poppins"),
+          document.fonts.load("1em Montserrat"),
+          document.fonts.load("1em Playfair Display"),
+          document.fonts.load("1em Roboto"),
+          document.fonts.load("1em Open Sans"),
+        ]);
+      };
+      loadFonts();
     }
   }, [profile?.id]);
 
@@ -50,3 +50,6 @@ export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
     </div>
   );
 }
+
+// Also export as VCard to maintain compatibility
+export { VCard as VCardRoot };

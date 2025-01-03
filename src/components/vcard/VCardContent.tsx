@@ -38,11 +38,11 @@ export function VCardContent({
     onEditStateChange?.(state);
   };
 
-  const handleAddSkill = (skill: string) => {
-    if (skill && profile.skills) {
+  const handleAddSkill = () => {
+    if (newSkill && profile.skills) {
       setProfile({
         ...profile,
-        skills: [...profile.skills, skill],
+        skills: [...profile.skills, newSkill],
       });
       setNewSkill("");
     }
@@ -82,9 +82,9 @@ export function VCardContent({
           <VCardSkills
             profile={profile}
             isEditing={isEditing}
+            setProfile={setProfile}
             newSkill={newSkill}
             setNewSkill={setNewSkill}
-            setProfile={setProfile}
             handleAddSkill={handleAddSkill}
             handleRemoveSkill={handleRemoveSkill}
           />
