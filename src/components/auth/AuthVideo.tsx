@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
-import { Play } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { cn } from "@/lib/utils";
 
 export const AuthVideo = () => {
   const [videoError, setVideoError] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
@@ -43,6 +45,25 @@ export const AuthVideo = () => {
     }
   };
 
+  const handleTimeUpdate = () => {
+    if (!videoRef.current) return;
+    const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+    setProgress(progress);
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!videoRef.current) return;
+    
+    const progressBar = e.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = (x / rect.width) * 100;
+    const time = (percentage / 100) * videoRef.current.duration;
+    
+    videoRef.current.currentTime = time;
+    setProgress(percentage);
+  };
+
   const handlePause = () => {
     setIsPlaying(false);
   };
@@ -73,6 +94,7 @@ export const AuthVideo = () => {
             preload="metadata"
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
+            onTimeUpdate={handleTimeUpdate}
             onPause={handlePause}
             onPlay={handlePlay}
           >
@@ -80,18 +102,47 @@ export const AuthVideo = () => {
             Votre navigateur ne supporte pas la lecture de vidéos.
           </video>
           
-          {/* Video Overlay - Now shown when not playing */}
+          {/* Video Overlay */}
           <div 
-            className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={cn(
+              "absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300",
+              isPlaying ? "opacity-0 hover:opacity-100" : "opacity-100"
+            )}
             onClick={togglePlay}
           >
-            <Logo size="lg" className="mb-4" />
-            <button
-              className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-              onClick={togglePlay}
-            >
-              <Play className="w-8 h-8 text-white" />
-            </button>
+            <div className="flex flex-col items-center space-y-4 bg-white/10 p-8 rounded-xl backdrop-blur-sm">
+              <Logo size="lg" className="mb-2" />
+              <h2 className="text-xl font-semibold text-white">
+                Bienvenue sur Victaure
+              </h2>
+              <p className="text-sm text-white/80">
+                Connectez-vous pour accéder à votre espace
+              </p>
+              <button
+                className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                onClick={togglePlay}
+              >
+                {isPlaying ? (
+                  <Pause className="w-8 h-8 text-white" />
+                ) : (
+                  <Play className="w-8 h-8 text-white" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Video Progress Bar */}
+          <div 
+            className={cn(
+              "absolute bottom-0 left-0 right-0 h-1 bg-black/30 cursor-pointer transition-opacity duration-300",
+              isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+            )}
+            onClick={handleProgressClick}
+          >
+            <div 
+              className="h-full bg-primary transition-all duration-100"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </div>
       )}
