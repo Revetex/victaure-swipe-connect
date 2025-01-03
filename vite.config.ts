@@ -32,7 +32,8 @@ export default defineConfig(({ mode }) => ({
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true
+      credentials: true,
+      preflightContinue: true,
     },
   },
 }));
