@@ -102,41 +102,32 @@ export const AuthVideo = () => {
             Votre navigateur ne supporte pas la lecture de vidéos.
           </video>
           
-          {/* Video Overlay */}
-          <div 
-            className={cn(
-              "absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300",
-              isPlaying ? "opacity-0 hover:opacity-100" : "opacity-100"
-            )}
-            onClick={togglePlay}
-          >
-            <div className="flex flex-col items-center space-y-4 bg-white/10 p-8 rounded-xl backdrop-blur-sm">
-              <Logo size="lg" className="mb-2" />
-              <h2 className="text-xl font-semibold text-white">
+          {/* White Background Container */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-white rounded-xl p-8 shadow-lg max-w-sm mx-auto text-center space-y-4">
+              <Logo size="lg" />
+              <h2 className="text-xl font-semibold text-gray-900">
                 Bienvenue sur Victaure
               </h2>
-              <p className="text-sm text-white/80">
+              <p className="text-sm text-gray-600">
                 Connectez-vous pour accéder à votre espace
               </p>
               <button
-                className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                className="p-4 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
                 onClick={togglePlay}
               >
                 {isPlaying ? (
-                  <Pause className="w-8 h-8 text-white" />
+                  <Pause className="w-8 h-8 text-gray-900" />
                 ) : (
-                  <Play className="w-8 h-8 text-white" />
+                  <Play className="w-8 h-8 text-gray-900" />
                 )}
               </button>
             </div>
           </div>
 
-          {/* Video Progress Bar */}
+          {/* Video Progress Bar - Always visible */}
           <div 
-            className={cn(
-              "absolute bottom-0 left-0 right-0 h-1 bg-black/30 cursor-pointer transition-opacity duration-300",
-              isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-            )}
+            className="absolute bottom-0 left-0 right-0 h-2 bg-gray-200 cursor-pointer"
             onClick={handleProgressClick}
           >
             <div 
