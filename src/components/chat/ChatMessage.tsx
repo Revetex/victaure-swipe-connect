@@ -53,9 +53,9 @@ export const ChatMessage = memo(function ChatMessage({
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-4 py-2 w-full shadow-sm",
+          "rounded-lg px-4 py-2 w-full shadow-sm backdrop-blur-sm",
           isBot 
-            ? "bg-muted/80 text-foreground backdrop-blur-sm" 
+            ? "bg-muted/80 text-foreground" 
             : "bg-primary text-primary-foreground"
         )}>
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
