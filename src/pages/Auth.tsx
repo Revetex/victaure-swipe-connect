@@ -87,11 +87,11 @@ export default function Auth() {
             <AuthVideo />
           </div>
 
-          {/* Legal Links */}
-          <div className="text-center text-sm text-muted-foreground pb-8">
+          {/* Legal Links with improved contrast */}
+          <div className="text-center text-sm pb-8">
             <div className="space-x-2">
               <Dialog>
-                <DialogTrigger className="hover:text-primary hover:underline">
+                <DialogTrigger className="text-primary hover:text-primary/80 font-medium transition-colors">
                   Politique de confidentialité
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
@@ -124,9 +124,9 @@ export default function Auth() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <span>•</span>
+              <span className="text-primary font-medium">•</span>
               <Dialog>
-                <DialogTrigger className="hover:text-primary hover:underline">
+                <DialogTrigger className="text-primary hover:text-primary/80 font-medium transition-colors">
                   Conditions d'utilisation
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
@@ -152,7 +152,7 @@ export default function Auth() {
                 </DialogContent>
               </Dialog>
             </div>
-            <div className="mt-2">
+            <div className="mt-2 text-muted-foreground font-medium">
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
             </div>
           </div>
