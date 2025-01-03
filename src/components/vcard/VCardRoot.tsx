@@ -1,16 +1,14 @@
-import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useProfile } from "@/hooks/useProfile";
-import { VCardSkeleton } from "./VCardSkeleton";
-import { VCardEmpty } from "./VCardEmpty";
 import { Card } from "@/components/ui/card";
 import { VCardContent } from "./VCardContent";
-import { StyleOption } from "./types";
+import { VCardSkeleton } from "./VCardSkeleton";
+import { useProfile } from "@/hooks/useProfile";
 import { styleOptions } from "./styles";
+import type { StyleOption } from "./types";
 
 interface VCardProps {
-  onEditStateChange?: (isEditing: boolean) => void;
-  onRequestChat?: () => void;
+  onEditStateChange: (isEditing: boolean) => void;
+  onRequestChat: () => void;
 }
 
 export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
@@ -18,6 +16,7 @@ export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(styleOptions[0]);
 
   useEffect(() => {
+    if (profile?.id) {
     const loadFonts = async () => {
       await Promise.all([
         document.fonts.load("1em Poppins"),
@@ -28,18 +27,15 @@ export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
       ]);
     };
     loadFonts();
-  }, []);
+    }
+  }, [profile?.id]);
 
-  if (isLoading) return <VCardSkeleton />;
-  if (!profile) return <VCardEmpty />;
+  if (isLoading || !profile) {
+    return <VCardSkeleton />;
+  }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="w-full max-w-4xl mx-auto"
-    >
+    <div className="relative w-full max-w-4xl mx-auto">
       <Card className="border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950">
         <VCardContent 
           profile={profile}
@@ -48,10 +44,9 @@ export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
           setSelectedStyle={setSelectedStyle}
           onEditStateChange={onEditStateChange}
           onRequestChat={onRequestChat}
+          styleOptions={styleOptions}
         />
       </Card>
-    </motion.div>
+    </div>
   );
 }
-
-export { VCardRoot as VCard };
