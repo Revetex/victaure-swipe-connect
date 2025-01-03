@@ -4,7 +4,8 @@
            backdrop-blur-md
            border border-border/50
            shadow-lg
-           transition-all duration-300;
+           transition-all duration-300
+           rounded-xl;
   }
 
   .glass-panel {
@@ -19,7 +20,8 @@
            backdrop-blur-sm
            border border-border/50
            focus:border-primary/50
-           focus:ring-primary/50;
+           focus:ring-primary/50
+           rounded-xl;
   }
 
   .glass-button {
@@ -27,6 +29,7 @@
            hover:bg-primary/80 dark:hover:bg-primary/70
            text-primary-foreground
            backdrop-blur-sm
-           transition-colors;
+           transition-colors
+           rounded-xl;
   }
 }

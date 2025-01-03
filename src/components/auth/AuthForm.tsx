@@ -30,9 +30,9 @@ export const AuthForm = memo(function AuthForm() {
               inputBorderWidth: '1px',
             },
             radii: {
-              borderRadiusButton: '0.5rem',
-              buttonBorderRadius: '0.5rem',
-              inputBorderRadius: '0.5rem',
+              borderRadiusButton: '0.75rem',
+              buttonBorderRadius: '0.75rem',
+              inputBorderRadius: '0.75rem',
             },
             fonts: {
               bodyFontFamily: `var(--font-sans)`,
@@ -42,8 +42,8 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
         className: {
-          button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px] bg-primary text-primary-foreground hover:bg-primary/90",
-          input: "w-full h-11 text-sm glass-input",
+          button: "w-full h-12 text-sm font-medium transition-all hover:-translate-y-[1px] bg-primary text-primary-foreground hover:bg-primary/90",
+          input: "w-full h-12 text-sm glass-input",
           label: "text-sm text-foreground font-medium mb-2",
           message: "text-sm text-muted-foreground",
           anchor: "text-primary hover:text-primary/90 no-underline hover:underline",
