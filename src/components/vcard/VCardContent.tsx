@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { CardContent } from "../ui/card";
 import { VCardStyleSelector } from "./VCardStyleSelector";
 import { StyleOption } from "./types";
+import { styleOptions } from "./styles"; // Import the styleOptions array
 
 interface VCardContentProps {
   profile: any;
@@ -19,6 +20,7 @@ interface VCardContentProps {
   setSelectedStyle: (style: StyleOption) => void;
   onEditStateChange?: (isEditing: boolean) => void;
   onRequestChat?: () => void;
+  setProfile: (profile: any) => void; // Add this prop
 }
 
 export function VCardContent({
@@ -26,7 +28,8 @@ export function VCardContent({
   selectedStyle,
   setSelectedStyle,
   onEditStateChange,
-  onRequestChat
+  onRequestChat,
+  setProfile
 }: VCardContentProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
@@ -61,46 +64,72 @@ export function VCardContent({
     }
   };
 
+  const handleAddSkill = () => {
+    if (newSkill && !profile.skills?.includes(newSkill)) {
+      setProfile({
+        ...profile,
+        skills: [...(profile.skills || []), newSkill],
+      });
+      setNewSkill("");
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setProfile({
+      ...profile,
+      skills: profile.skills?.filter((skill: string) => skill !== skillToRemove),
+    });
+  };
+
   return (
     <CardContent className="p-6 space-y-6">
       {isEditing && (
         <VCardStyleSelector
           selectedStyle={selectedStyle}
           onStyleSelect={setSelectedStyle}
+          styleOptions={styleOptions}
         />
       )}
 
       <VCardHeader
         profile={profile}
         isEditing={isEditing}
+        setProfile={setProfile}
       />
 
       <VCardContact
         profile={profile}
         isEditing={isEditing}
+        setProfile={setProfile}
       />
 
       <motion.div className="space-y-6">
         <VCardSkills
           profile={profile}
           isEditing={isEditing}
+          setProfile={setProfile}
           newSkill={newSkill}
           setNewSkill={setNewSkill}
+          handleAddSkill={handleAddSkill}
+          handleRemoveSkill={handleRemoveSkill}
         />
 
         <VCardExperiences
           profile={profile}
           isEditing={isEditing}
+          setProfile={setProfile}
         />
 
         <VCardCertifications
           profile={profile}
           isEditing={isEditing}
+          setProfile={setProfile}
         />
 
         <VCardEducation
           profile={profile}
           isEditing={isEditing}
+          setProfile={setProfile}
         />
 
         <div className="flex flex-wrap justify-center gap-4 pt-4">
