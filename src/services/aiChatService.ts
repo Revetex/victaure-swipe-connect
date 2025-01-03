@@ -14,10 +14,13 @@ export async function generateAIResponse(message: string, profile?: any): Promis
     }
 
     const API_TOKEN = secretData;
+    console.log("API token retrieved successfully");
+
     const contextPrompt = profile ? 
       `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
     
     console.log("Sending request to Hugging Face API...");
+    console.log("Context prompt:", contextPrompt);
     
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -50,8 +53,10 @@ ${message}
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Hugging Face API Error:", errorText);
-      throw new Error(errorText);
+      console.error("Hugging Face API Error Response:", errorText);
+      console.error("Response status:", response.status);
+      console.error("Response headers:", Object.fromEntries(response.headers.entries()));
+      throw new Error(`API Error: ${errorText}`);
     }
 
     const result = await response.json();
@@ -68,6 +73,7 @@ ${message}
 
   } catch (error) {
     console.error("Error generating AI response:", error);
+    toast.error("Une erreur est survenue lors de la génération de la réponse");
     throw error;
   }
 }
