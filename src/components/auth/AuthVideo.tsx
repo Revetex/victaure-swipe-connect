@@ -7,8 +7,6 @@ export const AuthVideo = () => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isScrubbing, setIsScrubbing] = useState(false);
-  const [wasPlayingBeforeScrub, setWasPlayingBeforeScrub] = useState(false);
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     console.error("Erreur de chargement vidéo:", e);
@@ -43,24 +41,8 @@ export const AuthVideo = () => {
   };
 
   const handleTimeUpdate = () => {
-    if (videoRef.current && !isScrubbing) {
+    if (videoRef.current) {
       setIsPlaying(!videoRef.current.paused);
-    }
-  };
-
-  const handleSeeking = () => {
-    if (!isScrubbing) {
-      setWasPlayingBeforeScrub(isPlaying);
-      setIsScrubbing(true);
-    }
-  };
-
-  const handleSeeked = () => {
-    setIsScrubbing(false);
-    if (wasPlayingBeforeScrub && videoRef.current) {
-      videoRef.current.play().catch(error => {
-        console.error("Error resuming video after seeking:", error);
-      });
     }
   };
 
@@ -87,8 +69,6 @@ export const AuthVideo = () => {
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
             onTimeUpdate={handleTimeUpdate}
-            onSeeking={handleSeeking}
-            onSeeked={handleSeeked}
             controls={isPlaying}
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
