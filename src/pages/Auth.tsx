@@ -7,6 +7,7 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
 import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function Auth() {
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          toast.error("Erreur de vérification de session");
           return;
         }
 
@@ -32,7 +34,7 @@ export default function Auth() {
 
           if (user) {
             console.log("User already logged in, redirecting to dashboard");
-            navigate("/dashboard");
+            navigate("/dashboard", { replace: true });
           }
         }
       } catch (error) {
@@ -58,7 +60,7 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="relative min-h-screen w-full bg-background overflow-y-auto">
       {/* Background Pattern */}
       <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       

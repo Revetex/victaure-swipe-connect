@@ -72,6 +72,6 @@ body {
     radial-gradient(at 82% 65%, hsl(218.00, 39.29%, 11.96%) 0, transparent 55%);
   background-attachment: fixed;
   min-height: 100vh;
-  height: auto;
+  height: 100%;
   overflow-y: auto;
 }
