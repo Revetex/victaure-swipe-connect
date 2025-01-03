@@ -17,9 +17,21 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     format: 'a4'
   }) as ExtendedJsPDF;
 
-  // White background
-  doc.setFillColor(255, 255, 255);
+  // Set gradient background
+  const gradient = doc.setFillColor(accentColor);
   doc.rect(0, 0, 210, 297, 'F');
+
+  // Add a white overlay for better readability
+  doc.setFillColor(255, 255, 255);
+  doc.setGlobalAlpha(0.95);
+  doc.rect(10, 10, 190, 277, 'F');
+  doc.setGlobalAlpha(1);
+
+  // Add decorative elements
+  doc.setDrawColor(accentColor);
+  doc.setLineWidth(0.5);
+  doc.line(10, 15, 200, 15);
+  doc.line(10, 282, 200, 282);
 
   // Render each section and update yPos
   let yPos = pdfStyles.margins.top + 15;
