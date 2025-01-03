@@ -14,7 +14,7 @@ interface VCardProps {
 }
 
 export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
-  const { profile, isLoading } = useProfile();
+  const { profile, setProfile, isLoading } = useProfile();
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(styleOptions[0]);
 
   useEffect(() => {
@@ -43,6 +43,7 @@ export function VCardRoot({ onEditStateChange, onRequestChat }: VCardProps) {
       <Card className="border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950">
         <VCardContent 
           profile={profile}
+          setProfile={setProfile}
           selectedStyle={selectedStyle}
           setSelectedStyle={setSelectedStyle}
           onEditStateChange={onEditStateChange}

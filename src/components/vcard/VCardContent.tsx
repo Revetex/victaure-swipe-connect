@@ -12,15 +12,16 @@ import { toast } from "sonner";
 import { CardContent } from "../ui/card";
 import { VCardStyleSelector } from "./VCardStyleSelector";
 import { StyleOption } from "./types";
-import { styleOptions } from "./styles"; // Import the styleOptions array
+import { styleOptions } from "./styles";
+import { UserProfile } from "@/types/profile";
 
 interface VCardContentProps {
-  profile: any;
+  profile: UserProfile;
   selectedStyle: StyleOption;
   setSelectedStyle: (style: StyleOption) => void;
   onEditStateChange?: (isEditing: boolean) => void;
   onRequestChat?: () => void;
-  setProfile: (profile: any) => void; // Add this prop
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardContent({
