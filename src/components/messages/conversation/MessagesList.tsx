@@ -53,7 +53,9 @@ export function MessagesList({
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2 text-left">
-                  {chatMessages[chatMessages.length - 1]?.content || "Comment puis-je vous aider ?"}
+                  {chatMessages.length > 0 
+                    ? chatMessages[chatMessages.length - 1]?.content 
+                    : "Comment puis-je vous aider ?"}
                 </p>
               </div>
             </div>

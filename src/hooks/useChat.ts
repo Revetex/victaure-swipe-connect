@@ -16,8 +16,15 @@ export function useChat(): ChatState & ChatActions {
       try {
         console.log("Initializing chat...");
         const savedMessages = await loadMessages();
-        setMessages(savedMessages);
-        console.log("Chat initialized with messages:", savedMessages);
+        // Map database messages to Message type with proper timestamp
+        const formattedMessages = savedMessages.map(msg => ({
+          id: msg.id,
+          content: msg.content,
+          sender: msg.sender,
+          timestamp: new Date(msg.created_at),
+        }));
+        setMessages(formattedMessages);
+        console.log("Chat initialized with messages:", formattedMessages);
       } catch (error) {
         console.error("Error initializing chat:", error);
         toast.error("Erreur lors du chargement des messages");
@@ -25,6 +32,35 @@ export function useChat(): ChatState & ChatActions {
     };
     initializeChat();
   }, []);
+
+  const handleVoiceInput = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = "fr-FR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => setIsListening(true);
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      setInputMessage(transcript);
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Erreur de reconnaissance vocale:", event.error);
+      setIsListening(false);
+      toast.error("Erreur lors de la reconnaissance vocale");
+    };
+
+    recognition.onend = () => setIsListening(false);
+
+    recognition.start();
+  };
 
   const handleSendMessage = async (message: string, profile?: any) => {
     if (!message.trim()) return;
@@ -88,35 +124,6 @@ export function useChat(): ChatState & ChatActions {
     } finally {
       setIsThinking(false);
     }
-  };
-
-  const handleVoiceInput = () => {
-    if (!("webkitSpeechRecognition" in window)) {
-      toast.error("La reconnaissance vocale n'est pas supportée par votre navigateur");
-      return;
-    }
-
-    const recognition = new webkitSpeechRecognition();
-    recognition.lang = "fr-FR";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onstart = () => setIsListening(true);
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript;
-      setInputMessage(transcript);
-    };
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error("Erreur de reconnaissance vocale:", event.error);
-      setIsListening(false);
-      toast.error("Erreur lors de la reconnaissance vocale");
-    };
-
-    recognition.onend = () => setIsListening(false);
-
-    recognition.start();
   };
 
   const clearChat = async () => {
