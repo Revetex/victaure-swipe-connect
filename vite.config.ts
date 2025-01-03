@@ -19,9 +19,11 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     hmr: {
       protocol: 'ws',
-      host: process.env.VITE_DEV_SERVER_HOST || 'localhost',
-      port: Number(process.env.VITE_DEV_SERVER_PORT) || 8080,
-      clientPort: Number(process.env.VITE_DEV_CLIENT_PORT) || 8080,
+      host: 'localhost',
+      port: 8080,
+      clientPort: 8080,
+      timeout: 120000,
+      overlay: true,
     },
     watch: {
       usePolling: true,
