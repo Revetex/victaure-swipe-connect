@@ -1,7 +1,7 @@
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { VCard } from "@/components/VCard";
+import { VCard } from "@/components/vcard/VCardRoot";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useEffect } from "react";
@@ -46,7 +46,7 @@ export function DashboardLayout() {
       variants={itemVariants} 
       className={`transform transition-all duration-300 ${className}`}
       style={{ 
-        WebkitTransform: "translate3d(0,0,0)", // Force GPU acceleration
+        WebkitTransform: "translate3d(0,0,0)",
         WebkitBackfaceVisibility: "hidden",
         WebkitPerspective: "1000",
       }}
@@ -67,7 +67,7 @@ export function DashboardLayout() {
     if (currentPage === 1) {
       return (
         <div 
-          className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto -webkit-overflow-scrolling-touch" : "relative"}
+          className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 pb-0 overflow-auto -webkit-overflow-scrolling-touch" : "relative"}
           style={{ height: isEditing ? viewportHeight : "auto" }}
         >
           {renderDashboardSection(
@@ -107,9 +107,9 @@ export function DashboardLayout() {
       
       {!isEditing && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-4 z-50"
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-2 z-50"
           style={{ 
-            paddingBottom: `max(1rem, env(safe-area-inset-bottom))`,
+            paddingBottom: `max(0.5rem, env(safe-area-inset-bottom))`,
           }}
         >
           <div className="container mx-auto px-4">

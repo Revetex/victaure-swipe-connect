@@ -4,12 +4,12 @@ export const styleOptions: StyleOption[] = [
   {
     id: 1,
     name: "Classique",
-    color: "#1E40AF",
+    color: "#0EA5E9", // Sky blue for better contrast
     font: "poppins",
     displayStyle: "default",
-    bgGradient: "from-blue-600 via-blue-700 to-blue-800",
-    secondaryColor: "#60A5FA",
-    accentGradient: "linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(30, 64, 175, 0.3))",
+    bgGradient: "from-sky-600 via-sky-700 to-sky-800",
+    secondaryColor: "#38BDF8",
+    accentGradient: "linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(14, 165, 233, 0.3))",
     borderStyle: "border-b-4"
   },
   {
@@ -26,12 +26,12 @@ export const styleOptions: StyleOption[] = [
   {
     id: 3,
     name: "Moderne",
-    color: "#10B981",
+    color: "#8B5CF6", // Vivid purple for better visibility
     font: "roboto",
     displayStyle: "modern",
-    bgGradient: "from-emerald-500 via-emerald-600 to-teal-600",
-    secondaryColor: "#34D399",
-    accentGradient: "linear-gradient(135deg, rgba(52, 211, 153, 0.3), rgba(16, 185, 129, 0.3))",
+    bgGradient: "from-violet-600 via-purple-600 to-indigo-700",
+    secondaryColor: "#A78BFA",
+    accentGradient: "linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(139, 92, 246, 0.3))",
     borderStyle: "border-t-4"
   },
   {

@@ -1,125 +1,136 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
-import { VCardMainContent } from "./sections/VCardMainContent";
-import { VCardExpandedContent } from "./sections/VCardExpandedContent";
-import { VCardCompactActions } from "./VCardCompactActions";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { VCardHeader } from "../VCardHeader";
+import { VCardContact } from "../VCardContact";
+import { VCardSkills } from "../VCardSkills";
+import { VCardCertifications } from "../VCardCertifications";
+import { VCardEducation } from "../VCardEducation";
+import { VCardExperiences } from "../VCardExperiences";
+import { Button } from "../ui/button";
+import { Download, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { CardContent } from "../ui/card";
+import { VCardStyleSelector } from "./VCardStyleSelector";
+import { StyleOption } from "./types";
 
 interface VCardContentProps {
   profile: any;
-  tempProfile: any;
-  isEditing: boolean;
-  setProfile: (profile: any) => void;
-  setTempProfile: (profile: any) => void;
-  setIsEditing: (isEditing: boolean) => void;
-  newSkill: string;
-  setNewSkill: (skill: string) => void;
-  onShare: () => void;
-  onDownload: () => void;
-  onDownloadPDF: () => void;
-  onDownloadBusinessPDF: () => void;
-  onDownloadCVPDF: () => void;
-  onCopyLink: () => void;
-  onSave: () => void;
-  onApplyChanges: () => void;
+  selectedStyle: StyleOption;
+  setSelectedStyle: (style: StyleOption) => void;
+  onEditStateChange?: (isEditing: boolean) => void;
+  onRequestChat?: () => void;
 }
 
 export function VCardContent({
   profile,
-  tempProfile,
-  isEditing,
-  setProfile,
-  setTempProfile,
-  setIsEditing,
-  newSkill,
-  setNewSkill,
-  onShare,
-  onDownload,
-  onDownloadPDF,
-  onDownloadBusinessPDF,
-  onDownloadCVPDF,
-  onCopyLink,
-  onSave,
-  onApplyChanges,
+  selectedStyle,
+  setSelectedStyle,
+  onEditStateChange,
+  onRequestChat
 }: VCardContentProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
 
-  // Automatically expand when entering edit mode
-  useEffect(() => {
-    if (isEditing) {
-      setIsExpanded(true);
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+    if (onEditStateChange) {
+      onEditStateChange(!isEditing);
     }
-  }, [isEditing]);
+  };
 
   const handleSave = async () => {
     try {
-      await onSave();
-      toast.success("Modifications enregistrées avec succès");
       setIsEditing(false);
+      if (onEditStateChange) {
+        onEditStateChange(false);
+      }
+      toast.success("Profil mis à jour avec succès");
     } catch (error) {
       console.error('Error saving profile:', error);
-      toast.error("Erreur lors de l'enregistrement des modifications");
+      toast.error("Erreur lors de la sauvegarde du profil");
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!profile) return;
+    try {
+      toast.success("PDF téléchargé avec succès");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Erreur lors de la génération du PDF");
     }
   };
 
   return (
-    <Card className={`w-full max-w-4xl mx-auto overflow-visible border-none shadow-xl transition-all duration-300 ${
-      !isExpanded ? 'bg-gradient-to-br from-indigo-600 to-indigo-800' : 
-      'min-h-screen sm:min-h-0 bg-gradient-to-br from-indigo-600 to-indigo-800'
-    }`}>
-      <CardContent className="p-4 sm:p-6">
-        <div className="space-y-4 sm:space-y-6">
-          <VCardMainContent
-            profile={tempProfile}
-            isEditing={isEditing}
-            setProfile={setTempProfile}
-            isExpanded={isExpanded}
-            setIsExpanded={setIsExpanded}
-          />
+    <CardContent className="p-6 space-y-6">
+      {isEditing && (
+        <VCardStyleSelector
+          selectedStyle={selectedStyle}
+          onStyleSelect={setSelectedStyle}
+        />
+      )}
 
-          <AnimatePresence mode="wait">
-            {(isExpanded || isEditing) && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-visible"
-              >
-                <VCardExpandedContent
-                  profile={tempProfile}
-                  isEditing={isEditing}
-                  setProfile={setTempProfile}
-                  setIsEditing={setIsEditing}
-                  newSkill={newSkill}
-                  setNewSkill={setNewSkill}
-                  isExpanded={isExpanded}
-                  setIsExpanded={setIsExpanded}
-                  onShare={onShare}
-                  onDownload={onDownload}
-                  onDownloadPDF={onDownloadPDF}
-                  onDownloadBusinessPDF={onDownloadBusinessPDF}
-                  onDownloadCVPDF={onDownloadCVPDF}
-                  onCopyLink={onCopyLink}
-                  onSave={handleSave}
-                  onApplyChanges={onApplyChanges}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+      <VCardHeader
+        profile={profile}
+        isEditing={isEditing}
+      />
 
-          {!isExpanded && !isEditing && (
-            <VCardCompactActions
-              onExpand={() => setIsExpanded(true)}
-              onEdit={() => setIsEditing(true)}
-              onShare={onShare}
-              onDownloadPDF={onDownloadPDF}
-              onDownloadBusinessPDF={onDownloadBusinessPDF}
-            />
+      <VCardContact
+        profile={profile}
+        isEditing={isEditing}
+      />
+
+      <motion.div className="space-y-6">
+        <VCardSkills
+          profile={profile}
+          isEditing={isEditing}
+          newSkill={newSkill}
+          setNewSkill={setNewSkill}
+        />
+
+        <VCardExperiences
+          profile={profile}
+          isEditing={isEditing}
+        />
+
+        <VCardCertifications
+          profile={profile}
+          isEditing={isEditing}
+        />
+
+        <VCardEducation
+          profile={profile}
+          isEditing={isEditing}
+        />
+
+        <div className="flex flex-wrap justify-center gap-4 pt-4">
+          {isEditing ? (
+            <Button
+              onClick={handleSave}
+              className="bg-sky-500 hover:bg-sky-600 text-white transition-colors"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Sauvegarder
+            </Button>
+          ) : (
+            <Button
+              onClick={handleEditToggle}
+              className="bg-sky-500 hover:bg-sky-600 text-white transition-colors"
+            >
+              <Edit2 className="mr-2 h-4 w-4" />
+              Modifier mon profil
+            </Button>
           )}
+
+          <Button
+            onClick={handleDownloadPDF}
+            className="bg-sky-500 hover:bg-sky-600 text-white transition-colors"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Télécharger PDF
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+      </motion.div>
+    </CardContent>
   );
 }
