@@ -6,7 +6,62 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-    /* ... keep existing code (CSS variables) */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --victaure-blue: 221.2 83.2% 53.3%;
+    --victaure-blue-light: 221.2 83.2% 65.3%;
+    --victaure-blue-dark: 221.2 83.2% 43.3%;
+    --victaure-orange: 24.6 95% 53.1%;
+    --victaure-orange-light: 24.6 95% 65.1%;
+    --victaure-gray: 215.4 16.3% 46.9%;
+    --victaure-gray-light: 210 40% 96.1%;
+    --victaure-gray-dark: 215.4 16.3% 36.9%;
+  }
+
+  [data-theme="dark"] {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    --victaure-blue: 221.2 83.2% 65.3%;
+    --victaure-blue-light: 221.2 83.2% 75.3%;
+    --victaure-blue-dark: 221.2 83.2% 55.3%;
+    --victaure-orange: 24.6 95% 65.1%;
+    --victaure-orange-light: 24.6 95% 75.1%;
+    --victaure-gray: 215 20.2% 75.1%;
+    --victaure-gray-light: 217.2 32.6% 25.5%;
+    --victaure-gray-dark: 215 20.2% 85.1%;
   }
 
   * {
@@ -25,7 +80,7 @@
   }
   
   body {
-    @apply bg-background text-foreground min-h-screen flex flex-col;
+    @apply bg-background text-foreground antialiased min-h-screen flex flex-col;
     background-image: url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png');
     background-size: cover;
     background-position: center;
@@ -42,26 +97,6 @@
   }
 
   main {
-    @apply flex-1 flex flex-col;
-  }
-
-  h1 {
-    @apply text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white;
-    line-height: 1.2;
-  }
-
-  h2 {
-    @apply text-xl md:text-2xl lg:text-3xl font-semibold text-gray-800 dark:text-gray-100;
-    line-height: 1.3;
-  }
-
-  h3 {
-    @apply text-lg md:text-xl lg:text-2xl font-medium text-gray-700 dark:text-gray-200;
-    line-height: 1.4;
-  }
-
-  p {
-    @apply text-base md:text-lg text-gray-600 dark:text-gray-300;
-    line-height: 1.6;
+    @apply flex-1 flex flex-col relative;
   }
 }
