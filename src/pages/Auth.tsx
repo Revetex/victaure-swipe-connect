@@ -58,12 +58,12 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="relative min-h-screen w-full">
-      {/* Background Pattern */}
-      <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none -z-10" />
+    <div className="min-h-screen w-full bg-background">
+      {/* Background Pattern with fixed position */}
+      <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       
-      {/* Main Content */}
-      <div className="relative w-full min-h-screen py-8 px-4 overflow-y-auto">
+      {/* Scrollable Content Container */}
+      <div className="relative min-h-screen w-full overflow-y-auto py-8 px-4">
         <div className="container max-w-sm mx-auto space-y-8 pb-16">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
