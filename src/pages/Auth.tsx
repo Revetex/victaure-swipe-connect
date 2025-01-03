@@ -91,7 +91,7 @@ export default function Auth() {
           <div className="text-center text-sm pb-8">
             <div className="space-x-2">
               <Dialog>
-                <DialogTrigger className="text-primary hover:text-primary/80 font-medium transition-colors">
+                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
                   Politique de confidentialité
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
@@ -124,9 +124,9 @@ export default function Auth() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <span className="text-primary font-medium">•</span>
+              <span className="text-muted-foreground">•</span>
               <Dialog>
-                <DialogTrigger className="text-primary hover:text-primary/80 font-medium transition-colors">
+                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
                   Conditions d'utilisation
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
@@ -152,7 +152,7 @@ export default function Auth() {
                 </DialogContent>
               </Dialog>
             </div>
-            <div className="mt-2 text-muted-foreground font-medium">
+            <div className="mt-2 text-muted-foreground">
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
             </div>
           </div>
