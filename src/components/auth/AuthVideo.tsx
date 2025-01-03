@@ -72,7 +72,7 @@ export function AuthVideo() {
         className="w-full h-full object-cover"
         onTimeUpdate={handleTimeUpdate}
         onEnded={() => setIsPlaying(false)}
-        poster="/lovable-uploads/video-cover.png"
+        poster="/lovable-uploads/decouvrez-victaure-en-video.png"
       >
         <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
         Votre navigateur ne supporte pas la lecture de vidéos.
