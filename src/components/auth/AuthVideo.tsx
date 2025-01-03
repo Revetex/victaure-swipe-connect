@@ -28,19 +28,23 @@ export function AuthVideo() {
   }, [isMuted]);
 
   const handleTimeUpdate = useCallback(() => {
-    if (videoRef.current && !isDragging) {
+    if (videoRef.current && !isDragging && videoRef.current.duration) {
       const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
-      setProgress(progress);
+      setProgress(isFinite(progress) ? progress : 0);
     }
   }, [isDragging]);
 
   const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (videoRef.current && progressRef.current) {
+    if (videoRef.current && progressRef.current && videoRef.current.duration) {
       const rect = progressRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
+      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
       const percentage = x / rect.width;
-      videoRef.current.currentTime = percentage * videoRef.current.duration;
-      setProgress(percentage * 100);
+      const newTime = percentage * videoRef.current.duration;
+      
+      if (isFinite(newTime)) {
+        videoRef.current.currentTime = newTime;
+        setProgress(percentage * 100);
+      }
     }
   }, []);
 
@@ -55,9 +59,13 @@ export function AuthVideo() {
 
   useEffect(() => {
     const handleMouseUp = () => {
-      if (isDragging && videoRef.current && progressRef.current) {
+      if (isDragging && videoRef.current && progressRef.current && videoRef.current.duration) {
         setIsDragging(false);
-        videoRef.current.currentTime = (progress / 100) * videoRef.current.duration;
+        const newTime = (progress / 100) * videoRef.current.duration;
+        
+        if (isFinite(newTime)) {
+          videoRef.current.currentTime = newTime;
+        }
       }
     };
 
