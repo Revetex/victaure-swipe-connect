@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 0;
   text-align: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .logo {
@@ -10,26 +12,43 @@
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
+  -webkit-transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
+  -webkit-filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+  -webkit-filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes logo-spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
+    -webkit-animation: logo-spin infinite 20s linear;
   }
 }
 
@@ -41,13 +60,22 @@
   color: #888;
 }
 
-/* Improved responsive container */
+/* Improved responsive container with Safari support */
 .container {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
 }
 
 @media (min-width: 640px) {
@@ -84,7 +112,7 @@
   }
 }
 
-/* Enhanced background pattern */
+/* Enhanced background pattern with Safari support */
 body {
   background-color: #f8f9fa;
   background-image: 
@@ -92,41 +120,54 @@ body {
     radial-gradient(at 82% 65%, hsl(218.00, 39.29%, 11.96%) 0, transparent 55%);
   background-attachment: fixed;
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   height: 100%;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Glass effect improvements */
+/* Safari-specific height fix */
+html {
+  height: -webkit-fill-available;
+}
+
+/* Glass effect improvements with Safari support */
 .glass-card {
   background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
   transition: all 0.3s ease;
+  -webkit-transition: all 0.3s ease;
 }
 
 .glass-card:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
+  -webkit-transform: translateY(-2px);
 }
 
-/* Responsive typography */
+/* Responsive typography with Safari support */
 @media (max-width: 640px) {
   h1 {
     font-size: 1.875rem;
     line-height: 2.25rem;
+    -webkit-text-size-adjust: 100%;
   }
   h2 {
     font-size: 1.5rem;
     line-height: 2rem;
+    -webkit-text-size-adjust: 100%;
   }
   p {
     font-size: 0.875rem;
     line-height: 1.25rem;
+    -webkit-text-size-adjust: 100%;
   }
 }
 
-/* Improved scrollbars */
+/* Improved scrollbars with Safari support */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -144,4 +185,15 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
+}
+
+/* Safari-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+  
+  .h-screen {
+    height: -webkit-fill-available;
+  }
 }

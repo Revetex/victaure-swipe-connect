@@ -54,7 +54,13 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
+  
+  html {
+    height: -webkit-fill-available;
+  }
+  
   body {
     @apply bg-background text-foreground;
     background-image: url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png');
@@ -62,71 +68,102 @@
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    min-height: -webkit-fill-available;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
-/* Styles spécifiques pour chaque thème */
+/* Style-specific themes with Safari support */
 .style-default {
   @apply text-gray-900;
+  -webkit-font-smoothing: antialiased;
 }
 
 .style-warm {
   @apply text-amber-900;
+  -webkit-font-smoothing: antialiased;
 }
 
 .style-modern {
   @apply text-emerald-900;
+  -webkit-font-smoothing: antialiased;
 }
 
 .style-elegant {
   @apply text-blue-900;
+  -webkit-font-smoothing: antialiased;
 }
 
 .style-bold {
   @apply text-purple-900;
+  -webkit-font-smoothing: antialiased;
 }
 
 .style-minimal {
   @apply text-gray-800;
+  -webkit-font-smoothing: antialiased;
 }
 
 .style-creative {
   @apply text-orange-900;
+  -webkit-font-smoothing: antialiased;
 }
 
 .style-professional {
   @apply text-sky-900;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Classes de police personnalisées */
+/* Font classes with Safari optimizations */
 .font-poppins {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: 'Poppins', -apple-system, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-montserrat {
-  font-family: 'Montserrat', sans-serif !important;
+  font-family: 'Montserrat', -apple-system, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-playfair {
-  font-family: 'Playfair Display', serif !important;
+  font-family: 'Playfair Display', -apple-system, system-ui, serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-roboto {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'Roboto', -apple-system, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-opensans {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: 'Open Sans', -apple-system, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-inter {
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-quicksand {
-  font-family: 'Quicksand', sans-serif !important;
+  font-family: 'Quicksand', -apple-system, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-lato {
-  font-family: 'Lato', sans-serif !important;
+  font-family: 'Lato', -apple-system, system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Safari-specific touch handling */
+@supports (-webkit-touch-callout: none) {
+  .touch-action-none {
+    touch-action: none;
+  }
+  
+  .touch-action-manipulation {
+    touch-action: manipulation;
+  }
 }
