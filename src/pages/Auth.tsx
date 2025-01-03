@@ -23,6 +23,17 @@ export default function Auth() {
 
         <div className="glass-card p-6 rounded-lg shadow-lg">
           <AuthForm />
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            <div className="space-x-2">
+              <a href="/politique-confidentialite" className="hover:text-primary transition-colors">
+                Politique de confidentialité
+              </a>
+              <span>•</span>
+              <a href="/conditions-utilisation" className="hover:text-primary transition-colors">
+                Conditions d'utilisation
+              </a>
+            </div>
+          </div>
         </div>
         
         <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
