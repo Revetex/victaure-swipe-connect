@@ -52,7 +52,7 @@ export function MessagesList({
                     Assistant IA
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2 text-left">
                   {chatMessages[chatMessages.length - 1]?.content || "Comment puis-je vous aider ?"}
                 </p>
               </div>

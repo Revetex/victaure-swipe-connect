@@ -1,16 +1,38 @@
 import { supabase } from "@/integrations/supabase/client";
-import { Message } from "@/types/chat";
 import { toast } from "sonner";
 
-export async function generateAIResponse(message: string, profile?: any): Promise<string> {
+export async function saveMessage(message: any) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("User not authenticated");
+
+  return await supabase.from("ai_chat_messages").insert([{ ...message, user_id: user.id }]);
+}
+
+export async function loadMessages() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("ai_chat_messages")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: true });
+
+  return data || [];
+}
+
+export async function generateAIResponse(message: string, profile?: any) {
   try {
+    console.log("Generating AI response...");
     console.log("Fetching API token...");
-    const { data: secretData, error: secretError } = await supabase
-      .rpc('get_secret', { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' });
-    
-    if (secretError || !secretData) {
+
+    const { data: secretData, error: secretError } = await supabase.functions.invoke('get-secret', {
+      body: { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' }
+    });
+
+    if (secretError) {
       console.error("Error fetching API token:", secretError);
-      throw new Error("Échec de la récupération du token API");
+      throw new Error("Failed to fetch API token");
     }
 
     const API_TOKEN = secretData;
@@ -18,6 +40,8 @@ export async function generateAIResponse(message: string, profile?: any): Promis
 
     const contextPrompt = profile ? 
       `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
+    
+    const systemPrompt = `Tu es un assistant virtuel professionnel et amical. Tu dois répondre en français de manière concise et claire. ${contextPrompt}`;
     
     console.log("Sending request to Hugging Face API...");
     console.log("Context prompt:", contextPrompt);
@@ -27,21 +51,19 @@ export async function generateAIResponse(message: string, profile?: any): Promis
       {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${API_TOKEN}`,
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${API_TOKEN}`
         },
         body: JSON.stringify({
           inputs: `<|im_start|>system
-Tu es M. Victaure, un assistant professionnel et amical qui aide les utilisateurs dans leur recherche d'emploi et leur développement de carrière. Tu dois TOUJOURS répondre en français de manière professionnelle mais chaleureuse.
-${contextPrompt}
+${systemPrompt}
 <|im_end|>
 <|im_start|>user
 ${message}
 <|im_end|>
-<|im_start|>assistant
-`,
+<|im_start|>assistant`,
           parameters: {
-            max_new_tokens: 1024,
+            max_new_tokens: 1000,
             temperature: 0.7,
             top_p: 0.95,
             do_sample: true,
@@ -62,73 +84,21 @@ ${message}
     const result = await response.json();
     console.log("API Response:", result);
 
-    if (Array.isArray(result) && result.length > 0) {
-      const generatedText = result[0]?.generated_text;
-      if (generatedText) {
-        return generatedText.trim();
-      }
+    if (!result || !result[0] || !result[0].generated_text) {
+      throw new Error("Invalid response format from API");
     }
 
-    throw new Error("Format de réponse API invalide");
+    // Clean up the response by removing any remaining tags and trimming whitespace
+    const cleanedResponse = result[0].generated_text
+      .replace(/<\|im_end\|>/g, '')
+      .replace(/<\|im_start\|>assistant/g, '')
+      .trim();
+
+    return cleanedResponse;
 
   } catch (error) {
     console.error("Error generating AI response:", error);
     toast.error("Une erreur est survenue lors de la génération de la réponse");
     throw error;
-  }
-}
-
-export async function saveMessage(message: Message): Promise<void> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Utilisateur non authentifié");
-    }
-
-    const { error } = await supabase
-      .from('ai_chat_messages')
-      .insert({
-        id: message.id,
-        content: message.content,
-        sender: message.sender,
-        user_id: user.id,
-        created_at: message.timestamp.toISOString(),
-      });
-
-    if (error) {
-      console.error('Erreur lors de la sauvegarde du message:', error);
-      throw error;
-    }
-  } catch (error) {
-    console.error('Erreur dans saveMessage:', error);
-    throw error;
-  }
-}
-
-export async function loadMessages(): Promise<Message[]> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return [];
-
-    const { data, error } = await supabase
-      .from('ai_chat_messages')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('Erreur lors du chargement des messages:', error);
-      return [];
-    }
-
-    return data.map(msg => ({
-      id: msg.id,
-      content: msg.content,
-      sender: msg.sender as "user" | "assistant",
-      timestamp: new Date(msg.created_at),
-    }));
-  } catch (error) {
-    console.error('Erreur dans loadMessages:', error);
-    return [];
   }
 }
