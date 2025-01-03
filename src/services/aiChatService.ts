@@ -43,10 +43,15 @@ export async function generateAIResponse(message: string, profile?: any) {
     const contextPrompt = profile ? 
       `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
     
-    const systemPrompt = `Tu es un assistant virtuel professionnel et amical. Tu dois répondre en français de manière concise et claire. ${contextPrompt}`;
+    const systemPrompt = `Tu es Mr. Victaure, un assistant virtuel professionnel et amical spécialisé dans l'aide à la recherche d'emploi et le développement de carrière. Tu dois:
+    - Répondre en français de manière claire et naturelle
+    - Être empathique et encourageant
+    - Donner des conseils pratiques et actionnables
+    - Adapter tes réponses au profil de l'utilisateur quand disponible
+    - Rester professionnel tout en étant chaleureux
+    ${contextPrompt}`;
     
     console.log("Sending request to Hugging Face API...");
-    console.log("Context prompt:", contextPrompt);
     
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",

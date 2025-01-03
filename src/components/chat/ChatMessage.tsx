@@ -49,11 +49,11 @@ export const ChatMessage = memo(function ChatMessage({
         )}
       </div>
       <div className={cn(
-        "flex flex-col gap-1 min-w-0",
+        "flex flex-col gap-1 min-w-0 w-full max-w-[85%]",
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-4 py-2 max-w-[80%] shadow-sm",
+          "rounded-lg px-4 py-2 w-full shadow-sm",
           isBot 
             ? "bg-muted/80 text-foreground backdrop-blur-sm" 
             : "bg-primary text-primary-foreground"
