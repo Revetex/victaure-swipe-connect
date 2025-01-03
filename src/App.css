@@ -67,8 +67,11 @@
 /* Background pattern */
 body {
   background-color: #f8f9fa;
-  background-image: 
-    radial-gradient(at 47% 33%, hsl(214.74, 95.56%, 87.96%) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsl(218.00, 39.29%, 11.96%) 0, transparent 55%);
-  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+html {
+  overflow-y: auto;
 }

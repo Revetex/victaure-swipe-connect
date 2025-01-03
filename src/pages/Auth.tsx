@@ -58,13 +58,13 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen w-full bg-background overflow-y-auto">
+    <div className="relative min-h-screen w-full">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-dashboard-pattern opacity-5 pointer-events-none -z-10" />
+      <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none -z-10" />
       
       {/* Main Content */}
-      <div className="w-full py-8 px-4">
-        <div className="container max-w-sm mx-auto space-y-8 mb-16">
+      <div className="relative w-full min-h-screen py-8 px-4 overflow-y-auto">
+        <div className="container max-w-sm mx-auto space-y-8 pb-16">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
             <Logo size="lg" className="mb-2" />
