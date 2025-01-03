@@ -27,7 +27,9 @@ export async function generateAIResponse(message: string, profile?: any) {
     console.log("Fetching API token...");
 
     const { data: secretData, error: secretError } = await supabase.functions.invoke('get-secret', {
-      body: { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' }
+      body: { 
+        secret_name: 'HUGGING_FACE_ACCESS_TOKEN'
+      }
     });
 
     if (secretError) {
@@ -35,7 +37,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Failed to fetch API token");
     }
 
-    const API_TOKEN = secretData;
+    const API_TOKEN = secretData.secret;
     console.log("API token retrieved successfully");
 
     const contextPrompt = profile ? 

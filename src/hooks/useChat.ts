@@ -16,11 +16,11 @@ export function useChat(): ChatState & ChatActions {
       try {
         console.log("Initializing chat...");
         const savedMessages = await loadMessages();
-        // Map database messages to Message type with proper timestamp
+        // Map database messages to Message type with proper timestamp and sender type
         const formattedMessages = savedMessages.map(msg => ({
           id: msg.id,
           content: msg.content,
-          sender: msg.sender,
+          sender: msg.sender as "user" | "assistant",
           timestamp: new Date(msg.created_at),
         }));
         setMessages(formattedMessages);
