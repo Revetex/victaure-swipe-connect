@@ -5,14 +5,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function Navigation() {
   const isMobile = useIsMobile();
   const { signOut, isLoading } = useAuth();
-
-  if (isLoading) {
-    return null;
-  }
 
   const NavLinks = () => (
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-4`}>
@@ -34,13 +31,35 @@ export function Navigation() {
           variant="ghost" 
           size="icon"
           onClick={signOut}
-          className="text-primary hover:text-primary/80"
+          className="text-primary hover:text-primary/80 relative"
+          disabled={isLoading}
         >
-          <User className="h-5 w-5" />
+          {isLoading ? (
+            <Skeleton className="h-5 w-5 rounded-full" />
+          ) : (
+            <User className="h-5 w-5" />
+          )}
         </Button>
       </div>
     </nav>
   );
+
+  if (isLoading) {
+    return (
+      <header className="sticky top-0 bg-background/90 backdrop-blur-sm border-b border-border z-50">
+        <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-6 w-24" />
+          </div>
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 bg-background/90 backdrop-blur-sm border-b border-border z-50">

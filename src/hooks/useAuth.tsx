@@ -12,34 +12,16 @@ export function useAuth() {
     try {
       setIsLoading(true);
       
-      // First, get current session to verify
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        throw sessionError;
-      }
-
-      if (!session) {
-        console.log('No active session found, clearing storage');
-        localStorage.clear();
-        sessionStorage.clear();
-        setIsAuthenticated(false);
-        navigate('/auth');
-        return;
-      }
-
-      // Clear all storage first
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Attempt signout
       const { error: signOutError } = await supabase.auth.signOut();
       
       if (signOutError) {
         console.error("Sign out error:", signOutError);
         throw signOutError;
       }
+      
+      // Clear all storage
+      localStorage.clear();
+      sessionStorage.clear();
       
       setIsAuthenticated(false);
       navigate('/auth');
@@ -57,7 +39,6 @@ export function useAuth() {
 
     const checkAuth = async () => {
       try {
-        // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -75,7 +56,6 @@ export function useAuth() {
           return;
         }
 
-        // Verify the session is valid
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
@@ -94,7 +74,9 @@ export function useAuth() {
         console.error('Auth check error:', error);
         if (mounted) {
           setIsAuthenticated(false);
-          await signOut();
+          localStorage.clear();
+          sessionStorage.clear();
+          navigate('/auth');
         }
       } finally {
         if (mounted) {
@@ -112,7 +94,10 @@ export function useAuth() {
         setIsAuthenticated(true);
         navigate('/dashboard');
       } else if (event === 'SIGNED_OUT' || !session) {
-        await signOut();
+        setIsAuthenticated(false);
+        localStorage.clear();
+        sessionStorage.clear();
+        navigate('/auth');
       }
     });
 
