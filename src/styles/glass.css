@@ -1,22 +1,32 @@
-.dashboard-card {
-  @apply bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-gray-900/80;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  border-radius: 10px;
-}
+@layer components {
+  .glass-card {
+    @apply bg-background/80 dark:bg-background/40 
+           backdrop-blur-md 
+           border border-border/50
+           shadow-lg
+           transition-all duration-300;
+  }
 
-.task-section {
-  @apply bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-6 rounded-lg border border-gray-200/50 dark:border-gray-700/50;
-  background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
+  .glass-panel {
+    @apply bg-background/95 dark:bg-background/80
+           backdrop-blur-md
+           border border-border/50
+           shadow-xl;
+  }
 
-.notes-section {
-  @apply bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-6 rounded-lg border border-gray-200/50 dark:border-gray-700/50;
-  background-image: 
-    radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
+  .glass-input {
+    @apply bg-background/50 dark:bg-background/20
+           backdrop-blur-sm
+           border border-border/50
+           focus:border-primary/50
+           focus:ring-primary/50;
+  }
+
+  .glass-button {
+    @apply bg-primary/90 dark:bg-primary/80
+           hover:bg-primary/80 dark:hover:bg-primary/70
+           text-primary-foreground
+           backdrop-blur-sm
+           transition-colors;
+  }
 }
