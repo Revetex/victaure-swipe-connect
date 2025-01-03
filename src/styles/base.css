@@ -24,14 +24,6 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
-    --victaure-blue: 221.2 83.2% 53.3%;
-    --victaure-blue-light: 221.2 83.2% 65.3%;
-    --victaure-blue-dark: 221.2 83.2% 43.3%;
-    --victaure-orange: 24.6 95% 53.1%;
-    --victaure-orange-light: 24.6 95% 65.1%;
-    --victaure-gray: 215.4 16.3% 46.9%;
-    --victaure-gray-light: 210 40% 96.1%;
-    --victaure-gray-dark: 215.4 16.3% 36.9%;
   }
 
   [data-theme="dark"] {
@@ -54,14 +46,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
-    --victaure-blue: 221.2 83.2% 65.3%;
-    --victaure-blue-light: 221.2 83.2% 75.3%;
-    --victaure-blue-dark: 221.2 83.2% 55.3%;
-    --victaure-orange: 24.6 95% 65.1%;
-    --victaure-orange-light: 24.6 95% 75.1%;
-    --victaure-gray: 215 20.2% 75.1%;
-    --victaure-gray-light: 217.2 32.6% 25.5%;
-    --victaure-gray-dark: 215 20.2% 85.1%;
   }
 
   * {
@@ -73,10 +57,6 @@
     height: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
-    font-size: 16px;
-    @screen lg {
-      font-size: 18px;
-    }
   }
   
   body {
@@ -98,5 +78,51 @@
 
   main {
     @apply flex-1 flex flex-col relative;
+  }
+
+  .auth-container {
+    @apply flex min-h-screen flex-col items-center justify-center p-4 sm:p-8;
+    background: linear-gradient(to bottom right, 
+      rgba(255, 255, 255, 0.1), 
+      rgba(255, 255, 255, 0.05)
+    );
+    backdrop-filter: blur(10px);
+  }
+
+  .auth-card {
+    @apply w-full max-w-md rounded-lg border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-lg;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+  }
+
+  .auth-card input {
+    @apply bg-white/10 border-white/20 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary;
+  }
+
+  .auth-card button {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  [data-theme="dark"] .auth-container {
+    background: linear-gradient(to bottom right, 
+      rgba(0, 0, 0, 0.2), 
+      rgba(0, 0, 0, 0.1)
+    );
+  }
+
+  [data-theme="dark"] .auth-card {
+    @apply bg-black/20 border-white/10;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.2) 0%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+  }
+
+  [data-theme="dark"] .auth-card input {
+    @apply bg-black/20 border-white/10 placeholder:text-white/50;
   }
 }
