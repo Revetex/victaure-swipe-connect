@@ -15,38 +15,38 @@ export const AuthForm = memo(function AuthForm() {
         variables: {
           default: {
             colors: {
-              brand: 'hsl(var(--primary))',
-              brandAccent: 'hsl(var(--primary))',
-              inputBackground: 'transparent',
-              inputText: 'hsl(var(--foreground))',
-              inputPlaceholder: 'hsl(var(--muted-foreground))',
+              brand: '#22d3ee',
+              brandAccent: '#06b6d4',
+              inputBackground: 'white',
+              inputText: 'rgb(75, 85, 99)',
+              inputPlaceholder: 'rgb(156, 163, 175)',
             },
             space: {
               inputPadding: '1rem',
-              buttonPadding: '1.25rem',
+              buttonPadding: '1rem',
             },
             borderWidths: {
-              buttonBorderWidth: '1px',
+              buttonBorderWidth: '0px',
               inputBorderWidth: '1px',
             },
             radii: {
-              borderRadiusButton: '0.75rem',
-              buttonBorderRadius: '0.75rem',
-              inputBorderRadius: '0.75rem',
+              borderRadiusButton: '0.5rem',
+              buttonBorderRadius: '0.5rem',
+              inputBorderRadius: '0.5rem',
             },
             fonts: {
-              bodyFontFamily: `var(--font-sans)`,
-              buttonFontFamily: `var(--font-sans)`,
-              inputFontFamily: `var(--font-sans)`,
+              bodyFontFamily: `system-ui, -apple-system, sans-serif`,
+              buttonFontFamily: `system-ui, -apple-system, sans-serif`,
+              inputFontFamily: `system-ui, -apple-system, sans-serif`,
             },
           },
         },
         className: {
-          button: "w-full h-12 text-sm font-medium transition-all hover:-translate-y-[1px] bg-primary text-primary-foreground hover:bg-primary/90",
-          input: "w-full h-12 text-sm glass-input",
-          label: "text-sm text-foreground font-medium mb-2",
-          message: "text-sm text-muted-foreground",
-          anchor: "text-primary hover:text-primary/90 no-underline hover:underline",
+          button: "w-full bg-[#22d3ee] hover:bg-[#06b6d4] text-white transition-colors",
+          input: "w-full border border-gray-200 focus:border-[#22d3ee] focus:ring-1 focus:ring-[#22d3ee]",
+          label: "text-gray-600 font-medium",
+          message: "text-sm text-gray-500",
+          anchor: "text-[#22d3ee] hover:text-[#06b6d4] no-underline hover:underline",
         },
       }}
       providers={[]}
