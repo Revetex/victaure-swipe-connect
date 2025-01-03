@@ -10,32 +10,33 @@ export default function Auth() {
   const [showPrivacy, setShowPrivacy] = useState(false);
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-background">
       {/* Left Side - Video */}
-      <div className="w-full md:w-1/2 h-[300px] md:h-screen relative">
+      <div className="relative w-full md:w-1/2 h-[300px] md:h-screen">
         <AuthVideo />
-        <div className="absolute top-4 left-4">
-          <Logo size="lg" className="w-24 h-24" />
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Logo size="xl" className="w-32 h-32 drop-shadow-lg" />
         </div>
       </div>
 
       {/* Right Side - Auth Form */}
-      <div className="w-full md:w-1/2 flex flex-col justify-between p-8 relative">
+      <div className="w-full md:w-1/2 min-h-[calc(100vh-300px)] md:min-h-screen flex flex-col justify-between p-8 relative">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
 
         <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full space-y-8">
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
+          <div className="text-center space-y-2 animate-fadeIn">
+            <h1 className="text-3xl font-bold tracking-tight font-playfair">
               Bienvenue sur Victaure
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground font-light">
               Connectez-vous ou créez un compte pour continuer
             </p>
           </div>
 
-          <div className="glass-card p-6">
+          <div className="glass-card p-8 animate-slideUp">
             <AuthForm />
           </div>
         </div>
@@ -57,23 +58,23 @@ export default function Auth() {
             </button>
           </div>
           <div className="text-sm text-muted-foreground">
-            © 2025 Victaure. Tous droits réservés.
+            © {new Date().getFullYear()} Victaure. Tous droits réservés.
           </div>
         </div>
       </div>
 
       {/* Terms Modal */}
       {showTerms && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-background rounded-lg w-full max-w-lg max-h-[80vh] overflow-y-auto relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-background/95 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto relative shadow-xl border border-border/50">
             <button 
               onClick={() => setShowTerms(false)}
               className="absolute right-4 top-4 p-2 hover:bg-accent rounded-full"
             >
               <X className="h-4 w-4" />
             </button>
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Conditions d'utilisation</h2>
+            <div className="p-8">
+              <h2 className="text-2xl font-bold mb-6 font-playfair">Conditions d'utilisation</h2>
               
               <div className="prose prose-sm dark:prose-invert">
                 <section>
@@ -118,16 +119,16 @@ export default function Auth() {
 
       {/* Privacy Modal */}
       {showPrivacy && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-background rounded-lg w-full max-w-lg max-h-[80vh] overflow-y-auto relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-background/95 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto relative shadow-xl border border-border/50">
             <button 
               onClick={() => setShowPrivacy(false)}
               className="absolute right-4 top-4 p-2 hover:bg-accent rounded-full"
             >
               <X className="h-4 w-4" />
             </button>
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Politique de confidentialité</h2>
+            <div className="p-8">
+              <h2 className="text-2xl font-bold mb-6 font-playfair">Politique de confidentialité</h2>
               
               <div className="prose prose-sm dark:prose-invert">
                 <section>
