@@ -11,7 +11,7 @@ export default function Auth() {
       </div>
       
       <div className="w-full max-w-md space-y-6 relative z-10">
-        <div className="flex flex-col items-center space-y-2 text-center">
+        <div className="flex flex-col items-center space-y-2 text-center bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg">
           <Logo size="lg" className="mb-2" />
           <h1 className="text-2xl font-semibold tracking-tight">
             Bienvenue sur Victaure
