@@ -32,40 +32,49 @@ export const ChatMessage = memo(function ChatMessage({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className={cn(
-        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors",
+        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-all duration-200",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
-      <div className={cn(
-        "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm",
-        isBot ? "bg-primary text-primary-foreground ring-2 ring-primary/10" : "bg-muted"
-      )}>
-        {isBot ? (
-          <Bot className="h-4 w-4" />
-        ) : (
-          <User className="h-4 w-4" />
+      <div
+        className={cn(
+          "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm transition-transform duration-200 group-hover:scale-110",
+          isBot ? "bg-primary text-primary-foreground ring-2 ring-primary/10" : "bg-muted"
         )}
+      >
+        {isBot ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
       </div>
-      <div className={cn(
-        "flex flex-col gap-1 min-w-0 w-full max-w-[85%]",
-        isBot ? "items-start" : "items-end"
-      )}>
-        <div className={cn(
-          "rounded-lg px-4 py-2 w-full shadow-sm backdrop-blur-sm",
-          isBot 
-            ? "bg-muted/80 text-foreground" 
-            : "bg-primary text-primary-foreground"
-        )}>
+      <div
+        className={cn(
+          "flex flex-col gap-1 min-w-0 w-full max-w-[85%]",
+          isBot ? "items-start" : "items-end"
+        )}
+      >
+        <motion.div
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          className={cn(
+            "rounded-lg px-4 py-2.5 w-full shadow-sm backdrop-blur-sm transition-colors duration-200",
+            isBot
+              ? "bg-muted/80 text-foreground hover:bg-muted"
+              : "bg-primary text-primary-foreground hover:bg-primary/90"
+          )}
+        >
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {content}
           </p>
-        </div>
+        </motion.div>
         {showTimestamp && timestamp && (
-          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
             {format(new Date(timestamp), "d MMMM 'à' HH:mm", { locale: fr })}
-          </span>
+          </motion.span>
         )}
       </div>
     </motion.div>

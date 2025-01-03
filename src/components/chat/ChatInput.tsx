@@ -59,39 +59,43 @@ export function ChatInput({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full"
+          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full transition-colors duration-200"
           disabled={isThinking}
         />
         <div className="absolute bottom-2 right-2 flex items-center gap-2">
           {onVoiceInput && (
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <Button
+                type="button"
+                size="icon"
+                variant={isListening ? "default" : "ghost"}
+                onClick={onVoiceInput}
+                className="h-8 w-8 transition-all duration-200"
+                disabled={isThinking}
+              >
+                <motion.div
+                  animate={isListening ? { scale: [1, 1.2, 1] } : {}}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                >
+                  <Mic className="h-4 w-4" />
+                </motion.div>
+              </Button>
+            </motion.div>
+          )}
+          <motion.div whileTap={{ scale: 0.95 }}>
             <Button
               type="button"
               size="icon"
-              variant={isListening ? "default" : "ghost"}
-              onClick={onVoiceInput}
-              className="h-8 w-8"
-              disabled={isThinking}
+              onClick={handleSendClick}
+              className={cn(
+                "h-8 w-8 transition-all duration-200",
+                value.trim() && !isThinking && "hover:scale-105"
+              )}
+              disabled={!value.trim() || isThinking}
             >
-              <motion.div
-                animate={isListening ? { scale: [1, 1.2, 1] } : {}}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                <Mic className="h-4 w-4" />
-              </motion.div>
+              <Send className="h-4 w-4" />
             </Button>
-          )}
-          <Button
-            type="button"
-            size="icon"
-            onClick={handleSendClick}
-            className={cn(
-              "h-8 w-8 transition-transform",
-              value.trim() && !isThinking && "hover:scale-105"
-            )}
-            disabled={!value.trim() || isThinking}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+          </motion.div>
         </div>
       </div>
     </div>
