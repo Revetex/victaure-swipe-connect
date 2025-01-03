@@ -40,6 +40,14 @@ export const AuthVideo = () => {
     }
   };
 
+  const handlePause = () => {
+    setIsPlaying(false);
+  };
+
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
+
   return (
     <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
       {isVideoLoading && (
@@ -62,13 +70,15 @@ export const AuthVideo = () => {
             preload="metadata"
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
+            onPause={handlePause}
+            onPlay={handlePlay}
             controls={isPlaying}
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
             Votre navigateur ne supporte pas la lecture de vidéos.
           </video>
           
-          {/* Video Overlay - Now completely hidden when playing */}
+          {/* Video Overlay - Now shown when not playing */}
           <div 
             className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
