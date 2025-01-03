@@ -59,10 +59,20 @@
   }
 }
 
+html, body {
+  min-height: 100vh;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
 #root {
   min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .glass-card {
