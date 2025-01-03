@@ -10,22 +10,22 @@ export function useChat() {
   const [inputMessage, setInputMessage] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const loadMessages = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !user) return;
     
     try {
-      const loadedMessages = await chatService.loadMessages();
+      const loadedMessages = await chatService.loadMessages(user.id);
       setMessages(loadedMessages);
     } catch (error) {
       console.error("Erreur lors du chargement des messages:", error);
       toast.error("Impossible de charger les messages");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   const handleSendMessage = useCallback(async (content: string) => {
-    if (!isAuthenticated || !content.trim()) return;
+    if (!isAuthenticated || !user || !content.trim()) return;
 
     const userMessage: Message = {
       id: uuidv4(),
@@ -39,7 +39,7 @@ export function useChat() {
     setIsThinking(true);
 
     try {
-      await chatService.saveMessage(content, "user");
+      await chatService.saveMessage(user.id, content, "user");
       
       const aiResponse = await chatService.generateAIResponse(content);
       const assistantMessage: Message = {
@@ -49,7 +49,7 @@ export function useChat() {
         timestamp: new Date(),
       };
       
-      await chatService.saveMessage(aiResponse, "assistant");
+      await chatService.saveMessage(user.id, aiResponse, "assistant");
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
@@ -57,7 +57,7 @@ export function useChat() {
     } finally {
       setIsThinking(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   const handleVoiceInput = useCallback(() => {
     if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
