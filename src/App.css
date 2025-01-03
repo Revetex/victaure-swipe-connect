@@ -54,23 +54,15 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased min-h-screen;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-html {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-}
-
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .glass-card {

@@ -58,35 +58,36 @@ export default function Auth() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen w-full bg-background overflow-y-auto">
+    <div className="relative min-h-screen w-full">
       {/* Background Pattern */}
       <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       
       {/* Main Content Container */}
-      <div className="container max-w-sm mx-auto py-8 px-4 space-y-8">
-        {/* Header */}
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <Logo size="lg" className="mb-2" />
-          <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
-          <p className="text-sm text-muted-foreground">
-            Connectez-vous ou créez un compte pour continuer
-          </p>
-        </div>
+      <div className="relative container max-w-sm mx-auto py-8 px-4">
+        <div className="space-y-8">
+          {/* Header */}
+          <div className="flex flex-col items-center space-y-2 text-center">
+            <Logo size="lg" className="mb-2" />
+            <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
+            <p className="text-sm text-muted-foreground">
+              Connectez-vous ou créez un compte pour continuer
+            </p>
+          </div>
 
-        {/* Auth Card */}
-        <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
-          <BiometricAuth />
-          <AuthForm />
-        </div>
+          {/* Auth Card */}
+          <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
+            <BiometricAuth />
+            <AuthForm />
+          </div>
 
-        {/* Video Section */}
-        <div className="w-full mb-8">
-          <AuthVideo />
-        </div>
+          {/* Video Section */}
+          <div className="w-full mb-8">
+            <AuthVideo />
+          </div>
 
-        {/* Legal Links */}
-        <div className="text-center text-sm text-muted-foreground pb-8">
-          <div className="space-x-2">
+          {/* Legal Links */}
+          <div className="text-center text-sm text-muted-foreground pb-8">
+            <div className="space-x-2">
             <Dialog>
               <DialogTrigger className="hover:text-primary hover:underline">
                 Politique de confidentialité
@@ -121,7 +122,7 @@ export default function Auth() {
                 </div>
               </DialogContent>
             </Dialog>
-            <span>•</span>
+              <span>•</span>
             <Dialog>
               <DialogTrigger className="hover:text-primary hover:underline">
                 Conditions d'utilisation
@@ -148,9 +149,10 @@ export default function Auth() {
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
-          <div className="mt-2">
-            © {new Date().getFullYear()} Victaure. Tous droits réservés.
+            </div>
+            <div className="mt-2">
+              © {new Date().getFullYear()} Victaure. Tous droits réservés.
+            </div>
           </div>
         </div>
       </div>

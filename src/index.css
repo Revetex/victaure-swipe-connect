@@ -62,7 +62,17 @@
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    min-height: 100vh;
+    height: auto;
   }
+}
+
+html, body, #root {
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
 }
 
 /* Styles spécifiques pour chaque thème */
