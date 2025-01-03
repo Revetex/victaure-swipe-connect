@@ -788,6 +788,71 @@ export type Database = {
         }
         Returns: boolean
       }
+      cube:
+        | {
+            Args: {
+              "": number[]
+            }
+            Returns: unknown
+          }
+        | {
+            Args: {
+              "": number
+            }
+            Returns: unknown
+          }
+      cube_dim: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      cube_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      cube_is_point: {
+        Args: {
+          "": unknown
+        }
+        Returns: boolean
+      }
+      cube_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      cube_recv: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      cube_send: {
+        Args: {
+          "": unknown
+        }
+        Returns: string
+      }
+      cube_size: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      earth: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      gc_to_sec: {
+        Args: {
+          "": number
+        }
+        Returns: number
+      }
       get_secret: {
         Args: {
           secret_name: string
@@ -795,6 +860,24 @@ export type Database = {
         Returns: {
           secret: string
         }[]
+      }
+      latitude: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      longitude: {
+        Args: {
+          "": unknown
+        }
+        Returns: number
+      }
+      sec_to_gc: {
+        Args: {
+          "": number
+        }
+        Returns: number
       }
     }
     Enums: {
