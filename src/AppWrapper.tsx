@@ -1,8 +1,8 @@
 import { BrowserRouter as Router } from "react-router-dom";
+import App from "./App";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
-import { Dashboard } from "./components/Dashboard";
 
 // Create a client with default options
 const queryClient = new QueryClient({
@@ -19,7 +19,7 @@ export default function AppWrapper() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <Router>
-          <Dashboard />
+          <App />
           <Toaster position="top-right" expand={false} richColors />
         </Router>
       </ThemeProvider>

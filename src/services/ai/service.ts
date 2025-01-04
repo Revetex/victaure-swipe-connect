@@ -1,26 +1,19 @@
 import { supabase } from "@/integrations/supabase/client";
 import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
+import { toast } from "sonner";
 import { Message } from "@/types/chat/messageTypes";
 
-export async function getHuggingFaceApiKey(): Promise<string> {
-  try {
-    const { data, error } = await supabase.rpc('get_secret', {
+async function getHuggingFaceApiKey(): Promise<string> {
+  const { data, error } = await supabase
+    .rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
-    if (error) {
-      throw error;
-    }
-
-    if (!data || typeof data !== 'string') {
-      throw new Error('API key not found');
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching Hugging Face API key:', error);
-    throw error;
+  if (error || !data) {
+    throw new Error('Failed to retrieve API key');
   }
+
+  return data.secret;
 }
 
 export async function generateAIResponse(message: string): Promise<string> {
