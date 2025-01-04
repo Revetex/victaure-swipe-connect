@@ -33,15 +33,21 @@ export async function loadMessages() {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
+    console.log("Fetching Hugging Face API key...");
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
     
-    if (secretError || !secretData) {
+    if (secretError) {
       console.error("Error fetching API token:", secretError);
-      throw new Error("Impossible de récupérer le token API");
+      throw new Error("Impossible de récupérer le token API. Veuillez vérifier la configuration dans Supabase.");
+    }
+
+    if (!secretData || secretData.trim() === '') {
+      throw new Error("Le token API Hugging Face n'est pas configuré. Veuillez l'ajouter dans les secrets Supabase.");
     }
 
     const API_TOKEN = secretData;
+    console.log("API token retrieved successfully");
 
     const contextPrompt = profile ? 
       `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
@@ -54,6 +60,7 @@ export async function generateAIResponse(message: string, profile?: any) {
     - Rester professionnel tout en étant chaleureux
     ${contextPrompt}`;
 
+    console.log("Making request to Hugging Face API...");
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
       {
@@ -87,10 +94,10 @@ ${message}
       
       if (response.status === 503) {
         throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
-      } else if (errorData.error && errorData.error.includes("token seems invalid")) {
-        throw new Error("Le token d'API n'est pas valide. Veuillez vérifier votre configuration.");
+      } else if (response.status === 400 && errorData.error?.includes("token seems invalid")) {
+        throw new Error("Le token d'API Hugging Face n'est pas valide. Veuillez vérifier votre configuration dans les secrets Supabase.");
       } else {
-        throw new Error("Une erreur est survenue lors de la communication avec l'API");
+        throw new Error(`Erreur API Hugging Face: ${errorData.error || 'Erreur inconnue'}`);
       }
     }
 
@@ -117,6 +124,6 @@ ${message}
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error("Une erreur inattendue est survenue");
+    throw new Error("Une erreur inattendue est survenue lors de la génération de la réponse");
   }
 }
