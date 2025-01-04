@@ -2,6 +2,8 @@ import { TabsContent } from "@/components/ui/tabs";
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
 import { AssistantTab } from "./tabs/AssistantTab";
+import { ScrapedJobsList } from "./ScrapedJobsList";
+import { ScrapedJob } from "@/types/database/scrapedJobs";
 
 interface MessagesContentProps {
   todos: any[];
@@ -18,12 +20,13 @@ interface MessagesContentProps {
   onTimeChange: (time: string) => void;
   onColorChange: (color: string) => void;
   onAllDayChange: (allDay: boolean) => void;
-  onAddTodo: () => void;
-  onAddNote: () => void;
+  onAdd: () => void;
   onToggleTodo: (id: string) => void;
   onDeleteTodo: (id: string) => void;
   onDeleteNote: (id: string) => void;
   colors: { value: string; label: string; class: string; }[];
+  scrapedJobs?: ScrapedJob[];
+  isLoadingJobs?: boolean;
 }
 
 export function MessagesContent({
@@ -41,12 +44,13 @@ export function MessagesContent({
   onTimeChange,
   onColorChange,
   onAllDayChange,
-  onAddTodo,
-  onAddNote,
+  onAdd,
   onToggleTodo,
   onDeleteTodo,
   onDeleteNote,
   colors,
+  scrapedJobs = [],
+  isLoadingJobs = false,
 }: MessagesContentProps) {
   return (
     <div className="flex-1 overflow-hidden">
@@ -66,7 +70,7 @@ export function MessagesContent({
             onDateChange={onDateChange}
             onTimeChange={onTimeChange}
             onAllDayChange={onAllDayChange}
-            onAdd={onAddTodo}
+            onAdd={onAdd}
             onToggle={onToggleTodo}
             onDelete={onDeleteTodo}
           />
@@ -76,11 +80,15 @@ export function MessagesContent({
             selectedColor={selectedColor}
             onNoteChange={onNoteChange}
             onColorChange={onColorChange}
-            onAdd={onAddNote}
+            onAdd={onAdd}
             onDelete={onDeleteNote}
             colors={colors}
           />
         </div>
+      </TabsContent>
+
+      <TabsContent value="jobs" className="h-full">
+        <ScrapedJobsList jobs={scrapedJobs} isLoading={isLoadingJobs} />
       </TabsContent>
     </div>
   );
