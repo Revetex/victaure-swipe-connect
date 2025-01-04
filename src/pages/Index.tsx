@@ -1,10 +1,20 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MrVictaureWelcome } from "@/components/dashboard/MrVictaureWelcome";
 
 export default function Index() {
+  const [showWelcome, setShowWelcome] = useState(false);
+  const navigate = useNavigate();
+
+  const handleStartChat = () => {
+    setShowWelcome(false);
+    navigate("/dashboard");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -12,7 +22,8 @@ export default function Index() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 p-6 rounded-lg border bg-card text-card-foreground shadow-sm"
+          className="mb-12 p-6 rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          onClick={() => setShowWelcome(true)}
         >
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16 ring-2 ring-primary/10">
@@ -26,12 +37,10 @@ export default function Index() {
               <p className="text-muted-foreground mb-4">
                 Votre assistant IA personnel, prêt à vous aider dans votre recherche d'emploi
               </p>
-              <Link to="/dashboard">
-                <Button className="gap-2">
-                  <Bot className="h-4 w-4" />
-                  Discuter avec M. Victaure
-                </Button>
-              </Link>
+              <Button className="gap-2" onClick={(e) => { e.stopPropagation(); setShowWelcome(true); }}>
+                <Bot className="h-4 w-4" />
+                Discuter avec M. Victaure
+              </Button>
             </div>
           </div>
         </motion.div>
@@ -58,6 +67,13 @@ export default function Index() {
           </div>
         </div>
       </div>
+
+      {showWelcome && (
+        <MrVictaureWelcome
+          onDismiss={() => setShowWelcome(false)}
+          onStartChat={handleStartChat}
+        />
+      )}
     </div>
   );
 }
