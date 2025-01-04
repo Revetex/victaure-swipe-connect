@@ -1,3 +1,4 @@
+import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
 import { ExtendedJsPDF } from "@/types/pdf";
 import { extendPdfDocument } from "./pdfExtensions";
@@ -10,7 +11,7 @@ import { renderEducation } from "./cv/sections/education";
 import { renderCertifications } from "./cv/sections/certifications";
 import { renderFooter } from "./cv/sections/footer";
 
-export const generateCV = async (profile: UserProfile, style?: any): Promise<ExtendedJsPDF> => {
+export const generateCV = async (profile: UserProfile): Promise<ExtendedJsPDF> => {
   const doc = extendPdfDocument(new jsPDF());
   let currentY = 10;
 
@@ -43,7 +44,7 @@ export const generateCV = async (profile: UserProfile, style?: any): Promise<Ext
   currentY = doc.addSpace(currentY, 10);
 
   // Footer
-  await renderFooter(doc, profile, currentY, doc.internal.pageSize.width);
+  renderFooter(doc, profile, currentY);
 
   return doc;
 };

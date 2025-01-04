@@ -1,11 +1,11 @@
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { pdfColors } from './colors';
 import type { UserProfile } from '@/types/profile';
 import { drawHeader, drawSection } from './helpers';
 import type { ExtendedJsPDF } from './types';
 
-export const generateBusinessCardPDF = async (profile: UserProfile) => {
+export const generateBusinessCard = async (profile: UserProfile): Promise<ExtendedJsPDF> => {
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
@@ -84,4 +84,6 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
   // Save the PDF
   const fileName = `carte-visite-${profile.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'professionnel'}.pdf`;
   doc.save(fileName);
+
+  return doc;
 };

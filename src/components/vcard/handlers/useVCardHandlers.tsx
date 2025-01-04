@@ -1,6 +1,6 @@
 import { useToast } from "@/hooks/use-toast";
 import { generateVCardData } from "@/utils/profileActions";
-import { generateVCardPDF, generateBusinessCardPDF, generateCVPDF } from "@/utils/pdfGenerator";
+import { generatePDF, generateBusinessPDF, generateCVPDF } from "@/utils/pdfGenerator";
 import type { UserProfile } from "@/types/profile";
 
 export function useVCardHandlers() {
@@ -66,7 +66,8 @@ export function useVCardHandlers() {
     if (!profile) return;
     
     try {
-      await generateVCardPDF(profile);
+      const doc = await generatePDF(profile);
+      doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
       
       toast({
         title: "Succès",
@@ -86,7 +87,8 @@ export function useVCardHandlers() {
     if (!profile) return;
     
     try {
-      await generateBusinessCardPDF(profile);
+      const doc = await generateBusinessPDF(profile);
+      doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
       
       toast({
         title: "Succès",
@@ -106,7 +108,8 @@ export function useVCardHandlers() {
     if (!profile) return;
     
     try {
-      await generateCVPDF(profile);
+      const doc = await generateCVPDF(profile);
+      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
       
       toast({
         title: "Succès",
