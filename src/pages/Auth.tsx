@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -7,14 +7,17 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
 import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Loader } from "@/components/ui/loader";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check current session
     const checkSession = async () => {
       try {
+        setIsLoading(true);
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -29,6 +32,8 @@ export default function Auth() {
       } catch (error) {
         console.error("Auth check error:", error);
         toast.error("Erreur lors de la vérification de l'authentification");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -48,6 +53,14 @@ export default function Auth() {
       subscription.unsubscribe();
     };
   }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <Loader className="w-8 h-8" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen w-full bg-background overflow-y-auto">

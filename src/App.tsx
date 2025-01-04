@@ -3,13 +3,18 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
+import { Loader } from "./components/ui/loader";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Show nothing while checking auth status
+  // Show loading spinner while checking auth status
   if (isLoading) {
-    return null;
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <Loader className="w-8 h-8" />
+      </div>
+    );
   }
 
   return (
@@ -46,6 +51,18 @@ function App() {
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
+          }
+        />
+
+        {/* Catch all route - redirect to dashboard or auth */}
+        <Route 
+          path="*" 
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/auth" replace />
+            )
           }
         />
       </Routes>

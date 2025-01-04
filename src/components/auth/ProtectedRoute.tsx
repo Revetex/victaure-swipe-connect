@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { Loader } from "@/components/ui/loader";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,7 +20,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }, [isLoading, isAuthenticated, navigate]);
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <Loader className="w-8 h-8" />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

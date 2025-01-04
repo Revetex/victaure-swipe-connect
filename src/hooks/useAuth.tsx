@@ -27,13 +27,13 @@ export function useAuth() {
       }
       
       setIsAuthenticated(false);
-      navigate('/auth');
+      navigate('/auth', { replace: true });
       toast.success('Déconnexion réussie');
     } catch (error) {
       console.error('Sign out error:', error);
       // Even if there's an error, ensure we clear the local state
       setIsAuthenticated(false);
-      navigate('/auth');
+      navigate('/auth', { replace: true });
       toast.error('Erreur lors de la déconnexion');
     } finally {
       setIsLoading(false);
@@ -45,6 +45,7 @@ export function useAuth() {
 
     const checkAuth = async () => {
       try {
+        setIsLoading(true);
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -57,7 +58,7 @@ export function useAuth() {
           if (mounted) {
             setIsAuthenticated(false);
             if (window.location.pathname !== '/auth') {
-              navigate('/auth');
+              navigate('/auth', { replace: true });
             }
           }
           return;
@@ -94,7 +95,7 @@ export function useAuth() {
       
       if (event === 'SIGNED_IN' && session) {
         setIsAuthenticated(true);
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
         await signOut();
       } else if (event === 'USER_UPDATED') {
