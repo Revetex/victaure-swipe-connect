@@ -29,7 +29,7 @@ export function MessagesList({
     >
       <ScrollArea className="flex-1 px-4">
         <div className="space-y-4 py-4">
-          {/* Assistant Message Item */}
+          {/* M. Victaure - Conversation épinglée */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -61,7 +61,7 @@ export function MessagesList({
             </div>
           </motion.div>
 
-          {/* User Messages Section */}
+          {/* Messages des utilisateurs */}
           {messages.length > 0 && (
             <div>
               <div className="flex items-center gap-2 text-primary mb-4">
