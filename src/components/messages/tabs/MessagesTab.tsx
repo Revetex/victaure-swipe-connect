@@ -27,7 +27,7 @@ export function MessagesTab() {
   if (selectedConversation === "assistant") {
     return (
       <ConversationView 
-        messages={chatMessages}
+        messages={chatMessages || []} // Ensure messages is never undefined
         inputMessage={inputMessage}
         isListening={isListening}
         isThinking={isThinking}
@@ -44,7 +44,7 @@ export function MessagesTab() {
   return (
     <MessagesList
       messages={messages}
-      chatMessages={chatMessages}
+      chatMessages={chatMessages || []} // Ensure chatMessages is never undefined
       onSelectConversation={setSelectedConversation}
       onMarkAsRead={handleMarkAsRead}
     />

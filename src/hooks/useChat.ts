@@ -21,9 +21,9 @@ export function useChat(): ChatState & ChatActions {
     clearChat,
     restoreChat
   } = useChatActions(
-    messages,
+    messages || [], // Ensure messages is never undefined
     setMessages,
-    deletedMessages,
+    deletedMessages || [], // Ensure deletedMessages is never undefined
     setDeletedMessages,
     setInputMessage,
     setIsThinking
@@ -37,8 +37,8 @@ export function useChat(): ChatState & ChatActions {
   };
 
   return {
-    messages,
-    deletedMessages,
+    messages: messages || [], // Ensure we never return undefined
+    deletedMessages: deletedMessages || [],
     inputMessage,
     isListening,
     isThinking,
