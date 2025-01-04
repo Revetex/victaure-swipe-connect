@@ -7,6 +7,8 @@ import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useEffect } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
+import { useChat } from "@/hooks/useChat";
+import { useProfile } from "@/hooks/useProfile";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -14,6 +16,18 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState("100vh");
+  const { profile } = useProfile();
+  const {
+    messages,
+    inputMessage,
+    isListening,
+    isThinking,
+    setInputMessage,
+    handleSendMessage,
+    handleVoiceInput,
+    clearChat,
+    restoreChat,
+  } = useChat();
 
   // Handle viewport height for mobile browsers
   useEffect(() => {
@@ -88,7 +102,18 @@ export function DashboardLayout() {
 
     if (currentPage === 2 && !isEditing) {
       return renderDashboardSection(
-        <Messages />,
+        <Messages 
+          messages={messages}
+          inputMessage={inputMessage}
+          isListening={isListening}
+          isThinking={isThinking}
+          profile={profile}
+          onSendMessage={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
+          setInputMessage={setInputMessage}
+          onClearChat={clearChat}
+          onRestoreChat={restoreChat}
+        />,
         'w-full h-full'
       );
     }
