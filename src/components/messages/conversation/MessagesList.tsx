@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { MessageSquare, Bot } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageItem } from "../MessageItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Message } from "@/hooks/useMessages";
 
@@ -61,7 +60,7 @@ export function MessagesList({
             </div>
           </motion.div>
 
-          {/* User Messages Section */}
+          {/* Messages Section */}
           {messages.length > 0 && (
             <div>
               <div className="flex items-center gap-2 text-primary mb-4">
@@ -70,11 +69,19 @@ export function MessagesList({
               </div>
               <div className="space-y-2">
                 {messages.map((message) => (
-                  <MessageItem
+                  <div
                     key={message.id}
-                    {...message}
-                    onMarkAsRead={onMarkAsRead}
-                  />
+                    className="p-4 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                    onClick={() => onMarkAsRead(message.id)}
+                  >
+                    <div className="flex justify-between items-start gap-2 mb-1">
+                      <h3 className="font-medium">{message.sender}</h3>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(message.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{message.content}</p>
+                  </div>
                 ))}
               </div>
             </div>
