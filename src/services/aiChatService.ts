@@ -78,6 +78,13 @@ export async function generateAIResponse(message: string, profile?: any): Promis
       throw new Error("Hugging Face API key is not configured");
     }
 
+    // Verify API key format (basic check)
+    if (!apiKey.startsWith('hf_')) {
+      console.error("Invalid API key format");
+      toast.error("Format de la clé API invalide. La clé doit commencer par 'hf_'");
+      throw new Error("Invalid API key format");
+    }
+
     const contextPrompt = profile ? 
       `Context: User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : '';
 
@@ -115,15 +122,25 @@ ${message}
       const errorText = await response.text();
       console.error("Hugging Face API Error Response:", errorText);
       
-      if (response.status === 503) {
-        toast.error("Le modèle est en cours de chargement, veuillez réessayer dans quelques instants");
-        throw new Error("Model is loading");
-      } else if (response.status === 401) {
-        toast.error("La clé API n'est pas valide");
-        throw new Error("Invalid API key");
-      } else {
-        toast.error("Erreur lors de la génération de la réponse");
-        throw new Error(`API request failed: ${errorText}`);
+      // Parse the error response
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.error && errorJson.error.includes("token seems invalid")) {
+          toast.error("La clé API Hugging Face n'est pas valide. Veuillez vérifier votre clé.");
+          throw new Error("Invalid Hugging Face API token");
+        }
+      } catch (e) {
+        // If we can't parse the error JSON, use the original error handling
+        if (response.status === 503) {
+          toast.error("Le modèle est en cours de chargement, veuillez réessayer dans quelques instants");
+          throw new Error("Model is loading");
+        } else if (response.status === 401 || response.status === 400) {
+          toast.error("La clé API n'est pas valide");
+          throw new Error("Invalid API key");
+        } else {
+          toast.error("Erreur lors de la génération de la réponse");
+          throw new Error(`API request failed: ${errorText}`);
+        }
       }
     }
 
