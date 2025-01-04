@@ -25,20 +25,19 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     // Set gradient background using multiple rectangles with varying opacity
     const gradientSteps = 15;
     for (let i = 0; i < gradientSteps; i++) {
-      const alpha = 0.03 - (i / gradientSteps) * 0.02;
+      const opacity = 0.03 - (i / gradientSteps) * 0.02;
       doc.setFillColor(accentColor);
-      doc.setGlobalAlpha(alpha);
+      // Instead of using setGlobalAlpha, we'll create a lighter shade of the accent color
+      const alpha = Math.floor(opacity * 255);
+      const hexOpacity = alpha.toString(16).padStart(2, '0');
+      doc.setFillColor(accentColor + hexOpacity);
       doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
     }
 
-    // Reset opacity for content
-    doc.setGlobalAlpha(1);
-
     // Add a subtle white overlay for better readability
     doc.setFillColor(255, 255, 255);
-    doc.setGlobalAlpha(0.95);
+    doc.setFillColor('#FFFFFF80'); // 50% white overlay
     doc.rect(15, 15, 180, 267, 'F');
-    doc.setGlobalAlpha(1);
 
     // Add decorative elements
     doc.setDrawColor(accentColor);
