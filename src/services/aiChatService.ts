@@ -6,15 +6,13 @@ export async function saveMessage(message: Message) {
   try {
     const { error } = await supabase
       .from('ai_chat_messages')
-      .insert([
-        {
-          id: message.id,
-          content: message.content,
-          sender: message.sender,
-          user_id: (await supabase.auth.getUser()).data.user?.id,
-          created_at: message.timestamp
-        }
-      ]);
+      .insert({
+        id: message.id,
+        content: message.content,
+        sender: message.sender,
+        user_id: (await supabase.auth.getUser()).data.user?.id,
+        created_at: message.timestamp.toISOString() // Convert Date to ISO string
+      });
 
     if (error) throw error;
   } catch (error) {
@@ -49,7 +47,7 @@ export async function loadMessages(): Promise<Message[]> {
     return data.map(msg => ({
       id: msg.id,
       content: msg.content,
-      sender: msg.sender,
+      sender: msg.sender as "user" | "assistant", // Type assertion to narrow the type
       timestamp: new Date(msg.created_at),
     }));
   } catch (error) {
