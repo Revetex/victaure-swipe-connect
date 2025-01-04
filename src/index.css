@@ -60,6 +60,7 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    height: -webkit-fill-available;
   }
   
   body {
@@ -71,6 +72,7 @@
     background-repeat: no-repeat;
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    min-height: calc(var(--vh, 1vh) * 100);
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
@@ -79,6 +81,7 @@
   @supports (-webkit-touch-callout: none) {
     .min-h-screen {
       min-height: -webkit-fill-available;
+      min-height: calc(var(--vh, 1vh) * 100);
     }
   }
 
@@ -101,6 +104,28 @@
       min-height: 44px;
       min-width: 44px;
       padding: 0.5rem;
+    }
+
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  /* Safe area insets for modern iOS devices */
+  @supports (padding: max(0px)) {
+    .fixed-bottom {
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    }
+
+    .has-safe-area {
+      padding-bottom: env(safe-area-inset-bottom);
     }
   }
 }

@@ -15,17 +15,16 @@ export function DashboardLayout() {
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
-  // Handle iOS Safari viewport height
   useEffect(() => {
     const updateHeight = () => {
-      setViewportHeight(window.innerHeight);
+      const vh = window.innerHeight;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+      setViewportHeight(vh);
     };
 
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
-
-    // Initial trigger for iOS Safari
-    setTimeout(updateHeight, 100);
+    updateHeight();
 
     return () => {
       window.removeEventListener('resize', updateHeight);
@@ -46,7 +45,7 @@ export function DashboardLayout() {
       variants={itemVariants} 
       className={`transform transition-all duration-300 ${className}`}
       style={{ 
-        maxHeight: isEditing ? viewportHeight : `calc(${viewportHeight}px - 4rem)`,
+        height: isEditing ? viewportHeight : `calc(var(--vh, 1vh) * 100 - 4rem)`,
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch'
       }}
