@@ -16,7 +16,6 @@ export function useChat(): ChatState & ChatActions {
       try {
         console.log("Initializing chat...");
         const savedMessages = await loadMessages();
-        // Map database messages to Message type with proper timestamp and sender type
         const formattedMessages = savedMessages.map(msg => ({
           id: msg.id,
           content: msg.content,
@@ -68,7 +67,6 @@ export function useChat(): ChatState & ChatActions {
     try {
       console.log("Sending message:", message);
       
-      // Save user message
       const newUserMessage: Message = {
         id: crypto.randomUUID(),
         content: message,
@@ -81,7 +79,6 @@ export function useChat(): ChatState & ChatActions {
       setInputMessage("");
       setIsThinking(true);
 
-      // Add thinking message
       const thinkingMessage: Message = {
         id: crypto.randomUUID(),
         content: "...",
@@ -91,35 +88,43 @@ export function useChat(): ChatState & ChatActions {
       };
       setMessages(prev => [...prev, thinkingMessage]);
 
-      // Generate AI response
-      console.log("Generating AI response...");
-      const response = await generateAIResponse(message, profile);
-      
-      if (!response) {
-        throw new Error("Pas de réponse de l'IA");
+      try {
+        console.log("Generating AI response...");
+        const response = await generateAIResponse(message, profile);
+        
+        if (!response) {
+          throw new Error("Pas de réponse de l'IA");
+        }
+
+        console.log("AI response generated:", response);
+
+        const newAssistantMessage: Message = {
+          id: crypto.randomUUID(),
+          content: response,
+          sender: "assistant",
+          timestamp: new Date(),
+        };
+
+        setMessages(prev => {
+          const filtered = prev.filter(msg => msg.id !== thinkingMessage.id);
+          return [...filtered, newAssistantMessage];
+        });
+
+        await saveMessage(newAssistantMessage);
+
+      } catch (error) {
+        console.error("Error in AI response generation:", error);
+        setMessages(prev => prev.filter(msg => msg.id !== thinkingMessage.id));
+        
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Une erreur est survenue lors de la génération de la réponse");
+        }
       }
-
-      console.log("AI response generated:", response);
-
-      // Replace thinking message with actual response
-      const newAssistantMessage: Message = {
-        id: crypto.randomUUID(),
-        content: response,
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => {
-        const filtered = prev.filter(msg => msg.id !== thinkingMessage.id);
-        return [...filtered, newAssistantMessage];
-      });
-
-      // Save AI response
-      await saveMessage(newAssistantMessage);
 
     } catch (error) {
       console.error("Error in handleSendMessage:", error);
-      setMessages(prev => prev.filter(msg => !msg.thinking));
       toast.error("Désolé, je n'ai pas pu générer une réponse. Veuillez réessayer.");
     } finally {
       setIsThinking(false);

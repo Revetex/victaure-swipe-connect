@@ -30,7 +30,7 @@ export async function generateAIResponse(message: string, profile?: any) {
     
     if (secretError || !secretData) {
       console.error("Error fetching API token:", secretError);
-      throw new Error("Failed to fetch API token");
+      throw new Error("Impossible de récupérer le token API");
     }
 
     const API_TOKEN = secretData;
@@ -81,14 +81,19 @@ ${message}
       console.error("Hugging Face API Error Response:", errorText);
       console.error("Response status:", response.status);
       console.error("Response headers:", Object.fromEntries(response.headers.entries()));
-      throw new Error(`API Error: ${errorText}`);
+      
+      if (response.status === 503) {
+        throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
+      } else {
+        throw new Error("Une erreur est survenue lors de la communication avec l'API");
+      }
     }
 
     const result = await response.json();
     console.log("API Response:", result);
 
     if (!result || !result[0] || !result[0].generated_text) {
-      throw new Error("Invalid response format from API");
+      throw new Error("Format de réponse invalide de l'API");
     }
 
     // Clean up the response by removing any remaining tags and trimming whitespace
@@ -97,11 +102,17 @@ ${message}
       .replace(/<\|im_start\|>assistant/g, '')
       .trim();
 
+    if (!cleanedResponse) {
+      throw new Error("La réponse générée est vide");
+    }
+
     return cleanedResponse;
 
   } catch (error) {
     console.error("Error generating AI response:", error);
-    toast.error("Une erreur est survenue lors de la génération de la réponse");
-    throw error;
+    if (error instanceof Error) {
+      throw new Error(error.message || "Une erreur est survenue lors de la génération de la réponse");
+    }
+    throw new Error("Une erreur inattendue est survenue");
   }
 }
