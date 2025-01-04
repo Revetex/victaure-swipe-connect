@@ -1,14 +1,15 @@
-import jsPDF from 'jspdf';
-import type { UserProfile } from '@/types/profile';
-import { pdfStyles } from './styles';
-import type { ExtendedJsPDF } from '@/types/pdf';
-import { renderHeader } from './sections/header';
-import { renderContact } from './sections/contact';
-import { renderBio } from './sections/bio';
-import { renderSkills } from './sections/skills';
-import { renderExperiences } from './sections/experiences';
-import { renderEducation } from './sections/education';
-import { renderFooter } from './sections/footer';
+import { jsPDF } from "jspdf";
+import { UserProfile } from "@/types/profile";
+import { ExtendedJsPDF } from "@/types/pdf";
+import { extendPdfDocument } from "../pdfExtensions";
+import { generateHeader } from "./sections/header";
+import { generateBio } from "./sections/bio";
+import { generateContact } from "./sections/contact";
+import { generateSkills } from "./sections/skills";
+import { generateExperiences } from "./sections/experiences";
+import { generateEducation } from "./sections/education";
+import { generateCertifications } from "./sections/certifications";
+import { generateFooter } from "./sections/footer";
 
 export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
   // Initialize PDF document
@@ -18,71 +19,34 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
     format: 'a4'
   });
 
-  // Add custom methods to the document
-  const doc = baseDoc as unknown as ExtendedJsPDF;
-  doc.setGlobalAlpha = function(alpha: number) {
-    // @ts-ignore - This is a valid internal method
-    this.internal.write(alpha + " g");
-  };
-  doc.roundedRect = function(x: number, y: number, w: number, h: number, rx: number, ry: number, style: string) {
-    const r = rx;
-    const hp = this.internal.pageSize.getHeight();
-    
-    y = hp - y - h;
-    
-    this.setLineWidth(0.5);
-    
-    const c = 0.551915024494;
-    
-    this.lines(
-      [
-        [w - 2 * r, 0],
-        [r * c, 0, r, 0, r, -r],
-        [0, -(h - 2 * r)],
-        [0, -r * c, -r, -r, -r, -r],
-        [-(w - 2 * r), 0],
-        [-r * c, 0, -r, 0, -r, r],
-        [0, h - 2 * r],
-        [0, r * c, r, r, r, r]
-      ],
-      x + r,
-      y + h - r,
-      [1, 1],
-      style
-    );
-    
-    return this;
-  };
+  // Extend the document with custom methods
+  const doc = extendPdfDocument(baseDoc);
 
   // Set document properties
   doc.setProperties({
-    title: `CV - ${profile.full_name}`,
+    title: `CV - ${profile.full_name || 'Sans nom'}`,
     subject: 'Curriculum Vitae',
-    author: profile.full_name,
-    keywords: 'cv, resume, curriculum vitae',
-    creator: 'Lovable CV Generator'
+    author: profile.full_name || 'Sans nom',
+    keywords: 'CV, Resume, Curriculum Vitae',
+    creator: 'Victaure'
   });
 
-  // Set initial y position
-  let yPos = pdfStyles.margins.top;
+  try {
+    // Generate each section
+    let currentY = await generateHeader(doc, profile);
+    currentY = await generateBio(doc, profile, currentY);
+    currentY = await generateContact(doc, profile, currentY);
+    currentY = await generateSkills(doc, profile, currentY);
+    currentY = await generateExperiences(doc, profile, currentY);
+    currentY = await generateEducation(doc, profile, currentY);
+    currentY = await generateCertifications(doc, profile, currentY);
+    await generateFooter(doc, profile, currentY);
 
-  // Set document styles
-  doc.setFont('helvetica');
-  doc.setFontSize(pdfStyles.fonts.body.size);
-  doc.setTextColor(pdfStyles.colors.text.primary);
-
-  const accentColor = pdfStyles.colors.primary;
-
-  // Render each section and update yPos
-  yPos = await renderHeader(doc, profile, yPos);
-  yPos = renderContact(doc, profile, yPos);
-  yPos = renderBio(doc, profile, yPos);
-  yPos = renderSkills(doc, profile, yPos);
-  yPos = renderExperiences(doc, profile, yPos);
-  yPos = renderEducation(doc, profile, yPos);
-  await renderFooter(doc, accentColor);
-
-  // Convert ArrayBuffer to Uint8Array before returning
-  const arrayBuffer = doc.output('arraybuffer');
-  return new Uint8Array(arrayBuffer);
+    // Convert ArrayBuffer to Uint8Array before returning
+    const arrayBuffer = doc.output('arraybuffer');
+    return new Uint8Array(arrayBuffer);
+  } catch (error) {
+    console.error('Erreur lors de la génération du CV:', error);
+    throw error;
+  }
 };
