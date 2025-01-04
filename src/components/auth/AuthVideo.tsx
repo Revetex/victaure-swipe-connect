@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { Play } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 import { Logo } from "../Logo";
 
 export function AuthVideo() {
@@ -39,7 +39,11 @@ export function AuthVideo() {
           className="p-6 rounded-full bg-purple-500/20 hover:bg-purple-500/30 transition-all duration-300 hover:scale-110 group-hover:scale-110"
           onClick={togglePlay}
         >
-          <Play className="w-12 h-12 text-white" />
+          {isPlaying ? (
+            <Pause className="w-12 h-12 text-white" />
+          ) : (
+            <Play className="w-12 h-12 text-white" />
+          )}
         </button>
       </div>
     </div>
