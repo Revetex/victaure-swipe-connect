@@ -6,7 +6,7 @@ import QRCode from "qrcode";
 
 export const generateBusinessCard = async (
   profile: UserProfile,
-  selectedStyle: StyleOption
+  style: StyleOption
 ): Promise<ExtendedJsPDF> => {
   const doc = new jsPDF({
     orientation: 'landscape',
@@ -15,7 +15,7 @@ export const generateBusinessCard = async (
   }) as ExtendedJsPDF;
 
   // Set background color based on style
-  doc.setFillColor(selectedStyle.colors.primary);
+  doc.setFillColor(style.colors.primary);
   doc.rect(0, 0, 85.6, 53.98, 'F');
 
   // Add profile photo on the left if available
@@ -29,24 +29,26 @@ export const generateBusinessCard = async (
         img.src = profile.avatar_url;
       });
       
-      const imgSize = 20;
+      // Larger photo size and better positioning
+      const imgSize = 25;
       doc.addImage(img, 'JPEG', 5, 5, imgSize, imgSize, undefined, 'MEDIUM');
     } catch (error) {
       console.error('Error loading profile image:', error);
     }
   }
 
-  // Set text color to white for better contrast
+  // Set text color and font from style
   doc.setTextColor(255, 255, 255);
+  doc.setFont(style.font || 'helvetica');
 
-  // Add name and role next to the photo
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.text(profile.full_name || '', 30, 12);
+  // Add name and role next to the photo with more spacing
+  doc.setFontSize(16);
+  doc.setFont(style.font || 'helvetica', 'bold');
+  doc.text(profile.full_name || '', 35, 15);
   
   doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.text(profile.role || '', 30, 18);
+  doc.setFont(style.font || 'helvetica', 'normal');
+  doc.text(profile.role || '', 35, 22);
 
   // Add Victaure logo in the middle
   try {
@@ -56,7 +58,8 @@ export const generateBusinessCard = async (
       logoImg.onload = resolve;
       logoImg.onerror = reject;
     });
-    doc.addImage(logoImg, 'PNG', 35, 22, 15, 15);
+    // Center the logo
+    doc.addImage(logoImg, 'PNG', 35, 25, 15, 15);
   } catch (error) {
     console.error('Error loading Victaure logo:', error);
   }

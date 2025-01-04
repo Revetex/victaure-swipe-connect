@@ -4,7 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
 
@@ -14,6 +14,7 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateHeight = () => {
@@ -22,15 +23,23 @@ export function DashboardLayout() {
       setViewportHeight(vh);
     };
 
+    const handleScroll = () => {
+      if (contentRef.current) {
+        contentRef.current.style.height = `${viewportHeight}px`;
+      }
+    };
+
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     updateHeight();
 
     return () => {
       window.removeEventListener('resize', updateHeight);
       window.removeEventListener('orientationchange', updateHeight);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [viewportHeight]);
 
   const handleRequestChat = () => {
     setCurrentPage(2);
@@ -47,8 +56,10 @@ export function DashboardLayout() {
       style={{ 
         height: isEditing ? viewportHeight : `calc(var(--vh, 1vh) * 100 - 4rem)`,
         overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        position: 'relative'
       }}
+      ref={contentRef}
     >
       <div className="dashboard-card h-full">
         {padding ? (
