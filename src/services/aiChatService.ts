@@ -127,24 +127,43 @@ ${message}
       }
     }
 
-    console.log("Received response from API");
-    const result = await response.json();
-    console.log("API Response:", result);
+    // Clone the response before reading it
+    const responseClone = response.clone();
+    
+    try {
+      console.log("Received response from API");
+      const result = await response.json();
+      console.log("API Response:", result);
 
-    // Handle both array and object response formats
-    if (Array.isArray(result) && result.length > 0) {
-      const generatedText = result[0]?.generated_text;
-      if (generatedText) {
-        return generatedText.trim();
+      // Handle both array and object response formats
+      if (Array.isArray(result) && result.length > 0) {
+        const generatedText = result[0]?.generated_text;
+        if (generatedText) {
+          return generatedText.trim();
+        }
+      } else if (result.generated_text) {
+        // Some models return the response directly in the object
+        return result.generated_text.trim();
       }
-    } else if (result.generated_text) {
-      // Some models return the response directly in the object
-      return result.generated_text.trim();
-    }
 
-    console.error("Unexpected API response format:", result);
-    toast.error("Format de réponse invalide");
-    throw new Error("Invalid response format from API");
+      // If we get here, try parsing the response as text
+      const textResponse = await responseClone.text();
+      if (textResponse) {
+        return textResponse.trim();
+      }
+
+      console.error("Unexpected API response format:", result);
+      toast.error("Format de réponse invalide");
+      throw new Error("Invalid response format from API");
+    } catch (parseError) {
+      console.error("Error parsing JSON response:", parseError);
+      // Try to get the response as text instead
+      const textResponse = await responseClone.text();
+      if (textResponse) {
+        return textResponse.trim();
+      }
+      throw parseError;
+    }
   } catch (error) {
     console.error("Error generating AI response:", error);
     // Only show toast if it's not already handled
