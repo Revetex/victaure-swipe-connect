@@ -6,7 +6,7 @@ import QRCode from "qrcode";
 
 export const generateCV = async (
   profile: UserProfile,
-  style: StyleOption
+  selectedStyle: StyleOption
 ): Promise<ExtendedJsPDF> => {
   try {
     const doc = new jsPDF({
@@ -15,14 +15,9 @@ export const generateCV = async (
       format: 'a4'
     }) as ExtendedJsPDF;
 
-    // Apply selected style colors
-    const primaryColor = style.colors.primary;
-    const secondaryColor = style.colors.secondary;
-    const textColor = style.colors.text.primary;
-
-    // Add header with primary color
-    doc.setFillColor(primaryColor);
-    doc.rect(0, 0, 210, 40, 'F');
+    // Set colors based on selected style
+    const primaryColor = selectedStyle.color;
+    const secondaryColor = selectedStyle.secondaryColor;
 
     // Add Victaure logo at the top left
     try {
@@ -32,38 +27,53 @@ export const generateCV = async (
         logoImg.onload = resolve;
         logoImg.onerror = reject;
       });
-      doc.addImage(logoImg, 'PNG', 15, 10, 20, 20);
+      doc.addImage(logoImg, 'PNG', 20, 10, 15, 15);
     } catch (error) {
       console.error('Error loading Victaure logo:', error);
     }
 
-    // Set font styles based on the selected style
-    doc.setFont(style.font || 'helvetica', 'bold');
+    // Set initial position after logo
+    let currentY = 35;
 
-    // Header with name and role
-    doc.setTextColor(255, 255, 255);
+    // Header with name and role using selected style
+    doc.setTextColor(primaryColor);
     doc.setFontSize(24);
-    doc.text(profile.full_name || 'Non défini', 45, 20);
-    
+    doc.setFont('helvetica', 'bold');
+    doc.text(profile.full_name || 'Non défini', 20, currentY);
+    currentY += 10;
+
+    doc.setTextColor(secondaryColor);
     doc.setFontSize(16);
-    doc.setFont(style.font || 'helvetica', 'normal');
-    doc.text(profile.role || 'Non défini', 45, 30);
+    doc.setFont('helvetica', 'normal');
+    doc.text(profile.role || 'Non défini', 20, currentY);
+    currentY += 15;
 
-    // Reset text color for content
-    doc.setTextColor(textColor);
-
-    let currentY = 50;
+    // Contact information
+    doc.setTextColor(51, 51, 51); // Default text color
+    doc.setFontSize(12);
+    doc.text(`Email: ${profile.email}`, 20, currentY);
+    currentY += 6;
+    
+    if (profile.phone) {
+      doc.text(`Téléphone: ${profile.phone}`, 20, currentY);
+      currentY += 6;
+    }
+    
+    if (profile.city || profile.state) {
+      doc.text(`Localisation: ${[profile.city, profile.state].filter(Boolean).join(', ')}`, 20, currentY);
+      currentY += 10;
+    }
 
     // Bio section if available
     if (profile.bio) {
-      doc.setFontSize(14);
-      doc.setFont(style.font || 'helvetica', 'bold');
       doc.setTextColor(primaryColor);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
       doc.text('À propos', 20, currentY);
       currentY += 8;
       
-      doc.setTextColor(textColor);
-      doc.setFont(style.font || 'helvetica', 'normal');
+      doc.setTextColor(51, 51, 51);
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
       const bioLines = doc.splitTextToSize(profile.bio, 170);
       doc.text(bioLines, 20, currentY);
@@ -72,38 +82,19 @@ export const generateCV = async (
 
     // Skills section
     if (profile.skills && profile.skills.length > 0) {
-      doc.setFontSize(14);
-      doc.setFont(style.font || 'helvetica', 'bold');
       doc.setTextColor(primaryColor);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
       doc.text('Compétences', 20, currentY);
       currentY += 8;
       
-      doc.setTextColor(textColor);
-      doc.setFont(style.font || 'helvetica', 'normal');
+      doc.setTextColor(51, 51, 51);
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
       const skillsText = profile.skills.join(' • ');
       const skillsLines = doc.splitTextToSize(skillsText, 170);
       doc.text(skillsLines, 20, currentY);
       currentY += skillsLines.length * 5 + 10;
-    }
-
-    // Contact information at the bottom
-    doc.setTextColor(textColor);
-    doc.setFontSize(12);
-    let contactY = 250;
-    
-    if (profile.email) {
-      doc.text(`Email: ${profile.email}`, 20, contactY);
-      contactY += 6;
-    }
-    
-    if (profile.phone) {
-      doc.text(`Téléphone: ${profile.phone}`, 20, contactY);
-      contactY += 6;
-    }
-    
-    if (profile.city || profile.state) {
-      doc.text(`Localisation: ${[profile.city, profile.state].filter(Boolean).join(', ')}`, 20, contactY);
     }
 
     // Add QR code at the bottom right
@@ -116,10 +107,9 @@ export const generateCV = async (
 
     // Footer with style-based color
     doc.setFillColor(primaryColor);
-    doc.rect(0, 287, 210, 10, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
-    doc.text('Généré avec Victaure', 105, 293, { align: 'center' });
+    doc.text('Généré avec Victaure', 105, 287, { align: 'center' });
 
     return doc;
   } catch (error) {

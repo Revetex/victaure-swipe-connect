@@ -54,50 +54,42 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
   
   html {
-    height: 100%;
-    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     background-image: url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
     min-height: 100vh;
-    height: 100vh;
-    overflow: hidden;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: none;
-  }
-
-  /* Improved scrollbar styling */
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-  }
-
-  *::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
   }
 
   /* Fix for iOS Safari viewport height */
   @supports (-webkit-touch-callout: none) {
     .min-h-screen {
       min-height: -webkit-fill-available;
+    }
+  }
+
+  /* Fix for Safari flexbox gap */
+  @supports not (gap: 1rem) {
+    .gap-4 > * + * {
+      margin-left: 1rem;
+    }
+    .flex-col.gap-4 > * + * {
+      margin-top: 1rem;
+      margin-left: 0;
     }
   }
 
@@ -109,23 +101,6 @@
       min-height: 44px;
       min-width: 44px;
       padding: 0.5rem;
-    }
-
-    input,
-    select,
-    textarea {
-      font-size: 16px !important;
-    }
-  }
-
-  /* Safe area insets for modern iOS devices */
-  @supports (padding: max(0px)) {
-    .fixed-bottom {
-      padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-    }
-
-    .has-safe-area {
-      padding-bottom: env(safe-area-inset-bottom);
     }
   }
 }
@@ -194,4 +169,3 @@
 .font-lato {
   font-family: 'Lato', sans-serif !important;
 }
-

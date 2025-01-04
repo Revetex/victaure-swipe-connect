@@ -8,13 +8,13 @@ interface DashboardContainerProps {
 
 export function DashboardContainer({ children, containerVariants }: DashboardContainerProps) {
   return (
-    <div className="relative min-h-screen max-h-screen overflow-hidden overscroll-none">
+    <div className="relative min-h-screen">
       <div className="fixed inset-0 bg-dashboard-pattern bg-cover bg-center bg-fixed" />
       <div className="fixed inset-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" />
-      <main className="relative h-screen overflow-hidden">
-        <div className="container mx-auto px-4 h-full">
+      <main className="flex-1 relative">
+        <div className="container mx-auto px-4 h-[calc(100vh-4rem)] overflow-y-auto">
           <motion.div 
-            className="max-w-[1200px] mx-auto h-full flex flex-col"
+            className="max-w-[1200px] mx-auto h-full"
             variants={containerVariants}
             initial="hidden"
             animate="visible"

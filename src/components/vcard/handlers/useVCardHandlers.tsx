@@ -105,11 +105,11 @@ export function useVCardHandlers() {
     }
   };
 
-  const handleDownloadCVPDF = async (profile: UserProfile) => {
+  const handleDownloadCVPDF = async (profile: UserProfile, style: StyleOption) => {
     if (!profile) return;
     
     try {
-      const doc = await generateCV(profile);
+      const doc = await generateCV(profile, style);
       doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
       
       toast({

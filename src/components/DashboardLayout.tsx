@@ -4,7 +4,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { VCard } from "@/components/VCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
 
@@ -13,17 +13,19 @@ export function DashboardLayout() {
   const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
+  // Handle iOS Safari viewport height
   useEffect(() => {
     const updateHeight = () => {
-      const vh = window.innerHeight;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
+      setViewportHeight(window.innerHeight);
     };
 
-    updateHeight();
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
+
+    // Initial trigger for iOS Safari
+    setTimeout(updateHeight, 100);
 
     return () => {
       window.removeEventListener('resize', updateHeight);
@@ -42,21 +44,21 @@ export function DashboardLayout() {
   ) => (
     <motion.div 
       variants={itemVariants} 
-      className={`h-[calc(100vh-4rem)] ${className}`}
+      className={`transform transition-all duration-300 ${className}`}
       style={{ 
-        height: isEditing ? '100vh' : 'calc(var(--vh, 1vh) * 100 - 4rem)',
-        WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'contain',
-        maxHeight: isEditing ? '100vh' : 'calc(var(--vh, 1vh) * 100 - 4rem)'
+        maxHeight: isEditing ? viewportHeight : `calc(${viewportHeight}px - 4rem)`,
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch'
       }}
-      ref={contentRef}
     >
       <div className="dashboard-card h-full">
         {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto overscroll-contain">
+          <div className="p-3 sm:p-4 md:p-6 h-full">
             {component}
           </div>
-        ) : component}
+        ) : (
+          component
+        )}
       </div>
     </motion.div>
   );
@@ -67,10 +69,9 @@ export function DashboardLayout() {
         <div 
           className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm' : 'relative'}`}
           style={{ 
-            height: isEditing ? '100vh' : 'auto',
+            height: isEditing ? viewportHeight : 'auto',
             overflowY: isEditing ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch',
-            overscrollBehavior: 'contain'
+            WebkitOverflowScrolling: 'touch'
           }}
         >
           {renderDashboardSection(

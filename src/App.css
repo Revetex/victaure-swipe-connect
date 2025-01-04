@@ -73,4 +73,5 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
   height: 100%;
+  overflow-y: auto;
 }
