@@ -5,7 +5,12 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 
 function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show nothing while checking auth status
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen w-full overflow-y-auto">
@@ -22,8 +27,17 @@ function App() {
           } 
         />
         
-        {/* Auth route */}
-        <Route path="/auth" element={<Auth />} />
+        {/* Auth route - redirect to dashboard if already authenticated */}
+        <Route 
+          path="/auth" 
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Auth />
+            )
+          } 
+        />
         
         {/* Protected dashboard route */}
         <Route

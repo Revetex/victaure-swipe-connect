@@ -7,35 +7,24 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
 import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    // Check current session
+    const checkSession = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
-          toast.error("Erreur de vérification de session");
           return;
         }
 
-        if (session) {
-          const { data: { user }, error: userError } = await supabase.auth.getUser();
-          
-          if (userError) {
-            console.error("User verification error:", userError);
-            await supabase.auth.signOut();
-            return;
-          }
-
-          if (user) {
-            console.log("User already logged in, redirecting to dashboard");
-            navigate("/dashboard", { replace: true });
-          }
+        if (session?.user) {
+          console.log("User already logged in, redirecting to dashboard");
+          navigate("/dashboard", { replace: true });
         }
       } catch (error) {
         console.error("Auth check error:", error);
@@ -43,8 +32,9 @@ export default function Auth() {
       }
     };
 
-    checkAuth();
+    checkSession();
 
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       

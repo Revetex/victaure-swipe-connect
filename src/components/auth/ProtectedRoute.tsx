@@ -14,7 +14,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       toast.error("Veuillez vous connecter pour accéder à cette page");
-      navigate("/auth");
+      navigate("/auth", { replace: true });
     }
   }, [isLoading, isAuthenticated, navigate]);
 
