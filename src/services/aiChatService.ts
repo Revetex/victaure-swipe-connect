@@ -35,27 +35,13 @@ export async function generateAIResponse(message: string, profile?: any) {
   try {
     console.log("Starting AI response generation...");
     
-    const { data, error: secretError } = await supabase
+    const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
     
-    if (secretError) {
+    if (secretError || !secretData) {
       console.error("Error fetching API token:", secretError);
-      throw new Error("Impossible de récupérer le token API. Veuillez vérifier la configuration dans Supabase.");
+      throw new Error("Impossible de récupérer le token API");
     }
-
-    if (!data) {
-      console.error("No data returned from get_secret");
-      throw new Error("Aucune donnée retournée lors de la récupération du token API");
-    }
-
-    const secretValue = typeof data === 'string' ? data : data[0]?.secret;
-
-    if (!secretValue || typeof secretValue !== 'string' || secretValue.trim() === '') {
-      console.error("Invalid or empty API token");
-      throw new Error("Le token API Hugging Face n'est pas configuré correctement");
-    }
-
-    console.log("API token retrieved successfully");
 
     const contextPrompt = profile ? 
       `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
@@ -74,7 +60,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${secretValue}`,
+          "Authorization": `Bearer ${secretData}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -102,8 +88,6 @@ ${message}
       
       if (response.status === 503) {
         throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
-      } else if (response.status === 400 && errorData.error?.includes("token seems invalid")) {
-        throw new Error("Le token d'API Hugging Face n'est pas valide. Veuillez vérifier votre configuration.");
       } else {
         throw new Error(`Erreur API Hugging Face: ${errorData.error || 'Erreur inconnue'}`);
       }
