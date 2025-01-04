@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
-  const { data: stats, isLoading, error } = useDashboardStats();
+  const { data: stats, isLoading, error, refetch } = useDashboardStats();
   const navigate = useNavigate();
 
   // Fonction pour gérer les erreurs
@@ -30,15 +30,17 @@ export function Dashboard() {
       const { data: jobsData, error: jobsError } = await supabase
         .from('jobs')
         .select('*')
-        .eq('employer_id', user.id);
+        .eq('employer_id', user.id)
+        .single();
 
       if (jobsError) throw jobsError;
 
+      // Create CSV content once
       const csvContent = "data:text/csv;charset=utf-8," + 
         "Titre,Description,Budget,Statut,Date de création\n" +
-        jobsData.map(job => 
+        (jobsData ? [jobsData].map(job => 
           `${job.title},${job.description},${job.budget},${job.status},${job.created_at}`
-        ).join("\n");
+        ).join("\n") : "");
 
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
@@ -57,7 +59,7 @@ export function Dashboard() {
   // Fonction pour rafraîchir les données
   const handleRefresh = async () => {
     try {
-      await useDashboardStats();
+      await refetch();
       toast.success("Données actualisées !");
     } catch (error) {
       handleError(error as Error);

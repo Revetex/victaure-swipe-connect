@@ -7,7 +7,7 @@ export function useDashboardStats() {
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user) throw new Error("User not authenticated");
 
       const [jobsResponse, messagesResponse] = await Promise.all([
         supabase
@@ -26,15 +26,17 @@ export function useDashboardStats() {
         .from('matches')
         .select('id')
         .eq('employer_id', user.id)
-        .eq('status', 'accepted');
+        .eq('status', 'accepted')
+        .single();
 
       const { data: payments } = await supabase
         .from('payments')
         .select('amount')
         .eq('status', 'pending')
-        .in('match_id', matches?.map(match => match.id) || []);
+        .in('match_id', matches ? [matches.id] : [])
+        .single();
 
-      const pendingAmount = payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
+      const pendingAmount = payments?.amount || 0;
 
       return {
         activeJobs: jobsResponse.count || 0,
@@ -42,6 +44,8 @@ export function useDashboardStats() {
         pendingPayments: `CAD ${pendingAmount.toLocaleString()}`,
         nextJob: 'Dans 2 jours'
       };
-    }
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 }
