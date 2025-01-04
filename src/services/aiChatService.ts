@@ -4,26 +4,35 @@ export async function saveMessage(message: any) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("User not authenticated");
 
-  return await supabase.from("ai_chat_messages").insert([{ ...message, user_id: user.id }]);
+  const { error } = await supabase
+    .from("ai_chat_messages")
+    .insert([{
+      id: message.id,
+      content: message.content,
+      sender: message.sender,
+      user_id: user.id,
+      created_at: message.created_at
+    }]);
+
+  if (error) throw error;
 }
 
 export async function loadMessages() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("ai_chat_messages")
-    .select("*")
+    .select("id, content, sender, created_at, user_id")
     .eq("user_id", user.id)
     .order("created_at", { ascending: true });
 
+  if (error) throw error;
   return data || [];
 }
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
-    console.log("Generating AI response...");
-    
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
     
@@ -34,7 +43,6 @@ export async function generateAIResponse(message: string, profile?: any) {
 
     const API_TOKEN = secretData;
 
-    // Include profile context if provided
     const contextPrompt = profile ? 
       `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
     
@@ -74,13 +82,13 @@ ${message}
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Hugging Face API Error Response:", errorText);
-      console.error("Response status:", response.status);
-      console.error("Response headers:", Object.fromEntries(response.headers.entries()));
+      const errorData = await response.json();
+      console.error("Hugging Face API Error Response:", errorData);
       
       if (response.status === 503) {
         throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
+      } else if (errorData.error && errorData.error.includes("token seems invalid")) {
+        throw new Error("Le token d'API n'est pas valide. Veuillez vérifier votre configuration.");
       } else {
         throw new Error("Une erreur est survenue lors de la communication avec l'API");
       }

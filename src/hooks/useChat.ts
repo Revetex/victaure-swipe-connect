@@ -75,7 +75,10 @@ export function useChat(): ChatState & ChatActions {
       };
 
       setMessages(prev => [...prev, newUserMessage]);
-      await saveMessage(newUserMessage);
+      await saveMessage({
+        ...newUserMessage,
+        created_at: newUserMessage.timestamp,
+      });
       setInputMessage("");
       setIsThinking(true);
 
@@ -110,7 +113,10 @@ export function useChat(): ChatState & ChatActions {
           return [...filtered, newAssistantMessage];
         });
 
-        await saveMessage(newAssistantMessage);
+        await saveMessage({
+          ...newAssistantMessage,
+          created_at: newAssistantMessage.timestamp,
+        });
 
       } catch (error) {
         console.error("Error in AI response generation:", error);
@@ -139,6 +145,7 @@ export function useChat(): ChatState & ChatActions {
       }
 
       setDeletedMessages(messages);
+      setMessages([]);
 
       const { error } = await supabase
         .from('ai_chat_messages')
@@ -147,7 +154,6 @@ export function useChat(): ChatState & ChatActions {
 
       if (error) throw error;
 
-      setMessages([]);
       toast.success("Conversation effacée avec succès");
     } catch (error) {
       console.error('Erreur dans clearChat:', error);
@@ -164,7 +170,10 @@ export function useChat(): ChatState & ChatActions {
 
     try {
       for (const message of deletedMessages) {
-        await saveMessage(message);
+        await saveMessage({
+          ...message,
+          created_at: message.timestamp,
+        });
       }
       setMessages(deletedMessages);
       setDeletedMessages([]);
