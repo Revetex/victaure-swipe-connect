@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export async function saveMessage(message: any) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -15,20 +16,6 @@ export async function saveMessage(message: any) {
     }]);
 
   if (error) throw error;
-}
-
-export async function loadMessages() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-
-  const { data, error } = await supabase
-    .from("ai_chat_messages")
-    .select("id, content, sender, created_at, user_id")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: true });
-
-  if (error) throw error;
-  return data || [];
 }
 
 export async function generateAIResponse(message: string, profile?: any) {
@@ -55,12 +42,13 @@ export async function generateAIResponse(message: string, profile?: any) {
     ${contextPrompt}`;
 
     console.log("Making request to Hugging Face API...");
+    
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${secretData}`,
+          "Authorization": `Bearer ${secretData.secret}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
