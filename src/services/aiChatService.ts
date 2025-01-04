@@ -57,7 +57,6 @@ export async function saveMessage(message: Message) {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
-    // First, get the API token from Supabase secrets
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
@@ -104,7 +103,6 @@ ${message}
       }
     );
 
-    let result;
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Hugging Face API Error:", errorText);
@@ -126,13 +124,8 @@ ${message}
       throw new Error(`API Error (${response.status}): ${errorText}`);
     }
 
-    try {
-      result = await response.json();
-    } catch (e) {
-      console.error("Error parsing response:", e);
-      toast.error("Erreur lors de la lecture de la réponse");
-      throw new Error("Failed to parse API response");
-    }
+    // Store the response data immediately
+    const result = await response.json();
     
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text;
