@@ -21,9 +21,11 @@ export function AuthVideo() {
     <div className="relative rounded-xl overflow-hidden group bg-gray-900">
       <video
         ref={videoRef}
-        className="w-full h-full object-cover opacity-90"
+        className="w-full h-full object-cover"
         onEnded={() => setIsPlaying(false)}
-        poster="/lovable-uploads/decouvrez-victaure-en-video.png"
+        autoPlay
+        muted
+        loop
       >
         <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
         Votre navigateur ne supporte pas la lecture de vidéos.
@@ -34,7 +36,7 @@ export function AuthVideo() {
         <Logo size="md" className="absolute top-4 right-4 w-8 h-8 text-white" />
         
         <button
-          className="p-6 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 transition-all duration-300 hover:scale-110 group-hover:scale-110"
+          className="p-6 rounded-full bg-purple-500/20 hover:bg-purple-500/30 transition-all duration-300 hover:scale-110 group-hover:scale-110"
           onClick={togglePlay}
         >
           <Play className="w-12 h-12 text-white" />

@@ -15,14 +15,14 @@ export const AuthForm = memo(function AuthForm() {
         variables: {
           default: {
             colors: {
-              brand: '#0ea5e9',
-              brandAccent: '#0284c7',
-              inputBackground: theme === 'dark' ? 'rgb(17, 17, 17)' : 'white',
-              inputText: theme === 'dark' ? 'rgb(229, 231, 235)' : 'rgb(75, 85, 99)',
-              inputPlaceholder: theme === 'dark' ? 'rgb(156, 163, 175, 0.5)' : 'rgb(156, 163, 175)',
-              inputBorder: theme === 'dark' ? 'rgb(64, 64, 64)' : 'rgb(229, 231, 235)',
-              inputBorderHover: theme === 'dark' ? 'rgb(82, 82, 82)' : 'rgb(209, 213, 219)',
-              inputBorderFocus: '#0ea5e9',
+              brand: '#8B5CF6',
+              brandAccent: '#7E69AB',
+              inputBackground: theme === 'dark' ? '#1A1F2C' : 'white',
+              inputText: theme === 'dark' ? '#F1F1F1' : 'rgb(75, 85, 99)',
+              inputPlaceholder: theme === 'dark' ? 'rgb(156, 163, 175)' : 'rgb(156, 163, 175)',
+              inputBorder: theme === 'dark' ? '#2D3748' : 'rgb(229, 231, 235)',
+              inputBorderHover: theme === 'dark' ? '#4A5568' : 'rgb(209, 213, 219)',
+              inputBorderFocus: '#9B87F5',
             },
             space: {
               inputPadding: '1rem',
@@ -45,12 +45,12 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
         className: {
-          button: "w-full bg-sky-500 hover:bg-sky-600 text-white transition-colors",
-          input: `w-full border focus:border-sky-500 focus:ring-1 focus:ring-sky-500 
-                 ${theme === 'dark' ? 'bg-neutral-900 border-neutral-700 text-gray-200' : 'bg-white border-gray-200 text-gray-700'}`,
+          button: "w-full bg-purple-500 hover:bg-purple-600 text-white transition-colors",
+          input: `w-full border focus:border-purple-500 focus:ring-1 focus:ring-purple-500 
+                 ${theme === 'dark' ? 'bg-gray-900 border-gray-700 text-gray-200' : 'bg-white border-gray-200 text-gray-700'}`,
           label: "text-gray-600 dark:text-gray-300 font-medium",
           message: "text-sm text-gray-500 dark:text-gray-400",
-          anchor: "text-sky-500 hover:text-sky-600 no-underline hover:underline",
+          anchor: "text-purple-500 hover:text-purple-600 no-underline hover:underline",
         },
       }}
       providers={[]}
