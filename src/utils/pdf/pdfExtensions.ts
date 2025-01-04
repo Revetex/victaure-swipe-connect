@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import { ExtendedJsPDF } from "@/types/pdf";
 
 export function extendPdfDocument(baseDoc: jsPDF): ExtendedJsPDF {
-  const doc = baseDoc as unknown as ExtendedJsPDF;
+  const doc = baseDoc as ExtendedJsPDF;
   
   doc.setGlobalAlpha = function(alpha: number) {
     // @ts-ignore - This is a valid internal method
@@ -39,8 +39,11 @@ export function extendPdfDocument(baseDoc: jsPDF): ExtendedJsPDF {
     return this;
   };
 
-  doc.addSpace = function(currentY: number, space: number) {
-    return currentY + space;
+  doc.addSpace = function(space: number): number {
+    const currentY = this.internal.getCurrentPageInfo().pageNumber === 1 
+      ? this.internal.getCurrentPageInfo().pageNumber * space
+      : this.internal.getCurrentPageInfo().pageNumber * space + 10;
+    return currentY;
   };
 
   return doc;

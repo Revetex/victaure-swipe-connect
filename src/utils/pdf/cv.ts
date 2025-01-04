@@ -1,50 +1,66 @@
 import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
 import { ExtendedJsPDF } from "@/types/pdf";
+import { pdfColors } from './colors';
 import { extendPdfDocument } from "./pdfExtensions";
-import { renderHeader } from "./cv/sections/header";
-import { renderBio } from "./cv/sections/bio";
-import { renderContact } from "./cv/sections/contact";
-import { renderSkills } from "./cv/sections/skills";
-import { renderExperiences } from "./cv/sections/experiences";
-import { renderEducation } from "./cv/sections/education";
-import { renderCertifications } from "./cv/sections/certifications";
-import { renderFooter } from "./cv/sections/footer";
 
 export const generateCV = async (profile: UserProfile): Promise<ExtendedJsPDF> => {
-  const doc = extendPdfDocument(new jsPDF());
+  const doc = extendPdfDocument(new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+  }));
+
   let currentY = 10;
 
   // Header section
-  currentY = await renderHeader(doc, profile, currentY);
-  currentY = doc.addSpace(currentY, 10);
+  doc.setFontSize(24);
+  doc.setFont('helvetica', 'bold');
+  doc.text(profile.full_name || 'No Name', 20, currentY);
+  currentY = doc.addSpace(10);
 
-  // Bio section
-  currentY = await renderBio(doc, profile, currentY);
-  currentY = doc.addSpace(currentY, 10);
+  // Role
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'normal');
+  doc.text(profile.role || 'No Role', 20, currentY);
+  currentY = doc.addSpace(10);
 
-  // Contact section
-  currentY = await renderContact(doc, profile, currentY);
-  currentY = doc.addSpace(currentY, 10);
+  // Bio
+  if (profile.bio) {
+    doc.setFontSize(12);
+    const bioLines = doc.splitTextToSize(profile.bio, 170);
+    doc.text(bioLines, 20, currentY);
+    currentY = doc.addSpace(bioLines.length * 5 + 10);
+  }
 
-  // Skills section
-  currentY = await renderSkills(doc, profile, currentY);
-  currentY = doc.addSpace(currentY, 10);
+  // Contact Info
+  doc.setFontSize(12);
+  doc.text(`Email: ${profile.email}`, 20, currentY);
+  currentY = doc.addSpace(5);
+  if (profile.phone) {
+    doc.text(`Phone: ${profile.phone}`, 20, currentY);
+    currentY = doc.addSpace(5);
+  }
 
-  // Experience section
-  currentY = await renderExperiences(doc, profile, currentY);
-  currentY = doc.addSpace(currentY, 10);
-
-  // Education section
-  currentY = await renderEducation(doc, profile, currentY);
-  currentY = doc.addSpace(currentY, 10);
-
-  // Certifications section
-  currentY = await renderCertifications(doc, profile, currentY);
-  currentY = doc.addSpace(currentY, 10);
+  // Skills
+  if (profile.skills && profile.skills.length > 0) {
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Skills', 20, currentY);
+    currentY = doc.addSpace(5);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    const skillsText = profile.skills.join(', ');
+    const skillsLines = doc.splitTextToSize(skillsText, 170);
+    doc.text(skillsLines, 20, currentY);
+    currentY = doc.addSpace(skillsLines.length * 5 + 10);
+  }
 
   // Footer
-  renderFooter(doc, profile, currentY);
+  doc.setTextColor(pdfColors.text.muted);
+  doc.setFontSize(10);
+  doc.text('Generated with Victaure', 105, 287, { align: 'center' });
 
   return doc;
 };
