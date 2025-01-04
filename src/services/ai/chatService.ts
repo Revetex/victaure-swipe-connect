@@ -5,20 +5,24 @@ import { handleChatError } from "./utils/errorHandler";
 import type { ChatContext, ApiResponse, Message } from "./types/chatTypes";
 
 export async function getHuggingFaceApiKey(): Promise<string> {
-  const { data: secretData, error } = await supabase
-    .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
+  try {
+    const { data, error } = await supabase
+      .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
-  if (error || !secretData) {
-    console.error("Error retrieving API key:", error);
-    throw new Error("Could not retrieve the API token");
+    if (error) {
+      console.error("Error retrieving API key:", error);
+      throw new Error("Could not retrieve the API token");
+    }
+
+    if (!data || !data[0]?.secret) {
+      throw new Error("API key not found. Please configure your Hugging Face API key in the project settings.");
+    }
+
+    return data[0].secret;
+  } catch (error) {
+    console.error("Error in getHuggingFaceApiKey:", error);
+    throw error;
   }
-
-  const secret = Array.isArray(secretData) && secretData[0]?.secret;
-  if (!secret) {
-    throw new Error("Invalid secret format");
-  }
-
-  return secret;
 }
 
 export async function loadMessages(): Promise<Message[]> {
@@ -72,10 +76,15 @@ export async function deleteMessages(messageIds: string[]): Promise<void> {
 export async function generateAIResponse(message: string, profile?: any): Promise<string> {
   try {
     const apiKey = await getHuggingFaceApiKey();
+    if (!apiKey) {
+      throw new Error("API key not configured");
+    }
+
     validateApiKey(apiKey);
 
     const prompt = `<|im_start|>system\n${SYSTEM_PROMPT}\n${profile ? `Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : ''}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
 
+    console.log("Sending request to Hugging Face API...");
     const response = await fetch(HUGGING_FACE_CONFIG.endpoint, {
       headers: { 
         ...HUGGING_FACE_CONFIG.defaultHeaders,
@@ -88,9 +97,11 @@ export async function generateAIResponse(message: string, profile?: any): Promis
       }),
     });
 
+    console.log("Response status:", response.status);
     validateApiResponse(response);
 
     const result = await response.json() as ApiResponse;
+    console.log("API Response:", result);
     
     if (!result.generated_text) {
       throw new Error("Invalid response format from API");
@@ -98,6 +109,7 @@ export async function generateAIResponse(message: string, profile?: any): Promis
 
     return result.generated_text.trim();
   } catch (error) {
+    console.error("Error in generateAIResponse:", error);
     return handleChatError(error);
   }
 }

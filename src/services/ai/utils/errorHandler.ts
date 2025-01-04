@@ -12,6 +12,8 @@ export function handleChatError(error: unknown): never {
   
   if (error instanceof ChatError) {
     toast.error(error.message);
+  } else if (error instanceof Error) {
+    toast.error(error.message);
   } else {
     toast.error("Une erreur est survenue lors de la communication avec l'assistant");
   }
