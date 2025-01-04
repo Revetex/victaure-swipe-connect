@@ -54,29 +54,23 @@
 @layer base {
   * {
     @apply border-border;
-    -webkit-tap-highlight-color: transparent;
   }
   
   html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    height: -webkit-fill-available;
-    overflow: hidden;
+    height: 100%;
+    overflow-y: auto;
   }
   
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground;
     background-image: url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
     min-height: 100vh;
-    min-height: -webkit-fill-available;
-    min-height: calc(var(--vh, 1vh) * 100);
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
+    height: 100%;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -103,7 +97,6 @@
   @supports (-webkit-touch-callout: none) {
     .min-h-screen {
       min-height: -webkit-fill-available;
-      min-height: calc(var(--vh, 1vh) * 100);
     }
   }
 

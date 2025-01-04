@@ -18,7 +18,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen w-full overflow-y-auto">
+    <div className="min-h-screen w-full">
       <Routes>
         {/* Redirect root to dashboard if authenticated, otherwise to auth */}
         <Route 
