@@ -30,7 +30,6 @@ export function VCardActions({
 
     try {
       await generateVCardPDF(profile, selectedStyle.color);
-      toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error("Erreur lors de la génération du PDF. Veuillez réessayer.");
