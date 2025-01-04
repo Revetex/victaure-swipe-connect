@@ -1,4 +1,4 @@
-import { CreditCard, Settings, MessageSquare, ListTodo, StickyNote } from "lucide-react";
+import { UserCircle, MessageSquare, BriefcaseIcon } from "lucide-react";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -9,15 +9,11 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
   const getPageIcon = (page: number) => {
     switch (page) {
       case 1:
-        return <MessageSquare className="h-4 w-4" />;
+        return <UserCircle className="h-4 w-4" />;
       case 2:
-        return <ListTodo className="h-4 w-4" />;
+        return <MessageSquare className="h-4 w-4" />;
       case 3:
-        return <StickyNote className="h-4 w-4" />;
-      case 4:
-        return <CreditCard className="h-4 w-4" />;
-      case 5:
-        return <Settings className="h-4 w-4" />;
+        return <BriefcaseIcon className="h-4 w-4" />;
       default:
         return null;
     }
@@ -26,15 +22,11 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
   const getPageName = (page: number) => {
     switch (page) {
       case 1:
-        return "Messages";
+        return "Profil";
       case 2:
-        return "Tâches";
+        return "M. Victaure";
       case 3:
-        return "Notes";
-      case 4:
-        return "Paiements";
-      case 5:
-        return "Paramètres";
+        return "Emplois";
       default:
         return "";
     }
@@ -42,12 +34,12 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
 
   return (
     <div className="container mx-auto px-4">
-      <div className="flex justify-between gap-2">
-        {[1, 2, 3, 4, 5].map((page) => (
+      <div className="flex justify-center gap-4">
+        {[1, 2, 3].map((page) => (
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
               currentPage === page 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-background/80 hover:bg-background/90 backdrop-blur-sm'

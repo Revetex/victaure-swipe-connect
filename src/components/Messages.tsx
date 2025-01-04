@@ -3,8 +3,6 @@ import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
 import { MessagesTabs } from "./messages/MessagesTabs";
 import { MessagesContent } from "./messages/MessagesContent";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export function Messages() {
   const {
@@ -32,21 +30,6 @@ export function Messages() {
     deleteNote
   } = useNotes();
 
-  // Fetch scraped jobs
-  const { data: scrapedJobs, isLoading: isLoadingJobs } = useQuery({
-    queryKey: ['scraped-jobs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('scraped_jobs')
-        .select('*')
-        .order('posted_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const colors = [
     { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
     { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
@@ -60,7 +43,7 @@ export function Messages() {
 
   return (
     <Tabs defaultValue="messages" className="h-full flex flex-col">
-      <MessagesTabs scrapedJobsCount={scrapedJobs?.length || 0} />
+      <MessagesTabs />
       <MessagesContent
         todos={todos}
         notes={notes}
@@ -76,13 +59,12 @@ export function Messages() {
         onTimeChange={setSelectedTime}
         onColorChange={setSelectedColor}
         onAllDayChange={setAllDay}
-        onAdd={addTodo}
+        onAddTodo={addTodo}
+        onAddNote={addNote}
         onToggleTodo={toggleTodo}
         onDeleteTodo={deleteTodo}
         onDeleteNote={deleteNote}
         colors={colors}
-        scrapedJobs={scrapedJobs}
-        isLoadingJobs={isLoadingJobs}
       />
     </Tabs>
   );
