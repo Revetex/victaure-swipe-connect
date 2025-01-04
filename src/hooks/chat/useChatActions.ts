@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Message } from "@/types/chat/messageTypes";
-import { generateAIResponse, saveMessage, deleteMessages } from "@/services/ai/service";
+import { generateAIResponse, saveMessage, deleteAllMessages } from "@/services/ai/service";
 import { toast } from "sonner";
 
 export function useChatActions(
@@ -22,8 +22,8 @@ export function useChatActions(
         timestamp: new Date(),
       };
 
-      setMessages([...messages, userMessage]);
       await saveMessage(userMessage);
+      setMessages([...messages, userMessage]);
       setInputMessage("");
 
       const thinkingMessage: Message = {
@@ -38,7 +38,7 @@ export function useChatActions(
       setIsThinking(true);
 
       try {
-        const aiResponse = await generateAIResponse(message, profile);
+        const aiResponse = await generateAIResponse(message);
         const assistantMessage: Message = {
           id: uuidv4(),
           content: aiResponse,
@@ -46,8 +46,8 @@ export function useChatActions(
           timestamp: new Date(),
         };
 
-        setMessages([...messages, userMessage, assistantMessage]);
         await saveMessage(assistantMessage);
+        setMessages([...messages, userMessage, assistantMessage]);
       } catch (error) {
         console.error("Error generating AI response:", error);
         toast.error("Erreur lors de la génération de la réponse");
@@ -63,14 +63,8 @@ export function useChatActions(
 
   const clearChat = async () => {
     try {
-      // Store current messages before clearing
       setDeletedMessages(messages);
-      
-      // Delete messages from database
-      const messageIds = messages.map(msg => msg.id);
-      await deleteMessages(messageIds);
-      
-      // Clear messages from state
+      await deleteAllMessages();
       setMessages([]);
       toast.success("Conversation effacée");
     } catch (error) {
@@ -82,14 +76,10 @@ export function useChatActions(
   const restoreChat = async () => {
     try {
       if (deletedMessages.length > 0) {
-        // Restore messages in state
-        setMessages(deletedMessages);
-        
-        // Save restored messages to database
         for (const message of deletedMessages) {
           await saveMessage(message);
         }
-        
+        setMessages(deletedMessages);
         setDeletedMessages([]);
         toast.success("Conversation restaurée");
       }

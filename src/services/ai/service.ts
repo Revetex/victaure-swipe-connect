@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from 'uuid';
 
 async function getHuggingFaceApiKey(): Promise<string> {
   const { data, error } = await supabase
@@ -8,14 +9,14 @@ async function getHuggingFaceApiKey(): Promise<string> {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
 
-  if (error || !data?.secret) {
+  if (error || !data) {
     throw new Error('Failed to retrieve API key');
   }
 
   return data.secret;
 }
 
-export async function generateAIResponse(message: string): Promise<string> {
+export async function generateAIResponse(message: string, profile?: any): Promise<string> {
   try {
     const apiKey = await getHuggingFaceApiKey();
     
@@ -47,12 +48,12 @@ export async function generateAIResponse(message: string): Promise<string> {
     const data = await response.json();
     return data[0]?.generated_text || 'Je suis désolé, je ne peux pas répondre pour le moment.';
   } catch (error) {
-    toast.error("Erreur lors de la génération de la réponse");
+    console.error('Error generating AI response:', error);
     throw error;
   }
 }
 
-export async function saveMessage(content: string, sender: string): Promise<void> {
+export async function saveMessage(message: Message): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
@@ -62,18 +63,19 @@ export async function saveMessage(content: string, sender: string): Promise<void
   const { error } = await supabase
     .from('ai_chat_messages')
     .insert({
+      id: message.id,
       user_id: user.id,
-      content,
-      sender
+      content: message.content,
+      sender: message.sender
     });
 
   if (error) {
-    toast.error("Erreur lors de la sauvegarde du message");
+    console.error('Error saving message:', error);
     throw error;
   }
 }
 
-export async function loadMessages() {
+export async function loadMessages(): Promise<Message[]> {
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
@@ -87,9 +89,30 @@ export async function loadMessages() {
     .order('created_at', { ascending: true });
 
   if (error) {
-    toast.error("Erreur lors du chargement des messages");
+    console.error('Error loading messages:', error);
     throw error;
   }
 
-  return data;
+  return data.map(msg => ({
+    ...msg,
+    timestamp: new Date(msg.created_at)
+  }));
+}
+
+export async function deleteAllMessages(): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
+  const { error } = await supabase
+    .from('ai_chat_messages')
+    .delete()
+    .eq('user_id', user.id);
+
+  if (error) {
+    console.error('Error deleting messages:', error);
+    throw error;
+  }
 }
