@@ -10,7 +10,7 @@ export function DashboardContainer({ children, containerVariants }: DashboardCon
   return (
     <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
       <main className="flex-1 relative">
-        <div className="container mx-auto px-4 py-6 pb-24 h-[calc(100vh-8rem)] overflow-y-auto">
+        <div className="container mx-auto px-4 py-6 pb-28 h-[calc(100vh-2rem)] overflow-y-auto">
           <motion.div 
             className="max-w-[1200px] mx-auto h-full"
             variants={containerVariants}
