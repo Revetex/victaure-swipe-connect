@@ -20,7 +20,13 @@ export async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error("Could not retrieve the API token");
     }
 
-    return (secretData as unknown) as string;
+    // Extract the secret string from the response
+    const secret = Array.isArray(secretData) && secretData[0]?.secret;
+    if (!secret) {
+      throw new Error("Invalid secret format");
+    }
+
+    return secret;
   } catch (error) {
     console.error("Error in getHuggingFaceApiKey:", error);
     throw error;

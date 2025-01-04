@@ -1,3 +1,4 @@
+<lov-code>
 import { supabase } from "@/integrations/supabase/client";
 import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config/huggingFaceConfig";
 import { validateApiKey, validateApiResponse } from "./utils/apiValidator";
@@ -12,7 +13,13 @@ export async function getHuggingFaceApiKey(): Promise<string> {
     throw new Error("Could not retrieve the API token");
   }
 
-  return (secretData as unknown) as string;
+  // Extract the secret string from the response
+  const secret = Array.isArray(secretData) && secretData[0]?.secret;
+  if (!secret) {
+    throw new Error("Invalid secret format");
+  }
+
+  return secret;
 }
 
 export async function saveMessage(message: Message): Promise<void> {
@@ -49,30 +56,4 @@ export async function generateAIResponse(message: string, profile?: any): Promis
     const apiKey = await getHuggingFaceApiKey();
     validateApiKey(apiKey);
 
-    const prompt = `<|im_start|>system\n${SYSTEM_PROMPT}\n${profile ? `User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : ''}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
-
-    const response = await fetch(HUGGING_FACE_CONFIG.endpoint, {
-      headers: { 
-        ...HUGGING_FACE_CONFIG.defaultHeaders,
-        Authorization: `Bearer ${apiKey}`
-      },
-      method: "POST",
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: HUGGING_FACE_CONFIG.modelParams
-      }),
-    });
-
-    validateApiResponse(response);
-
-    const result = await response.json() as ApiResponse;
-    
-    if (!result.generated_text) {
-      throw new Error("Invalid response format from API");
-    }
-
-    return result.generated_text.trim();
-  } catch (error) {
-    return handleChatError(error);
-  }
-}
+    const prompt = `<|im_start|>system\n${SYSTEM_PROMPT}\n${profile ? `User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : ''}
