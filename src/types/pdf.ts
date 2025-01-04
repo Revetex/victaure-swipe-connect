@@ -1,7 +1,7 @@
-import { jsPDF } from 'jspdf';
+import { jsPDF } from "jspdf";
 
 export interface ExtendedJsPDF extends jsPDF {
-  setGlobalAlpha: (alpha: number) => void;
-  roundedRect: (x: number, y: number, w: number, h: number, rx: number, ry: number, style: string) => void;
+  setGlobalAlpha: (alpha: number) => ExtendedJsPDF;
+  roundedRect: (x: number, y: number, w: number, h: number, rx: number, ry: number, style: string) => ExtendedJsPDF;
   addSpace: (space: number) => number;
 }

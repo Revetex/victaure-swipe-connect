@@ -4,15 +4,14 @@ import { ExtendedJsPDF } from "@/types/pdf";
 export function extendPdfDocument(baseDoc: jsPDF): ExtendedJsPDF {
   const doc = baseDoc as ExtendedJsPDF;
   
-  doc.setGlobalAlpha = function(alpha: number) {
+  doc.setGlobalAlpha = function(alpha: number): ExtendedJsPDF {
     // @ts-ignore - This is a valid internal method
     this.internal.write(alpha + " g");
+    return this;
   };
 
-  doc.roundedRect = function(x: number, y: number, w: number, h: number, rx: number, ry: number, style: string) {
-    const r = rx;
+  doc.roundedRect = function(x: number, y: number, w: number, h: number, rx: number, ry: number, style: string): ExtendedJsPDF {
     const hp = this.internal.pageSize.getHeight();
-    
     y = hp - y - h;
     
     this.setLineWidth(0.5);
@@ -21,17 +20,17 @@ export function extendPdfDocument(baseDoc: jsPDF): ExtendedJsPDF {
     
     this.lines(
       [
-        [w - 2 * r, 0],
-        [r * c, 0, r, 0, r, -r],
-        [0, -(h - 2 * r)],
-        [0, -r * c, -r, -r, -r, -r],
-        [-(w - 2 * r), 0],
-        [-r * c, 0, -r, 0, -r, r],
-        [0, h - 2 * r],
-        [0, r * c, r, r, r, r]
+        [w - 2 * rx, 0],
+        [rx * c, 0, rx, 0, rx, -ry],
+        [0, -(h - 2 * ry)],
+        [0, -ry * c, -rx, -ry, -rx, -ry],
+        [-(w - 2 * rx), 0],
+        [-rx * c, 0, -rx, 0, -rx, ry],
+        [0, h - 2 * ry],
+        [0, ry * c, rx, ry, rx, ry]
       ],
-      x + r,
-      y + h - r,
+      x + rx,
+      y + h - ry,
       [1, 1],
       style
     );
