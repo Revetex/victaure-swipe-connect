@@ -1,5 +1,5 @@
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { AppWrapper } from "./AppWrapper";
+import AppWrapper from "./AppWrapper";
 import { Toaster } from "sonner";
 import "./App.css";
 
