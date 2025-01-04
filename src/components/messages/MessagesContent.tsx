@@ -2,8 +2,6 @@ import { TabsContent } from "@/components/ui/tabs";
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
 import { AssistantTab } from "./tabs/AssistantTab";
-import { ScrapedJobsList } from "./ScrapedJobsList";
-import { ScrapedJob } from "@/types/database/scrapedJobs";
 
 interface MessagesContentProps {
   todos: any[];
@@ -26,8 +24,6 @@ interface MessagesContentProps {
   onDeleteTodo: (id: string) => void;
   onDeleteNote: (id: string) => void;
   colors: { value: string; label: string; class: string; }[];
-  scrapedJobs?: ScrapedJob[];
-  isLoadingJobs?: boolean;
 }
 
 export function MessagesContent({
@@ -51,8 +47,6 @@ export function MessagesContent({
   onDeleteTodo,
   onDeleteNote,
   colors,
-  scrapedJobs = [],
-  isLoadingJobs = false,
 }: MessagesContentProps) {
   return (
     <div className="flex-1 overflow-hidden">
@@ -87,10 +81,6 @@ export function MessagesContent({
             colors={colors}
           />
         </div>
-      </TabsContent>
-
-      <TabsContent value="jobs" className="h-full">
-        <ScrapedJobsList jobs={scrapedJobs} isLoading={isLoadingJobs} />
       </TabsContent>
     </div>
   );
