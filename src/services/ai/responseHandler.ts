@@ -1,5 +1,4 @@
 import { toast } from "sonner";
-import type { ChatResponse } from "@/types/ai/chat";
 
 export async function handleApiResponse(response: Response): Promise<string> {
   if (!response.ok) {

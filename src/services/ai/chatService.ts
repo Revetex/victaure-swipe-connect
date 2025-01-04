@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { API_CONFIG } from "./config";
 import { getHuggingFaceApiKey, buildPrompt } from "./utils";
 import { handleApiResponse } from "./responseHandler";
@@ -68,11 +67,6 @@ export async function generateAIResponse(message: string, profile?: any): Promis
     return await handleApiResponse(response);
   } catch (error) {
     console.error("Error generating AI response:", error);
-    if (!error.message.includes("Model is loading") && 
-        !error.message.includes("Invalid API key") &&
-        !error.message.includes("Invalid response format")) {
-      toast.error("Erreur lors de la génération de la réponse");
-    }
     throw error;
   }
 }
