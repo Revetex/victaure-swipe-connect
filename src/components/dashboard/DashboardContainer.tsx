@@ -9,7 +9,7 @@ interface DashboardContainerProps {
 export function DashboardContainer({ children, containerVariants }: DashboardContainerProps) {
   return (
     <div className="relative min-h-[100dvh] flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] pointer-events-none" />
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-[2px] pointer-events-none" />
       <main className="relative z-10 flex-1 flex flex-col">
         <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
           <motion.div 
