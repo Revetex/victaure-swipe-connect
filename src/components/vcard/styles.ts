@@ -1,4 +1,4 @@
-import { StyleOption } from "./types";
+import type { StyleOption } from "./types";
 
 export const styleOptions: StyleOption[] = [
   {
