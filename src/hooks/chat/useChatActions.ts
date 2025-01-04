@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Message } from "@/types/chat/messageTypes";
-import { generateAIResponse, saveMessage } from "@/services/aiChatService";
+import { generateAIResponse, saveMessage, deleteMessages } from "@/services/aiChatService";
 import { toast } from "sonner";
 
 export function useChatActions(
@@ -63,7 +63,14 @@ export function useChatActions(
 
   const clearChat = async () => {
     try {
+      // Store current messages before clearing
       setDeletedMessages(messages);
+      
+      // Delete messages from database
+      const messageIds = messages.map(msg => msg.id);
+      await deleteMessages(messageIds);
+      
+      // Clear messages from state
       setMessages([]);
       toast.success("Conversation effacée");
     } catch (error) {
@@ -75,7 +82,14 @@ export function useChatActions(
   const restoreChat = async () => {
     try {
       if (deletedMessages.length > 0) {
+        // Restore messages in state
         setMessages(deletedMessages);
+        
+        // Save restored messages to database
+        for (const message of deletedMessages) {
+          await saveMessage(message);
+        }
+        
         setDeletedMessages([]);
         toast.success("Conversation restaurée");
       }
