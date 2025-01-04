@@ -3,8 +3,19 @@ import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
 import { MessagesTabs } from "./messages/MessagesTabs";
 import { MessagesContent } from "./messages/MessagesContent";
+import { useEffect, useState } from "react";
 
 export function Messages() {
+  // Get the saved tab from localStorage or default to "messages"
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem("messagesActiveTab") || "messages";
+  });
+
+  // Save the active tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("messagesActiveTab", activeTab);
+  }, [activeTab]);
+
   const {
     todos,
     newTodo,
@@ -42,7 +53,11 @@ export function Messages() {
   ];
 
   return (
-    <Tabs defaultValue="messages" className="h-full flex flex-col">
+    <Tabs 
+      defaultValue={activeTab} 
+      className="h-full flex flex-col"
+      onValueChange={setActiveTab}
+    >
       <MessagesTabs />
       <MessagesContent
         todos={todos}
