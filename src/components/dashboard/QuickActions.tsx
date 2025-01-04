@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 
 interface QuickActionsProps {
   stats: DashboardStats | undefined;
+  isLoading?: boolean;  // Added isLoading prop
 }
 
 const containerVariants = {
@@ -31,11 +32,11 @@ const itemVariants = {
   }
 };
 
-export function QuickActions({ stats }: QuickActionsProps) {
+export function QuickActions({ stats, isLoading = false }: QuickActionsProps) {
   const quickActions = useMemo(() => [
     {
       title: "Missions en cours",
-      value: stats?.activeJobs.toString() || "0",
+      value: isLoading ? "..." : stats?.activeJobs.toString() || "0",
       icon: Briefcase,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
@@ -43,7 +44,7 @@ export function QuickActions({ stats }: QuickActionsProps) {
     },
     {
       title: "Messages non lus",
-      value: stats?.unreadMessages.toString() || "0",
+      value: isLoading ? "..." : stats?.unreadMessages.toString() || "0",
       icon: MessageSquare,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
@@ -51,7 +52,7 @@ export function QuickActions({ stats }: QuickActionsProps) {
     },
     {
       title: "Paiements en attente",
-      value: stats?.pendingPayments || "CAD 0",
+      value: isLoading ? "..." : stats?.pendingPayments || "CAD 0",
       icon: DollarSign,
       color: "text-yellow-500",
       bgColor: "bg-yellow-500/10",
@@ -59,13 +60,13 @@ export function QuickActions({ stats }: QuickActionsProps) {
     },
     {
       title: "Prochaine mission",
-      value: stats?.nextJob || "Aucune",
+      value: isLoading ? "..." : stats?.nextJob || "Aucune",
       icon: Calendar,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
       gradient: "from-purple-500/20 to-purple-600/20"
     },
-  ], [stats]);
+  ], [stats, isLoading]);
 
   return (
     <motion.div 
