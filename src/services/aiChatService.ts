@@ -21,8 +21,9 @@ export async function loadMessages() {
     return messages.map((msg): Message => ({
       id: msg.id,
       content: msg.content,
-      sender: msg.sender,
+      sender: msg.sender as "user" | "assistant",
       timestamp: new Date(msg.created_at),
+      created_at: msg.created_at
     }));
   } catch (error) {
     console.error("Error loading messages:", error);
@@ -33,7 +34,7 @@ export async function loadMessages() {
 export async function saveMessage(message: {
   id: string;
   content: string;
-  sender: string;
+  sender: "user" | "assistant";
   created_at: Date;
 }) {
   try {
@@ -47,7 +48,7 @@ export async function saveMessage(message: {
       content: message.content,
       sender: message.sender,
       user_id: user.id,
-      created_at: message.created_at,
+      created_at: message.created_at.toISOString()
     });
 
     if (error) {

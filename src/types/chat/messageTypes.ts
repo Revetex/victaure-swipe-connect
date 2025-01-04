@@ -4,6 +4,7 @@ export interface Message {
   sender: "user" | "assistant";
   thinking?: boolean;
   timestamp: Date;
+  created_at?: string;
 }
 
 export interface ChatState {

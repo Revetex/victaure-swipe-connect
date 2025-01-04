@@ -15,7 +15,8 @@ export function useMessages() {
           id: msg.id,
           content: msg.content,
           sender: msg.sender as "user" | "assistant",
-          timestamp: new Date(msg.created_at),
+          timestamp: new Date(msg.created_at || msg.timestamp),
+          created_at: msg.created_at
         }));
         setMessages(formattedMessages);
         console.log("Chat initialized with messages:", formattedMessages);
