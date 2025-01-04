@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { VCardContent } from "./VCardContent";
-import { VCardSkeleton } from "./VCardSkeleton";
+import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { useProfile } from "@/hooks/useProfile";
-import { styleOptions } from "./styles";
-import type { StyleOption } from "./types";
+import { styleOptions } from "./vcard/styles";
+import type { StyleOption } from "./vcard/types";
 
 interface VCardProps {
   onEditStateChange: (isEditing: boolean) => void;
