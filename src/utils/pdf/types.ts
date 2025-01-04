@@ -11,3 +11,36 @@ export interface ExtendedJsPDF extends jsPDF {
   circle: (x: number, y: number, r: number, style: string) => jsPDF;
   setLineDashPattern: (pattern: number[], phase: number) => jsPDF;
 }
+
+export interface PDFStyles {
+  colors: {
+    primary: string;
+    secondary: string;
+    background: string;
+    text: {
+      primary: string;
+      secondary: string;
+      muted: string;
+    };
+    accent: string;
+  };
+  margins: {
+    top: number;
+    left: number;
+    right: number;
+  };
+  fonts: {
+    header: {
+      size: number;
+      style: string;
+    };
+    subheader: {
+      size: number;
+      style: string;
+    };
+    body: {
+      size: number;
+      style: string;
+    };
+  };
+}

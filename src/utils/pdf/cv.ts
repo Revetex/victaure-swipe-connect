@@ -26,7 +26,6 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     const gradientSteps = 15;
     for (let i = 0; i < gradientSteps; i++) {
       const opacity = 0.03 - (i / gradientSteps) * 0.02;
-      doc.setFillColor(accentColor);
       // Instead of using setGlobalAlpha, we'll create a lighter shade of the accent color
       const alpha = Math.floor(opacity * 255);
       const hexOpacity = alpha.toString(16).padStart(2, '0');
@@ -35,7 +34,6 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     }
 
     // Add a subtle white overlay for better readability
-    doc.setFillColor(255, 255, 255);
     doc.setFillColor('#FFFFFF80'); // 50% white overlay
     doc.rect(15, 15, 180, 267, 'F');
 
@@ -76,6 +74,8 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     // Save the PDF with a clean filename
     const cleanName = profile.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'vcard';
     doc.save(`${cleanName}_vcard.pdf`);
+
+    return true;
   } catch (error) {
     console.error('Error generating PDF:', error);
     throw new Error('Failed to generate PDF: ' + (error as Error).message);

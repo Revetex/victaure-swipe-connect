@@ -1,9 +1,9 @@
-import type { PDFStyles } from '../types';
+import { PDFStyles } from '../types';
 
 export const pdfStyles: PDFStyles = {
   colors: {
-    primary: '#1E40AF', // indigo-600
-    secondary: '#1E40AF80', // indigo-600 with 50% opacity
+    primary: '#1E40AF',
+    secondary: '#1E40AF80',
     background: '#FFFFFF',
     text: {
       primary: '#1A1F2C',
