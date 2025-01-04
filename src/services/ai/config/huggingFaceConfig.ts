@@ -8,7 +8,8 @@ export const HUGGING_FACE_CONFIG = {
     temperature: 0.7,
     top_p: 0.95,
     do_sample: true,
-    return_full_text: false
+    return_full_text: false,
+    wait_for_model: true
   }
 };
 

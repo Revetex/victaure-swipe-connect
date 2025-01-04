@@ -6,6 +6,7 @@ import type { ChatContext, ApiResponse, Message } from "./types/chatTypes";
 
 export async function getHuggingFaceApiKey(): Promise<string> {
   try {
+    console.log("Fetching Hugging Face API key...");
     const { data, error } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
@@ -14,10 +15,12 @@ export async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error("Could not retrieve the API token");
     }
 
-    if (!data || !data[0]?.secret) {
+    if (!data || data.length === 0 || !data[0]?.secret) {
+      console.error("API key not found in response:", data);
       throw new Error("API key not found. Please configure your Hugging Face API key in the project settings.");
     }
 
+    console.log("API key retrieved successfully");
     return data[0].secret;
   } catch (error) {
     console.error("Error in getHuggingFaceApiKey:", error);
@@ -75,22 +78,35 @@ export async function deleteMessages(messageIds: string[]): Promise<void> {
 
 export async function generateAIResponse(message: string, profile?: any): Promise<string> {
   try {
+    console.log("Starting AI response generation...");
     const apiKey = await getHuggingFaceApiKey();
+    
     if (!apiKey) {
+      console.error("No API key returned");
       throw new Error("API key not configured");
     }
 
     validateApiKey(apiKey);
 
-    const prompt = `<|im_start|>system\n${SYSTEM_PROMPT}\n${profile ? `Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : ''}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
+    const prompt = `<|im_start|>system
+${SYSTEM_PROMPT}
+${profile ? `Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : ''}
+<|im_end|>
+<|im_start|>user
+${message}
+<|im_end|>
+<|im_start|>assistant
+`;
 
     console.log("Sending request to Hugging Face API...");
+    console.log("Using endpoint:", HUGGING_FACE_CONFIG.endpoint);
+    
     const response = await fetch(HUGGING_FACE_CONFIG.endpoint, {
+      method: "POST",
       headers: { 
         ...HUGGING_FACE_CONFIG.defaultHeaders,
         Authorization: `Bearer ${apiKey}`
       },
-      method: "POST",
       body: JSON.stringify({
         inputs: prompt,
         parameters: HUGGING_FACE_CONFIG.modelParams
@@ -98,16 +114,21 @@ export async function generateAIResponse(message: string, profile?: any): Promis
     });
 
     console.log("Response status:", response.status);
-    validateApiResponse(response);
+    await validateApiResponse(response);
 
-    const result = await response.json() as ApiResponse;
-    console.log("API Response:", result);
+    const result = await response.json();
+    console.log("Raw API Response:", result);
     
-    if (!result.generated_text) {
-      throw new Error("Invalid response format from API");
+    if (Array.isArray(result) && result.length > 0 && result[0]?.generated_text) {
+      return result[0].generated_text.trim();
+    } 
+    
+    if (result.generated_text) {
+      return result.generated_text.trim();
     }
 
-    return result.generated_text.trim();
+    console.error("Unexpected API response format:", result);
+    throw new Error("Format de réponse invalide");
   } catch (error) {
     console.error("Error in generateAIResponse:", error);
     return handleChatError(error);
