@@ -5,7 +5,7 @@ import { Todo } from "@/types/todo";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TodoSectionProps {
-  todos?: Todo[];
+  todos: Todo[];
   newTodo: string;
   selectedDate?: Date;
   selectedTime?: string;
@@ -21,7 +21,7 @@ interface TodoSectionProps {
 }
 
 export function TodoSection({
-  todos = [], // Provide default empty array
+  todos,
   newTodo,
   selectedDate,
   selectedTime,
