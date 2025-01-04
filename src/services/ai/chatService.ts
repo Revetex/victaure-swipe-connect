@@ -3,7 +3,6 @@ import { toast } from "sonner";
 import { API_CONFIG } from "./config";
 import { getHuggingFaceApiKey, buildPrompt } from "./utils";
 import { handleApiResponse } from "./responseHandler";
-import type { ChatPrompt } from "@/types/ai/chat";
 
 export async function saveMessage(message: {
   id: string;
@@ -25,6 +24,20 @@ export async function saveMessage(message: {
     if (error) throw error;
   } catch (error) {
     console.error("Error saving message:", error);
+    throw error;
+  }
+}
+
+export async function deleteMessages(messageIds: string[]) {
+  try {
+    const { error } = await supabase
+      .from('ai_chat_messages')
+      .delete()
+      .in('id', messageIds);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error("Error deleting messages:", error);
     throw error;
   }
 }
