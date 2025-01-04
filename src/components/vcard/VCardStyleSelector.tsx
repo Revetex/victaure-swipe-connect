@@ -19,16 +19,12 @@ export function VCardStyleSelector({
           key={style.id}
           onClick={() => onStyleSelect(style)}
           variant={selectedStyle.id === style.id ? "default" : "outline"}
-          className="flex items-center gap-2"
-          style={{
-            backgroundColor: selectedStyle.id === style.id ? style.color : 'transparent',
-            borderColor: style.color,
-            color: selectedStyle.id === style.id ? 'white' : style.color,
-          }}
+          className={`flex items-center gap-2 ${
+            selectedStyle.id === style.id ? style.colorScheme.primary : "bg-transparent"
+          }`}
         >
           <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: style.color }}
+            className={`w-3 h-3 rounded-full ${style.colorScheme.primary}`}
           />
           {style.name}
         </Button>

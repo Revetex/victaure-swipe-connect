@@ -62,7 +62,7 @@ export function VCardContent({
 
   const handleDownloadPDF = async () => {
     try {
-      await generateVCardPDF(profile, selectedStyle.color);
+      await generateVCardPDF(profile, selectedStyle.colorScheme.primary);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -126,8 +126,7 @@ export function VCardContent({
             {isEditing ? (
               <Button
                 onClick={() => handleEditStateChange(false)}
-                style={{ backgroundColor: selectedStyle.color }}
-                className="text-white transition-colors"
+                className={`text-white transition-colors ${selectedStyle.colorScheme.primary}`}
               >
                 <Save className="mr-2 h-4 w-4" />
                 Sauvegarder
@@ -135,8 +134,7 @@ export function VCardContent({
             ) : (
               <Button
                 onClick={() => handleEditStateChange(true)}
-                style={{ backgroundColor: selectedStyle.color }}
-                className="text-white transition-colors"
+                className={`text-white transition-colors ${selectedStyle.colorScheme.primary}`}
               >
                 <Edit2 className="mr-2 h-4 w-4" />
                 Modifier mon profil
@@ -145,8 +143,7 @@ export function VCardContent({
 
             <Button
               onClick={handleDownloadPDF}
-              style={{ backgroundColor: selectedStyle.color }}
-              className="text-white transition-colors"
+              className={`text-white transition-colors ${selectedStyle.colorScheme.primary}`}
             >
               <Download className="mr-2 h-4 w-4" />
               Télécharger PDF
