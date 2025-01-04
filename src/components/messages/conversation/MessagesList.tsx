@@ -75,9 +75,9 @@ export function MessagesList({
                     onClick={() => onMarkAsRead(message.id)}
                   >
                     <div className="flex justify-between items-start gap-2 mb-1">
-                      <h3 className="font-medium">{message.sender}</h3>
+                      <h3 className="font-medium">{message.sender.full_name}</h3>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(message.timestamp).toLocaleString()}
+                        {new Date(message.created_at).toLocaleString()}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">{message.content}</p>
