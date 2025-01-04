@@ -6,7 +6,6 @@ import { useChat } from "@/hooks/useChat";
 import { useProfile } from "@/hooks/useProfile";
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 export function AssistantTab() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -30,26 +29,6 @@ export function AssistantTab() {
     }
   }, [chatMessages]);
 
-  const handleClearChat = async () => {
-    try {
-      await clearChat();
-      toast.success("Conversation effacée avec succès");
-    } catch (error) {
-      console.error("Error clearing chat:", error);
-      toast.error("Erreur lors de l'effacement de la conversation");
-    }
-  };
-
-  const handleRestoreChat = async () => {
-    try {
-      await restoreChat();
-      toast.success("Conversation restaurée avec succès");
-    } catch (error) {
-      console.error("Error restoring chat:", error);
-      toast.error("Erreur lors de la restauration de la conversation");
-    }
-  };
-
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
@@ -71,7 +50,7 @@ export function AssistantTab() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleRestoreChat}
+            onClick={restoreChat}
             className="hover:bg-primary/10 hover:text-primary"
           >
             <RotateCcw className="h-4 w-4" />
@@ -79,7 +58,7 @@ export function AssistantTab() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleClearChat}
+            onClick={clearChat}
             className="hover:bg-destructive/10 hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />

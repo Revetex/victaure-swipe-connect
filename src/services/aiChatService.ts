@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export async function saveMessage(message: any) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -46,9 +45,7 @@ export async function generateAIResponse(message: string, profile?: any) {
     - Adapter tes réponses au profil de l'utilisateur quand disponible
     - Rester professionnel tout en étant chaleureux
     ${contextPrompt}`;
-    
-    console.log("Sending request to Hugging Face API...");
-    
+
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
       {
@@ -96,7 +93,6 @@ ${message}
       throw new Error("Format de réponse invalide de l'API");
     }
 
-    // Clean up the response by removing any remaining tags and trimming whitespace
     const cleanedResponse = result[0].generated_text
       .replace(/<\|im_end\|>/g, '')
       .replace(/<\|im_start\|>assistant/g, '')
@@ -111,7 +107,7 @@ ${message}
   } catch (error) {
     console.error("Error generating AI response:", error);
     if (error instanceof Error) {
-      throw new Error(error.message || "Une erreur est survenue lors de la génération de la réponse");
+      throw error;
     }
     throw new Error("Une erreur inattendue est survenue");
   }
