@@ -29,20 +29,6 @@ export async function saveMessage(message: {
   }
 }
 
-export async function deleteMessages(messageIds: string[]) {
-  try {
-    const { error } = await supabase
-      .from('ai_chat_messages')
-      .delete()
-      .in('id', messageIds);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error("Error deleting messages:", error);
-    throw error;
-  }
-}
-
 export async function generateAIResponse(message: string, profile?: any): Promise<string> {
   console.log("Generating AI response for message:", message);
   
@@ -62,13 +48,7 @@ export async function generateAIResponse(message: string, profile?: any): Promis
       method: "POST",
       body: JSON.stringify({
         inputs: prompt,
-        parameters: {
-          max_new_tokens: 1024,
-          temperature: 0.7,
-          top_p: 0.95,
-          do_sample: true,
-          return_full_text: false
-        }
+        parameters: API_CONFIG.modelParams
       }),
     });
 

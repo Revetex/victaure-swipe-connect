@@ -1,5 +1,5 @@
-import { HuggingFaceResponse, ApiError } from "@/types/ai/chat";
 import { toast } from "sonner";
+import type { ChatResponse } from "@/types/ai/chat";
 
 export async function handleApiResponse(response: Response): Promise<string> {
   if (!response.ok) {
@@ -7,7 +7,7 @@ export async function handleApiResponse(response: Response): Promise<string> {
     console.error("Hugging Face API Error Response:", errorText);
     
     try {
-      const errorJson = JSON.parse(errorText) as ApiError;
+      const errorJson = JSON.parse(errorText);
       if (errorJson.error?.includes("token seems invalid")) {
         toast.error("La clé API Hugging Face n'est pas valide. Veuillez vérifier votre clé.");
         throw new Error("Invalid Hugging Face API token");
@@ -35,8 +35,8 @@ export async function handleApiResponse(response: Response): Promise<string> {
       return result[0].generated_text.trim();
     } 
     
-    if ((result as HuggingFaceResponse).generated_text) {
-      return (result as HuggingFaceResponse).generated_text.trim();
+    if (result.generated_text) {
+      return result.generated_text.trim();
     }
 
     const textResponse = await responseClone.text();

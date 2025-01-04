@@ -2,6 +2,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { ChatPrompt } from "@/types/ai/chat";
 
+interface SecretResponse {
+  secret: string;
+}
+
 export async function getHuggingFaceApiKey(): Promise<string> {
   try {
     const { data: secretData, error: secretError } = await supabase
