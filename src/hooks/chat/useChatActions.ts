@@ -15,7 +15,6 @@ export function useChatActions(
     if (!message.trim()) return;
 
     try {
-      // Add user message
       const userMessage: Message = {
         id: uuidv4(),
         content: message,
@@ -27,7 +26,6 @@ export function useChatActions(
       await saveMessage(userMessage);
       setInputMessage("");
 
-      // Add thinking message
       const thinkingMessage: Message = {
         id: uuidv4(),
         content: "",
@@ -36,14 +34,11 @@ export function useChatActions(
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, thinkingMessage]);
+      setMessages([...messages, userMessage, thinkingMessage]);
       setIsThinking(true);
 
       try {
-        // Generate AI response
         const aiResponse = await generateAIResponse(message, profile);
-
-        // Replace thinking message with actual response
         const assistantMessage: Message = {
           id: uuidv4(),
           content: aiResponse,
@@ -51,12 +46,12 @@ export function useChatActions(
           timestamp: new Date(),
         };
 
-        setMessages(prev => [...prev.filter(m => !m.thinking), assistantMessage]);
+        setMessages([...messages, userMessage, assistantMessage]);
         await saveMessage(assistantMessage);
       } catch (error) {
         console.error("Error generating AI response:", error);
         toast.error("Erreur lors de la génération de la réponse");
-        setMessages(prev => prev.filter(m => !m.thinking));
+        setMessages([...messages, userMessage]);
       } finally {
         setIsThinking(false);
       }

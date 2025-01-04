@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Message } from "@/types/chat/messageTypes";
 import { loadMessages } from "@/services/aiChatService";
+import { toast } from "sonner";
 
 export function useMessages() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -9,12 +10,11 @@ export function useMessages() {
   useEffect(() => {
     const initializeChat = async () => {
       try {
-        console.log("Initializing chat...");
         const savedMessages = await loadMessages();
         setMessages(savedMessages);
-        console.log("Chat initialized with messages:", savedMessages);
       } catch (error) {
         console.error("Error initializing chat:", error);
+        toast.error("Erreur lors du chargement des messages");
       }
     };
     initializeChat();

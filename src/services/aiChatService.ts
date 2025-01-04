@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Message } from "@/types/chat/messageTypes";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from 'uuid';
 
 export async function loadMessages(): Promise<Message[]> {
   try {
@@ -9,14 +11,12 @@ export async function loadMessages(): Promise<Message[]> {
     }
 
     const { data: messages, error } = await supabase
-      .from("ai_chat_messages")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: true });
+      .from('ai_chat_messages')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     return messages.map((msg): Message => ({
       id: msg.id,
@@ -31,10 +31,7 @@ export async function loadMessages(): Promise<Message[]> {
   }
 }
 
-export async function saveMessage(message: {
-  content: string;
-  sender: "user" | "assistant";
-}) {
+export async function saveMessage(message: Message) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -42,16 +39,16 @@ export async function saveMessage(message: {
     }
 
     const { error } = await supabase
-      .from("ai_chat_messages")
+      .from('ai_chat_messages')
       .insert({
+        id: message.id,
         content: message.content,
         sender: message.sender,
         user_id: user.id,
+        created_at: message.timestamp.toISOString()
       });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
   } catch (error) {
     console.error("Error saving message:", error);
     throw error;
@@ -60,36 +57,23 @@ export async function saveMessage(message: {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
-    console.log("Generating AI response...");
-
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
     if (secretError) {
       console.error("Error fetching API token:", secretError);
-      throw new Error("Impossible de récupérer le token API. Veuillez configurer votre clé API Hugging Face dans les paramètres.");
+      throw new Error("Impossible de récupérer le token API");
     }
 
-    const apiKey = secretData?.[0]?.secret || '';
-    if (!apiKey.trim()) {
-      throw new Error("La clé API Hugging Face n'est pas configurée. Veuillez l'ajouter dans les paramètres.");
+    const apiKey = secretData;
+    if (!apiKey) {
+      throw new Error("La clé API Hugging Face n'est pas configurée");
     }
 
-    const systemPrompt = `Tu es un assistant virtuel professionnel et amical qui aide les utilisateurs à trouver du travail et à gérer leur carrière. 
+    const systemPrompt = `Tu es Mr. Victaure, un assistant virtuel professionnel et amical qui aide les utilisateurs à trouver du travail et à gérer leur carrière. 
     ${profile ? `L'utilisateur avec qui tu parles s'appelle ${profile.full_name}.` : ''}
     ${profile?.skills ? `Ses compétences principales sont: ${profile.skills.join(', ')}.` : ''}
-    Réponds de manière concise et pertinente.`;
-
-    const userMessage = message?.trim() || '';
-    if (!userMessage) {
-      throw new Error("Le message ne peut pas être vide");
-    }
-
-    const prompt = `<s>[INST] ${systemPrompt}
-
-    Message de l'utilisateur: ${userMessage} [/INST]</s>`;
-
-    console.log("Sending request to API with prompt:", prompt);
+    Réponds toujours en français de manière concise et pertinente.`;
 
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -100,7 +84,13 @@ export async function generateAIResponse(message: string, profile?: any) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          inputs: prompt,
+          inputs: `<|im_start|>system
+${systemPrompt}
+<|im_end|>
+<|im_start|>user
+${message}
+<|im_end|>
+<|im_start|>assistant`,
           parameters: {
             max_new_tokens: 1000,
             temperature: 0.7,
@@ -115,24 +105,18 @@ export async function generateAIResponse(message: string, profile?: any) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("API Error Response:", errorText);
-      
-      if (response.status === 401 || response.status === 403) {
-        throw new Error("Clé API invalide. Veuillez vérifier votre configuration.");
+      throw new Error(`Erreur lors de l'appel à l'API (${response.status})`);
+    }
+
+    const result = await response.json();
+    if (Array.isArray(result) && result.length > 0) {
+      const generatedText = result[0]?.generated_text;
+      if (generatedText) {
+        return generatedText.trim();
       }
-      
-      throw new Error(
-        `Erreur lors de l'appel à l'API (${response.status}): ${errorText}`
-      );
     }
 
-    const responseData = await response.json();
-    console.log("API Response:", responseData);
-
-    if (!responseData || !Array.isArray(responseData) || !responseData[0]?.generated_text) {
-      throw new Error("Format de réponse invalide de l'API");
-    }
-
-    return responseData[0].generated_text.trim();
+    throw new Error("Format de réponse invalide de l'API");
   } catch (error) {
     console.error("Error in AI response generation:", error);
     throw error;
