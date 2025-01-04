@@ -1,72 +1,43 @@
 import { Button } from "@/components/ui/button";
-import { Download, Edit2, Save } from "lucide-react";
-import { toast } from "sonner";
-import { generateVCardPDF } from "@/utils/pdfGenerator";
 import { UserProfile } from "@/types/profile";
-import { StyleOption } from "./types";
+import { generateVCardData } from "@/utils/profileActions";
+import { toast } from "sonner";
 
 interface VCardActionsProps {
-  isEditing: boolean;
-  isPdfGenerating: boolean;
   profile: UserProfile;
-  selectedStyle: StyleOption;
-  onEditToggle: () => void;
-  onSave: () => Promise<void>;
+  onEdit?: () => void;
 }
 
-export function VCardActions({
-  isEditing,
-  isPdfGenerating,
-  profile,
-  selectedStyle,
-  onEditToggle,
-  onSave
-}: VCardActionsProps) {
-  const handleDownloadPDF = async () => {
-    if (!profile) {
-      toast.error("Aucun profil trouvé");
-      return;
-    }
-
+export function VCardActions({ profile, onEdit }: VCardActionsProps) {
+  const handleDownloadVCard = () => {
     try {
-      await generateVCardPDF(profile, selectedStyle.color);
+      const vCardData = generateVCardData(profile);
+      const blob = new Blob([vCardData], { type: 'text/vcard' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${profile.full_name || 'contact'}.vcf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("VCard téléchargée avec succès");
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast.error("Erreur lors de la génération du PDF. Veuillez réessayer.");
+      console.error('Error downloading vCard:', error);
+      toast.error("Erreur lors du téléchargement de la VCard");
     }
   };
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/20">
-      {isEditing ? (
-        <Button
-          onClick={onSave}
-          style={{ backgroundColor: selectedStyle.color }}
-          className="text-white transition-colors"
-        >
-          <Save className="mr-2 h-4 w-4" />
-          Sauvegarder
-        </Button>
-      ) : (
-        <Button
-          onClick={onEditToggle}
-          style={{ backgroundColor: selectedStyle.color }}
-          className="text-white transition-colors"
-        >
-          <Edit2 className="mr-2 h-4 w-4" />
-          Modifier mon profil
+    <div className="flex gap-2 mt-4">
+      <Button onClick={handleDownloadVCard} variant="outline">
+        Télécharger VCard
+      </Button>
+      {onEdit && (
+        <Button onClick={onEdit} variant="default">
+          Modifier
         </Button>
       )}
-
-      <Button
-        onClick={handleDownloadPDF}
-        disabled={isPdfGenerating}
-        style={{ backgroundColor: selectedStyle.color }}
-        className="text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <Download className="mr-2 h-4 w-4" />
-        {isPdfGenerating ? 'Génération...' : 'Télécharger PDF'}
-      </Button>
     </div>
   );
 }
