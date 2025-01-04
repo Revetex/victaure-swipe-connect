@@ -5,11 +5,14 @@ import { VCardSkills } from "@/components/VCardSkills";
 import { VCardExperiences } from "@/components/VCardExperiences";
 import { VCardCertifications } from "@/components/VCardCertifications";
 import { VCardEducation } from "@/components/VCardEducation";
-import { CardContent } from "../ui/card";
-import { VCardStyleSelector } from "./VCardStyleSelector";
-import { StyleOption } from "./types";
-import { UserProfile } from "@/types/profile";
-import { VCardActions } from "../VCardActions";
+import { CardContent } from "@/components/ui/card";
+import { VCardStyleSelector } from "@/components/vcard/VCardStyleSelector";
+import { StyleOption } from "@/components/vcard/types";
+import { VCardActions } from "@/components/VCardActions";
+import { Button } from "@/components/ui/button";
+import { Download, Edit2, Save } from "lucide-react";
+import { toast } from "sonner";
+import { generateVCardPDF } from "@/utils/pdfGenerator";
 
 interface VCardContentProps {
   profile: UserProfile;
