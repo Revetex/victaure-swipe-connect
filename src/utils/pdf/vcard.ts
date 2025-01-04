@@ -22,14 +22,14 @@ export const generateVCardPDF = async (profile: UserProfile) => {
   // Header with profile photo
   if (profile.avatar_url) {
     try {
-      const img = new Image();
-      img.crossOrigin = 'Anonymous';
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => resolve(img);
         img.onerror = reject;
         img.src = profile.avatar_url;
       });
-      doc.addImage(img, 'JPEG', 20, 20, 40, 40);
+      doc.addImage(img, 'JPEG', 20, 20, 40, 40, undefined, 'FAST');
       doc.setDrawColor(200, 200, 200);
       doc.rect(20, 20, 40, 40, 'S');
     } catch (error) {
@@ -47,7 +47,7 @@ export const generateVCardPDF = async (profile: UserProfile) => {
         light: '#FFFFFF'
       }
     });
-    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30);
+    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30, undefined, 'FAST');
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
