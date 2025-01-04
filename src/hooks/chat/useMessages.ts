@@ -11,15 +11,8 @@ export function useMessages() {
       try {
         console.log("Initializing chat...");
         const savedMessages = await loadMessages();
-        const formattedMessages = savedMessages.map(msg => ({
-          id: msg.id,
-          content: msg.content,
-          sender: msg.sender as "user" | "assistant",
-          timestamp: new Date(msg.created_at || msg.timestamp),
-          created_at: msg.created_at
-        }));
-        setMessages(formattedMessages);
-        console.log("Chat initialized with messages:", formattedMessages);
+        setMessages(savedMessages);
+        console.log("Chat initialized with messages:", savedMessages);
       } catch (error) {
         console.error("Error initializing chat:", error);
       }

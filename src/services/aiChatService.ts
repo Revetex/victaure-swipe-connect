@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Message } from "@/types/chat/messageTypes";
 
-export async function loadMessages() {
+export async function loadMessages(): Promise<Message[]> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -32,10 +32,8 @@ export async function loadMessages() {
 }
 
 export async function saveMessage(message: {
-  id: string;
   content: string;
   sender: "user" | "assistant";
-  created_at: Date;
 }) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -43,13 +41,13 @@ export async function saveMessage(message: {
       throw new Error("User not authenticated");
     }
 
-    const { error } = await supabase.from("ai_chat_messages").insert({
-      id: message.id,
-      content: message.content,
-      sender: message.sender,
-      user_id: user.id,
-      created_at: message.created_at.toISOString()
-    });
+    const { error } = await supabase
+      .from("ai_chat_messages")
+      .insert({
+        content: message.content,
+        sender: message.sender,
+        user_id: user.id,
+      });
 
     if (error) {
       throw error;
