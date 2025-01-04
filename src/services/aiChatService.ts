@@ -72,6 +72,12 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Hugging Face API key is not configured");
     }
 
+    // Validate API key format (basic check)
+    if (!apiKey.startsWith('hf_')) {
+      toast.error("Le format du token API Hugging Face semble invalide");
+      throw new Error("Invalid Hugging Face API token format");
+    }
+
     console.log("Making request to Hugging Face API...");
 
     const response = await fetch(
@@ -109,22 +115,17 @@ ${message}
       
       try {
         const errorData = JSON.parse(errorText);
-        if (response.status === 400 && errorData?.error?.includes("Authorization")) {
-          toast.error("Le token d'API Hugging Face semble invalide. Veuillez le vérifier.");
+        if (errorData?.error?.includes("Authorization")) {
+          toast.error("Le token API Hugging Face est invalide. Veuillez le vérifier.");
           throw new Error("Invalid Hugging Face API token");
-        } else if (response.status === 429) {
-          toast.error("Trop de requêtes. Veuillez réessayer dans quelques instants.");
-          throw new Error("Rate limit exceeded");
         }
       } catch (e) {
-        // Error parsing JSON
+        // Error parsing JSON, use generic error
+        toast.error("Erreur lors de la communication avec l'API Hugging Face");
+        throw new Error(`API Error (${response.status}): ${errorText}`);
       }
-      
-      toast.error("Erreur lors de la communication avec l'API Hugging Face");
-      throw new Error(`API Error (${response.status}): ${errorText}`);
     }
 
-    // Store the response data immediately
     const result = await response.json();
     
     if (Array.isArray(result) && result.length > 0) {
