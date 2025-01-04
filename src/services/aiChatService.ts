@@ -57,6 +57,7 @@ export async function saveMessage(message: Message) {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
+    // First, get the API token from Supabase secrets
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
@@ -103,20 +104,35 @@ ${message}
       }
     );
 
+    // Clone the response before reading the body
+    const responseClone = response.clone();
+    
+    // Try to parse the response as JSON first
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      // If JSON parsing fails, try to get the text
+      const textError = await responseClone.text();
+      errorData = { error: textError };
+    }
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
       console.error("Hugging Face API Error:", errorData);
       
       if (response.status === 400 && errorData?.error?.includes("Authorization")) {
-        toast.error("Le token d'API semble invalide");
-        throw new Error("Invalid API token");
+        toast.error("Le token d'API Hugging Face semble invalide. Veuillez le vérifier.");
+        throw new Error("Invalid Hugging Face API token");
+      } else if (response.status === 429) {
+        toast.error("Trop de requêtes. Veuillez réessayer dans quelques instants.");
+        throw new Error("Rate limit exceeded");
       }
       
-      toast.error("Erreur lors de la communication avec l'API");
-      throw new Error(`API Error (${response.status})`);
+      toast.error("Erreur lors de la communication avec l'API Hugging Face");
+      throw new Error(`API Error (${response.status}): ${errorData?.error || 'Unknown error'}`);
     }
 
-    const result = await response.json();
+    const result = errorData; // We already parsed the response above
     
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text;
@@ -125,13 +141,15 @@ ${message}
       }
     }
 
-    toast.error("Format de réponse invalide");
+    toast.error("Format de réponse invalide de l'API Hugging Face");
     throw new Error("Invalid response format from API");
 
   } catch (error) {
     console.error("Error generating AI response:", error);
-    if (!toast.error) {
-      toast.error("Erreur lors de la génération de la réponse");
+    if (error instanceof Error) {
+      toast.error(`Erreur: ${error.message}`);
+    } else {
+      toast.error("Erreur inattendue lors de la génération de la réponse");
     }
     throw error;
   }
