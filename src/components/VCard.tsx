@@ -178,13 +178,24 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.font}`}
+      className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.font} ${
+        isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20' : 'relative'
+      }`}
       style={{ 
         '--accent-color': selectedStyle.color,
         '--secondary-color': selectedStyle.secondaryColor 
       } as React.CSSProperties}
     >
-      <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient} ${selectedStyle.borderStyle || ''}`}>
+      {isEditing && (
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm" />
+      )}
+      
+      <Card className={`relative border-none shadow-lg ${
+        isEditing 
+          ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
+          : `bg-gradient-to-br ${selectedStyle.bgGradient}`
+        } ${selectedStyle.borderStyle || ''}`}
+      >
         <CardContent className="p-6">
           <div className="space-y-8">
             <VCardStyleSelector
