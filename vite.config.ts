@@ -18,9 +18,9 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     strictPort: true,
     hmr: {
-      host: 'localhost',
-      protocol: 'ws',
-      port: 8080
+      clientPort: 443,
+      protocol: 'wss',
+      host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
     },
     watch: {
       usePolling: true,
