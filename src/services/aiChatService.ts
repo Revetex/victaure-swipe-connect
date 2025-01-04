@@ -1,6 +1,29 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+export async function loadMessages() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    const { data, error } = await supabase
+      .from("ai_chat_messages")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("Error loading messages:", error);
+      throw error;
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("Error in loadMessages:", error);
+    return [];
+  }
+}
+
 export async function saveMessage(message: any) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("User not authenticated");
@@ -16,20 +39,6 @@ export async function saveMessage(message: any) {
     }]);
 
   if (error) throw error;
-}
-
-export async function loadMessages() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-
-  const { data, error } = await supabase
-    .from("ai_chat_messages")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: true });
-
-  if (error) throw error;
-  return data || [];
 }
 
 export async function generateAIResponse(message: string, profile?: any) {
@@ -85,13 +94,15 @@ ${message}
     );
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.text();
       console.error("Hugging Face API Error Response:", errorData);
       
       if (response.status === 503) {
         throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
+      } else if (response.status === 400) {
+        throw new Error("Erreur d'authentification avec l'API Hugging Face. Veuillez vérifier votre clé API.");
       } else {
-        throw new Error(`Erreur API Hugging Face: ${errorData.error || 'Erreur inconnue'}`);
+        throw new Error(`Erreur API Hugging Face: ${errorData || 'Erreur inconnue'}`);
       }
     }
 
