@@ -6,10 +6,13 @@ import { VCardExperiences } from "@/components/VCardExperiences";
 import { VCardCertifications } from "@/components/VCardCertifications";
 import { VCardEducation } from "@/components/VCardEducation";
 import { CardContent } from "@/components/ui/card";
-import { VCardStyleSelector } from "./VCardStyleSelector";
+import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
 import { StyleOption } from "./types";
 import { UserProfile } from "@/types/profile";
-import { VCardActions } from "@/components/VCardActions";
+import { Button } from "@/components/ui/button";
+import { Download, Edit2, Save } from "lucide-react";
+import { toast } from "sonner";
+import { generateVCardPDF } from "@/utils/pdfGenerator";
 
 interface VCardContentProps {
   profile: UserProfile;
@@ -54,6 +57,16 @@ export function VCardContent({
         ...profile,
         skills: profile.skills.filter(skill => skill !== skillToRemove),
       });
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      await generateVCardPDF(profile, selectedStyle.color);
+      toast.success("PDF téléchargé avec succès");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Erreur lors de la génération du PDF");
     }
   };
 
@@ -108,20 +121,38 @@ export function VCardContent({
             isEditing={isEditing}
             setProfile={setProfile}
           />
-        </div>
 
-        <VCardActions
-          isEditing={isEditing}
-          onShare={() => {}}
-          onDownload={() => {}}
-          onDownloadPDF={() => {}}
-          onDownloadBusinessPDF={() => {}}
-          onDownloadCVPDF={() => {}}
-          onCopyLink={() => {}}
-          onSave={() => handleEditStateChange(false)}
-          onApplyChanges={() => {}}
-          setIsEditing={handleEditStateChange}
-        />
+          <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/20">
+            {isEditing ? (
+              <Button
+                onClick={() => handleEditStateChange(false)}
+                style={{ backgroundColor: selectedStyle.color }}
+                className="text-white transition-colors"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Sauvegarder
+              </Button>
+            ) : (
+              <Button
+                onClick={() => handleEditStateChange(true)}
+                style={{ backgroundColor: selectedStyle.color }}
+                className="text-white transition-colors"
+              >
+                <Edit2 className="mr-2 h-4 w-4" />
+                Modifier mon profil
+              </Button>
+            )}
+
+            <Button
+              onClick={handleDownloadPDF}
+              style={{ backgroundColor: selectedStyle.color }}
+              className="text-white transition-colors"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Télécharger PDF
+            </Button>
+          </div>
+        </div>
       </div>
     </CardContent>
   );
