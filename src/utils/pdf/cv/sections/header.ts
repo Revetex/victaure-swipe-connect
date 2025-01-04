@@ -1,6 +1,6 @@
-import type { ExtendedJsPDF } from '../../types';
-import type { UserProfile } from '@/types/profile';
-import { pdfStyles } from '../styles';
+import { ExtendedJsPDF } from "@/types/pdf";
+import { UserProfile } from "@/types/profile";
+import { pdfStyles } from "../styles";
 
 export const renderHeader = async (
   doc: ExtendedJsPDF,
