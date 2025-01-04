@@ -92,7 +92,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      await generatePDF(profile, selectedStyle);
+      await generatePDF(profile);
       toast.success("PDF généré avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -106,7 +106,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      await generateBusinessPDF(profile, selectedStyle);
+      await generateBusinessPDF(profile);
       toast.success("Business PDF généré avec succès");
     } catch (error) {
       console.error('Error generating Business PDF:', error);
@@ -120,7 +120,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      await generateCVPDF(profile, selectedStyle);
+      await generateCVPDF(profile);
       toast.success("CV PDF généré avec succès");
     } catch (error) {
       console.error('Error generating CV PDF:', error);

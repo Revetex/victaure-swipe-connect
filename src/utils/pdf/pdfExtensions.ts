@@ -39,5 +39,9 @@ export function extendPdfDocument(baseDoc: jsPDF): ExtendedJsPDF {
     return this;
   };
 
+  doc.addSpace = function(currentY: number, space: number) {
+    return currentY + space;
+  };
+
   return doc;
 }

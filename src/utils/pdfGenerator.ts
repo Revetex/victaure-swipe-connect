@@ -1,9 +1,9 @@
-import { generateCV as generateCVPDF } from './pdf/cv';
-import { generateCV as generateVCardPDF } from './pdf/cv';
+import { generateVCardPDF } from './pdf/vcard';
+import { generateCVPDF } from './pdf/cv';
 import { generateBusinessCardPDF } from './pdf/businessCard';
 
 export { 
-  generateVCardPDF, 
+  generateVCardPDF as generatePDF,
   generateCVPDF,
-  generateBusinessCardPDF 
+  generateBusinessCardPDF as generateBusinessPDF
 };
