@@ -33,6 +33,9 @@ export async function loadMessages() {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
+    console.log("Starting AI response generation...");
+    
+    // Fetch API key with detailed logging
     console.log("Fetching Hugging Face API key...");
     const { data, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
@@ -42,13 +45,18 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Impossible de récupérer le token API. Veuillez vérifier la configuration dans Supabase.");
     }
 
-    const secretData = Array.isArray(data) ? data[0] : data;
-
-    if (!secretData?.secret || typeof secretData.secret !== 'string' || secretData.secret.trim() === '') {
-      throw new Error("Le token API Hugging Face n'est pas configuré. Veuillez l'ajouter dans les secrets Supabase.");
+    if (!data || data.length === 0) {
+      console.error("No data returned from get_secret");
+      throw new Error("Aucune donnée retournée lors de la récupération du token API");
     }
 
-    const API_TOKEN = secretData.secret;
+    const secretValue = Array.isArray(data) ? data[0].secret : data.secret;
+
+    if (!secretValue || typeof secretValue !== 'string' || secretValue.trim() === '') {
+      console.error("Invalid or empty API token");
+      throw new Error("Le token API Hugging Face n'est pas configuré correctement");
+    }
+
     console.log("API token retrieved successfully");
 
     const contextPrompt = profile ? 
@@ -68,7 +76,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${API_TOKEN}`,
+          "Authorization": `Bearer ${secretValue}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -97,7 +105,7 @@ ${message}
       if (response.status === 503) {
         throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
       } else if (response.status === 400 && errorData.error?.includes("token seems invalid")) {
-        throw new Error("Le token d'API Hugging Face n'est pas valide. Veuillez vérifier votre configuration dans les secrets Supabase.");
+        throw new Error("Le token d'API Hugging Face n'est pas valide. Veuillez vérifier votre configuration.");
       } else {
         throw new Error(`Erreur API Hugging Face: ${errorData.error || 'Erreur inconnue'}`);
       }
