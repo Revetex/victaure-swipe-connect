@@ -24,22 +24,18 @@ export async function loadMessages() {
 export async function generateAIResponse(message: string, profile?: any) {
   try {
     console.log("Generating AI response...");
-    console.log("Fetching API token...");
-
-    const { data: secretData, error: secretError } = await supabase.functions.invoke('get-secret', {
-      body: { 
-        secret_name: 'HUGGING_FACE_ACCESS_TOKEN'
-      }
-    });
-
-    if (secretError) {
+    
+    const { data: secretData, error: secretError } = await supabase
+      .rpc('get_secret', { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' });
+    
+    if (secretError || !secretData) {
       console.error("Error fetching API token:", secretError);
       throw new Error("Failed to fetch API token");
     }
 
-    const API_TOKEN = secretData.secret;
-    console.log("API token retrieved successfully");
+    const API_TOKEN = secretData;
 
+    // Include profile context if provided
     const contextPrompt = profile ? 
       `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
     
