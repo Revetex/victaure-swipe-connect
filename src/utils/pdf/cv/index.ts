@@ -15,9 +15,14 @@ export const generateCV = async (
       format: 'a4'
     }) as ExtendedJsPDF;
 
-    // Set colors based on selected style
-    const primaryColor = selectedStyle.color;
-    const secondaryColor = selectedStyle.secondaryColor;
+    // Apply selected style colors
+    const primaryColor = selectedStyle.colors.primary;
+    const secondaryColor = selectedStyle.colors.secondary;
+    const backgroundColor = selectedStyle.colors.background;
+
+    // Add background color
+    doc.setFillColor(backgroundColor);
+    doc.rect(0, 0, 210, 297, 'F');
 
     // Add Victaure logo at the top left
     try {
@@ -47,22 +52,6 @@ export const generateCV = async (
     doc.setFont('helvetica', 'normal');
     doc.text(profile.role || 'Non défini', 20, currentY);
     currentY += 15;
-
-    // Contact information
-    doc.setTextColor(51, 51, 51); // Default text color
-    doc.setFontSize(12);
-    doc.text(`Email: ${profile.email}`, 20, currentY);
-    currentY += 6;
-    
-    if (profile.phone) {
-      doc.text(`Téléphone: ${profile.phone}`, 20, currentY);
-      currentY += 6;
-    }
-    
-    if (profile.city || profile.state) {
-      doc.text(`Localisation: ${[profile.city, profile.state].filter(Boolean).join(', ')}`, 20, currentY);
-      currentY += 10;
-    }
 
     // Bio section if available
     if (profile.bio) {
@@ -95,6 +84,25 @@ export const generateCV = async (
       const skillsLines = doc.splitTextToSize(skillsText, 170);
       doc.text(skillsLines, 20, currentY);
       currentY += skillsLines.length * 5 + 10;
+    }
+
+    // Contact information at the bottom
+    doc.setTextColor(51, 51, 51);
+    doc.setFontSize(12);
+    let contactY = 250;
+    
+    if (profile.email) {
+      doc.text(`Email: ${profile.email}`, 20, contactY);
+      contactY += 6;
+    }
+    
+    if (profile.phone) {
+      doc.text(`Téléphone: ${profile.phone}`, 20, contactY);
+      contactY += 6;
+    }
+    
+    if (profile.city || profile.state) {
+      doc.text(`Localisation: ${[profile.city, profile.state].filter(Boolean).join(', ')}`, 20, contactY);
     }
 
     // Add QR code at the bottom right
