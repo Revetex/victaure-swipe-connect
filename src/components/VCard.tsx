@@ -92,7 +92,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      const doc = await generateVCard(profile);
+      const doc = await generateVCard(profile, selectedStyle);
       doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
       toast.success("PDF généré avec succès");
     } catch (error) {
@@ -107,7 +107,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      const doc = await generateBusinessCard(profile);
+      const doc = await generateBusinessCard(profile, selectedStyle);
       doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
       toast.success("Business PDF généré avec succès");
     } catch (error) {
@@ -122,7 +122,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      const doc = await generateCV(profile);
+      const doc = await generateCV(profile, selectedStyle);
       doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
       toast.success("CV PDF généré avec succès");
     } catch (error) {
