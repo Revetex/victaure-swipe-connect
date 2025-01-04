@@ -6,6 +6,8 @@ export interface StyleOption {
   font: string;
   bgGradient: string;
   borderStyle?: string;
+  displayStyle?: string;
+  accentGradient?: string;
   colors: {
     primary: string;
     secondary: string;

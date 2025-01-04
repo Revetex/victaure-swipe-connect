@@ -122,7 +122,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      const doc = await generateCV(profile, selectedStyle);
+      const doc = await generateCV(profile);
       doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
       toast.success("CV PDF généré avec succès");
     } catch (error) {

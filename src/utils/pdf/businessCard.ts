@@ -29,8 +29,12 @@ export const generateBusinessCard = async (
         img.onerror = reject;
         img.src = profile.avatar_url;
       });
-      // Position photo on the left side
-      doc.addImage(img, 'JPEG', 5, 5, 20, 20, undefined, 'MEDIUM');
+      
+      // Position photo on the left side with better spacing
+      const imgSize = 15;
+      const imgX = 5;
+      const imgY = (53.98 - imgSize) / 2;
+      doc.addImage(img, 'JPEG', imgX, imgY, imgSize, imgSize, undefined, 'MEDIUM');
     } catch (error) {
       console.error('Error loading profile image:', error);
     }
@@ -40,30 +44,32 @@ export const generateBusinessCard = async (
   doc.setTextColor(255, 255, 255);
 
   // Add name and role with better spacing
+  const textStartX = profile.avatar_url ? 25 : 5;
+  
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text(profile.full_name || '', 30, 12);
+  doc.text(profile.full_name || '', textStartX, 20);
   
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
-  doc.text(profile.role || '', 30, 20);
+  doc.text(profile.role || '', textStartX, 26);
 
   // Add contact details with better layout
   doc.setFontSize(9);
-  let contactY = 28;
+  let contactY = 32;
   
   if (profile.email) {
-    doc.text(profile.email, 30, contactY);
-    contactY += 6;
+    doc.text(profile.email, textStartX, contactY);
+    contactY += 5;
   }
   
   if (profile.phone) {
-    doc.text(profile.phone, 30, contactY);
-    contactY += 6;
+    doc.text(profile.phone, textStartX, contactY);
+    contactY += 5;
   }
   
   if (profile.city) {
-    doc.text(profile.city, 30, contactY);
+    doc.text(profile.city, textStartX, contactY);
   }
 
   // Add QR code on the right side
