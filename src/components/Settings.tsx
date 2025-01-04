@@ -1,4 +1,4 @@
-import { LogOut, Bell, Moon, Lock } from "lucide-react";
+import { LogOut, Bell, Moon, Lock, Sun, Monitor } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { PasswordChangeSection } from "./settings/PasswordChangeSection";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -74,21 +75,44 @@ export function Settings() {
         <motion.div variants={itemVariants}>
           <SettingsSection title="Apparence">
             <div className={cn(
-              "flex items-center justify-between space-x-4 p-3 rounded-lg",
+              "p-3 rounded-lg",
               "hover:bg-muted/50 dark:hover:bg-muted/25 transition-colors",
               "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
             )}>
-              <Label className="text-sm cursor-pointer flex items-center gap-2">
+              <Label className="text-sm mb-4 flex items-center gap-2">
                 <Moon className="h-4 w-4" />
-                Mode sombre
+                Thème
               </Label>
-              <Switch
-                checked={theme === "dark"}
-                onCheckedChange={(checked) => {
-                  setTheme(checked ? "dark" : "light");
-                  toast.success(`Mode ${checked ? "sombre" : "clair"} activé`);
+              <RadioGroup
+                value={theme}
+                onValueChange={(value) => {
+                  setTheme(value);
+                  toast.success(`Thème ${value === 'light' ? 'clair' : value === 'dark' ? 'sombre' : 'système'} activé`);
                 }}
-              />
+                className="grid gap-4 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="light" id="light" />
+                  <Label htmlFor="light" className="flex items-center gap-2">
+                    <Sun className="h-4 w-4" />
+                    Clair
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="dark" id="dark" />
+                  <Label htmlFor="dark" className="flex items-center gap-2">
+                    <Moon className="h-4 w-4" />
+                    Sombre
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="system" id="system" />
+                  <Label htmlFor="system" className="flex items-center gap-2">
+                    <Monitor className="h-4 w-4" />
+                    Système
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
           </SettingsSection>
         </motion.div>
