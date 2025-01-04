@@ -1,6 +1,7 @@
 import { StyleOption } from "./types";
 import { VCardStyleSelectorMinimal } from "./VCardStyleSelectorMinimal";
 import { motion } from "framer-motion";
+import { styleOptions } from "./styles";
 
 interface VCardStyleSelectorProps {
   selectedStyle: StyleOption;
