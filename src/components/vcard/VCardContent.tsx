@@ -5,11 +5,11 @@ import { VCardSkills } from "@/components/VCardSkills";
 import { VCardExperiences } from "@/components/VCardExperiences";
 import { VCardCertifications } from "@/components/VCardCertifications";
 import { VCardEducation } from "@/components/VCardEducation";
-import { CardContent } from "../ui/card";
+import { CardContent } from "@/components/ui/card";
 import { VCardStyleSelector } from "./VCardStyleSelector";
 import { StyleOption } from "./types";
-import { styleOptions } from "./styles";
 import { UserProfile } from "@/types/profile";
+import { VCardActions } from "@/components/VCardActions";
 
 interface VCardContentProps {
   profile: UserProfile;

@@ -4,7 +4,7 @@ export const styleOptions: StyleOption[] = [
   {
     id: 1,
     name: "Classique",
-    color: "#0EA5E9", // Sky blue for better contrast
+    color: "#0EA5E9",
     font: "poppins",
     displayStyle: "default",
     bgGradient: "from-sky-600 via-sky-700 to-sky-800",
