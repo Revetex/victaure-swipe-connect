@@ -29,7 +29,7 @@ export const generateVCardPDF = async (profile: UserProfile) => {
         img.onerror = reject;
         img.src = profile.avatar_url;
       });
-      doc.addImage(img, 'JPEG', 20, 20, 40, 40);
+      doc.addImage(img, 'JPEG', 20, 20, 40, 40, undefined, 'FAST');
       doc.setDrawColor(200, 200, 200);
       doc.rect(20, 20, 40, 40, 'S');
     } catch (error) {
@@ -47,7 +47,7 @@ export const generateVCardPDF = async (profile: UserProfile) => {
         light: '#FFFFFF'
       }
     });
-    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30);
+    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30, undefined, 'FAST');
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
