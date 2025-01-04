@@ -13,13 +13,18 @@ async function getHuggingFaceApiKey(): Promise<string> {
     throw new Error('Failed to retrieve API key');
   }
 
-  return data.secret;
+  // Ensure we're getting the secret string from the response
+  return data.secret || '';
 }
 
 export async function generateAIResponse(message: string): Promise<string> {
   try {
     const apiKey = await getHuggingFaceApiKey();
     
+    if (!apiKey) {
+      throw new Error('No API key available');
+    }
+
     const response = await fetch(
       `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
       {
@@ -31,7 +36,7 @@ export async function generateAIResponse(message: string): Promise<string> {
         body: JSON.stringify({
           inputs: `${SYSTEM_PROMPT}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
-            max_new_tokens: 1000,
+            max_new_tokens: HUGGING_FACE_CONFIG.maxTokens,
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
@@ -42,13 +47,16 @@ export async function generateAIResponse(message: string): Promise<string> {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to generate AI response');
+      const errorData = await response.json();
+      console.error('Hugging Face API error:', errorData);
+      throw new Error(errorData.error || 'Failed to generate AI response');
     }
 
     const data = await response.json();
     return data[0]?.generated_text || 'Je suis désolé, je ne peux pas répondre pour le moment.';
   } catch (error) {
     console.error('Error generating AI response:', error);
+    toast.error("Erreur lors de la génération de la réponse");
     throw error;
   }
 }
