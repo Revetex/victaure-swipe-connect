@@ -53,7 +53,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Impossible de récupérer le token API. Veuillez configurer votre clé API Hugging Face dans les paramètres.");
     }
 
-    if (!secretData.trim()) {
+    if (!secretData[0]?.secret?.trim()) {
       throw new Error("La clé API Hugging Face n'est pas configurée. Veuillez l'ajouter dans les paramètres.");
     }
 
@@ -75,7 +75,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${secretData}`,
+          "Authorization": `Bearer ${secretData[0].secret}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -98,18 +98,18 @@ ${message}
     );
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error("Hugging Face API Error Response:", errorData);
+      const errorText = await response.text();
+      console.error("Hugging Face API Error Response:", errorText);
       
       if (response.status === 503) {
         throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
       } else if (response.status === 400) {
-        if (errorData.includes("token seems invalid")) {
+        if (errorText.includes("token seems invalid")) {
           throw new Error("La clé API Hugging Face semble invalide. Veuillez vérifier et mettre à jour votre clé API dans les paramètres.");
         }
         throw new Error("Erreur d'authentification avec l'API Hugging Face. Veuillez vérifier votre clé API.");
       } else {
-        throw new Error(`Erreur API Hugging Face: ${errorData || 'Erreur inconnue'}`);
+        throw new Error(`Erreur API Hugging Face: ${errorText || 'Erreur inconnue'}`);
       }
     }
 
