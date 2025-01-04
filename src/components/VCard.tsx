@@ -32,16 +32,20 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   useEffect(() => {
     const loadFonts = async () => {
-      await Promise.all([
-        document.fonts.load("1em Poppins"),
-        document.fonts.load("1em Montserrat"),
-        document.fonts.load("1em Playfair Display"),
-        document.fonts.load("1em Roboto"),
-        document.fonts.load("1em Open Sans"),
-        document.fonts.load("1em Inter"),
-        document.fonts.load("1em Quicksand"),
-        document.fonts.load("1em Lato"),
-      ]);
+      try {
+        await Promise.all([
+          document.fonts.load("1em Poppins"),
+          document.fonts.load("1em Montserrat"),
+          document.fonts.load("1em Playfair Display"),
+          document.fonts.load("1em Roboto"),
+          document.fonts.load("1em Open Sans"),
+          document.fonts.load("1em Inter"),
+          document.fonts.load("1em Quicksand"),
+          document.fonts.load("1em Lato"),
+        ]);
+      } catch (error) {
+        console.error('Error loading fonts:', error);
+      }
     };
     loadFonts();
   }, []);
@@ -86,14 +90,23 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   };
 
   const handleDownloadPDF = async () => {
-    if (!profile) return;
+    if (!profile) {
+      toast.error("Aucun profil trouvé");
+      return;
+    }
+
     try {
       setIsPdfGenerating(true);
+      toast.loading("Génération du PDF en cours...");
+      
       await generateVCardPDF(profile, selectedStyle.color);
+      
+      toast.dismiss();
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error("Erreur lors de la génération du PDF");
+      toast.dismiss();
+      toast.error("Erreur lors de la génération du PDF. Veuillez réessayer.");
     } finally {
       setIsPdfGenerating(false);
     }
@@ -205,7 +218,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                 onClick={handleDownloadPDF}
                 disabled={isPdfGenerating}
                 style={{ backgroundColor: selectedStyle.color }}
-                className="text-white transition-colors"
+                className="text-white transition-colors disabled:opacity-50"
               >
                 <Download className="mr-2 h-4 w-4" />
                 {isPdfGenerating ? 'Génération...' : 'Télécharger PDF'}

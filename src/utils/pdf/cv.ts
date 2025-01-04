@@ -11,6 +11,10 @@ import { renderEducation } from './cv/sections/education';
 import { renderFooter } from './cv/sections/footer';
 
 export const generateVCardPDF = async (profile: UserProfile, accentColor: string = '#1E40AF') => {
+  if (!profile) {
+    throw new Error('No profile data provided');
+  }
+
   try {
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -75,7 +79,7 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     doc.save(`${cleanName}_vcard.pdf`);
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw new Error('Failed to generate PDF');
+    throw new Error('Failed to generate PDF: ' + (error as Error).message);
   }
 };
 
