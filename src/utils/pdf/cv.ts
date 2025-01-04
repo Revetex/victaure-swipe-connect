@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from './styles';
-import type { ExtendedJsPDF } from './types';
+import type { ExtendedJsPDF } from '../types';
 import { renderHeader } from './cv/sections/header';
 import { renderContact } from './cv/sections/contact';
 import { renderBio } from './cv/sections/bio';
@@ -16,30 +16,65 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
   }
 
   try {
+    // Initialize PDF document with A4 size
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4'
-    }) as unknown as ExtendedJsPDF;
+    }) as ExtendedJsPDF;
 
-    // Set gradient background
+    // Set document properties
+    doc.setProperties({
+      title: `CV - ${profile.full_name || 'No Name'}`,
+      subject: 'Curriculum Vitae',
+      author: profile.full_name || 'Unknown',
+      keywords: 'cv, resume, curriculum vitae',
+      creator: 'Victaure CV Generator'
+    });
+
+    // Set initial position
+    let yPos = pdfStyles.margins.top;
+
+    // Set document styles
+    doc.setFont('helvetica');
+    doc.setFontSize(pdfStyles.fonts.body.size);
+    doc.setTextColor(pdfStyles.colors.text.primary);
+
+    // Add white background
+    doc.setFillColor(255, 255, 255);
+    doc.rect(0, 0, 210, 297, 'F');
+
+    // Add gradient header background
     const gradientSteps = 15;
     for (let i = 0; i < gradientSteps; i++) {
-      const opacity = 0.03 - (i / gradientSteps) * 0.02;
-      const alpha = Math.floor(opacity * 255);
-      const hexOpacity = alpha.toString(16).padStart(2, '0');
-      doc.setFillColor(accentColor + hexOpacity);
-      doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
+      const opacity = 0.1 - (i / gradientSteps) * 0.08;
+      doc.setGlobalAlpha(opacity);
+      doc.setFillColor(accentColor);
+      doc.rect(0, (i * 50) / gradientSteps, 210, 50 / gradientSteps, 'F');
+    }
+    doc.setGlobalAlpha(1);
+
+    // Render sections
+    yPos = await renderHeader(doc, profile, yPos);
+    yPos = renderContact(doc, profile, yPos + 10);
+    
+    if (profile.bio) {
+      yPos = renderBio(doc, profile, yPos + 10);
+    }
+    
+    if (profile.skills && profile.skills.length > 0) {
+      yPos = renderSkills(doc, profile, yPos + 10);
+    }
+    
+    if (profile.experiences && profile.experiences.length > 0) {
+      yPos = renderExperiences(doc, profile, yPos + 10);
+    }
+    
+    if (profile.education && profile.education.length > 0) {
+      yPos = renderEducation(doc, profile, yPos + 10);
     }
 
-    // Add sections
-    let yPos = pdfStyles.margins.top;
-    yPos = await renderHeader(doc, profile, yPos);
-    yPos = renderContact(doc, profile, yPos);
-    yPos = renderBio(doc, profile, yPos);
-    yPos = renderSkills(doc, profile, yPos);
-    yPos = renderExperiences(doc, profile, yPos);
-    yPos = renderEducation(doc, profile, yPos);
+    // Add footer with QR code
     await renderFooter(doc, accentColor);
 
     // Save the PDF
