@@ -20,21 +20,21 @@ export function useAuth() {
         throw sessionError;
       }
 
+      // Clear all storage first, regardless of session state
+      localStorage.clear();
+      sessionStorage.clear();
+      
       if (!session) {
-        console.log('No active session found, clearing storage');
-        localStorage.clear();
-        sessionStorage.clear();
+        console.log('No active session found');
         setIsAuthenticated(false);
         navigate('/auth');
         return;
       }
 
-      // Clear all storage first
-      localStorage.clear();
-      sessionStorage.clear();
-      
       // Attempt signout
-      const { error: signOutError } = await supabase.auth.signOut();
+      const { error: signOutError } = await supabase.auth.signOut({
+        scope: 'global' // This ensures all sessions are invalidated
+      });
       
       if (signOutError) {
         console.error("Sign out error:", signOutError);
@@ -46,6 +46,9 @@ export function useAuth() {
       toast.success('Déconnexion réussie');
     } catch (error) {
       console.error('Sign out error:', error);
+      // Even if there's an error, we want to clear the local state
+      setIsAuthenticated(false);
+      navigate('/auth');
       toast.error('Erreur lors de la déconnexion');
     } finally {
       setIsLoading(false);
@@ -80,7 +83,9 @@ export function useAuth() {
         
         if (userError) {
           console.error("User verification error:", userError);
-          throw userError;
+          // If there's a user error, sign out to clear any invalid tokens
+          await signOut();
+          return;
         }
 
         if (!user) {
@@ -111,8 +116,11 @@ export function useAuth() {
       if (event === 'SIGNED_IN' && session) {
         setIsAuthenticated(true);
         navigate('/dashboard');
-      } else if (event === 'SIGNED_OUT' || !session) {
+      } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
         await signOut();
+      } else if (event === 'TOKEN_REFRESHED' && session) {
+        setIsAuthenticated(true);
+        console.log("Token refreshed successfully");
       }
     });
 
