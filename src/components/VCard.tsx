@@ -14,6 +14,7 @@ import { VCardActions } from "./vcard/VCardActions";
 import { VCardContent } from "./vcard/VCardContent";
 import { QRCodeSVG } from "qrcode.react";
 import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -47,6 +48,16 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     loadFonts();
   }, []);
 
+  // Load the saved style when profile loads
+  useEffect(() => {
+    if (profile?.style_id) {
+      const savedStyle = styleOptions.find(style => style.id === profile.style_id);
+      if (savedStyle) {
+        setSelectedStyle(savedStyle);
+      }
+    }
+  }, [profile]);
+
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
     if (onEditStateChange) {
@@ -56,6 +67,13 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   const handleSave = async () => {
     try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ style_id: selectedStyle.id })
+        .eq('id', profile?.id);
+
+      if (error) throw error;
+
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -84,8 +102,22 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     setProfile({ ...profile, skills: updatedSkills });
   };
 
-  const handleStyleSelect = (style: StyleOption) => {
+  const handleStyleSelect = async (style: StyleOption) => {
     setSelectedStyle(style);
+    if (!isEditing) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ style_id: style.id })
+          .eq('id', profile?.id);
+
+        if (error) throw error;
+        toast.success("Style mis à jour avec succès");
+      } catch (error) {
+        console.error('Error updating style:', error);
+        toast.error("Erreur lors de la mise à jour du style");
+      }
+    }
   };
 
   const handleDownloadVCard = async () => {

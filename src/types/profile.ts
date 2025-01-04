@@ -53,4 +53,5 @@ export interface UserProfile {
   company_name?: string | null;
   company_size?: string | null;
   industry?: string | null;
+  style_id?: string;
 }

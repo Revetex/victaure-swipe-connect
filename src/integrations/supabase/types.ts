@@ -615,6 +615,7 @@ export type Database = {
           role: string
           skills: string[] | null
           state: string | null
+          style_id: string | null
           updated_at: string | null
           website: string | null
         }
@@ -638,6 +639,7 @@ export type Database = {
           role: string
           skills?: string[] | null
           state?: string | null
+          style_id?: string | null
           updated_at?: string | null
           website?: string | null
         }
@@ -661,6 +663,7 @@ export type Database = {
           role?: string
           skills?: string[] | null
           state?: string | null
+          style_id?: string | null
           updated_at?: string | null
           website?: string | null
         }
