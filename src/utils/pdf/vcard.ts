@@ -3,23 +3,24 @@ import QRCode from 'qrcode';
 import { pdfColors } from './colors';
 import type { UserProfile } from '@/types/profile';
 import { drawHeader, drawSection } from './helpers';
+import type { ExtendedJsPDF } from './types';
 
 export const generateVCardPDF = async (profile: UserProfile) => {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
-  });
+  }) as ExtendedJsPDF;
 
-  // Add gradient background
+  // Add gradient background with opacity
   const gradientSteps = 15;
   for (let i = 0; i < gradientSteps; i++) {
     const opacity = 0.05 - (i / gradientSteps) * 0.03;
     doc.setFillColor(pdfColors.background);
-    doc.setGlobalAlpha(opacity);
+    (doc as any).setGlobalAlpha(opacity);
     doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
   }
-  doc.setGlobalAlpha(1);
+  (doc as any).setGlobalAlpha(1);
 
   // Header section with profile info
   doc.setFontSize(24);

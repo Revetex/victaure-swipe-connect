@@ -2,6 +2,7 @@ import type { jsPDF } from 'jspdf';
 
 export interface ExtendedJsPDF extends Omit<jsPDF, 'roundedRect'> {
   roundedRect: (x: number, y: number, w: number, h: number, rx: number, ry: number, style: string) => void;
+  setGlobalAlpha: (alpha: number) => void;
 }
 
 export interface PDFStyles {
