@@ -53,7 +53,8 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Impossible de récupérer le token API. Veuillez configurer votre clé API Hugging Face dans les paramètres.");
     }
 
-    if (!secretData[0]?.secret?.trim()) {
+    const apiKey = secretData[0]?.secret;
+    if (!apiKey?.trim()) {
       throw new Error("La clé API Hugging Face n'est pas configurée. Veuillez l'ajouter dans les paramètres.");
     }
 
@@ -75,7 +76,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${secretData[0].secret}`,
+          "Authorization": `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -116,7 +117,7 @@ ${message}
     const result = await response.json();
     console.log("API Response:", result);
 
-    if (!result || !result[0] || !result[0].generated_text) {
+    if (!result || !Array.isArray(result) || !result[0]?.generated_text) {
       throw new Error("Format de réponse invalide de l'API");
     }
 
