@@ -127,22 +127,14 @@ export async function generateAIResponse(message: string, profile?: any) {
       );
     }
 
-    const responseText = await response.text();
-    let result;
-    try {
-      result = JSON.parse(responseText);
-    } catch (e) {
-      console.error("Error parsing API response:", e);
+    const responseData = await response.json();
+    console.log("API Response:", responseData);
+
+    if (!responseData || !Array.isArray(responseData) || !responseData[0]?.generated_text) {
       throw new Error("Format de réponse invalide de l'API");
     }
 
-    console.log("API Response:", result);
-
-    if (!result || !Array.isArray(result) || !result[0]?.generated_text) {
-      throw new Error("Format de réponse invalide de l'API");
-    }
-
-    return result[0].generated_text.trim();
+    return responseData[0].generated_text.trim();
   } catch (error) {
     console.error("Error in AI response generation:", error);
     throw error;
