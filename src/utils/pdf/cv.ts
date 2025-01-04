@@ -17,11 +17,48 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
 
   try {
     // Initialize PDF document with A4 size
-    const doc = new jsPDF({
+    const baseDoc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4'
-    }) as ExtendedJsPDF;
+    });
+
+    // Add custom methods to the document
+    const doc = baseDoc as unknown as ExtendedJsPDF;
+    doc.setGlobalAlpha = function(alpha: number) {
+      // @ts-ignore - This is a valid internal method
+      this.internal.write(alpha + " g");
+    };
+    doc.roundedRect = function(x: number, y: number, w: number, h: number, rx: number, ry: number, style: string) {
+      const r = rx;
+      const k = this.internal.scaleFactor;
+      const hp = this.internal.pageSize.getHeight();
+      
+      y = hp - y - h;
+      
+      this.setLineWidth(0.5);
+      
+      const c = 0.551915024494;
+      
+      this.lines(
+        [
+          [w - 2 * r, 0],
+          [r * c, 0, r, 0, r, -r],
+          [0, -(h - 2 * r)],
+          [0, -r * c, -r, -r, -r, -r],
+          [-(w - 2 * r), 0],
+          [-r * c, 0, -r, 0, -r, r],
+          [0, h - 2 * r],
+          [0, r * c, r, r, r, r]
+        ],
+        x + r,
+        y + h - r,
+        [1, 1],
+        style
+      );
+      
+      return this;
+    };
 
     // Set document properties
     doc.setProperties({
