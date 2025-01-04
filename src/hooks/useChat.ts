@@ -26,21 +26,48 @@ export function useChat(): ChatState & ChatActions {
         }));
         setMessages(formattedMessages);
         
-        // Si aucun message n'existe, envoyer le message d'accueil
+        // Si aucun message n'existe, générer le message d'accueil avec l'API
         if (formattedMessages.length === 0 && !hasInitialMessage) {
-          const welcomeMessage = {
-            id: crypto.randomUUID(),
-            content: "Bonjour ! Je suis M. Victaure, votre assistant IA personnel. Je suis là pour vous aider dans votre parcours professionnel. Comment puis-je vous assister aujourd'hui ?",
-            sender: "assistant" as const,
-            timestamp: new Date(),
-          };
-          
-          setMessages([welcomeMessage]);
-          await saveMessage({
-            ...welcomeMessage,
-            created_at: welcomeMessage.timestamp,
-          });
-          setHasInitialMessage(true);
+          setIsThinking(true);
+          try {
+            const welcomePrompt = "Génère un message d'accueil chaleureux en tant que M. Victaure, un assistant IA professionnel qui aide les utilisateurs dans leur parcours professionnel. Le message doit être en français, amical et encourageant.";
+            const response = await generateAIResponse(welcomePrompt);
+            
+            if (!response) {
+              throw new Error("Pas de réponse de l'IA pour le message d'accueil");
+            }
+
+            const welcomeMessage: Message = {
+              id: crypto.randomUUID(),
+              content: response,
+              sender: "assistant",
+              timestamp: new Date(),
+            };
+            
+            setMessages([welcomeMessage]);
+            await saveMessage({
+              ...welcomeMessage,
+              created_at: welcomeMessage.timestamp,
+            });
+            setHasInitialMessage(true);
+          } catch (error) {
+            console.error("Error generating welcome message:", error);
+            // En cas d'erreur, utiliser un message de secours
+            const fallbackMessage: Message = {
+              id: crypto.randomUUID(),
+              content: "Bonjour ! Je suis M. Victaure, votre assistant IA personnel. Je suis là pour vous aider dans votre parcours professionnel. Comment puis-je vous assister aujourd'hui ?",
+              sender: "assistant",
+              timestamp: new Date(),
+            };
+            setMessages([fallbackMessage]);
+            await saveMessage({
+              ...fallbackMessage,
+              created_at: fallbackMessage.timestamp,
+            });
+            setHasInitialMessage(true);
+          } finally {
+            setIsThinking(false);
+          }
         }
         
         console.log("Chat initialized with messages:", formattedMessages);
