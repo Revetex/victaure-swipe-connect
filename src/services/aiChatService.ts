@@ -63,14 +63,14 @@ export async function generateAIResponse(message: string, profile?: any): Promis
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
-    if (secretError || !secretData) {
+    if (secretError || !secretData || secretData.length === 0) {
       console.error("Error retrieving API key:", secretError);
       toast.error("Erreur lors de la récupération de la clé API");
       throw new Error("Could not retrieve the API token");
     }
 
     console.log("Successfully retrieved API key");
-    const apiKey = secretData;
+    const apiKey = secretData[0]?.secret;
     
     if (!apiKey) {
       console.error("API key is empty or undefined");
