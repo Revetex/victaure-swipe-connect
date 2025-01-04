@@ -10,42 +10,22 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export function Dashboard() {
+  const { data: stats, isLoading, error } = useDashboardStats();
   const navigate = useNavigate();
-  const [isExporting, setIsExporting] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  
-  const { 
-    data: stats, 
-    isLoading, 
-    error,
-    refetch 
-  } = useDashboardStats();
 
-  // Enhanced error handling with specific error messages
-  const handleError = (error: Error, context: string) => {
-    console.error(`Error in ${context}:`, error);
-    
-    const errorMessage = error.message || "Une erreur inattendue est survenue";
-    toast.error(errorMessage, {
-      description: `Erreur lors de ${context}`,
-      duration: 5000,
-    });
+  // Fonction pour gérer les erreurs
+  const handleError = (error: Error) => {
+    console.error("Erreur du tableau de bord:", error);
+    toast.error("Une erreur est survenue lors du chargement des données");
   };
 
-  // Enhanced export function with proper error handling and loading state
+  // Fonction pour exporter les données
   const handleExport = async () => {
-    if (isExporting) return;
-    
     try {
-      setIsExporting(true);
       const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("Vous devez être connecté pour exporter les données");
-      }
+      if (!user) throw new Error("Utilisateur non authentifié");
 
       const { data: jobsData, error: jobsError } = await supabase
         .from('jobs')
@@ -54,94 +34,43 @@ export function Dashboard() {
 
       if (jobsError) throw jobsError;
 
-      if (!jobsData?.length) {
-        toast.info("Aucune donnée à exporter");
-        return;
-      }
-
-      // Format data for CSV
-      const headers = [
-        "Titre",
-        "Description",
-        "Budget",
-        "Statut",
-        "Date de création",
-        "Type de contrat",
-        "Niveau d'expérience",
-        "Localisation"
-      ];
-
-      const rows = jobsData.map(job => [
-        job.title,
-        job.description,
-        job.budget,
-        job.status,
-        new Date(job.created_at).toLocaleDateString('fr-FR'),
-        job.contract_type,
-        job.experience_level,
-        job.location
-      ]);
-
-      // Create CSV content with proper escaping
       const csvContent = "data:text/csv;charset=utf-8," + 
-        headers.join(",") + "\n" +
-        rows.map(row => 
-          row.map(cell => 
-            typeof cell === 'string' ? 
-              `"${cell.replace(/"/g, '""')}"` : 
-              cell
-          ).join(",")
+        "Titre,Description,Budget,Statut,Date de création\n" +
+        jobsData.map(job => 
+          `${job.title},${job.description},${job.budget},${job.status},${job.created_at}`
         ).join("\n");
 
-      // Download file
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `missions_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute("download", "missions.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
       toast.success("Export réussi !");
     } catch (error) {
-      handleError(error as Error, "l'export des données");
-    } finally {
-      setIsExporting(false);
+      handleError(error as Error);
     }
   };
 
-  // Enhanced refresh function with loading state and optimistic updates
+  // Fonction pour rafraîchir les données
   const handleRefresh = async () => {
-    if (isRefreshing) return;
-    
     try {
-      setIsRefreshing(true);
-      await refetch();
-      toast.success("Données actualisées avec succès !");
+      await useDashboardStats();
+      toast.success("Données actualisées !");
     } catch (error) {
-      handleError(error as Error, "l'actualisation des données");
-    } finally {
-      setIsRefreshing(false);
+      handleError(error as Error);
     }
   };
 
-  // Enhanced navigation with state persistence
+  // Fonction pour naviguer vers la création de mission
   const handleCreateJob = () => {
-    try {
-      navigate("/jobs/create", { 
-        state: { 
-          returnPath: "/dashboard",
-          timestamp: Date.now() 
-        } 
-      });
-    } catch (error) {
-      handleError(error as Error, "la navigation");
-    }
+    navigate("/jobs/create");
   };
 
-  // Handle initial error
   if (error) {
-    handleError(error as Error, "le chargement initial");
+    handleError(error as Error);
   }
 
   const containerVariants = {
@@ -168,7 +97,7 @@ export function Dashboard() {
         />
         
         <div className="mt-8">
-          <QuickActions stats={stats} isLoading={isLoading} />
+          <QuickActions stats={stats} />
         </div>
 
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -195,7 +124,7 @@ export function Dashboard() {
         </div>
 
         <motion.div 
-          className="mt-8 flex flex-wrap justify-end gap-4"
+          className="mt-8 flex justify-end gap-4"
           variants={{
             hidden: { opacity: 0, x: -20 },
             visible: { opacity: 1, x: 0 }
@@ -204,18 +133,16 @@ export function Dashboard() {
           <Button
             variant="outline"
             onClick={handleRefresh}
-            disabled={isRefreshing}
             className="bg-white dark:bg-gray-800 border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-300"
           >
-            {isRefreshing ? "Actualisation..." : "Actualiser"}
+            Actualiser
           </Button>
           <Button
             variant="outline"
             onClick={handleExport}
-            disabled={isExporting}
             className="bg-white dark:bg-gray-800 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-gray-700 transition-all duration-300"
           >
-            {isExporting ? "Export en cours..." : "Exporter"}
+            Exporter
           </Button>
           <Button
             onClick={handleCreateJob}

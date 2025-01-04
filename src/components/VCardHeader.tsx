@@ -57,14 +57,14 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-start gap-6"
+      className="flex items-start gap-4"
     >
       <div className="relative group">
-        <Avatar className="h-24 w-24 ring-2 ring-white/20">
+        <Avatar className="h-20 w-20 ring-2 ring-white/20 shrink-0">
           <AvatarImage 
             src={profile.avatar_url || ''} 
             alt={profile.full_name || ''}
-            className="object-cover"
+            className="object-cover w-full h-full"
           />
           <AvatarFallback className="bg-muted">
             <UserCircle2 className="h-12 w-12 text-muted-foreground" />
@@ -75,7 +75,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
             htmlFor="avatar-upload"
           >
-            <Upload className="h-6 w-6 text-white" />
+            <Upload className="h-5 w-5 text-white" />
             <input
               id="avatar-upload"
               type="file"
@@ -87,7 +87,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
         )}
       </div>
 
-      <div className="flex-1 min-w-0 space-y-2">
+      <div className="flex-1 min-w-0 space-y-1">
         {isEditing ? (
           <div className="space-y-4">
             <Input
@@ -105,10 +105,10 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
           </div>
         ) : (
           <>
-            <h2 className="text-2xl font-semibold text-white truncate">
+            <h2 className="text-xl font-semibold text-white truncate">
               {profile.full_name || "Nom non défini"}
             </h2>
-            <p className="text-lg text-white/90">
+            <p className="text-sm text-white/90">
               {profile.role || "Rôle non défini"}
             </p>
           </>

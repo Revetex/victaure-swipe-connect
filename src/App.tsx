@@ -1,37 +1,55 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
-import Index from "@/pages/Index";
-import PrivacyPolicy from "@/pages/PrivacyPolicy";
-import TermsOfService from "@/pages/TermsOfService";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { useAuth } from "@/hooks/useAuth";
+import "./App.css";
 
-function App() {
-  const { isAuthenticated } = useAuth();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route 
-        path="/auth" 
-        element={
-          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Auth />
-        } 
-      />
-      <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
-      <Route path="/conditions-utilisation" element={<TermsOfService />} />
-      <Route
-        path="/dashboard/*"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <TooltipProvider>
+            <div className="min-h-screen w-full overflow-y-auto">
+              <Routes>
+                <Route path="/auth" element={<Auth />} />
+                <Route 
+                  path="/" 
+                  element={
+                    <ProtectedRoute>
+                      <Index />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+              </Routes>
+              <Toaster />
+            </div>
+          </TooltipProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
-
-export default App;

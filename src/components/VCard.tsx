@@ -38,6 +38,9 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
         document.fonts.load("1em Playfair Display"),
         document.fonts.load("1em Roboto"),
         document.fonts.load("1em Open Sans"),
+        document.fonts.load("1em Inter"),
+        document.fonts.load("1em Quicksand"),
+        document.fonts.load("1em Lato"),
       ]);
     };
     loadFonts();
@@ -66,7 +69,7 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
   const handleDownloadPDF = async () => {
     if (!profile) return;
     try {
-      await generateVCardPDF(profile, selectedStyle.colorScheme.primary);
+      await generateVCardPDF(profile, selectedStyle.color);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -76,32 +79,26 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
   const handleStyleSelect = (style: StyleOption) => {
     setSelectedStyle(style);
-    document.documentElement.style.setProperty('--accent-color', style.colorScheme.primary);
-    document.documentElement.style.setProperty('--secondary-color', style.colorScheme.secondary);
+    document.documentElement.style.setProperty('--accent-color', style.color);
+    document.documentElement.style.setProperty('--secondary-color', style.secondaryColor);
     
     const vCardElement = document.querySelector('.vcard-root');
     if (vCardElement) {
-      vCardElement.className = `vcard-root font-${style.fontFamily} ${style.layout}`;
+      vCardElement.className = `vcard-root font-${style.font} style-${style.displayStyle} ${style.borderStyle || ''}`;
     }
   };
 
   const handleAddSkill = () => {
-    if (newSkill && profile?.skills) {
-      setProfile({
-        ...profile,
-        skills: [...profile.skills, newSkill],
-      });
-      setNewSkill("");
-    }
+    if (!newSkill.trim() || !profile) return;
+    const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+    setProfile({ ...profile, skills: updatedSkills });
+    setNewSkill("");
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
-    if (profile?.skills) {
-      setProfile({
-        ...profile,
-        skills: profile.skills.filter(skill => skill !== skillToRemove),
-      });
-    }
+    if (!profile) return;
+    const updatedSkills = profile.skills?.filter(skill => skill !== skillToRemove) || [];
+    setProfile({ ...profile, skills: updatedSkills });
   };
 
   if (isLoading) {
@@ -117,13 +114,13 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.fontFamily}`}
+      className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.font}`}
       style={{ 
-        '--accent-color': selectedStyle.colorScheme.primary,
-        '--secondary-color': selectedStyle.colorScheme.secondary 
+        '--accent-color': selectedStyle.color,
+        '--secondary-color': selectedStyle.secondaryColor 
       } as React.CSSProperties}
     >
-      <Card className={`border-none shadow-lg ${selectedStyle.colorScheme.primary}`}>
+      <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient} ${selectedStyle.borderStyle || ''}`}>
         <CardContent className="p-6 space-y-8">
           {isEditing && (
             <VCardStyleSelector
@@ -178,7 +175,8 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
               {isEditing ? (
                 <Button
                   onClick={handleSave}
-                  className={`text-white transition-colors ${selectedStyle.colorScheme.primary}`}
+                  style={{ backgroundColor: selectedStyle.color }}
+                  className="text-white transition-colors"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   Sauvegarder
@@ -186,7 +184,8 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
               ) : (
                 <Button
                   onClick={handleEditToggle}
-                  className={`text-white transition-colors ${selectedStyle.colorScheme.primary}`}
+                  style={{ backgroundColor: selectedStyle.color }}
+                  className="text-white transition-colors"
                 >
                   <Edit2 className="mr-2 h-4 w-4" />
                   Modifier mon profil
@@ -195,7 +194,8 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
               <Button
                 onClick={handleDownloadPDF}
-                className={`text-white transition-colors ${selectedStyle.colorScheme.primary}`}
+                style={{ backgroundColor: selectedStyle.color }}
+                className="text-white transition-colors"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger PDF

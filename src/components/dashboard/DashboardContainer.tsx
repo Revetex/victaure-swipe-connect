@@ -8,16 +8,11 @@ interface DashboardContainerProps {
 
 export function DashboardContainer({ children, containerVariants }: DashboardContainerProps) {
   return (
-    <div 
-      className="min-h-[100vh] min-h-[100dvh] w-full flex flex-col relative"
-      style={{ minHeight: `calc(var(--vh, 1vh) * 100)` }}
-    >
-      <div className="fixed inset-0 w-full h-full bg-dashboard-pattern bg-cover bg-center bg-fixed z-0" />
-      <div className="fixed inset-0 w-full h-full bg-background/80 backdrop-blur-[2px] z-0" />
-      <main className="relative z-10 flex-1 flex flex-col w-full">
-        <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-dashboard-pattern bg-cover bg-center bg-fixed">
+      <main className="flex-1 relative">
+        <div className="container mx-auto px-4 py-6 pb-24 h-[calc(100vh-8rem)] overflow-y-auto">
           <motion.div 
-            className="max-w-[1200px] mx-auto w-full flex-1 flex flex-col"
+            className="max-w-[1200px] mx-auto h-full"
             variants={containerVariants}
             initial="hidden"
             animate="visible"

@@ -13,7 +13,7 @@ export function Logo({ className, size = "md" }: LogoProps) {
   };
 
   return (
-    <div className={cn("relative group flex items-center justify-center", className)}>
+    <div className={cn("relative group", className)}>
       <img
         src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png"
         alt="Victaure Logo"

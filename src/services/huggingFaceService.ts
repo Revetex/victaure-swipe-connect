@@ -30,7 +30,7 @@ export async function generateAIResponse(message: string, profile?: any) {
         },
         body: JSON.stringify({
           inputs: `<|im_start|>system
-You are Mr. Victaure, a professional and friendly AI assistant. You help users with their job search and career development. Always respond in French and be empathetic.
+You are Mr. Victaure, a professional and friendly AI assistant. You help users with their job search and career development. Always respond in French.
 ${contextPrompt}
 <|im_end|>
 <|im_start|>user
@@ -43,8 +43,7 @@ ${message}
             temperature: 0.7,
             top_p: 0.95,
             do_sample: true,
-            return_full_text: false,
-            repetition_penalty: 1.1
+            return_full_text: false
           }
         }),
       }
@@ -53,11 +52,6 @@ ${message}
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Hugging Face API Error:", errorText);
-      
-      if (response.status === 503) {
-        toast.error("Le modèle est en cours de chargement, veuillez réessayer dans quelques secondes");
-        return "Je suis désolé, je suis momentanément indisponible. Veuillez réessayer dans quelques secondes.";
-      }
       
       if (response.status === 400 && errorText.includes("Authorization")) {
         toast.error("Le token d'API semble invalide. Veuillez vérifier votre configuration.");

@@ -15,42 +15,38 @@ export const AuthForm = memo(function AuthForm() {
         variables: {
           default: {
             colors: {
-              brand: '#0EA5E9',
-              brandAccent: '#0284C7',
-              inputBackground: theme === 'dark' ? '#0F172A' : 'white',
-              inputText: theme === 'dark' ? '#F9FAFB' : 'rgb(75, 85, 99)',
-              inputPlaceholder: theme === 'dark' ? '#6B7280' : 'rgb(156, 163, 175)',
-              inputBorder: theme === 'dark' ? '#1E293B' : 'rgb(229, 231, 235)',
-              inputBorderHover: theme === 'dark' ? '#334155' : 'rgb(209, 213, 219)',
-              inputBorderFocus: '#0EA5E9',
+              brand: 'rgb(30, 174, 219)',
+              brandAccent: 'rgb(15, 160, 206)',
+              inputBackground: 'transparent',
+              inputText: 'hsl(var(--foreground))',
+              inputPlaceholder: 'hsl(var(--muted-foreground))',
             },
             space: {
               inputPadding: '1rem',
-              buttonPadding: '1rem',
+              buttonPadding: '1.25rem',
             },
             borderWidths: {
-              buttonBorderWidth: '0px',
+              buttonBorderWidth: '1px',
               inputBorderWidth: '1px',
             },
             radii: {
-              borderRadiusButton: '0.75rem',
-              buttonBorderRadius: '0.75rem',
-              inputBorderRadius: '0.75rem',
+              borderRadiusButton: '0.5rem',
+              buttonBorderRadius: '0.5rem',
+              inputBorderRadius: '0.5rem',
             },
             fonts: {
-              bodyFontFamily: `system-ui, -apple-system, sans-serif`,
-              buttonFontFamily: `system-ui, -apple-system, sans-serif`,
-              inputFontFamily: `system-ui, -apple-system, sans-serif`,
+              bodyFontFamily: `var(--font-sans)`,
+              buttonFontFamily: `var(--font-sans)`,
+              inputFontFamily: `var(--font-sans)`,
             },
           },
         },
         className: {
-          button: "w-full bg-cyan-500 hover:bg-cyan-600 text-white transition-colors",
-          input: `w-full border focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 
-                 ${theme === 'dark' ? 'bg-slate-900 border-slate-700 text-gray-100' : 'bg-white border-gray-200 text-gray-700'}`,
-          label: "text-gray-600 dark:text-gray-300 font-medium",
-          message: "text-sm text-gray-500 dark:text-gray-400",
-          anchor: "text-cyan-500 hover:text-cyan-600 no-underline hover:underline",
+          button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px]",
+          input: "w-full h-11 text-sm bg-transparent border border-border transition-colors focus:border-primary focus:outline-none",
+          label: "text-sm text-foreground mb-2",
+          message: "text-sm text-muted-foreground",
+          anchor: "text-primary no-underline hover:underline",
         },
       }}
       providers={[]}

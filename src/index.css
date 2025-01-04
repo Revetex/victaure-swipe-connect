@@ -1,5 +1,132 @@
-@import './styles/base.css';
-@import './styles/components.css';
-@import './styles/utilities.css';
 @import './styles/glass.css';
 @import './styles/sticky-notes.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image: url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+}
+
+/* Styles spécifiques pour chaque thème */
+.style-default {
+  @apply text-gray-900;
+}
+
+.style-warm {
+  @apply text-amber-900;
+}
+
+.style-modern {
+  @apply text-emerald-900;
+}
+
+.style-elegant {
+  @apply text-blue-900;
+}
+
+.style-bold {
+  @apply text-purple-900;
+}
+
+.style-minimal {
+  @apply text-gray-800;
+}
+
+.style-creative {
+  @apply text-orange-900;
+}
+
+.style-professional {
+  @apply text-sky-900;
+}
+
+/* Classes de police personnalisées */
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif !important;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+.font-opensans {
+  font-family: 'Open Sans', sans-serif !important;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif !important;
+}
+
+.font-quicksand {
+  font-family: 'Quicksand', sans-serif !important;
+}
+
+.font-lato {
+  font-family: 'Lato', sans-serif !important;
+}

@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 
 export default function Index() {
   return (
-    <div className="min-h-screen w-full bg-background overflow-x-hidden">
+    <div className="h-screen w-full bg-background overflow-hidden">
       <DashboardLayout />
     </div>
   );

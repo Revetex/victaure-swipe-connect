@@ -1,153 +1,163 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { AuthContent } from "@/components/auth/AuthContent";
-import { AuthModal } from "@/components/auth/AuthModals";
+import { toast } from "sonner";
+import { BiometricAuth } from "@/components/auth/BiometricAuth";
+import { AuthForm } from "@/components/auth/AuthForm";
+import { Logo } from "@/components/Logo";
+import { AuthVideo } from "@/components/auth/AuthVideo";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Auth() {
-  const [showTerms, setShowTerms] = useState(false);
-  const [showPrivacy, setShowPrivacy] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const from = location.state?.from || '/dashboard';
-        navigate(from, { replace: true });
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          toast.error("Erreur de vérification de session");
+          return;
+        }
+
+        if (session) {
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          
+          if (userError) {
+            console.error("User verification error:", userError);
+            await supabase.auth.signOut();
+            return;
+          }
+
+          if (user) {
+            console.log("User already logged in, redirecting to dashboard");
+            navigate("/dashboard", { replace: true });
+          }
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        toast.error("Erreur lors de la vérification de l'authentification");
       }
     };
 
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
+      
       if (event === 'SIGNED_IN' && session) {
-        const from = location.state?.from || '/dashboard';
-        navigate(from, { replace: true });
+        toast.success("Connexion réussie");
+        navigate("/dashboard", { replace: true });
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, location]);
+  }, [navigate]);
 
   return (
-    <div className="min-h-[100vh] min-h-[100dvh] w-full flex flex-col items-center px-4 py-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 relative overflow-hidden">
+    <div className="relative min-h-screen w-full bg-background overflow-y-auto">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-dashboard-pattern bg-cover bg-center opacity-5" />
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+      <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
       
       {/* Main Content */}
-      <div className="relative z-10">
-        <AuthContent />
-
-        {/* Footer */}
-        <div className="w-full text-center space-y-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400 space-x-2">
-            <Link 
-              to="/privacy-policy"
-              className="hover:text-cyan-500 transition-colors"
-            >
-              Politique de confidentialité
-            </Link>
-            <span>•</span>
-            <Link
-              to="/terms-of-service"
-              className="hover:text-cyan-500 transition-colors"
-            >
-              Conditions d'utilisation
-            </Link>
+      <div className="relative w-full py-8 px-4">
+        <div className="container max-w-sm mx-auto space-y-8">
+          {/* Header */}
+          <div className="flex flex-col items-center space-y-2 text-center">
+            <Logo size="lg" className="mb-2" />
+            <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
+            <p className="text-sm text-muted-foreground">
+              Connectez-vous ou créez un compte pour continuer
+            </p>
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            © 2025 Victaure. Tous droits réservés.
+
+          {/* Auth Card */}
+          <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
+            <BiometricAuth />
+            <AuthForm />
+          </div>
+
+          {/* Video Section */}
+          <div className="w-full">
+            <AuthVideo />
+          </div>
+
+          {/* Legal Links */}
+          <div className="text-center text-sm pb-8">
+            <div className="space-x-2">
+              <Dialog>
+                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                  Politique de confidentialité
+                </DialogTrigger>
+                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Politique de confidentialité</DialogTitle>
+                  </DialogHeader>
+                  <div className="prose prose-sm mt-4 text-muted-foreground">
+                    <h2 className="text-foreground">1. Collecte des informations</h2>
+                    <p>Nous collectons les informations suivantes :</p>
+                    <ul className="text-muted-foreground">
+                      <li>Nom et prénom</li>
+                      <li>Adresse e-mail</li>
+                      <li>Numéro de téléphone</li>
+                      <li>Informations professionnelles</li>
+                    </ul>
+
+                    <h2 className="text-foreground">2. Utilisation des informations</h2>
+                    <p>Les informations collectées sont utilisées pour :</p>
+                    <ul className="text-muted-foreground">
+                      <li>Personnaliser l'expérience utilisateur</li>
+                      <li>Améliorer notre service</li>
+                      <li>Communiquer avec vous concernant votre compte</li>
+                    </ul>
+
+                    <h2 className="text-foreground">3. Protection des informations</h2>
+                    <p>Nous mettons en œuvre une variété de mesures de sécurité pour préserver la sécurité de vos informations personnelles.</p>
+
+                    <h2 className="text-foreground">4. Cookies</h2>
+                    <p>Nous utilisons des cookies pour améliorer l'expérience utilisateur et analyser notre trafic.</p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <span className="text-muted-foreground">•</span>
+              <Dialog>
+                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                  Conditions d'utilisation
+                </DialogTrigger>
+                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Conditions d'utilisation</DialogTitle>
+                  </DialogHeader>
+                  <div className="prose prose-sm mt-4 text-muted-foreground">
+                    <h2 className="text-foreground">1. Acceptation des conditions</h2>
+                    <p>En accédant à ce site, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
+
+                    <h2 className="text-foreground">2. Licence d'utilisation</h2>
+                    <p>Une licence limitée, non exclusive et non transférable vous est accordée pour accéder et utiliser le site.</p>
+
+                    <h2 className="text-foreground">3. Compte utilisateur</h2>
+                    <p>Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe.</p>
+
+                    <h2 className="text-foreground">4. Limitations de responsabilité</h2>
+                    <p>Nous ne serons pas tenus responsables des dommages directs, indirects, accessoires ou consécutifs.</p>
+
+                    <h2 className="text-foreground">5. Modifications du service</h2>
+                    <p>Nous nous réservons le droit de modifier ou d'interrompre le service sans préavis.</p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div className="mt-2 text-muted-foreground">
+              © {new Date().getFullYear()} Victaure. Tous droits réservés.
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Modals */}
-      <AuthModal 
-        show={showPrivacy} 
-        onClose={() => setShowPrivacy(false)}
-        title="Politique de confidentialité"
-      >
-                <section>
-                  <h3>1. Collecte des informations</h3>
-                  <p>Nous collectons les informations suivantes :</p>
-                  <ul>
-                    <li>Nom et prénom</li>
-                    <li>Adresse e-mail</li>
-                    <li>Numéro de téléphone</li>
-                    <li>Informations professionnelles</li>
-                  </ul>
-                </section>
-
-                <section>
-                  <h3>2. Utilisation des informations</h3>
-                  <p>Les informations collectées sont utilisées pour :</p>
-                  <ul>
-                    <li>Personnaliser l'expérience utilisateur</li>
-                    <li>Améliorer notre service</li>
-                    <li>Communiquer avec vous concernant votre compte</li>
-                  </ul>
-                </section>
-
-                <section>
-                  <h3>3. Protection des informations</h3>
-                  <p>
-                    Nous mettons en œuvre une variété de mesures de sécurité pour préserver la sécurité de vos informations personnelles.
-                  </p>
-                </section>
-
-                <section>
-                  <h3>4. Cookies</h3>
-                  <p>
-                    Nous utilisons des cookies pour améliorer l'expérience utilisateur et analyser notre trafic.
-                  </p>
-                </section>
-      </AuthModal>
-
-      <AuthModal
-        show={showTerms}
-        onClose={() => setShowTerms(false)}
-        title="Conditions d'utilisation"
-      >
-                <section>
-                  <h3>1. Acceptation des conditions</h3>
-                  <p>
-                    En accédant à ce site, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.
-                  </p>
-                </section>
-
-                <section>
-                  <h3>2. Licence d'utilisation</h3>
-                  <p>
-                    Une licence limitée, non exclusive et non transférable vous est accordée pour accéder et utiliser le site.
-                  </p>
-                </section>
-
-                <section>
-                  <h3>3. Compte utilisateur</h3>
-                  <p>
-                    Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe.
-                  </p>
-                </section>
-
-                <section>
-                  <h3>4. Limitations de responsabilité</h3>
-                  <p>
-                    Nous ne serons pas tenus responsables des dommages directs, indirects, accessoires ou consécutifs.
-                  </p>
-                </section>
-
-                <section>
-                  <h3>5. Modifications du service</h3>
-                  <p>
-                    Nous nous réservons le droit de modifier ou d'interrompre le service sans préavis.
-                  </p>
-                </section>
-      </AuthModal>
     </div>
   );
 }
