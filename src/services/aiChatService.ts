@@ -34,7 +34,7 @@ export async function loadMessages() {
 export async function generateAIResponse(message: string, profile?: any) {
   try {
     console.log("Fetching Hugging Face API key...");
-    const { data: secretData, error: secretError } = await supabase
+    const { data: secretResponse, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
     
     if (secretError) {
@@ -42,11 +42,11 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Impossible de récupérer le token API. Veuillez vérifier la configuration dans Supabase.");
     }
 
-    if (!secretData || secretData.trim() === '') {
+    if (!secretResponse?.secret || secretResponse.secret.trim() === '') {
       throw new Error("Le token API Hugging Face n'est pas configuré. Veuillez l'ajouter dans les secrets Supabase.");
     }
 
-    const API_TOKEN = secretData;
+    const API_TOKEN = secretResponse.secret;
     console.log("API token retrieved successfully");
 
     const contextPrompt = profile ? 
