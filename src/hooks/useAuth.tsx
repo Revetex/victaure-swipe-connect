@@ -6,17 +6,17 @@ import { toast } from 'sonner';
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
 
   const signOut = async () => {
     try {
       setIsLoading(true);
       
-      // First, clear all storage to remove any stale tokens
+      // Clear all storage to remove any stale tokens
       localStorage.clear();
       sessionStorage.clear();
       
-      // Then attempt to sign out globally
       const { error: signOutError } = await supabase.auth.signOut({
         scope: 'global'
       });
@@ -31,7 +31,6 @@ export function useAuth() {
       toast.success('Déconnexion réussie');
     } catch (error) {
       console.error('Sign out error:', error);
-      // Even if there's an error, ensure we clear the local state
       setIsAuthenticated(false);
       navigate('/auth', { replace: true });
       toast.error('Erreur lors de la déconnexion');
@@ -42,14 +41,25 @@ export function useAuth() {
 
   useEffect(() => {
     let mounted = true;
+    let retryTimeout: NodeJS.Timeout;
 
     const checkAuth = async () => {
       try {
         setIsLoading(true);
+        
+        // First try to get the session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          
+          // If we get a network error and haven't exceeded retry attempts, try again
+          if (sessionError.message === "Failed to fetch" && retryCount < 3) {
+            setRetryCount(prev => prev + 1);
+            retryTimeout = setTimeout(checkAuth, 2000); // Retry after 2 seconds
+            return;
+          }
+          
           await signOut();
           return;
         }
@@ -67,19 +77,33 @@ export function useAuth() {
         // Verify session is still valid
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
-        if (userError || !user) {
+        if (userError) {
           console.error("User verification error:", userError);
           await signOut();
           return;
         }
 
+        if (!user) {
+          if (mounted) {
+            setIsAuthenticated(false);
+            navigate('/auth', { replace: true });
+          }
+          return;
+        }
+
         if (mounted) {
           setIsAuthenticated(true);
+          setRetryCount(0); // Reset retry count on successful auth
         }
       } catch (error) {
         console.error('Auth check error:', error);
         if (mounted) {
-          await signOut();
+          if (retryCount < 3) {
+            setRetryCount(prev => prev + 1);
+            retryTimeout = setTimeout(checkAuth, 2000);
+          } else {
+            await signOut();
+          }
         }
       } finally {
         if (mounted) {
@@ -99,14 +123,12 @@ export function useAuth() {
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
         await signOut();
       } else if (event === 'USER_UPDATED') {
-        // Handle user updates if needed
         if (session) {
           setIsAuthenticated(true);
         } else {
           await signOut();
         }
       } else if (event === 'TOKEN_REFRESHED' && session) {
-        // Only update auth state if we have a valid session
         const { data: { user }, error } = await supabase.auth.getUser();
         if (user && !error) {
           setIsAuthenticated(true);
@@ -119,9 +141,10 @@ export function useAuth() {
 
     return () => {
       mounted = false;
+      if (retryTimeout) clearTimeout(retryTimeout);
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, retryCount]);
 
   return { isLoading, isAuthenticated, signOut };
 }
