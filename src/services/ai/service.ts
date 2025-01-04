@@ -10,6 +10,7 @@ async function getHuggingFaceApiKey(): Promise<string> {
     });
 
   if (error || !data) {
+    console.error('Failed to retrieve API key:', error);
     throw new Error('Failed to retrieve API key');
   }
 
