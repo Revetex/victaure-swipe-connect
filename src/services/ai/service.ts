@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from 'uuid';
+import { Message } from "@/types/chat/messageTypes";
 
 async function getHuggingFaceApiKey(): Promise<string> {
   const { data, error } = await supabase
@@ -16,7 +16,7 @@ async function getHuggingFaceApiKey(): Promise<string> {
   return data.secret;
 }
 
-export async function generateAIResponse(message: string, profile?: any): Promise<string> {
+export async function generateAIResponse(message: string): Promise<string> {
   try {
     const apiKey = await getHuggingFaceApiKey();
     
@@ -66,7 +66,8 @@ export async function saveMessage(message: Message): Promise<void> {
       id: message.id,
       user_id: user.id,
       content: message.content,
-      sender: message.sender
+      sender: message.sender,
+      created_at: message.timestamp.toISOString()
     });
 
   if (error) {
@@ -94,8 +95,13 @@ export async function loadMessages(): Promise<Message[]> {
   }
 
   return data.map(msg => ({
-    ...msg,
-    timestamp: new Date(msg.created_at)
+    id: msg.id,
+    content: msg.content,
+    sender: msg.sender,
+    timestamp: new Date(msg.created_at),
+    created_at: msg.created_at,
+    updated_at: msg.updated_at,
+    user_id: msg.user_id
   }));
 }
 

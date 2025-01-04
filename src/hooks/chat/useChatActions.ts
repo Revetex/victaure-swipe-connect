@@ -11,7 +11,7 @@ export function useChatActions(
   setInputMessage: (message: string) => void,
   setIsThinking: (isThinking: boolean) => void
 ) {
-  const handleSendMessage = async (message: string, profile?: any) => {
+  const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
 
     try {
