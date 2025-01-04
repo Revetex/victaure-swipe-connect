@@ -8,6 +8,7 @@ import { MrVictaureWelcome } from "@/components/dashboard/MrVictaureWelcome";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChat } from "@/hooks/useChat";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Index() {
   const [showWelcome, setShowWelcome] = useState(false);
@@ -22,104 +23,131 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* M. Victaure Chat Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
         >
-          <Card className="p-6 bg-white/95 backdrop-blur-sm shadow-lg border-primary/10">
-            <div className="flex items-center gap-4 mb-6">
-              <Avatar className="h-16 w-16 ring-2 ring-primary/10">
-                <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
-                <AvatarFallback className="bg-primary/20">
-                  <Bot className="h-8 w-8 text-primary" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="text-2xl font-semibold">M. Victaure</h2>
-                <p className="text-muted-foreground">Votre Assistant IA Personnel</p>
+          <Card className="bg-card/95 backdrop-blur-sm shadow-lg border-primary/10">
+            <Tabs defaultValue="messages" className="w-full">
+              <div className="border-b">
+                <TabsList className="p-0 h-12">
+                  <TabsTrigger value="messages" className="data-[state=active]:bg-background/50">
+                    Messages
+                  </TabsTrigger>
+                  <TabsTrigger value="notifications" className="data-[state=active]:bg-background/50">
+                    Notifications
+                  </TabsTrigger>
+                  <TabsTrigger value="notes" className="data-[state=active]:bg-background/50">
+                    Notes
+                  </TabsTrigger>
+                  <TabsTrigger value="tasks" className="data-[state=active]:bg-background/50">
+                    Tâches
+                  </TabsTrigger>
+                  <TabsTrigger value="payments" className="data-[state=active]:bg-background/50">
+                    Paiements
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="data-[state=active]:bg-background/50">
+                    Paramètres
+                  </TabsTrigger>
+                </TabsList>
               </div>
-            </div>
 
-            <ScrollArea className="h-[400px] mb-6 border rounded-lg p-4">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`mb-4 ${
-                    message.sender === "assistant"
-                      ? "mr-12"
-                      : "ml-12"
-                  }`}
-                >
-                  <div
-                    className={`p-3 rounded-lg ${
-                      message.sender === "assistant"
-                        ? "bg-muted"
-                        : "bg-primary text-primary-foreground"
-                    }`}
-                  >
-                    {message.content}
+              <TabsContent value="messages" className="p-0">
+                <div className="flex items-center gap-4 p-4 border-b">
+                  <Avatar className="h-10 w-10 ring-2 ring-primary/10">
+                    <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
+                    <AvatarFallback className="bg-primary/20">
+                      <Bot className="h-5 w-5 text-primary" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h2 className="text-lg font-semibold">M. Victaure</h2>
+                    <p className="text-sm text-muted-foreground">Comment puis-je vous aider ?</p>
                   </div>
                 </div>
-              ))}
-              {isThinking && (
-                <div className="flex justify-center p-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                </div>
-              )}
-            </ScrollArea>
 
-            <div className="flex gap-4">
-              <input
-                type="text"
-                placeholder="Écrivez votre message..."
-                className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary/50"
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                    handleSendMessage(e.currentTarget.value);
-                    e.currentTarget.value = "";
-                  }
-                }}
-              />
-              <Button onClick={() => setShowWelcome(true)}>
-                <Bot className="h-4 w-4 mr-2" />
-                Plus d'options
-              </Button>
-            </div>
+                <ScrollArea className="h-[500px] p-4">
+                  {messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={`mb-4 ${
+                        message.sender === "assistant" ? "mr-12" : "ml-12"
+                      }`}
+                    >
+                      <div
+                        className={`p-3 rounded-lg ${
+                          message.sender === "assistant"
+                            ? "bg-muted"
+                            : "bg-primary text-primary-foreground"
+                        }`}
+                      >
+                        {message.content}
+                      </div>
+                    </div>
+                  ))}
+                  {isThinking && (
+                    <div className="flex justify-center p-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    </div>
+                  )}
+                </ScrollArea>
+
+                <div className="p-4 border-t">
+                  <input
+                    type="text"
+                    placeholder="Écrivez votre message..."
+                    className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                        handleSendMessage(e.currentTarget.value);
+                        e.currentTarget.value = "";
+                      }
+                    }}
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="notifications">
+                <div className="p-4">
+                  <p className="text-muted-foreground">Aucune notification pour le moment.</p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="notes">
+                <div className="p-4">
+                  <p className="text-muted-foreground">Aucune note pour le moment.</p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="tasks">
+                <div className="p-4">
+                  <p className="text-muted-foreground">Aucune tâche pour le moment.</p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="payments">
+                <div className="p-4">
+                  <p className="text-muted-foreground">Aucun paiement pour le moment.</p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="settings">
+                <div className="p-4">
+                  <p className="text-muted-foreground">Paramètres de l'application.</p>
+                </div>
+              </TabsContent>
+            </Tabs>
           </Card>
         </motion.div>
 
-        {/* Rest of the content */}
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Trouvez votre prochain emploi
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl">
-            Découvrez des opportunités professionnelles adaptées à vos compétences et aspirations.
-            Notre plateforme vous accompagne dans votre recherche d'emploi.
-          </p>
-          <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link to="/jobs">
-              <Button size="lg">
-                Voir les offres
-              </Button>
-            </Link>
-            <Link to="/profile">
-              <Button variant="outline" size="lg">
-                Créer mon profil
-              </Button>
-            </Link>
-          </div>
-        </div>
+        {showWelcome && (
+          <MrVictaureWelcome
+            onDismiss={() => setShowWelcome(false)}
+            onStartChat={handleStartChat}
+          />
+        )}
       </div>
-
-      {showWelcome && (
-        <MrVictaureWelcome
-          onDismiss={() => setShowWelcome(false)}
-          onStartChat={handleStartChat}
-        />
-      )}
     </div>
   );
 }
