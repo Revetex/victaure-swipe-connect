@@ -1,55 +1,29 @@
-import { BrowserRouter } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import Index from "@/pages/Index";
-import Auth from "@/pages/Auth";
-import Dashboard from "@/pages/Dashboard";
-import "./App.css";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import Index from "./pages/Index";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+// Create a client
+const queryClient = new QueryClient();
 
-export default function App() {
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TooltipProvider>
-            <div className="min-h-screen w-full overflow-y-auto">
-              <Routes>
-                <Route path="/auth" element={<Auth />} />
-                <Route 
-                  path="/" 
-                  element={
-                    <ProtectedRoute>
-                      <Index />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-              </Routes>
-              <Toaster />
-            </div>
-          </TooltipProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard/*" element={<Dashboard />} />
+          </Routes>
+          <Toaster position="top-right" expand={false} richColors />
+        </Router>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
+
+export default App;
