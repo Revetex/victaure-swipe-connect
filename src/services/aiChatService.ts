@@ -42,11 +42,11 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Impossible de récupérer le token API. Veuillez vérifier la configuration dans Supabase.");
     }
 
-    if (!data || typeof data !== 'string' || data.trim() === '') {
+    if (!data || !data.secret || typeof data.secret !== 'string' || data.secret.trim() === '') {
       throw new Error("Le token API Hugging Face n'est pas configuré. Veuillez l'ajouter dans les secrets Supabase.");
     }
 
-    const API_TOKEN = data;
+    const API_TOKEN = data.secret;
     console.log("API token retrieved successfully");
 
     const contextPrompt = profile ? 
