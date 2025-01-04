@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import { pdfColors } from './colors';
 import type { UserProfile } from '@/types/profile';
+import { drawHeader, drawSection } from './helpers';
 
 export const generateVCardPDF = async (profile: UserProfile) => {
   const doc = new jsPDF({
@@ -10,11 +11,17 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     format: 'a4'
   });
 
-  // Background
-  doc.setFillColor(pdfColors.background);
-  doc.rect(0, 0, 210, 297, 'F');
+  // Add gradient background
+  const gradientSteps = 15;
+  for (let i = 0; i < gradientSteps; i++) {
+    const opacity = 0.05 - (i / gradientSteps) * 0.03;
+    doc.setFillColor(pdfColors.background);
+    doc.setGlobalAlpha(opacity);
+    doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
+  }
+  doc.setGlobalAlpha(1);
 
-  // Header section
+  // Header section with profile info
   doc.setFontSize(24);
   doc.setTextColor(pdfColors.text.primary);
   doc.text(profile.full_name || 'Nom complet', 20, 30);
@@ -28,57 +35,57 @@ export const generateVCardPDF = async (profile: UserProfile) => {
   let yPosition = 60;
   const lineHeight = 8;
 
-  if (profile.email) {
-    doc.text(`Email: ${profile.email}`, 20, yPosition);
-    yPosition += lineHeight;
-  }
+  // Contact details with icons
+  const contactInfo = [
+    { label: 'Email:', value: profile.email },
+    { label: 'Téléphone:', value: profile.phone },
+    { label: 'Localisation:', value: [profile.city, profile.state, profile.country].filter(Boolean).join(', ') }
+  ];
 
-  if (profile.phone) {
-    doc.text(`Téléphone: ${profile.phone}`, 20, yPosition);
-    yPosition += lineHeight;
-  }
-
-  if (profile.city || profile.state || profile.country) {
-    const location = [profile.city, profile.state, profile.country]
-      .filter(Boolean)
-      .join(', ');
-    doc.text(`Adresse: ${location}`, 20, yPosition);
-    yPosition += lineHeight * 2;
-  }
-
-  // Bio section if available
-  if (profile.bio) {
-    doc.setFontSize(14);
-    doc.setTextColor(pdfColors.text.primary);
-    doc.text('À propos', 20, yPosition);
-    yPosition += lineHeight;
-
-    doc.setFontSize(12);
-    doc.setTextColor(pdfColors.text.secondary);
-    const bioLines = doc.splitTextToSize(profile.bio, 170);
-    doc.text(bioLines, 20, yPosition);
-    yPosition += (bioLines.length * lineHeight) + lineHeight;
-  }
+  contactInfo.forEach(({ label, value }) => {
+    if (value) {
+      doc.setFont('helvetica', 'bold');
+      doc.text(label, 20, yPosition);
+      doc.setFont('helvetica', 'normal');
+      doc.text(value, 50, yPosition);
+      yPosition += lineHeight;
+    }
+  });
 
   // Skills section
   if (profile.skills && profile.skills.length > 0) {
+    yPosition += 10;
     doc.setFontSize(14);
-    doc.setTextColor(pdfColors.text.primary);
+    doc.setFont('helvetica', 'bold');
     doc.text('Compétences', 20, yPosition);
-    yPosition += lineHeight;
+    yPosition += 8;
 
-    doc.setFontSize(12);
-    doc.setTextColor(pdfColors.text.secondary);
-    const skillsText = profile.skills.join(' • ');
-    const skillsLines = doc.splitTextToSize(skillsText, 170);
-    doc.text(skillsLines, 20, yPosition);
-    yPosition += (skillsLines.length * lineHeight) + lineHeight;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const skillsPerRow = 3;
+    const skillChunks = [];
+    for (let i = 0; i < profile.skills.length; i += skillsPerRow) {
+      skillChunks.push(profile.skills.slice(i, i + skillsPerRow));
+    }
+
+    skillChunks.forEach(chunk => {
+      const skillsText = chunk.join(' • ');
+      doc.text(skillsText, 20, yPosition);
+      yPosition += 6;
+    });
   }
 
-  // QR Code at the top right
+  // QR Code
   try {
-    const qrDataUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30, undefined, 'FAST', 0);
+    const qrDataUrl = await QRCode.toDataURL(window.location.href, {
+      margin: 0,
+      width: 256,
+      color: {
+        dark: pdfColors.text.primary,
+        light: '#FFFFFF'
+      }
+    });
+    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
@@ -89,6 +96,6 @@ export const generateVCardPDF = async (profile: UserProfile) => {
   doc.text('Généré sur victaure.com', 20, 285);
 
   // Save the PDF
-  const fileName = `${profile.full_name?.replace(/\s+/g, '_').toLowerCase() || 'vcard'}.pdf`;
-  doc.save(fileName);
+  const cleanName = profile.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'vcard';
+  doc.save(`${cleanName}_vcard.pdf`);
 };

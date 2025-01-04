@@ -14,8 +14,7 @@ async function getHuggingFaceApiKey(): Promise<string> {
     throw new Error('Failed to retrieve API key');
   }
 
-  // The get_secret function returns an object with a secret property
-  return data.secret;
+  return data[0]?.secret || '';
 }
 
 export async function generateAIResponse(message: string): Promise<string> {
@@ -27,7 +26,7 @@ export async function generateAIResponse(message: string): Promise<string> {
     }
 
     const response = await fetch(
-      `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
+      `https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1`,
       {
         method: 'POST',
         headers: {
@@ -37,7 +36,7 @@ export async function generateAIResponse(message: string): Promise<string> {
         body: JSON.stringify({
           inputs: `${SYSTEM_PROMPT}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
-            max_new_tokens: HUGGING_FACE_CONFIG.maxTokens,
+            max_new_tokens: 1000,
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
