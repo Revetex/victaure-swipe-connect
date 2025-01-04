@@ -13,8 +13,8 @@ async function getHuggingFaceApiKey(): Promise<string> {
     throw new Error('Failed to retrieve API key');
   }
 
-  // Ensure we're getting the secret string from the response
-  return data.secret || '';
+  // The get_secret function returns an object with a secret property
+  return data.secret;
 }
 
 export async function generateAIResponse(message: string): Promise<string> {
