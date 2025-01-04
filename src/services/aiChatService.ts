@@ -42,10 +42,9 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Impossible de récupérer le token API. Veuillez vérifier la configuration dans Supabase.");
     }
 
-    // Handle the array response and get the first item
     const secretData = Array.isArray(data) ? data[0] : data;
 
-    if (!secretData || !secretData.secret || typeof secretData.secret !== 'string' || secretData.secret.trim() === '') {
+    if (!secretData?.secret || typeof secretData.secret !== 'string' || secretData.secret.trim() === '') {
       throw new Error("Le token API Hugging Face n'est pas configuré. Veuillez l'ajouter dans les secrets Supabase.");
     }
 
