@@ -26,4 +26,4 @@ export const renderFooter = async (
   doc.setFontSize(8);
   doc.setTextColor(128, 128, 128);
   doc.text('Créé sur victaure.com', 105, 285, { align: 'center' });
-}
+};

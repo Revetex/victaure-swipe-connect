@@ -2,14 +2,14 @@ import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
 import { ExtendedJsPDF } from "@/types/pdf";
 import { extendPdfDocument } from "./pdfExtensions";
-import { generateHeader } from "./cv/sections/header";
-import { generateBio } from "./cv/sections/bio";
-import { generateContact } from "./cv/sections/contact";
-import { generateSkills } from "./cv/sections/skills";
-import { generateExperiences } from "./cv/sections/experiences";
-import { generateEducation } from "./cv/sections/education";
-import { generateCertifications } from "./cv/sections/certifications";
-import { generateFooter } from "./cv/sections/footer";
+import { renderHeader } from "./cv/sections/header";
+import { renderBio } from "./cv/sections/bio";
+import { renderContact } from "./cv/sections/contact";
+import { renderSkills } from "./cv/sections/skills";
+import { renderExperiences } from "./cv/sections/experiences";
+import { renderEducation } from "./cv/sections/education";
+import { renderCertifications } from "./cv/sections/certifications";
+import { renderFooter } from "./cv/sections/footer";
 import { toast } from "sonner";
 
 export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
@@ -34,14 +34,14 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
     });
 
     // Generate each section
-    let currentY = await generateHeader(doc, profile);
-    currentY = await generateBio(doc, profile, currentY);
-    currentY = await generateContact(doc, profile, currentY);
-    currentY = await generateSkills(doc, profile, currentY);
-    currentY = await generateExperiences(doc, profile, currentY);
-    currentY = await generateEducation(doc, profile, currentY);
-    currentY = await generateCertifications(doc, profile, currentY);
-    await generateFooter(doc, profile, currentY);
+    let currentY = await renderHeader(doc, profile, 20);
+    currentY = await renderBio(doc, profile, currentY);
+    currentY = await renderContact(doc, profile, currentY);
+    currentY = await renderSkills(doc, profile, currentY);
+    currentY = await renderExperiences(doc, profile, currentY);
+    currentY = await renderEducation(doc, profile, currentY);
+    currentY = await renderCertifications(doc, profile, currentY);
+    await renderFooter(doc, profile.role || '#1E40AF');
 
     // Convert ArrayBuffer to Uint8Array before returning
     const arrayBuffer = doc.output('arraybuffer');
@@ -52,3 +52,6 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
     throw error;
   }
 };
+
+export { generateCV as generateCVPDF };
+export const generateVCardPDF = generateCV;

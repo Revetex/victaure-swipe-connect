@@ -2,14 +2,14 @@ import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
 import { ExtendedJsPDF } from "@/types/pdf";
 import { extendPdfDocument } from "../pdfExtensions";
-import { generateHeader } from "./sections/header";
-import { generateBio } from "./sections/bio";
-import { generateContact } from "./sections/contact";
-import { generateSkills } from "./sections/skills";
-import { generateExperiences } from "./sections/experiences";
-import { generateEducation } from "./sections/education";
-import { generateCertifications } from "./sections/certifications";
-import { generateFooter } from "./sections/footer";
+import { renderHeader } from "./sections/header";
+import { renderBio } from "./sections/bio";
+import { renderContact } from "./sections/contact";
+import { renderSkills } from "./sections/skills";
+import { renderExperiences } from "./sections/experiences";
+import { renderEducation } from "./sections/education";
+import { renderCertifications } from "./sections/certifications";
+import { renderFooter } from "./sections/footer";
 
 export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
   // Initialize PDF document
@@ -33,14 +33,14 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
 
   try {
     // Generate each section
-    let currentY = await generateHeader(doc, profile);
-    currentY = await generateBio(doc, profile, currentY);
-    currentY = await generateContact(doc, profile, currentY);
-    currentY = await generateSkills(doc, profile, currentY);
-    currentY = await generateExperiences(doc, profile, currentY);
-    currentY = await generateEducation(doc, profile, currentY);
-    currentY = await generateCertifications(doc, profile, currentY);
-    await generateFooter(doc, profile, currentY);
+    let currentY = await renderHeader(doc, profile, 20);
+    currentY = await renderBio(doc, profile, currentY);
+    currentY = await renderContact(doc, profile, currentY);
+    currentY = await renderSkills(doc, profile, currentY);
+    currentY = await renderExperiences(doc, profile, currentY);
+    currentY = await renderEducation(doc, profile, currentY);
+    currentY = await renderCertifications(doc, profile, currentY);
+    await renderFooter(doc, profile.role || '#1E40AF');
 
     // Convert ArrayBuffer to Uint8Array before returning
     const arrayBuffer = doc.output('arraybuffer');
