@@ -1,102 +1,95 @@
 import { supabase } from "@/integrations/supabase/client";
 import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
-import type { ApiResponse } from "./types";
 import { toast } from "sonner";
 
 async function getHuggingFaceApiKey(): Promise<string> {
-  try {
-    const { data, error } = await supabase.functions.invoke('get-secret', {
-      body: { secretName: 'HUGGING_FACE_API_KEY' }
+  const { data, error } = await supabase
+    .rpc('get_secret', {
+      secret_name: 'HUGGING_FACE_API_KEY'
     });
 
-    if (error || !data?.secret) {
-      throw new Error('Failed to retrieve API key');
-    }
-
-    return data.secret;
-  } catch (error) {
-    console.error('Error in getHuggingFaceApiKey:', error);
-    throw error;
+  if (error || !data?.secret) {
+    throw new Error('Failed to retrieve API key');
   }
+
+  return data.secret;
 }
 
-export async function generateAIResponse(message: string, profile?: any): Promise<string> {
+export async function generateAIResponse(message: string): Promise<string> {
   try {
     const apiKey = await getHuggingFaceApiKey();
     
-    if (!apiKey) {
-      throw new Error('API key not found');
-    }
-
-    const prompt = `${SYSTEM_PROMPT}\n\nUtilisateur: ${message}\n\nAssistant:`;
-
-    const response = await fetch(HUGGING_FACE_CONFIG.endpoint, {
-      method: 'POST',
-      headers: {
-        ...HUGGING_FACE_CONFIG.defaultHeaders,
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        ...HUGGING_FACE_CONFIG.modelParams,
-      }),
-    });
+    const response = await fetch(
+      `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: `${SYSTEM_PROMPT}\n\nUser: ${message}\n\nAssistant:`,
+          parameters: {
+            max_new_tokens: 1000,
+            temperature: 0.7,
+            top_p: 0.9,
+            do_sample: true,
+            return_full_text: false
+          }
+        }),
+      }
+    );
 
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`);
+      throw new Error('Failed to generate AI response');
     }
 
-    const result = await response.json() as ApiResponse[];
-    
-    if (!Array.isArray(result) || !result[0]?.generated_text) {
-      throw new Error('Invalid response format from API');
-    }
-
-    return result[0].generated_text.trim();
+    const data = await response.json();
+    return data[0]?.generated_text || 'Je suis désolé, je ne peux pas répondre pour le moment.';
   } catch (error) {
-    console.error('Error generating AI response:', error);
     toast.error("Erreur lors de la génération de la réponse");
     throw error;
   }
 }
 
-// Messages CRUD operations
-export async function saveMessage(message: any): Promise<void> {
+export async function saveMessage(content: string, sender: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
   const { error } = await supabase
     .from('ai_chat_messages')
-    .insert(message);
+    .insert({
+      user_id: user.id,
+      content,
+      sender
+    });
 
   if (error) {
-    console.error("Error saving message:", error);
     toast.error("Erreur lors de la sauvegarde du message");
     throw error;
   }
 }
 
-export async function loadMessages(): Promise<any[]> {
+export async function loadMessages() {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
   const { data, error } = await supabase
     .from('ai_chat_messages')
     .select('*')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: true });
 
   if (error) {
-    console.error("Error loading messages:", error);
     toast.error("Erreur lors du chargement des messages");
     throw error;
   }
 
   return data;
-}
-
-export async function deleteMessages(messageIds: string[]): Promise<void> {
-  const { error } = await supabase
-    .from('ai_chat_messages')
-    .delete()
-    .in('id', messageIds);
-
-  if (error) {
-    console.error("Error deleting messages:", error);
-    toast.error("Erreur lors de la suppression des messages");
-    throw error;
-  }
 }
