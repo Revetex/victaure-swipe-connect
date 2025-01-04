@@ -1,50 +1,71 @@
 import { Tabs } from "@/components/ui/tabs";
+import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
 import { MessagesTabs } from "./messages/MessagesTabs";
 import { MessagesContent } from "./messages/MessagesContent";
-import { AssistantTab } from "./messages/tabs/AssistantTab";
 
-interface MessagesProps {
-  messages: any[];
-  inputMessage: string;
-  isListening: boolean;
-  isThinking: boolean;
-  profile: any;
-  onSendMessage: (message: string, profile: any) => void;
-  onVoiceInput: () => void;
-  setInputMessage: (message: string) => void;
-  onClearChat: () => void;
-  onRestoreChat: () => void;
-}
+export function Messages() {
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
 
-export function Messages({
-  messages,
-  inputMessage,
-  isListening,
-  isThinking,
-  profile,
-  onSendMessage,
-  onVoiceInput,
-  setInputMessage,
-  onClearChat,
-  onRestoreChat
-}: MessagesProps) {
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
+  const colors = [
+    { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
+    { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
+    { value: 'green', label: 'Vert', class: 'bg-green-200' },
+    { value: 'pink', label: 'Rose', class: 'bg-pink-200' },
+    { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
+    { value: 'peach', label: 'Pêche', class: 'bg-orange-200' },
+    { value: 'gray', label: 'Gris', class: 'bg-gray-200' },
+    { value: 'orange', label: 'Orange', class: 'bg-orange-300' },
+  ];
+
   return (
-    <Tabs defaultValue="assistant" className="h-full flex flex-col">
+    <Tabs defaultValue="messages" className="h-full flex flex-col">
       <MessagesTabs />
-      <MessagesContent>
-        <AssistantTab
-          messages={messages}
-          inputMessage={inputMessage}
-          isListening={isListening}
-          isThinking={isThinking}
-          profile={profile}
-          onSendMessage={onSendMessage}
-          onVoiceInput={onVoiceInput}
-          setInputMessage={setInputMessage}
-          onClearChat={onClearChat}
-          onRestoreChat={onRestoreChat}
-        />
-      </MessagesContent>
+      <MessagesContent
+        todos={todos}
+        notes={notes}
+        newTodo={newTodo}
+        newNote={newNote}
+        selectedDate={selectedDate}
+        selectedTime={selectedTime}
+        selectedColor={selectedColor}
+        allDay={allDay}
+        onTodoChange={setNewTodo}
+        onNoteChange={setNewNote}
+        onDateChange={setSelectedDate}
+        onTimeChange={setSelectedTime}
+        onColorChange={setSelectedColor}
+        onAllDayChange={setAllDay}
+        onAddTodo={addTodo}
+        onAddNote={addNote}
+        onToggleTodo={toggleTodo}
+        onDeleteTodo={deleteTodo}
+        onDeleteNote={deleteNote}
+        colors={colors}
+      />
     </Tabs>
   );
 }
