@@ -1,23 +1,22 @@
 import { TabsContent } from "@/components/ui/tabs";
-import { MessagesTab } from "./tabs/MessagesTab";
-import { NotificationsTab } from "./tabs/NotificationsTab";
-import { TodoSection } from "../todo/TodoSection";
-import { Settings } from "../Settings";
-import { PaymentBox } from "../dashboard/PaymentBox";
-import { NotesSection } from "../todo/NotesSection";
+import { TodoSection } from "@/components/todo/TodoSection";
+import { NotesSection } from "@/components/todo/NotesSection";
+import { AssistantTab } from "./tabs/AssistantTab";
+import { ScrapedJobsList } from "./ScrapedJobsList";
+import { ScrapedJob } from "@/types/database/scrapedJobs";
 
 interface MessagesContentProps {
   todos: any[];
   notes: any[];
   newTodo: string;
   newNote: string;
-  selectedDate: Date | null;
+  selectedDate: Date | undefined;
   selectedTime: string;
   selectedColor: string;
   allDay: boolean;
-  onTodoChange: (todo: string) => void;
-  onNoteChange: (note: string) => void;
-  onDateChange: (date: Date | null) => void;
+  onTodoChange: (value: string) => void;
+  onNoteChange: (value: string) => void;
+  onDateChange: (date: Date | undefined) => void;
   onTimeChange: (time: string) => void;
   onColorChange: (color: string) => void;
   onAllDayChange: (allDay: boolean) => void;
@@ -26,7 +25,9 @@ interface MessagesContentProps {
   onToggleTodo: (id: string) => void;
   onDeleteTodo: (id: string) => void;
   onDeleteNote: (id: string) => void;
-  colors: Array<{ value: string; label: string; class: string; }>;
+  colors: { value: string; label: string; class: string; }[];
+  scrapedJobs?: ScrapedJob[];
+  isLoadingJobs?: boolean;
 }
 
 export function MessagesContent({
@@ -50,49 +51,46 @@ export function MessagesContent({
   onDeleteTodo,
   onDeleteNote,
   colors,
+  scrapedJobs = [],
+  isLoadingJobs = false,
 }: MessagesContentProps) {
   return (
-    <div className="flex-1 overflow-hidden pt-14">
-      <TabsContent value="messages" className="h-full mt-0">
-        <MessagesTab />
+    <div className="flex-1 overflow-hidden">
+      <TabsContent value="messages" className="h-full">
+        <AssistantTab />
       </TabsContent>
-      <TabsContent value="notifications" className="h-full mt-0">
-        <NotificationsTab />
+      
+      <TabsContent value="todos" className="h-full">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+          <TodoSection
+            todos={todos}
+            newTodo={newTodo}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
+            onTodoChange={onTodoChange}
+            onDateChange={onDateChange}
+            onTimeChange={onTimeChange}
+            onAllDayChange={onAllDayChange}
+            onAddTodo={onAddTodo}
+            onToggleTodo={onToggleTodo}
+            onDeleteTodo={onDeleteTodo}
+          />
+          <NotesSection
+            notes={notes}
+            newNote={newNote}
+            selectedColor={selectedColor}
+            onNoteChange={onNoteChange}
+            onColorChange={onColorChange}
+            onAddNote={onAddNote}
+            onDeleteNote={onDeleteNote}
+            colors={colors}
+          />
+        </div>
       </TabsContent>
-      <TabsContent value="notes" className="h-full mt-0">
-        <NotesSection
-          notes={notes}
-          newNote={newNote}
-          selectedColor={selectedColor}
-          colors={colors}
-          onNoteChange={onNoteChange}
-          onColorChange={onColorChange}
-          onAdd={onAddNote}
-          onDelete={onDeleteNote}
-        />
-      </TabsContent>
-      <TabsContent value="tasks" className="h-full mt-0">
-        <TodoSection
-          type="tasks"
-          todos={todos}
-          newTodo={newTodo}
-          selectedDate={selectedDate}
-          selectedTime={selectedTime}
-          allDay={allDay}
-          onTodoChange={onTodoChange}
-          onDateChange={onDateChange}
-          onTimeChange={onTimeChange}
-          onAllDayChange={onAllDayChange}
-          onAdd={onAddTodo}
-          onToggle={onToggleTodo}
-          onDelete={onDeleteTodo}
-        />
-      </TabsContent>
-      <TabsContent value="payments" className="h-full mt-0">
-        <PaymentBox />
-      </TabsContent>
-      <TabsContent value="settings" className="h-full mt-0 overflow-y-auto">
-        <Settings />
+
+      <TabsContent value="jobs" className="h-full">
+        <ScrapedJobsList jobs={scrapedJobs || []} isLoading={isLoadingJobs} />
       </TabsContent>
     </div>
   );
