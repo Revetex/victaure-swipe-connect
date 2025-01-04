@@ -11,14 +11,21 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     format: 'a4'
   });
 
-  // Set background
-  doc.setFillColor('#ffffff');
+  // Set white background explicitly
+  doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, 210, 297, 'F');
 
   // Header with profile photo
   if (profile.avatar_url) {
     try {
-      doc.addImage(profile.avatar_url, 'JPEG', 20, 20, 40, 40, undefined, 'FAST');
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';  // Enable CORS
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = profile.avatar_url;
+      });
+      doc.addImage(img, 'PNG', 20, 20, 40, 40, undefined, 'FAST');
       // Add a subtle border around the image
       doc.setDrawColor(200, 200, 200);
       doc.rect(20, 20, 40, 40, 'S');
@@ -37,11 +44,11 @@ export const generateVCardPDF = async (profile: UserProfile) => {
 
   // Name and Role
   doc.setFontSize(24);
-  doc.setTextColor(pdfColors.text.primary);
+  doc.setTextColor(0, 0, 0); // Black text
   doc.text(profile.full_name || 'Nom complet', 70, 35);
 
   doc.setFontSize(16);
-  doc.setTextColor(pdfColors.text.secondary);
+  doc.setTextColor(80, 80, 80); // Dark gray text
   doc.text(profile.role || 'Rôle professionnel', 70, 45);
 
   // Contact Information
@@ -50,12 +57,12 @@ export const generateVCardPDF = async (profile: UserProfile) => {
 
   // Contact section title
   doc.setFontSize(14);
-  doc.setTextColor(pdfColors.text.primary);
+  doc.setTextColor(0, 0, 0);
   doc.text('Contact', 20, yPosition);
   yPosition += lineHeight * 1.5;
 
   doc.setFontSize(12);
-  doc.setTextColor(pdfColors.text.secondary);
+  doc.setTextColor(60, 60, 60);
 
   if (profile.email) {
     doc.text(`Email: ${profile.email}`, 20, yPosition);
@@ -78,12 +85,12 @@ export const generateVCardPDF = async (profile: UserProfile) => {
   // Bio section
   if (profile.bio) {
     doc.setFontSize(14);
-    doc.setTextColor(pdfColors.text.primary);
+    doc.setTextColor(0, 0, 0);
     doc.text('À propos', 20, yPosition);
     yPosition += lineHeight;
 
     doc.setFontSize(12);
-    doc.setTextColor(pdfColors.text.secondary);
+    doc.setTextColor(60, 60, 60);
     const bioLines = doc.splitTextToSize(profile.bio, 170);
     doc.text(bioLines, 20, yPosition);
     yPosition += (bioLines.length * lineHeight) + lineHeight;
@@ -92,12 +99,12 @@ export const generateVCardPDF = async (profile: UserProfile) => {
   // Skills section
   if (profile.skills && profile.skills.length > 0) {
     doc.setFontSize(14);
-    doc.setTextColor(pdfColors.text.primary);
+    doc.setTextColor(0, 0, 0);
     doc.text('Compétences', 20, yPosition);
     yPosition += lineHeight;
 
     doc.setFontSize(12);
-    doc.setTextColor(pdfColors.text.secondary);
+    doc.setTextColor(60, 60, 60);
     const skillsText = profile.skills.join(' • ');
     const skillsLines = doc.splitTextToSize(skillsText, 170);
     doc.text(skillsLines, 20, yPosition);
@@ -107,12 +114,12 @@ export const generateVCardPDF = async (profile: UserProfile) => {
   // Experience section
   if (profile.experiences && profile.experiences.length > 0) {
     doc.setFontSize(14);
-    doc.setTextColor(pdfColors.text.primary);
+    doc.setTextColor(0, 0, 0);
     doc.text('Expériences professionnelles', 20, yPosition);
     yPosition += lineHeight * 1.5;
 
     doc.setFontSize(12);
-    doc.setTextColor(pdfColors.text.secondary);
+    doc.setTextColor(60, 60, 60);
     
     profile.experiences.forEach((exp) => {
       doc.setFont(undefined, 'bold');
@@ -142,12 +149,12 @@ export const generateVCardPDF = async (profile: UserProfile) => {
   // Education section
   if (profile.education && profile.education.length > 0) {
     doc.setFontSize(14);
-    doc.setTextColor(pdfColors.text.primary);
+    doc.setTextColor(0, 0, 0);
     doc.text('Formation', 20, yPosition);
     yPosition += lineHeight * 1.5;
 
     doc.setFontSize(12);
-    doc.setTextColor(pdfColors.text.secondary);
+    doc.setTextColor(60, 60, 60);
     
     profile.education.forEach((edu) => {
       doc.setFont(undefined, 'bold');
@@ -168,7 +175,7 @@ export const generateVCardPDF = async (profile: UserProfile) => {
 
   // Footer
   doc.setFontSize(10);
-  doc.setTextColor(pdfColors.text.muted);
+  doc.setTextColor(150, 150, 150);
   doc.text('Généré sur victaure.com', 20, 285);
 
   // Save the PDF
