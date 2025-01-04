@@ -46,13 +46,14 @@ export function DashboardLayout() {
       style={{ 
         height: isEditing ? '100vh' : 'calc(var(--vh, 1vh) * 100 - 4rem)',
         WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'contain'
+        overscrollBehavior: 'contain',
+        maxHeight: isEditing ? '100vh' : 'calc(var(--vh, 1vh) * 100 - 4rem)'
       }}
       ref={contentRef}
     >
       <div className="dashboard-card h-full">
         {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 h-full">
+          <div className="p-3 sm:p-4 md:p-6 h-full overflow-y-auto overscroll-contain">
             {component}
           </div>
         ) : component}
@@ -68,7 +69,8 @@ export function DashboardLayout() {
           style={{ 
             height: isEditing ? '100vh' : 'auto',
             overflowY: isEditing ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain'
           }}
         >
           {renderDashboardSection(

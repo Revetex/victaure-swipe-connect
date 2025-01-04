@@ -58,7 +58,7 @@
   
   html {
     height: 100%;
-    overflow-y: auto;
+    overflow: hidden;
   }
   
   body {
@@ -69,10 +69,10 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
     min-height: 100vh;
-    height: auto;
-    overflow-y: auto;
+    height: 100vh;
+    overflow: hidden;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: none;
+    overscroll-behavior: none;
   }
 
   /* Improved scrollbar styling */
