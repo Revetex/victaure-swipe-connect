@@ -54,13 +54,16 @@ export function useAuth() {
           console.error("Session error:", sessionError);
           
           // If we get a network error and haven't exceeded retry attempts, try again
-          if (sessionError.message === "Failed to fetch" && retryCount < 3) {
+          if ((sessionError.message === "Failed to fetch" || sessionError.message.includes("NetworkError")) && retryCount < 3) {
             setRetryCount(prev => prev + 1);
             retryTimeout = setTimeout(checkAuth, 2000); // Retry after 2 seconds
             return;
           }
           
-          await signOut();
+          if (mounted) {
+            setIsAuthenticated(false);
+            navigate('/auth', { replace: true });
+          }
           return;
         }
         
@@ -79,7 +82,10 @@ export function useAuth() {
         
         if (userError) {
           console.error("User verification error:", userError);
-          await signOut();
+          if (mounted) {
+            setIsAuthenticated(false);
+            navigate('/auth', { replace: true });
+          }
           return;
         }
 
@@ -102,7 +108,8 @@ export function useAuth() {
             setRetryCount(prev => prev + 1);
             retryTimeout = setTimeout(checkAuth, 2000);
           } else {
-            await signOut();
+            setIsAuthenticated(false);
+            navigate('/auth', { replace: true });
           }
         }
       } finally {
@@ -121,20 +128,22 @@ export function useAuth() {
         setIsAuthenticated(true);
         navigate('/dashboard', { replace: true });
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
-        await signOut();
+        setIsAuthenticated(false);
+        navigate('/auth', { replace: true });
       } else if (event === 'USER_UPDATED') {
         if (session) {
           setIsAuthenticated(true);
         } else {
-          await signOut();
+          setIsAuthenticated(false);
+          navigate('/auth', { replace: true });
         }
       } else if (event === 'TOKEN_REFRESHED' && session) {
         const { data: { user }, error } = await supabase.auth.getUser();
         if (user && !error) {
           setIsAuthenticated(true);
-          console.log("Token refreshed successfully");
         } else {
-          await signOut();
+          setIsAuthenticated(false);
+          navigate('/auth', { replace: true });
         }
       }
     });
