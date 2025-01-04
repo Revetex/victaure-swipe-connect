@@ -1,11 +1,13 @@
 import { VCardSection } from "./VCardSection";
 import { Code } from "lucide-react";
 import { CategorizedSkills } from "./skills/CategorizedSkills";
+import { UserProfile } from "@/types/profile";
+import { Dispatch, SetStateAction } from "react";
 
 interface VCardSkillsProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   handleAddSkill: () => void;

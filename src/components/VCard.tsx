@@ -66,6 +66,25 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
+  const handleAddSkill = () => {
+    if (!profile || !newSkill.trim()) return;
+    
+    const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+    setProfile({ ...profile, skills: updatedSkills });
+    setNewSkill("");
+    toast.success("Compétence ajoutée avec succès");
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    if (!profile) return;
+    
+    const updatedSkills = (profile.skills || []).filter(
+      (skill) => skill !== skillToRemove
+    );
+    setProfile({ ...profile, skills: updatedSkills });
+    toast.success("Compétence supprimée avec succès");
+  };
+
   const handleDownloadPDF = async () => {
     if (!profile) return;
     try {
@@ -139,6 +158,8 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
               setProfile={setProfile}
               newSkill={newSkill}
               setNewSkill={setNewSkill}
+              handleAddSkill={handleAddSkill}
+              handleRemoveSkill={handleRemoveSkill}
             />
 
             <VCardExperiences
