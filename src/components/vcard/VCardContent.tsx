@@ -6,13 +6,13 @@ import { VCardExperiences } from "@/components/VCardExperiences";
 import { VCardCertifications } from "@/components/VCardCertifications";
 import { VCardEducation } from "@/components/VCardEducation";
 import { CardContent } from "@/components/ui/card";
-import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
-import { StyleOption } from "./types";
-import { UserProfile } from "@/types/profile";
+import { VCardStyleSelector } from "./VCardStyleSelector";
 import { Button } from "@/components/ui/button";
 import { Download, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
+import type { StyleOption } from "./types";
+import type { UserProfile } from "@/types/profile";
 
 interface VCardContentProps {
   profile: UserProfile;
