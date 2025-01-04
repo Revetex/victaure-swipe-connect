@@ -13,13 +13,12 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      storage: window?.localStorage
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined
     },
     global: {
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+        'X-Client-Info': 'supabase-js-web',
+      },
     },
     realtime: {
       params: {
