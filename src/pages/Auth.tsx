@@ -36,30 +36,30 @@ export default function Auth() {
   }, [navigate, location]);
 
   return (
-    <div className="min-h-[100vh] min-h-[100dvh] w-full flex flex-col items-center px-4 py-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 relative overflow-hidden">
+    <div className="min-h-[100vh] min-h-[100dvh] w-full flex flex-col items-center px-4 py-8 bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-dashboard-pattern bg-cover bg-center opacity-5" />
       <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
       
       <div className="relative z-10 w-full max-w-md flex flex-col items-center">
         {/* Logo */}
-        <div className="w-full flex justify-center mb-8">
-          <Logo size="lg" className="w-24 h-24" />
+        <div className="w-full flex justify-center mb-12">
+          <Logo size="lg" className="w-28 h-28" />
         </div>
 
         {/* Welcome Text */}
-        <div className="w-full text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+        <div className="w-full text-center mb-10">
+          <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 bg-clip-text text-transparent">
             Bienvenue sur Victaure
           </h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-slate-600 dark:text-slate-300">
             Connectez-vous ou créez un compte pour continuer
           </p>
         </div>
 
         {/* Auth Form */}
         <div className="w-full mb-12">
-          <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-lg rounded-xl p-6 shadow-xl border border-gray-200/20 dark:border-gray-700/20">
+          <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-slate-200/20 dark:border-slate-700/20">
             <AuthForm />
           </div>
         </div>
@@ -71,22 +71,22 @@ export default function Auth() {
 
         {/* Footer */}
         <div className="w-full text-center space-y-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400 space-x-2">
+          <div className="text-sm text-slate-500 dark:text-slate-400 space-x-3">
             <button 
               onClick={() => setShowPrivacy(true)}
-              className="hover:text-cyan-500 transition-colors"
+              className="hover:text-purple-500 transition-colors"
             >
               Politique de confidentialité
             </button>
             <span>•</span>
             <button
               onClick={() => setShowTerms(true)}
-              className="hover:text-cyan-500 transition-colors"
+              className="hover:text-purple-500 transition-colors"
             >
               Conditions d'utilisation
             </button>
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-sm text-slate-500 dark:text-slate-400">
             © 2025 Victaure. Tous droits réservés.
           </div>
         </div>
