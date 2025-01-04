@@ -41,7 +41,7 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
     currentY = await renderExperiences(doc, profile, currentY);
     currentY = await renderEducation(doc, profile, currentY);
     currentY = await renderCertifications(doc, profile, currentY);
-    renderFooter(doc, profile.role || '#1E40AF');
+    renderFooter(doc, profile.role || '#1E40AF', currentY, profile);
 
     // Convert ArrayBuffer to Uint8Array before returning
     const arrayBuffer = doc.output('arraybuffer');

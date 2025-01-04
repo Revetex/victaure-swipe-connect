@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
+import { Share2, Download, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { StyleOption } from "./types";
@@ -13,7 +13,6 @@ interface VCardActionsProps {
   selectedStyle: StyleOption;
   onEditToggle: () => void;
   onSave: () => Promise<void>;
-  onDownloadPDF: () => Promise<void>;
   onDownloadBusinessPDF: () => Promise<void>;
   onDownloadCVPDF: () => Promise<void>;
 }
@@ -22,10 +21,8 @@ export function VCardActions({
   isEditing,
   isPdfGenerating,
   profile,
-  selectedStyle,
   onEditToggle,
   onSave,
-  onDownloadPDF,
   onDownloadBusinessPDF,
   onDownloadCVPDF,
 }: VCardActionsProps) {
@@ -63,15 +60,6 @@ export function VCardActions({
     }
   };
 
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("Lien copié dans le presse-papier");
-    } catch (error) {
-      toast.error("Erreur lors de la copie du lien");
-    }
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -90,7 +78,6 @@ export function VCardActions({
               className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
               disabled={isPdfGenerating}
             >
-              <Save className="mr-2 h-4 w-4" />
               Sauvegarder
             </Button>
           </motion.div>
@@ -143,20 +130,6 @@ export function VCardActions({
             className="flex-1 min-w-[100px]"
           >
             <Button 
-              onClick={onDownloadPDF}
-              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-              disabled={isPdfGenerating}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              PDF
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
-          >
-            <Button 
               onClick={onDownloadBusinessPDF}
               className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
               disabled={isPdfGenerating}
@@ -177,18 +150,6 @@ export function VCardActions({
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Button 
-              onClick={handleCopyLink}
-              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-              disabled={isPdfGenerating}
-            >
-              <Copy className="h-4 w-4" />
             </Button>
           </motion.div>
         </>
