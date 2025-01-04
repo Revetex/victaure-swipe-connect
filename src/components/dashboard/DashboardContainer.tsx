@@ -12,7 +12,7 @@ export function DashboardContainer({ children, containerVariants }: DashboardCon
       <div className="fixed inset-0 bg-dashboard-pattern bg-cover bg-center bg-fixed" />
       <div className="fixed inset-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" />
       <main className="flex-1 relative">
-        <div className="container mx-auto px-4 py-6 h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="container mx-auto px-4 h-[calc(100vh-64px)] overflow-y-auto">
           <motion.div 
             className="max-w-[1200px] mx-auto h-full"
             variants={containerVariants}
