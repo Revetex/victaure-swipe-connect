@@ -8,7 +8,7 @@ import { ConversationView } from "../conversation/ConversationView";
 export function MessagesTab() {
   const [selectedConversation, setSelectedConversation] = useState<"assistant" | null>(null);
   const { profile } = useProfile();
-  const { messages, markMessageAsRead } = useMessages();
+  const { messages, markAsRead } = useMessages();
   const {
     messages: chatMessages,
     inputMessage,
@@ -25,7 +25,7 @@ export function MessagesTab() {
   };
 
   const handleMarkAsRead = async (messageId: string) => {
-    await markMessageAsRead(messageId);
+    await markAsRead.mutateAsync(messageId);
   };
 
   return (
