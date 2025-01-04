@@ -12,28 +12,13 @@ export function useAuth() {
     try {
       setIsLoading(true);
       
-      // First, get current session to verify
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        throw sessionError;
-      }
-
-      // Clear all storage first, regardless of session state
+      // First, clear all storage to remove any stale tokens
       localStorage.clear();
       sessionStorage.clear();
       
-      if (!session) {
-        console.log('No active session found');
-        setIsAuthenticated(false);
-        navigate('/auth');
-        return;
-      }
-
-      // Attempt signout
+      // Then attempt to sign out globally
       const { error: signOutError } = await supabase.auth.signOut({
-        scope: 'global' // This ensures all sessions are invalidated
+        scope: 'global'
       });
       
       if (signOutError) {
@@ -46,7 +31,7 @@ export function useAuth() {
       toast.success('Déconnexion réussie');
     } catch (error) {
       console.error('Sign out error:', error);
-      // Even if there's an error, we want to clear the local state
+      // Even if there's an error, ensure we clear the local state
       setIsAuthenticated(false);
       navigate('/auth');
       toast.error('Erreur lors de la déconnexion');
@@ -60,12 +45,12 @@ export function useAuth() {
 
     const checkAuth = async () => {
       try {
-        // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
-          throw sessionError;
+          await signOut();
+          return;
         }
         
         if (!session) {
@@ -78,18 +63,13 @@ export function useAuth() {
           return;
         }
 
-        // Verify the session is valid
+        // Verify session is still valid
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
-        if (userError) {
+        if (userError || !user) {
           console.error("User verification error:", userError);
-          // If there's a user error, sign out to clear any invalid tokens
           await signOut();
           return;
-        }
-
-        if (!user) {
-          throw new Error('No user found');
         }
 
         if (mounted) {
@@ -98,7 +78,6 @@ export function useAuth() {
       } catch (error) {
         console.error('Auth check error:', error);
         if (mounted) {
-          setIsAuthenticated(false);
           await signOut();
         }
       } finally {
@@ -116,11 +95,19 @@ export function useAuth() {
       if (event === 'SIGNED_IN' && session) {
         setIsAuthenticated(true);
         navigate('/dashboard');
-      } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+      } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+        await signOut();
+      } else if (event === 'USER_DELETED' || event === 'TOKEN_REVOKED') {
         await signOut();
       } else if (event === 'TOKEN_REFRESHED' && session) {
-        setIsAuthenticated(true);
-        console.log("Token refreshed successfully");
+        // Only update auth state if we have a valid session
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (user && !error) {
+          setIsAuthenticated(true);
+          console.log("Token refreshed successfully");
+        } else {
+          await signOut();
+        }
       }
     });
 
