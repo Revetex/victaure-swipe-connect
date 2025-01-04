@@ -1,8 +1,7 @@
 import jsPDF from 'jspdf';
 import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from './styles';
-import { drawHeader } from '../helpers';
-import type { ExtendedJsPDF } from '../types';
+import type { ExtendedJsPDF } from '@/types/pdf';
 import { renderHeader } from './sections/header';
 import { renderContact } from './sections/contact';
 import { renderBio } from './sections/bio';
