@@ -19,26 +19,45 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     }) as ExtendedJsPDF;
 
     // Set gradient background using multiple rectangles with varying opacity
-    const gradientSteps = 10;
+    const gradientSteps = 15;
     for (let i = 0; i < gradientSteps; i++) {
-      const alpha = 1 - (i / gradientSteps);
+      const alpha = 0.03 - (i / gradientSteps) * 0.02;
       doc.setFillColor(accentColor);
-      doc.setGlobalAlpha(alpha * 0.1);
+      doc.setGlobalAlpha(alpha);
       doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
     }
 
     // Reset opacity for content
     doc.setGlobalAlpha(1);
 
-    // Add a white overlay for better readability
+    // Add a subtle white overlay for better readability
     doc.setFillColor(255, 255, 255);
-    doc.rect(10, 10, 190, 277, 'F');
+    doc.setGlobalAlpha(0.95);
+    doc.rect(15, 15, 180, 267, 'F');
+    doc.setGlobalAlpha(1);
 
     // Add decorative elements
     doc.setDrawColor(accentColor);
     doc.setLineWidth(0.5);
-    doc.line(10, 15, 200, 15);
-    doc.line(10, 282, 200, 282);
+    doc.setLineDashPattern([1, 1], 0);
+    doc.line(15, 20, 195, 20);
+    doc.line(15, 277, 195, 277);
+
+    // Add subtle corner decorations
+    const cornerSize = 5;
+    doc.setLineWidth(0.3);
+    // Top left
+    doc.line(15, 15, 15 + cornerSize, 15);
+    doc.line(15, 15, 15, 15 + cornerSize);
+    // Top right
+    doc.line(195 - cornerSize, 15, 195, 15);
+    doc.line(195, 15, 195, 15 + cornerSize);
+    // Bottom left
+    doc.line(15, 277, 15 + cornerSize, 277);
+    doc.line(15, 277 - cornerSize, 15, 277);
+    // Bottom right
+    doc.line(195 - cornerSize, 277, 195, 277);
+    doc.line(195, 277 - cornerSize, 195, 277);
 
     // Render each section and update yPos
     let yPos = pdfStyles.margins.top + 15;

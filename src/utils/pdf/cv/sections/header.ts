@@ -9,12 +9,21 @@ export const renderHeader = async (
 ): Promise<number> => {
   const { margins, fonts, colors } = pdfStyles;
   
-  // Set font for header
+  // Add a subtle accent background for the header
+  doc.setFillColor(colors.accent);
+  doc.setGlobalAlpha(0.1);
+  doc.rect(margins.left, startY - 5, 180, 25, 'F');
+  doc.setGlobalAlpha(1);
+
+  // Set font for name
   doc.setFont('helvetica', fonts.header.style);
   doc.setFontSize(fonts.header.size);
-  doc.setTextColor(colors.primary);
+  doc.setTextColor(colors.text.primary);
 
-  // Draw name
+  // Draw name with a subtle shadow effect
+  doc.setTextColor(0, 0, 0, 0.1);
+  doc.text(profile.full_name || 'No Name', margins.left + 0.5, startY + 0.5);
+  doc.setTextColor(colors.text.primary);
   doc.text(profile.full_name || 'No Name', margins.left, startY);
   
   // Set font for role
@@ -26,5 +35,5 @@ export const renderHeader = async (
   const roleY = startY + 10;
   doc.text(profile.role || 'No Role', margins.left, roleY);
 
-  return roleY + 10; // Return next Y position
+  return roleY + 15;
 };

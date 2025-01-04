@@ -2,8 +2,8 @@ import type { PDFStyles } from './types';
 
 export const pdfStyles: PDFStyles = {
   colors: {
-    primary: '#9b87f5',
-    secondary: '#7E69AB',
+    primary: '#1E40AF',
+    secondary: '#60A5FA',
     background: '#FFFFFF',
     text: {
       primary: '#1A1F2C',
@@ -27,7 +27,7 @@ export const pdfStyles: PDFStyles = {
       style: 'normal'
     },
     body: {
-      size: 10,
+      size: 11,
       style: 'normal'
     }
   }
