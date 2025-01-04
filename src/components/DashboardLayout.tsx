@@ -42,7 +42,7 @@ export function DashboardLayout() {
   ) => (
     <motion.div 
       variants={itemVariants} 
-      className={`h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain ${className}`}
+      className={`h-[calc(100vh-4rem)] ${className}`}
       style={{ 
         height: isEditing ? '100vh' : 'calc(var(--vh, 1vh) * 100 - 4rem)',
         WebkitOverflowScrolling: 'touch',
