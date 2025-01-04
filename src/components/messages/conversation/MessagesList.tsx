@@ -36,10 +36,10 @@ export function MessagesList({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
             onClick={() => onSelectConversation("assistant")}
-            className="p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] bg-muted hover:bg-muted/80"
+            className="sticky top-0 z-10 p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] bg-primary/5 hover:bg-primary/10 border border-primary/20 shadow-sm"
           >
             <div className="flex gap-3">
-              <Avatar className="h-10 w-10 shrink-0">
+              <Avatar className="h-12 w-12 shrink-0 ring-2 ring-primary/10">
                 <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
                 <AvatarFallback className="bg-primary/20">
                   <Bot className="h-5 w-5 text-primary" />
@@ -47,15 +47,15 @@ export function MessagesList({
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start gap-2">
-                  <h3 className="font-medium truncate">Mr. Victaure</h3>
+                  <h3 className="font-medium text-primary">M. Victaure</h3>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    Assistant IA
+                    Assistant IA Personnel
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2 text-left">
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                   {chatMessages.length > 0 
                     ? chatMessages[chatMessages.length - 1]?.content 
-                    : "Comment puis-je vous aider ?"}
+                    : "Comment puis-je vous aider aujourd'hui ?"}
                 </p>
               </div>
             </div>
