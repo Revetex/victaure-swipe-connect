@@ -69,9 +69,10 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
     min-height: 100vh;
-    height: 100%;
+    height: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
   }
 
   /* Improved scrollbar styling */

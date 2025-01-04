@@ -21,10 +21,7 @@ export function DashboardLayout() {
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
-    // Initial call
     updateHeight();
-
-    // Update on resize and orientation change
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
 
@@ -48,7 +45,8 @@ export function DashboardLayout() {
       className={`h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain ${className}`}
       style={{ 
         height: isEditing ? '100vh' : 'calc(var(--vh, 1vh) * 100 - 4rem)',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehavior: 'contain'
       }}
       ref={contentRef}
     >
