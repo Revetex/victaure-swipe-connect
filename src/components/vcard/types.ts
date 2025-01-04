@@ -1,11 +1,14 @@
 export interface StyleOption {
-  id: number;
+  id: string;
   name: string;
-  color: string;
-  font: string;
-  displayStyle: string;
-  bgGradient: string;
-  secondaryColor: string;
-  accentGradient: string;
-  borderStyle?: string;
+  description: string;
+  fontFamily: string;
+  colorScheme: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    text: string;
+  };
+  layout: 'classic' | 'modern' | 'minimal';
 }
