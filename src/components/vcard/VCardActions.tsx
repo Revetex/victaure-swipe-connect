@@ -24,7 +24,6 @@ export function VCardActions({
   profile,
   onEditToggle,
   onSave,
-  onDownloadVCard,
   onDownloadBusinessCard,
   onDownloadCV,
 }: VCardActionsProps) {
@@ -91,20 +90,6 @@ export function VCardActions({
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
-          >
-            <Button 
-              onClick={onDownloadVCard}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-              disabled={isPdfGenerating}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              VCard
             </Button>
           </motion.div>
           <motion.div 
