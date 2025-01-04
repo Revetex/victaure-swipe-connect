@@ -12,7 +12,7 @@ import { useChat } from "@/hooks/useChat";
 export default function Index() {
   const [showWelcome, setShowWelcome] = useState(false);
   const navigate = useNavigate();
-  const { messages, sendMessage, isLoading } = useChat();
+  const { messages, handleSendMessage, isThinking } = useChat();
 
   const handleStartChat = () => {
     setShowWelcome(false);
@@ -63,7 +63,7 @@ export default function Index() {
                   </div>
                 </div>
               ))}
-              {isLoading && (
+              {isThinking && (
                 <div className="flex justify-center p-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
@@ -77,7 +77,7 @@ export default function Index() {
                 className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary/50"
                 onKeyPress={(e) => {
                   if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                    sendMessage(e.currentTarget.value);
+                    handleSendMessage(e.currentTarget.value);
                     e.currentTarget.value = "";
                   }
                 }}
