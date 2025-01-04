@@ -21,6 +21,25 @@ export async function getHuggingFaceApiKey(): Promise<string> {
   return secret;
 }
 
+export async function loadMessages(): Promise<Message[]> {
+  const { data, error } = await supabase
+    .from('ai_chat_messages')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error("Error loading messages:", error);
+    throw error;
+  }
+
+  return data.map(msg => ({
+    id: msg.id,
+    content: msg.content,
+    sender: msg.sender,
+    timestamp: new Date(msg.created_at),
+  }));
+}
+
 export async function saveMessage(message: Message): Promise<void> {
   const { error } = await supabase
     .from('ai_chat_messages')
