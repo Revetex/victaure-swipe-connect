@@ -97,8 +97,13 @@ export function useAuth() {
         navigate('/dashboard');
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
         await signOut();
-      } else if (event === 'USER_DELETED' || event === 'TOKEN_REVOKED') {
-        await signOut();
+      } else if (event === 'USER_UPDATED') {
+        // Handle user updates if needed
+        if (session) {
+          setIsAuthenticated(true);
+        } else {
+          await signOut();
+        }
       } else if (event === 'TOKEN_REFRESHED' && session) {
         // Only update auth state if we have a valid session
         const { data: { user }, error } = await supabase.auth.getUser();
