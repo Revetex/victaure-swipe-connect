@@ -4,17 +4,26 @@ import { toast } from "sonner";
 import { Message } from "@/types/chat/messageTypes";
 
 async function getHuggingFaceApiKey(): Promise<string> {
-  const { data, error } = await supabase
-    .rpc('get_secret', {
-      secret_name: 'HUGGING_FACE_API_KEY'
-    });
+  try {
+    const { data, error } = await supabase
+      .rpc('get_secret', {
+        secret_name: 'HUGGING_FACE_API_KEY'
+      });
 
-  if (error || !data) {
-    console.error('Failed to retrieve API key:', error);
-    throw new Error('Failed to retrieve API key');
+    if (error) {
+      console.error('Failed to retrieve API key:', error);
+      throw new Error('Failed to retrieve API key');
+    }
+
+    if (!data || data.length === 0 || !data[0]?.secret) {
+      throw new Error('No API key found');
+    }
+
+    return data[0].secret;
+  } catch (error) {
+    console.error('Error getting API key:', error);
+    throw new Error('Failed to retrieve API key. Please check your configuration.');
   }
-
-  return data[0]?.secret || '';
 }
 
 export async function generateAIResponse(message: string): Promise<string> {
@@ -22,11 +31,12 @@ export async function generateAIResponse(message: string): Promise<string> {
     const apiKey = await getHuggingFaceApiKey();
     
     if (!apiKey) {
+      toast.error("Clé API manquante. Veuillez configurer la clé Hugging Face.");
       throw new Error('No API key available');
     }
 
     const response = await fetch(
-      `https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1`,
+      `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
       {
         method: 'POST',
         headers: {
@@ -36,7 +46,7 @@ export async function generateAIResponse(message: string): Promise<string> {
         body: JSON.stringify({
           inputs: `${SYSTEM_PROMPT}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
-            max_new_tokens: 1000,
+            max_new_tokens: HUGGING_FACE_CONFIG.maxTokens,
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
@@ -56,7 +66,6 @@ export async function generateAIResponse(message: string): Promise<string> {
     return data[0]?.generated_text || 'Je suis désolé, je ne peux pas répondre pour le moment.';
   } catch (error) {
     console.error('Error generating AI response:', error);
-    toast.error("Erreur lors de la génération de la réponse");
     throw error;
   }
 }

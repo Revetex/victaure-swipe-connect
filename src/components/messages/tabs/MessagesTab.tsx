@@ -2,7 +2,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { useChat } from "@/hooks/useChat";
 import { MessagesList } from "../conversation/MessagesList";
 import { ConversationView } from "../conversation/ConversationView";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useProfile } from "@/hooks/useProfile";
 
 export function MessagesTab() {
@@ -20,14 +20,14 @@ export function MessagesTab() {
   const { profile } = useProfile();
   const [selectedConversation, setSelectedConversation] = useState<"assistant" | null>(null);
 
-  const handleMarkAsRead = async (messageId: string) => {
+  const handleMarkAsRead = useCallback(async (messageId: string) => {
     await markAsRead.mutateAsync(messageId);
-  };
+  }, [markAsRead]);
 
   if (selectedConversation === "assistant") {
     return (
       <ConversationView 
-        messages={chatMessages || []} // Ensure messages is never undefined
+        messages={chatMessages || []}
         inputMessage={inputMessage}
         isListening={isListening}
         isThinking={isThinking}
@@ -44,7 +44,7 @@ export function MessagesTab() {
   return (
     <MessagesList
       messages={messages}
-      chatMessages={chatMessages || []} // Ensure chatMessages is never undefined
+      chatMessages={chatMessages || []}
       onSelectConversation={setSelectedConversation}
       onMarkAsRead={handleMarkAsRead}
     />
