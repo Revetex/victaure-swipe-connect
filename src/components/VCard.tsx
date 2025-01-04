@@ -13,7 +13,7 @@ import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
 import { VCardActions } from "./vcard/VCardActions";
 import { VCardContent } from "./vcard/VCardContent";
 import { QRCodeSVG } from "qrcode.react";
-import { generatePDF, generateBusinessPDF, generateCVPDF } from "@/utils/pdfGenerator";
+import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -92,7 +92,8 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      await generatePDF(profile);
+      const doc = await generateVCard(profile);
+      doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
       toast.success("PDF généré avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -106,10 +107,11 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      await generateBusinessPDF(profile);
+      const doc = await generateBusinessCard(profile);
+      doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
       toast.success("Business PDF généré avec succès");
     } catch (error) {
-      console.error('Error generating Business PDF:', error);
+      console.error('Error generating business PDF:', error);
       toast.error("Erreur lors de la génération du Business PDF");
     } finally {
       setIsPdfGenerating(false);
@@ -120,7 +122,8 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      await generateCVPDF(profile);
+      const doc = await generateCV(profile);
+      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
       toast.success("CV PDF généré avec succès");
     } catch (error) {
       console.error('Error generating CV PDF:', error);
