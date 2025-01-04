@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import { pdfColors } from './colors';
 import type { UserProfile } from '@/types/profile';
+import { drawHeader, drawSection } from './helpers';
 
 export const generateBusinessCardPDF = async (profile: UserProfile) => {
   // Standard business card size in mm (85.6 x 53.98)
@@ -11,32 +12,9 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
     format: [85.6, 53.98]
   });
 
-  // Background
-  doc.setFillColor(pdfColors.background);
-  doc.rect(0, 0, 85.6, 53.98, 'F');
-
-  // Add gradient effect using multiple rectangles
-  for (let i = 0; i < 85.6; i += 2) {
-    const shade = Math.floor((i / 85.6) * 20);
-    doc.setFillColor(`#${(parseInt(pdfColors.background.slice(1), 16) + shade).toString(16).padStart(6, '0')}`);
-    doc.rect(i, 0, 2, 53.98, 'F');
-  }
-
-  // Circuit pattern with subtle effect
-  doc.setDrawColor(pdfColors.circuit.lines);
-  doc.setLineWidth(0.1);
-  for (let i = 0; i < 85.6; i += 10) {
-    doc.line(i, 0, i, 53.98);
-  }
-  for (let i = 0; i < 53.98; i += 10) {
-    doc.line(0, i, 85.6, i);
-  }
-
-  // Add decorative elements
-  doc.setDrawColor(pdfColors.primary);
-  doc.setLineWidth(0.5);
-  doc.line(5, 5, 80.6, 5);
-  doc.line(5, 48.98, 80.6, 48.98);
+  // Add background and decorative elements
+  drawHeader(doc, 53.98, pdfColors.background, pdfColors.circuit.lines);
+  drawSection(doc, 10, 75.6, 33.98, pdfColors.primary);
 
   // Main Content Area
   doc.setTextColor(pdfColors.text.primary);
@@ -49,13 +27,11 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
   doc.setTextColor(pdfColors.text.secondary);
   let yPos = 22;
 
-  // Role
+  // Role & Company
   if (profile.role) {
     doc.text(profile.role, 15, yPos);
     yPos += 6;
   }
-
-  // Company
   if (profile.company_name) {
     doc.text(profile.company_name, 15, yPos);
     yPos += 6;
@@ -65,25 +41,18 @@ export const generateBusinessCardPDF = async (profile: UserProfile) => {
   doc.setFontSize(9);
   doc.setTextColor(pdfColors.text.muted);
 
-  // Email
-  if (profile.email) {
-    doc.text(`Email: ${profile.email}`, 15, yPos);
-    yPos += 4;
-  }
+  const contactInfo = [
+    { label: 'Email:', value: profile.email },
+    { label: 'Tél:', value: profile.phone },
+    { label: 'Location:', value: [profile.city, profile.state, profile.country].filter(Boolean).join(', ') }
+  ];
 
-  // Phone
-  if (profile.phone) {
-    doc.text(`Tél: ${profile.phone}`, 15, yPos);
-    yPos += 4;
-  }
-
-  // Location
-  if (profile.city || profile.state || profile.country) {
-    const location = [profile.city, profile.state, profile.country]
-      .filter(Boolean)
-      .join(', ');
-    doc.text(location, 15, yPos);
-  }
+  contactInfo.forEach(({ label, value }) => {
+    if (value) {
+      doc.text(`${label} ${value}`, 15, yPos);
+      yPos += 4;
+    }
+  });
 
   // QR Code
   try {

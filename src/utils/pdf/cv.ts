@@ -22,7 +22,7 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
       format: 'a4'
     }) as ExtendedJsPDF;
 
-    // Set gradient background using multiple rectangles with varying opacity
+    // Set gradient background
     const gradientSteps = 15;
     for (let i = 0; i < gradientSteps; i++) {
       const opacity = 0.03 - (i / gradientSteps) * 0.02;
@@ -32,36 +32,8 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
       doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
     }
 
-    // Add a subtle white overlay for better readability
-    doc.setFillColor('#FFFFFF80');
-    doc.rect(15, 15, 180, 267, 'F');
-
-    // Add decorative elements
-    doc.setDrawColor(accentColor);
-    doc.setLineWidth(0.5);
-    doc.setLineDashPattern([1, 1], 0);
-    doc.line(15, 20, 195, 20);
-    doc.line(15, 277, 195, 277);
-
-    // Add subtle corner decorations
-    const cornerSize = 5;
-    doc.setLineWidth(0.3);
-    // Top left
-    doc.line(15, 15, 15 + cornerSize, 15);
-    doc.line(15, 15, 15, 15 + cornerSize);
-    // Top right
-    doc.line(195 - cornerSize, 15, 195, 15);
-    doc.line(195, 15, 195, 15 + cornerSize);
-    // Bottom left
-    doc.line(15, 277, 15 + cornerSize, 277);
-    doc.line(15, 277 - cornerSize, 15, 277);
-    // Bottom right
-    doc.line(195 - cornerSize, 277, 195, 277);
-    doc.line(195, 277 - cornerSize, 195, 277);
-
-    // Render each section and update yPos
-    let yPos = pdfStyles.margins.top + 15;
-    
+    // Add sections
+    let yPos = pdfStyles.margins.top;
     yPos = await renderHeader(doc, profile, yPos);
     yPos = renderContact(doc, profile, yPos);
     yPos = renderBio(doc, profile, yPos);
@@ -70,7 +42,7 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
     yPos = renderEducation(doc, profile, yPos);
     await renderFooter(doc, accentColor);
 
-    // Save the PDF with a clean filename
+    // Save the PDF
     const cleanName = profile.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'vcard';
     doc.save(`${cleanName}_vcard.pdf`);
 
