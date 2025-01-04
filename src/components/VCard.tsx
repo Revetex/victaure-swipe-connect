@@ -92,7 +92,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
-      const doc = await generateVCard(profile, selectedStyle);
+      const doc = await generateVCard(profile);
       doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
       toast.success("PDF généré avec succès");
     } catch (error) {

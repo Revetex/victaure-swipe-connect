@@ -1,11 +1,18 @@
 export interface StyleOption {
-  id: number;
+  id: string;
   name: string;
   color: string;
-  font: string;
-  displayStyle: string;
-  bgGradient: string;
   secondaryColor: string;
-  accentGradient: string;
+  font: string;
+  bgGradient: string;
   borderStyle?: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    text: {
+      primary: string;
+      secondary: string;
+      muted: string;
+    }
+  }
 }

@@ -67,7 +67,7 @@ export function useVCardHandlers() {
     if (!profile) return;
     
     try {
-      const doc = await generateVCard(profile, style);
+      const doc = await generateVCard(profile);
       doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
       
       toast({
