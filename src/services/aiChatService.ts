@@ -1,76 +1,97 @@
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import type { Message } from "@/types/chat/messageTypes";
 
 export async function loadMessages() {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return [];
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
 
-    const { data, error } = await supabase
+    const { data: messages, error } = await supabase
       .from("ai_chat_messages")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.error("Error loading messages:", error);
       throw error;
     }
 
-    return data || [];
+    return messages.map((msg): Message => ({
+      id: msg.id,
+      content: msg.content,
+      sender: msg.sender,
+      timestamp: new Date(msg.created_at),
+    }));
   } catch (error) {
-    console.error("Error in loadMessages:", error);
-    return [];
+    console.error("Error loading messages:", error);
+    throw error;
   }
 }
 
-export async function saveMessage(message: any) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("User not authenticated");
+export async function saveMessage(message: {
+  id: string;
+  content: string;
+  sender: string;
+  created_at: Date;
+}) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
 
-  const { error } = await supabase
-    .from("ai_chat_messages")
-    .insert([{
+    const { error } = await supabase.from("ai_chat_messages").insert({
       id: message.id,
       content: message.content,
       sender: message.sender,
       user_id: user.id,
-      created_at: message.created_at
-    }]);
+      created_at: message.created_at,
+    });
 
-  if (error) throw error;
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error("Error saving message:", error);
+    throw error;
+  }
 }
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
-    console.log("Starting AI response generation...");
-    
+    console.log("Generating AI response...");
+
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
-    
-    if (secretError || !secretData) {
+
+    if (secretError) {
       console.error("Error fetching API token:", secretError);
       throw new Error("Impossible de récupérer le token API. Veuillez configurer votre clé API Hugging Face dans les paramètres.");
     }
 
-    const apiKey = secretData[0]?.secret;
-    if (!apiKey?.trim()) {
+    const apiKey = secretData?.[0]?.secret || '';
+    if (!apiKey.trim()) {
       throw new Error("La clé API Hugging Face n'est pas configurée. Veuillez l'ajouter dans les paramètres.");
     }
 
-    const contextPrompt = profile ? 
-      `Contexte: Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : '';
-    
-    const systemPrompt = `Tu es Mr. Victaure, un assistant virtuel professionnel et amical spécialisé dans l'aide à la recherche d'emploi et le développement de carrière. Tu dois:
-    - Répondre en français de manière claire et naturelle
-    - Être empathique et encourageant
-    - Donner des conseils pratiques et actionnables
-    - Adapter tes réponses au profil de l'utilisateur quand disponible
-    - Rester professionnel tout en étant chaleureux
-    ${contextPrompt}`;
+    const systemPrompt = `Tu es un assistant virtuel professionnel et amical qui aide les utilisateurs à trouver du travail et à gérer leur carrière. 
+    ${profile ? `L'utilisateur avec qui tu parles s'appelle ${profile.full_name}.` : ''}
+    ${profile?.skills ? `Ses compétences principales sont: ${profile.skills.join(', ')}.` : ''}
+    Réponds de manière concise et pertinente.`;
 
-    console.log("Making request to Hugging Face API...");
-    
+    const userMessage = message?.trim() || '';
+    if (!userMessage) {
+      throw new Error("Le message ne peut pas être vide");
+    }
+
+    const prompt = `<s>[INST] ${systemPrompt}
+
+    Message de l'utilisateur: ${userMessage} [/INST]</s>`;
+
+    console.log("Sending request to API with prompt:", prompt);
+
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
       {
@@ -80,63 +101,49 @@ export async function generateAIResponse(message: string, profile?: any) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          inputs: `<|im_start|>system
-${systemPrompt}
-<|im_end|>
-<|im_start|>user
-${message}
-<|im_end|>
-<|im_start|>assistant`,
+          inputs: prompt,
           parameters: {
             max_new_tokens: 1000,
             temperature: 0.7,
             top_p: 0.95,
             do_sample: true,
-            return_full_text: false
-          }
+            return_full_text: false,
+          },
         }),
       }
     );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Hugging Face API Error Response:", errorText);
+      console.error("API Error Response:", errorText);
       
-      if (response.status === 503) {
-        throw new Error("Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.");
-      } else if (response.status === 400) {
-        if (errorText.includes("token seems invalid")) {
-          throw new Error("La clé API Hugging Face semble invalide. Veuillez vérifier et mettre à jour votre clé API dans les paramètres.");
-        }
-        throw new Error("Erreur d'authentification avec l'API Hugging Face. Veuillez vérifier votre clé API.");
-      } else {
-        throw new Error(`Erreur API Hugging Face: ${errorText || 'Erreur inconnue'}`);
+      if (response.status === 401 || response.status === 403) {
+        throw new Error("Clé API invalide. Veuillez vérifier votre configuration.");
       }
+      
+      throw new Error(
+        `Erreur lors de l'appel à l'API (${response.status}): ${errorText}`
+      );
     }
 
-    const result = await response.json();
+    const responseText = await response.text();
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (e) {
+      console.error("Error parsing API response:", e);
+      throw new Error("Format de réponse invalide de l'API");
+    }
+
     console.log("API Response:", result);
 
     if (!result || !Array.isArray(result) || !result[0]?.generated_text) {
       throw new Error("Format de réponse invalide de l'API");
     }
 
-    const cleanedResponse = result[0].generated_text
-      .replace(/<\|im_end\|>/g, '')
-      .replace(/<\|im_start\|>assistant/g, '')
-      .trim();
-
-    if (!cleanedResponse) {
-      throw new Error("La réponse générée est vide");
-    }
-
-    return cleanedResponse;
-
+    return result[0].generated_text.trim();
   } catch (error) {
-    console.error("Error generating AI response:", error);
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error("Une erreur inattendue est survenue lors de la génération de la réponse");
+    console.error("Error in AI response generation:", error);
+    throw error;
   }
 }
