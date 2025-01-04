@@ -69,10 +69,20 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({ style_id: selectedStyle.id })
+        .update({ 
+          style_id: selectedStyle.id,
+        })
         .eq('id', profile?.id);
 
       if (error) throw error;
+
+      // Update the local profile state to reflect the changes
+      if (profile) {
+        setProfile({
+          ...profile,
+          style_id: selectedStyle.id
+        });
+      }
 
       setIsEditing(false);
       if (onEditStateChange) {
@@ -82,6 +92,33 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     } catch (error) {
       console.error('Error saving profile:', error);
       toast.error("Erreur lors de la sauvegarde du profil");
+    }
+  };
+
+  const handleStyleSelect = async (style: StyleOption) => {
+    setSelectedStyle(style);
+    if (!isEditing) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ style_id: style.id })
+          .eq('id', profile?.id);
+
+        if (error) throw error;
+
+        // Update the local profile state
+        if (profile) {
+          setProfile({
+            ...profile,
+            style_id: style.id
+          });
+        }
+
+        toast.success("Style mis à jour avec succès");
+      } catch (error) {
+        console.error('Error updating style:', error);
+        toast.error("Erreur lors de la mise à jour du style");
+      }
     }
   };
 
@@ -100,24 +137,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       (skill) => skill !== skillToRemove
     );
     setProfile({ ...profile, skills: updatedSkills });
-  };
-
-  const handleStyleSelect = async (style: StyleOption) => {
-    setSelectedStyle(style);
-    if (!isEditing) {
-      try {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ style_id: style.id })
-          .eq('id', profile?.id);
-
-        if (error) throw error;
-        toast.success("Style mis à jour avec succès");
-      } catch (error) {
-        console.error('Error updating style:', error);
-        toast.error("Erreur lors de la mise à jour du style");
-      }
-    }
   };
 
   const handleDownloadVCard = async () => {
