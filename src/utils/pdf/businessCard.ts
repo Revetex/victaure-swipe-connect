@@ -18,7 +18,7 @@ export const generateBusinessCard = async (
   doc.setFillColor(selectedStyle.colors.primary);
   doc.rect(0, 0, 85.6, 53.98, 'F');
 
-  // Add profile photo if available at the top
+  // Add profile photo on the left if available
   if (profile.avatar_url) {
     try {
       const img = new Image();
@@ -29,10 +29,8 @@ export const generateBusinessCard = async (
         img.src = profile.avatar_url;
       });
       
-      const imgSize = 15;
-      const imgX = (85.6 - imgSize) / 2;
-      const imgY = 5;
-      doc.addImage(img, 'JPEG', imgX, imgY, imgSize, imgSize, undefined, 'MEDIUM');
+      const imgSize = 20;
+      doc.addImage(img, 'JPEG', 5, 5, imgSize, imgSize, undefined, 'MEDIUM');
     } catch (error) {
       console.error('Error loading profile image:', error);
     }
@@ -41,40 +39,45 @@ export const generateBusinessCard = async (
   // Set text color to white for better contrast
   doc.setTextColor(255, 255, 255);
 
-  // Add name and role centered at the top
-  const nameY = profile.avatar_url ? 25 : 15;
-  
+  // Add name and role next to the photo
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text(profile.full_name || '', 85.6/2, nameY, { align: 'center' });
+  doc.text(profile.full_name || '', 30, 12);
   
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
-  doc.text(profile.role || '', 85.6/2, nameY + 6, { align: 'center' });
+  doc.text(profile.role || '', 30, 18);
 
-  // Add contact details at the bottom
+  // Add Victaure logo in the middle
+  try {
+    const logoImg = new Image();
+    logoImg.src = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+    await new Promise((resolve, reject) => {
+      logoImg.onload = resolve;
+      logoImg.onerror = reject;
+    });
+    doc.addImage(logoImg, 'PNG', 35, 22, 15, 15);
+  } catch (error) {
+    console.error('Error loading Victaure logo:', error);
+  }
+
+  // Add contact details at the bottom left
   doc.setFontSize(9);
-  let contactY = 38;
+  let contactY = 45;
   
   if (profile.email) {
-    doc.text(profile.email, 85.6/2, contactY, { align: 'center' });
-    contactY += 5;
+    doc.text(profile.email, 5, contactY);
+    contactY += 4;
   }
   
   if (profile.phone) {
-    doc.text(profile.phone, 85.6/2, contactY, { align: 'center' });
-    contactY += 5;
-  }
-  
-  if (profile.city) {
-    doc.text(profile.city, 85.6/2, contactY, { align: 'center' });
+    doc.text(profile.phone, 5, contactY);
   }
 
   // Add QR code in bottom right corner with smaller size
   try {
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    // Smaller QR code (10mm x 10mm) positioned in bottom right corner with 3mm margin
-    doc.addImage(qrCodeUrl, 'PNG', 72.6, 41, 10, 10);
+    doc.addImage(qrCodeUrl, 'PNG', 70, 40, 12, 12);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }

@@ -18,11 +18,15 @@ export const generateCV = async (
     // Apply selected style colors
     const primaryColor = selectedStyle.colors.primary;
     const secondaryColor = selectedStyle.colors.secondary;
-    const backgroundColor = selectedStyle.colors.background;
+    const backgroundColor = selectedStyle.colors.background || '#ffffff';
 
     // Add background color
     doc.setFillColor(backgroundColor);
     doc.rect(0, 0, 210, 297, 'F');
+
+    // Add header with primary color
+    doc.setFillColor(primaryColor);
+    doc.rect(0, 0, 210, 40, 'F');
 
     // Add Victaure logo at the top left
     try {
@@ -32,37 +36,38 @@ export const generateCV = async (
         logoImg.onload = resolve;
         logoImg.onerror = reject;
       });
-      doc.addImage(logoImg, 'PNG', 20, 10, 15, 15);
+      doc.addImage(logoImg, 'PNG', 15, 10, 20, 20);
     } catch (error) {
       console.error('Error loading Victaure logo:', error);
     }
 
-    // Set initial position after logo
-    let currentY = 35;
+    // Set font styles based on the selected style
+    doc.setFont(selectedStyle.font || 'helvetica', 'bold');
 
-    // Header with name and role using selected style
-    doc.setTextColor(primaryColor);
+    // Header with name and role
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text(profile.full_name || 'Non défini', 20, currentY);
-    currentY += 10;
-
-    doc.setTextColor(secondaryColor);
+    doc.text(profile.full_name || 'Non défini', 45, 20);
+    
     doc.setFontSize(16);
-    doc.setFont('helvetica', 'normal');
-    doc.text(profile.role || 'Non défini', 20, currentY);
-    currentY += 15;
+    doc.setFont(selectedStyle.font || 'helvetica', 'normal');
+    doc.text(profile.role || 'Non défini', 45, 30);
+
+    // Reset text color for content
+    doc.setTextColor(0, 0, 0);
+
+    let currentY = 50;
 
     // Bio section if available
     if (profile.bio) {
-      doc.setTextColor(primaryColor);
       doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(selectedStyle.font || 'helvetica', 'bold');
+      doc.setTextColor(primaryColor);
       doc.text('À propos', 20, currentY);
       currentY += 8;
       
       doc.setTextColor(51, 51, 51);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(selectedStyle.font || 'helvetica', 'normal');
       doc.setFontSize(12);
       const bioLines = doc.splitTextToSize(profile.bio, 170);
       doc.text(bioLines, 20, currentY);
@@ -71,14 +76,14 @@ export const generateCV = async (
 
     // Skills section
     if (profile.skills && profile.skills.length > 0) {
-      doc.setTextColor(primaryColor);
       doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(selectedStyle.font || 'helvetica', 'bold');
+      doc.setTextColor(primaryColor);
       doc.text('Compétences', 20, currentY);
       currentY += 8;
       
       doc.setTextColor(51, 51, 51);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(selectedStyle.font || 'helvetica', 'normal');
       doc.setFontSize(12);
       const skillsText = profile.skills.join(' • ');
       const skillsLines = doc.splitTextToSize(skillsText, 170);
@@ -86,7 +91,7 @@ export const generateCV = async (
       currentY += skillsLines.length * 5 + 10;
     }
 
-    // Contact information at the bottom
+    // Contact information
     doc.setTextColor(51, 51, 51);
     doc.setFontSize(12);
     let contactY = 250;
@@ -115,9 +120,10 @@ export const generateCV = async (
 
     // Footer with style-based color
     doc.setFillColor(primaryColor);
+    doc.rect(0, 287, 210, 10, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
-    doc.text('Généré avec Victaure', 105, 287, { align: 'center' });
+    doc.text('Généré avec Victaure', 105, 293, { align: 'center' });
 
     return doc;
   } catch (error) {
