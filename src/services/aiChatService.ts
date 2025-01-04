@@ -66,7 +66,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Could not retrieve the API token");
     }
 
-    const apiKey = secretData;
+    const apiKey = secretData[0]?.secret;
     if (!apiKey) {
       toast.error("La clé API Hugging Face n'est pas configurée");
       throw new Error("Hugging Face API key is not configured");
