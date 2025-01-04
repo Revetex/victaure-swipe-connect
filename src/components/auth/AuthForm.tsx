@@ -17,11 +17,11 @@ export const AuthForm = memo(function AuthForm() {
             colors: {
               brand: '#0ea5e9',
               brandAccent: '#0284c7',
-              inputBackground: theme === 'dark' ? 'rgb(23, 23, 23)' : 'white',
+              inputBackground: theme === 'dark' ? 'rgb(17, 17, 17)' : 'white',
               inputText: theme === 'dark' ? 'rgb(229, 231, 235)' : 'rgb(75, 85, 99)',
               inputPlaceholder: theme === 'dark' ? 'rgb(156, 163, 175, 0.5)' : 'rgb(156, 163, 175)',
-              inputBorder: theme === 'dark' ? 'rgb(75, 85, 99)' : 'rgb(229, 231, 235)',
-              inputBorderHover: theme === 'dark' ? 'rgb(107, 114, 128)' : 'rgb(209, 213, 219)',
+              inputBorder: theme === 'dark' ? 'rgb(64, 64, 64)' : 'rgb(229, 231, 235)',
+              inputBorderHover: theme === 'dark' ? 'rgb(82, 82, 82)' : 'rgb(209, 213, 219)',
               inputBorderFocus: '#0ea5e9',
             },
             space: {
