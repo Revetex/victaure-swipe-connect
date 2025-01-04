@@ -26,20 +26,21 @@ export function VCardStyleSelectorMinimal({
           >
             <Button
               onClick={() => onStyleSelect(style)}
-              className={`relative h-8 px-3 rounded-full transition-all duration-300 ${
+              className={`relative h-10 px-4 rounded-full transition-all duration-300 ${
                 selectedStyle.id === style.id 
                 ? 'ring-2 ring-white shadow-lg' 
                 : 'hover:ring-1 hover:ring-white/50'
               }`}
               style={{ 
                 background: `linear-gradient(135deg, ${style.color}, ${style.secondaryColor})`,
+                fontFamily: style.font
               }}
             >
               <span className="text-white text-sm font-medium">
                 {style.name}
               </span>
               {selectedStyle.id === style.id && (
-                <Check className="w-3 h-3 ml-1 inline-block" />
+                <Check className="w-4 h-4 ml-2 inline-block" />
               )}
             </Button>
           </motion.div>

@@ -15,13 +15,22 @@ export const generateBusinessCard = async (
     format: [85.6, 53.98]
   }));
 
-  // Set background color based on style
-  doc.setFillColor(selectedStyle.colors.primary);
+  // Set background gradient
+  const gradient = doc.setFillColor(selectedStyle.color);
   doc.rect(0, 0, 85.6, 53.98, 'F');
 
-  // Add profile photo if available
-  if (profile.avatar_url) {
-    try {
+  try {
+    // Add Victaure logo in the middle
+    const logoImg = new Image();
+    logoImg.src = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+    await new Promise((resolve, reject) => {
+      logoImg.onload = resolve;
+      logoImg.onerror = reject;
+    });
+    doc.addImage(logoImg, 'PNG', 35, 20, 15, 15);
+
+    // Add profile photo on the left if available
+    if (profile.avatar_url) {
       const img = new Image();
       img.crossOrigin = "Anonymous";
       await new Promise((resolve, reject) => {
@@ -29,54 +38,48 @@ export const generateBusinessCard = async (
         img.onerror = reject;
         img.src = profile.avatar_url;
       });
-      
-      // Position photo on the left side with better spacing
-      const imgSize = 15;
-      const imgX = 5;
-      const imgY = (53.98 - imgSize) / 2;
-      doc.addImage(img, 'JPEG', imgX, imgY, imgSize, imgSize, undefined, 'MEDIUM');
-    } catch (error) {
-      console.error('Error loading profile image:', error);
+      doc.addImage(img, 'JPEG', 5, 5, 20, 20);
     }
+  } catch (error) {
+    console.error('Error loading images:', error);
   }
 
-  // Set text color to white for better contrast
+  // Set text color and font based on style
   doc.setTextColor(255, 255, 255);
+  doc.setFont(selectedStyle.font || 'helvetica');
 
-  // Add name and role with better spacing
-  const textStartX = profile.avatar_url ? 25 : 5;
-  
+  // Add name and position next to photo
+  const textStartX = profile.avatar_url ? 30 : 5;
   doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.text(profile.full_name || '', textStartX, 20);
+  doc.setFont(selectedStyle.font || 'helvetica', 'bold');
+  doc.text(profile.full_name || '', textStartX, 15);
   
   doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.text(profile.role || '', textStartX, 26);
+  doc.setFont(selectedStyle.font || 'helvetica', 'normal');
+  doc.text(profile.role || '', textStartX, 22);
 
-  // Add contact details with better layout
+  // Add contact details at the bottom left
   doc.setFontSize(9);
-  let contactY = 32;
+  let contactY = 40;
   
   if (profile.email) {
-    doc.text(profile.email, textStartX, contactY);
+    doc.text(profile.email, 5, contactY);
     contactY += 5;
   }
   
   if (profile.phone) {
-    doc.text(profile.phone, textStartX, contactY);
+    doc.text(profile.phone, 5, contactY);
     contactY += 5;
   }
   
   if (profile.city) {
-    doc.text(profile.city, textStartX, contactY);
+    doc.text(profile.city, 5, contactY);
   }
 
-  // Add QR code in bottom right corner with smaller size
+  // Add QR code in bottom right corner
   try {
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    // Smaller QR code (10mm x 10mm) positioned in bottom right corner with 3mm margin
-    doc.addImage(qrCodeUrl, 'PNG', 72.6, 41, 10, 10);
+    doc.addImage(qrCodeUrl, 'PNG', 65, 35, 15, 15);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }

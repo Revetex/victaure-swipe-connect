@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { StyleOption } from "./types";
-import { styleOptions } from "./styles";
 import { VCardStyleSelectorMinimal } from "./VCardStyleSelectorMinimal";
+import { motion } from "framer-motion";
 
 interface VCardStyleSelectorProps {
   selectedStyle: StyleOption;
@@ -13,10 +12,17 @@ export function VCardStyleSelector({ selectedStyle, onStyleSelect, isEditing }: 
   if (!isEditing) return null;
   
   return (
-    <VCardStyleSelectorMinimal
-      selectedStyle={selectedStyle}
-      onStyleSelect={onStyleSelect}
-      styleOptions={styleOptions}
-    />
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg"
+    >
+      <VCardStyleSelectorMinimal
+        selectedStyle={selectedStyle}
+        onStyleSelect={onStyleSelect}
+        styleOptions={styleOptions}
+      />
+    </motion.div>
   );
 }

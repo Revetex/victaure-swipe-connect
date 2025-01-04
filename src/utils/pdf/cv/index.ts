@@ -6,7 +6,7 @@ import QRCode from "qrcode";
 
 export const generateCV = async (
   profile: UserProfile,
-  selectedStyle: StyleOption
+  selectedStyle?: StyleOption
 ): Promise<ExtendedJsPDF> => {
   try {
     const doc = new jsPDF({
@@ -15,9 +15,9 @@ export const generateCV = async (
       format: 'a4'
     }) as ExtendedJsPDF;
 
-    // Set colors based on selected style
-    const primaryColor = selectedStyle.color;
-    const secondaryColor = selectedStyle.secondaryColor;
+    // Set colors based on selected style or default
+    const primaryColor = selectedStyle?.color || '#9b87f5';
+    const secondaryColor = selectedStyle?.secondaryColor || '#7E69AB';
 
     // Add Victaure logo at the top left
     try {
@@ -35,21 +35,25 @@ export const generateCV = async (
     // Set initial position after logo
     let currentY = 35;
 
+    // Set font family based on style or default
+    const fontFamily = selectedStyle?.font || 'helvetica';
+    doc.setFont(fontFamily);
+
     // Header with name and role using selected style
     doc.setTextColor(primaryColor);
     doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(fontFamily, 'bold');
     doc.text(profile.full_name || 'Non défini', 20, currentY);
     currentY += 10;
 
     doc.setTextColor(secondaryColor);
     doc.setFontSize(16);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(fontFamily, 'normal');
     doc.text(profile.role || 'Non défini', 20, currentY);
     currentY += 15;
 
     // Contact information
-    doc.setTextColor(51, 51, 51); // Default text color
+    doc.setTextColor(51, 51, 51);
     doc.setFontSize(12);
     doc.text(`Email: ${profile.email}`, 20, currentY);
     currentY += 6;
