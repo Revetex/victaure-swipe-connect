@@ -85,6 +85,25 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
     }
   };
 
+  const handleAddSkill = () => {
+    if (newSkill && profile?.skills) {
+      setProfile({
+        ...profile,
+        skills: [...profile.skills, newSkill],
+      });
+      setNewSkill("");
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    if (profile?.skills) {
+      setProfile({
+        ...profile,
+        skills: profile.skills.filter(skill => skill !== skillToRemove),
+      });
+    }
+  };
+
   if (isLoading) {
     return <VCardSkeleton />;
   }
