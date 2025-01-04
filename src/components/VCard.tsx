@@ -12,6 +12,7 @@ import { StyleOption } from "./vcard/types";
 import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
 import { VCardActions } from "./vcard/VCardActions";
 import { VCardContent } from "./vcard/VCardContent";
+import { QRCodeSVG } from "qrcode.react";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -116,6 +117,18 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     >
       <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient} ${selectedStyle.borderStyle || ''}`}>
         <CardContent className="p-6 space-y-8">
+          <div className="flex justify-end mb-4">
+            <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
+              <QRCodeSVG
+                value={window.location.href}
+                size={85}
+                level="H"
+                includeMargin={false}
+                className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+              />
+            </div>
+          </div>
+
           <VCardStyleSelector
             selectedStyle={selectedStyle}
             onStyleSelect={handleStyleSelect}
