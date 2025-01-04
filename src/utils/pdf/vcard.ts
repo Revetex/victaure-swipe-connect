@@ -4,36 +4,28 @@ import { pdfColors } from './colors';
 import type { UserProfile } from '@/types/profile';
 
 export const generateVCardPDF = async (profile: UserProfile) => {
+  // Initialize PDF
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
   });
 
-  // Background gradient
-  const gradient = doc.setFillColor('#f8fafc');
+  // Set background
+  doc.setFillColor('#ffffff');
   doc.rect(0, 0, 210, 297, 'F');
 
   // Header with profile photo
   if (profile.avatar_url) {
     try {
-      doc.addImage(profile.avatar_url, 'PNG', 20, 20, 40, 40, undefined, 'FAST');
-      // Add a subtle shadow/border around the image
+      doc.addImage(profile.avatar_url, 'JPEG', 20, 20, 40, 40, undefined, 'FAST');
+      // Add a subtle border around the image
       doc.setDrawColor(200, 200, 200);
       doc.rect(20, 20, 40, 40, 'S');
     } catch (error) {
       console.error('Error adding profile image:', error);
     }
   }
-
-  // Name and Role (positioned next to photo)
-  doc.setFontSize(24);
-  doc.setTextColor(pdfColors.text.primary);
-  doc.text(profile.full_name || 'Nom complet', 70, 35);
-
-  doc.setFontSize(16);
-  doc.setTextColor(pdfColors.text.secondary);
-  doc.text(profile.role || 'Rôle professionnel', 70, 45);
 
   // QR Code (top right corner)
   try {
@@ -43,8 +35,16 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     console.error('Error generating QR code:', error);
   }
 
+  // Name and Role
+  doc.setFontSize(24);
+  doc.setTextColor(pdfColors.text.primary);
+  doc.text(profile.full_name || 'Nom complet', 70, 35);
+
+  doc.setFontSize(16);
+  doc.setTextColor(pdfColors.text.secondary);
+  doc.text(profile.role || 'Rôle professionnel', 70, 45);
+
   // Contact Information
-  doc.setFontSize(12);
   let yPosition = 80;
   const lineHeight = 8;
 
