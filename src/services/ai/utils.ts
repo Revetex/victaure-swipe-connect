@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { ChatPrompt } from "@/types/ai/chat";
 
 export async function getHuggingFaceApiKey(): Promise<string> {
   try {
