@@ -6,7 +6,7 @@ import type { Message } from "@/hooks/useMessages";
 
 interface MessageListProps {
   messages: Message[];
-  isLoading: boolean;
+  isLoading?: boolean;
   onMarkAsRead: (messageId: string) => void;
 }
 
