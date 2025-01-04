@@ -22,3 +22,8 @@ export interface ChatActions {
   clearChat: () => Promise<void>;
   restoreChat: () => Promise<void>;
 }
+
+export interface ApiResponse {
+  generated_text?: string;
+  error?: string;
+}
