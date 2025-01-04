@@ -15,8 +15,11 @@ export function DashboardLayout() {
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState("100vh");
 
+  // Handle viewport height for mobile browsers
   useEffect(() => {
     const updateHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
       setViewportHeight(`${window.innerHeight}px`);
     };
     
@@ -41,16 +44,17 @@ export function DashboardLayout() {
   ) => (
     <motion.div 
       variants={itemVariants} 
-      className={`transform transition-all duration-300 h-full ${className}`}
+      className={`transform-gpu will-change-transform ${className}`}
       style={{ 
-        WebkitTransform: "translate3d(0,0,0)",
-        WebkitBackfaceVisibility: "hidden",
-        WebkitPerspective: "1000",
+        height: isEditing ? viewportHeight : '100%',
+        WebkitTransform: 'translate3d(0,0,0)',
+        WebkitBackfaceVisibility: 'hidden',
+        WebkitPerspective: '1000'
       }}
     >
-      <div className="dashboard-card h-full flex flex-col">
+      <div className="dashboard-card h-full flex flex-col bg-background/80 backdrop-blur-sm rounded-lg shadow-lg">
         {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 flex-1 overflow-y-auto -webkit-overflow-scrolling-touch">
+          <div className="p-3 sm:p-4 md:p-6 flex-1 overflow-y-auto overscroll-contain">
             {component}
           </div>
         ) : (
@@ -64,7 +68,11 @@ export function DashboardLayout() {
     if (currentPage === 1) {
       return (
         <div 
-          className={`${isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 pb-0" : "relative h-full"} overflow-auto -webkit-overflow-scrolling-touch`}
+          className={`${
+            isEditing 
+              ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 pb-0" 
+              : "relative h-full"
+          } overflow-auto overscroll-contain`}
           style={{ height: isEditing ? viewportHeight : "100%" }}
         >
           {renderDashboardSection(
@@ -98,8 +106,11 @@ export function DashboardLayout() {
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
-      <div className="flex flex-col min-h-[100vh] min-h-[100dvh] w-full">
-        <div className="flex-1 flex flex-col">
+      <div 
+        className="flex flex-col min-h-[100vh] min-h-[100dvh] w-full"
+        style={{ minHeight: `calc(var(--vh, 1vh) * 100)` }}
+      >
+        <div className="flex-1 flex flex-col relative">
           <AnimatePresence mode="sync">
             {renderCurrentPage()}
           </AnimatePresence>
@@ -107,7 +118,7 @@ export function DashboardLayout() {
         
         {!isEditing && (
           <nav 
-            className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-2 z-50"
+            className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 py-2 z-50 safe-area-bottom"
             style={{ 
               paddingBottom: `max(0.5rem, env(safe-area-inset-bottom))`,
             }}
