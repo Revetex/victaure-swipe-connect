@@ -6,17 +6,12 @@ import { VCardEmpty } from "./vcard/VCardEmpty";
 import { Card, CardContent } from "@/components/ui/card";
 import { VCardHeader } from "./VCardHeader";
 import { VCardContact } from "./VCardContact";
-import { VCardSkills } from "./VCardSkills";
-import { VCardCertifications } from "./VCardCertifications";
-import { VCardEducation } from "./VCardEducation";
-import { VCardExperiences } from "./VCardExperiences";
-import { Button } from "./ui/button";
-import { Download, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
-import { generateVCardPDF } from "@/utils/pdfGenerator";
-import { VCardStyleSelectorMinimal } from "./vcard/VCardStyleSelectorMinimal";
 import { styleOptions } from "./vcard/styles";
 import { StyleOption } from "./vcard/types";
+import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
+import { VCardActions } from "./vcard/VCardActions";
+import { VCardContent } from "./vcard/VCardContent";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -89,24 +84,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     toast.success("Compétence supprimée avec succès");
   };
 
-  const handleDownloadPDF = async () => {
-    if (!profile) {
-      toast.error("Aucun profil trouvé");
-      return;
-    }
-
-    try {
-      setIsPdfGenerating(true);
-      await generateVCardPDF(profile, selectedStyle.color);
-      toast.success("PDF téléchargé avec succès");
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast.error("Erreur lors de la génération du PDF. Veuillez réessayer.");
-    } finally {
-      setIsPdfGenerating(false);
-    }
-  };
-
   const handleStyleSelect = (style: StyleOption) => {
     setSelectedStyle(style);
     document.documentElement.style.setProperty('--accent-color', style.color);
@@ -139,13 +116,11 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     >
       <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient} ${selectedStyle.borderStyle || ''}`}>
         <CardContent className="p-6 space-y-8">
-          {isEditing && (
-            <VCardStyleSelectorMinimal
-              selectedStyle={selectedStyle}
-              onStyleSelect={handleStyleSelect}
-              styleOptions={styleOptions}
-            />
-          )}
+          <VCardStyleSelector
+            selectedStyle={selectedStyle}
+            onStyleSelect={handleStyleSelect}
+            isEditing={isEditing}
+          />
 
           <VCardHeader
             profile={profile}
@@ -159,67 +134,25 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             setProfile={setProfile}
           />
 
-          <motion.div className="space-y-8 pt-6">
-            <VCardSkills
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              newSkill={newSkill}
-              setNewSkill={setNewSkill}
-              handleAddSkill={handleAddSkill}
-              handleRemoveSkill={handleRemoveSkill}
-            />
+          <VCardContent
+            profile={profile}
+            isEditing={isEditing}
+            selectedStyle={selectedStyle}
+            setProfile={setProfile}
+            newSkill={newSkill}
+            setNewSkill={setNewSkill}
+            handleAddSkill={handleAddSkill}
+            handleRemoveSkill={handleRemoveSkill}
+          />
 
-            <VCardExperiences
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-            />
-
-            <VCardCertifications
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-            />
-
-            <VCardEducation
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-            />
-
-            <div className="flex flex-wrap justify-center gap-4 pt-4 border-t border-white/20">
-              {isEditing ? (
-                <Button
-                  onClick={handleSave}
-                  style={{ backgroundColor: selectedStyle.color }}
-                  className="text-white transition-colors"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Sauvegarder
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleEditToggle}
-                  style={{ backgroundColor: selectedStyle.color }}
-                  className="text-white transition-colors"
-                >
-                  <Edit2 className="mr-2 h-4 w-4" />
-                  Modifier mon profil
-                </Button>
-              )}
-
-              <Button
-                onClick={handleDownloadPDF}
-                disabled={isPdfGenerating}
-                style={{ backgroundColor: selectedStyle.color }}
-                className="text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                {isPdfGenerating ? 'Génération...' : 'Télécharger PDF'}
-              </Button>
-            </div>
-          </motion.div>
+          <VCardActions
+            isEditing={isEditing}
+            isPdfGenerating={isPdfGenerating}
+            profile={profile}
+            selectedStyle={selectedStyle}
+            onEditToggle={handleEditToggle}
+            onSave={handleSave}
+          />
         </CardContent>
       </Card>
     </motion.div>
