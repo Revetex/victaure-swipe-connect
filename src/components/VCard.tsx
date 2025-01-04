@@ -97,11 +97,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
     try {
       setIsPdfGenerating(true);
-      const loadingToast = toast.loading("Génération du PDF en cours...");
-      
       await generateVCardPDF(profile, selectedStyle.color);
-      
-      toast.dismiss(loadingToast);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
