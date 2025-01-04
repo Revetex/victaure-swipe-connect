@@ -104,35 +104,35 @@ ${message}
       }
     );
 
-    // Clone the response before reading the body
-    const responseClone = response.clone();
-    
-    // Try to parse the response as JSON first
-    let errorData;
-    try {
-      errorData = await response.json();
-    } catch (e) {
-      // If JSON parsing fails, try to get the text
-      const textError = await responseClone.text();
-      errorData = { error: textError };
-    }
-
+    let result;
     if (!response.ok) {
-      console.error("Hugging Face API Error:", errorData);
+      const errorText = await response.text();
+      console.error("Hugging Face API Error:", errorText);
       
-      if (response.status === 400 && errorData?.error?.includes("Authorization")) {
-        toast.error("Le token d'API Hugging Face semble invalide. Veuillez le vérifier.");
-        throw new Error("Invalid Hugging Face API token");
-      } else if (response.status === 429) {
-        toast.error("Trop de requêtes. Veuillez réessayer dans quelques instants.");
-        throw new Error("Rate limit exceeded");
+      try {
+        const errorData = JSON.parse(errorText);
+        if (response.status === 400 && errorData?.error?.includes("Authorization")) {
+          toast.error("Le token d'API Hugging Face semble invalide. Veuillez le vérifier.");
+          throw new Error("Invalid Hugging Face API token");
+        } else if (response.status === 429) {
+          toast.error("Trop de requêtes. Veuillez réessayer dans quelques instants.");
+          throw new Error("Rate limit exceeded");
+        }
+      } catch (e) {
+        // Error parsing JSON
       }
       
       toast.error("Erreur lors de la communication avec l'API Hugging Face");
-      throw new Error(`API Error (${response.status}): ${errorData?.error || 'Unknown error'}`);
+      throw new Error(`API Error (${response.status}): ${errorText}`);
     }
 
-    const result = errorData; // We already parsed the response above
+    try {
+      result = await response.json();
+    } catch (e) {
+      console.error("Error parsing response:", e);
+      toast.error("Erreur lors de la lecture de la réponse");
+      throw new Error("Failed to parse API response");
+    }
     
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text;
