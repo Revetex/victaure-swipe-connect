@@ -116,7 +116,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       } as React.CSSProperties}
     >
       <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient} ${selectedStyle.borderStyle || ''}`}>
-        <CardContent className="p-6 space-y-8">
+        <CardContent className="p-6">
           <div className="flex justify-end mb-4">
             <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
               <QRCodeSVG
@@ -129,43 +129,45 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             </div>
           </div>
 
-          <VCardStyleSelector
-            selectedStyle={selectedStyle}
-            onStyleSelect={handleStyleSelect}
-            isEditing={isEditing}
-          />
+          <div className="space-y-8">
+            <VCardStyleSelector
+              selectedStyle={selectedStyle}
+              onStyleSelect={handleStyleSelect}
+              isEditing={isEditing}
+            />
 
-          <VCardHeader
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
+            <VCardHeader
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
+            />
 
-          <VCardContact
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
+            <VCardContact
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
+            />
 
-          <VCardContent
-            profile={profile}
-            isEditing={isEditing}
-            selectedStyle={selectedStyle}
-            setProfile={setProfile}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
-            handleAddSkill={handleAddSkill}
-            handleRemoveSkill={handleRemoveSkill}
-          />
+            <VCardContent
+              profile={profile}
+              isEditing={isEditing}
+              selectedStyle={selectedStyle}
+              setProfile={setProfile}
+              newSkill={newSkill}
+              setNewSkill={setNewSkill}
+              handleAddSkill={handleAddSkill}
+              handleRemoveSkill={handleRemoveSkill}
+            />
 
-          <VCardActions
-            isEditing={isEditing}
-            isPdfGenerating={isPdfGenerating}
-            profile={profile}
-            selectedStyle={selectedStyle}
-            onEditToggle={handleEditToggle}
-            onSave={handleSave}
-          />
+            <VCardActions
+              isEditing={isEditing}
+              isPdfGenerating={isPdfGenerating}
+              profile={profile}
+              selectedStyle={selectedStyle}
+              onEditToggle={handleEditToggle}
+              onSave={handleSave}
+            />
+          </div>
         </CardContent>
       </Card>
     </motion.div>

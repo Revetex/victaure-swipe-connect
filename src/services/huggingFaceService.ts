@@ -6,7 +6,7 @@ export async function generateAIResponse(message: string, profile?: any) {
   
   try {
     const { data: secretData, error: secretError } = await supabase
-      .rpc('get_secret', { secret_name: 'HUGGING_FACE_ACCESS_TOKEN' });
+      .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
     
     if (secretError || !secretData) {
       console.error("Error fetching API token:", secretError);
