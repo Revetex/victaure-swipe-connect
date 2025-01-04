@@ -98,7 +98,7 @@ export function DashboardLayout() {
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
-      <div className="flex flex-col min-h-[100dvh]">
+      <div className="flex flex-col min-h-screen w-full">
         <div className="flex-1 flex flex-col">
           <AnimatePresence mode="sync">
             {renderCurrentPage()}
