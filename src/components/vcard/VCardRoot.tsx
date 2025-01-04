@@ -36,7 +36,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto">
-      <Card className="border-none shadow-xl bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950">
+      <Card className="border-none shadow-xl bg-gradient-to-br from-indigo-600 to-indigo-900 dark:from-indigo-900 dark:to-indigo-950">
         <VCardContent 
           profile={profile}
           setProfile={setProfile}
@@ -51,5 +51,4 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   );
 }
 
-// Also export as VCard to maintain compatibility
 export { VCard as VCardRoot };

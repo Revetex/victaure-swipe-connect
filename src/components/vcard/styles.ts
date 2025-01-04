@@ -26,7 +26,7 @@ export const styleOptions: StyleOption[] = [
   {
     id: 3,
     name: "Moderne",
-    color: "#8B5CF6", // Vivid purple for better visibility
+    color: "#8B5CF6",
     font: "roboto",
     displayStyle: "modern",
     bgGradient: "from-violet-600 via-purple-600 to-indigo-700",

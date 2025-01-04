@@ -58,13 +58,15 @@ export function VCardContent({
   };
 
   return (
-    <CardContent className="p-0">
-      <div className="relative">
-        <VCardStyleSelector
-          selectedStyle={selectedStyle}
-          onStyleSelect={setSelectedStyle}
-          styleOptions={styleOptions}
-        />
+    <CardContent className="p-6 space-y-8">
+      <div className="relative space-y-8">
+        {isEditing && (
+          <VCardStyleSelector
+            selectedStyle={selectedStyle}
+            onStyleSelect={setSelectedStyle}
+            styleOptions={styleOptions}
+          />
+        )}
 
         <VCardHeader
           profile={profile}
@@ -78,7 +80,7 @@ export function VCardContent({
           setProfile={setProfile}
         />
 
-        <div className="mt-6">
+        <div className="space-y-8 pt-6">
           <VCardSkills
             profile={profile}
             isEditing={isEditing}
@@ -88,31 +90,38 @@ export function VCardContent({
             handleAddSkill={handleAddSkill}
             handleRemoveSkill={handleRemoveSkill}
           />
-        </div>
 
-        <div className="mt-6">
           <VCardExperiences
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
           />
-        </div>
 
-        <div className="mt-6">
           <VCardCertifications
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
           />
-        </div>
 
-        <div className="mt-6">
           <VCardEducation
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
           />
         </div>
+
+        <VCardActions
+          isEditing={isEditing}
+          onShare={() => {}}
+          onDownload={() => {}}
+          onDownloadPDF={() => {}}
+          onDownloadBusinessPDF={() => {}}
+          onDownloadCVPDF={() => {}}
+          onCopyLink={() => {}}
+          onSave={() => handleEditStateChange(false)}
+          onApplyChanges={() => {}}
+          setIsEditing={handleEditStateChange}
+        />
       </div>
     </CardContent>
   );
