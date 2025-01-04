@@ -57,6 +57,8 @@ export async function loadMessages(): Promise<Message[]> {
 }
 
 export async function generateAIResponse(message: string, profile?: any): Promise<string> {
+  console.log("Generating AI response for message:", message);
+  
   try {
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
@@ -67,16 +69,19 @@ export async function generateAIResponse(message: string, profile?: any): Promis
       throw new Error("Could not retrieve the API token");
     }
 
+    console.log("Successfully retrieved API key");
     const apiKey = secretData;
+    
     if (!apiKey) {
+      console.error("API key is empty or undefined");
       toast.error("La clé API Hugging Face n'est pas configurée");
       throw new Error("Hugging Face API key is not configured");
     }
 
-    // Include profile context if provided
     const contextPrompt = profile ? 
       `Context: User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : '';
 
+    console.log("Sending request to Hugging Face API...");
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
       {
@@ -112,7 +117,10 @@ ${message}
       throw new Error(`API request failed: ${errorData.error || response.statusText}`);
     }
 
+    console.log("Received response from API");
     const result = await response.json();
+    console.log("API Response:", result);
+
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text;
       if (generatedText) {
@@ -120,6 +128,7 @@ ${message}
       }
     }
 
+    console.error("Unexpected API response format:", result);
     throw new Error("Invalid response format from API");
   } catch (error) {
     console.error("Error generating AI response:", error);
