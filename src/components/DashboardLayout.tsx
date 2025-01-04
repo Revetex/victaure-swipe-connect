@@ -13,33 +13,26 @@ export function DashboardLayout() {
   const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateHeight = () => {
       const vh = window.innerHeight;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
-      setViewportHeight(vh);
     };
 
-    const handleScroll = () => {
-      if (contentRef.current) {
-        contentRef.current.style.height = `${viewportHeight}px`;
-      }
-    };
+    // Initial call
+    updateHeight();
 
+    // Update on resize and orientation change
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    updateHeight();
 
     return () => {
       window.removeEventListener('resize', updateHeight);
       window.removeEventListener('orientationchange', updateHeight);
-      window.removeEventListener('scroll', handleScroll);
     };
-  }, [viewportHeight]);
+  }, []);
 
   const handleRequestChat = () => {
     setCurrentPage(2);
@@ -52,12 +45,10 @@ export function DashboardLayout() {
   ) => (
     <motion.div 
       variants={itemVariants} 
-      className={`transform transition-all duration-300 ${className}`}
+      className={`h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain ${className}`}
       style={{ 
-        height: isEditing ? viewportHeight : `calc(var(--vh, 1vh) * 100 - 4rem)`,
-        overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        position: 'relative'
+        height: isEditing ? '100vh' : 'calc(var(--vh, 1vh) * 100 - 4rem)',
+        WebkitOverflowScrolling: 'touch'
       }}
       ref={contentRef}
     >
@@ -66,9 +57,7 @@ export function DashboardLayout() {
           <div className="p-3 sm:p-4 md:p-6 h-full">
             {component}
           </div>
-        ) : (
-          component
-        )}
+        ) : component}
       </div>
     </motion.div>
   );
@@ -79,7 +68,7 @@ export function DashboardLayout() {
         <div 
           className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm' : 'relative'}`}
           style={{ 
-            height: isEditing ? viewportHeight : 'auto',
+            height: isEditing ? '100vh' : 'auto',
             overflowY: isEditing ? 'auto' : 'visible',
             WebkitOverflowScrolling: 'touch'
           }}

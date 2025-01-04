@@ -61,6 +61,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     height: -webkit-fill-available;
+    overflow: hidden;
   }
   
   body {
@@ -73,8 +74,29 @@
     min-height: 100vh;
     min-height: -webkit-fill-available;
     min-height: calc(var(--vh, 1vh) * 100);
-    overflow-x: hidden;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Improved scrollbar styling */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
   }
 
   /* Fix for iOS Safari viewport height */
@@ -82,17 +104,6 @@
     .min-h-screen {
       min-height: -webkit-fill-available;
       min-height: calc(var(--vh, 1vh) * 100);
-    }
-  }
-
-  /* Fix for Safari flexbox gap */
-  @supports not (gap: 1rem) {
-    .gap-4 > * + * {
-      margin-left: 1rem;
-    }
-    .flex-col.gap-4 > * + * {
-      margin-top: 1rem;
-      margin-left: 0;
     }
   }
 
@@ -110,11 +121,6 @@
     select,
     textarea {
       font-size: 16px !important;
-    }
-
-    .container {
-      padding-left: 1rem;
-      padding-right: 1rem;
     }
   }
 
