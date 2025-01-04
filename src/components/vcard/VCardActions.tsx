@@ -13,8 +13,9 @@ interface VCardActionsProps {
   selectedStyle: StyleOption;
   onEditToggle: () => void;
   onSave: () => Promise<void>;
-  onDownloadBusinessPDF: () => Promise<void>;
-  onDownloadCVPDF: () => Promise<void>;
+  onDownloadVCard: () => Promise<void>;
+  onDownloadBusinessCard: () => Promise<void>;
+  onDownloadCV: () => Promise<void>;
 }
 
 export function VCardActions({
@@ -23,8 +24,9 @@ export function VCardActions({
   profile,
   onEditToggle,
   onSave,
-  onDownloadBusinessPDF,
-  onDownloadCVPDF,
+  onDownloadVCard,
+  onDownloadBusinessCard,
+  onDownloadCV,
 }: VCardActionsProps) {
   const handleShare = async () => {
     try {
@@ -38,25 +40,6 @@ export function VCardActions({
       if ((error as Error).name !== 'AbortError') {
         toast.error("Erreur lors du partage");
       }
-    }
-  };
-
-  const handleDownloadVCard = () => {
-    try {
-      const vCardData = generateVCardData(profile);
-      const blob = new Blob([vCardData], { type: 'text/vcard' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${profile.full_name || 'contact'}.vcf`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      toast.success("VCard téléchargée avec succès");
-    } catch (error) {
-      console.error('Error downloading vCard:', error);
-      toast.error("Erreur lors du téléchargement de la VCard");
     }
   };
 
@@ -116,7 +99,7 @@ export function VCardActions({
             className="flex-1 min-w-[100px]"
           >
             <Button 
-              onClick={handleDownloadVCard}
+              onClick={onDownloadVCard}
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
               disabled={isPdfGenerating}
             >
@@ -130,7 +113,7 @@ export function VCardActions({
             className="flex-1 min-w-[100px]"
           >
             <Button 
-              onClick={onDownloadBusinessPDF}
+              onClick={onDownloadBusinessCard}
               className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
               disabled={isPdfGenerating}
             >
@@ -144,7 +127,7 @@ export function VCardActions({
             className="flex-1 min-w-[100px]"
           >
             <Button 
-              onClick={onDownloadCVPDF}
+              onClick={onDownloadCV}
               className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
               disabled={isPdfGenerating}
             >

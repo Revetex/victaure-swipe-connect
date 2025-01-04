@@ -35,8 +35,8 @@ export const generateCV = async (profile: UserProfile): Promise<ExtendedJsPDF> =
     currentY = await renderEducation(doc, profile, currentY);
     currentY = await renderCertifications(doc, profile, currentY);
     
-    // Render footer with all required parameters
-    renderFooter(doc, profile.role || 'Professional', currentY, pdfStyles.colors.primary);
+    // Render footer
+    renderFooter(doc, pdfStyles.colors.primary);
 
     return doc;
   } catch (error) {

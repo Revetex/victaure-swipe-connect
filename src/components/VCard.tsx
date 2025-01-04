@@ -88,7 +88,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     setSelectedStyle(style);
   };
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadVCard = async () => {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
@@ -103,7 +103,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
-  const handleDownloadBusinessPDF = async () => {
+  const handleDownloadBusinessCard = async () => {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
@@ -118,7 +118,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
-  const handleDownloadCVPDF = async () => {
+  const handleDownloadCV = async () => {
     if (!profile) return;
     setIsPdfGenerating(true);
     try {
@@ -192,9 +192,9 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                 selectedStyle={selectedStyle}
                 onEditToggle={handleEditToggle}
                 onSave={handleSave}
-                onDownloadPDF={handleDownloadPDF}
-                onDownloadBusinessPDF={handleDownloadBusinessPDF}
-                onDownloadCVPDF={handleDownloadCVPDF}
+                onDownloadVCard={handleDownloadVCard}
+                onDownloadBusinessCard={handleDownloadBusinessCard}
+                onDownloadCV={handleDownloadCV}
               />
               
               <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
