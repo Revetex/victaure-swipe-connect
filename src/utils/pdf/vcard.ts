@@ -6,41 +6,41 @@ import { drawHeader, drawSection } from './helpers';
 import type { ExtendedJsPDF } from './types';
 
 export const generateVCardPDF = async (profile: UserProfile) => {
+  // Initialize PDF
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
   }) as unknown as ExtendedJsPDF;
 
-  // Set background color
+  // Set white background
   doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, 210, 297, 'F');
 
-  // Add gradient background with opacity
-  const gradientSteps = 15;
-  for (let i = 0; i < gradientSteps; i++) {
-    const opacity = 0.05 - (i / gradientSteps) * 0.03;
-    doc.setFillColor(pdfColors.background);
-    doc.setGlobalAlpha(opacity);
-    doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
-  }
-  doc.setGlobalAlpha(1);
+  // Header with gradient
+  const headerHeight = 60;
+  doc.setFillColor(pdfColors.primary);
+  doc.rect(0, 0, 210, headerHeight, 'F');
 
-  // Header section with profile info
+  // Profile info in header
+  doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
-  doc.setTextColor(pdfColors.text.primary);
+  doc.setFont('helvetica', 'bold');
   doc.text(profile.full_name || 'Nom complet', 20, 30);
 
   doc.setFontSize(16);
-  doc.setTextColor(pdfColors.text.secondary);
   doc.text(profile.role || 'Rôle professionnel', 20, 40);
 
   // Contact Information
-  doc.setFontSize(12);
-  let yPosition = 60;
-  const lineHeight = 8;
+  let yPosition = headerHeight + 20;
+  doc.setTextColor(pdfColors.text.primary);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Contact', 20, yPosition);
+  yPosition += 10;
 
-  // Contact details with icons
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
   const contactInfo = [
     { label: 'Email:', value: profile.email },
     { label: 'Téléphone:', value: profile.phone },
@@ -53,13 +53,13 @@ export const generateVCardPDF = async (profile: UserProfile) => {
       doc.text(label, 20, yPosition);
       doc.setFont('helvetica', 'normal');
       doc.text(value, 50, yPosition);
-      yPosition += lineHeight;
+      yPosition += 8;
     }
   });
 
   // Skills section
   if (profile.skills && profile.skills.length > 0) {
-    yPosition += 10;
+    yPosition += 15;
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.text('Compétences', 20, yPosition);
@@ -80,9 +80,9 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     });
   }
 
-  // Bio section if available
+  // Bio section
   if (profile.bio) {
-    yPosition += 10;
+    yPosition += 15;
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.text('À propos', 20, yPosition);
