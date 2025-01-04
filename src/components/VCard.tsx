@@ -13,9 +13,8 @@ import { VCardExperiences } from "./VCardExperiences";
 import { Button } from "./ui/button";
 import { Download, Edit2, Save } from "lucide-react";
 import { toast } from "sonner";
-import { QRCodeSVG } from "qrcode.react";
 import { generateVCardPDF } from "@/utils/pdfGenerator";
-import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
+import { VCardStyleSelectorMinimal } from "./vcard/VCardStyleSelectorMinimal";
 import { styleOptions } from "./vcard/styles";
 import { StyleOption } from "./vcard/types";
 
@@ -24,11 +23,12 @@ interface VCardProps {
   onRequestChat?: () => void;
 }
 
-export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps) {
+export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(styleOptions[0]);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
   useEffect(() => {
     const loadFonts = async () => {
@@ -69,11 +69,14 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
   const handleDownloadPDF = async () => {
     if (!profile) return;
     try {
+      setIsPdfGenerating(true);
       await generateVCardPDF(profile, selectedStyle.color);
       toast.success("PDF téléchargé avec succès");
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error("Erreur lors de la génération du PDF");
+    } finally {
+      setIsPdfGenerating(false);
     }
   };
 
@@ -86,19 +89,6 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
     if (vCardElement) {
       vCardElement.className = `vcard-root font-${style.font} style-${style.displayStyle} ${style.borderStyle || ''}`;
     }
-  };
-
-  const handleAddSkill = () => {
-    if (!newSkill.trim() || !profile) return;
-    const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-    setProfile({ ...profile, skills: updatedSkills });
-    setNewSkill("");
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
-    if (!profile) return;
-    const updatedSkills = profile.skills?.filter(skill => skill !== skillToRemove) || [];
-    setProfile({ ...profile, skills: updatedSkills });
   };
 
   if (isLoading) {
@@ -123,7 +113,7 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
       <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient} ${selectedStyle.borderStyle || ''}`}>
         <CardContent className="p-6 space-y-8">
           {isEditing && (
-            <VCardStyleSelector
+            <VCardStyleSelectorMinimal
               selectedStyle={selectedStyle}
               onStyleSelect={handleStyleSelect}
               styleOptions={styleOptions}
@@ -149,8 +139,6 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
               setProfile={setProfile}
               newSkill={newSkill}
               setNewSkill={setNewSkill}
-              handleAddSkill={handleAddSkill}
-              handleRemoveSkill={handleRemoveSkill}
             />
 
             <VCardExperiences
@@ -194,11 +182,12 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
 
               <Button
                 onClick={handleDownloadPDF}
+                disabled={isPdfGenerating}
                 style={{ backgroundColor: selectedStyle.color }}
                 className="text-white transition-colors"
               >
                 <Download className="mr-2 h-4 w-4" />
-                Télécharger PDF
+                {isPdfGenerating ? 'Génération...' : 'Télécharger PDF'}
               </Button>
             </div>
           </motion.div>
@@ -207,5 +196,3 @@ export function VCardComponent({ onEditStateChange, onRequestChat }: VCardProps)
     </motion.div>
   );
 }
-
-export { VCardComponent as VCard };

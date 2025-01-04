@@ -8,7 +8,7 @@ interface DashboardContainerProps {
 
 export function DashboardContainer({ children, containerVariants }: DashboardContainerProps) {
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="relative min-h-screen">
       <div className="fixed inset-0 bg-dashboard-pattern bg-cover bg-center bg-fixed" />
       <div className="fixed inset-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" />
       <main className="flex-1 relative">

@@ -11,47 +11,53 @@ import { renderEducation } from './cv/sections/education';
 import { renderFooter } from './cv/sections/footer';
 
 export const generateVCardPDF = async (profile: UserProfile, accentColor: string = '#1E40AF') => {
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4'
-  }) as ExtendedJsPDF;
+  try {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    }) as ExtendedJsPDF;
 
-  // Set gradient background using multiple rectangles with varying opacity
-  const gradientSteps = 10;
-  for (let i = 0; i < gradientSteps; i++) {
-    const alpha = 1 - (i / gradientSteps);
-    doc.setFillColor(accentColor);
-    doc.setGlobalAlpha(alpha * 0.1); // Reduce overall opacity
-    doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
+    // Set gradient background using multiple rectangles with varying opacity
+    const gradientSteps = 10;
+    for (let i = 0; i < gradientSteps; i++) {
+      const alpha = 1 - (i / gradientSteps);
+      doc.setFillColor(accentColor);
+      doc.setGlobalAlpha(alpha * 0.1);
+      doc.rect(0, (i * 297) / gradientSteps, 210, 297 / gradientSteps, 'F');
+    }
+
+    // Reset opacity for content
+    doc.setGlobalAlpha(1);
+
+    // Add a white overlay for better readability
+    doc.setFillColor(255, 255, 255);
+    doc.rect(10, 10, 190, 277, 'F');
+
+    // Add decorative elements
+    doc.setDrawColor(accentColor);
+    doc.setLineWidth(0.5);
+    doc.line(10, 15, 200, 15);
+    doc.line(10, 282, 200, 282);
+
+    // Render each section and update yPos
+    let yPos = pdfStyles.margins.top + 15;
+    
+    yPos = await renderHeader(doc, profile, yPos);
+    yPos = renderContact(doc, profile, yPos);
+    yPos = renderBio(doc, profile, yPos);
+    yPos = renderSkills(doc, profile, yPos);
+    yPos = renderExperiences(doc, profile, yPos);
+    yPos = renderEducation(doc, profile, yPos);
+    await renderFooter(doc, accentColor);
+
+    // Save the PDF with a clean filename
+    const cleanName = profile.full_name?.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'vcard';
+    doc.save(`${cleanName}_vcard.pdf`);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    throw new Error('Failed to generate PDF');
   }
-
-  // Reset opacity for content
-  doc.setGlobalAlpha(1);
-
-  // Add a white overlay for better readability
-  doc.setFillColor(255, 255, 255);
-  doc.rect(10, 10, 190, 277, 'F');
-
-  // Add decorative elements
-  doc.setDrawColor(accentColor);
-  doc.setLineWidth(0.5);
-  doc.line(10, 15, 200, 15);
-  doc.line(10, 282, 200, 282);
-
-  // Render each section and update yPos
-  let yPos = pdfStyles.margins.top + 15;
-  
-  yPos = await renderHeader(doc, profile, yPos);
-  yPos = renderContact(doc, profile, yPos);
-  yPos = renderBio(doc, profile, yPos);
-  yPos = renderSkills(doc, profile, yPos);
-  yPos = renderExperiences(doc, profile, yPos);
-  yPos = renderEducation(doc, profile, yPos);
-  await renderFooter(doc, accentColor);
-
-  // Save the PDF
-  doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '-') || 'professionnel'}.pdf`);
 };
 
 // Alias for backward compatibility
