@@ -72,10 +72,11 @@ export const generateBusinessCard = async (
     doc.text(profile.city, textStartX, contactY);
   }
 
-  // Add QR code on the right side
+  // Add QR code in bottom right corner with smaller size
   try {
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrCodeUrl, 'PNG', 65, 5, 15, 15);
+    // Smaller QR code (10mm x 10mm) positioned in bottom right corner with 3mm margin
+    doc.addImage(qrCodeUrl, 'PNG', 72.6, 41, 10, 10);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
