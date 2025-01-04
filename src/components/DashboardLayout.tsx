@@ -79,8 +79,8 @@ export function DashboardLayout() {
       </AnimatePresence>
       
       {!isEditing && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50">
-          <div className="container mx-auto px-4 py-4">
+        <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 h-16">
+          <div className="container mx-auto px-4 h-full flex items-center">
             <DashboardNavigation 
               currentPage={currentPage}
               onPageChange={setCurrentPage}
