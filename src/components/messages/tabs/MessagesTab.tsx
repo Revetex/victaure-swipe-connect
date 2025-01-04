@@ -3,10 +3,21 @@ import { useChat } from "@/hooks/useChat";
 import { MessagesList } from "../conversation/MessagesList";
 import { ConversationView } from "../conversation/ConversationView";
 import { useState } from "react";
+import { useProfile } from "@/hooks/useProfile";
 
 export function MessagesTab() {
   const { messages, markAsRead } = useMessages();
-  const { messages: chatMessages } = useChat();
+  const { 
+    messages: chatMessages, 
+    inputMessage, 
+    isListening, 
+    isThinking,
+    setInputMessage,
+    handleSendMessage,
+    handleVoiceInput,
+    clearChat
+  } = useChat();
+  const { profile } = useProfile();
   const [selectedConversation, setSelectedConversation] = useState<"assistant" | null>(null);
 
   const handleMarkAsRead = async (messageId: string) => {
@@ -14,7 +25,20 @@ export function MessagesTab() {
   };
 
   if (selectedConversation === "assistant") {
-    return <ConversationView onBack={() => setSelectedConversation(null)} />;
+    return (
+      <ConversationView 
+        messages={chatMessages}
+        inputMessage={inputMessage}
+        isListening={isListening}
+        isThinking={isThinking}
+        profile={profile}
+        onBack={() => setSelectedConversation(null)}
+        onSendMessage={handleSendMessage}
+        onVoiceInput={handleVoiceInput}
+        setInputMessage={setInputMessage}
+        onClearChat={clearChat}
+      />
+    );
   }
 
   return (
