@@ -12,7 +12,7 @@ export async function getHuggingFaceApiKey(): Promise<string> {
     throw new Error("Could not retrieve the API token");
   }
 
-  return secretData as string;
+  return (secretData as unknown) as string;
 }
 
 export async function saveMessage(message: Message): Promise<void> {

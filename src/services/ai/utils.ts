@@ -20,7 +20,7 @@ export async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error("Could not retrieve the API token");
     }
 
-    return secretData as string;
+    return (secretData as unknown) as string;
   } catch (error) {
     console.error("Error in getHuggingFaceApiKey:", error);
     throw error;
