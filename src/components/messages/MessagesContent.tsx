@@ -72,9 +72,9 @@ export function MessagesContent({
             onDateChange={onDateChange}
             onTimeChange={onTimeChange}
             onAllDayChange={onAllDayChange}
-            onAddTodo={onAddTodo}
-            onToggleTodo={onToggleTodo}
-            onDeleteTodo={onDeleteTodo}
+            onAdd={onAddTodo}
+            onToggle={onToggleTodo}
+            onDelete={onDeleteTodo}
           />
           <NotesSection
             notes={notes}
@@ -82,15 +82,15 @@ export function MessagesContent({
             selectedColor={selectedColor}
             onNoteChange={onNoteChange}
             onColorChange={onColorChange}
-            onAddNote={onAddNote}
-            onDeleteNote={onDeleteNote}
+            onAdd={onAddNote}
+            onDelete={onDeleteNote}
             colors={colors}
           />
         </div>
       </TabsContent>
 
       <TabsContent value="jobs" className="h-full">
-        <ScrapedJobsList jobs={scrapedJobs || []} isLoading={isLoadingJobs} />
+        <ScrapedJobsList jobs={scrapedJobs} isLoading={isLoadingJobs} />
       </TabsContent>
     </div>
   );
