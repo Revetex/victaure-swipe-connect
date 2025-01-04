@@ -17,11 +17,11 @@ export const AuthForm = memo(function AuthForm() {
             colors: {
               brand: '#8B5CF6',
               brandAccent: '#7E69AB',
-              inputBackground: theme === 'dark' ? '#111827' : 'white',
+              inputBackground: theme === 'dark' ? '#0F172A' : 'white',
               inputText: theme === 'dark' ? '#F9FAFB' : 'rgb(75, 85, 99)',
               inputPlaceholder: theme === 'dark' ? '#6B7280' : 'rgb(156, 163, 175)',
-              inputBorder: theme === 'dark' ? '#1F2937' : 'rgb(229, 231, 235)',
-              inputBorderHover: theme === 'dark' ? '#374151' : 'rgb(209, 213, 219)',
+              inputBorder: theme === 'dark' ? '#1E293B' : 'rgb(229, 231, 235)',
+              inputBorderHover: theme === 'dark' ? '#334155' : 'rgb(209, 213, 219)',
               inputBorderFocus: '#9B87F5',
             },
             space: {
@@ -47,7 +47,7 @@ export const AuthForm = memo(function AuthForm() {
         className: {
           button: "w-full bg-purple-500 hover:bg-purple-600 text-white transition-colors",
           input: `w-full border focus:border-purple-500 focus:ring-1 focus:ring-purple-500 
-                 ${theme === 'dark' ? 'bg-gray-900 border-gray-700 text-gray-100' : 'bg-white border-gray-200 text-gray-700'}`,
+                 ${theme === 'dark' ? 'bg-slate-900 border-slate-700 text-gray-100' : 'bg-white border-gray-200 text-gray-700'}`,
           label: "text-gray-600 dark:text-gray-300 font-medium",
           message: "text-sm text-gray-500 dark:text-gray-400",
           anchor: "text-purple-500 hover:text-purple-600 no-underline hover:underline",
