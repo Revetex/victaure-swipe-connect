@@ -1,6 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
-import { motion } from "framer-motion";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface QuickActionCardProps {
   title: string;
@@ -9,6 +8,7 @@ interface QuickActionCardProps {
   color: string;
   bgColor: string;
   gradient: string;
+  isLoading?: boolean;
 }
 
 export function QuickActionCard({ 
@@ -16,30 +16,29 @@ export function QuickActionCard({
   value, 
   icon: Icon, 
   color, 
-  bgColor,
-  gradient 
+  bgColor, 
+  gradient,
+  isLoading 
 }: QuickActionCardProps) {
   return (
-    <motion.div 
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="h-full"
-    >
-      <Card className="h-full border-none overflow-hidden bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+    <div className={`p-6 rounded-xl bg-gradient-to-br ${gradient} hover:shadow-lg transition-all duration-300`}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className={`inline-flex items-center justify-center p-2 ${bgColor} rounded-lg`}>
+            <Icon className={`h-6 w-6 ${color}`} />
+          </div>
+          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
             {title}
-          </CardTitle>
-          <div className={`${bgColor} p-2 rounded-lg backdrop-blur-sm transition-colors duration-300`}>
-            <Icon className={`h-4 w-4 ${color}`} />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            {value}
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+          </h3>
+          {isLoading ? (
+            <Skeleton className="h-8 w-24 mt-2" />
+          ) : (
+            <p className={`mt-2 text-2xl font-bold ${color}`}>
+              {value}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

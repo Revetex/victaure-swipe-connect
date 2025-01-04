@@ -16,13 +16,13 @@ export const AuthForm = memo(function AuthForm() {
           default: {
             colors: {
               brand: '#8B5CF6',
-              brandAccent: '#7C3AED',
+              brandAccent: '#7E69AB',
               inputBackground: theme === 'dark' ? '#0F172A' : 'white',
-              inputText: theme === 'dark' ? '#F9FAFB' : '#1A1F2C',
-              inputPlaceholder: theme === 'dark' ? '#64748B' : '#94A3B8',
-              inputBorder: theme === 'dark' ? '#1E293B' : '#E2E8F0',
-              inputBorderHover: theme === 'dark' ? '#334155' : '#CBD5E1',
-              inputBorderFocus: '#8B5CF6',
+              inputText: theme === 'dark' ? '#F9FAFB' : 'rgb(75, 85, 99)',
+              inputPlaceholder: theme === 'dark' ? '#6B7280' : 'rgb(156, 163, 175)',
+              inputBorder: theme === 'dark' ? '#1E293B' : 'rgb(229, 231, 235)',
+              inputBorderHover: theme === 'dark' ? '#334155' : 'rgb(209, 213, 219)',
+              inputBorderFocus: '#9B87F5',
             },
             space: {
               inputPadding: '1rem',
@@ -45,12 +45,12 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
         className: {
-          button: "w-full bg-purple-600 hover:bg-purple-700 text-white transition-colors",
+          button: "w-full bg-purple-500 hover:bg-purple-600 text-white transition-colors",
           input: `w-full border focus:border-purple-500 focus:ring-1 focus:ring-purple-500 
-                 ${theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-900'}`,
-          label: "text-slate-900 dark:text-slate-100 font-medium",
-          message: "text-sm text-slate-600 dark:text-slate-300",
-          anchor: "text-purple-600 hover:text-purple-700 no-underline hover:underline",
+                 ${theme === 'dark' ? 'bg-slate-900 border-slate-700 text-gray-100' : 'bg-white border-gray-200 text-gray-700'}`,
+          label: "text-gray-600 dark:text-gray-300 font-medium",
+          message: "text-sm text-gray-500 dark:text-gray-400",
+          anchor: "text-purple-500 hover:text-purple-600 no-underline hover:underline",
         },
       }}
       providers={[]}
