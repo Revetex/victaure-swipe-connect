@@ -34,14 +34,14 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
     });
 
     // Generate each section
-    let currentY = await renderHeader(doc, profile, 20);
-    currentY = await renderBio(doc, profile, currentY);
-    currentY = await renderContact(doc, profile, currentY);
-    currentY = await renderSkills(doc, profile, currentY);
-    currentY = await renderExperiences(doc, profile, currentY);
-    currentY = await renderEducation(doc, profile, currentY);
-    currentY = await renderCertifications(doc, profile, currentY);
-    await renderFooter(doc, profile.role || '#1E40AF');
+    let currentY = renderHeader(doc, profile, 20);
+    currentY = renderBio(doc, profile, currentY);
+    currentY = renderContact(doc, profile, currentY);
+    currentY = renderSkills(doc, profile, currentY);
+    currentY = renderExperiences(doc, profile, currentY);
+    currentY = renderEducation(doc, profile, currentY);
+    currentY = renderCertifications(doc, profile, currentY);
+    renderFooter(doc, profile.role || '#1E40AF');
 
     // Convert ArrayBuffer to Uint8Array before returning
     const arrayBuffer = doc.output('arraybuffer');
@@ -53,5 +53,6 @@ export const generateCV = async (profile: UserProfile): Promise<Uint8Array> => {
   }
 };
 
-export { generateCV as generateCVPDF };
+// Export both CV and VCard PDF generators
+export const generateCVPDF = generateCV;
 export const generateVCardPDF = generateCV;
