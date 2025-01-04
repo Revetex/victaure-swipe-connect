@@ -5,6 +5,15 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
+export interface Message {
+  id: string;
+  content: string;
+  sender: "user" | "assistant";
+  thinking?: boolean;
+  timestamp: Date;
+  created_at?: string;
+}
+
 export interface ApiResponse {
   generated_text?: string;
   error?: string;
