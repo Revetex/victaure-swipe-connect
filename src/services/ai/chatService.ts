@@ -9,10 +9,10 @@ export async function getHuggingFaceApiKey(): Promise<string> {
     .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
   if (error || !secretData) {
+    console.error("Error retrieving API key:", error);
     throw new Error("Could not retrieve the API token");
   }
 
-  // Extract the secret string from the response
   const secret = Array.isArray(secretData) && secretData[0]?.secret;
   if (!secret) {
     throw new Error("Invalid secret format");
@@ -74,7 +74,7 @@ export async function generateAIResponse(message: string, profile?: any): Promis
     const apiKey = await getHuggingFaceApiKey();
     validateApiKey(apiKey);
 
-    const prompt = `<|im_start|>system\n${SYSTEM_PROMPT}\n${profile ? `User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : ''}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
+    const prompt = `<|im_start|>system\n${SYSTEM_PROMPT}\n${profile ? `Profil utilisateur - Nom: ${profile.full_name}, Rôle: ${profile.role}\n` : ''}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
 
     const response = await fetch(HUGGING_FACE_CONFIG.endpoint, {
       headers: { 
