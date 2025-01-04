@@ -42,7 +42,7 @@ export function DashboardLayout() {
   const renderCurrentPage = () => {
     if (currentPage === 1) {
       return (
-        <div className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto pb-16' : 'relative'}`}>
+        <div className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm pb-20 overflow-y-auto' : 'relative'}`}>
           {renderDashboardSection(
             <VCard 
               onEditStateChange={setIsEditing}
@@ -57,14 +57,14 @@ export function DashboardLayout() {
     if (currentPage === 2 && !isEditing) {
       return renderDashboardSection(
         <Messages />,
-        'w-full h-full'
+        'w-full h-full pb-20'
       );
     }
 
     if (currentPage === 3 && !isEditing) {
       return renderDashboardSection(
         <SwipeJob />,
-        'w-full h-full',
+        'w-full h-full pb-20',
         false
       );
     }
