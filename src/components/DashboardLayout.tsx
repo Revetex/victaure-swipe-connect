@@ -42,7 +42,7 @@ export function DashboardLayout() {
   const renderCurrentPage = () => {
     if (currentPage === 1) {
       return (
-        <div className={isEditing ? "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm p-4 overflow-auto" : "relative"}>
+        <div className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto pb-16' : 'relative'}`}>
           {renderDashboardSection(
             <VCard 
               onEditStateChange={setIsEditing}
