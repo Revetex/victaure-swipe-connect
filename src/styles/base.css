@@ -74,9 +74,10 @@
   }
 
   #root {
-    @apply flex flex-col min-h-screen;
-    height: 100vh;
-    height: 100dvh;
+    @apply flex flex-col;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: -webkit-fill-available;
   }
 
   main {

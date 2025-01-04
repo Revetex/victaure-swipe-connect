@@ -8,9 +8,9 @@ interface DashboardContainerProps {
 
 export function DashboardContainer({ children, containerVariants }: DashboardContainerProps) {
   return (
-    <div className="min-h-[100vh] min-h-[100dvh] w-full flex flex-col">
-      <div className="fixed inset-0 w-full h-full bg-dashboard-pattern bg-cover bg-center bg-fixed" />
-      <div className="fixed inset-0 w-full h-full bg-background/80 backdrop-blur-[2px]" />
+    <div className="min-h-[100vh] min-h-[100dvh] w-full flex flex-col relative">
+      <div className="fixed inset-0 w-full h-full bg-dashboard-pattern bg-cover bg-center bg-fixed z-0" />
+      <div className="fixed inset-0 w-full h-full bg-background/80 backdrop-blur-[2px] z-0" />
       <main className="relative z-10 flex-1 flex flex-col w-full">
         <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
           <motion.div 
