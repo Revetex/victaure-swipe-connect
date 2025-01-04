@@ -112,27 +112,47 @@ ${message}
     );
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("API Error:", errorData);
-      throw new Error(`API request failed: ${errorData.error || response.statusText}`);
+      const errorText = await response.text();
+      console.error("Hugging Face API Error Response:", errorText);
+      
+      if (response.status === 503) {
+        toast.error("Le modèle est en cours de chargement, veuillez réessayer dans quelques instants");
+        throw new Error("Model is loading");
+      } else if (response.status === 401) {
+        toast.error("La clé API n'est pas valide");
+        throw new Error("Invalid API key");
+      } else {
+        toast.error("Erreur lors de la génération de la réponse");
+        throw new Error(`API request failed: ${errorText}`);
+      }
     }
 
     console.log("Received response from API");
     const result = await response.json();
     console.log("API Response:", result);
 
+    // Handle both array and object response formats
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text;
       if (generatedText) {
         return generatedText.trim();
       }
+    } else if (result.generated_text) {
+      // Some models return the response directly in the object
+      return result.generated_text.trim();
     }
 
     console.error("Unexpected API response format:", result);
+    toast.error("Format de réponse invalide");
     throw new Error("Invalid response format from API");
   } catch (error) {
     console.error("Error generating AI response:", error);
-    toast.error("Erreur lors de la génération de la réponse");
+    // Only show toast if it's not already handled
+    if (!error.message.includes("Model is loading") && 
+        !error.message.includes("Invalid API key") &&
+        !error.message.includes("Invalid response format")) {
+      toast.error("Erreur lors de la génération de la réponse");
+    }
     throw error;
   }
 }
