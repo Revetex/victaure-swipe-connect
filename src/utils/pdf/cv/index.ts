@@ -4,65 +4,89 @@ import { ExtendedJsPDF } from "@/types/pdf";
 import { pdfStyles } from '../styles';
 import { extendPdfDocument } from "../pdfExtensions";
 import { StyleOption } from "@/components/vcard/types";
-import {
-  renderHeader,
-  renderBio,
-  renderContact,
-  renderSkills,
-  renderExperiences,
-  renderEducation,
-  renderCertifications,
-  renderFooter
-} from './sections';
+import QRCode from "qrcode";
 
 export const generateCV = async (
   profile: UserProfile, 
   selectedStyle: StyleOption
 ): Promise<ExtendedJsPDF> => {
   try {
-    // Initialize PDF document
     const doc = extendPdfDocument(new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4'
     }));
 
-    // Create custom styles based on selected VCard style
-    const customStyles = {
-      ...pdfStyles,
-      colors: {
-        ...pdfStyles.colors,
-        primary: selectedStyle.color,
-        secondary: selectedStyle.secondaryColor,
-        text: {
-          primary: '#1A1F2C',
-          secondary: '#555555',
-          muted: '#8E9196'
-        }
-      },
-      fonts: {
-        ...pdfStyles.fonts,
-        family: selectedStyle.font || 'helvetica'
-      }
-    };
-
-    // Set initial Y position
+    // Set initial position
     let currentY = 20;
 
-    // Render each section and update currentY
-    currentY = await renderHeader(doc, profile, currentY);
-    currentY = await renderBio(doc, profile, currentY);
-    currentY = await renderContact(doc, profile, currentY);
-    currentY = await renderSkills(doc, profile, currentY);
-    currentY = await renderExperiences(doc, profile, currentY);
-    currentY = await renderEducation(doc, profile, currentY);
+    // Header with name and role
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text(profile.full_name || 'Non défini', 20, currentY);
+    currentY += 10;
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'normal');
+    doc.text(profile.role || 'Non défini', 20, currentY);
+    currentY += 15;
+
+    // Contact information
+    doc.setFontSize(12);
+    doc.text(`Email: ${profile.email}`, 20, currentY);
+    currentY += 6;
     
-    if (profile.certifications) {
-      currentY = renderCertifications(doc, profile.certifications, currentY);
+    if (profile.phone) {
+      doc.text(`Téléphone: ${profile.phone}`, 20, currentY);
+      currentY += 6;
     }
     
-    // Render footer with QR code
-    await renderFooter(doc, selectedStyle.color);
+    if (profile.city || profile.state) {
+      doc.text(`Localisation: ${[profile.city, profile.state].filter(Boolean).join(', ')}`, 20, currentY);
+      currentY += 10;
+    }
+
+    // Bio section if available
+    if (profile.bio) {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('À propos', 20, currentY);
+      currentY += 8;
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      const bioLines = doc.splitTextToSize(profile.bio, 170);
+      doc.text(bioLines, 20, currentY);
+      currentY += bioLines.length * 5 + 10;
+    }
+
+    // Skills section
+    if (profile.skills && profile.skills.length > 0) {
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Compétences', 20, currentY);
+      currentY += 8;
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      const skillsText = profile.skills.join(' • ');
+      const skillsLines = doc.splitTextToSize(skillsText, 170);
+      doc.text(skillsLines, 20, currentY);
+      currentY += skillsLines.length * 5 + 10;
+    }
+
+    // Add QR code at the bottom
+    try {
+      const qrCodeUrl = await QRCode.toDataURL(window.location.href);
+      doc.addImage(qrCodeUrl, 'PNG', 170, 250, 25, 25);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    }
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(128, 128, 128);
+    doc.text('Généré avec Victaure', 105, 287, { align: 'center' });
 
     return doc;
   } catch (error) {
