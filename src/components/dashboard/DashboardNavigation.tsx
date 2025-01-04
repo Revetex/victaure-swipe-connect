@@ -1,55 +1,65 @@
-import { UserCircle, MessageSquare, BriefcaseIcon } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import {
+  CreditCard,
+  Settings,
+  MessageSquare,
+  ListTodo,
+  StickyNote
+} from "lucide-react";
 
-interface DashboardNavigationProps {
-  currentPage: number;
-  onPageChange: (page: number) => void;
-}
+const navigation = [
+  {
+    name: "Messages",
+    href: "/dashboard/messages",
+    icon: MessageSquare,
+  },
+  {
+    name: "Tâches",
+    href: "/dashboard/todos",
+    icon: ListTodo,
+  },
+  {
+    name: "Notes",
+    href: "/dashboard/notes",
+    icon: StickyNote,
+  },
+  {
+    name: "Paiements",
+    href: "/dashboard/payments",
+    icon: CreditCard,
+  },
+  {
+    name: "Paramètres",
+    href: "/dashboard/settings",
+    icon: Settings,
+  },
+];
 
-export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
-  const getPageIcon = (page: number) => {
-    switch (page) {
-      case 1:
-        return <UserCircle className="h-4 w-4" />;
-      case 2:
-        return <MessageSquare className="h-4 w-4" />;
-      case 3:
-        return <BriefcaseIcon className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-
-  const getPageName = (page: number) => {
-    switch (page) {
-      case 1:
-        return "Profil";
-      case 2:
-        return "M. Victaure";
-      case 3:
-        return "Emplois";
-      default:
-        return "";
-    }
-  };
+export function DashboardNavigation() {
+  const location = useLocation();
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex justify-center gap-4">
-        {[1, 2, 3].map((page) => (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-              currentPage === page 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-background/80 hover:bg-background/90 backdrop-blur-sm'
-            }`}
+    <nav className="flex flex-col gap-1">
+      {navigation.map((item) => {
+        const isActive = location.pathname === item.href;
+        return (
+          <Link
+            key={item.name}
+            to={item.href}
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+              "hover:bg-accent/50",
+              "focus:bg-accent",
+              "dark:hover:bg-accent/50",
+              isActive ? "bg-accent" : "transparent"
+            )}
           >
-            {getPageIcon(page)}
-            <span className="text-sm font-medium">{getPageName(page)}</span>
-          </button>
-        ))}
-      </div>
-    </div>
+            <item.icon className="h-4 w-4" />
+            {item.name}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
