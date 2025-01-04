@@ -7,6 +7,19 @@ export interface Message {
   created_at?: string;
 }
 
+export interface ChatContext {
+  message: string;
+  profile?: {
+    full_name?: string;
+    role?: string;
+  };
+}
+
+export interface ApiResponse {
+  generated_text?: string;
+  error?: string;
+}
+
 export interface ChatState {
   messages: Message[];
   deletedMessages: Message[];

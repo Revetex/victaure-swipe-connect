@@ -3,7 +3,6 @@ import { MessagesTab } from "./tabs/MessagesTab";
 import { NotificationsTab } from "./tabs/NotificationsTab";
 import { TodoSection } from "../todo/TodoSection";
 import { Settings } from "../Settings";
-import { PaymentBox } from "../dashboard/PaymentBox";
 import { NotesSection } from "../todo/NotesSection";
 
 interface MessagesContentProps {
@@ -87,9 +86,6 @@ export function MessagesContent({
           onToggle={onToggleTodo}
           onDelete={onDeleteTodo}
         />
-      </TabsContent>
-      <TabsContent value="payments" className="h-full mt-0">
-        <PaymentBox />
       </TabsContent>
       <TabsContent value="settings" className="h-full mt-0 overflow-y-auto">
         <Settings />

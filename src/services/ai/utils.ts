@@ -2,8 +2,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface ChatPrompt {
-  context?: string;
   message: string;
+  profile?: {
+    full_name?: string;
+    role?: string;
+  };
 }
 
 export async function getHuggingFaceApiKey(): Promise<string> {
@@ -17,7 +20,6 @@ export async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error("Could not retrieve the API token");
     }
 
-    // The secretData is the string value directly
     return secretData;
   } catch (error) {
     console.error("Error in getHuggingFaceApiKey:", error);
@@ -25,12 +27,12 @@ export async function getHuggingFaceApiKey(): Promise<string> {
   }
 }
 
-export function buildPrompt({ context, message }: ChatPrompt): string {
-  const contextPrompt = context ? `Context: ${context}\n` : '';
+export function buildPrompt({ message, profile }: ChatPrompt): string {
+  const profilePrompt = profile ? `User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : '';
   
   return `<|im_start|>system
 You are Mr. Victaure, a professional and friendly AI assistant. You help users with their job search and career development. Always respond in French.
-${contextPrompt}
+${profilePrompt}
 <|im_end|>
 <|im_start|>user
 ${message}

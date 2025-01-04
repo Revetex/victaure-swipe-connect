@@ -2,9 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config/huggingFaceConfig";
 import { validateApiKey, validateApiResponse } from "./utils/apiValidator";
 import { handleChatError } from "./utils/errorHandler";
-import type { ChatContext, ApiResponse } from "./types/chatTypes";
+import type { ChatContext, ApiResponse, Message } from "./types/chatTypes";
 
-async function getHuggingFaceApiKey(): Promise<string> {
+export async function getHuggingFaceApiKey(): Promise<string> {
   const { data: secretData, error } = await supabase
     .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
@@ -15,24 +15,42 @@ async function getHuggingFaceApiKey(): Promise<string> {
   return secretData;
 }
 
-async function buildPrompt({ context, message }: ChatContext): Promise<string> {
-  const contextPrompt = context 
-    ? `Context: User profile - Name: ${context.full_name}, Role: ${context.role}\n` 
-    : '';
-  
-  return `<|im_start|>system\n${SYSTEM_PROMPT}\n${contextPrompt}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
+export async function saveMessage(message: Message): Promise<void> {
+  const { error } = await supabase
+    .from('ai_chat_messages')
+    .insert({
+      id: message.id,
+      content: message.content,
+      sender: message.sender,
+      user_id: (await supabase.auth.getUser()).data.user?.id,
+      created_at: message.timestamp.toISOString()
+    });
+
+  if (error) {
+    console.error("Error saving message:", error);
+    throw error;
+  }
+}
+
+export async function deleteMessages(messageIds: string[]): Promise<void> {
+  const { error } = await supabase
+    .from('ai_chat_messages')
+    .delete()
+    .in('id', messageIds);
+
+  if (error) {
+    console.error("Error deleting messages:", error);
+    throw error;
+  }
 }
 
 export async function generateAIResponse(message: string, profile?: any): Promise<string> {
-  console.log("Generating AI response for message:", message);
-  
   try {
     const apiKey = await getHuggingFaceApiKey();
     validateApiKey(apiKey);
 
-    const prompt = await buildPrompt({ context: profile, message });
+    const prompt = `<|im_start|>system\n${SYSTEM_PROMPT}\n${profile ? `User profile - Name: ${profile.full_name}, Role: ${profile.role}\n` : ''}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
 
-    console.log("Sending request to Hugging Face API...");
     const response = await fetch(HUGGING_FACE_CONFIG.endpoint, {
       headers: { 
         ...HUGGING_FACE_CONFIG.defaultHeaders,
