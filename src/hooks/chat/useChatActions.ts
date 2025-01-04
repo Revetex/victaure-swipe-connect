@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Message } from "@/types/chat/messageTypes";
-import { generateAIResponse, saveMessage, deleteMessages } from "@/services/ai/chatService";
+import { generateAIResponse, saveMessage, deleteMessages } from "@/services/ai/service";
 import { toast } from "sonner";
 
 export function useChatActions(

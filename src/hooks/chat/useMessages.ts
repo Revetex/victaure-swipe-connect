@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Message } from "@/types/chat/messageTypes";
-import { loadMessages } from "@/services/ai/chatService";
+import { loadMessages } from "@/services/ai/service";
 import { toast } from "sonner";
 
 export function useMessages() {
