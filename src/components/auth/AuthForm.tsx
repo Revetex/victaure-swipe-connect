@@ -45,12 +45,12 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
         className: {
-          button: "w-full bg-purple-500 hover:bg-purple-600 text-white transition-colors",
+          button: "w-full bg-purple-600 hover:bg-purple-700 text-white transition-colors",
           input: `w-full border focus:border-purple-500 focus:ring-1 focus:ring-purple-500 
                  ${theme === 'dark' ? 'bg-slate-900 border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-900'}`,
           label: "text-slate-900 dark:text-slate-100 font-medium",
           message: "text-sm text-slate-600 dark:text-slate-300",
-          anchor: "text-purple-500 hover:text-purple-600 no-underline hover:underline",
+          anchor: "text-purple-600 hover:text-purple-700 no-underline hover:underline",
         },
       }}
       providers={[]}
