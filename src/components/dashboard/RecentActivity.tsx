@@ -89,7 +89,7 @@ export function RecentActivity() {
           id: msg.id,
           type: 'message' as const,
           title: 'Nouveau message',
-          description: `${(msg.sender as unknown as MessageSender).full_name} vous a envoyé un message`,
+          description: `${(msg.sender as MessageSender).full_name} vous a envoyé un message`,
           created_at: msg.created_at
         })) || []),
         ...(matches?.map(match => ({

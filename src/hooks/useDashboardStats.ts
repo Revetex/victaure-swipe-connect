@@ -7,39 +7,34 @@ export function useDashboardStats() {
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!user) return null;
 
-      // Store responses in variables to avoid reading the stream multiple times
-      const jobsResponse = await supabase
-        .from('jobs')
-        .select('*', { count: 'exact' })
-        .eq('employer_id', user.id)
-        .eq('status', 'open');
+      const [jobsResponse, messagesResponse] = await Promise.all([
+        supabase
+          .from('jobs')
+          .select('*', { count: 'exact' })
+          .eq('employer_id', user.id)
+          .eq('status', 'open'),
+        supabase
+          .from('messages')
+          .select('*', { count: 'exact' })
+          .eq('receiver_id', user.id)
+          .eq('read', false),
+      ]);
 
-      const messagesResponse = await supabase
-        .from('messages')
-        .select('*', { count: 'exact' })
-        .eq('receiver_id', user.id)
-        .eq('read', false);
-
-      const matchesResponse = await supabase
+      const { data: matches } = await supabase
         .from('matches')
         .select('id')
         .eq('employer_id', user.id)
-        .eq('status', 'accepted')
-        .maybeSingle();
+        .eq('status', 'accepted');
 
-      let pendingAmount = 0;
-      if (matchesResponse.data?.id) {
-        const paymentsResponse = await supabase
-          .from('payments')
-          .select('amount')
-          .eq('status', 'pending')
-          .eq('match_id', matchesResponse.data.id)
-          .maybeSingle();
-          
-        pendingAmount = paymentsResponse.data?.amount || 0;
-      }
+      const { data: payments } = await supabase
+        .from('payments')
+        .select('amount')
+        .eq('status', 'pending')
+        .in('match_id', matches?.map(match => match.id) || []);
+
+      const pendingAmount = payments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0;
 
       return {
         activeJobs: jobsResponse.count || 0,
@@ -47,8 +42,6 @@ export function useDashboardStats() {
         pendingPayments: `CAD ${pendingAmount.toLocaleString()}`,
         nextJob: 'Dans 2 jours'
       };
-    },
-    retry: false,
-    refetchOnWindowFocus: false,
+    }
   });
 }
