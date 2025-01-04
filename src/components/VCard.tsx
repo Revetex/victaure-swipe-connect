@@ -117,18 +117,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     >
       <Card className={`border-none shadow-lg bg-gradient-to-br ${selectedStyle.bgGradient} ${selectedStyle.borderStyle || ''}`}>
         <CardContent className="p-6">
-          <div className="flex justify-end mb-4">
-            <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
-              <QRCodeSVG
-                value={window.location.href}
-                size={85}
-                level="H"
-                includeMargin={false}
-                className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-              />
-            </div>
-          </div>
-
           <div className="space-y-8">
             <VCardStyleSelector
               selectedStyle={selectedStyle}
@@ -159,14 +147,26 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
               handleRemoveSkill={handleRemoveSkill}
             />
 
-            <VCardActions
-              isEditing={isEditing}
-              isPdfGenerating={isPdfGenerating}
-              profile={profile}
-              selectedStyle={selectedStyle}
-              onEditToggle={handleEditToggle}
-              onSave={handleSave}
-            />
+            <div className="flex justify-between items-center">
+              <VCardActions
+                isEditing={isEditing}
+                isPdfGenerating={isPdfGenerating}
+                profile={profile}
+                selectedStyle={selectedStyle}
+                onEditToggle={handleEditToggle}
+                onSave={handleSave}
+              />
+              
+              <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
+                <QRCodeSVG
+                  value={window.location.href}
+                  size={85}
+                  level="H"
+                  includeMargin={false}
+                  className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                />
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
