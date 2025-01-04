@@ -35,7 +35,7 @@ export async function loadMessages(): Promise<Message[]> {
   return data.map(msg => ({
     id: msg.id,
     content: msg.content,
-    sender: msg.sender,
+    sender: msg.sender === "assistant" ? "assistant" : "user" as const,
     timestamp: new Date(msg.created_at),
   }));
 }
