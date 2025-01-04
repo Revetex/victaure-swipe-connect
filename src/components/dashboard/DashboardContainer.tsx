@@ -14,7 +14,7 @@ export function DashboardContainer({ children, containerVariants }: DashboardCon
       <main className="flex-1 relative">
         <div className="container mx-auto px-4 h-[calc(100vh-4rem)] overflow-y-auto">
           <motion.div 
-            className="max-w-[1200px] mx-auto h-full pb-16"
+            className="max-w-[1200px] mx-auto h-full"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
