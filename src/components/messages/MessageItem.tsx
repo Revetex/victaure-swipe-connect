@@ -3,7 +3,6 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { MessageCircle } from "lucide-react";
 
 interface MessageSender {
   id: string;
@@ -36,50 +35,36 @@ export function MessageItem({
       transition={{ duration: 0.2 }}
       onClick={() => !read && onMarkAsRead(id)}
       className={cn(
-        "group relative p-4 rounded-lg cursor-pointer transition-all duration-200",
-        "hover:bg-muted/80 hover:scale-[1.02]",
+        "p-4 rounded-lg cursor-pointer transition-all duration-200",
+        "hover:scale-[1.02] hover:bg-muted/80",
         !read 
-          ? "bg-primary/5 border-l-2 border-primary shadow-sm" 
-          : "bg-background hover:shadow-sm"
+          ? "bg-primary/10 border-l-2 border-primary shadow-sm" 
+          : "bg-muted"
       )}
     >
-      <div className="flex gap-4">
-        <Avatar className="h-12 w-12 shrink-0 shadow-sm">
+      <div className="flex gap-3">
+        <Avatar className="h-10 w-10">
           <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
-          <AvatarFallback className="bg-primary/10">
+          <AvatarFallback>
             {sender.full_name?.slice(0, 2).toUpperCase() || "??"}
           </AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start gap-2">
-            <div className="space-y-1">
-              <h3 className={cn(
-                "font-medium leading-none",
-                !read && "text-primary"
-              )}>
-                {sender.full_name}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(created_at), { 
-                  addSuffix: true,
-                  locale: fr 
-                })}
-              </p>
-            </div>
-            {!read && (
-              <span className="shrink-0 h-2 w-2 rounded-full bg-primary animate-pulse" />
-            )}
+            <h3 className="font-medium truncate text-foreground">
+              {sender.full_name}
+            </h3>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {formatDistanceToNow(new Date(created_at), { 
+                addSuffix: true,
+                locale: fr 
+              })}
+            </span>
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
             {content}
           </p>
         </div>
-      </div>
-      <div className={cn(
-        "absolute right-4 top-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-200",
-        "group-hover:opacity-100"
-      )}>
-        <MessageCircle className="h-5 w-5 text-muted-foreground" />
       </div>
     </motion.div>
   );

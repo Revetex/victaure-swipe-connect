@@ -6,7 +6,7 @@ import type { Message } from "@/hooks/useMessages";
 
 interface MessageListProps {
   messages: Message[];
-  isLoading?: boolean;
+  isLoading: boolean;
   onMarkAsRead: (messageId: string) => void;
 }
 
@@ -26,15 +26,14 @@ export function MessageList({ messages, isLoading, onMarkAsRead }: MessageListPr
         animate={{ opacity: 1 }}
         className="flex flex-col items-center justify-center h-full text-muted-foreground"
       >
-        <MessageSquare className="h-12 w-12 mb-4" />
-        <p className="text-lg font-medium">Aucun message</p>
-        <p className="text-sm">Vous n'avez pas encore de messages</p>
+        <MessageSquare className="h-8 w-8 mb-2" />
+        <p>Aucun message</p>
       </motion.div>
     );
   }
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-full pr-4">
       <AnimatePresence mode="popLayout">
         <motion.div 
           className="space-y-2 p-4"
