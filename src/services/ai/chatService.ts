@@ -1,44 +1,26 @@
 import { supabase } from "@/integrations/supabase/client";
-import { API_CONFIG } from "./config";
-import { getHuggingFaceApiKey, buildPrompt } from "./utils";
-import { handleApiResponse } from "./responseHandler";
+import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config/huggingFaceConfig";
+import { validateApiKey, validateApiResponse } from "./utils/apiValidator";
+import { handleChatError } from "./utils/errorHandler";
+import type { ChatContext, ApiResponse } from "./types/chatTypes";
 
-export async function saveMessage(message: {
-  id: string;
-  content: string;
-  sender: string;
-  timestamp: Date;
-}) {
-  try {
-    const { error } = await supabase
-      .from('ai_chat_messages')
-      .insert({
-        id: message.id,
-        content: message.content,
-        sender: message.sender,
-        user_id: (await supabase.auth.getUser()).data.user?.id,
-        created_at: message.timestamp.toISOString()
-      });
+async function getHuggingFaceApiKey(): Promise<string> {
+  const { data: secretData, error } = await supabase
+    .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
-    if (error) throw error;
-  } catch (error) {
-    console.error("Error saving message:", error);
-    throw error;
+  if (error || !secretData) {
+    throw new Error("Could not retrieve the API token");
   }
+
+  return secretData;
 }
 
-export async function deleteMessages(messageIds: string[]) {
-  try {
-    const { error } = await supabase
-      .from('ai_chat_messages')
-      .delete()
-      .in('id', messageIds);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error("Error deleting messages:", error);
-    throw error;
-  }
+async function buildPrompt({ context, message }: ChatContext): Promise<string> {
+  const contextPrompt = context 
+    ? `Context: User profile - Name: ${context.full_name}, Role: ${context.role}\n` 
+    : '';
+  
+  return `<|im_start|>system\n${SYSTEM_PROMPT}\n${contextPrompt}<|im_end|>\n<|im_start|>user\n${message}\n<|im_end|>\n<|im_start|>assistant\n`;
 }
 
 export async function generateAIResponse(message: string, profile?: any): Promise<string> {
@@ -46,27 +28,33 @@ export async function generateAIResponse(message: string, profile?: any): Promis
   
   try {
     const apiKey = await getHuggingFaceApiKey();
-    const prompt = buildPrompt({ 
-      context: profile ? `User profile - Name: ${profile.full_name}, Role: ${profile.role}` : undefined,
-      message 
-    });
+    validateApiKey(apiKey);
+
+    const prompt = await buildPrompt({ context: profile, message });
 
     console.log("Sending request to Hugging Face API...");
-    const response = await fetch(API_CONFIG.endpoint, {
+    const response = await fetch(HUGGING_FACE_CONFIG.endpoint, {
       headers: { 
-        ...API_CONFIG.defaultHeaders,
+        ...HUGGING_FACE_CONFIG.defaultHeaders,
         Authorization: `Bearer ${apiKey}`
       },
       method: "POST",
       body: JSON.stringify({
         inputs: prompt,
-        parameters: API_CONFIG.modelParams
+        parameters: HUGGING_FACE_CONFIG.modelParams
       }),
     });
 
-    return await handleApiResponse(response);
+    validateApiResponse(response);
+
+    const result = await response.json() as ApiResponse;
+    
+    if (!result.generated_text) {
+      throw new Error("Invalid response format from API");
+    }
+
+    return result.generated_text.trim();
   } catch (error) {
-    console.error("Error generating AI response:", error);
-    throw error;
+    return handleChatError(error);
   }
 }
