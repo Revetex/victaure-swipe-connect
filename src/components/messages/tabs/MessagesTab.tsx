@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useChat } from "@/hooks/useChat";
 import { useProfile } from "@/hooks/useProfile";
 import { useMessages } from "@/hooks/useMessages";
-import { MessagesList } from "../conversation/MessagesList";
+import { MessageList } from "../MessageList";
 import { ConversationView } from "../conversation/ConversationView";
 
 export function MessagesTab() {
   const [selectedConversation, setSelectedConversation] = useState<"assistant" | null>(null);
   const { profile } = useProfile();
-  const { messages, markAsRead } = useMessages();
+  const { messages, isLoading, markAsRead } = useMessages();
   const {
     messages: chatMessages,
     inputMessage,
@@ -31,10 +31,9 @@ export function MessagesTab() {
   return (
     <div className="relative h-full overflow-hidden">
       {!selectedConversation ? (
-        <MessagesList
+        <MessageList
           messages={messages}
-          chatMessages={chatMessages}
-          onSelectConversation={setSelectedConversation}
+          isLoading={isLoading}
           onMarkAsRead={handleMarkAsRead}
         />
       ) : (
