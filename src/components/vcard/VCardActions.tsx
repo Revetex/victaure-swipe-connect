@@ -33,7 +33,7 @@ export function VCardActions({
     try {
       await navigator.share({
         title: `${profile.full_name}'s VCard`,
-        text: `Check out ${profile.full_name}'s professional profile`,
+        text: `Découvrez le profil professionnel de ${profile.full_name}`,
         url: window.location.href,
       });
       toast.success("Profil partagé avec succès");
@@ -87,7 +87,7 @@ export function VCardActions({
           >
             <Button 
               onClick={onSave}
-              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
+              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
               disabled={isPdfGenerating}
             >
               <Save className="mr-2 h-4 w-4" />
@@ -104,7 +104,7 @@ export function VCardActions({
           >
             <Button 
               onClick={handleShare}
-              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
@@ -117,8 +117,7 @@ export function VCardActions({
           >
             <Button 
               onClick={onEditToggle}
-              variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
@@ -131,11 +130,11 @@ export function VCardActions({
           >
             <Button 
               onClick={handleDownloadVCard}
-              variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
+              disabled={isPdfGenerating}
             >
               <Download className="mr-2 h-4 w-4" />
-              Télécharger VCard
+              VCard
             </Button>
           </motion.div>
           <motion.div 
@@ -145,8 +144,8 @@ export function VCardActions({
           >
             <Button 
               onClick={onDownloadPDF}
-              variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
+              disabled={isPdfGenerating}
             >
               <FileText className="mr-2 h-4 w-4" />
               PDF
@@ -159,8 +158,8 @@ export function VCardActions({
           >
             <Button 
               onClick={onDownloadBusinessPDF}
-              variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
+              disabled={isPdfGenerating}
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
@@ -173,8 +172,8 @@ export function VCardActions({
           >
             <Button 
               onClick={onDownloadCVPDF}
-              variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
+              disabled={isPdfGenerating}
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
@@ -186,8 +185,8 @@ export function VCardActions({
           >
             <Button 
               onClick={handleCopyLink}
-              variant="outline"
-              className="border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
+              disabled={isPdfGenerating}
             >
               <Copy className="h-4 w-4" />
             </Button>

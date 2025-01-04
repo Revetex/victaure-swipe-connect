@@ -13,6 +13,7 @@ import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
 import { VCardActions } from "./vcard/VCardActions";
 import { VCardContent } from "./vcard/VCardContent";
 import { QRCodeSVG } from "qrcode.react";
+import { generatePDF, generateBusinessPDF, generateCVPDF } from "@/utils/pdfGenerator";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -72,7 +73,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     const updatedSkills = [...(profile.skills || []), newSkill.trim()];
     setProfile({ ...profile, skills: updatedSkills });
     setNewSkill("");
-    toast.success("Compétence ajoutée avec succès");
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
@@ -82,17 +82,51 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       (skill) => skill !== skillToRemove
     );
     setProfile({ ...profile, skills: updatedSkills });
-    toast.success("Compétence supprimée avec succès");
   };
 
   const handleStyleSelect = (style: StyleOption) => {
     setSelectedStyle(style);
-    document.documentElement.style.setProperty('--accent-color', style.color);
-    document.documentElement.style.setProperty('--secondary-color', style.secondaryColor);
-    
-    const vCardElement = document.querySelector('.vcard-root');
-    if (vCardElement) {
-      vCardElement.className = `vcard-root font-${style.font} style-${style.displayStyle} ${style.borderStyle || ''}`;
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!profile) return;
+    setIsPdfGenerating(true);
+    try {
+      await generatePDF(profile, selectedStyle);
+      toast.success("PDF généré avec succès");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Erreur lors de la génération du PDF");
+    } finally {
+      setIsPdfGenerating(false);
+    }
+  };
+
+  const handleDownloadBusinessPDF = async () => {
+    if (!profile) return;
+    setIsPdfGenerating(true);
+    try {
+      await generateBusinessPDF(profile, selectedStyle);
+      toast.success("Business PDF généré avec succès");
+    } catch (error) {
+      console.error('Error generating Business PDF:', error);
+      toast.error("Erreur lors de la génération du Business PDF");
+    } finally {
+      setIsPdfGenerating(false);
+    }
+  };
+
+  const handleDownloadCVPDF = async () => {
+    if (!profile) return;
+    setIsPdfGenerating(true);
+    try {
+      await generateCVPDF(profile, selectedStyle);
+      toast.success("CV PDF généré avec succès");
+    } catch (error) {
+      console.error('Error generating CV PDF:', error);
+      toast.error("Erreur lors de la génération du CV PDF");
+    } finally {
+      setIsPdfGenerating(false);
     }
   };
 
@@ -155,6 +189,9 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                 selectedStyle={selectedStyle}
                 onEditToggle={handleEditToggle}
                 onSave={handleSave}
+                onDownloadPDF={handleDownloadPDF}
+                onDownloadBusinessPDF={handleDownloadBusinessPDF}
+                onDownloadCVPDF={handleDownloadCVPDF}
               />
               
               <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
