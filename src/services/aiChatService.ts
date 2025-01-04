@@ -18,6 +18,20 @@ export async function saveMessage(message: any) {
   if (error) throw error;
 }
 
+export async function loadMessages() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("ai_chat_messages")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
 export async function generateAIResponse(message: string, profile?: any) {
   try {
     console.log("Starting AI response generation...");
@@ -48,7 +62,7 @@ export async function generateAIResponse(message: string, profile?: any) {
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${secretData.secret}`,
+          "Authorization": `Bearer ${secretData}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

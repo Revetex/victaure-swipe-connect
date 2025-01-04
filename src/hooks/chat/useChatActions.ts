@@ -24,7 +24,8 @@ export function useChatActions(
         timestamp: new Date(),
       };
 
-      setMessages([...messages, newUserMessage]);
+      const updatedMessages = [...messages, newUserMessage];
+      setMessages(updatedMessages);
       
       await saveMessage({
         ...newUserMessage,
@@ -42,7 +43,7 @@ export function useChatActions(
         timestamp: new Date(),
       };
       
-      setMessages([...messages, newUserMessage, thinkingMessage]);
+      setMessages([...updatedMessages, thinkingMessage]);
 
       try {
         console.log("Generating AI response...");
@@ -61,7 +62,8 @@ export function useChatActions(
           timestamp: new Date(),
         };
 
-        setMessages([...messages, newUserMessage, newAssistantMessage]);
+        const finalMessages = [...updatedMessages, newAssistantMessage];
+        setMessages(finalMessages);
 
         await saveMessage({
           ...newAssistantMessage,
@@ -70,7 +72,7 @@ export function useChatActions(
 
       } catch (error) {
         console.error("Error in AI response generation:", error);
-        setMessages([...messages, newUserMessage]);
+        setMessages(updatedMessages);
         
         if (error instanceof Error) {
           toast.error(error.message);
