@@ -57,23 +57,21 @@ export async function saveMessage(message: Message) {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
+    // First, get the API key from Supabase secrets
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
     if (secretError) {
       console.error("Error fetching API token:", secretError);
-      throw new Error("Impossible de récupérer le token API");
+      throw new Error("Could not retrieve the API token. Please make sure it's properly configured in Supabase.");
     }
 
     const apiKey = secretData;
     if (!apiKey) {
-      throw new Error("La clé API Hugging Face n'est pas configurée");
+      throw new Error("Hugging Face API key is not configured. Please set it up in your Supabase settings.");
     }
 
-    const systemPrompt = `Tu es Mr. Victaure, un assistant virtuel professionnel et amical qui aide les utilisateurs à trouver du travail et à gérer leur carrière. 
-    ${profile ? `L'utilisateur avec qui tu parles s'appelle ${profile.full_name}.` : ''}
-    ${profile?.skills ? `Ses compétences principales sont: ${profile.skills.join(', ')}.` : ''}
-    Réponds toujours en français de manière concise et pertinente.`;
+    console.log("Making request to Hugging Face API...");
 
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -85,7 +83,9 @@ export async function generateAIResponse(message: string, profile?: any) {
         },
         body: JSON.stringify({
           inputs: `<|im_start|>system
-${systemPrompt}
+You are Mr. Victaure, a professional and friendly AI assistant who helps users with their job search and career development. Always respond in French.
+${profile ? `The user you're talking to is ${profile.full_name}.` : ''}
+${profile?.skills ? `Their main skills are: ${profile.skills.join(', ')}.` : ''}
 <|im_end|>
 <|im_start|>user
 ${message}
@@ -104,8 +104,14 @@ ${message}
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("API Error Response:", errorText);
-      throw new Error(`Erreur lors de l'appel à l'API (${response.status})`);
+      console.error("Hugging Face API Error Response:", errorText);
+      
+      if (response.status === 400 && errorText.includes("Authorization")) {
+        toast.error("Le token d'API semble invalide. Veuillez vérifier votre configuration.");
+        throw new Error("Invalid API token. Please check your configuration.");
+      }
+      
+      throw new Error(`API Error (${response.status}): ${errorText}`);
     }
 
     const result = await response.json();
@@ -116,9 +122,11 @@ ${message}
       }
     }
 
-    throw new Error("Format de réponse invalide de l'API");
+    throw new Error("Invalid response format from API");
+
   } catch (error) {
-    console.error("Error in AI response generation:", error);
+    console.error("Error generating AI response:", error);
+    toast.error("Erreur lors de la génération de la réponse");
     throw error;
   }
 }
