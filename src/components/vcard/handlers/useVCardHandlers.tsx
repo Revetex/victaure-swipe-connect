@@ -2,6 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { generateVCardData } from "@/utils/profileActions";
 import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import type { UserProfile } from "@/types/profile";
+import type { StyleOption } from "../types";
 
 export function useVCardHandlers() {
   const { toast } = useToast();
@@ -62,11 +63,11 @@ export function useVCardHandlers() {
     }
   };
 
-  const handleDownloadPDF = async (profile: UserProfile) => {
+  const handleDownloadPDF = async (profile: UserProfile, style: StyleOption) => {
     if (!profile) return;
     
     try {
-      const doc = await generateVCard(profile);
+      const doc = await generateVCard(profile, style);
       doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
       
       toast({
@@ -83,11 +84,11 @@ export function useVCardHandlers() {
     }
   };
 
-  const handleDownloadBusinessPDF = async (profile: UserProfile) => {
+  const handleDownloadBusinessPDF = async (profile: UserProfile, style: StyleOption) => {
     if (!profile) return;
     
     try {
-      const doc = await generateBusinessCard(profile);
+      const doc = await generateBusinessCard(profile, style);
       doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
       
       toast({
@@ -104,11 +105,11 @@ export function useVCardHandlers() {
     }
   };
 
-  const handleDownloadCVPDF = async (profile: UserProfile) => {
+  const handleDownloadCVPDF = async (profile: UserProfile, style: StyleOption) => {
     if (!profile) return;
     
     try {
-      const doc = await generateCV(profile);
+      const doc = await generateCV(profile, style);
       doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
       
       toast({

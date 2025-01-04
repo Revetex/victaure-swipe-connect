@@ -54,18 +54,57 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     background-image: url('/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fix for iOS Safari viewport height */
+  @supports (-webkit-touch-callout: none) {
+    .min-h-screen {
+      min-height: -webkit-fill-available;
+    }
+  }
+
+  /* Fix for Safari flexbox gap */
+  @supports not (gap: 1rem) {
+    .gap-4 > * + * {
+      margin-left: 1rem;
+    }
+    .flex-col.gap-4 > * + * {
+      margin-top: 1rem;
+      margin-left: 0;
+    }
+  }
+
+  /* Improve touch targets on mobile */
+  @media (max-width: 640px) {
+    button, 
+    [role="button"],
+    a {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0.5rem;
+    }
   }
 }
 
-/* Styles spécifiques pour chaque thème */
 .style-default {
   @apply text-gray-900;
 }
