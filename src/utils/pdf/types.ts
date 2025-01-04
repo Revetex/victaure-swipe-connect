@@ -1,6 +1,6 @@
 import type { jsPDF } from 'jspdf';
 
-export interface ExtendedJsPDF extends Omit<jsPDF, 'roundedRect'> {
+export interface ExtendedJsPDF extends jsPDF {
   roundedRect: (x: number, y: number, w: number, h: number, rx: number, ry: number, style: string) => void;
   setGlobalAlpha: (alpha: number) => void;
 }

@@ -1,12 +1,12 @@
 export const pdfColors = {
-  background: '#1a1a1a',
-  primary: '#9b87f5',
+  background: '#ffffff',
+  primary: '#4F46E5',
   text: {
-    primary: '#ffffff',
-    secondary: '#e0e0e0',
-    muted: '#a0a0a0'
+    primary: '#111827',
+    secondary: '#4B5563',
+    muted: '#9CA3AF'
   },
   circuit: {
-    lines: '#2a2a2a'
+    lines: '#E5E7EB'
   }
 };
