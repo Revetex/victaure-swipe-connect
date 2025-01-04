@@ -27,17 +27,22 @@ export const generateCV = async (
       format: 'a4'
     }));
 
-    // Apply selected style colors
+    // Create custom styles based on selected VCard style
     const customStyles = {
       ...pdfStyles,
       colors: {
         ...pdfStyles.colors,
         primary: selectedStyle.color,
         secondary: selectedStyle.secondaryColor,
+        text: {
+          primary: '#1A1F2C',
+          secondary: '#555555',
+          muted: '#8E9196'
+        }
       },
       fonts: {
         ...pdfStyles.fonts,
-        family: selectedStyle.font
+        family: selectedStyle.font || 'helvetica'
       }
     };
 
@@ -45,16 +50,19 @@ export const generateCV = async (
     let currentY = 20;
 
     // Render each section and update currentY
-    currentY = await renderHeader(doc, profile, currentY, customStyles);
-    currentY = await renderBio(doc, profile, currentY, customStyles);
-    currentY = await renderContact(doc, profile, currentY, customStyles);
-    currentY = await renderSkills(doc, profile, currentY, customStyles);
-    currentY = await renderExperiences(doc, profile, currentY, customStyles);
-    currentY = await renderEducation(doc, profile, currentY, customStyles);
-    currentY = await renderCertifications(doc, profile, currentY, customStyles);
+    currentY = await renderHeader(doc, profile, currentY);
+    currentY = await renderBio(doc, profile, currentY);
+    currentY = await renderContact(doc, profile, currentY);
+    currentY = await renderSkills(doc, profile, currentY);
+    currentY = await renderExperiences(doc, profile, currentY);
+    currentY = await renderEducation(doc, profile, currentY);
+    
+    if (profile.certifications) {
+      currentY = renderCertifications(doc, profile.certifications, currentY);
+    }
     
     // Render footer with QR code
-    renderFooter(doc, customStyles);
+    await renderFooter(doc, selectedStyle.color);
 
     return doc;
   } catch (error) {

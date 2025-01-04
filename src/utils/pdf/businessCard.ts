@@ -15,7 +15,7 @@ export const generateBusinessCard = async (
     format: [85.6, 53.98]
   }));
 
-  // Apply gradient background
+  // Apply gradient background using selected style
   doc.setFillColor(selectedStyle.color);
   doc.rect(0, 0, 85.6, 53.98, 'F');
 
@@ -23,7 +23,7 @@ export const generateBusinessCard = async (
   if (profile.avatar_url) {
     try {
       const img = await loadImage(profile.avatar_url);
-      doc.addImage(img, 'JPEG', 5, 5, 15, 15, undefined, 'MEDIUM');
+      doc.addImage(img, 'JPEG', 5, 5, 20, 20, undefined, 'MEDIUM');
     } catch (error) {
       console.error('Error loading profile image:', error);
     }
@@ -33,26 +33,26 @@ export const generateBusinessCard = async (
   doc.setFont(selectedStyle.font || 'helvetica');
   doc.setTextColor(255, 255, 255); // White text for contrast
 
-  // Company info
+  // Company info with improved spacing
   doc.setFontSize(14);
-  doc.text(profile.company_name || '', 25, 12);
+  doc.text(profile.company_name || '', 30, 12);
   
-  // Personal info
+  // Personal info with better layout
   doc.setFontSize(12);
-  doc.text(profile.full_name || '', 25, 20);
+  doc.text(profile.full_name || '', 30, 20);
   doc.setFontSize(10);
-  doc.text(profile.role || '', 25, 26);
+  doc.text(profile.role || '', 30, 26);
   
-  // Contact details
+  // Contact details with icons and improved spacing
   doc.setFontSize(8);
-  doc.text(profile.email, 25, 34);
-  if (profile.phone) doc.text(profile.phone, 25, 39);
-  if (profile.website) doc.text(profile.website, 25, 44);
+  if (profile.email) doc.text(profile.email, 30, 34);
+  if (profile.phone) doc.text(profile.phone, 30, 39);
+  if (profile.website) doc.text(profile.website, 30, 44);
 
-  // Add QR code
+  // Add QR code with better positioning
   try {
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrCodeUrl, 'PNG', 65, 5, 15, 15);
+    doc.addImage(qrCodeUrl, 'PNG', 60, 5, 20, 20);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
