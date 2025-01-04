@@ -17,9 +17,12 @@ export const AuthForm = memo(function AuthForm() {
             colors: {
               brand: '#0ea5e9',
               brandAccent: '#0284c7',
-              inputBackground: 'white',
-              inputText: 'rgb(75, 85, 99)',
-              inputPlaceholder: 'rgb(156, 163, 175)',
+              inputBackground: theme === 'dark' ? 'rgb(23, 23, 23)' : 'white',
+              inputText: theme === 'dark' ? 'rgb(229, 231, 235)' : 'rgb(75, 85, 99)',
+              inputPlaceholder: theme === 'dark' ? 'rgb(156, 163, 175, 0.5)' : 'rgb(156, 163, 175)',
+              inputBorder: theme === 'dark' ? 'rgb(75, 85, 99)' : 'rgb(229, 231, 235)',
+              inputBorderHover: theme === 'dark' ? 'rgb(107, 114, 128)' : 'rgb(209, 213, 219)',
+              inputBorderFocus: '#0ea5e9',
             },
             space: {
               inputPadding: '1rem',
@@ -43,7 +46,8 @@ export const AuthForm = memo(function AuthForm() {
         },
         className: {
           button: "w-full bg-sky-500 hover:bg-sky-600 text-white transition-colors",
-          input: "w-full border border-gray-200 focus:border-sky-500 focus:ring-1 focus:ring-sky-500",
+          input: `w-full border focus:border-sky-500 focus:ring-1 focus:ring-sky-500 
+                 ${theme === 'dark' ? 'bg-neutral-900 border-neutral-700 text-gray-200' : 'bg-white border-gray-200 text-gray-700'}`,
           label: "text-gray-600 dark:text-gray-300 font-medium",
           message: "text-sm text-gray-500 dark:text-gray-400",
           anchor: "text-sky-500 hover:text-sky-600 no-underline hover:underline",
