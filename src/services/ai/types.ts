@@ -1,4 +1,4 @@
-export interface HuggingFaceResponse {
+export interface ApiResponse {
   generated_text?: string;
   error?: string;
 }
