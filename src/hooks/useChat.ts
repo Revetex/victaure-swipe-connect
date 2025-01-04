@@ -11,6 +11,7 @@ export function useChat(): ChatState & ChatActions {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [hasInitialMessage, setHasInitialMessage] = useState(false);
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -24,6 +25,24 @@ export function useChat(): ChatState & ChatActions {
           timestamp: new Date(msg.created_at),
         }));
         setMessages(formattedMessages);
+        
+        // Si aucun message n'existe, envoyer le message d'accueil
+        if (formattedMessages.length === 0 && !hasInitialMessage) {
+          const welcomeMessage = {
+            id: crypto.randomUUID(),
+            content: "Bonjour ! Je suis M. Victaure, votre assistant IA personnel. Je suis là pour vous aider dans votre parcours professionnel. Comment puis-je vous assister aujourd'hui ?",
+            sender: "assistant" as const,
+            timestamp: new Date(),
+          };
+          
+          setMessages([welcomeMessage]);
+          await saveMessage({
+            ...welcomeMessage,
+            created_at: welcomeMessage.timestamp,
+          });
+          setHasInitialMessage(true);
+        }
+        
         console.log("Chat initialized with messages:", formattedMessages);
       } catch (error) {
         console.error("Error initializing chat:", error);
@@ -31,7 +50,7 @@ export function useChat(): ChatState & ChatActions {
       }
     };
     initializeChat();
-  }, []);
+  }, [hasInitialMessage]);
 
   const handleSendMessage = async (message: string, profile?: any) => {
     if (!message.trim()) return;

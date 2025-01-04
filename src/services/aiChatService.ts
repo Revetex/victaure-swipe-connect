@@ -35,8 +35,6 @@ export async function generateAIResponse(message: string, profile?: any) {
   try {
     console.log("Starting AI response generation...");
     
-    // Fetch API key with detailed logging
-    console.log("Fetching Hugging Face API key...");
     const { data, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
     
@@ -45,12 +43,12 @@ export async function generateAIResponse(message: string, profile?: any) {
       throw new Error("Impossible de récupérer le token API. Veuillez vérifier la configuration dans Supabase.");
     }
 
-    if (!data || data.length === 0) {
+    if (!data) {
       console.error("No data returned from get_secret");
       throw new Error("Aucune donnée retournée lors de la récupération du token API");
     }
 
-    const secretValue = Array.isArray(data) ? data[0].secret : data.secret;
+    const secretValue = typeof data === 'string' ? data : data[0]?.secret;
 
     if (!secretValue || typeof secretValue !== 'string' || secretValue.trim() === '') {
       console.error("Invalid or empty API token");
