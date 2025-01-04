@@ -33,8 +33,8 @@ export function AuthVideo() {
       
       {/* Video Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-gray-900/30 flex items-center justify-center">
-        {/* Logo - Centered position */}
-        <Logo size="lg" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+        {/* Logo - Top right position */}
+        <Logo size="md" className="absolute top-4 right-4" />
         
         {/* Play/Pause Button - Always visible but with different icons */}
         <button

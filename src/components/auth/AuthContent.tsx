@@ -31,6 +31,28 @@ export function AuthContent() {
       <div className="w-full max-w-2xl mb-12">
         <AuthVideo />
       </div>
+
+      {/* Footer Links */}
+      <div className="w-full text-center space-y-4">
+        <div className="text-sm text-gray-500 dark:text-gray-400 space-x-4">
+          <a 
+            href="/privacy-policy"
+            className="hover:text-cyan-500 transition-colors"
+          >
+            Politique de confidentialité
+          </a>
+          <span>•</span>
+          <a
+            href="/terms-of-service"
+            className="hover:text-cyan-500 transition-colors"
+          >
+            Conditions d'utilisation
+          </a>
+        </div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          © {new Date().getFullYear()} Victaure. Tous droits réservés.
+        </div>
+      </div>
     </div>
   );
 }
