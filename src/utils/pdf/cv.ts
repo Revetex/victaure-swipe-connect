@@ -20,7 +20,7 @@ export const generateVCardPDF = async (profile: UserProfile, accentColor: string
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4'
-    }) as ExtendedJsPDF;
+    }) as unknown as ExtendedJsPDF;
 
     // Set gradient background
     const gradientSteps = 15;

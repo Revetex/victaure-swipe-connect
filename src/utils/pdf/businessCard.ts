@@ -3,18 +3,18 @@ import QRCode from 'qrcode';
 import { pdfColors } from './colors';
 import type { UserProfile } from '@/types/profile';
 import { drawHeader, drawSection } from './helpers';
+import type { ExtendedJsPDF } from './types';
 
 export const generateBusinessCardPDF = async (profile: UserProfile) => {
-  // Standard business card size in mm (85.6 x 53.98)
   const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
     format: [85.6, 53.98]
-  });
+  }) as unknown as ExtendedJsPDF;
 
   // Add background and decorative elements
-  drawHeader(doc, 53.98, pdfColors.background, pdfColors.circuit.lines);
-  drawSection(doc, 10, 75.6, 33.98, pdfColors.primary);
+  drawHeader(doc as ExtendedJsPDF, 53.98, pdfColors.background, pdfColors.circuit.lines);
+  drawSection(doc as ExtendedJsPDF, 10, 75.6, 33.98, pdfColors.primary);
 
   // Main Content Area
   doc.setTextColor(pdfColors.text.primary);
