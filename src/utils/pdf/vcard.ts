@@ -10,23 +10,52 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     format: 'a4'
   });
 
-  // Background
-  doc.setFillColor(pdfColors.background);
+  // Background gradient
+  const gradient = doc.setFillColor('#f8fafc');
   doc.rect(0, 0, 210, 297, 'F');
 
-  // Header section
+  // Header with profile photo
+  if (profile.avatar_url) {
+    try {
+      doc.addImage(profile.avatar_url, 'PNG', 20, 20, 40, 40, undefined, 'FAST');
+      // Add a subtle shadow/border around the image
+      doc.setDrawColor(200, 200, 200);
+      doc.rect(20, 20, 40, 40, 'S');
+    } catch (error) {
+      console.error('Error adding profile image:', error);
+    }
+  }
+
+  // Name and Role (positioned next to photo)
   doc.setFontSize(24);
   doc.setTextColor(pdfColors.text.primary);
-  doc.text(profile.full_name || 'Nom complet', 20, 30);
+  doc.text(profile.full_name || 'Nom complet', 70, 35);
 
   doc.setFontSize(16);
   doc.setTextColor(pdfColors.text.secondary);
-  doc.text(profile.role || 'Rôle professionnel', 20, 40);
+  doc.text(profile.role || 'Rôle professionnel', 70, 45);
+
+  // QR Code (top right corner)
+  try {
+    const qrDataUrl = await QRCode.toDataURL(window.location.href);
+    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30);
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
 
   // Contact Information
   doc.setFontSize(12);
-  let yPosition = 60;
+  let yPosition = 80;
   const lineHeight = 8;
+
+  // Contact section title
+  doc.setFontSize(14);
+  doc.setTextColor(pdfColors.text.primary);
+  doc.text('Contact', 20, yPosition);
+  yPosition += lineHeight * 1.5;
+
+  doc.setFontSize(12);
+  doc.setTextColor(pdfColors.text.secondary);
 
   if (profile.email) {
     doc.text(`Email: ${profile.email}`, 20, yPosition);
@@ -46,7 +75,7 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     yPosition += lineHeight * 2;
   }
 
-  // Bio section if available
+  // Bio section
   if (profile.bio) {
     doc.setFontSize(14);
     doc.setTextColor(pdfColors.text.primary);
@@ -75,56 +104,66 @@ export const generateVCardPDF = async (profile: UserProfile) => {
     yPosition += (skillsLines.length * lineHeight) + lineHeight;
   }
 
+  // Experience section
+  if (profile.experiences && profile.experiences.length > 0) {
+    doc.setFontSize(14);
+    doc.setTextColor(pdfColors.text.primary);
+    doc.text('Expériences professionnelles', 20, yPosition);
+    yPosition += lineHeight * 1.5;
+
+    doc.setFontSize(12);
+    doc.setTextColor(pdfColors.text.secondary);
+    
+    profile.experiences.forEach((exp) => {
+      doc.setFont(undefined, 'bold');
+      doc.text(exp.position, 20, yPosition);
+      yPosition += lineHeight;
+      
+      doc.setFont(undefined, 'normal');
+      doc.text(exp.company, 20, yPosition);
+      yPosition += lineHeight;
+      
+      if (exp.start_date || exp.end_date) {
+        const dateText = `${exp.start_date ? new Date(exp.start_date).toLocaleDateString() : ''} - ${exp.end_date ? new Date(exp.end_date).toLocaleDateString() : 'Présent'}`;
+        doc.text(dateText, 20, yPosition);
+        yPosition += lineHeight;
+      }
+
+      if (exp.description) {
+        const descLines = doc.splitTextToSize(exp.description, 170);
+        doc.text(descLines, 20, yPosition);
+        yPosition += (descLines.length * lineHeight) + lineHeight;
+      }
+
+      yPosition += lineHeight;
+    });
+  }
+
   // Education section
   if (profile.education && profile.education.length > 0) {
     doc.setFontSize(14);
     doc.setTextColor(pdfColors.text.primary);
     doc.text('Formation', 20, yPosition);
-    yPosition += lineHeight;
+    yPosition += lineHeight * 1.5;
 
     doc.setFontSize(12);
     doc.setTextColor(pdfColors.text.secondary);
     
     profile.education.forEach((edu) => {
+      doc.setFont(undefined, 'bold');
       doc.text(edu.school_name, 20, yPosition);
       yPosition += lineHeight;
       
-      doc.text(`${edu.degree}${edu.field_of_study ? ` - ${edu.field_of_study}` : ''}`, 25, yPosition);
+      doc.setFont(undefined, 'normal');
+      doc.text(`${edu.degree}${edu.field_of_study ? ` - ${edu.field_of_study}` : ''}`, 20, yPosition);
       yPosition += lineHeight;
       
       if (edu.start_date || edu.end_date) {
         const dateText = `${edu.start_date || ''} - ${edu.end_date || 'Présent'}`;
-        doc.text(dateText, 25, yPosition);
+        doc.text(dateText, 20, yPosition);
         yPosition += lineHeight * 1.5;
       }
     });
-  }
-
-  // Certifications section
-  if (profile.certifications && profile.certifications.length > 0) {
-    doc.setFontSize(14);
-    doc.setTextColor(pdfColors.text.primary);
-    doc.text('Certifications', 20, yPosition);
-    yPosition += lineHeight;
-
-    doc.setFontSize(12);
-    doc.setTextColor(pdfColors.text.secondary);
-    
-    profile.certifications.forEach((cert) => {
-      doc.text(cert.title, 20, yPosition);
-      yPosition += lineHeight;
-      
-      doc.text(`${cert.issuer}${cert.year ? ` (${cert.year})` : ''}`, 25, yPosition);
-      yPosition += lineHeight * 1.5;
-    });
-  }
-
-  // QR Code
-  try {
-    const qrDataUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrDataUrl, 'PNG', 160, 20, 30, 30);
-  } catch (error) {
-    console.error('Error generating QR code:', error);
   }
 
   // Footer
