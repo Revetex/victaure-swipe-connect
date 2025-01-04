@@ -57,18 +57,19 @@ export async function saveMessage(message: Message) {
 
 export async function generateAIResponse(message: string, profile?: any) {
   try {
-    // First, get the API key from Supabase secrets
     const { data: secretData, error: secretError } = await supabase
       .rpc('get_secret', { secret_name: 'HUGGING_FACE_API_KEY' });
 
     if (secretError) {
       console.error("Error fetching API token:", secretError);
-      throw new Error("Could not retrieve the API token. Please make sure it's properly configured in Supabase.");
+      toast.error("Impossible de récupérer le token API");
+      throw new Error("Could not retrieve the API token");
     }
 
     const apiKey = secretData;
     if (!apiKey) {
-      throw new Error("Hugging Face API key is not configured. Please set it up in your Supabase settings.");
+      toast.error("La clé API Hugging Face n'est pas configurée");
+      throw new Error("Hugging Face API key is not configured");
     }
 
     console.log("Making request to Hugging Face API...");
@@ -103,18 +104,20 @@ ${message}
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Hugging Face API Error Response:", errorText);
+      const errorData = await response.json().catch(() => null);
+      console.error("Hugging Face API Error:", errorData);
       
-      if (response.status === 400 && errorText.includes("Authorization")) {
-        toast.error("Le token d'API semble invalide. Veuillez vérifier votre configuration.");
-        throw new Error("Invalid API token. Please check your configuration.");
+      if (response.status === 400 && errorData?.error?.includes("Authorization")) {
+        toast.error("Le token d'API semble invalide");
+        throw new Error("Invalid API token");
       }
       
-      throw new Error(`API Error (${response.status}): ${errorText}`);
+      toast.error("Erreur lors de la communication avec l'API");
+      throw new Error(`API Error (${response.status})`);
     }
 
     const result = await response.json();
+    
     if (Array.isArray(result) && result.length > 0) {
       const generatedText = result[0]?.generated_text;
       if (generatedText) {
@@ -122,11 +125,14 @@ ${message}
       }
     }
 
+    toast.error("Format de réponse invalide");
     throw new Error("Invalid response format from API");
 
   } catch (error) {
     console.error("Error generating AI response:", error);
-    toast.error("Erreur lors de la génération de la réponse");
+    if (!toast.error) {
+      toast.error("Erreur lors de la génération de la réponse");
+    }
     throw error;
   }
 }
