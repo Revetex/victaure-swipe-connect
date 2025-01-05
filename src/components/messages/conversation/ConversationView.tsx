@@ -7,6 +7,7 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ConversationViewProps {
   messages: any[];
@@ -14,7 +15,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack?: () => void;  // Made optional with ?
+  onBack?: () => void;
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -35,6 +36,7 @@ export function ConversationView({
 }: ConversationViewProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -44,6 +46,10 @@ export function ConversationView({
     const target = event.target as HTMLDivElement;
     const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
     setShowScrollButton(!isNearBottom);
+  };
+
+  const handleBack = () => {
+    navigate("/dashboard");
   };
 
   useEffect(() => {
@@ -77,16 +83,14 @@ export function ConversationView({
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
-            {onBack && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onBack}
-                className="shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
               <AvatarFallback className="bg-primary/20">
