@@ -97,28 +97,32 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom complet"
-              className="text-xl font-semibold bg-white/10 border-white/20 text-foreground placeholder:text-muted-foreground"
-              style={{ color: selectedStyle.colors.text.primary }}
+              className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 text-foreground/90 placeholder:text-muted-foreground"
-              style={{ color: selectedStyle.colors.text.secondary }}
+              className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
             />
           </div>
         ) : (
           <>
             <h2 
-              className="text-xl font-semibold truncate text-foreground"
-              style={{ color: selectedStyle.colors.text.primary }}
+              className="text-xl font-semibold truncate text-white"
+              style={{ 
+                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                color: selectedStyle.colors.text.primary 
+              }}
             >
               {profile.full_name || "Nom non défini"}
             </h2>
             <p 
-              className="text-sm text-foreground/80"
-              style={{ color: selectedStyle.colors.text.secondary }}
+              className="text-sm text-white/90"
+              style={{ 
+                textShadow: '0 1px 1px rgba(0,0,0,0.3)',
+                color: selectedStyle.colors.text.secondary 
+              }}
             >
               {profile.role || "Rôle non défini"}
             </p>
