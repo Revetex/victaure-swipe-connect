@@ -7,9 +7,11 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function ScrapedJobs() {
-  const { data: jobs, isLoading } = useQuery({
+  const { data: jobs, isLoading, refetch } = useQuery({
     queryKey: ["scraped-jobs"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -22,6 +24,19 @@ export function ScrapedJobs() {
       return data as ScrapedJob[];
     }
   });
+
+  const handleRefresh = async () => {
+    try {
+      const { error } = await supabase.functions.invoke('job-scraper');
+      if (error) throw error;
+      
+      await refetch();
+      toast.success("Les offres d'emploi ont été mises à jour");
+    } catch (error) {
+      console.error('Error refreshing jobs:', error);
+      toast.error("Erreur lors de la mise à jour des offres");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -40,7 +55,18 @@ export function ScrapedJobs() {
 
   return (
     <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Emplois récents</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold">Emplois récents</h3>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleRefresh}
+          className="text-xs"
+        >
+          Rafraîchir
+        </Button>
+      </div>
+      
       <ScrollArea className="h-[400px] pr-4">
         <div className="space-y-4">
           {jobs?.map((job) => (
