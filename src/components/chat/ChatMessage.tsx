@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { useState } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessageProps {
   content: string;
@@ -36,11 +37,20 @@ export function ChatMessage({
         return;
       }
 
+      // Récupérer la clé API de manière sécurisée
+      const { data: { secret: apiKey }, error: secretError } = await supabase.functions.invoke('get-secret', {
+        body: { secretName: 'ELEVEN_LABS_API_KEY' }
+      });
+
+      if (secretError || !apiKey) {
+        throw new Error("Impossible de récupérer la clé API");
+      }
+
       const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL/stream", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "xi-api-key": "your-api-key", // À remplacer par la clé API de l'utilisateur
+          "xi-api-key": apiKey,
         },
         body: JSON.stringify({
           text: content,
