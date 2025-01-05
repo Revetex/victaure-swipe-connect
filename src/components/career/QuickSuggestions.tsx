@@ -36,11 +36,7 @@ interface QuickSuggestionsProps {
 
 export function QuickSuggestions({ onSelect }: QuickSuggestionsProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
-    >
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
       {suggestions.map((suggestion, index) => {
         const Icon = suggestion.icon;
         return (
@@ -65,6 +61,6 @@ export function QuickSuggestions({ onSelect }: QuickSuggestionsProps) {
           </motion.div>
         );
       })}
-    </motion.div>
+    </div>
   );
 }
