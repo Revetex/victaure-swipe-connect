@@ -111,8 +111,8 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <h2 
               className="text-xl font-semibold truncate text-white"
               style={{ 
-                textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                color: selectedStyle.colors.text.primary 
+                textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                color: 'white' // Force white color regardless of style
               }}
             >
               {profile.full_name || "Nom non défini"}
@@ -120,8 +120,8 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <p 
               className="text-sm text-white/90"
               style={{ 
-                textShadow: '0 1px 1px rgba(0,0,0,0.3)',
-                color: selectedStyle.colors.text.secondary 
+                textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                color: 'white' // Force white color regardless of style
               }}
             >
               {profile.role || "Rôle non défini"}
