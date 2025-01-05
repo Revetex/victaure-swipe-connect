@@ -24,7 +24,7 @@ export function JobCreationDialog({ isOpen, setIsOpen, onSuccess }: JobCreationD
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
-          className="bg-victaure-blue hover:bg-victaure-blue/90 text-white" 
+          className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700" 
           size="sm"
           onClick={handleCreateJob}
         >
@@ -34,10 +34,10 @@ export function JobCreationDialog({ isOpen, setIsOpen, onSuccess }: JobCreationD
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-victaure-blue">
+          <DialogTitle className="text-2xl font-bold text-foreground">
             Ajouter une mission
           </DialogTitle>
-          <DialogDescription className="text-victaure-gray-dark">
+          <DialogDescription className="text-muted-foreground">
             Créez une nouvelle mission en remplissant les informations ci-dessous.
             Les professionnels pourront la consulter et y postuler.
           </DialogDescription>
