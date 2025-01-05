@@ -1,4 +1,4 @@
-import { UserCircle, MessageSquare, BriefcaseIcon, Settings, Bell, ClipboardList } from "lucide-react";
+import { UserCircle, MessageSquare, BriefcaseIcon, Settings, ClipboardList } from "lucide-react";
 
 interface DashboardNavigationProps {
   currentPage: number;

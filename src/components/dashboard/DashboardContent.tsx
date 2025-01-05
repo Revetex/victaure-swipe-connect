@@ -4,6 +4,8 @@ import { VCard } from "@/components/VCard";
 import { Settings } from "@/components/Settings";
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
+import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -20,6 +22,40 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat,
 }: DashboardContentProps) {
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
+
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
+  const colors = [
+    { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
+    { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
+    { value: 'green', label: 'Vert', class: 'bg-green-200' },
+    { value: 'pink', label: 'Rose', class: 'bg-pink-200' },
+    { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
+    { value: 'orange', label: 'Orange', class: 'bg-orange-200' },
+  ];
+
   if (currentPage === 1) {
     return (
       <div 
@@ -65,8 +101,30 @@ export function DashboardContent({
       <div className="dashboard-card h-full">
         <div className="p-3 sm:p-4 md:p-6 h-full">
           <div className="space-y-6">
-            <TodoSection />
-            <NotesSection />
+            <TodoSection
+              todos={todos}
+              newTodo={newTodo}
+              selectedDate={selectedDate}
+              selectedTime={selectedTime}
+              allDay={allDay}
+              onTodoChange={setNewTodo}
+              onDateChange={setSelectedDate}
+              onTimeChange={setSelectedTime}
+              onAllDayChange={setAllDay}
+              onAdd={addTodo}
+              onToggle={toggleTodo}
+              onDelete={deleteTodo}
+            />
+            <NotesSection
+              notes={notes}
+              newNote={newNote}
+              selectedColor={selectedColor}
+              colors={colors}
+              onNoteChange={setNewNote}
+              onColorChange={setSelectedColor}
+              onAdd={addNote}
+              onDelete={deleteNote}
+            />
           </div>
         </div>
       </div>
