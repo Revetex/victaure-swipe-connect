@@ -3,10 +3,11 @@ export interface ScrapedJob {
   title: string;
   company: string;
   location: string;
-  description: string;
   salary_range?: string;
+  description?: string;
   url?: string;
-  posted_at?: Date;
+  posted_at: string;
+  source: string;
 }
 
 export interface JobScraper {

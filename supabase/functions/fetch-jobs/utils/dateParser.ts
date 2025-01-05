@@ -1,29 +1,28 @@
-export function parseDate(dateStr: string): Date | undefined {
-  if (!dateStr) return undefined;
-
+export function parseDate(dateStr: string): string {
+  if (!dateStr) return new Date().toISOString();
+  
   try {
-    // Handle relative dates
-    if (dateStr.includes('today')) {
-      return new Date();
+    if (dateStr.toLowerCase().includes('just posted')) {
+      return new Date().toISOString();
     }
-    if (dateStr.includes('yesterday')) {
+    
+    if (dateStr.toLowerCase().includes('hour')) {
+      const hours = parseInt(dateStr) || 1;
       const date = new Date();
-      date.setDate(date.getDate() - 1);
-      return date;
+      date.setHours(date.getHours() - hours);
+      return date.toISOString();
     }
-    if (dateStr.includes('days ago')) {
-      const days = parseInt(dateStr);
-      if (!isNaN(days)) {
-        const date = new Date();
-        date.setDate(date.getDate() - days);
-        return date;
-      }
+    
+    if (dateStr.toLowerCase().includes('day')) {
+      const days = parseInt(dateStr) || 1;
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      return date.toISOString();
     }
-
-    // Try parsing as regular date
-    return new Date(dateStr);
+    
+    return new Date(dateStr).toISOString();
   } catch (error) {
     console.error('Error parsing date:', error);
-    return undefined;
+    return new Date().toISOString();
   }
 }

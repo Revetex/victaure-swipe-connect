@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { LinkedInScraper } from "./scrapers/linkedinScraper.ts";
-import { IndeedScraper } from "./scrapers/indeedScraper.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { IndeedScraper } from "./scrapers/indeedScraper.ts";
+import { LinkedInScraper } from "./scrapers/linkedinScraper.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,90 +14,69 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Starting job fetch process...");
+    console.log('Starting job scraping...');
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get active job sources
-    const { data: sources, error: sourcesError } = await supabase
-      .from('job_sources')
-      .select('*')
-      .eq('is_active', true);
+    // Initialize scrapers
+    const indeedScraper = new IndeedScraper();
+    const linkedinScraper = new LinkedInScraper();
 
-    if (sourcesError) {
-      throw sourcesError;
-    }
+    // Scrape jobs from different sources
+    const indeedJobs = await indeedScraper.scrape('https://ca.indeed.com/jobs?q=construction&l=Quebec');
+    const linkedinJobs = await linkedinScraper.scrape('https://www.linkedin.com/jobs/search?keywords=construction&location=Quebec');
 
-    const jobs = [];
-    for (const source of sources) {
-      try {
-        let scraper;
-        switch (source.source) {
-          case 'linkedin':
-            scraper = new LinkedInScraper();
-            break;
-          case 'indeed':
-            scraper = new IndeedScraper();
-            break;
-          default:
-            console.log(`Unsupported source: ${source.source}`);
-            continue;
+    console.log(`Found ${indeedJobs.length} Indeed jobs and ${linkedinJobs.length} LinkedIn jobs`);
+
+    // Combine all jobs
+    const allJobs = [...indeedJobs, ...linkedinJobs].map(job => ({
+      ...job,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
+
+    // Insert jobs into Supabase
+    const { error } = await supabase
+      .from('scraped_jobs')
+      .upsert(
+        allJobs,
+        { 
+          onConflict: 'url',
+          ignoreDuplicates: true 
         }
+      );
 
-        const scrapedJobs = await scraper.scrape(source.url);
-        jobs.push(...scrapedJobs.map(job => ({
-          ...job,
-          source_id: source.id
-        })));
+    if (error) throw error;
 
-      } catch (error) {
-        console.error(`Error scraping source ${source.source}:`, error);
-      }
-    }
-
-    // Update last_checked timestamp
-    await supabase
-      .from('job_sources')
-      .update({ last_checked: new Date().toISOString() })
-      .in('id', sources.map(s => s.id));
-
-    // Insert scraped jobs
-    if (jobs.length > 0) {
-      const { error: insertError } = await supabase
-        .from('scraped_jobs')
-        .upsert(
-          jobs,
-          { onConflict: 'source_id,external_id' }
-        );
-
-      if (insertError) {
-        throw insertError;
-      }
-    }
+    console.log(`Successfully saved ${allJobs.length} jobs to database`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `Successfully processed ${jobs.length} jobs` 
+        message: `Successfully scraped and saved ${allJobs.length} jobs`,
+        jobsCount: allJobs.length 
       }),
       { 
         headers: { 
-          ...corsHeaders,
+          ...corsHeaders, 
           'Content-Type': 'application/json' 
         } 
       }
     );
 
   } catch (error) {
-    console.error("Error in fetch-jobs function:", error);
+    console.error('Error in fetch-jobs function:', error);
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      }),
       { 
         status: 500,
         headers: { 
-          ...corsHeaders,
+          ...corsHeaders, 
           'Content-Type': 'application/json' 
         } 
       }

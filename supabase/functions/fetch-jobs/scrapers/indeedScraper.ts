@@ -39,7 +39,8 @@ export class IndeedScraper implements JobScraper {
           salary_range: parseSalary(salary[1].trim()),
           posted_at: parseDate(posted[1].trim()),
           url: `https://www.indeed.com${url[1]}`,
-          description: ''  // Would need additional request to get full description
+          description: '',  // Would need additional request to get full description
+          source: 'indeed'
         });
       }
 
