@@ -82,7 +82,6 @@ export const AuthForm = memo(function AuthForm() {
           },
         }}
         showLinks={true}
-        persistSession={true}
         view="sign_in"
       />
       <div className="flex items-center justify-between space-x-2">
