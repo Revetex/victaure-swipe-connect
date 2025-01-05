@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
-import { Bot } from "lucide-react";
+import { Bot, Sparkles, Brain, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Message } from "./types";
@@ -21,7 +21,6 @@ export function CareerAdvisorChat() {
       setIsLoading(true);
       setShowSuggestions(false);
       
-      // Add user message to chat
       const userMessage: Message = {
         id: crypto.randomUUID(),
         content: messageContent,
@@ -30,21 +29,18 @@ export function CareerAdvisorChat() {
       };
       setMessages(prev => [...prev, userMessage]);
 
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Vous devez être connecté pour utiliser cette fonctionnalité");
         return;
       }
 
-      // Send message to AI advisor
       const { data, error } = await supabase.functions.invoke('career-advisor', {
         body: { message: messageContent, userId: user.id }
       });
 
       if (error) throw error;
 
-      // Add advisor response to chat
       const advisorMessage: Message = {
         id: crypto.randomUUID(),
         content: data.response,
@@ -76,21 +72,38 @@ export function CareerAdvisorChat() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className={`mb-4 ${
-                message.sender === 'user' ? 'ml-auto' : 'mr-auto'
-              }`}
+              className={`mb-4 ${message.sender === 'user' ? 'ml-auto' : 'mr-auto'}`}
             >
               <div
-                className={`max-w-[80%] p-3 rounded-lg ${
+                className={`flex items-start gap-3 max-w-[80%] ${
                   message.sender === 'user'
-                    ? 'bg-indigo-600 text-white ml-auto'
-                    : 'bg-gray-800 text-gray-100'
+                    ? 'flex-row-reverse ml-auto'
+                    : 'flex-row'
                 }`}
               >
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                <span className="text-xs opacity-70 mt-1 block">
-                  {message.timestamp.toLocaleTimeString()}
-                </span>
+                <div className={`flex-shrink-0 ${
+                  message.sender === 'user' 
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-800'
+                } p-2 rounded-full`}>
+                  {message.sender === 'user' ? (
+                    <MessageSquare className="h-5 w-5 text-white" />
+                  ) : (
+                    <Brain className="h-5 w-5 text-indigo-400" />
+                  )}
+                </div>
+                <div
+                  className={`p-4 rounded-lg ${
+                    message.sender === 'user'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-800 text-gray-100'
+                  }`}
+                >
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <span className="text-xs opacity-70 mt-2 block">
+                    {message.timestamp.toLocaleTimeString()}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -99,21 +112,27 @@ export function CareerAdvisorChat() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 text-gray-400 mb-4"
+              className="flex items-center gap-3 text-gray-400 mb-4"
             >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-              >
-                <Bot className="h-5 w-5" />
-              </motion.div>
-              <span className="text-sm">M. Victaure réfléchit</span>
-              <motion.div
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                ...
-              </motion.div>
+              <div className="bg-gray-800 p-2 rounded-full">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                >
+                  <Bot className="h-5 w-5 text-indigo-400" />
+                </motion.div>
+              </div>
+              <div className="bg-gray-800 p-4 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">M. Victaure réfléchit</span>
+                  <motion.div
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  >
+                    <Sparkles className="h-4 w-4 text-yellow-500" />
+                  </motion.div>
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

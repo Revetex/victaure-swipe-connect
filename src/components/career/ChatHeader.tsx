@@ -1,34 +1,40 @@
-import { Bot, Sparkles } from "lucide-react";
+import { Bot, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { ChatHeaderProps } from "./types";
 
 export function ChatHeader({ isLoading }: ChatHeaderProps) {
   return (
-    <div className="p-4 border-b border-gray-800">
+    <motion.div 
+      className="flex items-center justify-between p-4 border-b border-gray-800"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
       <div className="flex items-center gap-3">
         <div className="relative">
-          <motion.div
-            animate={isLoading ? { scale: [1, 1.1, 1] } : {}}
-            transition={{ repeat: Infinity, duration: 2 }}
-          >
-            <div className="h-10 w-10 rounded-full bg-indigo-600/20 flex items-center justify-center ring-2 ring-indigo-600/40">
-              <Bot className="h-5 w-5 text-indigo-400" />
-            </div>
-          </motion.div>
+          <div className="bg-indigo-600/20 p-2 rounded-full">
+            <Bot className="h-6 w-6 text-indigo-400" />
+          </div>
           {isLoading && (
-            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 ring-2 ring-gray-900" />
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-indigo-400 border-t-transparent"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            />
           )}
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-            M. Victaure
-            <Sparkles className="h-4 w-4 text-yellow-400" />
-          </h2>
-          <p className="text-sm text-gray-400">
-            {isLoading ? "En train de réfléchir..." : "Conseiller en Orientation"}
-          </p>
+          <h2 className="font-semibold text-white">M. Victaure</h2>
+          <p className="text-sm text-gray-400">Votre conseiller carrière</p>
         </div>
       </div>
-    </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-gray-400 hover:text-white"
+      >
+        <X className="h-5 w-5" />
+      </Button>
+    </motion.div>
   );
 }

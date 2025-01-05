@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, Mic } from "lucide-react";
 import { useState, FormEvent } from "react";
+import { motion } from "framer-motion";
 import { ChatInputProps } from "./types";
 
 export function ChatInput({ isLoading, onSendMessage }: ChatInputProps) {
@@ -16,7 +17,12 @@ export function ChatInput({ isLoading, onSendMessage }: ChatInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border-t border-gray-800">
+    <motion.form
+      onSubmit={handleSubmit}
+      className="p-4 border-t border-gray-800"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
       <div className="flex gap-2">
         <Input
           value={newMessage}
@@ -34,7 +40,15 @@ export function ChatInput({ isLoading, onSendMessage }: ChatInputProps) {
         >
           <Send className="h-4 w-4" />
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="border-gray-700 hover:bg-gray-800/50"
+          disabled={isLoading}
+        >
+          <Mic className="h-4 w-4" />
+        </Button>
       </div>
-    </form>
+    </motion.form>
   );
 }
