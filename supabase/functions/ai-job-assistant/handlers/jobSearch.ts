@@ -1,4 +1,4 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export async function handleJobSearch(message: string, profile: any, supabase: SupabaseClient) {
   console.log('Searching jobs with message:', message);
