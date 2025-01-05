@@ -49,7 +49,7 @@ export function ConversationView({
   };
 
   const handleBack = () => {
-    navigate("/dashboard");
+    navigate("/dashboard/messages");
   };
 
   useEffect(() => {
