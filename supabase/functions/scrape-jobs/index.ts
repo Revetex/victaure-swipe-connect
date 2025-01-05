@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,15 +13,19 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Starting job scraping...");
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Scrape Indeed jobs
     const indeedJobs = await scrapeIndeedJobs();
+    console.log(`Scraped ${indeedJobs.length} jobs from Indeed`);
     
     // Scrape LinkedIn jobs
     const linkedinJobs = await scrapeLinkedInJobs();
+    console.log(`Scraped ${linkedinJobs.length} jobs from LinkedIn`);
 
     // Combine and format jobs
     const jobs = [...indeedJobs, ...linkedinJobs].map(job => ({
@@ -29,25 +34,55 @@ serve(async (req) => {
       updated_at: new Date().toISOString()
     }));
 
+    console.log(`Total jobs to insert: ${jobs.length}`);
+
     // Insert jobs into Supabase
     const { error } = await supabase
       .from('scraped_jobs')
-      .upsert(jobs, { 
-        onConflict: 'url',
-        ignoreDuplicates: true 
-      });
+      .upsert(
+        jobs,
+        { 
+          onConflict: 'url',
+          ignoreDuplicates: true 
+        }
+      );
 
-    if (error) throw error;
+    if (error) {
+      console.error("Error inserting jobs:", error);
+      throw error;
+    }
 
-    return new Response(JSON.stringify({ success: true, jobsCount: jobs.length }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.log("Successfully inserted jobs into database");
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        message: `Successfully scraped and saved ${jobs.length} jobs`,
+        jobsCount: jobs.length 
+      }),
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
+    );
+
   } catch (error) {
     console.error('Error in scrape-jobs function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      }),
+      { 
+        status: 500,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
+    );
   }
 });
 
@@ -59,25 +94,39 @@ async function scrapeIndeedJobs() {
       }
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const html = await response.text();
-    const jobs = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
     
-    // Basic parsing using regex (in production, use a proper HTML parser)
-    const jobCards = html.match(/<div class="job_seen_beacon".*?<\/div>/gs) || [];
+    if (!doc) {
+      throw new Error('Failed to parse HTML');
+    }
+
+    const jobs = [];
+    const jobCards = doc.querySelectorAll('.job_seen_beacon');
     
     for (const card of jobCards) {
-      const title = card.match(/class="jobTitle".*?>(.*?)<\//) || ['', ''];
-      const company = card.match(/class="companyName".*?>(.*?)<\//) || ['', ''];
-      const location = card.match(/class="companyLocation".*?>(.*?)<\//) || ['', ''];
-      const url = card.match(/href="(.*?)"/) || ['', ''];
+      const title = card.querySelector('.jobTitle')?.textContent?.trim();
+      const company = card.querySelector('.companyName')?.textContent?.trim();
+      const location = card.querySelector('.companyLocation')?.textContent?.trim();
+      const url = card.querySelector('a')?.getAttribute('href');
+      const description = card.querySelector('.job-snippet')?.textContent?.trim();
       
-      jobs.push({
-        title: title[1].trim(),
-        company: company[1].trim(),
-        location: location[1].trim(),
-        url: `https://ca.indeed.com${url[1]}`,
-        source: 'indeed'
-      });
+      if (title && company && location) {
+        jobs.push({
+          title,
+          company,
+          location,
+          description,
+          url: url ? `https://ca.indeed.com${url}` : undefined,
+          source: 'indeed',
+          posted_at: new Date().toISOString()
+        });
+      }
     }
     
     return jobs;
@@ -95,25 +144,39 @@ async function scrapeLinkedInJobs() {
       }
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const html = await response.text();
-    const jobs = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
     
-    // Basic parsing using regex (in production, use a proper HTML parser)
-    const jobCards = html.match(/<div class="base-card.*?<\/div>/gs) || [];
+    if (!doc) {
+      throw new Error('Failed to parse HTML');
+    }
+
+    const jobs = [];
+    const jobCards = doc.querySelectorAll('.job-search-card');
     
     for (const card of jobCards) {
-      const title = card.match(/class="base-search-card__title".*?>(.*?)<\//) || ['', ''];
-      const company = card.match(/class="base-search-card__subtitle".*?>(.*?)<\//) || ['', ''];
-      const location = card.match(/class="job-search-card__location".*?>(.*?)<\//) || ['', ''];
-      const url = card.match(/href="(.*?)"/) || ['', ''];
+      const title = card.querySelector('.job-search-card__title')?.textContent?.trim();
+      const company = card.querySelector('.job-search-card__company-name')?.textContent?.trim();
+      const location = card.querySelector('.job-search-card__location')?.textContent?.trim();
+      const url = card.querySelector('a')?.getAttribute('href');
+      const description = card.querySelector('.job-search-card__snippet')?.textContent?.trim();
       
-      jobs.push({
-        title: title[1].trim(),
-        company: company[1].trim(),
-        location: location[1].trim(),
-        url: url[1],
-        source: 'linkedin'
-      });
+      if (title && company && location) {
+        jobs.push({
+          title,
+          company,
+          location,
+          description,
+          url,
+          source: 'linkedin',
+          posted_at: new Date().toISOString()
+        });
+      }
     }
     
     return jobs;

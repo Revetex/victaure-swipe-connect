@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { JobFilters } from "./jobs/JobFilters";
 import { JobList } from "./jobs/JobList";
+import { ScrapedJobsList } from "./jobs/ScrapedJobsList";
 import { Job } from "@/types/job";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +9,7 @@ import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jo
 import { Button } from "./ui/button";
 import { Filter } from "lucide-react";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function Marketplace() {
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
@@ -76,34 +78,47 @@ export function Marketplace() {
   return (
     <section className="min-h-screen bg-background">
       <div className="container mx-auto p-4 max-w-[2000px]">
-        <div className="mb-4">
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2"
-          >
-            <Filter className="h-4 w-4" />
-            {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-4">
-          {showFilters ? (
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-              <div className="lg:col-span-1">
-                <JobFilters
-                  filters={filters}
-                  onFilterChange={handleFilterChange}
-                />
-              </div>
-              <div className="lg:col-span-4">
-                <JobList jobs={jobs} isLoading={isLoading} />
-              </div>
+        <Tabs defaultValue="internal" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="internal">Offres Victaure</TabsTrigger>
+            <TabsTrigger value="external">Offres Externes</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="internal">
+            <div className="mb-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+              </Button>
             </div>
-          ) : (
-            <JobList jobs={jobs} isLoading={isLoading} />
-          )}
-        </div>
+            
+            <div className="grid grid-cols-1 gap-4">
+              {showFilters ? (
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                  <div className="lg:col-span-1">
+                    <JobFilters
+                      filters={filters}
+                      onFilterChange={handleFilterChange}
+                    />
+                  </div>
+                  <div className="lg:col-span-4">
+                    <JobList jobs={jobs} isLoading={isLoading} />
+                  </div>
+                </div>
+              ) : (
+                <JobList jobs={jobs} isLoading={isLoading} />
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="external">
+            <ScrapedJobsList />
+          </TabsContent>
+        </Tabs>
       </div>
     </section>
   );
