@@ -1,14 +1,10 @@
-import { Messages } from "@/components/Messages";
-import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { VCard } from "@/components/VCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useEffect } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare } from "lucide-react";
+import { DashboardContent } from "./dashboard/DashboardContent";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -38,84 +34,26 @@ export function DashboardLayout() {
     setCurrentPage(2);
   };
 
-  const renderDashboardSection = (
-    component: React.ReactNode,
-    className: string,
-    padding: boolean = true
-  ) => (
-    <motion.div 
-      variants={itemVariants} 
-      className={`transform transition-all duration-300 ${className}`}
-      style={{ 
-        maxHeight: isEditing ? viewportHeight : `calc(${viewportHeight}px - 4rem)`,
-        overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch'
-      }}
-    >
-      <div className="dashboard-card h-full">
-        {padding ? (
-          <div className="p-3 sm:p-4 md:p-6 h-full">
-            {component}
-          </div>
-        ) : (
-          component
-        )}
-      </div>
-    </motion.div>
-  );
-
-  const renderCurrentPage = () => {
-    if (currentPage === 1) {
-      return (
-        <div 
-          className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm' : 'relative'}`}
-          style={{ 
-            height: isEditing ? viewportHeight : 'auto',
-            overflowY: isEditing ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch'
-          }}
-        >
-          {renderDashboardSection(
-            <VCard 
-              onEditStateChange={setIsEditing}
-              onRequestChat={handleRequestChat}
-            />,
-            'w-full h-full'
-          )}
-        </div>
-      );
-    }
-
-    if (currentPage === 2 && !isEditing) {
-      return renderDashboardSection(
-        <Tabs defaultValue="messages" className="h-full flex flex-col">
-          <TabsList className="grid w-full grid-cols-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 left-0 right-0 z-50">
-            <TabsTrigger value="messages" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              <span className="hidden sm:inline">Messages</span>
-            </TabsTrigger>
-          </TabsList>
-          <Messages />
-        </Tabs>,
-        'w-full h-full'
-      );
-    }
-
-    if (currentPage === 3 && !isEditing) {
-      return renderDashboardSection(
-        <SwipeJob />,
-        'w-full h-full',
-        false
-      );
-    }
-
-    return null;
-  };
-
   return (
     <DashboardContainer containerVariants={containerVariants}>
       <AnimatePresence mode="sync">
-        {renderCurrentPage()}
+        <motion.div 
+          variants={itemVariants} 
+          className="transform transition-all duration-300 w-full h-full"
+          style={{ 
+            maxHeight: isEditing ? viewportHeight : `calc(${viewportHeight}px - 4rem)`,
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
+          <DashboardContent
+            currentPage={currentPage}
+            isEditing={isEditing}
+            viewportHeight={viewportHeight}
+            onEditStateChange={setIsEditing}
+            onRequestChat={handleRequestChat}
+          />
+        </motion.div>
       </AnimatePresence>
       
       {!isEditing && (
