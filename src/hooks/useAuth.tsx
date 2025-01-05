@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
 
@@ -45,6 +46,7 @@ export function useAuth() {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -58,6 +60,7 @@ export function useAuth() {
           }
           
           if (mounted) {
+            setError(sessionError);
             setIsAuthenticated(false);
             navigate('/auth', { replace: true });
           }
@@ -79,6 +82,7 @@ export function useAuth() {
         if (userError) {
           console.error("User verification error:", userError);
           if (mounted) {
+            setError(userError);
             setIsAuthenticated(false);
             navigate('/auth', { replace: true });
           }
@@ -104,6 +108,7 @@ export function useAuth() {
             setRetryCount(prev => prev + 1);
             retryTimeout = setTimeout(checkAuth, 2000);
           } else {
+            setError(error instanceof Error ? error : new Error('Authentication check failed'));
             setIsAuthenticated(false);
             navigate('/auth', { replace: true });
           }
@@ -134,5 +139,5 @@ export function useAuth() {
     };
   }, [navigate, retryCount]);
 
-  return { isLoading, isAuthenticated, signOut };
+  return { isLoading, isAuthenticated, error, signOut };
 }
