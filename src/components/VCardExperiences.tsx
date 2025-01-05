@@ -5,6 +5,7 @@ import { Briefcase, Plus, Trash2, Calendar, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { UserProfile, Experience } from "@/types/profile";
 import { toast } from "sonner";
 
@@ -26,6 +27,7 @@ export function VCardExperiences({
     end_date: "",
     description: ""
   });
+  const [isCurrentJob, setIsCurrentJob] = useState(false);
 
   const handleAddExperience = () => {
     if (!newExperience.company || !newExperience.position) {
@@ -38,13 +40,22 @@ export function VCardExperiences({
       company: newExperience.company,
       position: newExperience.position,
       start_date: newExperience.start_date || null,
-      end_date: newExperience.end_date || null,
+      end_date: isCurrentJob ? null : newExperience.end_date || null,
       description: newExperience.description || null
     };
 
+    const updatedExperiences = [...(profile.experiences || []), experience];
+    
+    // Trier les expériences par date de début (plus récente en premier)
+    updatedExperiences.sort((a, b) => {
+      const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
+      const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
+      return dateB - dateA;
+    });
+
     setProfile({
       ...profile,
-      experiences: [...(profile.experiences || []), experience]
+      experiences: updatedExperiences
     });
 
     setNewExperience({
@@ -54,8 +65,9 @@ export function VCardExperiences({
       end_date: "",
       description: ""
     });
+    setIsCurrentJob(false);
 
-    toast.success("Expérience ajoutée avec succès");
+    toast.success("Expérience ajoutée");
   };
 
   const handleRemoveExperience = (id: string) => {
@@ -66,6 +78,27 @@ export function VCardExperiences({
     toast.success("Expérience supprimée");
   };
 
+  const handleMoveExperience = (id: string, direction: 'up' | 'down') => {
+    if (!profile.experiences) return;
+    
+    const currentIndex = profile.experiences.findIndex(exp => exp.id === id);
+    if (currentIndex === -1) return;
+    
+    const newExperiences = [...profile.experiences];
+    if (direction === 'up' && currentIndex > 0) {
+      [newExperiences[currentIndex], newExperiences[currentIndex - 1]] = 
+      [newExperiences[currentIndex - 1], newExperiences[currentIndex]];
+    } else if (direction === 'down' && currentIndex < newExperiences.length - 1) {
+      [newExperiences[currentIndex], newExperiences[currentIndex + 1]] = 
+      [newExperiences[currentIndex + 1], newExperiences[currentIndex]];
+    }
+    
+    setProfile({
+      ...profile,
+      experiences: newExperiences
+    });
+  };
+
   return (
     <VCardSection
       title="Expériences professionnelles"
@@ -73,7 +106,7 @@ export function VCardExperiences({
     >
       <div className="space-y-6">
         <AnimatePresence>
-          {profile.experiences?.map((experience) => (
+          {profile.experiences?.map((experience, index) => (
             <motion.div
               key={experience.id}
               initial={{ opacity: 0, y: 20 }}
@@ -101,14 +134,36 @@ export function VCardExperiences({
                   )}
                 </div>
                 {isEditing && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveExperience(experience.id)}
-                    className="text-white/60 hover:text-white"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    {index > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleMoveExperience(experience.id, 'up')}
+                        className="text-white/60 hover:text-white"
+                      >
+                        ↑
+                      </Button>
+                    )}
+                    {index < (profile.experiences?.length || 0) - 1 && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleMoveExperience(experience.id, 'down')}
+                        className="text-white/60 hover:text-white"
+                      >
+                        ↓
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveExperience(experience.id)}
+                      className="text-white/60 hover:text-white"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 )}
               </div>
               {experience.description && (
@@ -144,13 +199,28 @@ export function VCardExperiences({
                 onChange={(e) => setNewExperience({ ...newExperience, start_date: e.target.value })}
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
               />
-              <Input
-                type="date"
-                placeholder="Date de fin"
-                value={newExperience.end_date}
-                onChange={(e) => setNewExperience({ ...newExperience, end_date: e.target.value })}
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              {!isCurrentJob && (
+                <Input
+                  type="date"
+                  placeholder="Date de fin"
+                  value={newExperience.end_date}
+                  onChange={(e) => setNewExperience({ ...newExperience, end_date: e.target.value })}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                />
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="currentJob"
+                checked={isCurrentJob}
+                onCheckedChange={(checked) => setIsCurrentJob(checked as boolean)}
               />
+              <label
+                htmlFor="currentJob"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
+              >
+                Emploi actuel
+              </label>
             </div>
             <Textarea
               placeholder="Description"

@@ -35,12 +35,12 @@ export const generateBusinessCard = async (
         img.onerror = reject;
       });
       
-      // Dimensions plus petites pour la photo
-      const size = 15; // Taille réduite
+      // Dimensions réduites pour la photo
+      const size = 12; // Taille encore plus petite
       const x = 5;
       const y = 5;
       
-      // Créer un masque rond
+      // Créer un masque rond plus petit
       doc.setFillColor(255, 255, 255);
       doc.circle(x + size/2, y + size/2, size/2, 'F');
       
@@ -51,38 +51,38 @@ export const generateBusinessCard = async (
     }
   }
 
-  // Informations de contact
+  // Informations de contact avec meilleur espacement
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
+  doc.setFontSize(14); // Taille de police réduite
   doc.setFont(fontFamily, 'bold');
-  doc.text(profile.full_name || 'Non défini', 25, 12);
+  doc.text(profile.full_name || 'Non défini', 20, 10);
 
-  doc.setFontSize(12);
+  doc.setFontSize(10); // Taille de police plus petite pour le rôle
   doc.setFont(fontFamily, 'normal');
-  doc.text(profile.role || 'Non défini', 25, 18);
+  doc.text(profile.role || 'Non défini', 20, 15);
 
-  // Coordonnées
-  doc.setFontSize(9);
-  let yPos = 28;
+  // Coordonnées avec meilleur espacement
+  doc.setFontSize(8);
+  let yPos = 25;
   
   if (profile.email) {
-    doc.text(`Courriel: ${profile.email}`, 25, yPos);
-    yPos += 5;
+    doc.text(`${profile.email}`, 20, yPos);
+    yPos += 4;
   }
   
   if (profile.phone) {
-    doc.text(`Tél: ${profile.phone}`, 25, yPos);
-    yPos += 5;
+    doc.text(`${profile.phone}`, 20, yPos);
+    yPos += 4;
   }
   
   if (profile.city) {
-    doc.text(`${profile.city}, ${profile.state || 'QC'}`, 25, yPos);
+    doc.text(`${profile.city}, ${profile.state || 'QC'}`, 20, yPos);
   }
 
-  // QR Code
+  // QR Code plus petit et mieux positionné
   try {
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrCodeUrl, 'PNG', 65, 35, 15, 15);
+    doc.addImage(qrCodeUrl, 'PNG', 68, 38, 12, 12);
   } catch (error) {
     console.error('Erreur lors de la génération du QR code:', error);
   }

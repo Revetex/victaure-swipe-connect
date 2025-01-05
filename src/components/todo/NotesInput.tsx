@@ -2,12 +2,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ColorOption } from "@/types/todo";
 
-interface NotesInputProps {
+export interface NotesInputProps {
   newNote: string;
   selectedColor: string;
-  colors: ColorOption[];
+  colors: { value: string; label: string; class: string; }[];
   onNoteChange: (value: string) => void;
   onColorChange: (color: string) => void;
   onAdd: () => void;
