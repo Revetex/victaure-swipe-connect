@@ -1,82 +1,84 @@
 import { useState } from "react";
+import { ChatMessages } from "./ChatMessages";
 import { ChatHeader } from "./ChatHeader";
 import { ChatInput } from "./ChatInput";
 import { QuickSuggestions } from "./QuickSuggestions";
-import { ChatMessages } from "./ChatMessages";
-import { useProfile } from "@/hooks/useProfile";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { Message } from "@/types/chat/messageTypes";
-import { v4 as uuidv4 } from 'uuid';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Message } from "@/types/chat/messageTypes";
 import { motion } from "framer-motion";
 
-export function CareerAdvisorChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const { profile } = useProfile();
+interface CareerAdvisorChatProps {
+  messages: Message[];
+  isLoading: boolean;
+  onSendMessage: (message: string) => void;
+}
 
-  const createMessage = (content: string, sender: string): Message => ({
-    id: uuidv4(),
-    content,
-    sender,
-    timestamp: new Date(),
-  });
+export function CareerAdvisorChat({
+  messages,
+  isLoading,
+  onSendMessage,
+}: CareerAdvisorChatProps) {
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
 
-  const handleSuggestionSelect = async (suggestion: string) => {
-    setMessages((prev) => [...prev, createMessage(suggestion, "user")]);
-    setIsTyping(true);
-
-    try {
-      const { data: response } = await supabase.functions.invoke('career-advisor', {
-        body: { message: suggestion, userId: profile?.id }
-      });
-
-      setMessages((prev) => [...prev, createMessage(response.response, "advisor")]);
-    } catch (err) {
-      console.error('Error:', err);
-      toast.error("Une erreur est survenue lors de la communication avec le conseiller");
-    } finally {
-      setIsTyping(false);
+  // Group messages by conversation
+  const conversations = messages.reduce((acc, message) => {
+    const date = new Date(message.timestamp).toLocaleDateString();
+    if (!acc[date]) {
+      acc[date] = [];
     }
-  };
-
-  const handleMessageSubmit = async (message: string) => {
-    if (!message.trim()) return;
-
-    setMessages((prev) => [...prev, createMessage(message, "user")]);
-    setIsTyping(true);
-
-    try {
-      const { data: response } = await supabase.functions.invoke('career-advisor', {
-        body: { message, userId: profile?.id }
-      });
-
-      setMessages((prev) => [...prev, createMessage(response.response, "advisor")]);
-    } catch (err) {
-      console.error('Error:', err);
-      toast.error("Une erreur est survenue lors de la communication avec le conseiller");
-    } finally {
-      setIsTyping(false);
-    }
-  };
+    acc[date].push(message);
+    return acc;
+  }, {} as Record<string, Message[]>);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col h-full bg-background"
-    >
-      <ChatHeader isLoading={isTyping} />
-      
-      <ScrollArea className="flex-1 p-4">
-        <QuickSuggestions onSelect={handleSuggestionSelect} />
-        <ChatMessages messages={messages} isTyping={isTyping} />
-      </ScrollArea>
-      
-      <div className="p-4 border-t">
-        <ChatInput isLoading={isTyping} onSendMessage={handleMessageSubmit} />
+    <div className="flex h-full gap-4">
+      {/* Conversations List */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="w-64 bg-card rounded-lg shadow-md hidden md:block"
+      >
+        <div className="p-4 border-b">
+          <h2 className="font-semibold">Conversations</h2>
+        </div>
+        <ScrollArea className="h-[calc(100vh-13rem)]">
+          <div className="p-2 space-y-2">
+            {Object.entries(conversations).map(([date, msgs]) => (
+              <button
+                key={date}
+                onClick={() => setSelectedConversation(date)}
+                className={`w-full p-3 text-left rounded-lg transition-colors ${
+                  selectedConversation === date
+                    ? "bg-primary/10 text-primary"
+                    : "hover:bg-muted"
+                }`}
+              >
+                <p className="font-medium">{date}</p>
+                <p className="text-sm text-muted-foreground truncate">
+                  {msgs[msgs.length - 1].content}
+                </p>
+              </button>
+            ))}
+          </div>
+        </ScrollArea>
+      </motion.div>
+
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col h-full bg-card rounded-lg shadow-md overflow-hidden">
+        <ChatHeader isLoading={isLoading} />
+        
+        <ScrollArea className="flex-1 p-4">
+          <ChatMessages 
+            messages={selectedConversation ? conversations[selectedConversation] : messages} 
+            isTyping={isLoading} 
+          />
+        </ScrollArea>
+
+        <div className="p-4 border-t bg-background/50 backdrop-blur-sm">
+          <QuickSuggestions onSelect={onSendMessage} />
+          <ChatInput isLoading={isLoading} onSendMessage={onSendMessage} />
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

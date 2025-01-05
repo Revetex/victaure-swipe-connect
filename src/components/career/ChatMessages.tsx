@@ -11,8 +11,8 @@ interface ChatMessagesProps {
 export function ChatMessages({ messages, isTyping }: ChatMessagesProps) {
   return (
     <div className="space-y-4">
-      <AnimatePresence>
-        {messages.map((message) => (
+      <AnimatePresence mode="popLayout">
+        {messages?.map((message) => (
           <motion.div
             key={message.id}
             initial={{ opacity: 0, y: 20 }}
