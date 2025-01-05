@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2, Download, FileText, CreditCard, MessageSquare } from "lucide-react";
+import { Edit2, Download, FileText, CreditCard, MessageSquare, Share2 } from "lucide-react";
 import { CareerAdvisorChat } from "../career/CareerAdvisorChat";
 import { useState } from "react";
 
@@ -32,6 +32,23 @@ export function VCardActions({
   onDownloadCV,
 }: VCardActionsProps) {
   const [isAdvisorOpen, setIsAdvisorOpen] = useState(false);
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: profile?.full_name || 'Profile',
+          text: `Check out ${profile?.full_name || 'this'}'s professional profile`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      // Fallback for browsers that don't support the Web Share API
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -87,12 +104,11 @@ export function VCardActions({
           <Button
             variant="outline"
             size="sm"
-            onClick={onDownloadVCard}
-            disabled={isPdfGenerating}
+            onClick={handleShare}
             className="text-blue-400 border-blue-400/30 hover:bg-blue-400/10"
           >
-            <Download className="h-4 w-4 mr-2" />
-            VCard
+            <Share2 className="h-4 w-4 mr-2" />
+            Partager
           </Button>
 
           <Button
