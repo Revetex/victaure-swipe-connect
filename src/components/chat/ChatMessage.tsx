@@ -34,6 +34,7 @@ export function ChatMessage({
         audio.pause();
         audio.currentTime = 0;
         setIsPlaying(false);
+        setAudio(null); // Réinitialiser l'audio immédiatement
         return;
       }
 
@@ -72,6 +73,7 @@ export function ChatMessage({
 
       newAudio.onended = () => {
         setIsPlaying(false);
+        setAudio(null); // Réinitialiser l'audio à la fin de la lecture
         URL.revokeObjectURL(audioUrl);
       };
 
@@ -82,6 +84,7 @@ export function ChatMessage({
       console.error("Erreur de synthèse vocale:", error);
       toast.error("Erreur lors de la lecture vocale. Veuillez réessayer.");
       setIsPlaying(false);
+      setAudio(null); // Réinitialiser l'audio en cas d'erreur
     }
   };
 
