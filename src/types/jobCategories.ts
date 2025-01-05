@@ -41,18 +41,18 @@ export const missionCategories: Record<string, CategoryConfig> = {
     icon: Palette,
     subcategories: [
       "3D",
-      "Branding",
-      "Graphisme",
+      "Identité visuelle",
+      "Design graphique",
       "Illustration",
       "Motion Design",
       "UI/UX",
-      "Web Design"
+      "Design Web"
     ]
   },
   "Développement": {
     icon: Code,
     subcategories: [
-      "Architecture",
+      "Architecture logicielle",
       "Backend",
       "Base de données",
       "DevOps",
@@ -89,7 +89,7 @@ export const missionCategories: Record<string, CategoryConfig> = {
       "Audit",
       "Comptabilité",
       "Contrôle de gestion",
-      "Risk Management",
+      "Gestion des risques",
       "Trésorerie"
     ]
   },
@@ -100,7 +100,7 @@ export const missionCategories: Record<string, CategoryConfig> = {
       "PMO",
       "Product Owner",
       "Scrum",
-      "Waterfall"
+      "Méthode classique"
     ]
   },
   "Hôtellerie & Restauration": {
@@ -117,7 +117,7 @@ export const missionCategories: Record<string, CategoryConfig> = {
     icon: Globe2,
     subcategories: [
       "Achats",
-      "Planning",
+      "Planification",
       "Stock",
       "Supply Chain",
       "Transport"
@@ -136,13 +136,13 @@ export const missionCategories: Record<string, CategoryConfig> = {
   "Marketing": {
     icon: TrendingUp,
     subcategories: [
-      "Analytics",
-      "Content Marketing",
+      "Analyse de données",
+      "Marketing de contenu",
       "Email Marketing",
       "Growth Hacking",
       "SEO",
       "SEM",
-      "Social Media"
+      "Réseaux sociaux"
     ]
   },
   "Médias": {
