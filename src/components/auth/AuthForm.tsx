@@ -85,50 +85,52 @@ export const AuthForm = memo(function AuthForm() {
         view="sign_in"
       />
       <div className="flex items-center justify-between space-x-2">
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="rememberMe"
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-          />
-          <label
-            htmlFor="rememberMe"
-            className="text-sm text-muted-foreground cursor-pointer select-none"
-          >
-            Rester connecté
-          </label>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-8 w-8 px-0"
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="rememberMe"
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <label
+              htmlFor="rememberMe"
+              className="text-sm text-muted-foreground cursor-pointer select-none"
             >
-              {theme === 'dark' ? (
-                <Moon className="h-4 w-4" />
-              ) : theme === 'system' ? (
-                <Monitor className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem onClick={() => setTheme('light')}>
-              <Sun className="mr-2 h-4 w-4" />
-              <span>Clair</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme('dark')}>
-              <Moon className="mr-2 h-4 w-4" />
-              <span>Sombre</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme('system')}>
-              <Monitor className="mr-2 h-4 w-4" />
-              <span>Système</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              Rester connecté
+            </label>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-6 w-6 p-0.5"
+              >
+                {theme === 'dark' ? (
+                  <Moon className="h-3 w-3" />
+                ) : theme === 'system' ? (
+                  <Monitor className="h-3 w-3" />
+                ) : (
+                  <Sun className="h-3 w-3" />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-28">
+              <DropdownMenuItem onClick={() => setTheme('light')} className="text-xs">
+                <Sun className="mr-2 h-3 w-3" />
+                <span>Clair</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('dark')} className="text-xs">
+                <Moon className="mr-2 h-3 w-3" />
+                <span>Sombre</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('system')} className="text-xs">
+                <Monitor className="mr-2 h-3 w-3" />
+                <span>Système</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </div>
   );
