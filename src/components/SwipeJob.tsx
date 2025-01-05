@@ -4,7 +4,6 @@ import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { BrowseJobsTab } from "./jobs/BrowseJobsTab";
-import { ScrapedJobs } from "./dashboard/ScrapedJobs";
 import { Separator } from "./ui/separator";
 
 export function SwipeJob() {
@@ -48,20 +47,12 @@ export function SwipeJob() {
         animate={{ opacity: 1 }}
         className="p-4 space-y-8"
       >
-        <div>
-          <BrowseJobsTab 
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            openLocation={openLocation}
-            setOpenLocation={setOpenLocation}
-          />
-        </div>
-
-        <Separator className="my-8" />
-
-        <div>
-          <ScrapedJobs />
-        </div>
+        <BrowseJobsTab 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          openLocation={openLocation}
+          setOpenLocation={setOpenLocation}
+        />
       </motion.div>
     </motion.div>
   );
