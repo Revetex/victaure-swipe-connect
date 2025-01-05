@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -13,6 +14,8 @@ interface VCardHeaderProps {
 }
 
 export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps) {
+  const { selectedStyle } = useVCardStyle();
+
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
   };
@@ -95,20 +98,28 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom complet"
               className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              style={{ color: selectedStyle.colors.text.primary }}
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
               className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
+              style={{ color: selectedStyle.colors.text.secondary }}
             />
           </div>
         ) : (
           <>
-            <h2 className="text-xl font-semibold text-white truncate">
+            <h2 
+              className="text-xl font-semibold truncate"
+              style={{ color: selectedStyle.colors.text.primary }}
+            >
               {profile.full_name || "Nom non défini"}
             </h2>
-            <p className="text-sm text-white/90">
+            <p 
+              className="text-sm"
+              style={{ color: selectedStyle.colors.text.secondary }}
+            >
               {profile.role || "Rôle non défini"}
             </p>
           </>

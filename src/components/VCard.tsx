@@ -15,6 +15,7 @@ import { VCardContent } from "./vcard/VCardContent";
 import { QRCodeSVG } from "qrcode.react";
 import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
+import { VCardStyleContext } from "./vcard/VCardStyleContext";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -28,27 +29,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [selectedStyle, setSelectedStyle] = useState<StyleOption>(styleOptions[0]);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
-  useEffect(() => {
-    const loadFonts = async () => {
-      try {
-        await Promise.all([
-          document.fonts.load("1em Poppins"),
-          document.fonts.load("1em Montserrat"),
-          document.fonts.load("1em Playfair Display"),
-          document.fonts.load("1em Roboto"),
-          document.fonts.load("1em Open Sans"),
-          document.fonts.load("1em Inter"),
-          document.fonts.load("1em Quicksand"),
-          document.fonts.load("1em Lato"),
-        ]);
-      } catch (error) {
-        console.error('Error loading fonts:', error);
-      }
-    };
-    loadFonts();
-  }, []);
-
-  // Load the saved style when profile loads
   useEffect(() => {
     if (profile?.style_id) {
       const savedStyle = styleOptions.find(style => style.id === profile.style_id);
@@ -120,66 +100,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
-  const handleAddSkill = () => {
-    if (!profile || !newSkill.trim()) return;
-    const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-    setProfile({ ...profile, skills: updatedSkills });
-    setNewSkill("");
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
-    if (!profile) return;
-    const updatedSkills = (profile.skills || []).filter(
-      (skill) => skill !== skillToRemove
-    );
-    setProfile({ ...profile, skills: updatedSkills });
-  };
-
-  const handleDownloadVCard = async () => {
-    if (!profile) return;
-    setIsPdfGenerating(true);
-    try {
-      const doc = await generateVCard(profile);
-      doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
-      toast.success("PDF généré avec succès");
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast.error("Erreur lors de la génération du PDF");
-    } finally {
-      setIsPdfGenerating(false);
-    }
-  };
-
-  const handleDownloadBusinessCard = async () => {
-    if (!profile) return;
-    setIsPdfGenerating(true);
-    try {
-      const doc = await generateBusinessCard(profile, selectedStyle);
-      doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-      toast.success("Business PDF généré avec succès");
-    } catch (error) {
-      console.error('Error generating business PDF:', error);
-      toast.error("Erreur lors de la génération du Business PDF");
-    } finally {
-      setIsPdfGenerating(false);
-    }
-  };
-
-  const handleDownloadCV = async () => {
-    if (!profile) return;
-    setIsPdfGenerating(true);
-    try {
-      const doc = await generateCV(profile);
-      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-      toast.success("CV PDF généré avec succès");
-    } catch (error) {
-      console.error('Error generating CV PDF:', error);
-      toast.error("Erreur lors de la génération du CV PDF");
-    } finally {
-      setIsPdfGenerating(false);
-    }
-  };
-
   if (isLoading) {
     return <VCardSkeleton />;
   }
@@ -188,95 +108,144 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     return <VCardEmpty />;
   }
 
-  const cardStyle = {
-    '--accent-color': selectedStyle.color,
-    '--secondary-color': selectedStyle.secondaryColor,
-    '--font-family': selectedStyle.font,
-    background: `linear-gradient(135deg, ${selectedStyle.colors.primary}, ${selectedStyle.colors.secondary})`,
-  } as React.CSSProperties;
-
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`vcard-root w-full max-w-4xl mx-auto ${
-        isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20' : 'relative'
-      }`}
-      style={cardStyle}
-    >
-      {isEditing && (
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm" />
-      )}
-      
-      <Card 
-        className={`relative border-none shadow-lg ${
-          isEditing 
-            ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
-            : selectedStyle.bgGradient
-        } ${selectedStyle.borderStyle || ''}`}
+    <VCardStyleContext.Provider value={{ selectedStyle, isEditing }}>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={`vcard-root w-full max-w-4xl mx-auto ${
+          isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20' : 'relative'
+        }`}
         style={{
-          color: selectedStyle.colors.text.primary,
-          fontFamily: selectedStyle.font
-        }}
+          '--accent-color': selectedStyle.color,
+          '--secondary-color': selectedStyle.secondaryColor,
+          '--font-family': selectedStyle.font,
+        } as React.CSSProperties}
       >
-        <CardContent className="p-6">
-          <div className="space-y-8">
-            <VCardStyleSelector
-              selectedStyle={selectedStyle}
-              onStyleSelect={handleStyleSelect}
-              isEditing={isEditing}
-            />
-
-            <VCardHeader
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-            />
-
-            <VCardContact
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-            />
-
-            <VCardContent
-              profile={profile}
-              isEditing={isEditing}
-              selectedStyle={selectedStyle}
-              setProfile={setProfile}
-              newSkill={newSkill}
-              setNewSkill={setNewSkill}
-              handleAddSkill={handleAddSkill}
-              handleRemoveSkill={handleRemoveSkill}
-            />
-
-            <div className="flex justify-between items-center">
-              <VCardActions
-                isEditing={isEditing}
-                isPdfGenerating={isPdfGenerating}
-                profile={profile}
+        {isEditing && (
+          <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm" />
+        )}
+        
+        <Card 
+          className={`relative border-none shadow-lg ${
+            isEditing 
+              ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
+              : selectedStyle.bgGradient
+          } ${selectedStyle.borderStyle}`}
+          style={{
+            fontFamily: selectedStyle.font,
+            color: selectedStyle.colors.text.primary,
+          }}
+        >
+          <CardContent className="p-6">
+            <div className="space-y-8">
+              <VCardStyleSelector
                 selectedStyle={selectedStyle}
-                onEditToggle={handleEditToggle}
-                onSave={handleSave}
-                onDownloadVCard={handleDownloadVCard}
-                onDownloadBusinessCard={handleDownloadBusinessCard}
-                onDownloadCV={handleDownloadCV}
+                onStyleSelect={handleStyleSelect}
+                isEditing={isEditing}
               />
-              
-              <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
-                <QRCodeSVG
-                  value={window.location.href}
-                  size={85}
-                  level="H"
-                  includeMargin={false}
-                  className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+
+              <VCardHeader
+                profile={profile}
+                isEditing={isEditing}
+                setProfile={setProfile}
+              />
+
+              <VCardContact
+                profile={profile}
+                isEditing={isEditing}
+                setProfile={setProfile}
+              />
+
+              <VCardContent
+                profile={profile}
+                isEditing={isEditing}
+                selectedStyle={selectedStyle}
+                setProfile={setProfile}
+                newSkill={newSkill}
+                setNewSkill={setNewSkill}
+                handleAddSkill={() => {
+                  if (!profile || !newSkill.trim()) return;
+                  const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+                  setProfile({ ...profile, skills: updatedSkills });
+                  setNewSkill("");
+                }}
+                handleRemoveSkill={(skillToRemove: string) => {
+                  if (!profile) return;
+                  const updatedSkills = (profile.skills || []).filter(
+                    (skill) => skill !== skillToRemove
+                  );
+                  setProfile({ ...profile, skills: updatedSkills });
+                }}
+              />
+
+              <div className="flex justify-between items-center">
+                <VCardActions
+                  isEditing={isEditing}
+                  isPdfGenerating={isPdfGenerating}
+                  profile={profile}
+                  selectedStyle={selectedStyle}
+                  onEditToggle={handleEditToggle}
+                  onSave={handleSave}
+                  onDownloadVCard={async () => {
+                    if (!profile) return;
+                    setIsPdfGenerating(true);
+                    try {
+                      const doc = await generateVCard(profile);
+                      doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
+                      toast.success("PDF généré avec succès");
+                    } catch (error) {
+                      console.error('Error generating PDF:', error);
+                      toast.error("Erreur lors de la génération du PDF");
+                    } finally {
+                      setIsPdfGenerating(false);
+                    }
+                  }}
+                  onDownloadBusinessCard={async () => {
+                    if (!profile) return;
+                    setIsPdfGenerating(true);
+                    try {
+                      const doc = await generateBusinessCard(profile, selectedStyle);
+                      doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+                      toast.success("Business PDF généré avec succès");
+                    } catch (error) {
+                      console.error('Error generating business PDF:', error);
+                      toast.error("Erreur lors de la génération du Business PDF");
+                    } finally {
+                      setIsPdfGenerating(false);
+                    }
+                  }}
+                  onDownloadCV={async () => {
+                    if (!profile) return;
+                    setIsPdfGenerating(true);
+                    try {
+                      const doc = await generateCV(profile);
+                      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+                      toast.success("CV PDF généré avec succès");
+                    } catch (error) {
+                      console.error('Error generating CV PDF:', error);
+                      toast.error("Erreur lors de la génération du CV PDF");
+                    } finally {
+                      setIsPdfGenerating(false);
+                    }
+                  }}
                 />
+                
+                <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
+                  <QRCodeSVG
+                    value={window.location.href}
+                    size={85}
+                    level="H"
+                    includeMargin={false}
+                    className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </VCardStyleContext.Provider>
   );
 }
