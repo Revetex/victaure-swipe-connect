@@ -9,6 +9,7 @@ export function useChat(): ChatState & ChatActions {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
   const {
     messages,
@@ -50,6 +51,7 @@ export function useChat(): ChatState & ChatActions {
     inputMessage,
     isListening,
     isThinking,
+    isLoading,
     setMessages,
     setInputMessage,
     handleSendMessage,

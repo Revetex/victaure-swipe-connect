@@ -1,93 +1,97 @@
-import { ConversationView } from "./conversation/ConversationView";
-import { MessagesList } from "./conversation/MessagesList";
-import { useProfile } from "@/hooks/useProfile";
-import { useMessages } from "@/hooks/useMessages";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { MessageSquare } from "lucide-react";
+import { Message } from "@/types/chat/messageTypes";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Send, Mic } from "lucide-react";
+import { ChatMessage } from "../chat/ChatMessage";
+import { ChatThinking } from "../chat/ChatThinking";
 
-interface MessagesContentProps {
-  messages: any[];
+export interface MessagesContentProps {
+  messages: Message[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
-  onSendMessage: (message: string, profile: any) => void;
+  onSendMessage: (message: string) => Promise<void>;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
-  onClearChat: () => void;
+  onClearChat: () => Promise<void>;
+  onBack?: () => void; // Make onBack optional
 }
 
 export function MessagesContent({
-  messages: chatMessages,
+  messages,
   inputMessage,
   isListening,
   isThinking,
   onSendMessage,
   onVoiceInput,
   setInputMessage,
-  onClearChat
+  onClearChat,
+  onBack
 }: MessagesContentProps) {
-  const { profile } = useProfile();
-  const { messages, markAsRead } = useMessages();
-  const [selectedConversation, setSelectedConversation] = useState<"list" | "assistant">("list");
-
-  const handleBack = () => {
-    setSelectedConversation("list");
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputMessage.trim()) {
+      onSendMessage(inputMessage);
+    }
   };
-
-  const handleSelectConversation = (type: "assistant") => {
-    setSelectedConversation(type);
-  };
-
-  if (selectedConversation === "assistant") {
-    return (
-      <div className="h-full">
-        <ConversationView
-          messages={chatMessages}
-          inputMessage={inputMessage}
-          isListening={isListening}
-          isThinking={isThinking}
-          profile={profile}
-          onBack={handleBack}
-          onSendMessage={onSendMessage}
-          onVoiceInput={onVoiceInput}
-          setInputMessage={setInputMessage}
-          onClearChat={onClearChat}
-        />
-      </div>
-    );
-  }
 
   return (
-    <div className="h-full flex flex-col">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10"
-      >
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <MessageSquare className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">Messages</h1>
-              <p className="text-sm text-muted-foreground">
-                Gérez vos conversations et restez connecté
-              </p>
-            </div>
-          </div>
+    <div className="flex flex-col h-full">
+      <header className="shrink-0 border-b px-4 py-3 flex items-center gap-3">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        <div>
+          <h1 className="text-lg font-semibold">Messages</h1>
+          <p className="text-sm text-muted-foreground">
+            Votre conversation avec M. Victaure
+          </p>
         </div>
-      </motion.div>
+      </header>
 
-      <div className="flex-1 overflow-hidden">
-        <MessagesList
-          messages={messages}
-          chatMessages={chatMessages}
-          onSelectConversation={handleSelectConversation}
-          onMarkAsRead={(messageId) => markAsRead.mutate(messageId)}
-        />
-      </div>
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-4">
+          {messages.map((message, index) => (
+            <ChatMessage key={index} message={message} />
+          ))}
+          {isThinking && <ChatThinking />}
+        </div>
+      </ScrollArea>
+
+      <form onSubmit={handleSubmit} className="border-t p-4 space-y-4">
+        <div className="flex gap-2">
+          <Input
+            placeholder="Écrivez votre message..."
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            className="flex-1"
+          />
+          <Button 
+            type="submit" 
+            size="icon"
+            disabled={!inputMessage.trim() || isThinking}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={onVoiceInput}
+            disabled={isListening || isThinking}
+          >
+            <Mic className={isListening ? "text-primary animate-pulse" : ""} />
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

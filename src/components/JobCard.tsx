@@ -24,12 +24,10 @@ export function JobCard(props: JobCardProps) {
     salary,
     budget,
     required_skills = [],
-    preferred_skills = [],
-    is_scraped
+    preferred_skills = []
   } = props;
   
   const displaySalary = salary || (budget ? `${budget} CAD` : undefined);
-  const displayCompany = company || company_name || "Entreprise";
   
   return (
     <motion.div
@@ -40,7 +38,7 @@ export function JobCard(props: JobCardProps) {
       transition={{ duration: 0.2 }}
       className="group"
     >
-      <Card className={`w-full hover:shadow-lg transition-all duration-200 bg-card/50 backdrop-blur-sm border-primary/10 group-hover:border-primary/30 ${is_scraped ? 'border-blue-500/20' : ''}`}>
+      <Card className="w-full hover:shadow-lg transition-all duration-200 bg-card/50 backdrop-blur-sm border-primary/10 group-hover:border-primary/30">
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <motion.h3 
@@ -50,13 +48,8 @@ export function JobCard(props: JobCardProps) {
               transition={{ delay: 0.1 }}
             >
               {title}
-              {is_scraped && (
-                <Badge variant="secondary" className="ml-2 bg-blue-500/10 text-xs">
-                  IA
-                </Badge>
-              )}
             </motion.h3>
-            {displayCompany && (
+            {(company || company_name) && (
               <motion.div 
                 className="flex items-center gap-2 text-sm text-muted-foreground"
                 initial={{ opacity: 0, x: -20 }}
@@ -64,7 +57,7 @@ export function JobCard(props: JobCardProps) {
                 transition={{ delay: 0.2 }}
               >
                 <Building2 className="h-4 w-4" />
-                <span>{displayCompany}</span>
+                <span>{company || company_name}</span>
                 {company_website && (
                   <a 
                     href={company_website} 
@@ -78,7 +71,7 @@ export function JobCard(props: JobCardProps) {
               </motion.div>
             )}
           </div>
-          <CategoryIcon category={category || 'Technology'} className="h-5 w-5 text-primary" />
+          <CategoryIcon category={category} className="h-5 w-5 text-primary" />
         </CardHeader>
         <CardContent>
           <JobBadges job={props} displaySalary={displaySalary} />

@@ -30,9 +30,13 @@ serve(async (req) => {
       throw sourcesError;
     }
 
+    console.log("Found active sources:", sources?.length);
+
     const jobs = [];
     for (const source of sources) {
       try {
+        console.log(`Processing source: ${source.source} - ${source.url}`);
+        
         let scraper;
         switch (source.source) {
           case 'linkedin':
@@ -47,6 +51,8 @@ serve(async (req) => {
         }
 
         const scrapedJobs = await scraper.scrape(source.url);
+        console.log(`Scraped ${scrapedJobs.length} jobs from ${source.source}`);
+        
         jobs.push(...scrapedJobs.map(job => ({
           ...job,
           source_id: source.id
@@ -57,11 +63,19 @@ serve(async (req) => {
       }
     }
 
+    console.log("Total jobs scraped:", jobs.length);
+
     // Update last_checked timestamp
-    await supabase
-      .from('job_sources')
-      .update({ last_checked: new Date().toISOString() })
-      .in('id', sources.map(s => s.id));
+    if (sources?.length > 0) {
+      const { error: updateError } = await supabase
+        .from('job_sources')
+        .update({ last_checked: new Date().toISOString() })
+        .in('id', sources.map(s => s.id));
+
+      if (updateError) {
+        console.error("Error updating last_checked:", updateError);
+      }
+    }
 
     // Insert scraped jobs
     if (jobs.length > 0) {
@@ -69,12 +83,14 @@ serve(async (req) => {
         .from('scraped_jobs')
         .upsert(
           jobs,
-          { onConflict: 'source_id,external_id' }
+          { onConflict: 'external_id' }
         );
 
       if (insertError) {
         throw insertError;
       }
+      
+      console.log("Successfully inserted jobs");
     }
 
     return new Response(

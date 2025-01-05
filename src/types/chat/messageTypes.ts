@@ -15,6 +15,7 @@ export interface ChatState {
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
+  isLoading: boolean;
 }
 
 export interface ChatActions {

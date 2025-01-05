@@ -8,7 +8,7 @@ interface DashboardNavigationProps {
 export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
   const navigationItems = [
     { id: 1, icon: UserCircle, name: "Profil" },
-    { id: 2, icon: MessageSquare, name: "M. Victaure" },
+    { id: 2, icon: MessageSquare, name: "Messages" },
     { id: 3, icon: BriefcaseIcon, name: "Emplois" },
     { id: 4, icon: ClipboardList, name: "Tâches/Notes" },
     { id: 5, icon: Settings, name: "Paramètres" }
