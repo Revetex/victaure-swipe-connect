@@ -12,6 +12,7 @@ export function useSwipeJobs(filters: JobFilters) {
   const fetchJobs = async () => {
     try {
       setLoading(true);
+      console.log("Fetching jobs with filters:", filters);
       
       // Fetch regular jobs
       let regularJobsQuery = supabase
@@ -27,23 +28,23 @@ export function useSwipeJobs(filters: JobFilters) {
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
-      // Apply filters to regular jobs
-      if (filters.category && filters.category !== "all") {
+      // Apply filters safely
+      if (filters?.category && filters.category !== "all") {
         regularJobsQuery = regularJobsQuery.eq("category", filters.category);
       }
-      if (filters.subcategory && filters.subcategory !== "all") {
+      if (filters?.subcategory && filters.subcategory !== "all") {
         regularJobsQuery = regularJobsQuery.eq("subcategory", filters.subcategory);
       }
-      if (filters.duration && filters.duration !== "all") {
+      if (filters?.duration && filters.duration !== "all") {
         regularJobsQuery = regularJobsQuery.eq("contract_type", filters.duration);
       }
-      if (filters.experienceLevel && filters.experienceLevel !== "all") {
+      if (filters?.experienceLevel && filters.experienceLevel !== "all") {
         regularJobsQuery = regularJobsQuery.eq("experience_level", filters.experienceLevel);
       }
-      if (filters.location && filters.location !== "all") {
+      if (filters?.location && filters.location !== "all") {
         regularJobsQuery = regularJobsQuery.eq("location", filters.location);
       }
-      if (filters.searchTerm) {
+      if (filters?.searchTerm) {
         regularJobsQuery = regularJobsQuery.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
@@ -60,29 +61,31 @@ export function useSwipeJobs(filters: JobFilters) {
       ]);
 
       if (regularJobsResult.error) {
+        console.error('Error fetching regular jobs:', regularJobsResult.error);
         throw regularJobsResult.error;
       }
 
       if (scrapedJobsResult.error) {
+        console.error('Error fetching scraped jobs:', scrapedJobsResult.error);
         throw scrapedJobsResult.error;
       }
 
-      // Format regular jobs
-      const formattedRegularJobs = regularJobsResult.data.map(job => ({
+      // Format regular jobs with safe defaults
+      const formattedRegularJobs = (regularJobsResult.data || []).map(job => ({
         ...job,
         company: job.employer?.company_name || "Entreprise",
-        salary: `${job.budget} CAD`,
+        salary: `${job.budget || 0} CAD`,
         skills: job.required_skills || [],
         status: job.status as Job['status'],
       }));
 
-      // Format scraped jobs to match Job type
-      const formattedScrapedJobs = scrapedJobsResult.data.map(job => ({
+      // Format scraped jobs with safe defaults
+      const formattedScrapedJobs = (scrapedJobsResult.data || []).map(job => ({
         id: job.id,
-        title: job.title,
+        title: job.title || "",
         description: job.description || "",
-        company: job.company,
-        location: job.location,
+        company: job.company || "",
+        location: job.location || "",
         budget: 0,
         employer_id: "",
         status: "open" as Job['status'],
@@ -90,20 +93,23 @@ export function useSwipeJobs(filters: JobFilters) {
         contract_type: "full-time",
         experience_level: "mid-level",
         created_at: job.posted_at,
-        company_name: job.company,
-        company_website: job.url,
-        is_scraped: true
+        company_name: job.company || "",
+        company_website: job.url || "",
+        is_scraped: true,
+        required_skills: [],
       }));
 
       // Combine and shuffle both types of jobs
       const allJobs = [...formattedRegularJobs, ...formattedScrapedJobs]
         .sort(() => Math.random() - 0.5);
 
+      console.log("Fetched jobs:", allJobs.length);
       setJobs(allJobs);
       setCurrentIndex(0);
     } catch (error) {
       console.error('Error fetching jobs:', error);
       toast.error("Impossible de charger les offres");
+      setJobs([]); // Reset to empty array on error
     } finally {
       setLoading(false);
     }
