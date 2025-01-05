@@ -3,6 +3,8 @@ import { MessagesList } from "./conversation/MessagesList";
 import { useProfile } from "@/hooks/useProfile";
 import { useMessages } from "@/hooks/useMessages";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { MessageSquare } from "lucide-react";
 
 interface MessagesContentProps {
   messages: any[];
@@ -57,13 +59,35 @@ export function MessagesContent({
   }
 
   return (
-    <div className="h-full">
-      <MessagesList
-        messages={messages}
-        chatMessages={chatMessages}
-        onSelectConversation={handleSelectConversation}
-        onMarkAsRead={(messageId) => markAsRead.mutate(messageId)}
-      />
+    <div className="h-full flex flex-col">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <MessageSquare className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Messages</h1>
+              <p className="text-sm text-muted-foreground">
+                Gérez vos conversations et restez connecté
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="flex-1 overflow-hidden">
+        <MessagesList
+          messages={messages}
+          chatMessages={chatMessages}
+          onSelectConversation={handleSelectConversation}
+          onMarkAsRead={(messageId) => markAsRead.mutate(messageId)}
+        />
+      </div>
     </div>
   );
 }
