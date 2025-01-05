@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LocationMap } from "./LocationMap";
 import { toast } from "sonner";
 
