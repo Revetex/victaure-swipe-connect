@@ -9,6 +9,18 @@ import { Filter } from "lucide-react";
 import { toast } from "sonner";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 
+interface ScrapedJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  description?: string;
+  url?: string;
+  posted_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export function Marketplace() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,16 +56,16 @@ export function Marketplace() {
       }));
 
       // Convert scraped jobs to match the Job type
-      const typedScrapedJobs = (scrapedJobs || []).map(job => ({
+      const typedScrapedJobs = (scrapedJobs || [] as ScrapedJob[]).map(job => ({
         id: job.id,
         title: job.title,
         description: job.description || '',
-        budget: 0, // Default value since scraped jobs might not have this
+        budget: 0,
         location: job.location,
-        employer_id: '', // Scraped jobs don't have this
+        employer_id: '',
         status: 'open' as 'open' | 'closed' | 'in-progress',
         company: job.company,
-        source: job.source || 'Externe',
+        source: 'Externe' as const,
         created_at: job.created_at,
         updated_at: job.updated_at,
         category: 'Externe',
