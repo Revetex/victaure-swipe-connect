@@ -3,7 +3,7 @@ import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
 import { toast } from "sonner";
 import { Message } from "@/types/chat/messageTypes";
 import { UserProfile } from "@/types/profile";
-import { handleWelcomeMessage, handleFallbackMessage, formatUserProfile } from "./messageHandlers";
+import { handleWelcomeMessage, handleFallbackMessage, formatUserProfile, validateProfileUpdate } from "./messageHandlers";
 
 async function getHuggingFaceApiKey(): Promise<string> {
   try {
@@ -48,6 +48,7 @@ export async function generateAIResponse(message: string): Promise<string> {
     const apiKey = await getHuggingFaceApiKey();
     const profile = await getUserProfile();
     const formattedProfile = formatUserProfile(profile);
+    
     const systemPrompt = SYSTEM_PROMPT
       .replace('{role}', formattedProfile.role)
       .replace('{skills}', formattedProfile.skills)
@@ -65,14 +66,7 @@ export async function generateAIResponse(message: string): Promise<string> {
         },
         body: JSON.stringify({
           inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
-          parameters: {
-            max_new_tokens: HUGGING_FACE_CONFIG.maxTokens,
-            temperature: HUGGING_FACE_CONFIG.temperature,
-            top_p: HUGGING_FACE_CONFIG.top_p,
-            do_sample: true,
-            return_full_text: false,
-            wait_for_model: true
-          }
+          parameters: HUGGING_FACE_CONFIG.parameters
         }),
         signal: controller.signal
       }

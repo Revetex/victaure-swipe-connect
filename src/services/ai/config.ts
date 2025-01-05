@@ -25,8 +25,20 @@ Assure-toi de :
 
 export const HUGGING_FACE_CONFIG = {
   model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-  maxTokens: 1000,
+  maxTokens: 2048,
   temperature: 0.7,
-  top_p: 0.9,
-  timeout: 60000,
+  top_p: 0.95,
+  top_k: 50,
+  repetition_penalty: 1.1,
+  timeout: 120000, // Increased timeout for more complex responses
+  parameters: {
+    do_sample: true,
+    return_full_text: false,
+    max_new_tokens: 2048,
+    temperature: 0.7,
+    top_p: 0.95,
+    top_k: 50,
+    repetition_penalty: 1.1,
+    stop: ["User:", "Assistant:", "\n\n"]
+  }
 };
