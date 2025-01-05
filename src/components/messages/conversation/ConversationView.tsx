@@ -73,7 +73,7 @@ export function ConversationView({
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-16">
-      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4 shadow-sm">
+      <header className="shrink-0 border-b bg-background/95 px-6 py-4 shadow-sm">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center gap-4">
             {onBack && (
@@ -81,19 +81,19 @@ export function ConversationView({
                 variant="ghost"
                 size="icon"
                 onClick={onBack}
-                className="shrink-0 hover:bg-primary/10 transition-colors h-12 w-12"
+                className="shrink-0 hover:bg-accent/10 transition-colors h-12 w-12"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
-            <Avatar className="h-14 w-14 shrink-0 ring-2 ring-primary/20">
+            <Avatar className="h-14 w-14 shrink-0 ring-2 ring-accent/20">
               <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
-              <AvatarFallback className="bg-primary/20">
-                <Bot className="h-7 w-7 text-primary" />
+              <AvatarFallback className="bg-accent/20">
+                <Bot className="h-7 w-7 text-accent" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-2xl font-semibold truncate bg-gradient-to-r from-primary to-high-contrast-magenta bg-clip-text text-transparent">
+              <h2 className="text-2xl font-semibold truncate text-foreground">
                 Mr. Victaure
               </h2>
               <p className="text-base text-muted-foreground truncate">
@@ -155,7 +155,7 @@ export function ConversationView({
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg bg-primary/90 hover:bg-primary/100 transition-colors h-12 w-12"
+                className="rounded-full shadow-lg bg-accent hover:bg-accent/90 transition-colors h-12 w-12"
                 onClick={scrollToBottom}
               >
                 <ArrowDown className="h-5 w-5" />
@@ -165,7 +165,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur p-6 shadow-lg">
+      <div className="shrink-0 border-t bg-background/95 p-6 shadow-lg">
         <div className="max-w-6xl mx-auto">
           <ChatInput
             value={inputMessage}
