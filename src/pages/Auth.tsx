@@ -85,12 +85,12 @@ export default function Auth() {
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
             <BiometricAuth />
             <AuthForm />
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center space-x-2">
               <Checkbox 
                 id="rememberMe" 
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                className="h-3 w-3 md:h-4 md:w-4" // Adjusted size for mobile
+                className="h-3 w-3" // Fixed small size for all screens
               />
               <label 
                 htmlFor="rememberMe" 
