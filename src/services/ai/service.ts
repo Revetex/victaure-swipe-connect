@@ -15,7 +15,9 @@ async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error('Failed to retrieve API key');
     }
 
-    if (!data || !data.secret) {
+    // The RPC function returns a single row with a secret column
+    if (!data || typeof data.secret !== 'string' || !data.secret) {
+      console.error('No API key found in response:', data);
       throw new Error('No API key found');
     }
 
