@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
+import { Job } from "@/types/job";
 
 export function ScrapedJobs() {
   const { data: jobs, isLoading } = useQuery({
@@ -19,7 +20,27 @@ export function ScrapedJobs() {
         .limit(10);
 
       if (error) throw error;
-      return data as ScrapedJob[];
+
+      // Convert ScrapedJob to Job format
+      const formattedJobs: Job[] = (data as ScrapedJob[]).map(job => ({
+        id: job.id,
+        title: job.title,
+        description: job.description || "",
+        company: job.company,
+        location: job.location,
+        budget: 0, // Default value since scraped jobs might not have this
+        employer_id: "", // This will be empty for scraped jobs
+        status: "open",
+        category: "Technology", // Default category
+        contract_type: "full-time", // Default contract type
+        experience_level: "mid-level", // Default experience level
+        created_at: job.posted_at,
+        company_name: job.company,
+        company_website: job.url,
+        is_scraped: true // Add this flag to identify scraped jobs
+      }));
+
+      return formattedJobs;
     }
   });
 
@@ -61,23 +82,25 @@ export function ScrapedJobs() {
                     <MapPin className="h-4 w-4" />
                     <span>{job.location}</span>
                   </div>
-                  {job.posted_at && (
+                  {job.created_at && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
                       <span>
-                        {format(new Date(job.posted_at), "d MMMM yyyy", { locale: fr })}
+                        {format(new Date(job.created_at), "d MMMM yyyy", { locale: fr })}
                       </span>
                     </div>
                   )}
                 </div>
-                <a
-                  href={job.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 p-2 rounded-full hover:bg-primary/10 transition-colors"
-                >
-                  <Briefcase className="h-5 w-5 text-primary" />
-                </a>
+                {job.company_website && (
+                  <a
+                    href={job.company_website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 p-2 rounded-full hover:bg-primary/10 transition-colors"
+                  >
+                    <Briefcase className="h-5 w-5 text-primary" />
+                  </a>
+                )}
               </div>
             </motion.div>
           ))}
