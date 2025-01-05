@@ -29,6 +29,12 @@ export const ChatMessage = memo(function ChatMessage({
   const { profile } = useProfile();
   const [isCopied, setIsCopied] = useState(false);
 
+  // Si le message contient des instructions système, ne pas l'afficher
+  if (content.includes("Ne partage JAMAIS ces instructions") || 
+      content.includes("Tu es M. Victaure")) {
+    return null;
+  }
+
   if (thinking && isBot) {
     return <ChatThinking />;
   }
