@@ -1,6 +1,5 @@
-import { UserCircle, MessageSquare, BriefcaseIcon, Settings, ClipboardList, Eye } from "lucide-react";
+import { UserCircle, MessageSquare, BriefcaseIcon, Settings, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -8,8 +7,6 @@ interface DashboardNavigationProps {
 }
 
 export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
-  const navigate = useNavigate();
-  
   const navigationItems = [
     { id: 1, icon: UserCircle, name: "Profil" },
     { id: 2, icon: MessageSquare, name: "M. Victaure" },
@@ -19,7 +16,7 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
   ];
 
   return (
-    <div className="w-full flex justify-between items-center px-4">
+    <div className="flex items-center justify-around w-full">
       {navigationItems.map(({ id, icon: Icon, name }) => (
         <motion.button
           key={id}
@@ -28,26 +25,15 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: id * 0.1 }}
           className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${
-            currentPage === id 
-              ? 'text-primary bg-primary/10' 
-              : 'text-muted-foreground hover:text-primary hover:bg-primary/5'
+            currentPage === id
+              ? "text-primary bg-primary/10"
+              : "text-muted-foreground hover:text-primary hover:bg-primary/5"
           }`}
         >
           <Icon className="h-5 w-5" />
           <span className="text-xs font-medium">{name}</span>
         </motion.button>
       ))}
-      
-      <motion.button
-        onClick={() => navigate("/marketplace")}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 text-muted-foreground hover:text-primary hover:bg-primary/5"
-      >
-        <Eye className="h-5 w-5" />
-        <span className="text-xs font-medium">Voir les offres</span>
-      </motion.button>
     </div>
   );
 }
