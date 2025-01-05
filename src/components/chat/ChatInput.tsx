@@ -24,7 +24,7 @@ export function ChatInput({
   isListening = false,
   isThinking = false,
   className,
-  placeholder = "Comment puis-je vous aider aujourd'hui?",
+  placeholder = "Comment puis-je vous aider aujourd'hui ?",
 }: ChatInputProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -33,8 +33,8 @@ export function ChatInput({
         try {
           onSend();
         } catch (error) {
-          console.error("Erreur lors de l'envoi du message:", error);
-          toast.error("Désolé, y'a eu un pépin. Essayez encore!");
+          console.error("Error sending message:", error);
+          toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
         }
       }
     }
@@ -45,8 +45,8 @@ export function ChatInput({
       try {
         onSend();
       } catch (error) {
-        console.error("Erreur lors de l'envoi du message:", error);
-        toast.error("Oups! Ça n'a pas marché. On réessaye?");
+        console.error("Error sending message:", error);
+        toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
       }
     }
   };

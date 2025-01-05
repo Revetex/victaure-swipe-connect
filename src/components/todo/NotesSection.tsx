@@ -1,101 +1,83 @@
-import { StickyNote } from "@/types/todo";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Trash2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { StickyNote as StickyNoteIcon } from "lucide-react";
+import { NotesInput } from "./NotesInput";
+import { StickyNote } from "./StickyNote";
+import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface NotesSectionProps {
-  notes: StickyNote[];
-  newNote: string;
-  selectedColor: string;
-  onNoteChange: (value: string) => void;
-  onColorChange: (value: string) => void;
-  onAdd: () => void;
-  onDelete: (id: string) => void;
+  notes?: StickyNoteType[];
+  newNote?: string;
+  selectedColor?: string;
+  colors?: ColorOption[];
+  onNoteChange?: (value: string) => void;
+  onColorChange?: (color: string) => void;
+  onAdd?: () => void;
+  onDelete?: (id: string) => void;
 }
 
-const colors = [
-  { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
-  { value: "blue", label: "Bleu", class: "bg-blue-200" },
-  { value: "green", label: "Vert", class: "bg-green-200" },
-  { value: "pink", label: "Rose", class: "bg-pink-200" },
-];
-
 export function NotesSection({
-  notes,
-  newNote,
-  selectedColor,
-  onNoteChange,
-  onColorChange,
-  onAdd,
-  onDelete,
+  notes = [],
+  newNote = "",
+  selectedColor = "yellow",
+  colors = [],
+  onNoteChange = () => {},
+  onColorChange = () => {},
+  onAdd = () => {},
+  onDelete = () => {},
 }: NotesSectionProps) {
+  const getColorClass = (colorValue: string) => {
+    const colorMap: { [key: string]: string } = {
+      yellow: 'sticky-note-yellow',
+      blue: 'sticky-note-blue',
+      green: 'sticky-note-green',
+      pink: 'sticky-note-pink',
+      purple: 'sticky-note-purple',
+      peach: 'sticky-note-peach',
+      gray: 'sticky-note-gray',
+      orange: 'sticky-note-orange',
+    };
+    return colorMap[colorValue] || 'sticky-note-yellow';
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Notes</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Nouvelle note..."
-              value={newNote}
-              onChange={(e) => onNoteChange(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  onAdd();
-                }
-              }}
-            />
-            <Button onClick={onAdd}>Ajouter</Button>
-          </div>
+    <div className="space-y-4 h-full flex flex-col notes-section">
+      <div className="flex items-center gap-2 text-primary">
+        <StickyNoteIcon className="h-5 w-5" />
+        <h2 className="text-lg font-semibold">Notes</h2>
+      </div>
 
-          <RadioGroup
-            value={selectedColor}
-            onValueChange={onColorChange}
-            className="flex gap-4"
-          >
-            {colors.map((color) => (
-              <div key={color.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={color.value} id={color.value} />
-                <Label
-                  htmlFor={color.value}
-                  className={`w-4 h-4 rounded-full ${color.class}`}
-                />
-              </div>
-            ))}
-          </RadioGroup>
+      <NotesInput
+        newNote={newNote}
+        selectedColor={selectedColor}
+        colors={colors}
+        onNoteChange={onNoteChange}
+        onColorChange={onColorChange}
+        onAdd={onAdd}
+      />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {notes.map((note, index) => (
-              <motion.div
+      <ScrollArea className="flex-1 pr-4">
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          layout
+        >
+          <AnimatePresence mode="popLayout">
+            {notes.map((note) => (
+              <StickyNote
                 key={note.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: index * 0.1 }}
-                className={`relative p-4 rounded-lg shadow-md ${
-                  colors.find((c) => c.value === note.color)?.class
-                }`}
-              >
-                <p className="text-gray-800">{note.text}</p>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => onDelete(note.id)}
-                >
-                  <Trash2 className="h-4 w-4 text-gray-600" />
-                </Button>
-              </motion.div>
+                note={note}
+                colorClass={getColorClass(note.color)}
+                onDelete={onDelete}
+              />
             ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </AnimatePresence>
+          {notes.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 col-span-full">
+              Aucune note pour le moment
+            </div>
+          )}
+        </motion.div>
+      </ScrollArea>
+    </div>
   );
 }

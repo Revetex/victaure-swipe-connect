@@ -1,4 +1,5 @@
-import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { JobFilters } from "../JobFilterUtils";
 
 interface BudgetFilterProps {
@@ -9,20 +10,28 @@ interface BudgetFilterProps {
 export function BudgetFilter({ filters, onFilterChange }: BudgetFilterProps) {
   return (
     <div className="space-y-4">
-      <label className="text-sm font-medium">Budget</label>
-      <Slider
-        min={0}
-        max={200000}
-        step={1000}
-        value={[filters.minBudget, filters.maxBudget]}
-        onValueChange={([min, max]) => {
-          onFilterChange("minBudget", min);
-          onFilterChange("maxBudget", max);
-        }}
-      />
-      <div className="flex justify-between text-sm text-muted-foreground">
-        <span>{filters.minBudget}$</span>
-        <span>{filters.maxBudget}$</span>
+      <Label>Budget (CAD)</Label>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">Minimum</Label>
+          <Input
+            type="number"
+            value={filters.minBudget || ""}
+            onChange={(e) => onFilterChange("minBudget", Number(e.target.value))}
+            placeholder="Min"
+            min={0}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">Maximum</Label>
+          <Input
+            type="number"
+            value={filters.maxBudget || ""}
+            onChange={(e) => onFilterChange("maxBudget", Number(e.target.value))}
+            placeholder="Max"
+            min={0}
+          />
+        </div>
       </div>
     </div>
   );

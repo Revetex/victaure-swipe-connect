@@ -1,34 +1,98 @@
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { Message } from "@/types/chat/messageTypes";
+import { deleteAllMessages, generateAIResponse, saveMessage } from "@/services/ai/service";
 import { toast } from "sonner";
 
-export function useChatActions() {
-  const [messages, setMessages] = useState<any[]>([]);
+export function useChatActions(
+  messages: Message[],
+  setMessages: (messages: Message[]) => void,
+  deletedMessages: Message[],
+  setDeletedMessages: (messages: Message[]) => void,
+  setInputMessage: (message: string) => void,
+  setIsThinking: (isThinking: boolean) => void
+) {
+  const handleSendMessage = async (message: string) => {
+    if (!message.trim()) return;
 
-  const deleteConversation = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Utilisateur non authentifié");
+      const userMessage: Message = {
+        id: crypto.randomUUID(),
+        content: message,
+        sender: "user",
+        timestamp: new Date(),
+      };
 
-      const { error } = await supabase
-        .from('ai_chat_messages')
-        .delete()
-        .eq('user_id', user.id);
+      const thinkingMessage: Message = {
+        id: crypto.randomUUID(),
+        content: "",
+        sender: "assistant",
+        thinking: true,
+        timestamp: new Date(),
+      };
 
-      if (error) throw error;
+      setMessages([...messages, userMessage, thinkingMessage]);
+      setIsThinking(true);
+      setInputMessage("");
 
+      try {
+        await saveMessage(userMessage);
+        console.log('Generating AI response...');
+        const aiResponse = await generateAIResponse(message);
+        console.log('AI response generated:', aiResponse);
+        
+        const assistantMessage: Message = {
+          id: crypto.randomUUID(),
+          content: aiResponse,
+          sender: "assistant",
+          timestamp: new Date(),
+        };
+
+        await saveMessage(assistantMessage);
+        setMessages([...messages, userMessage, assistantMessage]);
+      } catch (error) {
+        console.error("Error generating AI response:", error);
+        toast.error("Une erreur est survenue lors de la génération de la réponse");
+        setMessages([...messages, userMessage]);
+      } finally {
+        setIsThinking(false);
+      }
+    } catch (error) {
+      console.error("Error in handleSendMessage:", error);
+      toast.error("Une erreur est survenue lors de l'envoi du message");
+      setIsThinking(false);
+    }
+  };
+
+  const clearChat = async () => {
+    try {
+      setDeletedMessages(messages);
+      await deleteAllMessages();
       setMessages([]);
       toast.success("La conversation a été effacée");
-
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
-      toast.error("Impossible d'effacer la conversation");
+      console.error("Error clearing chat:", error);
+      toast.error("Une erreur est survenue lors de l'effacement de la conversation");
+    }
+  };
+
+  const restoreChat = async () => {
+    try {
+      if (deletedMessages.length > 0) {
+        for (const message of deletedMessages) {
+          await saveMessage(message);
+        }
+        setMessages(deletedMessages);
+        setDeletedMessages([]);
+        toast.success("La conversation a été restaurée");
+      }
+    } catch (error) {
+      console.error("Error restoring chat:", error);
+      toast.error("Une erreur est survenue lors de la restauration de la conversation");
     }
   };
 
   return {
-    messages,
-    setMessages,
-    deleteConversation,
+    handleSendMessage,
+    clearChat,
+    restoreChat
   };
 }

@@ -1,4 +1,4 @@
-import { Code2, Briefcase, Wrench, PenTool, Building2, HelpCircle } from "lucide-react";
+import { Brain, Briefcase, Code, Palette, Hammer, Users, Wrench, Folder } from "lucide-react";
 
 interface CategoryIconProps {
   category: string;
@@ -6,18 +6,24 @@ interface CategoryIconProps {
 }
 
 export function CategoryIcon({ category, className }: CategoryIconProps) {
-  switch (category?.toLowerCase()) {
-    case "technology":
-      return <Code2 className={className} />;
-    case "business":
-      return <Briefcase className={className} />;
-    case "trades":
-      return <Wrench className={className} />;
-    case "creative":
-      return <PenTool className={className} />;
-    case "professional":
-      return <Building2 className={className} />;
+  const defaultClass = className || "h-4 w-4";
+  
+  switch (category.toLowerCase()) {
+    case "développement":
+      return <Code className={`${defaultClass} text-indigo-600 dark:text-indigo-400`} />;
+    case "design":
+      return <Palette className={`${defaultClass} text-pink-600 dark:text-pink-400`} />;
+    case "gestion":
+      return <Briefcase className={`${defaultClass} text-blue-600 dark:text-blue-400`} />;
+    case "construction":
+      return <Hammer className={`${defaultClass} text-orange-600 dark:text-orange-400`} />;
+    case "manuel":
+      return <Wrench className={`${defaultClass} text-green-600 dark:text-green-400`} />;
+    case "soft skills":
+      return <Users className={`${defaultClass} text-purple-600 dark:text-purple-400`} />;
+    case "autres":
+      return <Folder className={`${defaultClass} text-gray-600 dark:text-gray-400`} />;
     default:
-      return <HelpCircle className={className} />;
+      return <Brain className={`${defaultClass} text-gray-600 dark:text-gray-400`} />;
   }
 }

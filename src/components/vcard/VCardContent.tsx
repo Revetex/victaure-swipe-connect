@@ -1,14 +1,18 @@
-import { Input } from "@/components/ui/input";
-import { Profile } from "@/types/profile";
+import { motion } from "framer-motion";
+import { UserProfile } from "@/types/profile";
+import { VCardHeader } from "@/components/VCardHeader";
+import { VCardContact } from "@/components/VCardContact";
+import { VCardSkills } from "@/components/VCardSkills";
+import { VCardCertifications } from "@/components/VCardCertifications";
+import { VCardEducation } from "@/components/VCardEducation";
+import { VCardExperiences } from "@/components/VCardExperiences";
 import { StyleOption } from "./types";
-import { Badge } from "@/components/ui/badge";
-import { Plus, X } from "lucide-react";
 
 interface VCardContentProps {
-  profile: Profile;
+  profile: UserProfile;
   isEditing: boolean;
   selectedStyle: StyleOption;
-  setProfile: (profile: Profile) => void;
+  setProfile: (profile: UserProfile) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   handleAddSkill: () => void;
@@ -23,66 +27,37 @@ export function VCardContent({
   newSkill,
   setNewSkill,
   handleAddSkill,
-  handleRemoveSkill,
+  handleRemoveSkill
 }: VCardContentProps) {
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">Bio</h3>
-        {isEditing ? (
-          <Input
-            value={profile.bio || ""}
-            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-            placeholder="Votre bio"
-          />
-        ) : (
-          <p className="text-sm">{profile.bio || "Aucune bio"}</p>
-        )}
-      </div>
+    <motion.div className="space-y-8 pt-6">
+      <VCardSkills
+        profile={profile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+        newSkill={newSkill}
+        setNewSkill={setNewSkill}
+        handleAddSkill={handleAddSkill}
+        handleRemoveSkill={handleRemoveSkill}
+      />
 
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium">Compétences</h3>
-        <div className="flex flex-wrap gap-2">
-          {profile.skills?.map((skill) => (
-            <Badge
-              key={skill}
-              variant="secondary"
-              className="flex items-center gap-1"
-            >
-              {skill}
-              {isEditing && (
-                <button
-                  onClick={() => handleRemoveSkill(skill)}
-                  className="ml-1 hover:text-destructive"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </Badge>
-          ))}
-          {isEditing && (
-            <div className="flex items-center gap-2">
-              <Input
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                placeholder="Nouvelle compétence"
-                className="max-w-[200px]"
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleAddSkill();
-                  }
-                }}
-              />
-              <button
-                onClick={handleAddSkill}
-                className="p-2 rounded-full hover:bg-accent"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+      <VCardExperiences
+        profile={profile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+      />
+
+      <VCardCertifications
+        profile={profile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+      />
+
+      <VCardEducation
+        profile={profile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+      />
+    </motion.div>
   );
 }

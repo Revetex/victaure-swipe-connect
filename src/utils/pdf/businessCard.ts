@@ -1,90 +1,87 @@
 import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
+import { ExtendedJsPDF } from "@/types/pdf";
+import { extendPdfDocument } from "./pdfExtensions";
 import { StyleOption } from "@/components/vcard/types";
 import QRCode from "qrcode";
 
 export const generateBusinessCard = async (
   profile: UserProfile,
   selectedStyle: StyleOption
-): Promise<jsPDF> => {
-  const doc = new jsPDF({
+): Promise<ExtendedJsPDF> => {
+  const doc = extendPdfDocument(new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
-    format: [85, 55]
-  });
+    format: [85.6, 53.98]
+  }));
 
-  // Couleurs du style sélectionné
-  const primaryColor = selectedStyle?.color || '#9b87f5';
-  const secondaryColor = selectedStyle?.secondaryColor || '#7E69AB';
+  // Set background gradient
+  const gradient = doc.setFillColor(selectedStyle.color);
+  doc.rect(0, 0, 85.6, 53.98, 'F');
 
-  // Fond avec dégradé
-  doc.setFillColor(primaryColor);
-  doc.rect(0, 0, 85, 55, 'F');
+  try {
+    // Add Victaure logo in the middle
+    const logoImg = new Image();
+    logoImg.src = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+    await new Promise((resolve, reject) => {
+      logoImg.onload = resolve;
+      logoImg.onerror = reject;
+    });
+    doc.addImage(logoImg, 'PNG', 35, 20, 15, 15);
 
-  // Police personnalisée
-  const fontFamily = selectedStyle?.font || 'helvetica';
-  doc.setFont(fontFamily);
-
-  // Photo de profil ronde (plus petite)
-  if (profile.avatar_url) {
-    try {
+    // Add profile photo on the left if available
+    if (profile.avatar_url) {
       const img = new Image();
-      img.src = profile.avatar_url;
+      img.crossOrigin = "Anonymous";
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
+        img.src = profile.avatar_url;
       });
-      
-      // Dimensions réduites pour la photo
-      const size = 12; // Taille encore plus petite
-      const x = 5;
-      const y = 5;
-      
-      // Créer un masque rond plus petit
-      doc.setFillColor(255, 255, 255);
-      doc.circle(x + size/2, y + size/2, size/2, 'F');
-      
-      // Ajouter l'image
-      doc.addImage(img, 'PNG', x, y, size, size);
-    } catch (error) {
-      console.error('Erreur lors du chargement de l\'avatar:', error);
+      doc.addImage(img, 'JPEG', 5, 5, 20, 20);
     }
+  } catch (error) {
+    console.error('Error loading images:', error);
   }
 
-  // Informations de contact avec meilleur espacement
+  // Set text color and font based on style
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(14); // Taille de police réduite
-  doc.setFont(fontFamily, 'bold');
-  doc.text(profile.full_name || 'Non défini', 20, 10);
+  doc.setFont(selectedStyle.font || 'helvetica');
 
-  doc.setFontSize(10); // Taille de police plus petite pour le rôle
-  doc.setFont(fontFamily, 'normal');
-  doc.text(profile.role || 'Non défini', 20, 15);
+  // Add name and position next to photo
+  const textStartX = profile.avatar_url ? 30 : 5;
+  doc.setFontSize(14);
+  doc.setFont(selectedStyle.font || 'helvetica', 'bold');
+  doc.text(profile.full_name || '', textStartX, 15);
+  
+  doc.setFontSize(12);
+  doc.setFont(selectedStyle.font || 'helvetica', 'normal');
+  doc.text(profile.role || '', textStartX, 22);
 
-  // Coordonnées avec meilleur espacement
-  doc.setFontSize(8);
-  let yPos = 25;
+  // Add contact details at the bottom left
+  doc.setFontSize(9);
+  let contactY = 40;
   
   if (profile.email) {
-    doc.text(`${profile.email}`, 20, yPos);
-    yPos += 4;
+    doc.text(profile.email, 5, contactY);
+    contactY += 5;
   }
   
   if (profile.phone) {
-    doc.text(`${profile.phone}`, 20, yPos);
-    yPos += 4;
+    doc.text(profile.phone, 5, contactY);
+    contactY += 5;
   }
   
   if (profile.city) {
-    doc.text(`${profile.city}, ${profile.state || 'QC'}`, 20, yPos);
+    doc.text(profile.city, 5, contactY);
   }
 
-  // QR Code plus petit et mieux positionné
+  // Add QR code in bottom right corner
   try {
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
-    doc.addImage(qrCodeUrl, 'PNG', 68, 38, 12, 12);
+    doc.addImage(qrCodeUrl, 'PNG', 65, 35, 15, 15);
   } catch (error) {
-    console.error('Erreur lors de la génération du QR code:', error);
+    console.error('Error generating QR code:', error);
   }
 
   return doc;
