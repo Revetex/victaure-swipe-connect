@@ -97,31 +97,29 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom complet"
-              className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="text-xl font-semibold bg-white dark:bg-white/10 border-gray-200 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/50"
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
+              className="text-sm bg-white dark:bg-white/10 border-gray-200 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/50"
             />
           </div>
         ) : (
           <>
             <h2 
-              className="text-xl font-semibold truncate text-white"
+              className="text-xl font-semibold truncate text-gray-900 dark:text-white"
               style={{ 
-                textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                color: 'white' // Force white color regardless of style
+                textShadow: '0 2px 4px rgba(0,0,0,0.2)',
               }}
             >
               {profile.full_name || "Nom non défini"}
             </h2>
             <p 
-              className="text-sm text-white/90"
+              className="text-sm text-gray-700 dark:text-white/90"
               style={{ 
-                textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                color: 'white' // Force white color regardless of style
+                textShadow: '0 1px 2px rgba(0,0,0,0.1)',
               }}
             >
               {profile.role || "Rôle non défini"}
