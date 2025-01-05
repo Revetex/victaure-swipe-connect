@@ -2,6 +2,10 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { FileText, Briefcase, GraduationCap, Brain, Target } from "lucide-react";
 
+interface QuickSuggestionsProps {
+  onSelect: (suggestion: string) => void;
+}
+
 const suggestions = [
   {
     text: "Aide-moi à créer mon CV",
@@ -29,10 +33,6 @@ const suggestions = [
     description: "Enrichissons votre parcours académique"
   }
 ];
-
-interface QuickSuggestionsProps {
-  onSelect: (suggestion: string) => void;
-}
 
 export function QuickSuggestions({ onSelect }: QuickSuggestionsProps) {
   return (

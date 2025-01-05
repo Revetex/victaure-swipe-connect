@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Edit2, Save, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 export function CareerAdvisorChat() {
@@ -16,23 +16,24 @@ export function CareerAdvisorChat() {
   const [isTyping, setIsTyping] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const { profile, setProfile } = useProfile();
-  const { toast } = useToast();
 
   const handleSuggestionSelect = async (suggestion: string) => {
     setMessages((prev) => [...prev, { content: suggestion, sender: "user" }]);
     setIsTyping(true);
 
     try {
-      const { data: response, error } = await supabase.functions.invoke('career-advisor', {
+      const { data: response } = await supabase.functions.invoke('career-advisor', {
         body: { message: suggestion, userId: profile?.id }
       });
 
-      if (error) throw error;
-
       setMessages((prev) => [...prev, { content: response.response, sender: "advisor" }]);
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error("Une erreur est survenue lors de la communication avec le conseiller");
+    } catch (err) {
+      console.error('Error:', err);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la communication avec le conseiller",
+        variant: "destructive",
+      });
     } finally {
       setIsTyping(false);
     }
@@ -45,16 +46,18 @@ export function CareerAdvisorChat() {
     setIsTyping(true);
 
     try {
-      const { data: response, error } = await supabase.functions.invoke('career-advisor', {
+      const { data: response } = await supabase.functions.invoke('career-advisor', {
         body: { message, userId: profile?.id }
       });
 
-      if (error) throw error;
-
       setMessages((prev) => [...prev, { content: response.response, sender: "advisor" }]);
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error("Une erreur est survenue lors de la communication avec le conseiller");
+    } catch (err) {
+      console.error('Error:', err);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la communication avec le conseiller",
+        variant: "destructive",
+      });
     } finally {
       setIsTyping(false);
     }
@@ -75,15 +78,15 @@ export function CareerAdvisorChat() {
 
       setIsEditing(false);
       toast({
-        title: "Profil mis à jour",
+        title: "Succès",
         description: "Vos informations ont été enregistrées avec succès",
       });
-    } catch (error) {
-      console.error('Error updating profile:', error);
+    } catch (err) {
+      console.error('Error updating profile:', err);
       toast({
-        variant: "destructive",
         title: "Erreur",
         description: "Impossible de mettre à jour le profil",
+        variant: "destructive",
       });
     }
   };
