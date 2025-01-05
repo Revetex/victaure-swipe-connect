@@ -24,7 +24,7 @@ export const AuthForm = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { error: signUpError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
@@ -34,7 +34,17 @@ export const AuthForm = () => {
             },
           },
         });
-        if (error) throw error;
+        
+        if (signUpError) throw signUpError;
+
+        // Update the profile with phone number
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ phone: formData.phone })
+          .eq('id', (await supabase.auth.getUser()).data.user?.id);
+
+        if (profileError) throw profileError;
+        
         toast.success("Inscription réussie ! Vérifiez vos emails.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
