@@ -10,12 +10,14 @@ import { Button } from "./ui/button";
 import { Filter, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { JobCreationDialog } from "./jobs/JobCreationDialog";
 
 export function Marketplace() {
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const [showFilters, setShowFilters] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const { data: jobs = [], isLoading } = useQuery({
+  const { data: jobs = [], isLoading, refetch } = useQuery({
     queryKey: ["jobs", filters],
     queryFn: async () => {
       console.log("Fetching jobs with filters:", filters);
@@ -78,7 +80,26 @@ export function Marketplace() {
   return (
     <section className="min-h-screen bg-background">
       <div className="container mx-auto p-4 max-w-[2000px]">
-        <Tabs defaultValue="external" className="space-y-4">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Offres d'emploi</h1>
+          <Button 
+            onClick={() => setIsDialogOpen(true)}
+            className="bg-victaure-blue text-white hover:bg-victaure-blue/90"
+          >
+            Publier une offre
+          </Button>
+        </div>
+
+        <JobCreationDialog 
+          isOpen={isDialogOpen} 
+          setIsOpen={setIsDialogOpen}
+          onSuccess={() => {
+            refetch();
+            toast.success("Offre créée avec succès");
+          }}
+        />
+
+        <Tabs defaultValue="internal" className="space-y-4">
           <TabsList className="w-full flex justify-center mb-4">
             <TabsTrigger value="internal">Offres Victaure</TabsTrigger>
             <TabsTrigger value="external" className="relative">
