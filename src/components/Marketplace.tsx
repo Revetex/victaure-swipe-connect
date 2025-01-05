@@ -31,14 +31,21 @@ export function Marketplace() {
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
+      console.log("Fetching jobs...");
       
       // Fetch regular jobs
       const { data: regularJobs, error: regularError } = await supabase
         .from("jobs")
         .select("*")
+        .eq('status', 'open')
         .order("created_at", { ascending: false });
 
-      if (regularError) throw regularError;
+      if (regularError) {
+        console.error("Error fetching regular jobs:", regularError);
+        throw regularError;
+      }
+
+      console.log("Regular jobs fetched:", regularJobs?.length || 0);
 
       // Fetch scraped jobs
       const { data: scrapedJobs, error: scrapedError } = await supabase
@@ -46,13 +53,18 @@ export function Marketplace() {
         .select("*")
         .order("posted_at", { ascending: false });
 
-      if (scrapedError) throw scrapedError;
+      if (scrapedError) {
+        console.error("Error fetching scraped jobs:", scrapedError);
+        throw scrapedError;
+      }
+
+      console.log("Scraped jobs fetched:", scrapedJobs?.length || 0);
 
       // Convert regular jobs to the correct type
       const typedRegularJobs = (regularJobs || []).map(job => ({
         ...job,
         status: job.status as 'open' | 'closed' | 'in-progress',
-        source: 'Victaure'
+        source: 'Victaure' as const
       }));
 
       // Convert scraped jobs to match the Job type
@@ -84,8 +96,9 @@ export function Marketplace() {
         return dateB.getTime() - dateA.getTime();
       });
 
+      console.log("Total jobs found:", sortedJobs.length);
       setJobs(sortedJobs);
-      console.log("Fetched jobs:", sortedJobs);
+
     } catch (error) {
       console.error("Error fetching jobs:", error);
       toast.error("Erreur lors du chargement des offres");
