@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { provinces, provinceData, type Province } from "@/data/provinces";
+import { provinces, cities, type Province } from "@/data/provinces";
 import { toast } from "sonner";
 
 interface VCardContactProps {
@@ -32,7 +32,7 @@ export function VCardContact({ profile, isEditing, onUpdate }: VCardContactProps
     province.toLowerCase().includes(provinceSearch.toLowerCase())
   );
 
-  const availableCities = selectedProvince ? provinceData[selectedProvince] : [];
+  const availableCities = selectedProvince ? cities[selectedProvince] : [];
   const filteredCities = availableCities.filter(city =>
     city.toLowerCase().includes(citySearch.toLowerCase())
   );
