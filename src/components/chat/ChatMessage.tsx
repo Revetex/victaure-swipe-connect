@@ -1,45 +1,87 @@
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Bot, User } from "lucide-react";
-import { memo } from "react";
+import { Bot, User, Volume2, VolumeX } from "lucide-react";
 import { motion } from "framer-motion";
-import { ChatThinking } from "./ChatThinking";
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface ChatMessageProps {
   content: string;
   sender: string;
   thinking?: boolean;
   showTimestamp?: boolean;
-  timestamp?: string;
+  timestamp?: Date;
 }
 
-export const ChatMessage = memo(function ChatMessage({
+export function ChatMessage({
   content,
   sender,
   thinking = false,
   showTimestamp = false,
   timestamp,
 }: ChatMessageProps) {
-  const isBot = sender === "assistant";
   const { profile } = useProfile();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const isBot = sender === "assistant";
 
-  if (thinking && isBot) {
-    return <ChatThinking />;
-  }
+  const handleVoicePlayback = async () => {
+    try {
+      if (isPlaying && audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        setIsPlaying(false);
+        return;
+      }
+
+      const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": "your-api-key", // À remplacer par la clé API de l'utilisateur
+        },
+        body: JSON.stringify({
+          text: content,
+          model_id: "eleven_multilingual_v2",
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la synthèse vocale");
+      }
+
+      const blob = await response.blob();
+      const audioUrl = URL.createObjectURL(blob);
+      const newAudio = new Audio(audioUrl);
+
+      newAudio.onended = () => {
+        setIsPlaying(false);
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      setAudio(newAudio);
+      await newAudio.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.error("Erreur de synthèse vocale:", error);
+      toast.error("Erreur lors de la lecture vocale. Veuillez réessayer.");
+      setIsPlaying(false);
+    }
+  };
 
   return (
     <motion.div
+      layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-      className={cn(
-        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors",
-        isBot ? "flex-row" : "flex-row-reverse"
-      )}
+      className="group relative flex gap-3 px-4 py-3"
     >
       <div className="shrink-0">
         {isBot ? (
@@ -62,26 +104,49 @@ export const ChatMessage = memo(function ChatMessage({
           </Avatar>
         )}
       </div>
-      <div className={cn(
-        "flex flex-col gap-1 min-w-0 w-full max-w-[85%]",
-        isBot ? "items-start" : "items-end"
-      )}>
-        <div className={cn(
-          "rounded-lg px-4 py-2 w-full shadow-sm",
-          isBot 
-            ? "bg-muted/80 text-foreground backdrop-blur-sm" 
-            : "bg-primary text-primary-foreground"
-        )}>
-          <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
-            {content}
-          </p>
-        </div>
-        {showTimestamp && timestamp && (
-          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-            {format(new Date(timestamp), "d MMMM 'à' HH:mm", { locale: fr })}
+
+      <div className="flex-1 space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="font-medium">
+            {isBot ? "Mr. Victaure" : profile?.full_name || "Vous"}
           </span>
-        )}
+          {showTimestamp && timestamp && (
+            <span className="text-xs text-muted-foreground">
+              {new Date(timestamp).toLocaleTimeString()}
+            </span>
+          )}
+        </div>
+
+        <div className="prose prose-neutral dark:prose-invert">
+          {thinking ? (
+            <motion.div
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="text-muted-foreground"
+            >
+              En train de réfléchir...
+            </motion.div>
+          ) : (
+            <div className="flex items-start gap-2">
+              <p className="mt-0 leading-normal">{content}</p>
+              {isBot && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={handleVoicePlayback}
+                >
+                  {isPlaying ? (
+                    <VolumeX className="h-4 w-4" />
+                  ) : (
+                    <Volume2 className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
-});
+}
