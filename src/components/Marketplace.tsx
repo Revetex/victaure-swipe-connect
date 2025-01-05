@@ -34,28 +34,63 @@ export function Marketplace() {
       const filteredQuery = await applyFilters(query, filters);
       console.log("Filtered query:", filteredQuery);
 
-      const { data, error } = await filteredQuery;
+      const { data: regularJobs, error: regularError } = await filteredQuery;
 
-      if (error) {
-        console.error("Error fetching jobs:", error);
-        toast.error("Erreur lors du chargement des offres");
-        throw error;
+      if (regularError) {
+        console.error("Error fetching regular jobs:", regularError);
+        throw regularError;
       }
 
-      if (!data || data.length === 0) {
-        console.log("No jobs found");
-        return [];
+      // Also fetch scraped jobs
+      const { data: scrapedJobs, error: scrapedError } = await supabase
+        .from("scraped_jobs")
+        .select("*")
+        .order("posted_at", { ascending: false });
+
+      if (scrapedError) {
+        console.error("Error fetching scraped jobs:", scrapedError);
+        throw scrapedError;
       }
 
-      console.log("Fetched jobs:", data);
-      return data.map(job => ({
+      // Format regular jobs
+      const formattedRegularJobs = regularJobs.map(job => ({
         ...job,
         company: job.employer?.company_name || job.company_name || "Entreprise",
         employer_name: job.employer?.full_name || "Employeur",
         employer_avatar: job.employer?.avatar_url,
         skills: job.required_skills || [],
         salary: job.budget ? `${job.budget} ${job.salary_currency || 'CAD'}` : 'À discuter'
-      })) as Job[];
+      }));
+
+      // Format scraped jobs to match Job type
+      const formattedScrapedJobs = scrapedJobs.map(job => ({
+        id: job.id,
+        title: job.title,
+        description: job.description || "",
+        company: job.company,
+        location: job.location,
+        budget: 0,
+        employer_id: "",
+        status: "open" as const,
+        category: "Technology",
+        contract_type: "full-time",
+        experience_level: "mid-level",
+        created_at: job.posted_at,
+        company_name: job.company,
+        company_website: job.url,
+        is_scraped: true
+      }));
+
+      // Combine both types of jobs
+      const allJobs = [...formattedRegularJobs, ...formattedScrapedJobs];
+      console.log("All jobs:", allJobs);
+
+      if (!allJobs.length) {
+        console.log("No jobs found");
+        return [];
+      }
+
+      return allJobs as Job[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
