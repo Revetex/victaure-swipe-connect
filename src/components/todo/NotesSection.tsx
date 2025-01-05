@@ -41,10 +41,10 @@ export function NotesSection({
   };
 
   return (
-    <div className="space-y-4 h-full flex flex-col notes-section">
+    <div className="space-y-4 h-[calc(100vh-8rem)] flex flex-col notes-section">
       <div className="flex items-center gap-2 text-primary">
-        <StickyNoteIcon className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Notes</h2>
+        <StickyNoteIcon className="h-6 w-6" />
+        <h2 className="text-xl font-semibold">Notes</h2>
       </div>
 
       <NotesInput
@@ -58,7 +58,7 @@ export function NotesSection({
 
       <ScrollArea className="flex-1 pr-4">
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           layout
         >
           <AnimatePresence mode="popLayout">
@@ -72,7 +72,7 @@ export function NotesSection({
             ))}
           </AnimatePresence>
           {notes.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 col-span-full">
+            <div className="text-center text-muted-foreground py-8 col-span-full text-lg">
               Aucune note pour le moment
             </div>
           )}

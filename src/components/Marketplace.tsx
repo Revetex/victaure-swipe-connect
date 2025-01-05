@@ -30,7 +30,6 @@ export function Marketplace() {
         .eq('status', 'open')
         .order("created_at", { ascending: false });
 
-      // Apply filters using the utility function
       const filteredQuery = await applyFilters(query, filters);
       console.log("Filtered query:", filteredQuery);
 
@@ -57,7 +56,7 @@ export function Marketplace() {
         salary: job.budget ? `${job.budget} ${job.salary_currency || 'CAD'}` : 'À discuter'
       })) as Job[];
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
     retry: 2
   });
@@ -75,8 +74,8 @@ export function Marketplace() {
   };
 
   return (
-    <section className="py-8 sm:py-16 bg-background">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="min-h-screen bg-background">
+      <div className="max-w-[2000px] mx-auto px-4 py-4">
         <div className="mb-4">
           <Button
             variant="outline"
@@ -87,21 +86,20 @@ export function Marketplace() {
             {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
           </Button>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:gap-8">
-          {showFilters && (
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4">
+          {showFilters ? (
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
               <div className="lg:col-span-1">
                 <JobFilters
                   filters={filters}
                   onFilterChange={handleFilterChange}
                 />
               </div>
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-4">
                 <JobList jobs={jobs} isLoading={isLoading} />
               </div>
             </div>
-          )}
-          {!showFilters && (
+          ) : (
             <JobList jobs={jobs} isLoading={isLoading} />
           )}
         </div>

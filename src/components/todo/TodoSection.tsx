@@ -39,10 +39,10 @@ export function TodoSection({
   const sectionClass = type === 'notes' ? 'notes-section' : 'task-section';
   
   return (
-    <div className={`space-y-4 h-full flex flex-col ${sectionClass}`}>
+    <div className={`space-y-4 h-[calc(100vh-8rem)] flex flex-col ${sectionClass}`}>
       <div className="flex items-center gap-2 text-primary">
-        <ListTodo className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">{title}</h2>
+        <ListTodo className="h-6 w-6" />
+        <h2 className="text-xl font-semibold">{title}</h2>
       </div>
 
       <TodoInput
@@ -58,7 +58,7 @@ export function TodoSection({
       />
 
       <ScrollArea className="flex-1 pr-4">
-        <div className="space-y-2">
+        <div className="space-y-3">
           {todos.map((todo) => (
             <TodoItem
               key={todo.id}
@@ -68,7 +68,7 @@ export function TodoSection({
             />
           ))}
           {todos.length === 0 && (
-            <div className="text-center text-muted-foreground py-8">
+            <div className="text-center text-muted-foreground py-8 text-lg">
               Aucune {type === 'notes' ? 'note' : 'tâche'} pour le moment
             </div>
           )}
