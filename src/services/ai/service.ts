@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
 import { toast } from "sonner";
 import { Message } from "@/types/chat/messageTypes";
+import { UserProfile } from "@/types/profile";
 
 async function getHuggingFaceApiKey(): Promise<string> {
   try {
@@ -29,6 +30,36 @@ async function getHuggingFaceApiKey(): Promise<string> {
   }
 }
 
+async function getUserProfile(): Promise<UserProfile | null> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (error) throw error;
+    return profile;
+  } catch (error) {
+    console.error('Erreur lors de la récupération du profil:', error);
+    return null;
+  }
+}
+
+function formatSystemPrompt(profile: UserProfile | null): string {
+  if (!profile) return SYSTEM_PROMPT;
+  
+  return SYSTEM_PROMPT
+    .replace('{role}', profile.role || 'non spécifié')
+    .replace('{skills}', profile.skills?.join(', ') || 'non spécifiées')
+    .replace('{city}', profile.city || 'non spécifiée')
+    .replace('{state}', profile.state || 'non spécifié')
+    .replace('{country}', profile.country || 'non spécifié');
+}
+
 export async function generateAIResponse(message: string): Promise<string> {
   const controller = new AbortController();
   const timeout = setTimeout(() => {
@@ -38,6 +69,8 @@ export async function generateAIResponse(message: string): Promise<string> {
   try {
     console.log('Génération de la réponse IA...');
     const apiKey = await getHuggingFaceApiKey();
+    const profile = await getUserProfile();
+    const systemPrompt = formatSystemPrompt(profile);
     
     console.log('Envoi de la requête à l\'API Hugging Face...');
     
@@ -50,7 +83,7 @@ export async function generateAIResponse(message: string): Promise<string> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `${SYSTEM_PROMPT}\n\nUser: ${message}\n\nAssistant:`,
+          inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
             max_new_tokens: HUGGING_FACE_CONFIG.maxTokens,
             temperature: HUGGING_FACE_CONFIG.temperature,
