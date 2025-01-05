@@ -42,13 +42,13 @@ export function TodoSection({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 h-full flex flex-col bg-background/50 rounded-lg p-6 shadow-lg border border-border/50"
+      className="h-full min-h-[calc(100vh-2rem)] flex flex-col bg-background/30 backdrop-blur-sm rounded-lg p-4 md:p-6 shadow-lg border border-border/50"
     >
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-          <ListTodo className="h-5 w-5 text-accent" />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center">
+          <ListTodo className="h-6 w-6 text-accent" />
         </div>
-        <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+        <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
       </div>
 
       <TodoInput
@@ -63,7 +63,7 @@ export function TodoSection({
         onAdd={onAdd}
       />
 
-      <ScrollArea className="flex-1 pr-4">
+      <ScrollArea className="flex-1 mt-6 pr-4">
         <AnimatePresence mode="popLayout">
           {todos.map((todo) => (
             <motion.div
@@ -71,7 +71,7 @@ export function TodoSection({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="mb-2"
+              className="mb-3"
             >
               <TodoItem
                 todo={todo}
@@ -84,7 +84,7 @@ export function TodoSection({
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center text-muted-foreground py-8 rounded-lg bg-accent/5"
+              className="text-center text-muted-foreground py-12 rounded-lg bg-accent/5"
             >
               Aucune {type === 'notes' ? 'note' : 'tâche'} pour le moment
             </motion.div>

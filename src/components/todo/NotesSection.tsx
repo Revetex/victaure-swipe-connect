@@ -44,13 +44,13 @@ export function NotesSection({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 h-full flex flex-col bg-background/50 rounded-lg p-6 shadow-lg border border-border/50"
+      className="h-full min-h-[calc(100vh-2rem)] flex flex-col bg-background/30 backdrop-blur-sm rounded-lg p-4 md:p-6 shadow-lg border border-border/50"
     >
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-          <StickyNoteIcon className="h-5 w-5 text-accent" />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center">
+          <StickyNoteIcon className="h-6 w-6 text-accent" />
         </div>
-        <h2 className="text-xl font-semibold text-foreground">Notes</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Notes</h2>
       </div>
 
       <NotesInput
@@ -62,10 +62,10 @@ export function NotesSection({
         onAdd={onAdd}
       />
 
-      <ScrollArea className="flex-1 pr-4">
+      <ScrollArea className="flex-1 mt-6 pr-4">
         <motion.div 
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
         >
           <AnimatePresence mode="popLayout">
             {notes.map((note) => (
@@ -88,7 +88,7 @@ export function NotesSection({
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center text-muted-foreground py-8 col-span-full rounded-lg bg-accent/5"
+                className="text-center text-muted-foreground py-12 col-span-full rounded-lg bg-accent/5"
               >
                 Aucune note pour le moment
               </motion.div>
