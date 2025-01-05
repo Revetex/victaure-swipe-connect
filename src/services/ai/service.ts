@@ -29,6 +29,11 @@ async function getHuggingFaceApiKey(): Promise<string> {
 }
 
 export async function generateAIResponse(message: string): Promise<string> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, HUGGING_FACE_CONFIG.timeout);
+
   try {
     console.log('Starting AI response generation...');
     const apiKey = await getHuggingFaceApiKey();
@@ -52,13 +57,14 @@ export async function generateAIResponse(message: string): Promise<string> {
           inputs: `${SYSTEM_PROMPT}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
             max_new_tokens: HUGGING_FACE_CONFIG.maxTokens,
-            temperature: 0.7,
-            top_p: 0.9,
+            temperature: HUGGING_FACE_CONFIG.temperature,
+            top_p: HUGGING_FACE_CONFIG.top_p,
             do_sample: true,
             return_full_text: false,
             wait_for_model: true
           }
         }),
+        signal: controller.signal
       }
     );
 
@@ -66,27 +72,31 @@ export async function generateAIResponse(message: string): Promise<string> {
       const errorData = await response.json();
       console.error('Hugging Face API error:', errorData);
       
-      // Check for specific error types
       if (response.status === 503) {
-        throw new Error('Le modèle est en cours de chargement, veuillez réessayer dans quelques secondes.');
+        throw new Error('Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.');
       }
-      throw new Error(errorData.error || 'Failed to generate AI response');
+      throw new Error(errorData.error || 'Erreur lors de la génération de la réponse');
     }
 
     const data = await response.json();
     console.log('Received response from API:', data);
     
     if (!data || !data[0]?.generated_text) {
-      throw new Error('Invalid response format from API');
+      throw new Error('Format de réponse invalide');
     }
     
     return data[0].generated_text.trim();
   } catch (error) {
     console.error('Error generating AI response:', error);
+    if (error.name === 'AbortError') {
+      throw new Error('La requête a pris trop de temps. Veuillez réessayer.');
+    }
     if (error instanceof Error) {
       throw new Error(error.message);
     }
     throw new Error('Une erreur est survenue lors de la génération de la réponse');
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
