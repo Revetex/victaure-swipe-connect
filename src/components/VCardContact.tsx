@@ -18,8 +18,11 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const handleAddressSearch = async (search: string) => {
+    setSearchValue(search);
+    
     if (!search.trim()) {
       setSearchResults([]);
       return;
@@ -68,6 +71,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
       postal_code: postcode
     }));
 
+    setSearchValue(address);
     setIsOpen(false);
     toast.success("Adresse mise à jour avec succès");
   };
@@ -147,19 +151,21 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                     aria-expanded={isOpen}
                     className="w-full justify-between"
                   >
-                    {profile.address || "Rechercher une adresse"}
+                    {searchValue || profile.address || "Rechercher une adresse"}
                     <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[400px] p-0">
-                  <Command>
+                  <Command shouldFilter={false}>
                     <CommandInput
                       placeholder="Entrez une adresse..."
                       onValueChange={handleAddressSearch}
-                      loading={isSearching}
+                      value={searchValue}
                     />
                     <CommandList>
-                      <CommandEmpty>Aucune adresse trouvée.</CommandEmpty>
+                      <CommandEmpty>
+                        {isSearching ? "Recherche en cours..." : "Aucune adresse trouvée."}
+                      </CommandEmpty>
                       {searchResults.map((result) => (
                         <CommandItem
                           key={result.id}
