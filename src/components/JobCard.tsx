@@ -7,10 +7,12 @@ import {
   Calendar,
   Briefcase,
   DollarSign,
-  Clock
+  Clock,
+  ExternalLink
 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Button } from "./ui/button";
 
 interface JobCardProps extends Omit<Job, 'source'> {
   source?: "Victaure" | "Externe";
@@ -24,8 +26,15 @@ export function JobCard({
   created_at,
   contract_type,
   source = "Externe",
-  status
+  status,
+  url
 }: JobCardProps) {
+  const handleExternalLink = () => {
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
   return (
     <Card className="p-4 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
@@ -48,15 +57,19 @@ export function JobCard({
             <span>{location}</span>
           </div>
           
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4" />
-            <span>{budget} CAD</span>
-          </div>
+          {budget > 0 && (
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              <span>{budget} CAD</span>
+            </div>
+          )}
 
-          <div className="flex items-center gap-2">
-            <Briefcase className="h-4 w-4" />
-            <span>{contract_type}</span>
-          </div>
+          {contract_type && (
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              <span>{contract_type}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
@@ -64,8 +77,20 @@ export function JobCard({
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex justify-between items-center">
           <Badge variant="outline">{status}</Badge>
+          
+          {url && source === "Externe" && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleExternalLink}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Voir l'offre
+            </Button>
+          )}
         </div>
       </div>
     </Card>
