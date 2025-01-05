@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -15,11 +16,17 @@ serve(async (req) => {
   try {
     const { message, userId } = await req.json();
 
+    if (!message || !userId) {
+      throw new Error('Message and userId are required');
+    }
+
     // Create a Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+    console.log('Fetching user profile...');
+    
     // Get the user's profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -27,7 +34,12 @@ serve(async (req) => {
       .eq('id', userId)
       .single();
 
-    if (profileError) throw profileError;
+    if (profileError) {
+      console.error('Profile error:', profileError);
+      throw profileError;
+    }
+
+    console.log('Profile fetched:', profile);
 
     // Prepare the context for the AI
     const systemPrompt = `Tu es Monsieur Victaure, un conseiller en orientation professionnelle expérimenté et bienveillant.
@@ -49,6 +61,8 @@ serve(async (req) => {
     Utilise le vouvoiement et garde un ton professionnel mais accessible.
     Sois précis dans tes conseils et donne des exemples concrets quand c'est pertinent.`;
 
+    console.log('Calling OpenAI API...');
+
     // Get response from OpenAI
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -57,7 +71,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message }
@@ -66,8 +80,21 @@ serve(async (req) => {
       }),
     });
 
+    if (!openAIResponse.ok) {
+      const errorData = await openAIResponse.text();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${errorData}`);
+    }
+
     const aiResponse = await openAIResponse.json();
+    
+    if (!aiResponse.choices || !aiResponse.choices[0] || !aiResponse.choices[0].message) {
+      console.error('Unexpected API response structure:', aiResponse);
+      throw new Error('Unexpected API response structure');
+    }
+
     const responseText = aiResponse.choices[0].message.content;
+    console.log('AI response generated:', responseText);
 
     // Return the AI response
     return new Response(
@@ -77,9 +104,12 @@ serve(async (req) => {
       },
     );
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in career-advisor function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: error.toString()
+      }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
