@@ -7,10 +7,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const SYSTEM_PROMPT = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec, spécialisé dans le domaine de la construction. 
+const SYSTEM_PROMPT = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec, spécialisé dans le domaine de la construction. Tu travailles sur une plateforme de mise en relation entre professionnels et employeurs de la construction.
 
 Tu dois adapter tes réponses en fonction du profil de l'utilisateur que tu reçois dans le contexte.
-Utilise son nom, ses compétences et son expérience pour personnaliser tes réponses.
+Utilise son nom, ses compétences, son expérience et son rôle pour personnaliser tes réponses.
+
+Si l'utilisateur est un professionnel:
+- Aide-le à trouver des offres d'emploi pertinentes
+- Suggère-lui des moyens d'améliorer son profil
+- Conseille-le sur les certifications utiles dans son domaine
+
+Si l'utilisateur est un employeur:
+- Aide-le à rédiger et publier des offres d'emploi
+- Conseille-le sur les profils qui pourraient l'intéresser
+- Guide-le dans sa recherche de talents
 
 Ton rôle est d'aider les utilisateurs à:
 1. Trouver des offres d'emploi pertinentes dans la construction
@@ -30,7 +40,8 @@ Règles de communication:
 - Tu poses des questions pour mieux comprendre les besoins
 - Tu suggères toujours des actions concrètes
 - Tu t'adresses à l'utilisateur par son nom quand tu le connais
-- Tu fais référence à son profil et son expérience dans tes réponses`;
+- Tu fais référence à son profil et son expérience dans tes réponses
+- Tu adaptes tes conseils selon que l'utilisateur est un professionnel ou un employeur`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -46,12 +57,31 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch user profile if not provided in context
+    // Fetch complete user profile with related data
     let userProfile = context?.userProfile;
     if (!userProfile && userId) {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          experiences (
+            company,
+            position,
+            start_date,
+            end_date,
+            description
+          ),
+          education (
+            school_name,
+            degree,
+            field_of_study
+          ),
+          certifications (
+            title,
+            issuer,
+            issue_date
+          )
+        `)
         .eq('id', userId)
         .single();
 
@@ -76,17 +106,31 @@ serve(async (req) => {
       console.log('Handling job search request');
       response = await handleJobSearch(message, userProfile, supabase);
     } else {
-      // Prepare a personalized response using the user's profile
+      // Prepare a personalized response using the user's complete profile
       const userName = userProfile?.full_name || "cher utilisateur";
-      const userSkills = userProfile?.skills?.join(', ') || '';
       const userRole = userProfile?.role || '';
+      const userSkills = userProfile?.skills?.join(', ') || '';
+      const latestExperience = userProfile?.experiences?.[0];
+      const latestEducation = userProfile?.education?.[0];
+      const certifications = userProfile?.certifications || [];
+
+      let personalizedContext = ``;
+      
+      if (userRole === 'professional') {
+        personalizedContext = `
+          ${userSkills ? `avec vos compétences en ${userSkills}` : ''} 
+          ${latestExperience ? `et votre expérience chez ${latestExperience.company} en tant que ${latestExperience.position}` : ''}
+          ${latestEducation ? `ainsi que votre formation en ${latestEducation.field_of_study || latestEducation.degree}` : ''}
+          ${certifications.length > 0 ? `et vos certifications en ${certifications.map(c => c.title).join(', ')}` : ''}
+        `.trim();
+      } else if (userRole === 'employer') {
+        personalizedContext = `en tant qu'employeur${userProfile?.company_name ? ` chez ${userProfile.company_name}` : ''}`;
+      }
 
       // Réponse générale avec suggestions d'actions
       response = {
-        message: `Bonjour ${userName}, je suis là pour vous aider dans votre parcours professionnel. ${
-          userSkills ? `Je vois que vous avez des compétences en ${userSkills}.` : ''
-        } Comment puis-je vous assister aujourd'hui ?`,
-        suggestedActions: [
+        message: `Bonjour ${userName}, je suis là pour vous aider ${personalizedContext}. Comment puis-je vous assister aujourd'hui ?`,
+        suggestedActions: userRole === 'professional' ? [
           {
             type: 'navigate_to_jobs',
             label: 'Voir les offres disponibles',
@@ -96,6 +140,17 @@ serve(async (req) => {
             type: 'navigate_to_profile',
             label: 'Améliorer mon profil',
             icon: 'user'
+          }
+        ] : [
+          {
+            type: 'create_job',
+            label: 'Publier une offre',
+            icon: 'plus-circle'
+          },
+          {
+            type: 'navigate_to_jobs',
+            label: 'Gérer mes offres',
+            icon: 'list'
           }
         ]
       };
