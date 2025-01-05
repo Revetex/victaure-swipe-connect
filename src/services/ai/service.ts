@@ -5,13 +5,15 @@ import { v4 as uuidv4 } from 'uuid';
 const getHuggingFaceApiKey = async () => {
   console.info('Récupération de la clé API Hugging Face...');
   try {
-    const { data, error } = await supabase.rpc('get_secret', {
+    const { data: { secret }, error } = await supabase.rpc('get_secret', {
       secret_name: 'HUGGING_FACE_API_KEY'
     });
     
     if (error) throw error;
+    if (!secret) throw new Error('Hugging Face API key not found');
+    
     console.info('Clé API récupérée avec succès');
-    return data;
+    return secret;
   } catch (error) {
     console.error('Erreur lors de la récupération de la clé API:', error);
     throw error;
@@ -30,7 +32,7 @@ export const generatePersonalizedAIResponse = async (message: string): Promise<s
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           inputs: message,
@@ -46,10 +48,15 @@ export const generatePersonalizedAIResponse = async (message: string): Promise<s
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('API Response Error:', errorText);
       throw new Error(`API request failed: ${errorText}`);
     }
 
     const result = await response.json();
+    if (!result || !Array.isArray(result) || result.length === 0) {
+      throw new Error('Invalid response format from API');
+    }
+
     return result[0].generated_text;
   } catch (error) {
     console.error('Error generating AI response:', error);
