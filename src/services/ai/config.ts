@@ -1,9 +1,9 @@
 export const HUGGING_FACE_CONFIG = {
   model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-  maxTokens: 250, // Reduced for faster responses
+  maxTokens: 250,
   temperature: 0.7,
   top_p: 0.9,
-  timeout: 30000, // 30 second timeout
+  timeout: 30000,
 };
 
 export const SYSTEM_PROMPT = `Tu es un assistant virtuel professionnel et amical. 

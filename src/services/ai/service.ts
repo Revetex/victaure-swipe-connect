@@ -6,25 +6,19 @@ import { Message } from "@/types/chat/messageTypes";
 async function getHuggingFaceApiKey(): Promise<string> {
   try {
     console.log('Fetching Hugging Face API key...');
-    const { data, error } = await supabase
-      .rpc('get_secret', {
-        secret_name: 'HUGGING_FACE_API_KEY'
-      });
+    const { data, error } = await supabase.functions.invoke('get-secret', {
+      body: { secretName: 'HUGGING_FACE_API_KEY' }
+    });
 
     if (error) {
       console.error('Failed to retrieve API key:', error);
       throw new Error('Erreur lors de la récupération de la clé API');
     }
 
-    if (!data || data.length === 0) {
-      console.error('No data returned from get_secret');
-      throw new Error('Aucune donnée reçue du serveur');
-    }
-
-    const apiKey = data[0]?.secret;
-    if (!apiKey || apiKey.trim() === '') {
-      console.error('API key is empty or invalid');
-      throw new Error('Clé API non trouvée ou invalide');
+    const apiKey = data?.secret;
+    if (!apiKey) {
+      console.error('No API key found');
+      throw new Error('Clé API non trouvée');
     }
 
     console.log('API key retrieved successfully');
