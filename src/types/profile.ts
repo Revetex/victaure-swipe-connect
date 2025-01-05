@@ -1,4 +1,4 @@
-export interface Profile {
+export interface UserProfile {
   id: string;
   email: string;
   full_name: string | null;
@@ -19,18 +19,19 @@ export interface Profile {
   style_id?: string;
 }
 
-export interface Certification {
+export interface Profile extends UserProfile {
+  created_at?: string;
+  updated_at?: string;
+  online_status?: boolean;
+  last_seen?: string;
+}
+
+export interface Experience {
   id: string;
-  profile_id: string;
-  title: string;
-  institution: string;
-  year: string;
-  created_at?: string | null;
-  updated_at?: string | null;
-  credential_url?: string | null;
-  issue_date?: string | null;
-  expiry_date?: string | null;
-  issuer: string;
+  company: string;
+  position: string;
+  start_date: string | null;
+  end_date?: string | null;
   description?: string | null;
 }
 
@@ -44,11 +45,17 @@ export interface Education {
   description?: string;
 }
 
-export interface Experience {
+export interface Certification {
   id: string;
-  company: string;
-  position: string;
-  start_date: string | null;
-  end_date?: string | null;
+  profile_id: string;
+  title: string;
+  institution: string;
+  year: string;
+  created_at?: string | null;
+  updated_at?: string | null;
+  credential_url?: string | null;
+  issue_date?: string | null;
+  expiry_date?: string | null;
+  issuer: string;
   description?: string | null;
 }
