@@ -27,7 +27,13 @@ export function Marketplace() {
 
       if (error) throw error;
 
-      setJobs(data || []);
+      // Convert the status to the correct type
+      const typedJobs = (data || []).map(job => ({
+        ...job,
+        status: job.status as 'open' | 'closed' | 'in-progress'
+      }));
+
+      setJobs(typedJobs);
     } catch (error) {
       console.error("Error fetching jobs:", error);
       toast.error("Erreur lors du chargement des offres");
