@@ -7,59 +7,85 @@ import { QuickActions } from "./QuickActions";
 import { RecentActivity } from "./RecentActivity";
 import { MrVictaureWelcome } from "./MrVictaureWelcome";
 import { ScrapedJobs } from "./ScrapedJobs";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useNotes } from "@/hooks/useNotes";
+import { useTodoList } from "@/hooks/useTodoList";
 
-export function DashboardContent() {
-  const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState("");
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
-  const colors = ["red", "blue", "green", "yellow"];
+interface DashboardContentProps {
+  currentPage: number;
+  isEditing: boolean;
+  viewportHeight: number;
+  onEditStateChange: (value: boolean) => void;
+  onRequestChat: () => void;
+}
 
-  const handleAddTodo = () => {
-    if (newTodo) {
-      setTodos([...todos, newTodo]);
-      setNewTodo("");
-    }
-  };
+export function DashboardContent({ 
+  currentPage,
+  isEditing,
+  viewportHeight,
+  onEditStateChange,
+  onRequestChat
+}: DashboardContentProps) {
+  const { data: stats } = useDashboardStats();
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
 
-  const handleToggleTodo = (index) => {
-    const updatedTodos = [...todos];
-    updatedTodos[index].completed = !updatedTodos[index].completed;
-    setTodos(updatedTodos);
-  };
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
 
-  const handleDeleteTodo = (index) => {
-    const updatedTodos = todos.filter((_, i) => i !== index);
-    setTodos(updatedTodos);
-  };
+  const colors = [
+    { value: "red", label: "Rouge", class: "bg-red-500" },
+    { value: "blue", label: "Bleu", class: "bg-blue-500" },
+    { value: "green", label: "Vert", class: "bg-green-500" },
+    { value: "yellow", label: "Jaune", class: "bg-yellow-500" }
+  ];
 
-  const handleAddNote = () => {
-    if (newNote) {
-      setNotes([...notes, { text: newNote, color: selectedColor }]);
-      setNewNote("");
-    }
-  };
-
-  const handleDeleteNote = (index) => {
-    const updatedNotes = notes.filter((_, i) => i !== index);
-    setNotes(updatedNotes);
+  const handleDismissWelcome = () => {
+    onEditStateChange(false);
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4">
       <div className="lg:col-span-8 space-y-4">
-        <MrVictaureWelcome />
+        <MrVictaureWelcome 
+          onDismiss={handleDismissWelcome}
+          onStartChat={onRequestChat}
+        />
         <DashboardStats />
         <DashboardChart />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <TodoSection
             todos={todos}
             newTodo={newTodo}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
             onTodoChange={setNewTodo}
-            onAdd={handleAddTodo}
-            onToggle={handleToggleTodo}
-            onDelete={handleDeleteTodo}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
+            onAllDayChange={setAllDay}
+            onAdd={addTodo}
+            onToggle={toggleTodo}
+            onDelete={deleteTodo}
           />
           <NotesSection
             notes={notes}
@@ -68,13 +94,13 @@ export function DashboardContent() {
             colors={colors}
             onNoteChange={setNewNote}
             onColorChange={setSelectedColor}
-            onAdd={handleAddNote}
-            onDelete={handleDeleteNote}
+            onAdd={addNote}
+            onDelete={deleteNote}
           />
         </div>
       </div>
       <div className="lg:col-span-4 space-y-4">
-        <QuickActions />
+        <QuickActions stats={stats} />
         <ScrapedJobs />
         <RecentActivity />
       </div>

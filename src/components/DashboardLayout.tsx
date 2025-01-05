@@ -21,7 +21,7 @@ export function DashboardLayout() {
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
 
-    // Déclenchement initial pour Safari iOS
+    // Initial trigger for iOS Safari
     setTimeout(updateHeight, 100);
 
     return () => {
