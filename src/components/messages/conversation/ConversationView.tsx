@@ -62,9 +62,18 @@ export function ConversationView({
     }
   };
 
+  const handleSendMessage = async (message: string) => {
+    try {
+      console.log("Sending message:", message); // Add logging
+      await onSendMessage(message, profile);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message");
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-background flex flex-col pt-14">
-      {/* Header */}
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
@@ -100,7 +109,6 @@ export function ConversationView({
         </div>
       </header>
 
-      {/* Messages */}
       <div className="flex-1 overflow-hidden">
         <ScrollArea 
           className="h-full px-4 py-4" 
@@ -147,13 +155,12 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      {/* Input */}
       <div className="shrink-0 border-t bg-background p-4">
         <div className="max-w-5xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
-            onSend={() => onSendMessage(inputMessage, profile)}
+            onSend={() => handleSendMessage(inputMessage)}
             onVoiceInput={onVoiceInput}
             isListening={isListening}
             isThinking={isThinking}
