@@ -74,28 +74,29 @@ export function Marketplace() {
   };
 
   return (
-    <section className="min-h-screen bg-background w-full">
-      <div className="container mx-auto px-4 py-4 max-w-[2000px]">
+    <section className="min-h-screen bg-background">
+      <div className="container mx-auto p-4 max-w-[2000px]">
         <div className="mb-4">
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
           >
             <Filter className="h-4 w-4" />
             {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
           </Button>
         </div>
+        
         <div className="grid grid-cols-1 gap-4">
           {showFilters ? (
-            <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
               <div className="lg:col-span-1">
                 <JobFilters
                   filters={filters}
                   onFilterChange={handleFilterChange}
                 />
               </div>
-              <div className="lg:col-span-5">
+              <div className="lg:col-span-4">
                 <JobList jobs={jobs} isLoading={isLoading} />
               </div>
             </div>

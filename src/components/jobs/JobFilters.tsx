@@ -30,8 +30,8 @@ export function JobFilters({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`lg:col-span-1 bg-card rounded-lg shadow-sm border ${
-        isMobile ? "sticky top-0 z-10 bg-opacity-95 backdrop-blur-sm" : ""
+      className={`bg-card rounded-lg shadow-sm border sticky ${
+        isMobile ? "top-0 z-10 bg-opacity-95 backdrop-blur-sm" : "top-4"
       }`}
     >
       <div className="p-4 border-b border-border">
@@ -54,18 +54,16 @@ export function JobFilters({
 
       <ScrollArea className="h-[calc(100vh-200px)] lg:h-auto">
         <motion.div 
-          className="p-4 space-y-6"
+          className="p-4 space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="space-y-4">
-            <SearchFilter filters={filters} onFilterChange={onFilterChange} />
-            <Separator />
-            <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
-            <Separator />
-            <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
-          </div>
+          <SearchFilter filters={filters} onFilterChange={onFilterChange} />
+          <Separator />
+          <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
+          <Separator />
+          <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
         </motion.div>
       </ScrollArea>
     </motion.div>
