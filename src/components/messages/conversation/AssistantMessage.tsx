@@ -36,7 +36,7 @@ export function AssistantMessage({ chatMessages, onSelectConversation }: Assista
           <p className="text-sm text-muted-foreground line-clamp-2 text-left">
             {chatMessages.length > 0 
               ? chatMessages[chatMessages.length - 1]?.content 
-              : "Comment puis-je vous aider aujourd'hui ?"}
+              : "Bonjour! Comment puis-je vous aider aujourd'hui?"}
           </p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
             <Clock className="h-3 w-3" />
