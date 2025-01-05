@@ -18,11 +18,11 @@ export function Navigation() {
   const NavLinks = () => (
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
       <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
-        <span className="relative z-10">Trouver un Job</span>
+        <span className="relative z-10">Trouver une job</span>
         <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
-        <span className="relative z-10">Pour les Employeurs</span>
+        <span className="relative z-10">Pour les employeurs</span>
         <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">

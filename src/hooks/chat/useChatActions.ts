@@ -5,13 +5,14 @@ import { toast } from "sonner";
 export function useChatActions(
   messages: Message[],
   setMessages: (messages: Message[]) => void,
-  deletedMessages: Message[],
+  setIsThinking: (isThinking: boolean) => void,
   setDeletedMessages: (messages: Message[]) => void,
-  setInputMessage: (message: string) => void,
-  setIsThinking: (isThinking: boolean) => void
+  deletedMessages: Message[]
 ) {
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string, profile: any) => {
     if (!message.trim()) return;
+
+    setIsThinking(true);
 
     try {
       const userMessage: Message = {
@@ -30,14 +31,13 @@ export function useChatActions(
       };
 
       setMessages([...messages, userMessage, thinkingMessage]);
-      setIsThinking(true);
       setInputMessage("");
 
       try {
+        const aiResponse = await generateAIResponse(message, profile);
         await saveMessage(userMessage);
-        console.log('Generating AI response...');
-        const aiResponse = await generateAIResponse(message);
-        console.log('AI response generated:', aiResponse);
+        
+        console.log('Réponse de l\'IA générée:', aiResponse);
         
         const assistantMessage: Message = {
           id: crypto.randomUUID(),
@@ -47,17 +47,18 @@ export function useChatActions(
         };
 
         await saveMessage(assistantMessage);
+        
         setMessages([...messages, userMessage, assistantMessage]);
       } catch (error) {
-        console.error("Error generating AI response:", error);
-        toast.error("Une erreur est survenue lors de la génération de la réponse");
+        console.error("Erreur lors de la génération de la réponse:", error);
+        toast.error("Oups! Y'a eu un pépin avec la réponse. On réessaye?");
         setMessages([...messages, userMessage]);
       } finally {
         setIsThinking(false);
       }
     } catch (error) {
-      console.error("Error in handleSendMessage:", error);
-      toast.error("Une erreur est survenue lors de l'envoi du message");
+      console.error("Erreur dans handleSendMessage:", error);
+      toast.error("Ben voyons donc! Ça n'a pas marché. On réessaye?");
       setIsThinking(false);
     }
   };
@@ -67,10 +68,10 @@ export function useChatActions(
       setDeletedMessages(messages);
       await deleteAllMessages();
       setMessages([]);
-      toast.success("La conversation a été effacée");
+      toast.success("La conversation a été effacée, là!");
     } catch (error) {
-      console.error("Error clearing chat:", error);
-      toast.error("Une erreur est survenue lors de l'effacement de la conversation");
+      console.error("Erreur lors de l'effacement:", error);
+      toast.error("Aïe! Ça n'a pas voulu s'effacer. On réessaye?");
     }
   };
 
@@ -82,17 +83,17 @@ export function useChatActions(
         }
         setMessages(deletedMessages);
         setDeletedMessages([]);
-        toast.success("La conversation a été restaurée");
+        toast.success("Parfait! La conversation est revenue!");
       }
     } catch (error) {
-      console.error("Error restoring chat:", error);
-      toast.error("Une erreur est survenue lors de la restauration de la conversation");
+      console.error("Erreur lors de la restauration:", error);
+      toast.error("Oups! On n'a pas pu ramener la conversation. On réessaye?");
     }
   };
 
   return {
     handleSendMessage,
     clearChat,
-    restoreChat
+    restoreChat,
   };
 }
