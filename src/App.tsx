@@ -28,14 +28,14 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
+      <div className="min-h-screen w-full flex items-center justify-center bg-background">
         <Loader className="w-8 h-8" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-[100vh] min-h-[calc(var(--vh,1vh)*100)] w-full overflow-y-auto">
+    <div className="min-h-screen w-full bg-background">
       <Routes>
         <Route 
           path="/" 
