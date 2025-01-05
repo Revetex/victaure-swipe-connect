@@ -24,6 +24,12 @@ export function MessagesContent({
 }: MessagesContentProps) {
   const { profile } = useProfile();
 
+  const handleBack = () => {
+    // Pour l'instant, on ne fait que rafraîchir la page
+    // car nous n'avons pas de gestion d'état pour la navigation
+    window.location.href = "/dashboard";
+  };
+
   return (
     <div className="h-full">
       <ConversationView
@@ -32,7 +38,7 @@ export function MessagesContent({
         isListening={isListening}
         isThinking={isThinking}
         profile={profile}
-        onBack={() => {}}
+        onBack={handleBack}
         onSendMessage={onSendMessage}
         onVoiceInput={onVoiceInput}
         setInputMessage={setInputMessage}
