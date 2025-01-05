@@ -29,4 +29,6 @@ export interface Job {
   company?: string;
   salary?: string;
   skills?: string[];
+  source?: 'Victaure' | 'Externe'; // Added source field
+  url?: string; // Added url field for external jobs
 }
