@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/chat/messageTypes";
+import { v4 as uuidv4 } from 'uuid';
 
 const getHuggingFaceApiKey = async () => {
   console.info('Récupération de la clé API Hugging Face...');
@@ -60,13 +61,12 @@ export const saveMessage = async (message: Message): Promise<void> => {
   try {
     const { error } = await supabase
       .from('ai_chat_messages')
-      .insert([
-        {
-          user_id: (await supabase.auth.getUser()).data.user?.id,
-          content: message.content,
-          sender: message.sender,
-        },
-      ]);
+      .insert({
+        id: uuidv4(),
+        user_id: (await supabase.auth.getUser()).data.user?.id,
+        content: message.content,
+        sender: message.sender,
+      });
 
     if (error) throw error;
   } catch (error) {
