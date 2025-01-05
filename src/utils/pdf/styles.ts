@@ -2,15 +2,15 @@ import type { PDFStyles } from './types';
 
 export const pdfStyles: PDFStyles = {
   colors: {
-    primary: '#1E40AF',
-    secondary: '#60A5FA',
+    primary: '#1E293B',
+    secondary: '#475569',
     background: '#FFFFFF',
     text: {
       primary: '#1A1F2C',
-      secondary: '#555555',
-      muted: '#8E9196'
+      secondary: '#475569',
+      muted: '#94A3B8'
     },
-    accent: '#E5DEFF'
+    accent: '#E2E8F0'
   },
   margins: {
     top: 20,
