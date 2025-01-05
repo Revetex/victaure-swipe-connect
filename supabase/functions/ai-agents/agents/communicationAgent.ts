@@ -11,72 +11,67 @@ export class CommunicationAgent {
     console.log("Communication Agent: Processing user interaction...");
     try {
       // Get user profile
-      const { data: profile } = await this.supabase
+      const { data: profile, error: profileError } = await this.supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      // Generate contextual response based on profile and message
-      const response = await this.generateResponse(message, profile);
-      
-      // Save interaction
-      await this.saveInteraction(userId, message, response);
-      
-      return { success: true, response };
+      if (profileError) throw profileError;
+
+      // Check for specific actions in the message
+      if (message.toLowerCase().includes('recherche') && message.toLowerCase().includes('mission')) {
+        return await this.handleJobSearch(message, profile);
+      }
+
+      if (message.toLowerCase().includes('modifie') && message.toLowerCase().includes('profil')) {
+        return await this.handleProfileUpdate(message, profile);
+      }
+
+      // Default response with career guidance
+      return await this.generateCareerAdvice(message, profile);
     } catch (error) {
       console.error("Communication Agent error:", error);
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: error.message,
+        response: "Je m'excuse, une erreur est survenue. Pouvez-vous reformuler votre demande?"
+      };
     }
   }
 
-  private async generateResponse(message: string, profile: any) {
-    try {
-      const context = this.buildContext(profile);
-      const response = await this.callHuggingFace(message, context);
-      return response;
-    } catch (error) {
-      console.error("Error generating response:", error);
-      return "Je m'excuse, j'ai rencontré une difficulté. Pourriez-vous reformuler votre demande?";
-    }
-  }
+  private async handleJobSearch(message: string, profile: any) {
+    const { data: jobs, error } = await this.supabase
+      .from('jobs')
+      .select('*')
+      .eq('status', 'open')
+      .limit(5);
 
-  private buildContext(profile: any) {
+    if (error) throw error;
+
+    const response = `J'ai trouvé ${jobs.length} missions qui pourraient vous intéresser. Voici les plus récentes :\n\n` +
+      jobs.map((job: any) => `- ${job.title} chez ${job.company_name} à ${job.location}\n`).join('');
+
     return {
-      role: profile?.role || 'professional',
-      skills: profile?.skills?.join(', ') || 'non spécifiées',
-      location: `${profile?.city || 'non spécifiée'}, ${profile?.state || 'Québec'}, ${profile?.country || 'Canada'}`,
-      experience: profile?.experiences || [],
-      education: profile?.education || [],
-      certifications: profile?.certifications || []
+      success: true,
+      response,
+      jobs
     };
   }
 
-  private async callHuggingFace(message: string, context: any) {
-    // Implement the actual call to Hugging Face here
-    // This is where you would use the HUGGING_FACE_CONFIG from config.ts
-    return "Je comprends votre demande. Pour mieux vous aider, j'aimerais en savoir plus sur vos objectifs professionnels.";
+  private async handleProfileUpdate(message: string, profile: any) {
+    return {
+      success: true,
+      response: "Pour modifier votre profil, j'ai besoin de votre confirmation explicite. Quelles informations souhaitez-vous mettre à jour?"
+    };
   }
 
-  private async saveInteraction(userId: string, message: string, response: string) {
-    const { error } = await this.supabase
-      .from('ai_chat_messages')
-      .insert([
-        {
-          user_id: userId,
-          content: message,
-          sender: 'user'
-        },
-        {
-          user_id: userId,
-          content: response,
-          sender: 'assistant'
-        }
-      ]);
+  private async generateCareerAdvice(message: string, profile: any) {
+    const response = `Je comprends votre situation. En tant qu'expert en orientation professionnelle au Québec, voici mes conseils personnalisés basés sur votre profil actuel et le marché local.`;
 
-    if (error) {
-      console.error("Error saving interaction:", error);
-      throw error;
-    }
+    return {
+      success: true,
+      response
+    };
   }
 }
