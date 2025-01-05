@@ -22,8 +22,8 @@ export function Hero() {
           <div className="flex flex-col items-center gap-6 mb-8">
             <Logo size="lg" className="mb-4" />
             <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50 mb-2">
-              Transformez votre carrière avec{" "}
-              <span className="text-foreground">Victaure</span>
+              La plateforme intelligente pour{" "}
+              <span className="text-foreground">l'emploi et les services</span>
             </h1>
           </div>
           <motion.div 
@@ -33,8 +33,8 @@ export function Hero() {
             className="h-1 w-32 bg-gradient-to-r from-primary to-primary/50 mx-auto rounded-full mb-8"
           />
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
-            Une plateforme innovante qui connecte les talents aux meilleures opportunités
-            grâce à l'intelligence artificielle.
+            Trouvez les meilleurs talents ou opportunités professionnelles. 
+            Offrez ou recherchez des services de qualité, tous domaines confondus.
           </p>
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
