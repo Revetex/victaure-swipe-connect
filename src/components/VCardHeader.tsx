@@ -63,14 +63,14 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       className="flex items-start gap-4"
     >
       <div className="relative group">
-        <Avatar className="h-20 w-20 ring-2 ring-white/20 shrink-0">
+        <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
           <AvatarImage 
             src={profile.avatar_url || ''} 
             alt={profile.full_name || ''}
             className="object-cover w-full h-full"
           />
           <AvatarFallback className="bg-muted">
-            <UserCircle2 className="h-12 w-12 text-muted-foreground" />
+            <UserCircle2 className="h-14 w-14 text-muted-foreground" />
           </AvatarFallback>
         </Avatar>
         {isEditing && (
@@ -78,7 +78,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
             htmlFor="avatar-upload"
           >
-            <Upload className="h-5 w-5 text-white" />
+            <Upload className="h-6 w-6 text-white" />
             <input
               id="avatar-upload"
               type="file"
@@ -97,27 +97,27 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom complet"
-              className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="text-xl font-semibold bg-white/10 border-white/20 text-foreground placeholder:text-muted-foreground"
               style={{ color: selectedStyle.colors.text.primary }}
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
+              className="text-sm bg-white/10 border-white/20 text-foreground/90 placeholder:text-muted-foreground"
               style={{ color: selectedStyle.colors.text.secondary }}
             />
           </div>
         ) : (
           <>
             <h2 
-              className="text-xl font-semibold truncate"
+              className="text-xl font-semibold truncate text-foreground"
               style={{ color: selectedStyle.colors.text.primary }}
             >
               {profile.full_name || "Nom non défini"}
             </h2>
             <p 
-              className="text-sm"
+              className="text-sm text-foreground/80"
               style={{ color: selectedStyle.colors.text.secondary }}
             >
               {profile.role || "Rôle non défini"}
