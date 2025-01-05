@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, X, Search, User, Briefcase } from "lucide-react";
+import { Bot, X, Search, User, Briefcase, Building2, GraduationCap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface AIAssistantProps {
   onClose: () => void;
@@ -16,6 +17,45 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Array<{ type: string; content: any }>>([]);
+  const navigate = useNavigate();
+
+  const systemContext = {
+    platform: {
+      type: "job_platform",
+      features: [
+        "job_search",
+        "job_posting",
+        "profile_management",
+        "career_advice",
+        "skill_assessment"
+      ],
+      userTypes: ["professional", "employer"],
+    },
+    capabilities: [
+      "search_jobs",
+      "analyze_profile",
+      "provide_career_advice",
+      "assist_with_job_posting",
+      "skill_recommendations",
+      "market_insights"
+    ]
+  };
+
+  const handleAction = (action: string, data?: any) => {
+    switch (action) {
+      case 'navigate_to_jobs':
+        navigate('/jobs');
+        break;
+      case 'navigate_to_profile':
+        navigate('/profile');
+        break;
+      case 'create_job':
+        navigate('/jobs/create');
+        break;
+      default:
+        console.log('Action non reconnue:', action);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,17 +73,41 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       // Add user message to chat
       setMessages(prev => [...prev, { type: 'user', content: input }]);
       
-      // Call AI assistant function
+      // Get user profile for better context
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      // Get recent jobs for context
+      const { data: recentJobs } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      // Call AI assistant function with enhanced context
       const { data, error } = await supabase.functions.invoke('ai-job-assistant', {
         body: { 
           message: input,
           userId: user.id,
           context: {
-            previousMessages: messages.slice(-5), // Envoyer les 5 derniers messages pour le contexte
-            userProfile: user,
+            systemContext,
+            previousMessages: messages.slice(-5),
+            userProfile: profile,
+            recentJobs,
             currentAction: input.toLowerCase().includes('cherche') ? 'search_jobs' : 
                          input.toLowerCase().includes('conseil') ? 'career_advice' :
-                         input.toLowerCase().includes('profil') ? 'analyze_profile' : 'general_assistance'
+                         input.toLowerCase().includes('profil') ? 'analyze_profile' :
+                         input.toLowerCase().includes('créer') ? 'create_job' :
+                         'general_assistance',
+            userIntent: {
+              isSearching: input.toLowerCase().includes('cherche') || input.toLowerCase().includes('trouve'),
+              isAsking: input.toLowerCase().includes('comment') || input.toLowerCase().includes('pourquoi'),
+              needsAdvice: input.toLowerCase().includes('conseil') || input.toLowerCase().includes('aide'),
+              wantsToCreate: input.toLowerCase().includes('créer') || input.toLowerCase().includes('poster'),
+            }
           }
         }
       });
@@ -51,7 +115,21 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       if (error) throw error;
 
       // Add AI response to chat
-      setMessages(prev => [...prev, { type: 'assistant', content: data }]);
+      setMessages(prev => [...prev, { 
+        type: 'assistant', 
+        content: {
+          ...data,
+          suggestedActions: data.suggestedActions || []
+        }
+      }]);
+
+      // Handle any suggested actions
+      if (data.suggestedActions?.length > 0) {
+        data.suggestedActions.forEach((action: any) => {
+          handleAction(action.type, action.data);
+        });
+      }
+
       setInput("");
       
     } catch (error) {
@@ -73,7 +151,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-blue-500" />
-            <h3 className="font-semibold">Assistant IA</h3>
+            <h3 className="font-semibold">Assistant Carrière IA</h3>
           </div>
           <Button
             variant="ghost"
@@ -85,7 +163,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
           </Button>
         </div>
 
-        <ScrollArea className="h-[300px] p-4">
+        <ScrollArea className="h-[400px] p-4">
           <AnimatePresence mode="popLayout">
             {messages.map((message, index) => (
               <motion.div
@@ -116,13 +194,44 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
                       {message.content.jobs && (
                         <div className="mt-2 space-y-2">
                           {message.content.jobs.map((job: any, i: number) => (
-                            <div key={i} className="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 rounded">
+                            <div 
+                              key={i} 
+                              className="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                              onClick={() => navigate(`/jobs/${job.id}`)}
+                            >
                               <Briefcase className="h-4 w-4" />
                               <div>
                                 <p className="font-medium">{job.title}</p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{job.company}</p>
+                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                  <Building2 className="h-3 w-3" />
+                                  <span>{job.company}</span>
+                                  {job.required_skills && job.required_skills.length > 0 && (
+                                    <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-2 py-0.5 rounded">
+                                      {job.required_skills[0]}
+                                      {job.required_skills.length > 1 && ` +${job.required_skills.length - 1}`}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
+                          ))}
+                        </div>
+                      )}
+                      {message.content.suggestedActions && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {message.content.suggestedActions.map((action: any, i: number) => (
+                            <Button
+                              key={i}
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAction(action.type, action.data)}
+                              className="flex items-center gap-1"
+                            >
+                              {action.icon === 'briefcase' && <Briefcase className="h-3 w-3" />}
+                              {action.icon === 'user' && <User className="h-3 w-3" />}
+                              {action.icon === 'graduation-cap' && <GraduationCap className="h-3 w-3" />}
+                              {action.label}
+                            </Button>
                           ))}
                         </div>
                       )}
@@ -145,7 +254,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Posez vos questions ou demandez de l'aide pour votre recherche..."
+              placeholder="Posez vos questions sur l'emploi, les missions, ou demandez des conseils..."
               className="flex-1"
               disabled={isLoading}
             />
