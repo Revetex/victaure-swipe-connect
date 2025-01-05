@@ -1,55 +1,46 @@
-import { ExtendedJsPDF } from '../../types';
-import { UserProfile } from '@/types/profile';
-import { pdfStyles } from '../styles';
+import { ExtendedJsPDF } from "@/types/pdf";
+import { UserProfile } from "@/types/profile";
+import QRCode from "qrcode";
 
-export const renderHeader = (
+export const renderHeader = async (
   doc: ExtendedJsPDF,
   profile: UserProfile,
-  yPos: number = pdfStyles.margins.top
-): number => {
-  let currentY = yPos;
+  startY: number
+): Promise<number> => {
+  let currentY = startY;
 
-  // Name
+  // Add profile photo if available with better positioning
+  if (profile.avatar_url) {
+    try {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = profile.avatar_url;
+      });
+      doc.addImage(img, 'JPEG', 20, currentY, 35, 35, undefined, 'MEDIUM');
+      
+      // Add QR code next to the photo
+      const qrCodeUrl = await QRCode.toDataURL(window.location.href);
+      doc.addImage(qrCodeUrl, 'PNG', 160, currentY, 30, 30);
+      
+      currentY += 40;
+    } catch (error) {
+      console.error('Error loading profile image:', error);
+    }
+  }
+  
+  // Name with larger font size
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(pdfStyles.fonts.header.size);
-  doc.setTextColor(pdfStyles.colors.primary);
-  doc.text(profile.full_name || 'Non défini', pdfStyles.margins.left, currentY);
-  currentY += 10;
-
-  // Role
+  doc.text(profile.full_name || 'No Name', 20, currentY);
+  currentY += 8;
+  
+  // Role with improved styling
+  doc.setFontSize(16);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(pdfStyles.fonts.subheader.size);
-  doc.setTextColor(pdfStyles.colors.secondary);
-  doc.text(profile.role || 'Non défini', pdfStyles.margins.left, currentY);
-  currentY += 15;
-
-  // Contact info with improved spacing and styling
-  doc.setFontSize(pdfStyles.fonts.body.size);
-  doc.setTextColor(pdfStyles.colors.text.secondary);
-
-  if (profile.email) {
-    doc.text(`Email: ${profile.email}`, pdfStyles.margins.left, currentY);
-    currentY += 6;
-  }
-
-  if (profile.phone) {
-    doc.text(`Téléphone: ${profile.phone}`, pdfStyles.margins.left, currentY);
-    currentY += 6;
-  }
-
-  if (profile.city || profile.state) {
-    doc.text(
-      `Localisation: ${[profile.city, profile.state].filter(Boolean).join(', ')}`,
-      pdfStyles.margins.left,
-      currentY
-    );
-    currentY += 10;
-  }
-
-  // Add a subtle separator line
-  doc.setDrawColor(pdfStyles.colors.accent);
-  doc.setLineWidth(0.5);
-  doc.line(pdfStyles.margins.left, currentY, 190, currentY);
+  doc.text(profile.role || 'No Role', 20, currentY);
   currentY += 10;
 
   return currentY;

@@ -1,50 +1,64 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
 serve(async (req) => {
+  console.log('Fonction get-secret appelée');
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { secretName } = await req.json()
+    const { secretName } = await req.json();
+    console.log('Secret demandé:', secretName);
     
-    // Create a Supabase client with the Auth context of the logged in user
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
-    )
+    if (!secretName) {
+      console.error('Nom du secret non fourni');
+      return new Response(
+        JSON.stringify({ error: 'Le nom du secret est requis' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
 
-    const { data, error } = await supabaseClient.rpc('get_secret', {
-      secret_name: secretName,
-    })
-
-    if (error) throw error
+    const secret = Deno.env.get(secretName);
+    console.log(`Secret ${secretName} ${secret ? 'trouvé' : 'non trouvé'}`);
+    
+    if (!secret) {
+      console.error(`Secret ${secretName} non trouvé`);
+      return new Response(
+        JSON.stringify({ error: `Secret ${secretName} non trouvé` }),
+        { 
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
 
     return new Response(
-      JSON.stringify({ secret: data }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      JSON.stringify({ secret }),
+      { 
         status: 200,
-      },
-    )
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   } catch (error) {
+    console.error('Erreur dans la fonction get-secret:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      },
-    )
+      JSON.stringify({ 
+        error: 'Erreur interne du serveur',
+        details: error.message 
+      }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
-})
+});

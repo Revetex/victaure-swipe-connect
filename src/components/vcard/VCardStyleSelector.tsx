@@ -1,6 +1,7 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { styleOptions } from "./styles";
 import { StyleOption } from "./types";
+import { VCardStyleSelectorMinimal } from "./VCardStyleSelectorMinimal";
+import { motion } from "framer-motion";
+import { styleOptions } from "./styles";
 
 interface VCardStyleSelectorProps {
   selectedStyle: StyleOption;
@@ -9,31 +10,20 @@ interface VCardStyleSelectorProps {
 }
 
 export function VCardStyleSelector({ selectedStyle, onStyleSelect, isEditing }: VCardStyleSelectorProps) {
+  if (!isEditing) return null;
+  
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-900 dark:text-gray-100">
-        Style de carte
-      </label>
-      <Select 
-        value={selectedStyle.id} 
-        onValueChange={(value) => {
-          const style = styleOptions.find(s => s.id === value);
-          if (style) {
-            onStyleSelect(style);
-          }
-        }}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Sélectionnez un style" />
-        </SelectTrigger>
-        <SelectContent>
-          {styleOptions.map((style) => (
-            <SelectItem key={style.id} value={style.id}>
-              {style.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg"
+    >
+      <VCardStyleSelectorMinimal
+        selectedStyle={selectedStyle}
+        onStyleSelect={onStyleSelect}
+        styleOptions={styleOptions}
+      />
+    </motion.div>
   );
 }

@@ -3,8 +3,6 @@ import { MessagesList } from "./conversation/MessagesList";
 import { useProfile } from "@/hooks/useProfile";
 import { useMessages } from "@/hooks/useMessages";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { MessageSquare } from "lucide-react";
 
 interface MessagesContentProps {
   messages: any[];
@@ -59,35 +57,13 @@ export function MessagesContent({
   }
 
   return (
-    <div className="h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="px-4 py-6 max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3"
-          >
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <MessageSquare className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">Messages</h1>
-              <p className="text-sm text-muted-foreground">
-                Gérez vos conversations et restez connecté
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-      
-      <div className="px-4 py-6 max-w-5xl mx-auto">
-        <MessagesList
-          messages={messages}
-          chatMessages={chatMessages}
-          onSelectConversation={handleSelectConversation}
-          onMarkAsRead={(messageId) => markAsRead.mutate(messageId)}
-        />
-      </div>
+    <div className="h-full">
+      <MessagesList
+        messages={messages}
+        chatMessages={chatMessages}
+        onSelectConversation={handleSelectConversation}
+        onMarkAsRead={(messageId) => markAsRead.mutate(messageId)}
+      />
     </div>
   );
 }

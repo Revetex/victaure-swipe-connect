@@ -14,7 +14,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack?: () => void;
+  onBack?: () => void;  // Made optional with ?
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -64,6 +64,7 @@ export function ConversationView({
 
   const handleSendMessage = async (message: string) => {
     try {
+      console.log("Sending message:", message);
       await onSendMessage(message, profile);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -72,31 +73,29 @@ export function ConversationView({
   };
 
   return (
-    <div className="fixed inset-0 bg-background flex flex-col pt-16">
-      <header className="shrink-0 border-b bg-background px-6 py-4">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-4">
+    <div className="fixed inset-0 bg-background flex flex-col pt-14">
+      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
+        <div className="flex items-center justify-between max-w-5xl mx-auto">
+          <div className="flex items-center gap-3">
             {onBack && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onBack}
-                className="shrink-0 hover:bg-accent/10 transition-colors h-12 w-12"
+                className="shrink-0"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <Avatar className="h-14 w-14 shrink-0">
+            <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
-              <AvatarFallback className="bg-accent/20">
-                <Bot className="h-7 w-7 text-accent" />
+              <AvatarFallback className="bg-primary/20">
+                <Bot className="h-5 w-5 text-primary" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-2xl font-semibold truncate text-foreground">
-                Mr. Victaure
-              </h2>
-              <p className="text-base text-muted-foreground truncate">
+              <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+              <p className="text-sm text-muted-foreground truncate">
                 {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
               </p>
             </div>
@@ -105,40 +104,33 @@ export function ConversationView({
             variant="ghost"
             size="icon"
             onClick={handleClearChat}
-            className="shrink-0 hover:bg-destructive/10 hover:text-destructive transition-colors h-12 w-12"
+            className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
           >
-            <Trash2 className="h-5 w-5" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden bg-background">
+      <div className="flex-1 overflow-hidden">
         <ScrollArea 
-          className="h-full px-4 py-6" 
+          className="h-full px-4 py-4" 
           onScroll={handleScroll}
         >
-          <div className="max-w-6xl mx-auto space-y-6">
+          <div className="max-w-5xl mx-auto space-y-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
-                <motion.div
+                <ChatMessage
                   key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ChatMessage
-                    content={message.content}
-                    sender={message.sender}
-                    thinking={message.thinking}
-                    showTimestamp={
-                      index === 0 || 
-                      messages[index - 1]?.sender !== message.sender ||
-                      new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
-                    }
-                    timestamp={message.timestamp}
-                  />
-                </motion.div>
+                  content={message.content}
+                  sender={message.sender}
+                  thinking={message.thinking}
+                  showTimestamp={
+                    index === 0 || 
+                    messages[index - 1]?.sender !== message.sender ||
+                    new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
+                  }
+                  timestamp={message.timestamp}
+                />
               ))}
             </AnimatePresence>
             <div ref={messagesEndRef} />
@@ -151,22 +143,22 @@ export function ConversationView({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="fixed bottom-28 right-6"
+              className="fixed bottom-24 right-4"
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-colors h-12 w-12"
+                className="rounded-full shadow-lg"
                 onClick={scrollToBottom}
               >
-                <ArrowDown className="h-5 w-5" />
+                <ArrowDown className="h-4 w-4" />
               </Button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background p-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="shrink-0 border-t bg-background p-4">
+        <div className="max-w-5xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}

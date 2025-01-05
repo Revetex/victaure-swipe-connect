@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Message } from "@/types/chat/messageTypes";
-import { generatePersonalizedAIResponse, saveMessage, deleteAllMessages } from "@/services/ai/service";
+import { generateAIResponse, saveMessage, deleteAllMessages } from "@/services/ai/service";
 import { toast } from "sonner";
 
 export function useChatActions(
@@ -37,7 +37,7 @@ export function useChatActions(
       try {
         await saveMessage(userMessage);
         console.log('Generating AI response...');
-        const aiResponse = await generatePersonalizedAIResponse(message);
+        const aiResponse = await generateAIResponse(message);
         console.log('AI response generated:', aiResponse);
         
         const assistantMessage: Message = {
