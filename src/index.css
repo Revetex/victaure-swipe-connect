@@ -75,6 +75,19 @@
     min-height: -webkit-fill-available;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    position: relative;
+    z-index: 0;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    z-index: -1;
   }
 
   ::-webkit-scrollbar {
