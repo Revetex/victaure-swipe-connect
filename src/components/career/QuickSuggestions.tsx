@@ -30,6 +30,10 @@ const suggestions = [
   }
 ];
 
+interface QuickSuggestionsProps {
+  onSelect: (suggestion: string) => void;
+}
+
 export function QuickSuggestions({ onSelect }: QuickSuggestionsProps) {
   return (
     <motion.div
@@ -59,7 +63,8 @@ export function QuickSuggestions({ onSelect }: QuickSuggestionsProps) {
               <p className="text-sm text-gray-400 mt-1">{suggestion.description}</p>
             </Button>
           </motion.div>
-        ))}
+        );
+      })}
     </motion.div>
   );
 }
