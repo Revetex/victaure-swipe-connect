@@ -9,6 +9,7 @@ import { ScrapedJobs } from "./ScrapedJobs";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useNotes } from "@/hooks/useNotes";
 import { useTodoList } from "@/hooks/useTodoList";
+import { DashboardStats as DashboardStatsType } from "@/types/dashboard";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -91,7 +92,7 @@ export function DashboardContent({
         </div>
       </div>
       <div className="lg:col-span-4 space-y-4">
-        <QuickActions stats={stats} />
+        <QuickActions stats={stats as DashboardStatsType} />
         <ScrapedJobs />
         <RecentActivity />
       </div>
