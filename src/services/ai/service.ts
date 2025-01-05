@@ -19,7 +19,7 @@ async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error('No API key found');
     }
 
-    return data;
+    return data.secret;
   } catch (error) {
     console.error('Error getting API key:', error);
     throw new Error('Failed to retrieve API key. Please check your configuration.');
@@ -63,7 +63,12 @@ export async function generateAIResponse(message: string): Promise<string> {
     }
 
     const data = await response.json();
-    return data[0]?.generated_text || 'Je suis désolé, je ne peux pas répondre pour le moment.';
+    
+    if (!data || !data[0]?.generated_text) {
+      throw new Error('Invalid response format from API');
+    }
+    
+    return data[0].generated_text.trim();
   } catch (error) {
     console.error('Error generating AI response:', error);
     throw error;

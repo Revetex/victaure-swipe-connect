@@ -22,10 +22,6 @@ export function useChatActions(
         timestamp: new Date(),
       };
 
-      await saveMessage(userMessage);
-      setMessages([...messages, userMessage]);
-      setInputMessage("");
-
       const thinkingMessage: Message = {
         id: uuidv4(),
         content: "",
@@ -36,9 +32,12 @@ export function useChatActions(
 
       setMessages([...messages, userMessage, thinkingMessage]);
       setIsThinking(true);
+      setInputMessage("");
 
       try {
+        await saveMessage(userMessage);
         const aiResponse = await generateAIResponse(message);
+        
         const assistantMessage: Message = {
           id: uuidv4(),
           content: aiResponse,
@@ -58,6 +57,7 @@ export function useChatActions(
     } catch (error) {
       console.error("Error in handleSendMessage:", error);
       toast.error("Erreur lors de l'envoi du message");
+      setIsThinking(false);
     }
   };
 
