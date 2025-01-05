@@ -15,13 +15,13 @@ async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error('Failed to retrieve API key');
     }
 
-    // The RPC function returns a single row with a secret column
-    if (!data || typeof data.secret !== 'string' || !data.secret) {
+    // The RPC function returns an array with a single row
+    if (!Array.isArray(data) || data.length === 0 || !data[0].secret) {
       console.error('No API key found in response:', data);
       throw new Error('No API key found');
     }
 
-    return data.secret;
+    return data[0].secret;
   } catch (error) {
     console.error('Error getting API key:', error);
     throw new Error('Failed to retrieve API key. Please check your configuration.');
