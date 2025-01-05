@@ -100,31 +100,35 @@ export function DashboardContent({
     return (
       <div className="dashboard-card h-full">
         <div className="p-3 sm:p-4 md:p-6 h-full">
-          <div className="space-y-6">
-            <TodoSection
-              todos={todos}
-              newTodo={newTodo}
-              selectedDate={selectedDate}
-              selectedTime={selectedTime}
-              allDay={allDay}
-              onTodoChange={setNewTodo}
-              onDateChange={setSelectedDate}
-              onTimeChange={setSelectedTime}
-              onAllDayChange={setAllDay}
-              onAdd={addTodo}
-              onToggle={toggleTodo}
-              onDelete={deleteTodo}
-            />
-            <NotesSection
-              notes={notes}
-              newNote={newNote}
-              selectedColor={selectedColor}
-              colors={colors}
-              onNoteChange={setNewNote}
-              onColorChange={setSelectedColor}
-              onAdd={addNote}
-              onDelete={deleteNote}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
+            <div className="h-full overflow-hidden">
+              <TodoSection
+                todos={todos}
+                newTodo={newTodo}
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                allDay={allDay}
+                onTodoChange={setNewTodo}
+                onDateChange={setSelectedDate}
+                onTimeChange={setSelectedTime}
+                onAllDayChange={setAllDay}
+                onAdd={addTodo}
+                onToggle={toggleTodo}
+                onDelete={deleteTodo}
+              />
+            </div>
+            <div className="h-full overflow-hidden">
+              <NotesSection
+                notes={notes}
+                newNote={newNote}
+                selectedColor={selectedColor}
+                colors={colors}
+                onNoteChange={setNewNote}
+                onColorChange={setSelectedColor}
+                onAdd={addNote}
+                onDelete={deleteNote}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -74,8 +74,8 @@ export function Marketplace() {
   };
 
   return (
-    <section className="min-h-screen bg-background">
-      <div className="max-w-[2000px] mx-auto px-4 py-4">
+    <section className="min-h-screen bg-background w-full">
+      <div className="container mx-auto px-4 py-4 max-w-[2000px]">
         <div className="mb-4">
           <Button
             variant="outline"
@@ -88,14 +88,14 @@ export function Marketplace() {
         </div>
         <div className="grid grid-cols-1 gap-4">
           {showFilters ? (
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
               <div className="lg:col-span-1">
                 <JobFilters
                   filters={filters}
                   onFilterChange={handleFilterChange}
                 />
               </div>
-              <div className="lg:col-span-4">
+              <div className="lg:col-span-5">
                 <JobList jobs={jobs} isLoading={isLoading} />
               </div>
             </div>
