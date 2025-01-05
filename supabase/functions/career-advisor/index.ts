@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,10 +23,10 @@ serve(async (req) => {
 
     // Create a Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get the user's profile
+    // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -47,17 +46,22 @@ serve(async (req) => {
 
     // Prepare the context for the AI
     const systemPrompt = `Tu es Mr Victaure, un conseiller en orientation professionnelle expert et bienveillant. 
-    Tu aides les utilisateurs à améliorer leur profil professionnel en posant des questions pertinentes et en donnant des conseils constructifs.
-    Voici le profil actuel de l'utilisateur :
-    - Nom: ${profile.full_name || 'Non défini'}
-    - Rôle: ${profile.role || 'Non défini'}
-    - Compétences: ${profile.skills?.join(', ') || 'Non définies'}
-    - Bio: ${profile.bio || 'Non définie'}
-
-    Pose des questions pertinentes pour aider l'utilisateur à améliorer son profil. 
-    Concentre-toi sur un aspect à la fois.
+    Tu aides les utilisateurs à améliorer leur profil professionnel et à atteindre leurs objectifs de carrière.
+    
+    Profil de l'utilisateur :
+    - Nom : ${profile.full_name}
+    - Rôle actuel : ${profile.role || 'Non spécifié'}
+    - Compétences : ${profile.skills ? profile.skills.join(', ') : 'Non spécifiées'}
+    - Localisation : ${profile.city || 'Non spécifiée'}, ${profile.state || 'Non spécifié'}, ${profile.country || 'Non spécifié'}
+    
+    Utilise ces informations pour personnaliser tes conseils.
     Sois encourageant et bienveillant dans tes réponses.
     Suggère des améliorations concrètes basées sur les réponses de l'utilisateur.`;
+
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      throw new Error('OpenAI API key not found');
+    }
 
     console.log('Sending request to OpenAI');
 
@@ -65,7 +69,7 @@ serve(async (req) => {
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${openaiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
