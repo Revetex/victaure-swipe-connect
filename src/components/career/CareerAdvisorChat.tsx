@@ -18,14 +18,46 @@ export function CareerAdvisorChat() {
   const { profile, setProfile } = useProfile();
   const { toast } = useToast();
 
-  const handleSuggestionSelect = (suggestion: string) => {
-    // Handle suggestion selection logic here
+  const handleSuggestionSelect = async (suggestion: string) => {
     setMessages((prev) => [...prev, { content: suggestion, sender: "user" }]);
+    setIsTyping(true);
+
+    try {
+      const { data: response, error } = await supabase.functions.invoke('career-advisor', {
+        body: { message: suggestion, userId: profile?.id }
+      });
+
+      if (error) throw error;
+
+      setMessages((prev) => [...prev, { content: response.response, sender: "advisor" }]);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Une erreur est survenue lors de la communication avec le conseiller");
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleMessageSubmit = async (message: string) => {
-    // Handle message submission logic here
+    if (!message.trim()) return;
+
     setMessages((prev) => [...prev, { content: message, sender: "user" }]);
+    setIsTyping(true);
+
+    try {
+      const { data: response, error } = await supabase.functions.invoke('career-advisor', {
+        body: { message, userId: profile?.id }
+      });
+
+      if (error) throw error;
+
+      setMessages((prev) => [...prev, { content: response.response, sender: "advisor" }]);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Une erreur est survenue lors de la communication avec le conseiller");
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleProfileUpdate = async () => {
@@ -58,7 +90,7 @@ export function CareerAdvisorChat() {
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-gray-100">
-      <ChatHeader />
+      <ChatHeader isLoading={isTyping} />
       
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         <motion.div
@@ -181,7 +213,7 @@ export function CareerAdvisorChat() {
       </div>
 
       <div className="p-4 border-t border-gray-800">
-        <ChatInput onSubmit={handleMessageSubmit} />
+        <ChatInput isLoading={isTyping} onSendMessage={handleMessageSubmit} />
       </div>
     </div>
   );

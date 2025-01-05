@@ -23,3 +23,16 @@ export interface ChatInputProps {
 export interface QuickSuggestionsProps {
   onSelect: (suggestion: string) => void;
 }
+
+export interface ProfileUpdatePayload {
+  bio?: string;
+  role?: string;
+  skills?: string[];
+  experiences?: Array<{
+    company: string;
+    position: string;
+    startDate: string;
+    endDate?: string;
+    description?: string;
+  }>;
+}
