@@ -1,7 +1,7 @@
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { VCard } from "@/components/VCard";
+import { VCard } from "@/components/vcard/VCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useEffect } from "react";
