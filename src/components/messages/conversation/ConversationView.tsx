@@ -14,7 +14,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack?: () => void;  // Made optional with ?
+  onBack?: () => void;
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -64,7 +64,6 @@ export function ConversationView({
 
   const handleSendMessage = async (message: string) => {
     try {
-      console.log("Sending message:", message);
       await onSendMessage(message, profile);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -73,8 +72,8 @@ export function ConversationView({
   };
 
   return (
-    <div className="fixed inset-0 bg-background flex flex-col pt-14">
-      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-14">
+      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 shadow-sm">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
             {onBack && (
@@ -82,19 +81,19 @@ export function ConversationView({
                 variant="ghost"
                 size="icon"
                 onClick={onBack}
-                className="shrink-0"
+                className="shrink-0 hover:bg-primary/10 transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <Avatar className="h-10 w-10 shrink-0">
+            <Avatar className="h-10 w-10 shrink-0 ring-2 ring-primary/20">
               <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
               <AvatarFallback className="bg-primary/20">
                 <Bot className="h-5 w-5 text-primary" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+              <h2 className="text-lg font-semibold truncate bg-gradient-to-r from-primary to-high-contrast-magenta bg-clip-text text-transparent">Mr. Victaure</h2>
               <p className="text-sm text-muted-foreground truncate">
                 {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
               </p>
@@ -104,14 +103,14 @@ export function ConversationView({
             variant="ghost"
             size="icon"
             onClick={handleClearChat}
-            className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
+            className="shrink-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden bg-gradient-to-b from-background/50 to-background">
         <ScrollArea 
           className="h-full px-4 py-4" 
           onScroll={handleScroll}
@@ -119,18 +118,25 @@ export function ConversationView({
           <div className="max-w-5xl mx-auto space-y-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
-                <ChatMessage
+                <motion.div
                   key={message.id}
-                  content={message.content}
-                  sender={message.sender}
-                  thinking={message.thinking}
-                  showTimestamp={
-                    index === 0 || 
-                    messages[index - 1]?.sender !== message.sender ||
-                    new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
-                  }
-                  timestamp={message.timestamp}
-                />
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChatMessage
+                    content={message.content}
+                    sender={message.sender}
+                    thinking={message.thinking}
+                    showTimestamp={
+                      index === 0 || 
+                      messages[index - 1]?.sender !== message.sender ||
+                      new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
+                    }
+                    timestamp={message.timestamp}
+                  />
+                </motion.div>
               ))}
             </AnimatePresence>
             <div ref={messagesEndRef} />
@@ -147,7 +153,7 @@ export function ConversationView({
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg"
+                className="rounded-full shadow-lg bg-primary/90 hover:bg-primary/100 transition-colors"
                 onClick={scrollToBottom}
               >
                 <ArrowDown className="h-4 w-4" />
@@ -157,7 +163,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background p-4">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur p-4 shadow-lg">
         <div className="max-w-5xl mx-auto">
           <ChatInput
             value={inputMessage}
