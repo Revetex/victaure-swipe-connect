@@ -28,36 +28,36 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
           </motion.div>
           <div>
             <h2 className="text-2xl font-bold">M. Victaure</h2>
-            <p className="text-muted-foreground">Votre Expert en Construction</p>
+            <p className="text-muted-foreground">Expert en Placement et Orientation - Québec</p>
           </div>
         </div>
 
         <div className="space-y-6 mb-6">
           <p className="text-lg">
-            Bonjour! Je suis M. Victaure, votre expert dédié dans le domaine de la construction au Québec. Je suis là pour vous accompagner dans votre développement professionnel et vous aider à saisir les meilleures opportunités.
+            Bonjour! Je suis M. Victaure, votre conseiller expert en placement et orientation professionnelle au Québec. Fort de mon expertise du marché du travail québécois, je suis là pour vous guider vers les meilleures opportunités et vous aider à développer votre carrière.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
               {
                 icon: UserCog,
-                title: "Profil Personnalisé",
-                description: "Optimisons ensemble votre profil professionnel"
+                title: "Orientation Personnalisée",
+                description: "Conseils adaptés à vos objectifs professionnels"
               },
               {
                 icon: MessageSquare,
-                title: "Conseils Sur Mesure",
-                description: "Échangeons sur vos objectifs de carrière"
+                title: "Expertise Québécoise",
+                description: "Connaissance approfondie du marché local"
               },
               {
                 icon: BrainCircuit,
-                title: "Expertise Construction",
-                description: "Profitez de mon expérience du secteur"
+                title: "Placement Stratégique",
+                description: "Identification des meilleures opportunités"
               },
               {
                 icon: Sparkles,
-                title: "Opportunités",
-                description: "Découvrez les meilleures offres du marché"
+                title: "Développement Professionnel",
+                description: "Accompagnement vers votre réussite"
               }
             ].map((feature, index) => (
               <div 
