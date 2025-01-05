@@ -1,133 +1,59 @@
-import React, { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React from 'react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 interface LocationMapProps {
   latitude?: number | null;
   longitude?: number | null;
-  onLocationSelect?: (lat: number, lng: number) => void;
   isEditing?: boolean;
+  onLocationSelect?: (lat: number, lng: number) => void;
 }
 
-export function LocationMap({ latitude, longitude, onLocationSelect, isEditing }: LocationMapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const marker = useRef<mapboxgl.Marker | null>(null);
+export function LocationMap({ latitude, longitude, isEditing, onLocationSelect }: LocationMapProps) {
+  const handleMapClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isEditing) return;
 
-  useEffect(() => {
-    const initializeMap = async () => {
-      if (!mapContainer.current) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
 
-      try {
-        // Get Mapbox token from Supabase secrets
-        const { data: secretData, error: secretError } = await supabase
-          .rpc('get_secret', { secret_name: 'MAPBOX_PUBLIC_TOKEN' });
+    // Convert click coordinates to approximate lat/lng
+    // Canada's approximate bounds: lat: 41.7-83.1°N, lng: -141.0--52.6°W
+    const lng = -141.0 + (x / rect.width) * (141.0 - 52.6);
+    const lat = 41.7 + ((rect.height - y) / rect.height) * (83.1 - 41.7);
 
-        if (secretError) throw secretError;
-
-        const mapboxToken = secretData || 'pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug'; // Fallback token
-        mapboxgl.accessToken = mapboxToken;
-        
-        const initialCenter: [number, number] = [longitude || -72.5, latitude || 46.35];
-        
-        map.current = new mapboxgl.Map({
-          container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/streets-v12',
-          center: initialCenter,
-          zoom: 12,
-        });
-
-        // Add navigation controls
-        map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-        // Add marker if coordinates exist
-        if (latitude && longitude) {
-          marker.current = new mapboxgl.Marker()
-            .setLngLat([longitude, latitude])
-            .addTo(map.current);
-        }
-
-        // Add click handler if editing
-        if (isEditing) {
-          map.current.on('click', (e) => {
-            const { lng, lat } = e.lngLat;
-            if (marker.current) {
-              marker.current.setLngLat([lng, lat]);
-            } else {
-              marker.current = new mapboxgl.Marker()
-                .setLngLat([lng, lat])
-                .addTo(map.current);
-            }
-            onLocationSelect?.(lat, lng);
-          });
-        }
-      } catch (error) {
-        console.error('Error initializing map:', error);
-        toast.error("Erreur lors de l'initialisation de la carte");
-      }
-    };
-
-    initializeMap();
-
-    return () => {
-      map.current?.remove();
-    };
-  }, [latitude, longitude, isEditing, onLocationSelect]);
-
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast.error("La géolocalisation n'est pas supportée par votre navigateur");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        
-        if (map.current) {
-          map.current.flyTo({
-            center: [longitude, latitude],
-            zoom: 14
-          });
-
-          if (marker.current) {
-            marker.current.setLngLat([longitude, latitude]);
-          } else {
-            marker.current = new mapboxgl.Marker()
-              .setLngLat([longitude, latitude])
-              .addTo(map.current);
-          }
-        }
-
-        onLocationSelect?.(latitude, longitude);
-        toast.success("Position actuelle récupérée avec succès");
-      },
-      (error) => {
-        console.error('Error getting location:', error);
-        toast.error("Impossible d'obtenir votre position actuelle");
-      }
-    );
+    onLocationSelect?.(lat, lng);
+    toast.success("Position sélectionnée");
   };
 
   return (
-    <div className="space-y-4">
-      {isEditing && (
-        <Button 
-          onClick={getCurrentLocation}
-          className="w-full"
-          variant="outline"
-        >
-          <MapPin className="mr-2 h-4 w-4" />
-          Utiliser ma position actuelle
-        </Button>
-      )}
-      <div className="h-[300px] w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800">
-        <div ref={mapContainer} className="h-full w-full" />
+    <Card className="w-full h-[300px] relative overflow-hidden">
+      <div 
+        className="w-full h-full relative cursor-pointer bg-[url('/canada-map.png')] bg-cover bg-center"
+        onClick={handleMapClick}
+      >
+        {latitude && longitude && (
+          <div 
+            className="absolute"
+            style={{
+              left: `${((longitude + 141.0) / (141.0 - 52.6)) * 100}%`,
+              bottom: `${((latitude - 41.7) / (83.1 - 41.7)) * 100}%`,
+              transform: 'translate(-50%, 50%)'
+            }}
+          >
+            <MapPin className="h-6 w-6 text-primary animate-bounce" />
+          </div>
+        )}
       </div>
-    </div>
+      {isEditing && (
+        <div className="absolute bottom-2 left-2 right-2 flex justify-center">
+          <Button variant="secondary" className="bg-background/80 backdrop-blur-sm">
+            Cliquez sur la carte pour sélectionner un emplacement
+          </Button>
+        </div>
+      )}
+    </Card>
   );
 }
