@@ -49,7 +49,11 @@ export const ChatMessage = memo(function ChatMessage({
           <Bot className="h-6 w-6" />
         ) : (
           <Avatar className="h-12 w-12">
-            <AvatarImage src={profile?.avatar_url} alt={profile?.full_name || "User"} />
+            <AvatarImage 
+              src={profile?.avatar_url} 
+              alt={profile?.full_name || "User"} 
+              className="object-cover"
+            />
             <AvatarFallback className="bg-muted">
               {profile?.full_name?.slice(0, 2).toUpperCase() || "U"}
             </AvatarFallback>
@@ -63,7 +67,7 @@ export const ChatMessage = memo(function ChatMessage({
         <div className={cn(
           "rounded-lg px-4 py-2 w-full shadow-sm",
           isBot 
-            ? "bg-background/95 text-foreground backdrop-blur-sm border" 
+            ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
             : "bg-primary text-primary-foreground"
         )}>
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
