@@ -49,7 +49,11 @@ export function ConversationView({
   };
 
   const handleBack = () => {
-    navigate("/dashboard/messages");
+    if (onBack) {
+      onBack();
+    } else {
+      navigate("/dashboard/messages");
+    }
   };
 
   useEffect(() => {
