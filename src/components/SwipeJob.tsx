@@ -26,8 +26,7 @@ const defaultFilters: JobFilters = {
   searchTerm: "",
   createdAfter: null,
   createdBefore: null,
-  deadlineBefore: null,
-  categories: []
+  deadlineBefore: null
 };
 
 export function SwipeJob() {
