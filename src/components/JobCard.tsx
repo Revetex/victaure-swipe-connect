@@ -5,7 +5,7 @@ import { CategoryIcon } from "./skills/CategoryIcon";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { Building2, Robot } from "lucide-react";
+import { Building2, Bot } from "lucide-react";
 import { JobBadges } from "./jobs/badges/JobBadges";
 
 type JobCardProps = Job;
@@ -51,7 +51,7 @@ export function JobCard(props: JobCardProps) {
               {title}
               {is_scraped && (
                 <Badge variant="secondary" className="bg-blue-500/10 hover:bg-blue-500/20 flex items-center gap-1">
-                  <Robot className="h-3 w-3" />
+                  <Bot className="h-3 w-3" />
                   IA
                 </Badge>
               )}
