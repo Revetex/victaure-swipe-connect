@@ -40,6 +40,11 @@ async function getUserProfile(): Promise<UserProfile | null> {
   }
 }
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 2000; // 2 seconds
+
 export async function generateAIResponse(message: string): Promise<string> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), HUGGING_FACE_CONFIG.timeout);
@@ -56,38 +61,61 @@ export async function generateAIResponse(message: string): Promise<string> {
       .replace('{state}', formattedProfile.state)
       .replace('{country}', formattedProfile.country);
 
-    const response = await fetch(
-      `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
-          parameters: HUGGING_FACE_CONFIG.parameters
-        }),
-        signal: controller.signal
-      }
-    );
+    let lastError = null;
+    
+    // Retry logic with exponential backoff
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        const response = await fetch(
+          `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
+              parameters: HUGGING_FACE_CONFIG.parameters
+            }),
+            signal: controller.signal
+          }
+        );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      if (response.status === 503) {
-        throw new Error('Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.');
+        if (response.status === 503) {
+          console.log(`Attempt ${attempt + 1}: Model is loading...`);
+          const retryDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
+          await delay(retryDelay);
+          continue;
+        }
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erreur lors de la génération de la réponse');
+        }
+
+        const data = await response.json();
+        if (!data?.[0]?.generated_text) throw new Error('Format de réponse invalide');
+        
+        return data[0].generated_text.trim();
+      } catch (error) {
+        lastError = error;
+        if (error.name === 'AbortError' || attempt === MAX_RETRIES - 1) {
+          throw error;
+        }
+        console.error(`Attempt ${attempt + 1} failed:`, error);
+        await delay(INITIAL_RETRY_DELAY * Math.pow(2, attempt));
       }
-      throw new Error(errorData.error || 'Erreur lors de la génération de la réponse');
     }
 
-    const data = await response.json();
-    if (!data?.[0]?.generated_text) throw new Error('Format de réponse invalide');
-    
-    return data[0].generated_text.trim();
+    throw lastError || new Error('Échec après plusieurs tentatives');
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse IA:', error);
     if (error.name === 'AbortError') {
       throw new Error('La requête a pris trop de temps. Veuillez réessayer.');
+    }
+    if (error.message.includes('Service Unavailable')) {
+      throw new Error('Le modèle est en cours de chargement. Veuillez patienter quelques secondes et réessayer.');
     }
     throw error;
   } finally {
