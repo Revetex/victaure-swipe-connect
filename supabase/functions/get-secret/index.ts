@@ -6,21 +6,20 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('get-secret function called');
+  console.log('Fonction get-secret appelée');
 
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { secretName } = await req.json();
-    console.log('Requested secret:', secretName);
+    console.log('Secret demandé:', secretName);
     
     if (!secretName) {
-      console.error('No secret name provided');
+      console.error('Nom du secret non fourni');
       return new Response(
-        JSON.stringify({ error: 'Secret name is required' }),
+        JSON.stringify({ error: 'Le nom du secret est requis' }),
         { 
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -28,14 +27,13 @@ serve(async (req) => {
       );
     }
 
-    // Get the secret from Supabase
     const secret = Deno.env.get(secretName);
-    console.log(`Secret ${secretName} ${secret ? 'found' : 'not found'}`);
+    console.log(`Secret ${secretName} ${secret ? 'trouvé' : 'non trouvé'}`);
     
     if (!secret) {
-      console.error(`Secret ${secretName} not found`);
+      console.error(`Secret ${secretName} non trouvé`);
       return new Response(
-        JSON.stringify({ error: `Secret ${secretName} not found` }),
+        JSON.stringify({ error: `Secret ${secretName} non trouvé` }),
         { 
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -51,10 +49,10 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error in get-secret function:', error);
+    console.error('Erreur dans la fonction get-secret:', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Internal server error',
+        error: 'Erreur interne du serveur',
         details: error.message 
       }),
       { 
