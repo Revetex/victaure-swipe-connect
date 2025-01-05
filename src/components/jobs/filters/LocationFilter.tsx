@@ -1,66 +1,51 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cities } from "@/data/provinces";
-import { JobFilters } from "../JobFilterUtils";
 import { useState } from "react";
+import { provinces, cities, type Province } from "@/data/provinces";
 
 interface LocationFilterProps {
-  filters: JobFilters;
-  onFilterChange: (key: keyof JobFilters, value: any) => void;
+  onLocationChange: (province: Province | null, city: string | null) => void;
 }
 
-export function LocationFilter({ filters, onFilterChange }: LocationFilterProps) {
-  const [selectedProvince, setSelectedProvince] = useState<string>(filters.province || "all");
-  const availableCities = selectedProvince !== "all" ? cities[selectedProvince] || [] : [];
+export function LocationFilter({ onLocationChange }: LocationFilterProps) {
+  const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+
+  const handleProvinceChange = (province: Province) => {
+    setSelectedProvince(province);
+    setSelectedCity(null);
+    onLocationChange(province, null);
+  };
+
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city);
+    onLocationChange(selectedProvince, city);
+  };
 
   return (
-    <div className="space-y-4">
+    <div>
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Province
-        </label>
-        <Select
-          value={selectedProvince}
-          onValueChange={(value) => {
-            setSelectedProvince(value);
-            onFilterChange("province", value);
-            onFilterChange("location", "all"); // Reset city when province changes
-          }}
+        <label>Province</label>
+        <select
+          value={selectedProvince || ""}
+          onChange={(e) => handleProvinceChange(e.target.value as Province)}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Toutes les provinces" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les provinces</SelectItem>
-            {Object.keys(cities).map((province) => (
-              <SelectItem key={province} value={province}>
-                {province}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <option value="" disabled>Select a province</option>
+          {provinces.map((province) => (
+            <option key={province} value={province}>{province}</option>
+          ))}
+        </select>
       </div>
-
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Ville
-        </label>
-        <Select
-          value={filters.location}
-          onValueChange={(value) => onFilterChange("location", value)}
-          disabled={selectedProvince === "all"}
+        <label>City</label>
+        <select
+          value={selectedCity || ""}
+          onChange={(e) => handleCityChange(e.target.value)}
+          disabled={!selectedProvince}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Toutes les villes" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les villes</SelectItem>
-            {availableCities.map((city) => (
-              <SelectItem key={city} value={city}>
-                {city}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <option value="" disabled>Select a city</option>
+          {selectedProvince && cities[selectedProvince].map((city) => (
+            <option key={city} value={city}>{city}</option>
+          ))}
+        </select>
       </div>
     </div>
   );

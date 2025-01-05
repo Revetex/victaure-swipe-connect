@@ -33,9 +33,9 @@ export function VCardContact({ profile, isEditing, onUpdate }: VCardContactProps
   );
 
   const availableCities = selectedProvince ? cities[selectedProvince] : [];
-  const filteredCities = availableCities.filter(city =>
+  const filteredCities = availableCities?.filter(city =>
     city.toLowerCase().includes(citySearch.toLowerCase())
-  );
+  ) || [];
 
   const handleProvinceSelect = (province: Province) => {
     setSelectedProvince(province);
