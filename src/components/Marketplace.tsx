@@ -5,7 +5,7 @@ import { Job } from "@/types/job";
 import { supabase } from "@/integrations/supabase/client";
 import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
-import { Filter } from "lucide-react";
+import { Filter, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 
@@ -115,6 +115,15 @@ export function Marketplace() {
     fetchJobs();
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Chargement des offres...</span>
+      </div>
+    );
+  }
+
   return (
     <section className="py-8 min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4">
@@ -152,7 +161,11 @@ export function Marketplace() {
                 />
               </div>
             )}
-            <JobList jobs={jobs} isLoading={isLoading} />
+            <JobList 
+              jobs={jobs} 
+              isLoading={isLoading} 
+              onJobDeleted={fetchJobs}
+            />
           </div>
         </div>
       </div>
