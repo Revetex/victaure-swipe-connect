@@ -8,14 +8,22 @@ import { useProfile } from "@/hooks/useProfile";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/chat/messageTypes";
+import { v4 as uuidv4 } from 'uuid';
 
 export function CareerAdvisorChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const { profile, setProfile } = useProfile();
 
+  const createMessage = (content: string, sender: string): Message => ({
+    id: uuidv4(),
+    content,
+    sender,
+    timestamp: new Date(),
+  });
+
   const handleSuggestionSelect = async (suggestion: string) => {
-    setMessages((prev) => [...prev, { content: suggestion, sender: "user" }]);
+    setMessages((prev) => [...prev, createMessage(suggestion, "user")]);
     setIsTyping(true);
 
     try {
@@ -23,7 +31,7 @@ export function CareerAdvisorChat() {
         body: { message: suggestion, userId: profile?.id }
       });
 
-      setMessages((prev) => [...prev, { content: response.response, sender: "advisor" }]);
+      setMessages((prev) => [...prev, createMessage(response.response, "advisor")]);
     } catch (err) {
       console.error('Error:', err);
       toast({
@@ -39,7 +47,7 @@ export function CareerAdvisorChat() {
   const handleMessageSubmit = async (message: string) => {
     if (!message.trim()) return;
 
-    setMessages((prev) => [...prev, { content: message, sender: "user" }]);
+    setMessages((prev) => [...prev, createMessage(message, "user")]);
     setIsTyping(true);
 
     try {
@@ -47,7 +55,7 @@ export function CareerAdvisorChat() {
         body: { message, userId: profile?.id }
       });
 
-      setMessages((prev) => [...prev, { content: response.response, sender: "advisor" }]);
+      setMessages((prev) => [...prev, createMessage(response.response, "advisor")]);
     } catch (err) {
       console.error('Error:', err);
       toast({

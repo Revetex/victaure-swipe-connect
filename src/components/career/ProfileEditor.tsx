@@ -6,6 +6,7 @@ import { Edit2, Save, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProfileEditorProps {
   profile: UserProfile | null;
