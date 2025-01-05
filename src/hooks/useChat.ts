@@ -15,26 +15,62 @@ export function useChat() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const messageId = uuidv4();
-      const message = {
-        id: messageId,
+      // Add user message
+      const userMessageId = uuidv4();
+      const userMessage = {
+        id: userMessageId,
         content,
         user_id: user.id,
-        sender: 'user'
+        sender: 'user',
+        timestamp: new Date(),
       };
 
-      const { error } = await supabase
-        .from('ai_chat_messages')
-        .insert(message);
-
-      if (error) throw error;
-
-      setMessages(prev => [...prev, message]);
+      setMessages(prev => [...prev, userMessage]);
       setInputMessage("");
+      setIsThinking(true);
+
+      // Save user message to database
+      const { error: saveError } = await supabase
+        .from('ai_chat_messages')
+        .insert(userMessage);
+
+      if (saveError) throw saveError;
+
+      // Get AI response
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-agents', {
+        body: { 
+          action: 'handle_message',
+          message: content,
+          userId: user.id
+        }
+      });
+
+      if (aiError) throw aiError;
+
+      // Add AI response
+      const aiMessageId = uuidv4();
+      const aiMessage = {
+        id: aiMessageId,
+        content: aiResponse.response,
+        user_id: user.id,
+        sender: 'assistant',
+        timestamp: new Date(),
+      };
+
+      // Save AI message to database
+      const { error: saveAiError } = await supabase
+        .from('ai_chat_messages')
+        .insert(aiMessage);
+
+      if (saveAiError) throw saveAiError;
+
+      setMessages(prev => [...prev, aiMessage]);
       
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error("Erreur lors de l'envoi du message");
+    } finally {
+      setIsThinking(false);
     }
   };
 
