@@ -5,7 +5,7 @@ import { CategoryIcon } from "./skills/CategoryIcon";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { Building2 } from "lucide-react";
+import { Building2, Robot } from "lucide-react";
 import { JobBadges } from "./jobs/badges/JobBadges";
 
 type JobCardProps = Job;
@@ -24,7 +24,8 @@ export function JobCard(props: JobCardProps) {
     salary,
     budget,
     required_skills = [],
-    preferred_skills = []
+    preferred_skills = [],
+    is_scraped = false
   } = props;
   
   const displaySalary = salary || (budget ? `${budget} CAD` : undefined);
@@ -42,12 +43,18 @@ export function JobCard(props: JobCardProps) {
         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <motion.h3 
-              className="font-semibold leading-none tracking-tight text-lg text-foreground group-hover:text-primary transition-colors"
+              className="font-semibold leading-none tracking-tight text-lg text-foreground group-hover:text-primary transition-colors flex items-center gap-2"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
               {title}
+              {is_scraped && (
+                <Badge variant="secondary" className="bg-blue-500/10 hover:bg-blue-500/20 flex items-center gap-1">
+                  <Robot className="h-3 w-3" />
+                  IA
+                </Badge>
+              )}
             </motion.h3>
             {(company || company_name) && (
               <motion.div 
