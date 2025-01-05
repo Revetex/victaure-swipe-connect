@@ -5,6 +5,7 @@ import { Message } from "@/types/chat/messageTypes";
 
 async function getHuggingFaceApiKey(): Promise<string> {
   try {
+    console.log('Fetching Hugging Face API key...');
     const { data, error } = await supabase
       .rpc('get_secret', {
         secret_name: 'HUGGING_FACE_API_KEY'
@@ -15,7 +16,6 @@ async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error('Failed to retrieve API key');
     }
 
-    // The RPC function returns an array with a single row
     if (!Array.isArray(data) || data.length === 0 || !data[0].secret) {
       console.error('No API key found in response:', data);
       throw new Error('No API key found');
@@ -30,6 +30,7 @@ async function getHuggingFaceApiKey(): Promise<string> {
 
 export async function generateAIResponse(message: string): Promise<string> {
   try {
+    console.log('Starting AI response generation...');
     const apiKey = await getHuggingFaceApiKey();
     
     if (!apiKey) {
@@ -54,7 +55,8 @@ export async function generateAIResponse(message: string): Promise<string> {
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
-            return_full_text: false
+            return_full_text: false,
+            wait_for_model: true
           }
         }),
       }
@@ -63,10 +65,16 @@ export async function generateAIResponse(message: string): Promise<string> {
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Hugging Face API error:', errorData);
+      
+      // Check for specific error types
+      if (response.status === 503) {
+        throw new Error('Le modèle est en cours de chargement, veuillez réessayer dans quelques secondes.');
+      }
       throw new Error(errorData.error || 'Failed to generate AI response');
     }
 
     const data = await response.json();
+    console.log('Received response from API:', data);
     
     if (!data || !data[0]?.generated_text) {
       throw new Error('Invalid response format from API');
@@ -75,7 +83,10 @@ export async function generateAIResponse(message: string): Promise<string> {
     return data[0].generated_text.trim();
   } catch (error) {
     console.error('Error generating AI response:', error);
-    throw error;
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Une erreur est survenue lors de la génération de la réponse');
   }
 }
 

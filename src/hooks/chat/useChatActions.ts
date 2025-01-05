@@ -36,7 +36,9 @@ export function useChatActions(
 
       try {
         await saveMessage(userMessage);
+        console.log('Generating AI response...');
         const aiResponse = await generateAIResponse(message);
+        console.log('AI response generated:', aiResponse);
         
         const assistantMessage: Message = {
           id: uuidv4(),
@@ -49,7 +51,7 @@ export function useChatActions(
         setMessages([...messages, userMessage, assistantMessage]);
       } catch (error) {
         console.error("Error generating AI response:", error);
-        toast.error("Erreur lors de la génération de la réponse");
+        toast.error(error instanceof Error ? error.message : "Erreur lors de la génération de la réponse");
         setMessages([...messages, userMessage]);
       } finally {
         setIsThinking(false);
