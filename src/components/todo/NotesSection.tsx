@@ -6,25 +6,25 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface NotesSectionProps {
-  notes: StickyNoteType[];
-  newNote: string;
-  selectedColor: string;
-  colors: ColorOption[];
-  onNoteChange: (value: string) => void;
-  onColorChange: (color: string) => void;
-  onAdd: () => void;
-  onDelete: (id: string) => void;
+  notes?: StickyNoteType[];
+  newNote?: string;
+  selectedColor?: string;
+  colors?: ColorOption[];
+  onNoteChange?: (value: string) => void;
+  onColorChange?: (color: string) => void;
+  onAdd?: () => void;
+  onDelete?: (id: string) => void;
 }
 
 export function NotesSection({
-  notes,
-  newNote,
-  selectedColor,
-  colors,
-  onNoteChange,
-  onColorChange,
-  onAdd,
-  onDelete,
+  notes = [],
+  newNote = "",
+  selectedColor = "yellow",
+  colors = [],
+  onNoteChange = () => {},
+  onColorChange = () => {},
+  onAdd = () => {},
+  onDelete = () => {},
 }: NotesSectionProps) {
   const getColorClass = (colorValue: string) => {
     const colorMap: { [key: string]: string } = {
