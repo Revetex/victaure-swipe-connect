@@ -90,6 +90,7 @@ export default function Auth() {
                 id="rememberMe" 
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                className="h-3 w-3 md:h-4 md:w-4" // Adjusted size for mobile
               />
               <label 
                 htmlFor="rememberMe" 
@@ -105,9 +106,9 @@ export default function Auth() {
             <AuthVideo />
           </div>
 
-          {/* Legal Links */}
-          <div className="text-center text-sm pb-8">
-            <div className="space-x-4">
+          {/* Legal Links - Centered */}
+          <div className="text-center text-sm pb-8 space-y-4">
+            <div className="flex justify-center space-x-4">
               <Dialog>
                 <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
                   Politique de confidentialité
@@ -169,7 +170,7 @@ export default function Auth() {
                 </DialogContent>
               </Dialog>
             </div>
-            <div className="mt-2 text-muted-foreground">
+            <div className="text-muted-foreground">
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
             </div>
           </div>
