@@ -15,6 +15,8 @@ export const filterSchema = z.object({
   createdAfter: z.string().nullable().default(null),
   createdBefore: z.string().nullable().default(null),
   deadlineBefore: z.string().nullable().default(null),
+  search: z.string().default(""),
+  categories: z.array(z.string()).default([]),
 });
 
 export type JobFilters = z.infer<typeof filterSchema>;
@@ -34,4 +36,6 @@ export const defaultFilters: JobFilters = {
   createdAfter: null,
   createdBefore: null,
   deadlineBefore: null,
+  search: "",
+  categories: [],
 };

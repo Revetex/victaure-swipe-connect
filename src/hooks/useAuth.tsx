@@ -13,7 +13,6 @@ export function useAuth() {
     try {
       setIsLoading(true);
       
-      // Clear all storage to remove any stale tokens
       localStorage.clear();
       sessionStorage.clear();
       
@@ -47,16 +46,14 @@ export function useAuth() {
       try {
         setIsLoading(true);
         
-        // First try to get the session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
           
-          // If we get a network error and haven't exceeded retry attempts, try again
           if ((sessionError.message === "Failed to fetch" || sessionError.message.includes("NetworkError")) && retryCount < 3) {
             setRetryCount(prev => prev + 1);
-            retryTimeout = setTimeout(checkAuth, 2000); // Retry after 2 seconds
+            retryTimeout = setTimeout(checkAuth, 2000);
             return;
           }
           
@@ -77,7 +74,6 @@ export function useAuth() {
           return;
         }
 
-        // Verify session is still valid
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
@@ -99,7 +95,7 @@ export function useAuth() {
 
         if (mounted) {
           setIsAuthenticated(true);
-          setRetryCount(0); // Reset retry count on successful auth
+          setRetryCount(0);
         }
       } catch (error) {
         console.error('Auth check error:', error);
@@ -122,29 +118,12 @@ export function useAuth() {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
-      
       if (event === 'SIGNED_IN' && session) {
         setIsAuthenticated(true);
         navigate('/dashboard', { replace: true });
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
         setIsAuthenticated(false);
         navigate('/auth', { replace: true });
-      } else if (event === 'USER_UPDATED') {
-        if (session) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-          navigate('/auth', { replace: true });
-        }
-      } else if (event === 'TOKEN_REFRESHED' && session) {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (user && !error) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-          navigate('/auth', { replace: true });
-        }
       }
     });
 
