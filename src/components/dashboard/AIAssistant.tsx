@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -8,7 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { AIAssistantHeader } from "./ai/AIAssistantHeader";
 import { AIAssistantStatus } from "./ai/AIAssistantStatus";
 import { AIAssistantInput } from "./ai/AIAssistantInput";
-import { Bot, User } from "lucide-react";
+import { AIMessageList } from "./ai/AIMessageList";
+import { ArrowDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface AIAssistantProps {
   onClose: () => void;
@@ -20,6 +21,8 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const [isThinking, setIsThinking] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<Array<{ type: string; content: any }>>([]);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const handleAction = (action: string, data?: any) => {
@@ -38,6 +41,16 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
     }
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    setShowScrollButton(!isNearBottom);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -53,10 +66,8 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         return;
       }
 
-      // Add user message to chat
       setMessages(prev => [...prev, { type: 'user', content: input }]);
       
-      // Get user profile for better context
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
@@ -65,7 +76,6 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
       setIsTyping(true);
       
-      // Call AI assistant function
       const { data, error } = await supabase.functions.invoke('ai-job-assistant', {
         body: { 
           message: input,
@@ -79,7 +89,6 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
       if (error) throw error;
 
-      // Add AI response to chat
       setMessages(prev => [...prev, { 
         type: 'assistant', 
         content: {
@@ -88,7 +97,6 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         }
       }]);
 
-      // Handle any suggested actions
       if (data.suggestedActions?.length > 0) {
         data.suggestedActions.forEach((action: any) => {
           handleAction(action.type, action.data);
@@ -117,91 +125,30 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       <Card className="max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-gray-200 dark:border-gray-800">
         <AIAssistantHeader onClose={onClose} />
 
-        <ScrollArea className="h-[400px] p-4">
-          <AnimatePresence mode="popLayout">
-            {messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className={`flex items-start gap-2 mb-4 ${
-                  message.type === 'user' ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                {message.type === 'assistant' && (
-                  <div className="flex-shrink-0">
-                    <Bot className="h-6 w-6 text-blue-500" />
-                  </div>
-                )}
-                
-                <div className={`max-w-[80%] p-3 rounded-lg ${
-                  message.type === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                }`}>
-                  {message.type === 'user' ? (
-                    <p>{message.content}</p>
-                  ) : (
-                    <div className="space-y-2">
-                      <p>{message.content.message}</p>
-                      {message.content.jobs && (
-                        <div className="mt-2 space-y-2">
-                          {message.content.jobs.map((job: any, i: number) => (
-                            <div 
-                              key={i} 
-                              className="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                              onClick={() => navigate(`/jobs/${job.id}`)}
-                            >
-                              <Briefcase className="h-4 w-4" />
-                              <div>
-                                <p className="font-medium">{job.title}</p>
-                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                  <Building2 className="h-3 w-3" />
-                                  <span>{job.company}</span>
-                                  {job.required_skills && job.required_skills.length > 0 && (
-                                    <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-2 py-0.5 rounded">
-                                      {job.required_skills[0]}
-                                      {job.required_skills.length > 1 && ` +${job.required_skills.length - 1}`}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {message.content.suggestedActions && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {message.content.suggestedActions.map((action: any, i: number) => (
-                            <Button
-                              key={i}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleAction(action.type, action.data)}
-                              className="flex items-center gap-1"
-                            >
-                              {action.icon === 'briefcase' && <Briefcase className="h-3 w-3" />}
-                              {action.icon === 'user' && <User className="h-3 w-3" />}
-                              {action.icon === 'graduation-cap' && <GraduationCap className="h-3 w-3" />}
-                              {action.label}
-                            </Button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+        <AIMessageList 
+          messages={messages}
+          onScroll={handleScroll}
+          messagesEndRef={messagesEndRef}
+        />
 
-                {message.type === 'user' && (
-                  <div className="flex-shrink-0">
-                    <User className="h-6 w-6 text-white bg-blue-500 rounded-full p-1" />
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </ScrollArea>
+        <AnimatePresence>
+          {showScrollButton && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="fixed bottom-24 right-4"
+            >
+              <Button
+                size="icon"
+                className="rounded-full shadow-lg"
+                onClick={scrollToBottom}
+              >
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <AIAssistantStatus 
           isThinking={isThinking}
