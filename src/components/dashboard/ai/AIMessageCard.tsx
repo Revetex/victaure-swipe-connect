@@ -13,6 +13,22 @@ interface AIMessageCardProps {
 export function AIMessageCard({ message }: AIMessageCardProps) {
   const navigate = useNavigate();
 
+  const handleAction = (type: string, data?: any) => {
+    switch (type) {
+      case 'navigate_to_jobs':
+        navigate('/jobs');
+        break;
+      case 'navigate_to_profile':
+        navigate('/profile');
+        break;
+      case 'create_job':
+        navigate('/jobs/create');
+        break;
+      default:
+        console.log('Action non reconnue:', type);
+    }
+  };
+
   return (
     <div className={`flex items-start gap-2 mb-4 ${
       message.type === 'user' ? 'justify-end' : 'justify-start'
@@ -36,8 +52,11 @@ export function AIMessageCard({ message }: AIMessageCardProps) {
             {message.content.jobs && (
               <div className="mt-2 space-y-2">
                 {message.content.jobs.map((job: any, i: number) => (
-                  <div 
+                  <motion.div 
                     key={i} 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
                     className="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                     onClick={() => navigate(`/jobs/${job.id}`)}
                   >
@@ -55,7 +74,7 @@ export function AIMessageCard({ message }: AIMessageCardProps) {
                         )}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             )}
