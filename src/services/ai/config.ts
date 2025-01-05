@@ -24,13 +24,13 @@ Assure-toi de :
 - Encourager l'utilisateur dans sa démarche`;
 
 export const HUGGING_FACE_CONFIG = {
-  model: "meta-llama/Llama-2-70b-chat-hf",
+  model: "gpt-4o-mini",
   maxTokens: 4096,
   temperature: 0.8,
   top_p: 0.95,
   top_k: 50,
   repetition_penalty: 1.1,
-  timeout: 300000, // Increased timeout to 5 minutes
+  timeout: 300000, // 5 minutes timeout
   parameters: {
     do_sample: true,
     return_full_text: false,
@@ -48,8 +48,8 @@ export const HUGGING_FACE_CONFIG = {
 
 // Retry configuration
 export const RETRY_CONFIG = {
-  maxRetries: 5, // Increased from 3 to 5
-  initialDelay: 5000, // Increased initial delay to 5 seconds
-  maxDelay: 30000, // Maximum delay of 30 seconds
-  backoffFactor: 1.5 // Gentler backoff factor
+  maxRetries: 5,
+  initialDelay: 5000,
+  maxDelay: 30000,
+  backoffFactor: 1.5
 };

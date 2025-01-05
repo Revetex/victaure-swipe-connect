@@ -5,6 +5,7 @@ import { delay, calculateBackoff } from "./utils/retryUtils";
 import { getHuggingFaceApiKey, callHuggingFaceAPI } from "./utils/apiUtils";
 import { getUserProfile } from "./utils/profileUtils";
 import { handleWelcomeMessage, handleFallbackMessage, formatUserProfile, validateProfileUpdate } from "./messageHandlers";
+import { supabase } from "@/integrations/supabase/client";
 
 export async function generateAIResponse(message: string): Promise<string> {
   const controller = new AbortController();
