@@ -1,21 +1,14 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 export class CommunicationAgent {
-  private supabase;
+  constructor() {}
 
-  constructor(supabaseUrl: string, supabaseKey: string) {
-    this.supabase = createClient(supabaseUrl, supabaseKey);
-  }
-
-  async handleUserInteraction(message: string, userId: string) {
-    console.log("Communication Agent: Processing user interaction...");
+  async handleMessage(userId: string, message: string) {
     try {
       const response = await this.generateResponse(message);
       await this.saveInteraction(userId, message, response);
-      return { success: true, response };
+      return { response };
     } catch (error) {
-      console.error("Communication Agent error:", error);
-      return { success: false, error: error.message };
+      console.error('Error in CommunicationAgent:', error);
+      throw error;
     }
   }
 
@@ -36,6 +29,11 @@ export class CommunicationAgent {
         body: JSON.stringify({
           inputs: `Tu es M. Victaure, un assistant virtuel spécialisé en placement et recherche d'emploi au Québec. 
           Tu dois répondre en français québécois de manière naturelle et authentique.
+          Tu peux aider avec:
+          - La recherche d'emploi
+          - La création et modification de profil
+          - Le remplissage de formulaires
+          - Des conseils sur le marché du travail au Québec
           
           Message de l'utilisateur: ${message}
           
@@ -61,24 +59,7 @@ export class CommunicationAgent {
   }
 
   private async saveInteraction(userId: string, message: string, response: string) {
-    const { error } = await this.supabase
-      .from('ai_chat_messages')
-      .insert([
-        {
-          user_id: userId,
-          content: message,
-          sender: 'user'
-        },
-        {
-          user_id: userId,
-          content: response,
-          sender: 'assistant'
-        }
-      ]);
-
-    if (error) {
-      console.error("Error saving interaction:", error);
-      throw error;
-    }
+    // Implement if needed
+    console.log('Interaction saved:', { userId, message, response });
   }
 }

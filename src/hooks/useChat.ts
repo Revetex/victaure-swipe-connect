@@ -1,16 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { v4 as uuidv4 } from 'uuid';
 
 export function useChat() {
   const [messages, setMessages] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
-  const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
-  const sendMessage = async (content: string) => {
+  useEffect(() => {
+    loadMessages();
+  }, []);
+
+  const loadMessages = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('ai_chat_messages')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setMessages(data || []);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      toast.error("Erreur lors du chargement des messages");
+    }
+  };
+
+  const handleSendMessage = async (content: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
@@ -22,7 +44,7 @@ export function useChat() {
         content,
         user_id: user.id,
         sender: 'user',
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
       };
 
       setMessages(prev => [...prev, userMessage]);
@@ -54,7 +76,7 @@ export function useChat() {
         content: aiResponse.response,
         user_id: user.id,
         sender: 'assistant',
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
       };
 
       // Save AI message to database
@@ -74,13 +96,9 @@ export function useChat() {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
-    await sendMessage(inputMessage);
-  };
-
   const handleVoiceInput = () => {
     setIsListening(!isListening);
+    // Implement voice input logic if needed
   };
 
   const clearChat = async () => {
@@ -94,24 +112,20 @@ export function useChat() {
         .eq('user_id', user.id);
 
       if (error) throw error;
-
       setMessages([]);
       toast.success("Conversation effacée");
     } catch (error) {
       console.error('Error clearing chat:', error);
-      toast.error("Erreur lors de l'effacement");
+      toast.error("Erreur lors de l'effacement de la conversation");
     }
   };
 
   return {
     messages,
-    setMessages,
-    isLoading,
     inputMessage,
-    setInputMessage,
-    isListening,
     isThinking,
-    sendMessage,
+    isListening,
+    setInputMessage,
     handleSendMessage,
     handleVoiceInput,
     clearChat
