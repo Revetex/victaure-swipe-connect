@@ -75,21 +75,9 @@
     min-height: -webkit-fill-available;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    position: relative;
-    z-index: 0;
   }
 
-  body::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: inherit;
-    z-index: -1;
-  }
-
+  /* Improved scrollbar styling */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -103,12 +91,25 @@
     @apply bg-primary/10 hover:bg-primary/20 rounded-full transition-colors;
   }
 
+  /* Fix for iOS Safari viewport height */
   @supports (-webkit-touch-callout: none) {
     .min-h-screen {
       min-height: -webkit-fill-available;
     }
   }
 
+  /* Fix for Safari flexbox gap */
+  @supports not (gap: 1rem) {
+    .gap-4 > * + * {
+      margin-left: 1rem;
+    }
+    .flex-col.gap-4 > * + * {
+      margin-top: 1rem;
+      margin-left: 0;
+    }
+  }
+
+  /* Improve touch targets on mobile */
   @media (max-width: 640px) {
     button, 
     [role="button"],
@@ -120,12 +121,27 @@
   }
 }
 
+/* Font classes */
 .font-poppins { font-family: 'Poppins', sans-serif !important; }
 .font-montserrat { font-family: 'Montserrat', sans-serif !important; }
 .font-playfair { font-family: 'Playfair Display', serif !important; }
 .font-roboto { font-family: 'Roboto', sans-serif !important; }
 .font-opensans { font-family: 'Open Sans', sans-serif !important; }
+.font-inter { font-family: 'Inter', sans-serif !important; }
+.font-quicksand { font-family: 'Quicksand', sans-serif !important; }
+.font-lato { font-family: 'Lato', sans-serif !important; }
 
+/* Style classes */
+.style-default { @apply text-gray-900 dark:text-gray-100; }
+.style-warm { @apply text-amber-900 dark:text-amber-100; }
+.style-modern { @apply text-emerald-900 dark:text-emerald-100; }
+.style-elegant { @apply text-blue-900 dark:text-blue-100; }
+.style-bold { @apply text-purple-900 dark:text-purple-100; }
+.style-minimal { @apply text-gray-800 dark:text-gray-200; }
+.style-creative { @apply text-orange-900 dark:text-orange-100; }
+.style-professional { @apply text-sky-900 dark:text-sky-100; }
+
+/* Avatar improvements */
 .avatar-container {
   @apply relative overflow-hidden rounded-full border-2 border-primary/10;
   aspect-ratio: 1;
@@ -139,6 +155,7 @@
   @apply scale-105;
 }
 
+/* Mobile optimizations */
 @media (max-width: 640px) {
   .mobile-safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);

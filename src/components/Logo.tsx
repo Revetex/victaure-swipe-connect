@@ -1,24 +1,28 @@
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
-  size?: "sm" | "md" | "lg";
   className?: string;
+  size?: "sm" | "md" | "lg";
 }
 
-export function Logo({ size = "md", className }: LogoProps) {
-  const sizeClasses = {
-    sm: "h-6 w-6",
-    md: "h-8 w-8",
-    lg: "h-10 w-10"
+export function Logo({ className, size = "md" }: LogoProps) {
+  const sizes = {
+    sm: "h-8 w-8",
+    md: "h-12 w-12",
+    lg: "h-16 w-16",
   };
 
   return (
-    <div className={cn("relative", className)}>
-      <img 
-        src="/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png" 
-        alt="Victaure Logo" 
-        className={cn("object-contain", sizeClasses[size])}
+    <div className={cn("relative group", className)}>
+      <img
+        src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png"
+        alt="Victaure Logo"
+        className={cn(
+          "transition-all duration-300 group-hover:scale-105",
+          sizes[size]
+        )}
       />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
     </div>
   );
 }

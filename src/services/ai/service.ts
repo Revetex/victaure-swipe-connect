@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { AI_CONFIG, SYSTEM_PROMPT } from "./config";
+import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
 import { toast } from "sonner";
 import { Message } from "@/types/chat/messageTypes";
 import { UserProfile } from "@/types/profile";
@@ -64,7 +64,7 @@ export async function generateAIResponse(message: string): Promise<string> {
   const controller = new AbortController();
   const timeout = setTimeout(() => {
     controller.abort();
-  }, AI_CONFIG.timeout);
+  }, HUGGING_FACE_CONFIG.timeout);
 
   try {
     console.log('Génération de la réponse IA...');
@@ -75,7 +75,7 @@ export async function generateAIResponse(message: string): Promise<string> {
     console.log('Envoi de la requête à l\'API Hugging Face...');
     
     const response = await fetch(
-      `https://api-inference.huggingface.co/models/${AI_CONFIG.model}`,
+      `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
       {
         method: 'POST',
         headers: {
@@ -85,8 +85,9 @@ export async function generateAIResponse(message: string): Promise<string> {
         body: JSON.stringify({
           inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
-            max_new_tokens: AI_CONFIG.max_tokens,
-            temperature: AI_CONFIG.temperature,
+            max_new_tokens: HUGGING_FACE_CONFIG.maxTokens,
+            temperature: HUGGING_FACE_CONFIG.temperature,
+            top_p: HUGGING_FACE_CONFIG.top_p,
             do_sample: true,
             return_full_text: false,
             wait_for_model: true

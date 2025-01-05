@@ -1,18 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 export function VCardEmpty() {
-  const navigate = useNavigate();
-
   return (
-    <div className="text-center space-y-4 p-6 bg-card rounded-lg shadow-lg">
-      <h2 className="text-xl font-semibold">Aucun profil trouvé</h2>
-      <p className="text-muted-foreground">
-        Vous devez créer un profil pour accéder à toutes les fonctionnalités
-      </p>
-      <Button onClick={() => navigate(0)}>
-        Créer mon profil
-      </Button>
-    </div>
+    <Card className="w-full max-w-2xl mx-auto glass-card">
+      <CardContent className="p-6 text-center text-muted-foreground">
+        Aucune donnée de profil disponible
+      </CardContent>
+    </Card>
   );
 }
