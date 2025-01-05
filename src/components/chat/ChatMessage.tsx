@@ -1,10 +1,12 @@
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Bot, User } from "lucide-react";
+import { Bot } from "lucide-react";
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { ChatThinking } from "./ChatThinking";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useProfile } from "@/hooks/useProfile";
 
 interface ChatMessageProps {
   content: string;
@@ -22,6 +24,7 @@ export const ChatMessage = memo(function ChatMessage({
   timestamp,
 }: ChatMessageProps) {
   const isBot = sender === "assistant";
+  const { profile } = useProfile();
 
   if (thinking && isBot) {
     return <ChatThinking />;
@@ -39,13 +42,18 @@ export const ChatMessage = memo(function ChatMessage({
       )}
     >
       <div className={cn(
-        "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm",
+        "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full overflow-hidden border shadow-sm",
         isBot ? "bg-primary text-primary-foreground ring-2 ring-primary/10" : "bg-muted"
       )}>
         {isBot ? (
           <Bot className="h-4 w-4" />
         ) : (
-          <User className="h-4 w-4" />
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={profile?.avatar_url} alt={profile?.full_name || "User"} />
+            <AvatarFallback className="bg-muted">
+              {profile?.full_name?.slice(0, 2).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
         )}
       </div>
       <div className={cn(
