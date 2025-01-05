@@ -13,47 +13,57 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json()
+    const { message } = await req.json()
+    console.log('Received message:', message)
 
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${Deno.env.get('HUGGING_FACE_API_KEY')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 800,
-        top_p: 0.95,
-        frequency_penalty: 0,
-        presence_penalty: 0,
+        inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Canada. 
+                Tu communiques en français québécois de manière professionnelle et naturelle.
+                
+                User: ${message}
+                
+                Assistant:`,
+        parameters: {
+          max_new_tokens: 1024,
+          temperature: 0.7,
+          top_p: 0.9,
+          frequency_penalty: 0.0,
+          presence_penalty: 0.0,
+        }
       }),
     })
 
-    const data = await openAIResponse.json()
-
-    if (!openAIResponse.ok) {
-      throw new Error(data.error?.message || 'OpenAI API error')
+    if (!response.ok) {
+      throw new Error(`Hugging Face API error: ${response.statusText}`)
     }
 
+    const data = await response.json()
+    console.log('AI response:', data)
+
+    // Extract only the Assistant's response
+    const assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
+
     return new Response(
-      JSON.stringify({
-        response: data.choices[0].message.content,
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+      JSON.stringify({ response: assistantResponse || data[0].generated_text }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error in AI chat function:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
+      JSON.stringify({ 
+        error: 'Une erreur est survenue',
+        details: error.message 
+      }),
+      { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+        status: 500 
+      }
     )
   }
 })
