@@ -1,12 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin, Search } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { supabase } from "@/integrations/supabase/client";
 
 interface VCardContactProps {
   profile: any;
@@ -19,35 +18,9 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [mapboxToken, setMapboxToken] = useState<string>("");
-
-  useEffect(() => {
-    async function fetchMapboxToken() {
-      try {
-        const { data, error } = await supabase.functions.invoke('get-secret', {
-          body: { secret_name: 'MAPBOX_PUBLIC_TOKEN' }
-        });
-        
-        if (error) throw error;
-        if (data?.secret) {
-          setMapboxToken(data.secret);
-        } else {
-          toast.error("Impossible de charger la recherche d'adresses");
-        }
-      } catch (error) {
-        console.error('Error fetching Mapbox token:', error);
-        toast.error("Erreur lors du chargement de la recherche d'adresses");
-      }
-    }
-
-    fetchMapboxToken();
-  }, []);
 
   const handleAddressSearch = async (search: string) => {
-    setSearchValue(search);
-    
-    if (!search.trim() || !mapboxToken) {
+    if (!search.trim()) {
       setSearchResults([]);
       return;
     }
@@ -58,7 +31,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     const timeout = setTimeout(async () => {
       try {
         const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(search)}.json?country=ca&types=address&access_token=${mapboxToken}`
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(search)}.json?country=ca&types=address&access_token=pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug`
         );
         
         if (!response.ok) {
@@ -95,7 +68,6 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
       postal_code: postcode
     }));
 
-    setSearchValue(address);
     setIsOpen(false);
     toast.success("Adresse mise à jour avec succès");
   };
@@ -175,21 +147,19 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                     aria-expanded={isOpen}
                     className="w-full justify-between"
                   >
-                    {searchValue || profile.address || "Rechercher une adresse"}
+                    {profile.address || "Rechercher une adresse"}
                     <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[400px] p-0">
-                  <Command shouldFilter={false}>
+                  <Command>
                     <CommandInput
                       placeholder="Entrez une adresse..."
                       onValueChange={handleAddressSearch}
-                      value={searchValue}
+                      loading={isSearching}
                     />
                     <CommandList>
-                      <CommandEmpty>
-                        {isSearching ? "Recherche en cours..." : "Aucune adresse trouvée."}
-                      </CommandEmpty>
+                      <CommandEmpty>Aucune adresse trouvée.</CommandEmpty>
                       {searchResults.map((result) => (
                         <CommandItem
                           key={result.id}

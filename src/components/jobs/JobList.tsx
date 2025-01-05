@@ -1,71 +1,77 @@
+import { JobCard } from "@/components/JobCard";
 import { Job } from "@/types/job";
-import { JobCard } from "../JobCard";
-import { Loader } from "../ui/loader";
-import { motion } from "framer-motion";
+import { JobActions } from "./JobActions";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Search } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface JobListProps {
   jobs: Job[];
-  isLoading: boolean;
+  isLoading?: boolean;
+  onJobDeleted?: () => void;
 }
 
-export function JobList({ jobs, isLoading }: JobListProps) {
+export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader className="w-8 h-8" />
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center py-8 space-y-4"
+      >
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">Chargement des offres...</p>
+      </motion.div>
     );
   }
 
-  if (!jobs.length) {
+  if (!jobs?.length) {
     return (
-      <div className="text-center p-8">
-        <p className="text-muted-foreground">Aucune offre trouvée</p>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center py-8 space-y-4"
+      >
+        <Search className="h-12 w-12 text-muted-foreground" />
+        <div className="text-center space-y-2">
+          <p className="text-lg font-medium">Aucune annonce disponible</p>
+          <p className="text-sm text-muted-foreground">
+            Essayez d'ajuster vos filtres pour voir plus d'offres
+          </p>
+        </div>
+      </motion.div>
     );
   }
-
-  // Separate regular and scraped jobs
-  const regularJobs = jobs.filter(job => !job.is_scraped);
-  const scrapedJobs = jobs.filter(job => job.is_scraped);
 
   return (
-    <div className="space-y-8">
-      {regularJobs.length > 0 && (
-        <section>
-          <h2 className="text-lg font-semibold mb-4">Offres de la communauté</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {regularJobs.map((job, index) => (
-              <motion.div
-                key={job.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <JobCard {...job} />
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {scrapedJobs.length > 0 && (
-        <section>
-          <h2 className="text-lg font-semibold mb-4">Offres externes</h2>
-          <div className="grid grid-cols-1 gap-4">
-            {scrapedJobs.map((job, index) => (
-              <motion.div
-                key={job.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <JobCard {...job} />
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+    <ScrollArea className="h-[calc(100vh-12rem)]">
+      <motion.div 
+        className="grid gap-4 sm:gap-6 pr-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ staggerChildren: 0.1 }}
+      >
+        <AnimatePresence mode="popLayout">
+          {jobs.map((job) => (
+            <motion.div
+              key={job.id}
+              className="relative"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              layout
+            >
+              <JobCard {...job} />
+              <JobActions 
+                jobId={job.id} 
+                employerId={job.employer_id}
+                onDelete={onJobDeleted}
+                onEdit={() => {}}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+    </ScrollArea>
   );
 }
