@@ -42,20 +42,26 @@ export function useAuth() {
   useEffect(() => {
     let mounted = true;
     let retryTimeout: NodeJS.Timeout;
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 2000;
 
     const checkAuth = async () => {
       try {
         setIsLoading(true);
         setError(null);
         
+        // First try to get the session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
           
-          if ((sessionError.message === "Failed to fetch" || sessionError.message.includes("NetworkError")) && retryCount < 3) {
+          // Retry logic for network errors
+          if ((sessionError.message === "Failed to fetch" || 
+               sessionError.message.includes("NetworkError")) && 
+               retryCount < MAX_RETRIES) {
             setRetryCount(prev => prev + 1);
-            retryTimeout = setTimeout(checkAuth, 2000);
+            retryTimeout = setTimeout(checkAuth, RETRY_DELAY);
             return;
           }
           
@@ -77,6 +83,7 @@ export function useAuth() {
           return;
         }
 
+        // Verify the user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
@@ -104,9 +111,9 @@ export function useAuth() {
       } catch (error) {
         console.error('Auth check error:', error);
         if (mounted) {
-          if (retryCount < 3) {
+          if (retryCount < MAX_RETRIES) {
             setRetryCount(prev => prev + 1);
-            retryTimeout = setTimeout(checkAuth, 2000);
+            retryTimeout = setTimeout(checkAuth, RETRY_DELAY);
           } else {
             setError(error instanceof Error ? error : new Error('Authentication check failed'));
             setIsAuthenticated(false);
@@ -123,6 +130,7 @@ export function useAuth() {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event);
       if (event === 'SIGNED_IN' && session) {
         setIsAuthenticated(true);
         navigate('/dashboard', { replace: true });
