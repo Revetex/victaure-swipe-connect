@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { generateAIResponse, loadMessages, saveMessage } from "@/services/ai/service";
 
 export function useChat() {
   const [messages, setMessages] = useState<any[]>([]);
@@ -10,87 +11,56 @@ export function useChat() {
   const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
-    loadMessages();
+    loadInitialMessages();
   }, []);
 
-  const loadMessages = async () => {
+  const loadInitialMessages = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('ai_chat_messages')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setMessages(data || []);
+      const savedMessages = await loadMessages();
+      setMessages(savedMessages);
     } catch (error) {
-      console.error('Error loading messages:', error);
+      console.error("Error loading messages:", error);
       toast.error("Erreur lors du chargement des messages");
     }
   };
 
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (content: string, profile: any) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!content.trim()) return;
 
-      // Add user message
+      // Create and save user message
       const userMessageId = uuidv4();
       const userMessage = {
         id: userMessageId,
         content,
-        user_id: user.id,
         sender: 'user',
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, userMessage]);
       setInputMessage("");
       setIsThinking(true);
 
-      // Save user message to database
-      const { error: saveError } = await supabase
-        .from('ai_chat_messages')
-        .insert(userMessage);
-
-      if (saveError) throw saveError;
+      await saveMessage(userMessage);
 
       // Get AI response
-      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-agents', {
-        body: { 
-          action: 'handle_message',
-          message: content,
-          userId: user.id
-        }
-      });
-
-      if (aiError) throw aiError;
-
-      // Add AI response
+      const aiResponse = await generateAIResponse(content);
+      
+      // Create and save AI message
       const aiMessageId = uuidv4();
       const aiMessage = {
         id: aiMessageId,
-        content: aiResponse.response,
-        user_id: user.id,
+        content: aiResponse,
         sender: 'assistant',
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       };
 
-      // Save AI message to database
-      const { error: saveAiError } = await supabase
-        .from('ai_chat_messages')
-        .insert(aiMessage);
-
-      if (saveAiError) throw saveAiError;
-
       setMessages(prev => [...prev, aiMessage]);
-      
+      await saveMessage(aiMessage);
+
     } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error("Erreur lors de l'envoi du message");
+      console.error("Error in handleSendMessage:", error);
+      toast.error("Désolé, il y a eu une erreur. Essayez encore!");
     } finally {
       setIsThinking(false);
     }
@@ -112,10 +82,11 @@ export function useChat() {
         .eq('user_id', user.id);
 
       if (error) throw error;
+      
       setMessages([]);
       toast.success("Conversation effacée");
     } catch (error) {
-      console.error('Error clearing chat:', error);
+      console.error("Error clearing chat:", error);
       toast.error("Erreur lors de l'effacement de la conversation");
     }
   };
@@ -123,8 +94,8 @@ export function useChat() {
   return {
     messages,
     inputMessage,
-    isThinking,
     isListening,
+    isThinking,
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,

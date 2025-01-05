@@ -14,7 +14,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack?: () => void;  // Made optional with ?
+  onBack?: () => void;
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -62,10 +62,9 @@ export function ConversationView({
     }
   };
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async () => {
     try {
-      console.log("Sending message:", message);
-      await onSendMessage(message, profile);
+      await onSendMessage(inputMessage, profile);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Erreur lors de l'envoi du message");
@@ -88,13 +87,13 @@ export function ConversationView({
               </Button>
             )}
             <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
+              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
               <AvatarFallback className="bg-primary/20">
                 <Bot className="h-5 w-5 text-primary" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+              <h2 className="text-lg font-semibold truncate">M. Victaure</h2>
               <p className="text-sm text-muted-foreground truncate">
                 {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
               </p>
@@ -162,11 +161,11 @@ export function ConversationView({
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
-            onSend={() => handleSendMessage(inputMessage)}
+            onSend={handleSendMessage}
             onVoiceInput={onVoiceInput}
             isListening={isListening}
             isThinking={isThinking}
-            placeholder="Écrivez votre message..."
+            placeholder="Comment puis-je vous aider aujourd'hui?"
             className="w-full"
           />
         </div>
