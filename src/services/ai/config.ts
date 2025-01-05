@@ -24,7 +24,7 @@ Assure-toi de :
 - Encourager l'utilisateur dans sa démarche`;
 
 export const HUGGING_FACE_CONFIG = {
-  model: "gpt-4o-mini",
+  model: "mistralai/Mistral-7B-Instruct-v0.2",
   maxTokens: 4096,
   temperature: 0.8,
   top_p: 0.95,
