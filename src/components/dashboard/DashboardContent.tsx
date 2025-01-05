@@ -64,7 +64,7 @@ export function DashboardContent({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 bg-transparent">
       <div className="lg:col-span-8 space-y-4">
         <MrVictaureWelcome 
           onDismiss={handleDismissWelcome}
