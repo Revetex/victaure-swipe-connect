@@ -64,14 +64,91 @@
   }
 }
 
-/* Motif d'arrière-plan */
+/* Motif d'arrière-plan amélioré pour le mode clair */
 body {
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   background-image: 
-    radial-gradient(at 47% 33%, hsl(214.74, 95.56%, 87.96%) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsl(218.00, 39.29%, 11.96%) 0, transparent 55%);
+    radial-gradient(at 47% 33%, hsl(214.74, 95.56%, 93%) 0, transparent 59%), 
+    radial-gradient(at 82% 65%, hsl(218.00, 39.29%, 85%) 0, transparent 55%);
   background-attachment: fixed;
   min-height: 100vh;
   height: 100%;
   overflow-y: auto;
+}
+
+/* Styles pour améliorer la visibilité en mode clair */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Amélioration du contraste pour le texte */
+.text-primary {
+  color: hsl(222.2, 47.4%, 11.2%);
+}
+
+.text-muted {
+  color: hsl(215.4, 16.3%, 46.9%);
+}
+
+/* Styles pour les bordures et les séparateurs */
+.border-subtle {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les cartes et conteneurs */
+.content-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+/* Amélioration des effets de survol */
+.hover-effect {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Styles pour les boutons en mode clair */
+.button-light {
+  background: linear-gradient(to right, hsl(221, 83%, 53%), hsl(217, 91%, 60%));
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.button-light:hover {
+  background: linear-gradient(to right, hsl(221, 83%, 45%), hsl(217, 91%, 52%));
+  transform: translateY(-1px);
+}
+
+/* Styles pour les inputs en mode clair */
+.input-light {
+  background: white;
+  border: 1px solid hsl(214, 32%, 91%);
+  color: hsl(222.2, 47.4%, 11.2%);
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: border-color 0.2s ease;
+}
+
+.input-light:focus {
+  border-color: hsl(221, 83%, 53%);
+  outline: none;
+  box-shadow: 0 0 0 3px hsla(221, 83%, 53%, 0.2);
 }
