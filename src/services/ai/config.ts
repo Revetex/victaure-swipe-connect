@@ -24,7 +24,7 @@ Assure-toi de :
 - Encourager l'utilisateur dans sa démarche`;
 
 export const HUGGING_FACE_CONFIG = {
-  model: "fixie-ai/ultravox-v0_4_1-llama-3_1-70b",
+  model: "Qwen/QwQ-32B-Preview",
   maxTokens: 4096,
   temperature: 0.8,
   top_p: 0.95,
