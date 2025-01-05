@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
 import { motion, AnimatePresence } from "framer-motion";
+import { CareerAdvisorButton } from "./CareerAdvisorButton";
 
 interface ProfileEditorProps {
   profile: UserProfile | null;
@@ -48,7 +49,7 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gray-800/50 rounded-lg p-4 border border-gray-700"
+      className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 space-y-6"
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-200">Mon Profil</h3>
@@ -128,6 +129,8 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
             <p className="text-gray-200">{profile?.bio || "Non défini"}</p>
           )}
         </div>
+
+        <CareerAdvisorButton />
       </div>
     </motion.div>
   );

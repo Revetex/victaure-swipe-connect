@@ -1,7 +1,7 @@
 import { useChat } from "@/hooks/useChat";
 import { MessagesContent } from "./messages/MessagesContent";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bot, MessageSquare } from "lucide-react";
+import { Bot } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
@@ -67,24 +67,6 @@ export function Messages() {
             <div className="flex-1 text-left">
               <h3 className="font-semibold">M. Victaure</h3>
               <p className="text-sm text-muted-foreground">Assistant IA Personnel</p>
-            </div>
-          </Button>
-
-          {/* Conseiller - Regular */}
-          <Button
-            variant="ghost"
-            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-accent"
-            onClick={() => navigate("/dashboard/messages/advisor")}
-          >
-            <Avatar className="h-12 w-12 shrink-0">
-              <AvatarImage src="/lovable-uploads/78b41840-19a1-401c-a34f-864298825f44.png" alt="Conseiller" />
-              <AvatarFallback className="bg-primary/20">
-                <MessageSquare className="h-6 w-6 text-primary" />
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 text-left">
-              <h3 className="font-semibold">Conseiller</h3>
-              <p className="text-sm text-muted-foreground">Conseiller en Orientation</p>
             </div>
           </Button>
         </div>
