@@ -1,9 +1,12 @@
 import { useChat } from "@/hooks/useChat";
 import { MessagesContent } from "./messages/MessagesContent";
+import { useState } from "react";
+import { MessagesList } from "./messages/conversation/MessagesList";
+import { useMessages } from "@/hooks/useMessages";
 
 export function Messages() {
   const {
-    messages,
+    messages: chatMessages,
     inputMessage,
     isListening,
     isThinking,
@@ -13,18 +16,39 @@ export function Messages() {
     clearChat
   } = useChat();
 
+  const { messages, markAsRead } = useMessages();
+  const [showConversation, setShowConversation] = useState(false);
+
+  const handleBack = () => {
+    setShowConversation(false);
+  };
+
+  const handleSelectConversation = (type: "assistant") => {
+    setShowConversation(true);
+  };
+
   return (
     <div className="h-full flex flex-col">
-      <MessagesContent
-        messages={messages}
-        inputMessage={inputMessage}
-        isListening={isListening}
-        isThinking={isThinking}
-        onSendMessage={handleSendMessage}
-        onVoiceInput={handleVoiceInput}
-        setInputMessage={setInputMessage}
-        onClearChat={clearChat}
-      />
+      {showConversation ? (
+        <MessagesContent
+          messages={chatMessages}
+          inputMessage={inputMessage}
+          isListening={isListening}
+          isThinking={isThinking}
+          onSendMessage={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
+          setInputMessage={setInputMessage}
+          onClearChat={clearChat}
+          onBack={handleBack}
+        />
+      ) : (
+        <MessagesList
+          messages={messages}
+          chatMessages={chatMessages}
+          onSelectConversation={handleSelectConversation}
+          onMarkAsRead={markAsRead}
+        />
+      )}
     </div>
   );
 }
