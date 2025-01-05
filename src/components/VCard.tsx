@@ -76,7 +76,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
       if (error) throw error;
 
-      // Update the local profile state to reflect the changes
       if (profile) {
         setProfile({
           ...profile,
@@ -106,7 +105,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
         if (error) throw error;
 
-        // Update the local profile state
         if (profile) {
           setProfile({
             ...profile,
@@ -124,7 +122,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   const handleAddSkill = () => {
     if (!profile || !newSkill.trim()) return;
-    
     const updatedSkills = [...(profile.skills || []), newSkill.trim()];
     setProfile({ ...profile, skills: updatedSkills });
     setNewSkill("");
@@ -132,7 +129,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   const handleRemoveSkill = (skillToRemove: string) => {
     if (!profile) return;
-    
     const updatedSkills = (profile.skills || []).filter(
       (skill) => skill !== skillToRemove
     );
@@ -192,28 +188,37 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     return <VCardEmpty />;
   }
 
+  const cardStyle = {
+    '--accent-color': selectedStyle.color,
+    '--secondary-color': selectedStyle.secondaryColor,
+    '--font-family': selectedStyle.font,
+    background: `linear-gradient(135deg, ${selectedStyle.colors.primary}, ${selectedStyle.colors.secondary})`,
+  } as React.CSSProperties;
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`vcard-root w-full max-w-4xl mx-auto font-${selectedStyle.font} ${
+      className={`vcard-root w-full max-w-4xl mx-auto ${
         isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20' : 'relative'
       }`}
-      style={{ 
-        '--accent-color': selectedStyle.color,
-        '--secondary-color': selectedStyle.secondaryColor 
-      } as React.CSSProperties}
+      style={cardStyle}
     >
       {isEditing && (
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm" />
       )}
       
-      <Card className={`relative border-none shadow-lg ${
-        isEditing 
-          ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
-          : `bg-gradient-to-br ${selectedStyle.bgGradient}`
+      <Card 
+        className={`relative border-none shadow-lg ${
+          isEditing 
+            ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
+            : selectedStyle.bgGradient
         } ${selectedStyle.borderStyle || ''}`}
+        style={{
+          color: selectedStyle.colors.text.primary,
+          fontFamily: selectedStyle.font
+        }}
       >
         <CardContent className="p-6">
           <div className="space-y-8">
