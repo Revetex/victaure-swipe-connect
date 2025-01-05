@@ -1,7 +1,21 @@
 import { useState } from "react";
 import { NotesSection } from "./NotesSection";
 
-export function DashboardContent() {
+interface DashboardContentProps {
+  currentPage: number;
+  isEditing: boolean;
+  viewportHeight: number;
+  onEditStateChange: (value: boolean) => void;
+  onRequestChat: () => void;
+}
+
+export function DashboardContent({
+  currentPage,
+  isEditing,
+  viewportHeight,
+  onEditStateChange,
+  onRequestChat
+}: DashboardContentProps) {
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("");
   const [selectedColor, setSelectedColor] = useState("yellow");
@@ -18,7 +32,7 @@ export function DashboardContent() {
     }
   };
 
-  const handleDeleteNote = (id) => {
+  const handleDeleteNote = (id: string) => {
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
   };
 
