@@ -24,9 +24,15 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Récupérer le profil complet de l'utilisateur
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('*')
+      .select(`
+        *,
+        experiences (*),
+        education (*),
+        certifications (*)
+      `)
       .eq('id', userId)
       .single();
 
@@ -40,12 +46,12 @@ serve(async (req) => {
 
     console.log('Profil trouvé:', profile);
 
-    // Vérifier si le message contient une confirmation de modification
+    // Vérifier si le message contient une confirmation
     const isConfirmation = message.toLowerCase().includes('oui') || 
                           message.toLowerCase().includes('confirme') || 
                           message.toLowerCase().includes("d'accord");
     
-    // Vérifier si nous avons une modification en attente dans la session
+    // Vérifier si nous avons une modification en attente
     const { data: pendingChanges } = await supabase
       .from('ai_chat_messages')
       .select('content')
@@ -61,16 +67,23 @@ serve(async (req) => {
 Instructions importantes:
 1. Réponds UNIQUEMENT en français québécois, de manière concise (2-3 phrases maximum)
 2. Pour TOUTE modification du profil:
-   - D'abord, explique les changements que tu suggères
+   - Explique d'abord clairement les changements que tu suggères
    - Demande TOUJOURS "Voulez-vous que je modifie votre profil avec ces changements? Répondez par Oui pour confirmer."
    - Attends la confirmation de l'utilisateur avant de faire les changements
 3. Sois chaleureux mais direct dans tes réponses
+4. Utilise des expressions québécoises comme:
+   - "Pas de trouble!" pour dire d'accord
+   - "C'est correct" pour approuver
+   - "Ben oui!" pour confirmer
 
-Profil de l'utilisateur:
-- Nom: ${profile.full_name}
+Profil actuel:
+- Nom: ${profile.full_name || 'Non spécifié'}
 - Rôle: ${profile.role || 'Non spécifié'}
 - Compétences: ${profile.skills ? profile.skills.join(', ') : 'Non spécifiées'}
 - Localisation: ${profile.city || 'Non spécifiée'}, ${profile.state || 'Non spécifié'}
+- Expérience: ${profile.experiences ? profile.experiences.length : 0} expérience(s)
+- Formation: ${profile.education ? profile.education.length : 0} formation(s)
+- Certifications: ${profile.certifications ? profile.certifications.length : 0} certification(s)
 
 Si l'utilisateur confirme une modification, applique-la et confirme que c'est fait.`;
 
@@ -117,27 +130,54 @@ Si l'utilisateur confirme une modification, applique-la et confirme que c'est fa
 
     // Si l'utilisateur confirme et qu'il y a des modifications en attente
     if (isConfirmation && hasPendingChanges) {
-      // Analyser le message précédent pour extraire les modifications suggérées
       const previousMessage = pendingChanges[0].content;
       
-      // Exemple de mise à jour du profil (à adapter selon les modifications suggérées)
+      // Analyser le message précédent pour les modifications
       if (previousMessage.includes('compétences')) {
-        // Extraire et ajouter les nouvelles compétences
-        const newSkills = [...(profile.skills || [])];
-        // Logique pour extraire et ajouter les compétences du message
-        
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ skills: newSkills })
-          .eq('id', userId);
+        const skillsMatch = previousMessage.match(/ajouter les compétences suivantes : (.*?)(?=\.|$)/i);
+        if (skillsMatch) {
+          const newSkills = skillsMatch[1].split(',').map(s => s.trim());
+          const updatedSkills = [...new Set([...(profile.skills || []), ...newSkills])];
+          
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ skills: updatedSkills })
+            .eq('id', userId);
 
-        if (updateError) {
-          throw new Error(`Erreur lors de la mise à jour du profil: ${updateError.message}`);
+          if (updateError) {
+            throw new Error(`Erreur lors de la mise à jour des compétences: ${updateError.message}`);
+          }
+          
+          console.log('Compétences mises à jour:', updatedSkills);
         }
       }
-      // Ajouter d'autres conditions pour d'autres types de modifications
+      
+      // Gérer les modifications d'expérience
+      if (previousMessage.includes('expérience')) {
+        const experienceMatch = previousMessage.match(/ajouter l'expérience : (.*?) chez (.*?) de (.*?) à (.*?)(?=\.|$)/i);
+        if (experienceMatch) {
+          const [_, position, company, startDate, endDate] = experienceMatch;
+          
+          const { error: expError } = await supabase
+            .from('experiences')
+            .insert({
+              profile_id: userId,
+              position: position.trim(),
+              company: company.trim(),
+              start_date: startDate.trim(),
+              end_date: endDate.trim() === 'présent' ? null : endDate.trim()
+            });
+
+          if (expError) {
+            throw new Error(`Erreur lors de l'ajout de l'expérience: ${expError.message}`);
+          }
+          
+          console.log('Nouvelle expérience ajoutée');
+        }
+      }
     }
 
+    // Sauvegarder la conversation
     const { error: chatError } = await supabase
       .from('ai_chat_messages')
       .insert([
