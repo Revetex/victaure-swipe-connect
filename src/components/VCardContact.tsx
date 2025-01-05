@@ -1,11 +1,12 @@
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin, Search } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VCardContactProps {
   profile: any;
@@ -19,11 +20,34 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [mapboxToken, setMapboxToken] = useState<string>("");
+
+  useEffect(() => {
+    async function fetchMapboxToken() {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-secret', {
+          body: { secret_name: 'MAPBOX_PUBLIC_TOKEN' }
+        });
+        
+        if (error) throw error;
+        if (data?.secret) {
+          setMapboxToken(data.secret);
+        } else {
+          toast.error("Impossible de charger la recherche d'adresses");
+        }
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+        toast.error("Erreur lors du chargement de la recherche d'adresses");
+      }
+    }
+
+    fetchMapboxToken();
+  }, []);
 
   const handleAddressSearch = async (search: string) => {
     setSearchValue(search);
     
-    if (!search.trim()) {
+    if (!search.trim() || !mapboxToken) {
       setSearchResults([]);
       return;
     }
@@ -34,7 +58,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     const timeout = setTimeout(async () => {
       try {
         const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(search)}.json?country=ca&types=address&access_token=pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug`
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(search)}.json?country=ca&types=address&access_token=${mapboxToken}`
         );
         
         if (!response.ok) {

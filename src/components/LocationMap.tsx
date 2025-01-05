@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LocationMapProps {
   latitude?: number | null;
@@ -16,12 +17,36 @@ export function LocationMap({ latitude, longitude, onLocationSelect, isEditing }
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
+  const [mapboxToken, setMapboxToken] = useState<string>('');
+
+  // Fetch Mapbox token on component mount
+  useEffect(() => {
+    async function fetchMapboxToken() {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-secret', {
+          body: { secret_name: 'MAPBOX_PUBLIC_TOKEN' }
+        });
+        
+        if (error) throw error;
+        if (data?.secret) {
+          setMapboxToken(data.secret);
+        } else {
+          toast.error("Impossible de charger la carte: token Mapbox manquant");
+        }
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+        toast.error("Erreur lors du chargement de la carte");
+      }
+    }
+
+    fetchMapboxToken();
+  }, []);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !mapboxToken) return;
 
     // Initialize map
-    mapboxgl.accessToken = 'pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug';
+    mapboxgl.accessToken = mapboxToken;
     
     const initialCenter: [number, number] = [longitude || -72.5, latitude || 46.35];
     
@@ -60,7 +85,7 @@ export function LocationMap({ latitude, longitude, onLocationSelect, isEditing }
     return () => {
       map.current?.remove();
     };
-  }, [latitude, longitude, isEditing, onLocationSelect]);
+  }, [latitude, longitude, isEditing, onLocationSelect, mapboxToken]);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
