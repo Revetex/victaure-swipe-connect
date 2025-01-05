@@ -16,7 +16,7 @@ interface CategoryFiltersProps {
 }
 
 export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProps) {
-  // Fetch categories from the database
+  // Fetch categories from the database with distinct values
   const { data: categories = [] } = useQuery({
     queryKey: ['job-categories'],
     queryFn: async () => {
@@ -26,7 +26,17 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .order('name');
       
       if (error) throw error;
-      return data;
+      
+      // Remove duplicates based on name
+      const uniqueCategories = data.reduce((acc: any[], current) => {
+        const x = acc.find(item => item.name === current.name);
+        if (!x) {
+          return acc.concat([current]);
+        }
+        return acc;
+      }, []);
+      
+      return uniqueCategories;
     }
   });
 
@@ -43,7 +53,17 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .order('name');
       
       if (error) throw error;
-      return data;
+      
+      // Remove duplicates based on name
+      const uniqueSubcategories = data.reduce((acc: any[], current) => {
+        const x = acc.find(item => item.name === current.name);
+        if (!x) {
+          return acc.concat([current]);
+        }
+        return acc;
+      }, []);
+      
+      return uniqueSubcategories;
     },
     enabled: filters.category !== 'all'
   });
@@ -56,7 +76,6 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
           value={filters.category}
           onValueChange={(value) => {
             onFilterChange("category", value);
-            // Reset subcategory when category changes
             if (value !== filters.category) {
               onFilterChange("subcategory", "all");
             }

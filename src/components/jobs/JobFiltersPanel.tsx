@@ -1,6 +1,6 @@
 import { JobFilters } from "./JobFilterUtils";
 import { Button } from "@/components/ui/button";
-import { Filter, RefreshCw } from "lucide-react";
+import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JobFilters as JobFiltersComponent } from "./JobFilters";
@@ -61,25 +61,7 @@ export function JobFiltersPanel({
       animate={{ opacity: 1, x: 0 }}
       className="sticky top-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border shadow-sm"
     >
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4" />
-            <h3 className="font-semibold">Filtres</h3>
-          </div>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => window.location.reload()}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Actualiser
-          </Button>
-        </div>
-      </div>
-      
-      <ScrollArea className="h-[calc(100vh-12rem)]">
+      <ScrollArea className="h-[calc(100vh-8rem)]">
         <div className="p-4">
           <JobFiltersComponent
             filters={filters}
