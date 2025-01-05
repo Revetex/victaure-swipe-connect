@@ -5,9 +5,10 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, error } = useAuth();
 
   // Fix mobile viewport height on iOS
   useEffect(() => {
@@ -25,6 +26,13 @@ function App() {
       window.removeEventListener('orientationchange', setVH);
     };
   }, []);
+
+  // Show error toast if authentication fails
+  useEffect(() => {
+    if (error) {
+      toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+    }
+  }, [error]);
 
   if (isLoading) {
     return (
