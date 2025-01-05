@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { provinceData } from "@/data/provinces";
+import { cities } from "@/data/provinces";
 import { JobFilters } from "../JobFilterUtils";
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ interface LocationFilterProps {
 
 export function LocationFilter({ filters, onFilterChange }: LocationFilterProps) {
   const [selectedProvince, setSelectedProvince] = useState<string>(filters.province || "all");
-  const cities = selectedProvince !== "all" ? provinceData[selectedProvince] || [] : [];
+  const availableCities = selectedProvince !== "all" ? cities[selectedProvince] || [] : [];
 
   return (
     <div className="space-y-4">
@@ -31,7 +31,7 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Toutes les provinces</SelectItem>
-            {Object.keys(provinceData).map((province) => (
+            {Object.keys(cities).map((province) => (
               <SelectItem key={province} value={province}>
                 {province}
               </SelectItem>
@@ -54,7 +54,7 @@ export function LocationFilter({ filters, onFilterChange }: LocationFilterProps)
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Toutes les villes</SelectItem>
-            {cities.map((city) => (
+            {availableCities.map((city) => (
               <SelectItem key={city} value={city}>
                 {city}
               </SelectItem>

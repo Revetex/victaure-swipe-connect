@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { BrowseJobsTab } from "./jobs/BrowseJobsTab";
 import { SwipeMatch } from "./SwipeMatch";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
