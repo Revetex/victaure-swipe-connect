@@ -249,7 +249,6 @@ export type Database = {
           images: string[] | null
           industry: string | null
           is_urgent: boolean | null
-          job_type: string | null
           languages: string[] | null
           latitude: number | null
           location: string
@@ -262,9 +261,6 @@ export type Database = {
           required_skills: string[] | null
           responsibilities: string[] | null
           salary_currency: string | null
-          salary_max: number | null
-          salary_min: number | null
-          salary_period: string | null
           status: string
           subcategory: string | null
           title: string
@@ -294,7 +290,6 @@ export type Database = {
           images?: string[] | null
           industry?: string | null
           is_urgent?: boolean | null
-          job_type?: string | null
           languages?: string[] | null
           latitude?: number | null
           location: string
@@ -307,9 +302,6 @@ export type Database = {
           required_skills?: string[] | null
           responsibilities?: string[] | null
           salary_currency?: string | null
-          salary_max?: number | null
-          salary_min?: number | null
-          salary_period?: string | null
           status?: string
           subcategory?: string | null
           title: string
@@ -339,7 +331,6 @@ export type Database = {
           images?: string[] | null
           industry?: string | null
           is_urgent?: boolean | null
-          job_type?: string | null
           languages?: string[] | null
           latitude?: number | null
           location?: string
@@ -352,9 +343,6 @@ export type Database = {
           required_skills?: string[] | null
           responsibilities?: string[] | null
           salary_currency?: string | null
-          salary_max?: number | null
-          salary_min?: number | null
-          salary_period?: string | null
           status?: string
           subcategory?: string | null
           title?: string

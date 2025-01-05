@@ -23,9 +23,9 @@ export function SwipeJob() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="glass-card p-4 space-y-4 rounded-lg shadow-lg bg-background/95 backdrop-blur-sm"
+      className="h-full w-full bg-background/95 backdrop-blur-sm"
     >
-      <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center justify-between flex-wrap gap-2 p-4 border-b">
         <motion.h2 
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -44,7 +44,7 @@ export function SwipeJob() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="space-y-4"
+        className="p-4"
       >
         <BrowseJobsTab 
           filters={filters}
