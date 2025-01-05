@@ -12,7 +12,23 @@ interface VCardProps {
 export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [selectedStyle, setSelectedStyle] = useState<StyleOption>("modern");
+  const [selectedStyle, setSelectedStyle] = useState<StyleOption>({ 
+    id: "modern",
+    name: "Modern",
+    color: "indigo",
+    secondaryColor: "purple",
+    font: "sans",
+    bgGradient: "bg-gradient-to-br from-indigo-500 to-purple-600",
+    colors: {
+      primary: "indigo",
+      secondary: "purple",
+      text: {
+        primary: "white",
+        secondary: "gray-200",
+        muted: "gray-400"
+      }
+    }
+  });
   const { profile, setProfile } = useProfile();
 
   const handleEditStateChange = (newState: boolean) => {
@@ -32,7 +48,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         setProfile={setProfile}
         isExpanded={isExpanded}
         setIsExpanded={setIsExpanded}
-        setIsEditing={handleEditStateChange}
       />
       <VCardContent
         profile={profile}

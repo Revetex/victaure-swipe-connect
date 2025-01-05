@@ -3,13 +3,14 @@ import { QRCodeSVG } from "qrcode.react";
 import { VCardHeader } from "../../VCardHeader";
 import { VCardContactInfo } from "../VCardContactInfo";
 import { UserProfile } from "@/types/profile";
+import { Dispatch, SetStateAction } from "react";
 
 interface VCardMainContentProps {
   profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
+  setProfile: Dispatch<SetStateAction<UserProfile>>;
   isExpanded: boolean;
-  setIsExpanded: (isExpanded: boolean) => void;
+  setIsExpanded: Dispatch<SetStateAction<boolean>>;
 }
 
 export function VCardMainContent({
