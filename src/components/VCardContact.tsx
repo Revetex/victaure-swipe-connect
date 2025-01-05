@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "./ui/command";
@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { quebecCities } from "@/data/cities";
+import { provinces, provinceData, type Province } from "@/data/provinces";
 import { toast } from "sonner";
 
 interface VCardContactProps {
@@ -16,12 +16,36 @@ interface VCardContactProps {
 }
 
 export function VCardContact({ profile, isEditing, onUpdate }: VCardContactProps) {
-  const [open, setOpen] = useState(false);
+  const [openProvince, setOpenProvince] = useState(false);
+  const [openCity, setOpenCity] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
+  const [provinceSearch, setProvinceSearch] = useState("");
   const [citySearch, setCitySearch] = useState("");
 
-  const filteredCities = quebecCities.filter(city =>
+  useEffect(() => {
+    if (profile.state) {
+      setSelectedProvince(profile.state as Province);
+    }
+  }, [profile.state]);
+
+  const filteredProvinces = provinces.filter(province =>
+    province.toLowerCase().includes(provinceSearch.toLowerCase())
+  );
+
+  const availableCities = selectedProvince ? provinceData[selectedProvince] : [];
+  const filteredCities = availableCities.filter(city =>
     city.toLowerCase().includes(citySearch.toLowerCase())
   );
+
+  const handleProvinceSelect = (province: Province) => {
+    setSelectedProvince(province);
+    onUpdate?.('state', province);
+    setOpenProvince(false);
+    setProvinceSearch("");
+    // Reset city when province changes
+    onUpdate?.('city', '');
+    toast.success("Province mise à jour");
+  };
 
   return (
     <div className="space-y-4">
@@ -37,15 +61,60 @@ export function VCardContact({ profile, isEditing, onUpdate }: VCardContactProps
         </div>
 
         <div className="space-y-2">
-          <Label>Ville</Label>
-          <Popover open={open && isEditing} onOpenChange={setOpen}>
+          <Label>Province</Label>
+          <Popover open={openProvince && isEditing} onOpenChange={setOpenProvince}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
-                aria-expanded={open}
+                aria-expanded={openProvince}
                 className="w-full justify-between"
                 disabled={!isEditing}
+              >
+                {profile.state || "Sélectionnez une province"}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput
+                  placeholder="Rechercher une province..."
+                  value={provinceSearch}
+                  onValueChange={setProvinceSearch}
+                />
+                <CommandList>
+                  <CommandEmpty>Aucune province trouvée.</CommandEmpty>
+                  {filteredProvinces.map((province) => (
+                    <CommandItem
+                      key={province}
+                      value={province}
+                      onSelect={() => handleProvinceSelect(province as Province)}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          profile.state === province ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {province}
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Ville</Label>
+          <Popover open={openCity && isEditing} onOpenChange={setOpenCity}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openCity}
+                className="w-full justify-between"
+                disabled={!isEditing || !selectedProvince}
               >
                 {profile.city || "Sélectionnez une ville"}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -59,14 +128,18 @@ export function VCardContact({ profile, isEditing, onUpdate }: VCardContactProps
                   onValueChange={setCitySearch}
                 />
                 <CommandList>
-                  <CommandEmpty>Aucune ville trouvée.</CommandEmpty>
+                  <CommandEmpty>
+                    {!selectedProvince 
+                      ? "Veuillez d'abord sélectionner une province" 
+                      : "Aucune ville trouvée."}
+                  </CommandEmpty>
                   {filteredCities.map((city) => (
                     <CommandItem
                       key={city}
                       value={city}
                       onSelect={() => {
                         onUpdate?.('city', city);
-                        setOpen(false);
+                        setOpenCity(false);
                         setCitySearch("");
                         toast.success("Ville mise à jour");
                       }}
@@ -84,15 +157,6 @@ export function VCardContact({ profile, isEditing, onUpdate }: VCardContactProps
               </Command>
             </PopoverContent>
           </Popover>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Province</Label>
-          <Input
-            value="Québec"
-            disabled
-            className="bg-muted"
-          />
         </div>
 
         <div className="space-y-2">
