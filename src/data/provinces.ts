@@ -16,7 +16,7 @@ export const provinces = [
 
 export type Province = typeof provinces[number];
 
-export const cities: { [key: string]: string[] } = {
+export const cities: { [key in Province]: string[] } = {
   'Alberta': ['Calgary', 'Edmonton', 'Red Deer', 'Lethbridge', 'Medicine Hat'],
   'British Columbia': ['Vancouver', 'Victoria', 'Surrey', 'Burnaby', 'Richmond'],
   'Manitoba': ['Winnipeg', 'Brandon', 'Thompson', 'Steinbach', 'Portage la Prairie'],
@@ -32,8 +32,6 @@ export const cities: { [key: string]: string[] } = {
   'Nunavut': ['Iqaluit', 'Rankin Inlet', 'Arviat', 'Baker Lake'],
   'Yukon': ['Whitehorse', 'Dawson City', 'Watson Lake', 'Haines Junction']
 };
-
-export const provinceData = cities;
 
 export const contractTypes = [
   'Full-time',
