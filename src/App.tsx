@@ -4,23 +4,39 @@ import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
+import { useEffect } from "react";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Show loading spinner while checking auth status
+  // Fix mobile viewport height on iOS
+  useEffect(() => {
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', setVH);
+
+    return () => {
+      window.removeEventListener('resize', setVH);
+      window.removeEventListener('orientationchange', setVH);
+    };
+  }, []);
+
   if (isLoading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
+      <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
         <Loader className="w-8 h-8" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full overflow-y-auto">
+    <div className="min-h-[100vh] min-h-[calc(var(--vh,1vh)*100)] w-full overflow-y-auto">
       <Routes>
-        {/* Redirect root to dashboard if authenticated, otherwise to auth */}
         <Route 
           path="/" 
           element={
@@ -32,7 +48,6 @@ function App() {
           } 
         />
         
-        {/* Auth route - redirect to dashboard if already authenticated */}
         <Route 
           path="/auth" 
           element={
@@ -44,7 +59,6 @@ function App() {
           } 
         />
         
-        {/* Protected dashboard route */}
         <Route
           path="/dashboard/*"
           element={
@@ -54,7 +68,6 @@ function App() {
           }
         />
 
-        {/* Catch all route - redirect to dashboard or auth */}
         <Route 
           path="*" 
           element={

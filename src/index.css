@@ -31,7 +31,7 @@
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 217.2 32.6% 12%;
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
@@ -61,6 +61,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     scroll-behavior: smooth;
+    height: -webkit-fill-available;
   }
   
   body {
@@ -78,8 +79,8 @@
 
   /* Improved scrollbar styling */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
@@ -120,67 +121,47 @@
   }
 }
 
-.style-default {
-  @apply text-gray-900;
+/* Font classes */
+.font-poppins { font-family: 'Poppins', sans-serif !important; }
+.font-montserrat { font-family: 'Montserrat', sans-serif !important; }
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+.font-roboto { font-family: 'Roboto', sans-serif !important; }
+.font-opensans { font-family: 'Open Sans', sans-serif !important; }
+.font-inter { font-family: 'Inter', sans-serif !important; }
+.font-quicksand { font-family: 'Quicksand', sans-serif !important; }
+.font-lato { font-family: 'Lato', sans-serif !important; }
+
+/* Style classes */
+.style-default { @apply text-gray-900 dark:text-gray-100; }
+.style-warm { @apply text-amber-900 dark:text-amber-100; }
+.style-modern { @apply text-emerald-900 dark:text-emerald-100; }
+.style-elegant { @apply text-blue-900 dark:text-blue-100; }
+.style-bold { @apply text-purple-900 dark:text-purple-100; }
+.style-minimal { @apply text-gray-800 dark:text-gray-200; }
+.style-creative { @apply text-orange-900 dark:text-orange-100; }
+.style-professional { @apply text-sky-900 dark:text-sky-100; }
+
+/* Avatar improvements */
+.avatar-container {
+  @apply relative overflow-hidden rounded-full border-2 border-primary/10;
+  aspect-ratio: 1;
 }
 
-.style-warm {
-  @apply text-amber-900;
+.avatar-container img {
+  @apply object-cover w-full h-full transition-transform duration-200;
 }
 
-.style-modern {
-  @apply text-emerald-900;
+.avatar-container:hover img {
+  @apply scale-105;
 }
 
-.style-elegant {
-  @apply text-blue-900;
-}
-
-.style-bold {
-  @apply text-purple-900;
-}
-
-.style-minimal {
-  @apply text-gray-800;
-}
-
-.style-creative {
-  @apply text-orange-900;
-}
-
-.style-professional {
-  @apply text-sky-900;
-}
-
-/* Classes de police personnalisées */
-.font-poppins {
-  font-family: 'Poppins', sans-serif !important;
-}
-
-.font-montserrat {
-  font-family: 'Montserrat', sans-serif !important;
-}
-
-.font-playfair {
-  font-family: 'Playfair Display', serif !important;
-}
-
-.font-roboto {
-  font-family: 'Roboto', sans-serif !important;
-}
-
-.font-opensans {
-  font-family: 'Open Sans', sans-serif !important;
-}
-
-.font-inter {
-  font-family: 'Inter', sans-serif !important;
-}
-
-.font-quicksand {
-  font-family: 'Quicksand', sans-serif !important;
-}
-
-.font-lato {
-  font-family: 'Lato', sans-serif !important;
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .mobile-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .mobile-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
 }

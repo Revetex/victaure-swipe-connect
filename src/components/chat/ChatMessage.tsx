@@ -68,7 +68,7 @@ export const ChatMessage = memo(function ChatMessage({
           "rounded-lg px-4 py-2 w-full shadow-sm",
           isBot 
             ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
-            : "bg-primary text-primary-foreground"
+            : "bg-primary/90 text-primary-foreground dark:bg-primary/80 dark:text-primary-foreground"
         )}>
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {content}
