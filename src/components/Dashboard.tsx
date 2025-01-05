@@ -10,10 +10,13 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
+import { useState, useEffect } from "react";
 
 export function Dashboard() {
   const { data: stats, isLoading, error } = useDashboardStats();
   const navigate = useNavigate();
+  const [showWelcome, setShowWelcome] = useState(true);
 
   // Fonction pour gérer les erreurs
   const handleError = (error: Error) => {
@@ -69,6 +72,17 @@ export function Dashboard() {
     navigate("/jobs/create");
   };
 
+  // Fonction pour démarrer la conversation avec Mr Victaure
+  const handleStartChat = () => {
+    setShowWelcome(false);
+    navigate("/messages");
+  };
+
+  // Fonction pour fermer la fenêtre de bienvenue
+  const handleDismissWelcome = () => {
+    setShowWelcome(false);
+  };
+
   if (error) {
     handleError(error as Error);
   }
@@ -90,6 +104,13 @@ export function Dashboard() {
       variants={containerVariants}
       className="py-8 min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
     >
+      {showWelcome && (
+        <MrVictaureWelcome
+          onDismiss={handleDismissWelcome}
+          onStartChat={handleStartChat}
+        />
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <DashboardHeader 
           title="Tableau de bord"
