@@ -12,7 +12,9 @@ import {
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
-interface JobCardProps extends Job {}
+interface JobCardProps extends Omit<Job, 'source'> {
+  source?: "Victaure" | "Externe";
+}
 
 export function JobCard({
   title,
