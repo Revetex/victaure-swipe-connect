@@ -60,6 +60,12 @@ export const HUGGING_FACE_CONFIG = {
   },
 };
 
+export const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelay: 1000,
+  maxDelay: 5000,
+};
+
 export const WELCOME_MESSAGE = `Bonjour! Je suis votre conseiller en orientation professionnelle spécialisé dans le domaine de la construction au Québec. 
 
 Pour mieux vous aider, j'aimerais en apprendre davantage sur vous. Pourriez-vous me parler de :
