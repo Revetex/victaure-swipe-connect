@@ -1,8 +1,28 @@
 project_id = "mfjllillnpleasclqabb"
 
-[global.env]
-HUGGING_FACE_ACCESS_TOKEN = "env(HUGGING_FACE_ACCESS_TOKEN)"
+[global.config]
+runtime = "deno"
 
-[[functions]]
+[[global.functions]]
+name = "ai-chat"
+verify_jwt = true
+
+[[global.functions]]
+name = "ai-job-assistant"
+verify_jwt = true
+
+[[global.functions]]
 name = "fetch-jobs"
-verify_jwt = false
+verify_jwt = true
+
+[[global.functions]]
+name = "get-secret"
+verify_jwt = true
+
+[[global.functions]]
+name = "ai-agents"
+verify_jwt = true
+
+[[global.functions]]
+name = "create-profile"
+verify_jwt = true
