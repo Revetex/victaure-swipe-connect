@@ -22,7 +22,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-background">
-        <Loader className="w-8 h-8" />
+        <div className="flex flex-col items-center gap-4">
+          <Loader className="w-8 h-8" />
+          <p className="text-sm text-muted-foreground animate-pulse">
+            Vérification de votre session...
+          </p>
+        </div>
       </div>
     );
   }

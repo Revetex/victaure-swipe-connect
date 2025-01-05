@@ -29,7 +29,12 @@ function App() {
   if (isLoading) {
     return (
       <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
-        <Loader className="w-8 h-8" />
+        <div className="flex flex-col items-center gap-4">
+          <Loader className="w-8 h-8" />
+          <p className="text-sm text-muted-foreground animate-pulse">
+            Chargement de votre session...
+          </p>
+        </div>
       </div>
     );
   }
