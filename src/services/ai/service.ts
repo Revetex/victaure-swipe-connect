@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT } from "./config";
+import { HUGGING_FACE_CONFIG, SYSTEM_PROMPT, RETRY_CONFIG } from "./config";
 import { toast } from "sonner";
 import { Message } from "@/types/chat/messageTypes";
 import { UserProfile } from "@/types/profile";
@@ -42,8 +42,10 @@ async function getUserProfile(): Promise<UserProfile | null> {
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const MAX_RETRIES = 3;
-const INITIAL_RETRY_DELAY = 2000; // 2 seconds
+const calculateBackoff = (attempt: number): number => {
+  const backoffDelay = RETRY_CONFIG.initialDelay * Math.pow(RETRY_CONFIG.backoffFactor, attempt);
+  return Math.min(backoffDelay, RETRY_CONFIG.maxDelay);
+};
 
 export async function generateAIResponse(message: string): Promise<string> {
   const controller = new AbortController();
@@ -63,9 +65,10 @@ export async function generateAIResponse(message: string): Promise<string> {
 
     let lastError = null;
     
-    // Retry logic with exponential backoff
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    for (let attempt = 0; attempt < RETRY_CONFIG.maxRetries; attempt++) {
       try {
+        console.log(`Tentative ${attempt + 1}/${RETRY_CONFIG.maxRetries} de génération de réponse...`);
+        
         const response = await fetch(
           `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
           {
@@ -82,9 +85,13 @@ export async function generateAIResponse(message: string): Promise<string> {
           }
         );
 
+        // Log response status for debugging
+        console.log(`Statut de la réponse: ${response.status}`);
+
         if (response.status === 503) {
-          console.log(`Attempt ${attempt + 1}: Model is loading...`);
-          const retryDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
+          console.log(`Le modèle est en cours de chargement (tentative ${attempt + 1})...`);
+          const retryDelay = calculateBackoff(attempt);
+          console.log(`Attente de ${retryDelay/1000} secondes avant la prochaine tentative...`);
           await delay(retryDelay);
           continue;
         }
@@ -95,28 +102,42 @@ export async function generateAIResponse(message: string): Promise<string> {
         }
 
         const data = await response.json();
-        if (!data?.[0]?.generated_text) throw new Error('Format de réponse invalide');
+        console.log('Réponse reçue avec succès');
+        
+        if (!data?.[0]?.generated_text) {
+          throw new Error('Format de réponse invalide');
+        }
         
         return data[0].generated_text.trim();
       } catch (error) {
         lastError = error;
-        if (error.name === 'AbortError' || attempt === MAX_RETRIES - 1) {
+        console.error(`Échec de la tentative ${attempt + 1}:`, error);
+        
+        if (error.name === 'AbortError') {
+          throw new Error('La requête a pris trop de temps. Veuillez réessayer.');
+        }
+        
+        if (attempt === RETRY_CONFIG.maxRetries - 1) {
           throw error;
         }
-        console.error(`Attempt ${attempt + 1} failed:`, error);
-        await delay(INITIAL_RETRY_DELAY * Math.pow(2, attempt));
+        
+        const retryDelay = calculateBackoff(attempt);
+        await delay(retryDelay);
       }
     }
 
     throw lastError || new Error('Échec après plusieurs tentatives');
   } catch (error) {
     console.error('Erreur lors de la génération de la réponse IA:', error);
+    
     if (error.name === 'AbortError') {
       throw new Error('La requête a pris trop de temps. Veuillez réessayer.');
     }
+    
     if (error.message.includes('Service Unavailable')) {
       throw new Error('Le modèle est en cours de chargement. Veuillez patienter quelques secondes et réessayer.');
     }
+    
     throw error;
   } finally {
     clearTimeout(timeout);

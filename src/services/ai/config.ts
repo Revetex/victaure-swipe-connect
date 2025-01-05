@@ -30,7 +30,7 @@ export const HUGGING_FACE_CONFIG = {
   top_p: 0.95,
   top_k: 50,
   repetition_penalty: 1.1,
-  timeout: 180000, // Increased timeout for more complex responses
+  timeout: 300000, // Increased timeout to 5 minutes
   parameters: {
     do_sample: true,
     return_full_text: false,
@@ -42,6 +42,14 @@ export const HUGGING_FACE_CONFIG = {
     stop: ["User:", "Assistant:", "\n\n"],
     typical_p: 0.95,
     watermark: false,
-    max_time: 120
+    max_time: 240
   }
+};
+
+// Retry configuration
+export const RETRY_CONFIG = {
+  maxRetries: 5, // Increased from 3 to 5
+  initialDelay: 5000, // Increased initial delay to 5 seconds
+  maxDelay: 30000, // Maximum delay of 30 seconds
+  backoffFactor: 1.5 // Gentler backoff factor
 };
