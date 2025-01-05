@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, InboxIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Message } from "@/hooks/useMessages";
 import { useState } from "react";
@@ -93,12 +93,28 @@ export function MessagesList({
                 ))}
               </div>
             </div>
-          ) : searchQuery ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
-              <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
-              <p>Aucun message ne correspond à votre recherche</p>
-            </div>
-          ) : null}
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground mt-8"
+            >
+              <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+                <InboxIcon className="h-8 w-8 opacity-50" />
+              </div>
+              {searchQuery ? (
+                <>
+                  <p className="text-lg font-medium">Aucun message trouvé</p>
+                  <p className="text-sm mt-1">Essayez avec d'autres termes de recherche</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-lg font-medium">Votre boîte de réception est vide</p>
+                  <p className="text-sm mt-1">Les nouveaux messages apparaîtront ici</p>
+                </>
+              )}
+            </motion.div>
+          )}
         </div>
       </ScrollArea>
     </motion.div>
