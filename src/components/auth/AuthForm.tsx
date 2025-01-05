@@ -75,6 +75,9 @@ export const AuthForm = memo(function AuthForm() {
           },
         },
       }}
+      showLinks={true}
+      persistSession={true}
+      view="sign_in"
     />
   );
 });

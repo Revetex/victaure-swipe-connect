@@ -8,10 +8,12 @@ import { Logo } from "@/components/Logo";
 import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     // Check current session
@@ -83,6 +85,19 @@ export default function Auth() {
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
             <BiometricAuth />
             <AuthForm />
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="rememberMe" 
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              />
+              <label 
+                htmlFor="rememberMe" 
+                className="text-sm text-muted-foreground cursor-pointer"
+              >
+                Rester connecté
+              </label>
+            </div>
           </div>
 
           {/* Video Section */}
@@ -92,7 +107,7 @@ export default function Auth() {
 
           {/* Legal Links */}
           <div className="text-center text-sm pb-8">
-            <div className="space-x-2">
+            <div className="space-x-4">
               <Dialog>
                 <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
                   Politique de confidentialité
@@ -127,7 +142,6 @@ export default function Auth() {
                   </div>
                 </DialogContent>
               </Dialog>
-              <span className="text-muted-foreground">•</span>
               <Dialog>
                 <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
                   Conditions d'utilisation
