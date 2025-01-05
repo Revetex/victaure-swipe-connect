@@ -1,88 +1,129 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Briefcase, Building2, MapPin, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Briefcase, Building2, MapPin, ExternalLink } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import type { ScrapedJob } from "@/types/database/scrapedJobs";
 
 export function ScrapedJobs() {
-  const { data: jobs, isLoading } = useQuery({
-    queryKey: ["scraped-jobs"],
-    queryFn: async () => {
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const fetchJobs = async () => {
+    try {
       const { data, error } = await supabase
-        .from("scraped_jobs")
-        .select("*")
-        .order("posted_at", { ascending: false })
+        .from('scraped_jobs')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;
-      return data as ScrapedJob[];
+      setJobs(data || []);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les emplois",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
 
-  if (isLoading) {
-    return (
-      <Card className="p-4">
-        <div className="animate-pulse space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="space-y-2">
-              <div className="h-4 bg-muted rounded w-3/4"></div>
-              <div className="h-3 bg-muted rounded w-1/2"></div>
-            </div>
-          ))}
-        </div>
-      </Card>
-    );
-  }
+  const refreshJobs = async () => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.functions.invoke('scrape-jobs');
+      if (error) throw error;
+      
+      await fetchJobs();
+      toast({
+        title: "Succès",
+        description: "Les emplois ont été mis à jour"
+      });
+    } catch (error) {
+      console.error('Error refreshing jobs:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de mettre à jour les emplois",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Emplois récents</h3>
-      <ScrollArea className="h-[400px] pr-4">
-        <div className="space-y-4">
-          {jobs?.map((job) => (
-            <motion.div
-              key={job.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors"
-            >
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <h4 className="font-medium">{job.title}</h4>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold">Emplois récents</h2>
+        <Button 
+          onClick={refreshJobs} 
+          disabled={isLoading}
+          variant="outline"
+        >
+          Rafraîchir
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {jobs.map((job, index) => (
+          <motion.div
+            key={job.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Card className="p-4 hover:shadow-lg transition-shadow">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between">
+                  <h3 className="font-semibold line-clamp-2">{job.title}</h3>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                    {job.source}
+                  </span>
+                </div>
+                
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4" />
                     <span>{job.company}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  
+                  <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
                     <span>{job.location}</span>
                   </div>
-                  {job.posted_at && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      <span>
-                        {format(new Date(job.posted_at), "d MMMM yyyy", { locale: fr })}
-                      </span>
-                    </div>
-                  )}
                 </div>
-                <a
-                  href={job.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 p-2 rounded-full hover:bg-primary/10 transition-colors"
-                >
-                  <Briefcase className="h-5 w-5 text-primary" />
-                </a>
+
+                <div className="pt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => window.open(job.url, '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Voir l'offre
+                  </Button>
+                </div>
               </div>
-            </motion.div>
-          ))}
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {jobs.length === 0 && !isLoading && (
+        <div className="text-center py-8 text-muted-foreground">
+          Aucun emploi trouvé. Cliquez sur Rafraîchir pour chercher de nouvelles offres.
         </div>
-      </ScrollArea>
-    </Card>
+      )}
+    </div>
   );
 }
