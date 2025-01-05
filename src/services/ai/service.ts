@@ -16,14 +16,21 @@ async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error('Erreur lors de la récupération de la clé API');
     }
 
-    if (!data || data.length === 0 || !data[0].secret || data[0].secret.trim() === '') {
-      console.error('No API key found in response:', data);
-      throw new Error('Clé API non trouvée ou vide. Veuillez configurer la clé Hugging Face.');
+    if (!data || data.length === 0) {
+      console.error('No data returned from get_secret');
+      throw new Error('Aucune donnée reçue du serveur');
     }
 
-    return data[0].secret;
+    const apiKey = data[0]?.secret;
+    if (!apiKey || apiKey.trim() === '') {
+      console.error('API key is empty or invalid');
+      throw new Error('Clé API non trouvée ou invalide');
+    }
+
+    console.log('API key retrieved successfully');
+    return apiKey;
   } catch (error) {
-    console.error('Error getting API key:', error);
+    console.error('Error in getHuggingFaceApiKey:', error);
     throw error;
   }
 }
