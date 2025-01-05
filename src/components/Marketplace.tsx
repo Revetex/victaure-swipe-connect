@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
-import { Filter, ArrowRight } from "lucide-react";
+import { Filter } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
@@ -99,10 +99,10 @@ export function Marketplace() {
           }}
         />
 
-        <Tabs defaultValue="internal" className="space-y-4">
+        <Tabs defaultValue="internal" className="w-full">
           <TabsList className="w-full flex justify-center mb-4">
-            <TabsTrigger value="internal">Offres Victaure</TabsTrigger>
-            <TabsTrigger value="external" className="relative">
+            <TabsTrigger value="internal" className="flex-1">Offres Victaure</TabsTrigger>
+            <TabsTrigger value="external" className="flex-1 relative">
               Offres Externes
               <span className="absolute -right-2 -top-2 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -111,40 +111,42 @@ export function Marketplace() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="internal">
-            <div className="mb-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="w-full sm:w-auto flex items-center justify-center gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {showFilters ? (
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-                  <div className="lg:col-span-1">
-                    <JobFilters
-                      filters={filters}
-                      onFilterChange={handleFilterChange}
-                    />
+          <div className="mt-4">
+            <TabsContent value="internal" className="m-0">
+              <div className="mb-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2"
+                >
+                  <Filter className="h-4 w-4" />
+                  {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-4">
+                {showFilters ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                    <div className="lg:col-span-1">
+                      <JobFilters
+                        filters={filters}
+                        onFilterChange={handleFilterChange}
+                      />
+                    </div>
+                    <div className="lg:col-span-4">
+                      <JobList jobs={jobs} isLoading={isLoading} />
+                    </div>
                   </div>
-                  <div className="lg:col-span-4">
-                    <JobList jobs={jobs} isLoading={isLoading} />
-                  </div>
-                </div>
-              ) : (
-                <JobList jobs={jobs} isLoading={isLoading} />
-              )}
-            </div>
-          </TabsContent>
+                ) : (
+                  <JobList jobs={jobs} isLoading={isLoading} />
+                )}
+              </div>
+            </TabsContent>
 
-          <TabsContent value="external">
-            <ScrapedJobsList />
-          </TabsContent>
+            <TabsContent value="external" className="m-0">
+              <ScrapedJobsList />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </section>
