@@ -12,11 +12,13 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState, useEffect } from "react";
+import { AIAssistant } from "./dashboard/AIAssistant";
 
 export function Dashboard() {
   const { data: stats, isLoading, error } = useDashboardStats();
   const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   // Fonction pour gérer les erreurs
   const handleError = (error: Error) => {
@@ -75,7 +77,7 @@ export function Dashboard() {
   // Fonction pour démarrer la conversation avec Mr Victaure
   const handleStartChat = () => {
     setShowWelcome(false);
-    navigate("/messages");
+    setShowAIAssistant(true);
   };
 
   // Fonction pour fermer la fenêtre de bienvenue
@@ -109,6 +111,10 @@ export function Dashboard() {
           onDismiss={handleDismissWelcome}
           onStartChat={handleStartChat}
         />
+      )}
+
+      {showAIAssistant && (
+        <AIAssistant onClose={() => setShowAIAssistant(false)} />
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
