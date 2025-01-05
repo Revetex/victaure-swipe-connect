@@ -1,25 +1,18 @@
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Dispatch, SetStateAction } from "react";
+import { ScrollArea } from "../ui/scroll-area";
+import { StickyNote as StickyNoteType } from "@/types/todo";
 
-export interface NotesSectionProps {
-  notes: any[];
+interface NotesSectionProps {
+  notes: StickyNoteType[];
   newNote: string;
   selectedColor: string;
-  onNoteChange: Dispatch<SetStateAction<string>>;
-  onColorChange: Dispatch<SetStateAction<string>>;
+  onNoteChange: (value: string) => void;
+  onColorChange: (color: string) => void;
   onAdd: () => void;
   onDelete: (id: string) => void;
 }
-
-const colors = [
-  { value: "yellow", label: "Yellow", class: "bg-yellow-200" },
-  { value: "blue", label: "Blue", class: "bg-blue-200" },
-  { value: "green", label: "Green", class: "bg-green-200" },
-  { value: "pink", label: "Pink", class: "bg-pink-200" },
-];
 
 export function NotesSection({
   notes,
@@ -28,39 +21,44 @@ export function NotesSection({
   onNoteChange,
   onColorChange,
   onAdd,
-  onDelete,
+  onDelete
 }: NotesSectionProps) {
+  const colors = [
+    { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
+    { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
+    { value: 'green', label: 'Vert', class: 'bg-green-200' },
+    { value: 'pink', label: 'Rose', class: 'bg-pink-200' },
+    { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
+    { value: 'orange', label: 'Orange', class: 'bg-orange-200' },
+  ];
+
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <Input
-          value={newNote}
-          onChange={(e) => onNoteChange(e.target.value)}
-          placeholder="Add a new note..."
-          className="flex-1"
-        />
-        <div className="flex gap-1">
-          {colors.map((color) => (
-            <button
-              key={color.value}
-              onClick={() => onColorChange(color.value)}
-              className={`w-6 h-6 rounded-full ${color.class} ${
-                selectedColor === color.value ? "ring-2 ring-offset-2" : ""
-              }`}
+      <h2 className="text-2xl font-bold text-white/90">Mes notes</h2>
+      
+      <NotesInput
+        newNote={newNote}
+        selectedColor={selectedColor}
+        colors={colors}
+        onNoteChange={onNoteChange}
+        onColorChange={onColorChange}
+        onAdd={onAdd}
+      />
+
+      <ScrollArea className="h-[400px] pr-4">
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          layout
+        >
+          {notes.map((note) => (
+            <StickyNote
+              key={note.id}
+              note={note}
+              onDelete={() => onDelete(note.id)}
             />
           ))}
-        </div>
-        <Button onClick={onAdd}>Add</Button>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {notes.map((note) => (
-          <StickyNote
-            key={note.id}
-            note={note}
-            onDelete={() => onDelete(note.id)}
-          />
-        ))}
-      </div>
+        </motion.div>
+      </ScrollArea>
     </div>
   );
 }
