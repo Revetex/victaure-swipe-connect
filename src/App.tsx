@@ -4,25 +4,9 @@ import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
-import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    const handleAuthError = (error: Error) => {
-      console.error("Auth error:", error);
-      toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
-    };
-
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'TOKEN_REFRESHED' && !session) {
-        handleAuthError(new Error('Token refresh failed'));
-      }
-    });
-  }, []);
 
   // Show loading spinner while checking auth status
   if (isLoading) {

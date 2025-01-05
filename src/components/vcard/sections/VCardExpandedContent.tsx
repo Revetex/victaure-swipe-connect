@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { VCardActions } from "../VCardActions";
+import { VCardActions } from "@/components/VCardActions";
 import { VCardExpandedHeader } from "./expanded/VCardExpandedHeader";
 import { VCardExpandedQR } from "./expanded/VCardExpandedQR";
 import { VCardExpandedGrid } from "./expanded/VCardExpandedGrid";
