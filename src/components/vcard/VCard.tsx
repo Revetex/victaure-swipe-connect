@@ -32,6 +32,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         setProfile={setProfile}
         isExpanded={isExpanded}
         setIsExpanded={setIsExpanded}
+        setIsEditing={handleEditStateChange}
       />
       <VCardContent
         profile={profile}
