@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { Mail, Phone, MapPin, Search } from "lucide-react";
+import { Mail, Phone, MapPin, Search, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -148,7 +148,11 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                     className="w-full justify-between"
                   >
                     {profile.address || "Rechercher une adresse"}
-                    <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    {isSearching ? (
+                      <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[400px] p-0">
@@ -156,7 +160,6 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                     <CommandInput
                       placeholder="Entrez une adresse..."
                       onValueChange={handleAddressSearch}
-                      loading={isSearching}
                     />
                     <CommandList>
                       <CommandEmpty>Aucune adresse trouvée.</CommandEmpty>
