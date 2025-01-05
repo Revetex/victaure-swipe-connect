@@ -667,7 +667,7 @@ export type Database = {
           posted_at: string | null
           title: string
           updated_at: string | null
-          url: string | null
+          url: string
         }
         Insert: {
           company: string
@@ -678,7 +678,7 @@ export type Database = {
           posted_at?: string | null
           title: string
           updated_at?: string | null
-          url?: string | null
+          url: string
         }
         Update: {
           company?: string
@@ -689,7 +689,7 @@ export type Database = {
           posted_at?: string | null
           title?: string
           updated_at?: string | null
-          url?: string | null
+          url?: string
         }
         Relationships: []
       }

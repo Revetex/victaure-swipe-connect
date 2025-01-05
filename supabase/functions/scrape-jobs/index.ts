@@ -36,14 +36,14 @@ serve(async (req) => {
 
     console.log(`Total jobs to insert: ${jobs.length}`);
 
-    // Insert jobs into Supabase
+    // Insert jobs into Supabase, using url as the conflict key
     const { error } = await supabase
       .from('scraped_jobs')
       .upsert(
         jobs,
         { 
           onConflict: 'url',
-          ignoreDuplicates: true 
+          ignoreDuplicates: false // Set to false to update existing records
         }
       );
 
@@ -116,13 +116,13 @@ async function scrapeIndeedJobs() {
       const url = card.querySelector('a')?.getAttribute('href');
       const description = card.querySelector('.job-snippet')?.textContent?.trim();
       
-      if (title && company && location) {
+      if (title && company && location && url) {
         jobs.push({
           title,
           company,
           location,
           description,
-          url: url ? `https://ca.indeed.com${url}` : undefined,
+          url: `https://ca.indeed.com${url}`,
           source: 'indeed',
           posted_at: new Date().toISOString()
         });
@@ -166,7 +166,7 @@ async function scrapeLinkedInJobs() {
       const url = card.querySelector('a')?.getAttribute('href');
       const description = card.querySelector('.job-search-card__snippet')?.textContent?.trim();
       
-      if (title && company && location) {
+      if (title && company && location && url) {
         jobs.push({
           title,
           company,
