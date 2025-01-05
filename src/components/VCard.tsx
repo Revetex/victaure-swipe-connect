@@ -145,7 +145,11 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
               <VCardContact
                 profile={profile}
                 isEditing={isEditing}
-                setProfile={setProfile}
+                onUpdate={(field, value) => {
+                  if (profile) {
+                    setProfile({ ...profile, [field]: value });
+                  }
+                }}
               />
 
               <VCardContent
