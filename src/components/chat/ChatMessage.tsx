@@ -44,19 +44,20 @@ export const ChatMessage = memo(function ChatMessage({
       <div className="shrink-0">
         {isBot ? (
           <div className={cn(
-            "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow-sm",
+            "flex h-12 w-12 shrink-0 select-none items-center justify-center rounded-md border shadow-sm",
             "bg-primary text-primary-foreground ring-2 ring-primary/10"
           )}>
-            <Bot className="h-4 w-4" />
+            <Bot className="h-6 w-6" />
           </div>
         ) : (
-          <Avatar className="h-8 w-8 ring-2 ring-primary/10">
+          <Avatar className="h-12 w-12 ring-2 ring-primary/10">
             <AvatarImage 
               src={profile?.avatar_url || ''} 
               alt={profile?.full_name || 'User'} 
+              className="object-cover"
             />
             <AvatarFallback>
-              <User className="h-4 w-4" />
+              <User className="h-6 w-6" />
             </AvatarFallback>
           </Avatar>
         )}
