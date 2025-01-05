@@ -1,54 +1,79 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export async function handleJobSearch(message: string, profile: any, supabase: SupabaseClient) {
+  console.log('Searching jobs with message:', message);
   const location = extractLocation(message);
-  const query = buildJobQuery(message);
+  
+  try {
+    // Recherche des emplois réguliers
+    const { data: jobs, error: jobsError } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('status', 'open')
+      .ilike('location', `%${location}%`);
 
-  // Search for jobs
-  const { data: jobs, error: jobsError } = await supabase
-    .from('jobs')
-    .select('*')
-    .eq('status', 'open')
-    .ilike('location', `%${location}%`)
-    .order('created_at', { ascending: false });
+    if (jobsError) {
+      console.error('Error fetching regular jobs:', jobsError);
+      throw jobsError;
+    }
 
-  if (jobsError) throw jobsError;
+    // Recherche des emplois scrapés
+    const { data: scrapedJobs, error: scrapedError } = await supabase
+      .from('scraped_jobs')
+      .select('*')
+      .ilike('location', `%${location}%`);
 
-  // Search scraped jobs
-  const { data: scrapedJobs, error: scrapedError } = await supabase
-    .from('scraped_jobs')
-    .select('*')
-    .ilike('location', `%${location}%`)
-    .order('posted_at', { ascending: false });
+    if (scrapedError) {
+      console.error('Error fetching scraped jobs:', scrapedError);
+      throw scrapedError;
+    }
 
-  if (scrapedError) throw scrapedError;
+    console.log(`Found ${jobs?.length || 0} regular jobs and ${scrapedJobs?.length || 0} scraped jobs`);
 
-  const allJobs = [...(jobs || []), ...(scrapedJobs || [])];
+    // Combine et formate les résultats
+    const formattedJobs = [
+      ...(jobs || []).map(job => ({
+        ...job,
+        source: 'Victaure'
+      })),
+      ...(scrapedJobs || []).map(job => ({
+        ...job,
+        source: 'Externe'
+      }))
+    ];
 
-  if (allJobs.length === 0) {
+    // Trie par date de création/publication
+    const sortedJobs = formattedJobs.sort((a, b) => {
+      const dateA = new Date(a.created_at || a.posted_at);
+      const dateB = new Date(b.created_at || b.posted_at);
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    if (sortedJobs.length === 0) {
+      return {
+        message: `Je n'ai pas trouvé d'offres d'emploi à ${location}. Voulez-vous voir toutes les offres disponibles ?`,
+        suggestedActions: [
+          {
+            type: 'navigate_to_jobs',
+            label: 'Voir toutes les offres',
+            icon: 'briefcase'
+          }
+        ]
+      };
+    }
+
     return {
-      message: `Je n'ai pas trouvé d'offres d'emploi à ${location}. Voulez-vous voir toutes les offres disponibles ?`,
-      suggestedActions: [
-        {
-          type: 'navigate_to_jobs',
-          label: 'Voir toutes les offres',
-          icon: 'briefcase'
-        }
-      ]
+      message: `J'ai trouvé ${sortedJobs.length} offres d'emploi à ${location}. Voici les plus récentes :`,
+      jobs: sortedJobs.slice(0, 5)
+    };
+
+  } catch (error) {
+    console.error('Error in handleJobSearch:', error);
+    return {
+      message: "Désolé, j'ai rencontré une erreur lors de la recherche d'emplois. Pouvez-vous réessayer ?",
+      error: error.message
     };
   }
-
-  return {
-    message: `J'ai trouvé ${allJobs.length} offres d'emploi à ${location}. Voici les plus récentes :`,
-    jobs: allJobs.slice(0, 5),
-    suggestedActions: [
-      {
-        type: 'navigate_to_jobs',
-        label: 'Voir toutes les offres',
-        icon: 'briefcase'
-      }
-    ]
-  };
 }
 
 function extractLocation(message: string): string {
@@ -63,13 +88,4 @@ function extractLocation(message: string): string {
   }
   
   return defaultLocation;
-}
-
-function buildJobQuery(message: string): string {
-  const keywords = message.toLowerCase()
-    .replace(/[^\w\s]/gi, '')
-    .split(' ')
-    .filter(word => word.length > 2);
-  
-  return keywords.join(' & ');
 }
