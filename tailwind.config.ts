@@ -17,6 +17,35 @@ export default {
       },
     },
     extend: {
+      colors: {
+        'high-contrast': {
+          purple: '#9b87f5',
+          dark: '#1A1F2C',
+          blue: '#1EAEDB',
+          charcoal: '#221F26',
+          magenta: '#D946EF',
+          gray: '#222222',
+        },
+        'pastel': {
+          green: '#F2FCE2',
+          yellow: '#FEF7CD',
+          orange: '#FEC6A1',
+          purple: '#E5DEFF',
+        },
+        'neutral': {
+          gray: '#8E9196',
+          dark: '#333333',
+          light: '#C8C8C9',
+          white: '#FFFFFF',
+        },
+      },
+      container: {
+        center: true,
+        padding: '2rem',
+        screens: {
+          '2xl': '1400px',
+        },
+      },
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
