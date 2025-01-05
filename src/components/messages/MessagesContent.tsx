@@ -1,5 +1,8 @@
 import { ConversationView } from "./conversation/ConversationView";
+import { MessagesList } from "./conversation/MessagesList";
 import { useProfile } from "@/hooks/useProfile";
+import { useMessages } from "@/hooks/useMessages";
+import { useState } from "react";
 
 interface MessagesContentProps {
   messages: any[];
@@ -13,7 +16,7 @@ interface MessagesContentProps {
 }
 
 export function MessagesContent({
-  messages,
+  messages: chatMessages,
   inputMessage,
   isListening,
   isThinking,
@@ -23,26 +26,43 @@ export function MessagesContent({
   onClearChat
 }: MessagesContentProps) {
   const { profile } = useProfile();
+  const { messages, markAsRead } = useMessages();
+  const [selectedConversation, setSelectedConversation] = useState<"list" | "assistant">("list");
 
   const handleBack = () => {
-    // Pour l'instant, on ne fait que rafraîchir la page
-    // car nous n'avons pas de gestion d'état pour la navigation
-    window.location.href = "/dashboard";
+    setSelectedConversation("list");
   };
+
+  const handleSelectConversation = (type: "assistant") => {
+    setSelectedConversation(type);
+  };
+
+  if (selectedConversation === "assistant") {
+    return (
+      <div className="h-full">
+        <ConversationView
+          messages={chatMessages}
+          inputMessage={inputMessage}
+          isListening={isListening}
+          isThinking={isThinking}
+          profile={profile}
+          onBack={handleBack}
+          onSendMessage={onSendMessage}
+          onVoiceInput={onVoiceInput}
+          setInputMessage={setInputMessage}
+          onClearChat={onClearChat}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full">
-      <ConversationView
+      <MessagesList
         messages={messages}
-        inputMessage={inputMessage}
-        isListening={isListening}
-        isThinking={isThinking}
-        profile={profile}
-        onBack={handleBack}
-        onSendMessage={onSendMessage}
-        onVoiceInput={onVoiceInput}
-        setInputMessage={setInputMessage}
-        onClearChat={onClearChat}
+        chatMessages={chatMessages}
+        onSelectConversation={handleSelectConversation}
+        onMarkAsRead={(messageId) => markAsRead.mutate(messageId)}
       />
     </div>
   );
