@@ -17,7 +17,9 @@ export function Marketplace() {
     queryKey: ["jobs", filters],
     queryFn: async () => {
       console.log("Fetching jobs with filters:", filters);
-      let query = supabase
+      
+      // Fetch regular jobs
+      let jobsQuery = supabase
         .from("jobs")
         .select(`
           *,
@@ -31,31 +33,68 @@ export function Marketplace() {
         .order("created_at", { ascending: false });
 
       // Apply filters using the utility function
-      const filteredQuery = await applyFilters(query, filters);
-      console.log("Filtered query:", filteredQuery);
+      const filteredJobsQuery = await applyFilters(jobsQuery, filters);
+      console.log("Filtered jobs query:", filteredJobsQuery);
 
-      const { data, error } = await filteredQuery;
+      // Fetch scraped jobs
+      let scrapedJobsQuery = supabase
+        .from("scraped_jobs")
+        .select("*")
+        .order("posted_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching jobs:", error);
-        toast.error("Erreur lors du chargement des offres");
-        throw error;
+      // Execute both queries in parallel
+      const [jobsResult, scrapedJobsResult] = await Promise.all([
+        filteredJobsQuery,
+        scrapedJobsQuery
+      ]);
+
+      if (jobsResult.error) {
+        console.error("Error fetching regular jobs:", jobsResult.error);
+        toast.error("Erreur lors du chargement des offres régulières");
+        throw jobsResult.error;
       }
 
-      if (!data || data.length === 0) {
-        console.log("No jobs found");
-        return [];
+      if (scrapedJobsResult.error) {
+        console.error("Error fetching scraped jobs:", scrapedJobsResult.error);
+        toast.error("Erreur lors du chargement des offres IA");
+        throw scrapedJobsResult.error;
       }
 
-      console.log("Fetched jobs:", data);
-      return data.map(job => ({
+      // Format regular jobs
+      const formattedRegularJobs = jobsResult.data?.map(job => ({
         ...job,
         company: job.employer?.company_name || job.company_name || "Entreprise",
         employer_name: job.employer?.full_name || "Employeur",
         employer_avatar: job.employer?.avatar_url,
         skills: job.required_skills || [],
         salary: job.budget ? `${job.budget} ${job.salary_currency || 'CAD'}` : 'À discuter'
-      })) as Job[];
+      })) || [];
+
+      // Format scraped jobs to match Job type
+      const formattedScrapedJobs = scrapedJobsResult.data?.map(job => ({
+        id: job.id,
+        title: job.title,
+        description: job.description || "",
+        company: job.company,
+        location: job.location,
+        budget: 0,
+        employer_id: "",
+        status: "open" as const,
+        category: "Technology",
+        contract_type: "full-time",
+        experience_level: "mid-level",
+        created_at: job.posted_at,
+        company_name: job.company,
+        company_website: job.url,
+        is_scraped: true
+      })) || [];
+
+      // Combine and sort all jobs by creation date
+      const allJobs = [...formattedRegularJobs, ...formattedScrapedJobs]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      console.log("Combined jobs:", allJobs);
+      return allJobs as Job[];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
