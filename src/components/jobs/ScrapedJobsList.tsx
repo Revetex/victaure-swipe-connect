@@ -45,10 +45,10 @@ export function ScrapedJobsList() {
     try {
       const toastId = toast.loading("Mise à jour des offres en cours...");
       console.log("Starting job refresh...");
-      const { error } = await supabase.functions.invoke("scrape-jobs");
+      const { error } = await supabase.functions.invoke("fetch-jobs");
       
       if (error) {
-        console.error("Error from scrape-jobs function:", error);
+        console.error("Error from fetch-jobs function:", error);
         toast.error("Erreur lors de la mise à jour des offres", { id: toastId });
         throw error;
       }
