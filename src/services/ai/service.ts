@@ -15,7 +15,7 @@ async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error('Failed to retrieve API key');
     }
 
-    if (!data) {
+    if (!data || !data.secret) {
       throw new Error('No API key found');
     }
 
@@ -35,6 +35,8 @@ export async function generateAIResponse(message: string): Promise<string> {
       throw new Error('No API key available');
     }
 
+    console.log('Sending request to Hugging Face API...');
+    
     const response = await fetch(
       `https://api-inference.huggingface.co/models/${HUGGING_FACE_CONFIG.model}`,
       {
