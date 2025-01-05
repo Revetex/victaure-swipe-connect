@@ -1,6 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { LocationMap } from "../map/LocationMap";
+import { toast } from "sonner";
 
 interface VCardContactProps {
   profile: any;
@@ -9,8 +12,53 @@ interface VCardContactProps {
 }
 
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
   const handleInputChange = (key: string, value: string) => {
     setProfile((prev: any) => ({ ...prev, [key]: value }));
+
+    // If the changed field is city, trigger geocoding
+    if (key === 'city' && value) {
+      if (searchTimeout) clearTimeout(searchTimeout);
+      setIsSearching(true);
+
+      const timeout = setTimeout(async () => {
+        try {
+          const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(value)}.json?country=ca&types=place&access_token=pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug`
+          );
+          const data = await response.json();
+
+          if (data.features && data.features.length > 0) {
+            const location = data.features[0];
+            const [longitude, latitude] = location.center;
+            const context = location.context || [];
+            
+            const region = context.find((item: any) => item.id.startsWith('region'))?.text || '';
+            const postcode = context.find((item: any) => item.id.startsWith('postcode'))?.text || '';
+
+            setProfile((prev: any) => ({
+              ...prev,
+              city: location.text,
+              state: region,
+              latitude,
+              longitude,
+              postal_code: postcode
+            }));
+
+            toast.success("Localisation mise à jour");
+          }
+        } catch (error) {
+          console.error('Error fetching location data:', error);
+          toast.error("Erreur lors de la mise à jour de la localisation");
+        } finally {
+          setIsSearching(false);
+        }
+      }, 1000);
+
+      setSearchTimeout(timeout);
+    }
   };
 
   const contactFields = [
@@ -73,6 +121,36 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             )}
           </motion.div>
         ))}
+
+        {profile.state && (
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3"
+          >
+            <div className="p-2 rounded-full bg-white/10">
+              <MapPin className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-white/90">
+              {profile.state}, {profile.postal_code || ""}
+            </span>
+          </motion.div>
+        )}
+
+        {isEditing && (profile.latitude || profile.longitude) && (
+          <LocationMap
+            latitude={profile.latitude}
+            longitude={profile.longitude}
+            onLocationSelect={(lat, lng) => {
+              setProfile((prev: any) => ({
+                ...prev,
+                latitude: lat,
+                longitude: lng
+              }));
+            }}
+            isEditing={isEditing}
+          />
+        )}
       </motion.div>
     </div>
   );
