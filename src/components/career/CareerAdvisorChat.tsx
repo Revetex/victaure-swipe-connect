@@ -2,21 +2,19 @@ import { useState } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { ChatInput } from "./ChatInput";
 import { QuickSuggestions } from "./QuickSuggestions";
-import { ProfileEditor } from "./ProfileEditor";
 import { ChatMessages } from "./ChatMessages";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/chat/messageTypes";
 import { v4 as uuidv4 } from 'uuid';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
 
 export function CareerAdvisorChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  const { profile, setProfile } = useProfile();
-  const [activeTab, setActiveTab] = useState("chat");
+  const { profile } = useProfile();
 
   const createMessage = (content: string, sender: string): Message => ({
     id: uuidv4(),
@@ -64,30 +62,21 @@ export function CareerAdvisorChat() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col h-full bg-background"
+    >
       <ChatHeader isLoading={isTyping} />
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="chat">Discussion</TabsTrigger>
-          <TabsTrigger value="profile">Mon Profil</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="chat" className="flex-1 flex flex-col">
-          <ScrollArea className="flex-1 p-4">
-            <QuickSuggestions onSelect={handleSuggestionSelect} />
-            <ChatMessages messages={messages} isTyping={isTyping} />
-          </ScrollArea>
-          
-          <div className="p-4 border-t">
-            <ChatInput isLoading={isTyping} onSendMessage={handleMessageSubmit} />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="profile" className="p-4">
-          <ProfileEditor profile={profile} setProfile={setProfile} />
-        </TabsContent>
-      </Tabs>
-    </div>
+      <ScrollArea className="flex-1 p-4">
+        <QuickSuggestions onSelect={handleSuggestionSelect} />
+        <ChatMessages messages={messages} isTyping={isTyping} />
+      </ScrollArea>
+      
+      <div className="p-4 border-t">
+        <ChatInput isLoading={isTyping} onSendMessage={handleMessageSubmit} />
+      </div>
+    </motion.div>
   );
 }

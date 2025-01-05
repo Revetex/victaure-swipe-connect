@@ -1,5 +1,7 @@
 import { Message } from "@/types/chat/messageTypes";
 import { motion, AnimatePresence } from "framer-motion";
+import { Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -8,33 +10,54 @@ interface ChatMessagesProps {
 
 export function ChatMessages({ messages, isTyping }: ChatMessagesProps) {
   return (
-    <AnimatePresence>
-      {messages.map((message) => (
-        <motion.div
-          key={message.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className={`p-4 rounded-lg ${
-            message.sender === "user"
-              ? "bg-blue-600/20 ml-auto"
-              : "bg-gray-800/50"
-          } max-w-[80%] mb-4`}
-        >
-          <p className="text-gray-200">{message.content}</p>
-        </motion.div>
-      ))}
+    <div className="space-y-4">
+      <AnimatePresence>
+        {messages.map((message) => (
+          <motion.div
+            key={message.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`flex gap-3 ${
+              message.sender === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            {message.sender === "advisor" && (
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/victaure-avatar.png" alt="M. Victaure" />
+                <AvatarFallback>MV</AvatarFallback>
+              </Avatar>
+            )}
+            
+            <div
+              className={`rounded-lg p-4 max-w-[80%] ${
+                message.sender === "user"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted"
+              }`}
+            >
+              {message.content}
+            </div>
+
+            {message.sender === "user" && (
+              <Avatar className="h-8 w-8">
+                <AvatarFallback>ME</AvatarFallback>
+              </Avatar>
+            )}
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
       {isTyping && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex items-center space-x-2 text-gray-400"
+          className="flex items-center gap-2 text-muted-foreground"
         >
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="text-sm">M. Victaure réfléchit...</span>
         </motion.div>
       )}
-    </AnimatePresence>
+    </div>
   );
 }
