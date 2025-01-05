@@ -35,17 +35,17 @@ export function MessageItem({
       transition={{ duration: 0.2 }}
       onClick={() => !read && onMarkAsRead(id)}
       className={cn(
-        "p-4 rounded-xl cursor-pointer transition-all duration-200",
-        "hover:scale-[1.02] hover:shadow-md hover:bg-muted/80",
+        "p-4 rounded-lg cursor-pointer transition-all duration-200",
+        "hover:scale-[1.02] hover:bg-muted/80",
         !read 
-          ? "bg-primary/5 border-l-2 border-primary shadow-sm" 
-          : "bg-muted/50 backdrop-blur-sm"
+          ? "bg-primary/10 border-l-2 border-primary shadow-sm" 
+          : "bg-muted"
       )}
     >
       <div className="flex gap-3">
-        <Avatar className="h-10 w-10 ring-2 ring-background">
+        <Avatar className="h-10 w-10">
           <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
-          <AvatarFallback className="bg-primary/10 text-primary">
+          <AvatarFallback>
             {sender.full_name?.slice(0, 2).toUpperCase() || "??"}
           </AvatarFallback>
         </Avatar>

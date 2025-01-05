@@ -1,20 +1,20 @@
 export const predefinedSkills = [
   // Développement
   "JavaScript", "TypeScript", "Python", "React", "Node.js", "Vue.js", "Angular", "PHP", "Java", "C#",
-  "Ruby", "Swift", "Kotlin", "Go", "Rust", "SQL", "MongoDB", "PostgreSQL", "GraphQL", "API REST",
+  "Ruby", "Swift", "Kotlin", "Go", "Rust", "SQL", "MongoDB", "PostgreSQL", "GraphQL", "REST API",
   "HTML5", "CSS3", "SASS", "Webpack", "Docker", "Kubernetes", "AWS", "Azure", "Git", "CI/CD",
   "Linux", "Jenkins", "Redux", "Next.js", "Gatsby", "Express.js", "Django", "Spring Boot",
   
   // Design
-  "Design UI", "Recherche UX", "Figma", "Adobe XD", "Photoshop", "Illustrator", "InDesign",
-  "After Effects", "Premiere Pro", "Sketch", "Design Responsive", "Système de Design", "Typographie",
-  "Théorie des Couleurs", "Wireframing", "Prototypage", "Tests Utilisateurs", "Accessibilité", "Design Motion",
+  "UI Design", "UX Research", "Figma", "Adobe XD", "Photoshop", "Illustrator", "InDesign",
+  "After Effects", "Premiere Pro", "Sketch", "Responsive Design", "Design System", "Typography",
+  "Color Theory", "Wireframing", "Prototyping", "User Testing", "Accessibility", "Motion Design",
   
   // Gestion & Business
   "Agile", "Scrum", "Kanban", "JIRA", "Trello", "Leadership", "Communication", "Gestion de projet",
-  "Gestion de Produit", "Analyse Business", "Planification Stratégique", "Budgétisation", "Gestion des Parties Prenantes",
-  "Gestion des Risques", "Assurance Qualité", "Construction d'Équipe", "Négociation", "Présentation",
-  "Service Client", "Marketing Digital",
+  "Product Management", "Business Analysis", "Strategic Planning", "Budgeting", "Stakeholder Management",
+  "Risk Management", "Quality Assurance", "Team Building", "Négociation", "Présentation",
+  "Customer Service", "Marketing Digital",
   
   // Construction
   "Maçonnerie", "Charpente", "Plomberie", "Électricité", "Menuiserie", "Peinture",
@@ -39,18 +39,18 @@ export const skillCategories = {
   "Développement": [
     "JavaScript", "TypeScript", "Python", "React", "Node.js", "Vue.js", "Angular", "PHP",
     "Java", "C#", "Ruby", "Swift", "Kotlin", "Go", "Rust", "SQL", "MongoDB", "PostgreSQL",
-    "GraphQL", "API REST", "HTML5", "CSS3", "SASS", "Webpack", "Docker", "Kubernetes",
+    "GraphQL", "REST API", "HTML5", "CSS3", "SASS", "Webpack", "Docker", "Kubernetes",
     "AWS", "Azure", "Git", "CI/CD", "Linux", "Jenkins"
   ],
   "Design": [
-    "Design UI", "Recherche UX", "Figma", "Adobe XD", "Photoshop", "Illustrator", "InDesign",
-    "After Effects", "Premiere Pro", "Sketch", "Design Responsive", "Système de Design",
-    "Typographie", "Théorie des Couleurs", "Wireframing", "Prototypage", "Tests Utilisateurs"
+    "UI Design", "UX Research", "Figma", "Adobe XD", "Photoshop", "Illustrator", "InDesign",
+    "After Effects", "Premiere Pro", "Sketch", "Responsive Design", "Design System",
+    "Typography", "Color Theory", "Wireframing", "Prototyping", "User Testing"
   ],
   "Gestion": [
     "Agile", "Scrum", "Kanban", "Leadership", "Communication", "Gestion de projet",
-    "Gestion de Produit", "Analyse Business", "Planification Stratégique", "Budgétisation",
-    "Gestion des Parties Prenantes", "Gestion des Risques", "Assurance Qualité", "Construction d'Équipe"
+    "Product Management", "Business Analysis", "Strategic Planning", "Budgeting",
+    "Stakeholder Management", "Risk Management", "Quality Assurance", "Team Building"
   ],
   "Construction": [
     "Maçonnerie", "Charpente", "Plomberie", "Électricité", "Menuiserie", "Peinture",
@@ -62,7 +62,7 @@ export const skillCategories = {
     "Maintenance", "Réparation", "Assemblage", "Finition", "Ébénisterie", "Ferronnerie",
     "Vitrerie", "Plâtrerie", "Couverture", "Façadage", "Paysagisme"
   ],
-  "Compétences Humaines": [
+  "Soft Skills": [
     "Travail d'équipe", "Résolution de problèmes", "Adaptabilité", "Organisation",
     "Créativité", "Pensée critique", "Gestion du temps", "Autonomie", "Initiative",
     "Service client", "Empathie", "Leadership", "Communication"

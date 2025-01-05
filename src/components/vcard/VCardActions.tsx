@@ -7,8 +7,6 @@ import {
 import { Edit2, Download, FileText, CreditCard, MessageSquare, Share2 } from "lucide-react";
 import { CareerAdvisorChat } from "../career/CareerAdvisorChat";
 import { useState } from "react";
-import { Message } from "@/types/chat/messageTypes";
-import { useChat } from "@/hooks/useChat";
 
 interface VCardActionsProps {
   isEditing: boolean;
@@ -34,7 +32,6 @@ export function VCardActions({
   onDownloadCV,
 }: VCardActionsProps) {
   const [isAdvisorOpen, setIsAdvisorOpen] = useState(false);
-  const { messages, isLoading, handleSendMessage } = useChat();
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -100,11 +97,7 @@ export function VCardActions({
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] bg-gray-900/95 border-gray-800">
-              <CareerAdvisorChat 
-                messages={messages}
-                isLoading={isLoading}
-                onSendMessage={handleSendMessage}
-              />
+              <CareerAdvisorChat />
             </DialogContent>
           </Dialog>
 

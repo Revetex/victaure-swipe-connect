@@ -26,17 +26,7 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .order('name');
       
       if (error) throw error;
-      
-      // Remove duplicates based on name
-      const uniqueCategories = data.reduce((acc: any[], current) => {
-        const exists = acc.find(item => item.name === current.name);
-        if (!exists) {
-          acc.push(current);
-        }
-        return acc;
-      }, []);
-      
-      return uniqueCategories;
+      return data;
     }
   });
 
@@ -53,17 +43,7 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .order('name');
       
       if (error) throw error;
-      
-      // Remove duplicates based on name
-      const uniqueSubcategories = data.reduce((acc: any[], current) => {
-        const exists = acc.find(item => item.name === current.name);
-        if (!exists) {
-          acc.push(current);
-        }
-        return acc;
-      }, []);
-      
-      return uniqueSubcategories;
+      return data;
     },
     enabled: filters.category !== 'all'
   });

@@ -4,9 +4,9 @@ import { Switch } from "@/components/ui/switch";
 import { useFormContext } from "react-hook-form";
 
 const experienceLevels = [
-  "Débutant",
+  "Entry Level",
   "Junior",
-  "Intermédiaire",
+  "Mid-Level",
   "Senior",
   "Lead",
   "Expert"
@@ -14,36 +14,36 @@ const experienceLevels = [
 
 const contractTypes = {
   company: [
-    "CDI",
-    "CDD",
-    "Intérim",
-    "Stage",
-    "Alternance"
+    "Full-time",
+    "Part-time",
+    "Contract",
+    "Temporary",
+    "Internship"
   ],
   individual: [
-    "Unique",
-    "Durée déterminée",
-    "Projet"
+    "One-time",
+    "Fixed-duration",
+    "Project-based"
   ]
 };
 
 const paymentSchedules = {
   company: [
-    "Mensuel",
-    "Bimensuel",
-    "Hebdomadaire"
+    "Monthly",
+    "Bi-weekly",
+    "Weekly"
   ],
   individual: [
-    "Unique",
-    "Par étape",
-    "Horaire"
+    "one_time",
+    "milestone",
+    "hourly"
   ]
 };
 
 const remoteTypes = [
-  "Sur site",
-  "À distance",
-  "Hybride"
+  "On-site",
+  "Remote",
+  "Hybrid"
 ];
 
 export function JobTypeFields() {
@@ -79,7 +79,7 @@ export function JobTypeFields() {
           <FormItem>
             <FormLabel>Type de contrat</FormLabel>
             <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value || (missionType === "individual" ? "Unique" : "CDI")}>
+              <Select onValueChange={field.onChange} defaultValue={field.value || (missionType === "individual" ? "One-time" : "Full-time")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez le type de contrat" />
                 </SelectTrigger>
@@ -105,7 +105,7 @@ export function JobTypeFields() {
             <FormControl>
               <Select 
                 onValueChange={field.onChange} 
-                defaultValue={field.value || (missionType === "individual" ? "Unique" : "Mensuel")}
+                defaultValue={field.value || (missionType === "individual" ? "one_time" : "Monthly")}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez le type de paiement" />
@@ -113,7 +113,9 @@ export function JobTypeFields() {
                 <SelectContent>
                   {(missionType === "individual" ? paymentSchedules.individual : paymentSchedules.company).map((type) => (
                     <SelectItem key={type} value={type}>
-                      {type}
+                      {type === "one_time" ? "Paiement unique" : 
+                       type === "milestone" ? "Par étapes" :
+                       type === "hourly" ? "Taux horaire" : type}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -131,7 +133,7 @@ export function JobTypeFields() {
             <FormItem>
               <FormLabel>Niveau d'expérience requis</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} defaultValue={field.value || "Intermédiaire"}>
+                <Select onValueChange={field.onChange} defaultValue={field.value || "Mid-Level"}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez le niveau d'expérience" />
                   </SelectTrigger>
@@ -156,7 +158,7 @@ export function JobTypeFields() {
           <FormItem>
             <FormLabel>Type de travail</FormLabel>
             <FormControl>
-              <Select onValueChange={field.onChange} defaultValue={field.value || "Sur site"}>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "On-site"}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionnez le type de travail" />
                 </SelectTrigger>

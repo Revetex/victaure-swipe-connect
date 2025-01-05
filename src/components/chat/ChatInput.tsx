@@ -59,7 +59,7 @@ export function ChatInput({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background/80 backdrop-blur-sm rounded-xl border-muted shadow-sm"
+          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full"
           disabled={isThinking}
         />
         <div className="absolute bottom-2 right-2 flex items-center gap-2">
@@ -69,7 +69,7 @@ export function ChatInput({
               size="icon"
               variant={isListening ? "default" : "ghost"}
               onClick={onVoiceInput}
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8"
               disabled={isThinking}
             >
               <motion.div
@@ -85,8 +85,8 @@ export function ChatInput({
             size="icon"
             onClick={handleSendClick}
             className={cn(
-              "h-8 w-8 rounded-full transition-all",
-              value.trim() && !isThinking && "hover:scale-105 hover:shadow-md"
+              "h-8 w-8 transition-transform",
+              value.trim() && !isThinking && "hover:scale-105"
             )}
             disabled={!value.trim() || isThinking}
           >
