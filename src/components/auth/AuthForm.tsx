@@ -34,11 +34,11 @@ export const AuthForm = memo(function AuthForm() {
             },
           },
           className: {
-            button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px] mt-2",
+            button: "w-full h-11 text-sm font-medium bg-primary/10 hover:bg-primary/20 text-primary transition-colors mt-2",
             input: "w-full h-11 text-sm bg-transparent border border-border transition-colors focus:border-primary focus:outline-none",
             label: "text-sm text-foreground mb-2",
             message: "text-sm text-muted-foreground",
-            anchor: "text-primary no-underline hover:underline",
+            anchor: "text-primary/80 no-underline hover:text-primary hover:underline transition-colors",
             container: "space-y-2",
           },
         }}
