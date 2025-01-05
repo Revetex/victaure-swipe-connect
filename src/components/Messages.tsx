@@ -1,6 +1,6 @@
 import { useChat } from "@/hooks/useChat";
 import { MessagesContent } from "./messages/MessagesContent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Bot, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ScrollArea } from "./ui/scroll-area";
@@ -19,7 +19,28 @@ export function Messages() {
     clearChat
   } = useChat();
   const navigate = useNavigate();
+  const location = useLocation();
 
+  // Check if we're in a specific conversation
+  const isInConversation = location.pathname.includes("/messages/");
+
+  // If we're in a conversation, show the chat interface
+  if (isInConversation) {
+    return (
+      <MessagesContent
+        messages={messages}
+        inputMessage={inputMessage}
+        isListening={isListening}
+        isThinking={isThinking}
+        onSendMessage={handleSendMessage}
+        onVoiceInput={handleVoiceInput}
+        setInputMessage={setInputMessage}
+        onClearChat={clearChat}
+      />
+    );
+  }
+
+  // Otherwise, show the conversations list
   return (
     <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm">
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
