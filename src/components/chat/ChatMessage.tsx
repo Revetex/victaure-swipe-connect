@@ -42,13 +42,18 @@ export const ChatMessage = memo(function ChatMessage({
       )}
     >
       <div className={cn(
-        "flex h-12 w-12 shrink-0 select-none items-center justify-center rounded-full overflow-hidden border shadow-sm",
-        isBot ? "bg-primary text-primary-foreground ring-2 ring-primary/10" : "bg-muted"
+        "flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full overflow-hidden",
+        isBot ? "ring-2 ring-primary/10" : "ring-2 ring-primary/5"
       )}>
         {isBot ? (
-          <Bot className="h-6 w-6" />
+          <Avatar className="h-10 w-10">
+            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
+            <AvatarFallback className="bg-primary/20">
+              <Bot className="h-5 w-5 text-primary" />
+            </AvatarFallback>
+          </Avatar>
         ) : (
-          <Avatar className="h-12 w-12">
+          <Avatar className="h-10 w-10">
             <AvatarImage 
               src={profile?.avatar_url} 
               alt={profile?.full_name || "User"} 
@@ -61,14 +66,14 @@ export const ChatMessage = memo(function ChatMessage({
         )}
       </div>
       <div className={cn(
-        "flex flex-col gap-1 min-w-0 w-full max-w-[85%]",
+        "flex flex-col gap-1 min-w-0 max-w-[85%]",
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-4 py-2 w-full shadow-sm",
+          "rounded-lg px-4 py-2.5 shadow-sm",
           isBot 
             ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
-            : "bg-primary/90 text-primary-foreground dark:bg-primary/80 dark:text-primary-foreground"
+            : "bg-primary text-primary-foreground"
         )}>
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {content}
