@@ -9,9 +9,9 @@ interface ChatMessagesProps {
 export function ChatMessages({ messages, isTyping }: ChatMessagesProps) {
   return (
     <AnimatePresence>
-      {messages.map((message, index) => (
+      {messages.map((message) => (
         <motion.div
-          key={index}
+          key={message.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}

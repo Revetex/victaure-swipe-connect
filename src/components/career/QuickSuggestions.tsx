@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Briefcase, GraduationCap, Brain, Target } from "lucide-react";
-
-interface QuickSuggestionsProps {
-  onSelect: (suggestion: string) => void;
-}
+import { QuickSuggestionsProps } from "./types";
 
 const suggestions = [
   {
