@@ -1,135 +1,38 @@
-import { Messages } from "@/components/Messages";
-import { SwipeJob } from "@/components/SwipeJob";
-import { VCard } from "@/components/VCard";
-import { Settings } from "@/components/Settings";
-import { TodoSection } from "@/components/todo/TodoSection";
-import { NotesSection } from "@/components/todo/NotesSection";
-import { useTodoList } from "@/hooks/useTodoList";
-import { useNotes } from "@/hooks/useNotes";
+import { useState } from "react";
+import { NotesSection } from "./NotesSection";
 
-interface DashboardContentProps {
-  currentPage: number;
-  isEditing: boolean;
-  viewportHeight: number;
-  onEditStateChange: (state: boolean) => void;
-  onRequestChat: () => void;
-}
+export function DashboardContent() {
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
+  const [selectedColor, setSelectedColor] = useState("yellow");
 
-export function DashboardContent({
-  currentPage,
-  isEditing,
-  viewportHeight,
-  onEditStateChange,
-  onRequestChat,
-}: DashboardContentProps) {
-  const {
-    todos,
-    newTodo,
-    selectedDate,
-    selectedTime,
-    allDay,
-    setNewTodo,
-    setSelectedDate,
-    setSelectedTime,
-    setAllDay,
-    addTodo,
-    toggleTodo,
-    deleteTodo
-  } = useTodoList();
+  const handleAddNote = () => {
+    if (newNote.trim()) {
+      const newNoteObj = {
+        id: crypto.randomUUID(),
+        text: newNote,
+        color: selectedColor,
+      };
+      setNotes((prevNotes) => [...prevNotes, newNoteObj]);
+      setNewNote("");
+    }
+  };
 
-  const {
-    notes,
-    newNote,
-    selectedColor,
-    setNewNote,
-    setSelectedColor,
-    addNote,
-    deleteNote
-  } = useNotes();
+  const handleDeleteNote = (id) => {
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+  };
 
-  if (currentPage === 1) {
-    return (
-      <div 
-        className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm' : 'relative'}`}
-        style={{ 
-          height: isEditing ? viewportHeight : 'auto',
-          overflowY: isEditing ? 'auto' : 'visible',
-          WebkitOverflowScrolling: 'touch'
-        }}
-      >
-        <div className="dashboard-card h-full">
-          <div className="p-3 sm:p-4 md:p-6 h-full">
-            <VCard 
-              onEditStateChange={onEditStateChange}
-              onRequestChat={onRequestChat}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (currentPage === 2) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <Messages />
-        </div>
-      </div>
-    );
-  }
-
-  if (currentPage === 3) {
-    return (
-      <div className="dashboard-card h-full">
-        <SwipeJob />
-      </div>
-    );
-  }
-
-  if (currentPage === 4) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <div className="space-y-6">
-            <TodoSection
-              todos={todos}
-              newTodo={newTodo}
-              selectedDate={selectedDate}
-              selectedTime={selectedTime}
-              allDay={allDay}
-              onTodoChange={setNewTodo}
-              onDateChange={setSelectedDate}
-              onTimeChange={setSelectedTime}
-              onAllDayChange={setAllDay}
-              onAdd={addTodo}
-              onToggle={toggleTodo}
-              onDelete={deleteTodo}
-            />
-            <NotesSection
-              notes={notes}
-              newNote={newNote}
-              selectedColor={selectedColor}
-              onNoteChange={setNewNote}
-              onColorChange={setSelectedColor}
-              onAdd={addNote}
-              onDelete={deleteNote}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (currentPage === 5) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <Settings />
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className="space-y-6 p-6">
+      <NotesSection
+        notes={notes}
+        newNote={newNote}
+        selectedColor={selectedColor}
+        onNoteChange={setNewNote}
+        onColorChange={setSelectedColor}
+        onAdd={handleAddNote}
+        onDelete={handleDeleteNote}
+      />
+    </div>
+  );
 }
