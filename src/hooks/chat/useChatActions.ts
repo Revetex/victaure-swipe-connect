@@ -1,6 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Message } from "@/types/chat/messageTypes";
-import { generateAIResponse, saveMessage, deleteAllMessages } from "@/services/ai/service";
+import { deleteAllMessages, generateAIResponse, saveMessage } from "@/services/ai/service";
 import { toast } from "sonner";
 
 export function useChatActions(
@@ -16,14 +15,14 @@ export function useChatActions(
 
     try {
       const userMessage: Message = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         content: message,
         sender: "user",
         timestamp: new Date(),
       };
 
       const thinkingMessage: Message = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         content: "",
         sender: "assistant",
         thinking: true,
@@ -41,7 +40,7 @@ export function useChatActions(
         console.log('AI response generated:', aiResponse);
         
         const assistantMessage: Message = {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           content: aiResponse,
           sender: "assistant",
           timestamp: new Date(),
@@ -51,14 +50,14 @@ export function useChatActions(
         setMessages([...messages, userMessage, assistantMessage]);
       } catch (error) {
         console.error("Error generating AI response:", error);
-        toast.error(error instanceof Error ? error.message : "Erreur lors de la génération de la réponse");
+        toast.error("Une erreur est survenue lors de la génération de la réponse");
         setMessages([...messages, userMessage]);
       } finally {
         setIsThinking(false);
       }
     } catch (error) {
       console.error("Error in handleSendMessage:", error);
-      toast.error("Erreur lors de l'envoi du message");
+      toast.error("Une erreur est survenue lors de l'envoi du message");
       setIsThinking(false);
     }
   };
@@ -68,10 +67,10 @@ export function useChatActions(
       setDeletedMessages(messages);
       await deleteAllMessages();
       setMessages([]);
-      toast.success("Conversation effacée");
+      toast.success("La conversation a été effacée");
     } catch (error) {
       console.error("Error clearing chat:", error);
-      toast.error("Erreur lors de l'effacement de la conversation");
+      toast.error("Une erreur est survenue lors de l'effacement de la conversation");
     }
   };
 
@@ -83,11 +82,11 @@ export function useChatActions(
         }
         setMessages(deletedMessages);
         setDeletedMessages([]);
-        toast.success("Conversation restaurée");
+        toast.success("La conversation a été restaurée");
       }
     } catch (error) {
       console.error("Error restoring chat:", error);
-      toast.error("Erreur lors de la restauration de la conversation");
+      toast.error("Une erreur est survenue lors de la restauration de la conversation");
     }
   };
 
