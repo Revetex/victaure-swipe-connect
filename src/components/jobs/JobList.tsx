@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface JobListProps {
   jobs: Job[];
   isLoading?: boolean;
-  onJobDeleted?: () => void;  // Made optional with ?
+  onJobDeleted?: () => void;
 }
 
 export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps) {

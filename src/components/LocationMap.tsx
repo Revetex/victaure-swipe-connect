@@ -1,59 +1,67 @@
-import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { MapPin } from 'lucide-react';
-import { toast } from "sonner";
+import React, { useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface LocationMapProps {
   latitude?: number | null;
   longitude?: number | null;
-  isEditing?: boolean;
   onLocationSelect?: (lat: number, lng: number) => void;
+  isEditing?: boolean;
 }
 
-export function LocationMap({ latitude, longitude, isEditing, onLocationSelect }: LocationMapProps) {
-  const handleMapClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!isEditing) return;
+export function LocationMap({ latitude, longitude, onLocationSelect, isEditing }: LocationMapProps) {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const marker = useRef<mapboxgl.Marker | null>(null);
 
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+  useEffect(() => {
+    if (!mapContainer.current) return;
 
-    // Convert click coordinates to approximate lat/lng
-    // Canada's approximate bounds: lat: 41.7-83.1°N, lng: -141.0--52.6°W
-    const lng = -141.0 + (x / rect.width) * (141.0 - 52.6);
-    const lat = 41.7 + ((rect.height - y) / rect.height) * (83.1 - 41.7);
+    // Initialize map
+    mapboxgl.accessToken = 'pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug';
+    
+    const initialCenter: [number, number] = [longitude || -72.5, latitude || 46.35];
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: initialCenter,
+      zoom: 12,
+    });
 
-    onLocationSelect?.(lat, lng);
-    toast.success("Position sélectionnée");
-  };
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Add marker if coordinates exist
+    if (latitude && longitude) {
+      marker.current = new mapboxgl.Marker()
+        .setLngLat([longitude, latitude])
+        .addTo(map.current);
+    }
+
+    // Add click handler if editing
+    if (isEditing) {
+      map.current.on('click', (e) => {
+        const { lng, lat } = e.lngLat;
+        if (marker.current) {
+          marker.current.setLngLat([lng, lat]);
+        } else {
+          marker.current = new mapboxgl.Marker()
+            .setLngLat([lng, lat])
+            .addTo(map.current);
+        }
+        onLocationSelect?.(lat, lng);
+      });
+    }
+
+    return () => {
+      map.current?.remove();
+    };
+  }, [latitude, longitude, isEditing, onLocationSelect]);
 
   return (
-    <Card className="w-full h-[300px] relative overflow-hidden">
-      <div 
-        className="w-full h-full relative cursor-pointer bg-[url('/canada-map.png')] bg-cover bg-center"
-        onClick={handleMapClick}
-      >
-        {latitude && longitude && (
-          <div 
-            className="absolute"
-            style={{
-              left: `${((longitude + 141.0) / (141.0 - 52.6)) * 100}%`,
-              bottom: `${((latitude - 41.7) / (83.1 - 41.7)) * 100}%`,
-              transform: 'translate(-50%, 50%)'
-            }}
-          >
-            <MapPin className="h-6 w-6 text-primary animate-bounce" />
-          </div>
-        )}
-      </div>
-      {isEditing && (
-        <div className="absolute bottom-2 left-2 right-2 flex justify-center">
-          <Button variant="secondary" className="bg-background/80 backdrop-blur-sm">
-            Cliquez sur la carte pour sélectionner un emplacement
-          </Button>
-        </div>
-      )}
-    </Card>
+    <div className="h-[300px] w-full rounded-lg overflow-hidden border">
+      <div ref={mapContainer} className="h-full w-full" />
+    </div>
   );
 }

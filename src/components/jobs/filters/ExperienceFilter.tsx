@@ -24,7 +24,7 @@ export function ExperienceFilter({ filters, onFilterChange }: ExperienceFilterPr
           <SelectContent>
             <SelectItem value="all">Tous les types</SelectItem>
             {contractTypes.map((type) => (
-              <SelectItem key={type} value={type.toLowerCase()}>
+              <SelectItem key={type} value={type}>
                 {type}
               </SelectItem>
             ))}
@@ -46,7 +46,7 @@ export function ExperienceFilter({ filters, onFilterChange }: ExperienceFilterPr
           <SelectContent>
             <SelectItem value="all">Tous les niveaux</SelectItem>
             {experienceLevels.map((level) => (
-              <SelectItem key={level} value={level.toLowerCase()}>
+              <SelectItem key={level} value={level}>
                 {level}
               </SelectItem>
             ))}

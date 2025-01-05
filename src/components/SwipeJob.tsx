@@ -1,45 +1,58 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useState } from "react";
+import { JobFilters, defaultFilters } from "./jobs/JobFilterUtils";
+import { Search } from "lucide-react";
+import { motion } from "framer-motion";
+import { JobCreationDialog } from "./jobs/JobCreationDialog";
+import { BrowseJobsTab } from "./jobs/BrowseJobsTab";
 
 export function SwipeJob() {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [openLocation, setOpenLocation] = useState(false);
+  const [filters, setFilters] = useState<JobFilters>(defaultFilters);
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('jobs')
-          .select('*');
-
-        if (error) throw error;
-
-        setJobs(data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-        toast.error("Erreur lors de la récupération des emplois");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJobs();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const handleFilterChange = (key: keyof JobFilters, value: any) => {
+    if (key === "category" && value !== filters.category) {
+      setFilters(prev => ({ ...prev, [key]: value, subcategory: "all" }));
+    } else {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }
+  };
 
   return (
-    <div>
-      <h2>Available Jobs</h2>
-      <ul>
-        {jobs.map(job => (
-          <li key={job.id}>{job.title}</li>
-        ))}
-      </ul>
-    </div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      className="glass-card p-4 space-y-4 rounded-lg shadow-lg bg-background/95 backdrop-blur-sm"
+    >
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <motion.h2 
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="text-2xl font-bold text-foreground"
+        >
+          Offres disponibles
+        </motion.h2>
+        
+        <JobCreationDialog 
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          onSuccess={() => {}}
+        />
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="space-y-4"
+      >
+        <BrowseJobsTab 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          openLocation={openLocation}
+          setOpenLocation={setOpenLocation}
+        />
+      </motion.div>
+    </motion.div>
   );
 }

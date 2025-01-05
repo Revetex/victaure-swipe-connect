@@ -1,58 +1,70 @@
+import { motion } from "framer-motion";
 import { VCardContact } from "@/components/VCardContact";
-import { VCardContent } from "../../VCardContent";
-import { VCardHeader } from "@/components/VCardHeader";
-import { VCardStyleSelector } from "../../VCardStyleSelector";
-import { styleOptions } from "../../styles";
+import { VCardSkills } from "@/components/VCardSkills";
 
-export function VCardExpandedGrid({ profile, isEditing, setProfile, selectedStyle, onStyleSelect, newSkill, setNewSkill }: any) {
+interface VCardExpandedGridProps {
+  profile: any;
+  isEditing: boolean;
+  setProfile: (profile: any) => void;
+  newSkill: string;
+  setNewSkill: (skill: string) => void;
+}
+
+export function VCardExpandedGrid({ 
+  profile, 
+  isEditing, 
+  setProfile,
+  newSkill,
+  setNewSkill 
+}: VCardExpandedGridProps) {
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
+    <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
         <VCardContact
-          profile={profile}
-          isEditing={isEditing}
-          onUpdate={(field, value) => {
-            if (profile) {
-              setProfile({ ...profile, [field]: value });
-            }
-          }}
-        />
-      </div>
-      <div className="space-y-8">
-        <VCardStyleSelector
-          selectedStyle={selectedStyle}
-          onStyleSelect={onStyleSelect}
-          isEditing={isEditing}
-        />
-        
-        <VCardHeader
           profile={profile}
           isEditing={isEditing}
           setProfile={setProfile}
         />
+      </div>
 
-        <VCardContent
+      <div className="glass-card p-6 rounded-xl backdrop-blur-sm bg-white/5 border border-white/10 shadow-lg hover:shadow-xl transition-shadow">
+        <VCardSkills
           profile={profile}
           isEditing={isEditing}
-          selectedStyle={selectedStyle}
           setProfile={setProfile}
           newSkill={newSkill}
           setNewSkill={setNewSkill}
           handleAddSkill={() => {
-            if (!profile || !newSkill.trim()) return;
-            const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-            setProfile({ ...profile, skills: updatedSkills });
-            setNewSkill("");
+            if (newSkill && !profile.skills?.includes(newSkill)) {
+              setProfile({
+                ...profile,
+                skills: [...(profile.skills || []), newSkill],
+              });
+              setNewSkill("");
+            }
           }}
           handleRemoveSkill={(skillToRemove: string) => {
-            if (!profile) return;
-            const updatedSkills = (profile.skills || []).filter(
-              (skill) => skill !== skillToRemove
-            );
-            setProfile({ ...profile, skills: updatedSkills });
+            setProfile({
+              ...profile,
+              skills: profile.skills?.filter(
+                (skill: string) => skill !== skillToRemove
+              ),
+            });
           }}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
