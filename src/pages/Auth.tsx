@@ -9,7 +9,6 @@ import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ThemeSelector } from "@/components/auth/ThemeSelector";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -85,24 +84,19 @@ export default function Auth() {
           {/* Auth Card */}
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
             <BiometricAuth />
-            <div className="space-y-4">
-              <AuthForm />
-              <div className="flex items-center justify-between space-x-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="rememberMe" 
-                    checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                  />
-                  <label 
-                    htmlFor="rememberMe" 
-                    className="text-sm text-muted-foreground cursor-pointer"
-                  >
-                    Rester connecté
-                  </label>
-                </div>
-                <ThemeSelector />
-              </div>
+            <AuthForm />
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="rememberMe" 
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              />
+              <label 
+                htmlFor="rememberMe" 
+                className="text-sm text-muted-foreground cursor-pointer"
+              >
+                Rester connecté
+              </label>
             </div>
           </div>
 
