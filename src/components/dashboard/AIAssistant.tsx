@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, X, Search, User, Briefcase, Building2, GraduationCap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { AIAssistantHeader } from "./ai/AIAssistantHeader";
+import { AIAssistantStatus } from "./ai/AIAssistantStatus";
+import { AIAssistantInput } from "./ai/AIAssistantInput";
+import { Bot, User } from "lucide-react";
 
 interface AIAssistantProps {
   onClose: () => void;
@@ -16,30 +17,10 @@ interface AIAssistantProps {
 export function AIAssistant({ onClose }: AIAssistantProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<Array<{ type: string; content: any }>>([]);
   const navigate = useNavigate();
-
-  const systemContext = {
-    platform: {
-      type: "job_platform",
-      features: [
-        "job_search",
-        "job_posting",
-        "profile_management",
-        "career_advice",
-        "skill_assessment"
-      ],
-      userTypes: ["professional", "employer"],
-    },
-    capabilities: [
-      "search_jobs",
-      "analyze_profile",
-      "provide_career_advice",
-      "assist_with_job_posting",
-      "skill_recommendations",
-      "market_insights"
-    ]
-  };
 
   const handleAction = (action: string, data?: any) => {
     switch (action) {
@@ -63,6 +44,8 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
     try {
       setIsLoading(true);
+      setIsThinking(true);
+      
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -80,34 +63,16 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         .eq('id', user.id)
         .single();
 
-      // Get recent jobs for context
-      const { data: recentJobs } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      // Call AI assistant function with enhanced context
+      setIsTyping(true);
+      
+      // Call AI assistant function
       const { data, error } = await supabase.functions.invoke('ai-job-assistant', {
         body: { 
           message: input,
           userId: user.id,
           context: {
-            systemContext,
             previousMessages: messages.slice(-5),
             userProfile: profile,
-            recentJobs,
-            currentAction: input.toLowerCase().includes('cherche') ? 'search_jobs' : 
-                         input.toLowerCase().includes('conseil') ? 'career_advice' :
-                         input.toLowerCase().includes('profil') ? 'analyze_profile' :
-                         input.toLowerCase().includes('créer') ? 'create_job' :
-                         'general_assistance',
-            userIntent: {
-              isSearching: input.toLowerCase().includes('cherche') || input.toLowerCase().includes('trouve'),
-              isAsking: input.toLowerCase().includes('comment') || input.toLowerCase().includes('pourquoi'),
-              needsAdvice: input.toLowerCase().includes('conseil') || input.toLowerCase().includes('aide'),
-              wantsToCreate: input.toLowerCase().includes('créer') || input.toLowerCase().includes('poster'),
-            }
           }
         }
       });
@@ -137,6 +102,8 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       toast.error("Une erreur est survenue lors de la communication avec l'assistant");
     } finally {
       setIsLoading(false);
+      setIsThinking(false);
+      setIsTyping(false);
     }
   };
 
@@ -148,20 +115,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6 lg:p-8"
     >
       <Card className="max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-gray-200 dark:border-gray-800">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
-          <div className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-blue-500" />
-            <h3 className="font-semibold">Assistant Carrière IA</h3>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+        <AIAssistantHeader onClose={onClose} />
 
         <ScrollArea className="h-[400px] p-4">
           <AnimatePresence mode="popLayout">
@@ -249,33 +203,18 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
           </AnimatePresence>
         </ScrollArea>
 
-        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200 dark:border-gray-800">
-          <div className="flex gap-2">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Posez vos questions sur l'emploi, les missions, ou demandez des conseils..."
-              className="flex-1"
-              disabled={isLoading}
-            />
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
-            >
-              {isLoading ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
-                  <Search className="h-4 w-4" />
-                </motion.div>
-              ) : (
-                <Search className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-        </form>
+        <AIAssistantStatus 
+          isThinking={isThinking}
+          isTyping={isTyping}
+          isListening={false}
+        />
+
+        <AIAssistantInput
+          input={input}
+          isLoading={isLoading}
+          onInputChange={setInput}
+          onSubmit={handleSubmit}
+        />
       </Card>
     </motion.div>
   );
