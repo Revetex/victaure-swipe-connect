@@ -6,21 +6,20 @@ import { Message } from "@/types/chat/messageTypes";
 async function getHuggingFaceApiKey(): Promise<string> {
   try {
     const { data, error } = await supabase
-      .from('secrets')
-      .select('value')
-      .eq('name', 'HUGGING_FACE_API_KEY')
-      .single();
+      .rpc('get_secret', {
+        secret_name: 'HUGGING_FACE_API_KEY'
+      });
 
     if (error) {
       console.error('Failed to retrieve API key:', error);
       throw new Error('Failed to retrieve API key');
     }
 
-    if (!data?.value) {
+    if (!data) {
       throw new Error('No API key found');
     }
 
-    return data.value;
+    return data;
   } catch (error) {
     console.error('Error getting API key:', error);
     throw new Error('Failed to retrieve API key. Please check your configuration.');
