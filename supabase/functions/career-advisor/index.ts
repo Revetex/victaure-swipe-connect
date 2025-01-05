@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { getSystemPrompt, getInitialQuestions } from './prompts.ts';
+import { updateProfile, addExperience, addSkills } from './profileUpdates.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +26,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Récupérer le profil complet de l'utilisateur
+    // Récupérer le profil complet
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select(`
@@ -46,51 +48,24 @@ serve(async (req) => {
 
     console.log('Profil trouvé:', profile);
 
+    // Vérifier si c'est un nouveau utilisateur
+    const isNewUser = !profile.full_name || profile.skills?.length === 0;
+    
     // Vérifier si le message contient une confirmation
     const isConfirmation = message.toLowerCase().includes('oui') || 
                           message.toLowerCase().includes('confirme') || 
                           message.toLowerCase().includes("d'accord");
-    
-    // Vérifier si nous avons une modification en attente
-    const { data: pendingChanges } = await supabase
-      .from('ai_chat_messages')
-      .select('content')
-      .eq('user_id', userId)
-      .eq('sender', 'assistant')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    const hasPendingChanges = pendingChanges?.[0]?.content.includes('Voulez-vous que je modifie');
-
-    const systemPrompt = `Tu es Mr Victaure, un conseiller en orientation professionnel québécois.
-
-Instructions importantes:
-1. Réponds UNIQUEMENT en français québécois, de manière concise (2-3 phrases maximum)
-2. Pour TOUTE modification du profil:
-   - Explique d'abord clairement les changements que tu suggères
-   - Demande TOUJOURS "Voulez-vous que je modifie votre profil avec ces changements? Répondez par Oui pour confirmer."
-   - Attends la confirmation de l'utilisateur avant de faire les changements
-3. Sois chaleureux mais direct dans tes réponses
-4. Utilise des expressions québécoises comme:
-   - "Pas de trouble!" pour dire d'accord
-   - "C'est correct" pour approuver
-   - "Ben oui!" pour confirmer
-
-Profil actuel:
-- Nom: ${profile.full_name || 'Non spécifié'}
-- Rôle: ${profile.role || 'Non spécifié'}
-- Compétences: ${profile.skills ? profile.skills.join(', ') : 'Non spécifiées'}
-- Localisation: ${profile.city || 'Non spécifiée'}, ${profile.state || 'Non spécifié'}
-- Expérience: ${profile.experiences ? profile.experiences.length : 0} expérience(s)
-- Formation: ${profile.education ? profile.education.length : 0} formation(s)
-- Certifications: ${profile.certifications ? profile.certifications.length : 0} certification(s)
-
-Si l'utilisateur confirme une modification, applique-la et confirme que c'est fait.`;
 
     const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!huggingFaceApiKey) {
       throw new Error('Clé API HuggingFace non trouvée');
     }
+
+    // Construire le prompt système
+    const systemPrompt = getSystemPrompt(profile);
+
+    // Si c'est un nouvel utilisateur, ajouter les questions initiales
+    const initialQuestions = isNewUser ? getInitialQuestions().join('\n') : '';
 
     console.log('Envoi de la requête à HuggingFace');
 
@@ -103,9 +78,9 @@ Si l'utilisateur confirme une modification, applique-la et confirme que c'est fa
         },
         method: 'POST',
         body: JSON.stringify({
-          inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
+          inputs: `${systemPrompt}\n\n${initialQuestions}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
-            max_new_tokens: 150,
+            max_new_tokens: 250,
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
@@ -128,51 +103,63 @@ Si l'utilisateur confirme une modification, applique-la et confirme que c'est fa
 
     const responseText = aiResponseData[0].generated_text;
 
-    // Si l'utilisateur confirme et qu'il y a des modifications en attente
-    if (isConfirmation && hasPendingChanges) {
-      const previousMessage = pendingChanges[0].content;
-      
-      // Analyser le message précédent pour les modifications
-      if (previousMessage.includes('compétences')) {
-        const skillsMatch = previousMessage.match(/ajouter les compétences suivantes : (.*?)(?=\.|$)/i);
-        if (skillsMatch) {
-          const newSkills = skillsMatch[1].split(',').map(s => s.trim());
-          const updatedSkills = [...new Set([...(profile.skills || []), ...newSkills])];
-          
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ skills: updatedSkills })
-            .eq('id', userId);
+    // Si l'utilisateur confirme et qu'il y a des modifications suggérées
+    if (isConfirmation) {
+      // Récupérer le dernier message de l'assistant
+      const { data: lastMessage } = await supabase
+        .from('ai_chat_messages')
+        .select('content')
+        .eq('user_id', userId)
+        .eq('sender', 'assistant')
+        .order('created_at', { ascending: false })
+        .limit(1);
 
-          if (updateError) {
-            throw new Error(`Erreur lors de la mise à jour des compétences: ${updateError.message}`);
-          }
-          
-          console.log('Compétences mises à jour:', updatedSkills);
-        }
-      }
-      
-      // Gérer les modifications d'expérience
-      if (previousMessage.includes('expérience')) {
-        const experienceMatch = previousMessage.match(/ajouter l'expérience : (.*?) chez (.*?) de (.*?) à (.*?)(?=\.|$)/i);
-        if (experienceMatch) {
-          const [_, position, company, startDate, endDate] = experienceMatch;
-          
-          const { error: expError } = await supabase
-            .from('experiences')
-            .insert({
-              profile_id: userId,
-              position: position.trim(),
-              company: company.trim(),
-              start_date: startDate.trim(),
-              end_date: endDate.trim() === 'présent' ? null : endDate.trim()
-            });
+      if (lastMessage?.[0]) {
+        const previousMessage = lastMessage[0].content;
 
-          if (expError) {
-            throw new Error(`Erreur lors de l'ajout de l'expérience: ${expError.message}`);
+        try {
+          // Gérer les modifications de compétences
+          if (previousMessage.includes('compétences')) {
+            const skillsMatch = previousMessage.match(/ajouter les compétences suivantes : (.*?)(?=\.|$)/i);
+            if (skillsMatch) {
+              const newSkills = skillsMatch[1].split(',').map((s: string) => s.trim());
+              await addSkills(supabase, userId, newSkills);
+            }
           }
-          
-          console.log('Nouvelle expérience ajoutée');
+
+          // Gérer les modifications d'expérience
+          if (previousMessage.includes('expérience')) {
+            const expMatch = previousMessage.match(/ajouter l'expérience : (.*?) chez (.*?) de (.*?) à (.*?)(?=\.|$)/i);
+            if (expMatch) {
+              const [_, position, company, startDate, endDate] = expMatch;
+              await addExperience(supabase, userId, {
+                position: position.trim(),
+                company: company.trim(),
+                start_date: startDate.trim(),
+                end_date: endDate.trim() === 'présent' ? null : endDate.trim()
+              });
+            }
+          }
+
+          // Gérer les modifications de profil général
+          if (previousMessage.includes('profil')) {
+            // Extraire et appliquer les modifications du profil
+            const updates: any = {};
+            if (previousMessage.includes('titre professionnel')) {
+              const roleMatch = previousMessage.match(/titre professionnel[^\w]*: (.*?)(?=\.|$)/i);
+              if (roleMatch) updates.role = roleMatch[1].trim();
+            }
+            if (previousMessage.includes('bio')) {
+              const bioMatch = previousMessage.match(/bio[^\w]*: (.*?)(?=\.|$)/i);
+              if (bioMatch) updates.bio = bioMatch[1].trim();
+            }
+            if (Object.keys(updates).length > 0) {
+              await updateProfile(supabase, userId, updates);
+            }
+          }
+        } catch (error) {
+          console.error('Erreur lors de la mise à jour:', error);
+          throw error;
         }
       }
     }
