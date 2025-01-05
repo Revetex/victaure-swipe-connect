@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "next-themes";
 import { memo } from "react";
 import { ThemeSelector } from "./ThemeSelector";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const AuthForm = memo(function AuthForm() {
   const { theme } = useTheme();
@@ -50,11 +51,6 @@ export const AuthForm = memo(function AuthForm() {
           anchor: "text-primary no-underline hover:underline",
           container: "space-y-4",
           divider: "my-4",
-          auth_title: "text-xl font-semibold tracking-tight",
-          auth_subtitle: "text-sm text-muted-foreground",
-          auth_button: "w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px] bg-primary/10 hover:bg-primary/20",
-          auth_input: "w-full h-11 text-sm bg-transparent border border-border transition-colors focus:border-primary focus:outline-none",
-          auth_label: "text-sm text-foreground mb-2 flex items-center justify-between",
         },
       }}
       providers={[]}

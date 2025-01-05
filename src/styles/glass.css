@@ -20,3 +20,26 @@
     radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
 }
+
+/* Add these styles for the remember me checkbox */
+.supabase-auth-ui_ui-button {
+  @apply text-sm;
+}
+
+.supabase-auth-ui_ui-checkbox {
+  @apply h-4 w-4 !important;
+}
+
+.supabase-auth-ui_ui-label {
+  @apply text-xs sm:text-sm !important;
+}
+
+@media (max-width: 640px) {
+  .supabase-auth-ui_ui-container {
+    @apply space-y-3;
+  }
+  
+  .supabase-auth-ui_ui-checkbox-label {
+    @apply text-xs;
+  }
+}
