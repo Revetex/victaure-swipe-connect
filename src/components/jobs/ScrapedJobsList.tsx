@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, MapPin, ExternalLink, Calendar } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Calendar, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -43,11 +43,19 @@ export function ScrapedJobsList() {
 
   const refreshJobs = async () => {
     try {
-      toast.loading("Mise à jour des offres en cours...");
+      const toastId = toast.loading("Mise à jour des offres en cours...");
+      console.log("Starting job refresh...");
       const { error } = await supabase.functions.invoke("scrape-jobs");
-      if (error) throw error;
+      
+      if (error) {
+        console.error("Error from scrape-jobs function:", error);
+        toast.error("Erreur lors de la mise à jour des offres", { id: toastId });
+        throw error;
+      }
+      
+      console.log("Jobs scraped successfully, refreshing list...");
       await refetch();
-      toast.success("Les offres ont été mises à jour");
+      toast.success("Les offres ont été mises à jour", { id: toastId });
     } catch (error) {
       console.error("Error refreshing jobs:", error);
       toast.error("Erreur lors de la mise à jour des offres");
@@ -66,7 +74,13 @@ export function ScrapedJobsList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Offres externes ({jobs.length})</h2>
-        <Button onClick={refreshJobs} variant="outline" size="sm">
+        <Button 
+          onClick={refreshJobs} 
+          variant="default" 
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
           Rafraîchir les offres
         </Button>
       </div>
