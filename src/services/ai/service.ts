@@ -16,15 +16,15 @@ async function getHuggingFaceApiKey(): Promise<string> {
       throw new Error('Erreur lors de la récupération de la clé API');
     }
 
-    if (!Array.isArray(data) || data.length === 0 || !data[0].secret) {
+    if (!data || data.length === 0 || !data[0].secret || data[0].secret.trim() === '') {
       console.error('No API key found in response:', data);
-      throw new Error('Clé API non trouvée. Veuillez configurer la clé Hugging Face.');
+      throw new Error('Clé API non trouvée ou vide. Veuillez configurer la clé Hugging Face.');
     }
 
     return data[0].secret;
   } catch (error) {
     console.error('Error getting API key:', error);
-    throw new Error('Erreur lors de la récupération de la clé API. Veuillez vérifier votre configuration.');
+    throw error;
   }
 }
 
@@ -38,11 +38,6 @@ export async function generateAIResponse(message: string): Promise<string> {
     console.log('Starting AI response generation...');
     const apiKey = await getHuggingFaceApiKey();
     
-    if (!apiKey) {
-      toast.error("Clé API manquante. Veuillez configurer la clé Hugging Face.");
-      throw new Error('No API key available');
-    }
-
     console.log('Sending request to Hugging Face API...');
     
     const response = await fetch(
@@ -91,10 +86,7 @@ export async function generateAIResponse(message: string): Promise<string> {
     if (error.name === 'AbortError') {
       throw new Error('La requête a pris trop de temps. Veuillez réessayer.');
     }
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-    throw new Error('Une erreur est survenue lors de la génération de la réponse');
+    throw error;
   } finally {
     clearTimeout(timeout);
   }
