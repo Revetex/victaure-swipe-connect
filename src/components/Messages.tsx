@@ -36,14 +36,15 @@ export function Messages() {
         onVoiceInput={handleVoiceInput}
         setInputMessage={setInputMessage}
         onClearChat={clearChat}
+        onBack={() => navigate("/dashboard/messages")}
       />
     );
   }
 
   // Otherwise, show the conversations list
   return (
-    <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm">
-      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
+    <div className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="shrink-0 border-b px-4 py-3">
         <h1 className="text-lg font-semibold">Messages</h1>
       </header>
 
