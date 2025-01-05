@@ -4,6 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Button } from '@/components/ui/button';
 import { MapPin } from 'lucide-react';
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LocationMapProps {
   latitude?: number | null;
@@ -18,44 +19,59 @@ export function LocationMap({ latitude, longitude, onLocationSelect, isEditing }
   const marker = useRef<mapboxgl.Marker | null>(null);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    const initializeMap = async () => {
+      if (!mapContainer.current) return;
 
-    // Initialize map
-    mapboxgl.accessToken = 'pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug';
-    
-    const initialCenter: [number, number] = [longitude || -72.5, latitude || 46.35];
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: initialCenter,
-      zoom: 12,
-    });
+      try {
+        // Get Mapbox token from Supabase secrets
+        const { data: secretData, error: secretError } = await supabase
+          .rpc('get_secret', { secret_name: 'MAPBOX_PUBLIC_TOKEN' });
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+        if (secretError) throw secretError;
 
-    // Add marker if coordinates exist
-    if (latitude && longitude) {
-      marker.current = new mapboxgl.Marker()
-        .setLngLat([longitude, latitude])
-        .addTo(map.current);
-    }
+        const mapboxToken = secretData || 'pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug'; // Fallback token
+        mapboxgl.accessToken = mapboxToken;
+        
+        const initialCenter: [number, number] = [longitude || -72.5, latitude || 46.35];
+        
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: initialCenter,
+          zoom: 12,
+        });
 
-    // Add click handler if editing
-    if (isEditing) {
-      map.current.on('click', (e) => {
-        const { lng, lat } = e.lngLat;
-        if (marker.current) {
-          marker.current.setLngLat([lng, lat]);
-        } else {
+        // Add navigation controls
+        map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+        // Add marker if coordinates exist
+        if (latitude && longitude) {
           marker.current = new mapboxgl.Marker()
-            .setLngLat([lng, lat])
+            .setLngLat([longitude, latitude])
             .addTo(map.current);
         }
-        onLocationSelect?.(lat, lng);
-      });
-    }
+
+        // Add click handler if editing
+        if (isEditing) {
+          map.current.on('click', (e) => {
+            const { lng, lat } = e.lngLat;
+            if (marker.current) {
+              marker.current.setLngLat([lng, lat]);
+            } else {
+              marker.current = new mapboxgl.Marker()
+                .setLngLat([lng, lat])
+                .addTo(map.current);
+            }
+            onLocationSelect?.(lat, lng);
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing map:', error);
+        toast.error("Erreur lors de l'initialisation de la carte");
+      }
+    };
+
+    initializeMap();
 
     return () => {
       map.current?.remove();

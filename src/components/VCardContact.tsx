@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VCardContactProps {
   profile: any;
@@ -30,8 +31,16 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
 
     const timeout = setTimeout(async () => {
       try {
+        // Get Mapbox token from Supabase secrets
+        const { data: secretData, error: secretError } = await supabase
+          .rpc('get_secret', { secret_name: 'MAPBOX_PUBLIC_TOKEN' });
+
+        if (secretError) throw secretError;
+
+        const mapboxToken = secretData || 'pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug'; // Fallback token
+        
         const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(search)}.json?country=ca&types=address&access_token=pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug`
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(search)}.json?country=ca&types=address&access_token=${mapboxToken}`
         );
         
         if (!response.ok) {
