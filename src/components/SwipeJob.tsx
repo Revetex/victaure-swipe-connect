@@ -27,8 +27,7 @@ const defaultFilters: JobFilters = {
   createdAfter: null,
   createdBefore: null,
   deadlineBefore: null,
-  search: "",
-  categories: [],
+  categories: []
 };
 
 export function SwipeJob() {
@@ -136,7 +135,7 @@ export function SwipeJob() {
         </motion.div>
       </AnimatePresence>
 
-      <SwipeControls onLike={handleLike} onDislike={handleDislike} />
+      <SwipeControls onSwipe={handleSwipe} isAnimating={false} />
     </div>
   );
 }

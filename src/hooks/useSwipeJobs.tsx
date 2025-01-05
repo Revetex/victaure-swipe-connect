@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
-import { JobFilters } from "../components/jobs/JobFilterUtils";
+import { JobFilters } from "@/components/jobs/JobFilterUtils";
 import { toast } from "sonner";
 
 export function useSwipeJobs(filters: JobFilters) {
@@ -12,6 +12,7 @@ export function useSwipeJobs(filters: JobFilters) {
   const fetchJobs = async () => {
     try {
       setLoading(true);
+      console.log("Fetching jobs with filters:", filters);
       
       // Fetch regular jobs
       let regularJobsQuery = supabase
@@ -27,21 +28,18 @@ export function useSwipeJobs(filters: JobFilters) {
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
-      // Apply filters to regular jobs
+      // Apply filters
       if (filters.category && filters.category !== "all") {
         regularJobsQuery = regularJobsQuery.eq("category", filters.category);
       }
       if (filters.subcategory && filters.subcategory !== "all") {
         regularJobsQuery = regularJobsQuery.eq("subcategory", filters.subcategory);
       }
-      if (filters.duration && filters.duration !== "all") {
-        regularJobsQuery = regularJobsQuery.eq("contract_type", filters.duration);
-      }
       if (filters.experienceLevel && filters.experienceLevel !== "all") {
         regularJobsQuery = regularJobsQuery.eq("experience_level", filters.experienceLevel);
       }
-      if (filters.location && filters.location !== "all") {
-        regularJobsQuery = regularJobsQuery.eq("location", filters.location);
+      if (filters.location) {
+        regularJobsQuery = regularJobsQuery.ilike("location", `%${filters.location}%`);
       }
       if (filters.searchTerm) {
         regularJobsQuery = regularJobsQuery.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
@@ -66,6 +64,9 @@ export function useSwipeJobs(filters: JobFilters) {
       if (scrapedJobsResult.error) {
         throw scrapedJobsResult.error;
       }
+
+      console.log("Regular jobs:", regularJobsResult.data);
+      console.log("Scraped jobs:", scrapedJobsResult.data);
 
       // Format regular jobs
       const formattedRegularJobs = regularJobsResult.data.map(job => ({
@@ -99,6 +100,8 @@ export function useSwipeJobs(filters: JobFilters) {
       const allJobs = [...formattedRegularJobs, ...formattedScrapedJobs]
         .sort(() => Math.random() - 0.5);
 
+      console.log("Combined jobs:", allJobs);
+      
       setJobs(allJobs);
       setCurrentIndex(0);
     } catch (error) {
