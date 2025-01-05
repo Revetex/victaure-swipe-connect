@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { Button } from '@/components/ui/button';
+import { MapPin } from 'lucide-react';
+import { toast } from "sonner";
 
 interface LocationMapProps {
   latitude?: number | null;
@@ -59,9 +62,56 @@ export function LocationMap({ latitude, longitude, onLocationSelect, isEditing }
     };
   }, [latitude, longitude, isEditing, onLocationSelect]);
 
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("La géolocalisation n'est pas supportée par votre navigateur");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        if (map.current) {
+          map.current.flyTo({
+            center: [longitude, latitude],
+            zoom: 14
+          });
+
+          if (marker.current) {
+            marker.current.setLngLat([longitude, latitude]);
+          } else {
+            marker.current = new mapboxgl.Marker()
+              .setLngLat([longitude, latitude])
+              .addTo(map.current);
+          }
+        }
+
+        onLocationSelect?.(latitude, longitude);
+        toast.success("Position actuelle récupérée avec succès");
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        toast.error("Impossible d'obtenir votre position actuelle");
+      }
+    );
+  };
+
   return (
-    <div className="h-[300px] w-full rounded-lg overflow-hidden border">
-      <div ref={mapContainer} className="h-full w-full" />
+    <div className="space-y-4">
+      {isEditing && (
+        <Button 
+          onClick={getCurrentLocation}
+          className="w-full"
+          variant="outline"
+        >
+          <MapPin className="mr-2 h-4 w-4" />
+          Utiliser ma position actuelle
+        </Button>
+      )}
+      <div className="h-[300px] w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800">
+        <div ref={mapContainer} className="h-full w-full" />
+      </div>
     </div>
   );
 }

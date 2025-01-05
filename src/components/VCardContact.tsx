@@ -137,7 +137,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
           </motion.div>
         )}
 
-        {isEditing && (profile.latitude || profile.longitude) && (
+        {(isEditing || (profile.latitude && profile.longitude)) && (
           <LocationMap
             latitude={profile.latitude}
             longitude={profile.longitude}
