@@ -27,6 +27,7 @@ export function ChatMessage({
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const isBot = sender === "assistant";
+  const isUserMessage = !isBot;
 
   const handleVoicePlayback = async () => {
     try {
@@ -95,7 +96,7 @@ export function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       className={cn(
         "group relative flex gap-4 px-6 py-4 hover:bg-muted/30 transition-colors rounded-lg",
-        isBot ? "justify-start" : "justify-end flex-row-reverse"
+        isUserMessage ? "justify-end flex-row-reverse" : "justify-start"
       )}
     >
       <div className="shrink-0">
@@ -122,7 +123,7 @@ export function ChatMessage({
 
       <div className={cn(
         "flex flex-col space-y-1 max-w-[80%] md:max-w-[70%]",
-        isBot ? "items-start" : "items-end"
+        isUserMessage ? "items-end" : "items-start"
       )}>
         <div className="flex items-center gap-2">
           <span className="font-semibold text-base">
@@ -137,7 +138,9 @@ export function ChatMessage({
 
         <div className={cn(
           "rounded-lg px-4 py-2",
-          isBot ? "bg-muted text-foreground" : "bg-primary text-primary-foreground",
+          isUserMessage 
+            ? "bg-primary text-primary-foreground ml-auto" 
+            : "bg-muted text-foreground mr-auto",
           "prose prose-neutral dark:prose-invert max-w-none"
         )}>
           {thinking ? (
