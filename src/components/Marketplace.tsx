@@ -31,76 +31,84 @@ export function Marketplace() {
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      console.log("Fetching jobs...");
+      console.log("Starting job fetch...");
       
-      // Fetch regular jobs
-      const { data: regularJobs, error: regularError } = await supabase
+      // Fetch regular jobs with detailed error logging
+      const regularJobsResult = await supabase
         .from("jobs")
         .select("*")
         .eq('status', 'open')
         .order("created_at", { ascending: false });
 
-      if (regularError) {
-        console.error("Error fetching regular jobs:", regularError);
-        throw regularError;
+      if (regularJobsResult.error) {
+        console.error("Error fetching regular jobs:", regularJobsResult.error);
+        throw regularJobsResult.error;
       }
 
-      console.log("Regular jobs fetched:", regularJobs?.length || 0);
+      const regularJobs = regularJobsResult.data || [];
+      console.log("Regular jobs fetched:", regularJobs.length);
 
-      // Fetch scraped jobs
-      const { data: scrapedJobs, error: scrapedError } = await supabase
+      // Fetch scraped jobs with detailed error logging
+      const scrapedJobsResult = await supabase
         .from("scraped_jobs")
         .select("*")
         .order("posted_at", { ascending: false });
 
-      if (scrapedError) {
-        console.error("Error fetching scraped jobs:", scrapedError);
-        throw scrapedError;
+      if (scrapedJobsResult.error) {
+        console.error("Error fetching scraped jobs:", scrapedJobsResult.error);
+        throw scrapedJobsResult.error;
       }
 
-      console.log("Scraped jobs fetched:", scrapedJobs?.length || 0);
+      const scrapedJobs = scrapedJobsResult.data || [];
+      console.log("Scraped jobs fetched:", scrapedJobs.length);
 
-      // Convert regular jobs to the correct type
-      const typedRegularJobs = (regularJobs || []).map(job => ({
-        ...job,
+      // Convert regular jobs to the correct type with explicit typing
+      const typedRegularJobs: Job[] = regularJobs.map(job => ({
+        id: job.id,
+        title: job.title,
+        description: job.description,
+        budget: job.budget,
+        location: job.location,
+        employer_id: job.employer_id,
         status: job.status as 'open' | 'closed' | 'in-progress',
-        source: 'Victaure' as const
+        company: job.company_name || 'Entreprise',
+        source: 'Victaure' as const,
+        created_at: job.created_at,
+        updated_at: job.updated_at,
+        category: job.category,
+        contract_type: job.contract_type,
+        experience_level: job.experience_level
       }));
 
-      // Convert scraped jobs to match the Job type
-      const typedScrapedJobs = (scrapedJobs || [] as ScrapedJob[]).map(job => ({
+      // Convert scraped jobs to match the Job type with explicit typing
+      const typedScrapedJobs: Job[] = scrapedJobs.map(job => ({
         id: job.id,
         title: job.title,
         description: job.description || '',
         budget: 0,
         location: job.location,
         employer_id: '',
-        status: 'open' as 'open' | 'closed' | 'in-progress',
+        status: 'open' as const,
         company: job.company,
         source: 'Externe' as const,
         created_at: job.created_at,
         updated_at: job.updated_at,
         category: 'Externe',
         contract_type: 'full-time',
-        experience_level: 'mid-level',
-        url: job.url
+        experience_level: 'mid-level'
       }));
 
-      // Combine both types of jobs
+      // Combine and sort all jobs
       const allJobs = [...typedRegularJobs, ...typedScrapedJobs];
-      
-      // Sort all jobs by creation date
       const sortedJobs = allJobs.sort((a, b) => {
-        const dateA = new Date(a.created_at || '');
-        const dateB = new Date(b.created_at || '');
-        return dateB.getTime() - dateA.getTime();
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
 
-      console.log("Total jobs found:", sortedJobs.length);
+      console.log("Total jobs to display:", sortedJobs.length);
       setJobs(sortedJobs);
 
     } catch (error) {
-      console.error("Error fetching jobs:", error);
+      console.error("Error in fetchJobs:", error);
       toast.error("Erreur lors du chargement des offres");
     } finally {
       setIsLoading(false);
@@ -112,6 +120,7 @@ export function Marketplace() {
   };
 
   useEffect(() => {
+    console.log("Initial job fetch triggered");
     fetchJobs();
   }, []);
 
@@ -141,7 +150,9 @@ export function Marketplace() {
 
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Toutes les offres</h2>
+            <h2 className="text-xl font-semibold">
+              Toutes les offres ({jobs.length})
+            </h2>
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
