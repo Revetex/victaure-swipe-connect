@@ -15,12 +15,12 @@ export default function Index() {
       <Features />
       <Stats />
       
-      {/* Floating Action Button */}
+      {/* Action Button */}
       <motion.div 
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.5 }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+        className="fixed right-8 top-1/2 -translate-y-1/2 z-50"
       >
         <Button
           size="lg"
