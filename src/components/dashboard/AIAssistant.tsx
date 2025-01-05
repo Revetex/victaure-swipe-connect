@@ -38,7 +38,13 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         body: { 
           message: input,
           userId: user.id,
-          action: input.toLowerCase().includes('cherche') ? 'search_jobs' : 'analyze_profile'
+          context: {
+            previousMessages: messages.slice(-5), // Envoyer les 5 derniers messages pour le contexte
+            userProfile: user,
+            currentAction: input.toLowerCase().includes('cherche') ? 'search_jobs' : 
+                         input.toLowerCase().includes('conseil') ? 'career_advice' :
+                         input.toLowerCase().includes('profil') ? 'analyze_profile' : 'general_assistance'
+          }
         }
       });
 
