@@ -33,6 +33,11 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(search)}.json?country=ca&types=address&access_token=pk.eyJ1IjoidGJsYW5jaGV0IiwiYSI6ImNscmxvZGVlZjBjcmUya3BnZGxqbXJyMWsifQ.YkOYoJrZJBGXBEVGhGE-Ug`
         );
+        
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
         const data = await response.json();
         setSearchResults(data.features || []);
       } catch (error) {
@@ -151,6 +156,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                     <CommandInput
                       placeholder="Entrez une adresse..."
                       onValueChange={handleAddressSearch}
+                      loading={isSearching}
                     />
                     <CommandList>
                       <CommandEmpty>Aucune adresse trouvée.</CommandEmpty>
