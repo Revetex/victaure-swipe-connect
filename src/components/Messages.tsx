@@ -27,6 +27,10 @@ export function Messages() {
     setShowConversation(true);
   };
 
+  const handleMarkAsRead = (messageId: string) => {
+    markAsRead.mutate(messageId);
+  };
+
   return (
     <div className="h-full flex flex-col">
       {showConversation ? (
@@ -46,7 +50,7 @@ export function Messages() {
           messages={messages}
           chatMessages={chatMessages}
           onSelectConversation={handleSelectConversation}
-          onMarkAsRead={markAsRead}
+          onMarkAsRead={handleMarkAsRead}
         />
       )}
     </div>
