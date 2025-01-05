@@ -28,36 +28,36 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
           </motion.div>
           <div>
             <h2 className="text-2xl font-bold">M. Victaure</h2>
-            <p className="text-muted-foreground">Votre Assistant IA Personnel</p>
+            <p className="text-muted-foreground">Votre Expert en Construction</p>
           </div>
         </div>
 
         <div className="space-y-6 mb-6">
           <p className="text-lg">
-            Bonjour ! Je suis M. Victaure, votre assistant virtuel intelligent. Je gère votre profil et vous accompagne dans votre parcours professionnel.
+            Bonjour! Je suis M. Victaure, votre expert dédié dans le domaine de la construction au Québec. Je suis là pour vous accompagner dans votre développement professionnel et vous aider à saisir les meilleures opportunités.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
               {
                 icon: UserCog,
-                title: "Gestion de Profil",
-                description: "Je m'occupe de toutes les modifications de votre profil"
+                title: "Profil Personnalisé",
+                description: "Optimisons ensemble votre profil professionnel"
               },
               {
                 icon: MessageSquare,
-                title: "Conversation Naturelle",
-                description: "Discutez avec moi comme avec un vrai conseiller"
+                title: "Conseils Sur Mesure",
+                description: "Échangeons sur vos objectifs de carrière"
               },
               {
                 icon: BrainCircuit,
-                title: "Conseils Personnalisés",
-                description: "Recevez des recommandations adaptées à votre profil"
+                title: "Expertise Construction",
+                description: "Profitez de mon expérience du secteur"
               },
               {
                 icon: Sparkles,
-                title: "Assistance Continue",
-                description: "Je suis disponible 24/7 pour vous aider"
+                title: "Opportunités",
+                description: "Découvrez les meilleures offres du marché"
               }
             ].map((feature, index) => (
               <div 
