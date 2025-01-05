@@ -25,6 +25,21 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  const createNotification = async (message: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase.from('notifications').insert({
+        user_id: user.id,
+        title: "Nouvelle réponse de M. Victaure",
+        message: message.substring(0, 200) + (message.length > 200 ? '...' : ''),
+      });
+    } catch (error) {
+      console.error('Error creating notification:', error);
+    }
+  };
+
   const handleAction = (action: string, data?: any) => {
     switch (action) {
       case 'navigate_to_jobs':
@@ -88,6 +103,9 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       });
 
       if (error) throw error;
+
+      // Create notification for AI response
+      await createNotification(data.message);
 
       setMessages(prev => [...prev, { 
         type: 'assistant', 
