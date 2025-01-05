@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
-import { Filter } from "lucide-react";
+import { Filter, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -78,10 +78,16 @@ export function Marketplace() {
   return (
     <section className="min-h-screen bg-background">
       <div className="container mx-auto p-4 max-w-[2000px]">
-        <Tabs defaultValue="internal" className="space-y-4">
-          <TabsList>
+        <Tabs defaultValue="external" className="space-y-4">
+          <TabsList className="w-full flex justify-center mb-4">
             <TabsTrigger value="internal">Offres Victaure</TabsTrigger>
-            <TabsTrigger value="external">Offres Externes</TabsTrigger>
+            <TabsTrigger value="external" className="relative">
+              Offres Externes
+              <span className="absolute -right-2 -top-2 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+              </span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="internal">

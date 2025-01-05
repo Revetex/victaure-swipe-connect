@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, MapPin, ExternalLink, Calendar, RefreshCw } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Calendar, RefreshCw, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -72,17 +72,29 @@ export function ScrapedJobsList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Offres externes ({jobs.length})</h2>
-        <Button 
-          onClick={refreshJobs} 
-          variant="default" 
-          size="sm"
-          className="flex items-center gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Rafraîchir les offres
-        </Button>
+      <div className="flex flex-col space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Offres externes ({jobs.length})</h2>
+          <Button 
+            onClick={refreshJobs} 
+            variant="default"
+            size="lg"
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg"
+          >
+            <RefreshCw className="h-5 w-5" />
+            Rafraîchir les offres
+          </Button>
+        </div>
+        
+        {jobs.length === 0 && (
+          <div className="bg-muted/50 rounded-lg p-6 text-center">
+            <p className="text-lg font-medium mb-4">Aucune offre trouvée</p>
+            <div className="flex items-center justify-center gap-2 text-primary">
+              <ArrowRight className="h-5 w-5 animate-bounce" />
+              <p>Cliquez sur le bouton "Rafraîchir les offres" en haut à droite pour chercher de nouvelles offres</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -144,12 +156,6 @@ export function ScrapedJobsList() {
           </motion.div>
         ))}
       </div>
-
-      {jobs.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          Aucune offre trouvée. Cliquez sur Rafraîchir pour chercher de nouvelles offres.
-        </div>
-      )}
     </div>
   );
 }
