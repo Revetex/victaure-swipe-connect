@@ -1,87 +1,90 @@
 import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
-import { ExtendedJsPDF } from "@/types/pdf";
-import { extendPdfDocument } from "./pdfExtensions";
 import { StyleOption } from "@/components/vcard/types";
 import QRCode from "qrcode";
 
 export const generateBusinessCard = async (
   profile: UserProfile,
   selectedStyle: StyleOption
-): Promise<ExtendedJsPDF> => {
-  const doc = extendPdfDocument(new jsPDF({
+): Promise<jsPDF> => {
+  const doc = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
-    format: [85.6, 53.98]
-  }));
+    format: [85, 55]
+  });
 
-  // Set background gradient
-  const gradient = doc.setFillColor(selectedStyle.color);
-  doc.rect(0, 0, 85.6, 53.98, 'F');
+  // Couleurs du style sélectionné
+  const primaryColor = selectedStyle?.color || '#9b87f5';
+  const secondaryColor = selectedStyle?.secondaryColor || '#7E69AB';
 
-  try {
-    // Add Victaure logo in the middle
-    const logoImg = new Image();
-    logoImg.src = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
-    await new Promise((resolve, reject) => {
-      logoImg.onload = resolve;
-      logoImg.onerror = reject;
-    });
-    doc.addImage(logoImg, 'PNG', 35, 20, 15, 15);
+  // Fond avec dégradé
+  doc.setFillColor(primaryColor);
+  doc.rect(0, 0, 85, 55, 'F');
 
-    // Add profile photo on the left if available
-    if (profile.avatar_url) {
+  // Police personnalisée
+  const fontFamily = selectedStyle?.font || 'helvetica';
+  doc.setFont(fontFamily);
+
+  // Photo de profil ronde (plus petite)
+  if (profile.avatar_url) {
+    try {
       const img = new Image();
-      img.crossOrigin = "Anonymous";
+      img.src = profile.avatar_url;
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-        img.src = profile.avatar_url;
       });
-      doc.addImage(img, 'JPEG', 5, 5, 20, 20);
+      
+      // Dimensions plus petites pour la photo
+      const size = 15; // Taille réduite
+      const x = 5;
+      const y = 5;
+      
+      // Créer un masque rond
+      doc.setFillColor(255, 255, 255);
+      doc.circle(x + size/2, y + size/2, size/2, 'F');
+      
+      // Ajouter l'image
+      doc.addImage(img, 'PNG', x, y, size, size);
+    } catch (error) {
+      console.error('Erreur lors du chargement de l\'avatar:', error);
     }
-  } catch (error) {
-    console.error('Error loading images:', error);
   }
 
-  // Set text color and font based on style
+  // Informations de contact
   doc.setTextColor(255, 255, 255);
-  doc.setFont(selectedStyle.font || 'helvetica');
+  doc.setFontSize(16);
+  doc.setFont(fontFamily, 'bold');
+  doc.text(profile.full_name || 'Non défini', 25, 12);
 
-  // Add name and position next to photo
-  const textStartX = profile.avatar_url ? 30 : 5;
-  doc.setFontSize(14);
-  doc.setFont(selectedStyle.font || 'helvetica', 'bold');
-  doc.text(profile.full_name || '', textStartX, 15);
-  
   doc.setFontSize(12);
-  doc.setFont(selectedStyle.font || 'helvetica', 'normal');
-  doc.text(profile.role || '', textStartX, 22);
+  doc.setFont(fontFamily, 'normal');
+  doc.text(profile.role || 'Non défini', 25, 18);
 
-  // Add contact details at the bottom left
+  // Coordonnées
   doc.setFontSize(9);
-  let contactY = 40;
+  let yPos = 28;
   
   if (profile.email) {
-    doc.text(profile.email, 5, contactY);
-    contactY += 5;
+    doc.text(`Courriel: ${profile.email}`, 25, yPos);
+    yPos += 5;
   }
   
   if (profile.phone) {
-    doc.text(profile.phone, 5, contactY);
-    contactY += 5;
+    doc.text(`Tél: ${profile.phone}`, 25, yPos);
+    yPos += 5;
   }
   
   if (profile.city) {
-    doc.text(profile.city, 5, contactY);
+    doc.text(`${profile.city}, ${profile.state || 'QC'}`, 25, yPos);
   }
 
-  // Add QR code in bottom right corner
+  // QR Code
   try {
     const qrCodeUrl = await QRCode.toDataURL(window.location.href);
     doc.addImage(qrCodeUrl, 'PNG', 65, 35, 15, 15);
   } catch (error) {
-    console.error('Error generating QR code:', error);
+    console.error('Erreur lors de la génération du QR code:', error);
   }
 
   return doc;

@@ -1,81 +1,44 @@
-import { StickyNote as StickyNoteIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { useNotes } from "@/hooks/useNotes";
 import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
-import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion, AnimatePresence } from "framer-motion";
+import { ScrollArea } from "../ui/scroll-area";
 
-interface NotesSectionProps {
-  notes?: StickyNoteType[];
-  newNote?: string;
-  selectedColor?: string;
-  colors?: ColorOption[];
-  onNoteChange?: (value: string) => void;
-  onColorChange?: (color: string) => void;
-  onAdd?: () => void;
-  onDelete?: (id: string) => void;
-}
-
-export function NotesSection({
-  notes = [],
-  newNote = "",
-  selectedColor = "yellow",
-  colors = [],
-  onNoteChange = () => {},
-  onColorChange = () => {},
-  onAdd = () => {},
-  onDelete = () => {},
-}: NotesSectionProps) {
-  const getColorClass = (colorValue: string) => {
-    const colorMap: { [key: string]: string } = {
-      yellow: 'sticky-note-yellow',
-      blue: 'sticky-note-blue',
-      green: 'sticky-note-green',
-      pink: 'sticky-note-pink',
-      purple: 'sticky-note-purple',
-      peach: 'sticky-note-peach',
-      gray: 'sticky-note-gray',
-      orange: 'sticky-note-orange',
-    };
-    return colorMap[colorValue] || 'sticky-note-yellow';
-  };
+export function NotesSection() {
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
 
   return (
-    <div className="space-y-4 h-full flex flex-col notes-section">
-      <div className="flex items-center gap-2 text-primary">
-        <StickyNoteIcon className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Notes</h2>
-      </div>
-
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold text-white/90">Mes notes</h2>
+      
       <NotesInput
-        newNote={newNote}
+        value={newNote}
+        onChange={setNewNote}
+        onSubmit={addNote}
         selectedColor={selectedColor}
-        colors={colors}
-        onNoteChange={onNoteChange}
-        onColorChange={onColorChange}
-        onAdd={onAdd}
+        onColorSelect={setSelectedColor}
       />
 
-      <ScrollArea className="flex-1 pr-4">
+      <ScrollArea className="h-[400px] pr-4">
         <motion.div 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           layout
         >
-          <AnimatePresence mode="popLayout">
-            {notes.map((note) => (
-              <StickyNote
-                key={note.id}
-                note={note}
-                colorClass={getColorClass(note.color)}
-                onDelete={onDelete}
-              />
-            ))}
-          </AnimatePresence>
-          {notes.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 col-span-full">
-              Aucune note pour le moment
-            </div>
-          )}
+          {notes.map((note) => (
+            <StickyNote
+              key={note.id}
+              note={note}
+              onDelete={() => deleteNote(note.id)}
+            />
+          ))}
         </motion.div>
       </ScrollArea>
     </div>
