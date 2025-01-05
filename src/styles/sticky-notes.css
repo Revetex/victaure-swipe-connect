@@ -1,39 +1,39 @@
 @layer components {
   .sticky-note {
-    @apply p-4 rounded-lg shadow-sm transition-all duration-200 
-           hover:shadow-md hover:-translate-y-0.5
+    @apply p-4 rounded-lg shadow-sm transition-all duration-300 
+           hover:shadow-lg hover:-translate-y-1
            backdrop-blur-sm;
   }
 
   .sticky-note-yellow {
-    @apply bg-[#FEF7CD]/80 hover:bg-[#FEF7CD];
+    @apply bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border-2 border-[#FEF7CD];
   }
 
   .sticky-note-blue {
-    @apply bg-[#D3E4FD]/80 hover:bg-[#D3E4FD];
+    @apply bg-[#D3E4FD]/90 hover:bg-[#D3E4FD] border-2 border-[#D3E4FD];
   }
 
   .sticky-note-green {
-    @apply bg-[#F2FCE2]/80 hover:bg-[#F2FCE2];
+    @apply bg-[#F2FCE2]/90 hover:bg-[#F2FCE2] border-2 border-[#F2FCE2];
   }
 
   .sticky-note-pink {
-    @apply bg-[#FFDEE2]/80 hover:bg-[#FFDEE2];
+    @apply bg-[#FFDEE2]/90 hover:bg-[#FFDEE2] border-2 border-[#FFDEE2];
   }
 
   .sticky-note-purple {
-    @apply bg-[#E5DEFF]/80 hover:bg-[#E5DEFF];
+    @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF] border-2 border-[#E5DEFF];
   }
 
   .sticky-note-peach {
-    @apply bg-[#FDE1D3]/80 hover:bg-[#FDE1D3];
+    @apply bg-[#FDE1D3]/90 hover:bg-[#FDE1D3] border-2 border-[#FDE1D3];
   }
 
   .sticky-note-gray {
-    @apply bg-[#F1F0FB]/80 hover:bg-[#F1F0FB];
+    @apply bg-[#F1F0FB]/90 hover:bg-[#F1F0FB] border-2 border-[#F1F0FB];
   }
 
   .sticky-note-orange {
-    @apply bg-[#FEC6A1]/80 hover:bg-[#FEC6A1];
+    @apply bg-[#FEC6A1]/90 hover:bg-[#FEC6A1] border-2 border-[#FEC6A1];
   }
 }

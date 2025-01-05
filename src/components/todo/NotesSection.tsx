@@ -41,10 +41,16 @@ export function NotesSection({
   };
 
   return (
-    <div className="space-y-4 h-full flex flex-col notes-section">
-      <div className="flex items-center gap-2 text-primary">
-        <StickyNoteIcon className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Notes</h2>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4 h-full flex flex-col bg-background/50 rounded-lg p-6 shadow-lg border border-border/50"
+    >
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
+          <StickyNoteIcon className="h-5 w-5 text-accent" />
+        </div>
+        <h2 className="text-xl font-semibold text-foreground">Notes</h2>
       </div>
 
       <NotesInput
@@ -58,26 +64,38 @@ export function NotesSection({
 
       <ScrollArea className="flex-1 pr-4">
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
           layout
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           <AnimatePresence mode="popLayout">
             {notes.map((note) => (
-              <StickyNote
+              <motion.div
                 key={note.id}
-                note={note}
-                colorClass={getColorClass(note.color)}
-                onDelete={onDelete}
-              />
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: "spring", damping: 15 }}
+              >
+                <StickyNote
+                  note={note}
+                  colorClass={getColorClass(note.color)}
+                  onDelete={onDelete}
+                />
+              </motion.div>
             ))}
+            {notes.length === 0 && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center text-muted-foreground py-8 col-span-full rounded-lg bg-accent/5"
+              >
+                Aucune note pour le moment
+              </motion.div>
+            )}
           </AnimatePresence>
-          {notes.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 col-span-full">
-              Aucune note pour le moment
-            </div>
-          )}
         </motion.div>
       </ScrollArea>
-    </div>
+    </motion.div>
   );
 }
