@@ -14,7 +14,7 @@ export function Messages() {
   } = useChat();
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm">
       <MessagesContent
         messages={messages}
         inputMessage={inputMessage}

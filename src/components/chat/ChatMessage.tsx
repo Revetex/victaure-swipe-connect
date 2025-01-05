@@ -37,7 +37,7 @@ export const ChatMessage = memo(function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors",
+        "flex gap-3 items-start group hover:bg-muted/30 rounded-xl p-4 transition-all",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
@@ -65,17 +65,17 @@ export const ChatMessage = memo(function ChatMessage({
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-4 py-2 w-full shadow-sm",
+          "rounded-xl px-4 py-2.5 w-full shadow-sm transition-all duration-200",
           isBot 
-            ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
-            : "bg-primary/90 text-primary-foreground dark:bg-primary/80 dark:text-primary-foreground"
+            ? "bg-card/95 text-card-foreground backdrop-blur-sm border hover:shadow-md" 
+            : "bg-primary text-primary-foreground hover:shadow-md hover:bg-primary/90"
         )}>
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {content}
           </p>
         </div>
         {showTimestamp && timestamp && (
-          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity px-1">
             {format(new Date(timestamp), "d MMMM 'à' HH:mm", { locale: fr })}
           </span>
         )}
