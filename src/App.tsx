@@ -52,13 +52,7 @@ function App() {
       <Routes>
         <Route 
           path="/" 
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Navigate to="/auth" replace />
-            )
-          } 
+          element={<Navigate to="/auth" replace />} 
         />
         
         <Route 
@@ -83,13 +77,7 @@ function App() {
 
         <Route 
           path="*" 
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Navigate to="/auth" replace />
-            )
-          }
+          element={<Navigate to="/auth" replace />} 
         />
       </Routes>
     </div>
