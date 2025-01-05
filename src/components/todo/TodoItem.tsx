@@ -16,10 +16,8 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
   return (
     <div className={cn(
       "flex items-center gap-3 p-4 rounded-lg",
-      "bg-background/50 backdrop-blur-sm",
+      "bg-background/50 dark:bg-gray-800/50",
       "border border-border/50 hover:border-border",
-      "transition-all duration-200 ease-in-out",
-      "hover:shadow-md hover:-translate-y-0.5",
       "group animate-in slide-in-from-left"
     )}>
       <Checkbox
@@ -29,14 +27,14 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
       />
       <div className="flex-1 min-w-0">
         <span className={cn(
-          "block transition-colors text-base",
+          "block transition-colors",
           todo.completed && "line-through text-muted-foreground",
           !todo.completed && "group-hover:text-primary"
         )}>
           {todo.text}
         </span>
         {(todo.dueDate || todo.dueTime) && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />
             <span>
               {todo.dueDate && `Pour le ${format(todo.dueDate, 'dd/MM/yyyy', { locale: fr })}`}
