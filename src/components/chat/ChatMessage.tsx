@@ -93,33 +93,39 @@ export function ChatMessage({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="group relative flex gap-4 px-6 py-4 hover:bg-muted/50 transition-colors rounded-lg"
+      className={cn(
+        "group relative flex gap-4 px-6 py-4 hover:bg-muted/30 transition-colors rounded-lg",
+        isBot ? "justify-start" : "justify-end flex-row-reverse"
+      )}
     >
       <div className="shrink-0">
         {isBot ? (
           <div className={cn(
-            "flex h-14 w-14 shrink-0 select-none items-center justify-center rounded-xl border shadow-sm",
-            "bg-primary text-primary-foreground ring-2 ring-primary/10"
+            "flex h-12 w-12 shrink-0 select-none items-center justify-center rounded-xl border shadow-sm",
+            "bg-primary text-primary-foreground"
           )}>
-            <Bot className="h-7 w-7" />
+            <Bot className="h-6 w-6" />
           </div>
         ) : (
-          <Avatar className="h-14 w-14 ring-2 ring-primary/10">
+          <Avatar className="h-12 w-12">
             <AvatarImage 
               src={profile?.avatar_url || ''} 
               alt={profile?.full_name || 'User'} 
               className="object-cover"
             />
             <AvatarFallback>
-              <User className="h-7 w-7" />
+              <User className="h-6 w-6" />
             </AvatarFallback>
           </Avatar>
         )}
       </div>
 
-      <div className="flex-1 space-y-2.5">
-        <div className="flex items-center gap-3">
-          <span className="font-semibold text-lg bg-gradient-to-r from-primary to-high-contrast-magenta bg-clip-text text-transparent">
+      <div className={cn(
+        "flex flex-col space-y-1 max-w-[80%] md:max-w-[70%]",
+        isBot ? "items-start" : "items-end"
+      )}>
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-base">
             {isBot ? "Mr. Victaure" : profile?.full_name || "Vous"}
           </span>
           {showTimestamp && timestamp && (
@@ -129,29 +135,33 @@ export function ChatMessage({
           )}
         </div>
 
-        <div className="prose prose-neutral dark:prose-invert max-w-none">
+        <div className={cn(
+          "rounded-lg px-4 py-2",
+          isBot ? "bg-muted text-foreground" : "bg-primary text-primary-foreground",
+          "prose prose-neutral dark:prose-invert max-w-none"
+        )}>
           {thinking ? (
             <motion.div
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 2 }}
-              className="text-muted-foreground text-lg"
+              className="text-muted-foreground"
             >
               En train de réfléchir...
             </motion.div>
           ) : (
-            <div className="flex items-start gap-3">
-              <p className="mt-0 leading-relaxed text-lg">{content}</p>
+            <div className="flex items-start gap-2">
+              <p className="mt-0 leading-relaxed">{content}</p>
               {isBot && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 shrink-0 hover:bg-primary/10 transition-colors"
+                  className="h-8 w-8 shrink-0 hover:bg-primary/10 transition-colors"
                   onClick={handleVoicePlayback}
                 >
                   {isPlaying ? (
-                    <VolumeX className="h-5 w-5" />
+                    <VolumeX className="h-4 w-4" />
                   ) : (
-                    <Volume2 className="h-5 w-5" />
+                    <Volume2 className="h-4 w-4" />
                   )}
                 </Button>
               )}

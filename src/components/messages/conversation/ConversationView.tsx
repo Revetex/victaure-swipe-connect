@@ -72,8 +72,8 @@ export function ConversationView({
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-16">
-      <header className="shrink-0 border-b bg-background/95 px-6 py-4 shadow-sm">
+    <div className="fixed inset-0 bg-background flex flex-col pt-16">
+      <header className="shrink-0 border-b bg-background px-6 py-4">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center gap-4">
             {onBack && (
@@ -86,7 +86,7 @@ export function ConversationView({
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
-            <Avatar className="h-14 w-14 shrink-0 ring-2 ring-accent/20">
+            <Avatar className="h-14 w-14 shrink-0">
               <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
               <AvatarFallback className="bg-accent/20">
                 <Bot className="h-7 w-7 text-accent" />
@@ -112,7 +112,7 @@ export function ConversationView({
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden bg-gradient-to-b from-background/50 to-background">
+      <div className="flex-1 overflow-hidden bg-background">
         <ScrollArea 
           className="h-full px-4 py-6" 
           onScroll={handleScroll}
@@ -155,7 +155,7 @@ export function ConversationView({
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg bg-accent hover:bg-accent/90 transition-colors h-12 w-12"
+                className="rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-colors h-12 w-12"
                 onClick={scrollToBottom}
               >
                 <ArrowDown className="h-5 w-5" />
@@ -165,7 +165,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 p-6 shadow-lg">
+      <div className="shrink-0 border-t bg-background p-6">
         <div className="max-w-6xl mx-auto">
           <ChatInput
             value={inputMessage}
