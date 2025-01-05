@@ -58,44 +58,53 @@ serve(async (req) => {
     Sois encourageant et bienveillant dans tes réponses.
     Suggère des améliorations concrètes basées sur les réponses de l'utilisateur.`;
 
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      throw new Error('OpenAI API key not found');
+    const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY');
+    if (!huggingFaceApiKey) {
+      throw new Error('HuggingFace API key not found');
     }
 
-    console.log('Sending request to OpenAI');
+    console.log('Sending request to HuggingFace');
 
-    // Get response from OpenAI
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
-        temperature: 0.7,
-      }),
-    });
+    // Get response from HuggingFace
+    const huggingFaceResponse = await fetch(
+      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${huggingFaceApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
+          parameters: {
+            max_new_tokens: 250,
+            temperature: 0.7,
+            top_p: 0.9,
+            do_sample: true,
+            return_full_text: false
+          }
+        }),
+      }
+    );
 
-    if (!openAIResponse.ok) {
-      const errorData = await openAIResponse.json();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    if (!huggingFaceResponse.ok) {
+      const errorData = await huggingFaceResponse.json();
+      console.error('HuggingFace API error:', errorData);
+      
+      if (huggingFaceResponse.status === 503) {
+        throw new Error('Le modèle est en cours de chargement, veuillez patienter quelques secondes et réessayer.');
+      }
+      throw new Error(`HuggingFace API error: ${errorData.error || 'Unknown error'}`);
     }
 
-    const aiResponseData = await openAIResponse.json();
-    console.log('Received OpenAI response:', aiResponseData);
+    const aiResponseData = await huggingFaceResponse.json();
+    console.log('Received HuggingFace response:', aiResponseData);
 
-    if (!aiResponseData.choices || !aiResponseData.choices[0] || !aiResponseData.choices[0].message) {
-      throw new Error('Invalid response format from OpenAI');
+    if (!aiResponseData || !aiResponseData[0]?.generated_text) {
+      throw new Error('Invalid response format from HuggingFace');
     }
 
-    const responseText = aiResponseData.choices[0].message.content;
+    const responseText = aiResponseData[0].generated_text;
 
     // Store the conversation in the database
     const { error: chatError } = await supabase
