@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { JobList } from "./jobs/JobList";
 import { JobFilters } from "./jobs/JobFilters";
-import { ScrapedJobsList } from "./jobs/ScrapedJobsList";
 import { Job } from "@/types/job";
 import { supabase } from "@/integrations/supabase/client";
-import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jobs/JobFilterUtils";
+import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
 import { Filter } from "lucide-react";
 import { toast } from "sonner";
@@ -30,7 +29,8 @@ export function Marketplace() {
       // Convert the status to the correct type
       const typedJobs = (data || []).map(job => ({
         ...job,
-        status: job.status as 'open' | 'closed' | 'in-progress'
+        status: job.status as 'open' | 'closed' | 'in-progress',
+        source: 'Victaure' // Ajouter la source pour identifier les offres Victaure
       }));
 
       setJobs(typedJobs);
@@ -65,38 +65,29 @@ export function Marketplace() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Offres Victaure */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Offres Victaure</h2>
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="w-auto flex items-center justify-center gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-              </Button>
-            </div>
-            
-            <div className="space-y-4">
-              {showFilters && (
-                <div className="bg-card rounded-lg p-4">
-                  <JobFilters
-                    filters={filters}
-                    onFilterChange={handleFilterChange}
-                  />
-                </div>
-              )}
-              <JobList jobs={jobs} isLoading={isLoading} />
-            </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">Toutes les offres</h2>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-auto flex items-center justify-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+            </Button>
           </div>
-
-          {/* Offres Externes */}
+          
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Offres Externes</h2>
-            <ScrapedJobsList />
+            {showFilters && (
+              <div className="bg-card rounded-lg p-4">
+                <JobFilters
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                />
+              </div>
+            )}
+            <JobList jobs={jobs} isLoading={isLoading} />
           </div>
         </div>
       </div>
