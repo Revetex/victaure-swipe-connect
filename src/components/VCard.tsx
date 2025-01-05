@@ -16,6 +16,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
 import { VCardStyleContext } from "./vcard/VCardStyleContext";
+import { updateProfile } from "@/utils/profileActions";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -46,22 +47,11 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   };
 
   const handleSave = async () => {
+    if (!profile) return;
+
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          style_id: selectedStyle.id,
-        })
-        .eq('id', profile?.id);
-
-      if (error) throw error;
-
-      if (profile) {
-        setProfile({
-          ...profile,
-          style_id: selectedStyle.id
-        });
-      }
+      // Update profile including all related data
+      await updateProfile(profile);
 
       setIsEditing(false);
       if (onEditStateChange) {

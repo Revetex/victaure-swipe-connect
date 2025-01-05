@@ -53,7 +53,8 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       company_size: tempProfile.company_size || null,
       industry: tempProfile.industry || null,
       role: tempProfile.role || existingProfile?.role || 'professional',
-      avatar_url: tempProfile.avatar_url || existingProfile?.avatar_url
+      avatar_url: tempProfile.avatar_url || existingProfile?.avatar_url,
+      style_id: tempProfile.style_id || existingProfile?.style_id
     };
 
     console.log("Profile data to be saved:", profileData);
@@ -135,7 +136,39 @@ export const updateProfile = async (tempProfile: UserProfile) => {
       }
     }
 
-    toast.success("Profil mis à jour avec succès");
+    // Update experiences if they exist
+    if (tempProfile.experiences) {
+      // Delete existing experiences
+      const { error: deleteError } = await supabase
+        .from('experiences')
+        .delete()
+        .eq('profile_id', user.id);
+
+      if (deleteError) {
+        console.error("Error deleting experiences:", deleteError);
+        throw deleteError;
+      }
+
+      // Insert new experiences if any exist
+      if (tempProfile.experiences.length > 0) {
+        const { error: expError } = await supabase
+          .from('experiences')
+          .insert(tempProfile.experiences.map(exp => ({
+            profile_id: user.id,
+            company: exp.company,
+            position: exp.position,
+            start_date: exp.start_date || null,
+            end_date: exp.end_date || null,
+            description: exp.description || null
+          })));
+
+        if (expError) {
+          console.error("Error inserting experiences:", expError);
+          throw expError;
+        }
+      }
+    }
+
     console.log("Profile updated successfully");
     
   } catch (error) {
