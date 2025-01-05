@@ -1,127 +1,123 @@
 import { Button } from "@/components/ui/button";
-import { Share2, Download, FileText, Edit } from "lucide-react";
-import { motion } from "framer-motion";
-import { toast } from "sonner";
-import { StyleOption } from "./types";
-import { UserProfile } from "@/types/profile";
-import { generateVCardData } from "@/utils/profileActions";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Edit2, Download, FileText, CreditCard, MessageSquare } from "lucide-react";
+import { CareerAdvisorChat } from "../career/CareerAdvisorChat";
+import { useState } from "react";
 
 interface VCardActionsProps {
   isEditing: boolean;
   isPdfGenerating: boolean;
-  profile: UserProfile;
-  selectedStyle: StyleOption;
+  profile: any;
+  selectedStyle: any;
   onEditToggle: () => void;
-  onSave: () => Promise<void>;
-  onDownloadVCard: () => Promise<void>;
-  onDownloadBusinessCard: () => Promise<void>;
-  onDownloadCV: () => Promise<void>;
+  onSave: () => void;
+  onDownloadVCard: () => void;
+  onDownloadBusinessCard: () => void;
+  onDownloadCV: () => void;
 }
 
 export function VCardActions({
   isEditing,
   isPdfGenerating,
   profile,
+  selectedStyle,
   onEditToggle,
   onSave,
+  onDownloadVCard,
   onDownloadBusinessCard,
   onDownloadCV,
 }: VCardActionsProps) {
-  const handleShare = async () => {
-    try {
-      await navigator.share({
-        title: `${profile.full_name}'s VCard`,
-        text: `Découvrez le profil professionnel de ${profile.full_name}`,
-        url: window.location.href,
-      });
-      toast.success("Profil partagé avec succès");
-    } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
-        toast.error("Erreur lors du partage");
-      }
-    }
-  };
+  const [isAdvisorOpen, setIsAdvisorOpen] = useState(false);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex flex-wrap gap-3 pt-4 border-t border-white/20"
-    >
+    <div className="flex flex-wrap items-center gap-2">
       {isEditing ? (
         <>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[120px]"
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSave}
+            className="text-green-400 border-green-400/30 hover:bg-green-400/10"
           >
-            <Button 
-              onClick={onSave}
-              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-              disabled={isPdfGenerating}
-            >
-              Sauvegarder
-            </Button>
-          </motion.div>
+            <Edit2 className="h-4 w-4 mr-2" />
+            Sauvegarder
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onEditToggle}
+            className="text-indigo-400 border-indigo-400/30 hover:bg-indigo-400/10"
+          >
+            <Edit2 className="h-4 w-4 mr-2" />
+            Annuler
+          </Button>
         </>
       ) : (
         <>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onEditToggle}
+            className="text-indigo-400 border-indigo-400/30 hover:bg-indigo-400/10"
           >
-            <Button 
-              onClick={handleShare}
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Partager
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+            <Edit2 className="h-4 w-4 mr-2" />
+            Modifier
+          </Button>
+
+          <Dialog open={isAdvisorOpen} onOpenChange={setIsAdvisorOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-emerald-400 border-emerald-400/30 hover:bg-emerald-400/10"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Conseiller IA
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px] bg-gray-900/95 border-gray-800">
+              <CareerAdvisorChat />
+            </DialogContent>
+          </Dialog>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDownloadVCard}
+            disabled={isPdfGenerating}
+            className="text-blue-400 border-blue-400/30 hover:bg-blue-400/10"
           >
-            <Button 
-              onClick={onEditToggle}
-              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              Mode édition
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+            <Download className="h-4 w-4 mr-2" />
+            VCard
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDownloadBusinessCard}
+            disabled={isPdfGenerating}
+            className="text-purple-400 border-purple-400/30 hover:bg-purple-400/10"
           >
-            <Button 
-              onClick={onDownloadBusinessCard}
-              className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-              disabled={isPdfGenerating}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Business PDF
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+            <CreditCard className="h-4 w-4 mr-2" />
+            Carte de visite
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDownloadCV}
+            disabled={isPdfGenerating}
+            className="text-pink-400 border-pink-400/30 hover:bg-pink-400/10"
           >
-            <Button 
-              onClick={onDownloadCV}
-              className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105"
-              disabled={isPdfGenerating}
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              CV PDF
-            </Button>
-          </motion.div>
+            <FileText className="h-4 w-4 mr-2" />
+            CV
+          </Button>
         </>
       )}
-    </motion.div>
+    </div>
   );
 }
