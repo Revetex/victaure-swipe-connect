@@ -1,8 +1,9 @@
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { VCard } from "@/components/VCard";
-import { Tabs } from "@/components/ui/tabs";
-import { DashboardTabs } from "./DashboardTabs";
+import { Settings } from "@/components/Settings";
+import { TodoSection } from "@/components/todo/TodoSection";
+import { NotesSection } from "@/components/todo/NotesSection";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -41,23 +42,43 @@ export function DashboardContent({
     );
   }
 
-  if (currentPage === 2 && !isEditing) {
+  if (currentPage === 2) {
     return (
       <div className="dashboard-card h-full">
         <div className="p-3 sm:p-4 md:p-6 h-full">
-          <Tabs defaultValue="messages" className="h-full flex flex-col">
-            <DashboardTabs />
-            <Messages />
-          </Tabs>
+          <Messages />
         </div>
       </div>
     );
   }
 
-  if (currentPage === 3 && !isEditing) {
+  if (currentPage === 3) {
     return (
       <div className="dashboard-card h-full">
         <SwipeJob />
+      </div>
+    );
+  }
+
+  if (currentPage === 4) {
+    return (
+      <div className="dashboard-card h-full">
+        <div className="p-3 sm:p-4 md:p-6 h-full">
+          <div className="space-y-6">
+            <TodoSection />
+            <NotesSection />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === 5) {
+    return (
+      <div className="dashboard-card h-full">
+        <div className="p-3 sm:p-4 md:p-6 h-full">
+          <Settings />
+        </div>
       </div>
     );
   }
