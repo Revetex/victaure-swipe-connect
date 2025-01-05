@@ -9,6 +9,9 @@ const corsHeaders = {
 
 const SYSTEM_PROMPT = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec, spécialisé dans le domaine de la construction. 
 
+Tu dois adapter tes réponses en fonction du profil de l'utilisateur que tu reçois dans le contexte.
+Utilise son nom, ses compétences et son expérience pour personnaliser tes réponses.
+
 Ton rôle est d'aider les utilisateurs à:
 1. Trouver des offres d'emploi pertinentes dans la construction
 2. Comprendre les exigences du marché québécois
@@ -25,7 +28,9 @@ Règles de communication:
 - Tu communiques en français québécois de manière professionnelle
 - Tu es précis et concret dans tes recommandations
 - Tu poses des questions pour mieux comprendre les besoins
-- Tu suggères toujours des actions concrètes`;
+- Tu suggères toujours des actions concrètes
+- Tu t'adresses à l'utilisateur par son nom quand tu le connais
+- Tu fais référence à son profil et son expérience dans tes réponses`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -41,6 +46,22 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Fetch user profile if not provided in context
+    let userProfile = context?.userProfile;
+    if (!userProfile && userId) {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+      } else {
+        userProfile = profile;
+      }
+    }
+
     // Vérifier si le message concerne la recherche d'emploi
     const jobKeywords = [
       'emploi', 'job', 'travail', 'offre', 'poste', 
@@ -53,11 +74,18 @@ serve(async (req) => {
     let response;
     if (isJobSearch) {
       console.log('Handling job search request');
-      response = await handleJobSearch(message, context?.userProfile, supabase);
+      response = await handleJobSearch(message, userProfile, supabase);
     } else {
+      // Prepare a personalized response using the user's profile
+      const userName = userProfile?.full_name || "cher utilisateur";
+      const userSkills = userProfile?.skills?.join(', ') || '';
+      const userRole = userProfile?.role || '';
+
       // Réponse générale avec suggestions d'actions
       response = {
-        message: "Je peux vous aider à trouver un emploi dans la construction ou à améliorer votre profil professionnel. Que souhaitez-vous faire?",
+        message: `Bonjour ${userName}, je suis là pour vous aider dans votre parcours professionnel. ${
+          userSkills ? `Je vois que vous avez des compétences en ${userSkills}.` : ''
+        } Comment puis-je vous assister aujourd'hui ?`,
         suggestedActions: [
           {
             type: 'navigate_to_jobs',

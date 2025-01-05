@@ -10,6 +10,7 @@ import { AIAssistantInput } from "./ai/AIAssistantInput";
 import { AIMessageList } from "./ai/AIMessageList";
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useProfile } from "@/hooks/useProfile";
 
 interface AIAssistantProps {
   onClose: () => void;
@@ -24,6 +25,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { profile } = useProfile();
 
   const createNotification = async (message: string) => {
     try {
@@ -82,12 +84,6 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       }
 
       setMessages(prev => [...prev, { type: 'user', content: input }]);
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
 
       setIsTyping(true);
       
