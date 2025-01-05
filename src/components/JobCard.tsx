@@ -1,97 +1,112 @@
 import { Job } from "@/types/job";
-import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { 
   Building2, 
   MapPin, 
-  Calendar,
+  Calendar, 
   Briefcase,
-  DollarSign,
-  Clock,
-  ExternalLink
+  ExternalLink,
+  Clock
 } from "lucide-react";
-import { format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Button } from "./ui/button";
 
-interface JobCardProps extends Omit<Job, 'source'> {
-  source?: "Victaure" | "Externe";
+interface JobCardProps {
+  job: Job;
+  onApply?: () => void;
+  onDelete?: () => void;
+  showActions?: boolean;
+  url?: string; // Added url property
 }
 
-export function JobCard({
-  title,
-  company,
-  location,
-  budget,
-  created_at,
-  contract_type,
-  source = "Externe",
-  status,
-  url
+export function JobCard({ 
+  job, 
+  onApply, 
+  onDelete, 
+  showActions = true,
+  url 
 }: JobCardProps) {
-  const handleExternalLink = () => {
-    if (url) {
-      window.open(url, '_blank');
-    }
-  };
+  const formattedDate = formatDistanceToNow(new Date(job.created_at), {
+    addSuffix: true,
+    locale: fr
+  });
 
   return (
-    <Card className="p-4 hover:shadow-lg transition-shadow">
+    <Card className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="font-semibold">{title}</h3>
+            <h3 className="text-lg font-semibold">{job.title}</h3>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
               <Building2 className="h-4 w-4" />
-              <span>{company}</span>
+              <span>{job.company}</span>
             </div>
           </div>
-          <Badge variant={source === "Victaure" ? "default" : "secondary"}>
-            {source}
+          <Badge variant={job.source === 'Victaure' ? 'default' : 'secondary'}>
+            {job.source || 'Victaure'}
           </Badge>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
-            <span>{location}</span>
+            <span>{job.location}</span>
           </div>
-          
-          {budget > 0 && (
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
-              <span>{budget} CAD</span>
-            </div>
-          )}
 
-          {contract_type && (
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              <span>{contract_type}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            <span>{job.contract_type}</span>
+          </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
-            <span>{format(new Date(created_at), 'PP', { locale: fr })}</span>
+            <span>{formattedDate}</span>
           </div>
-        </div>
 
-        <div className="flex justify-between items-center">
-          <Badge variant="outline">{status}</Badge>
-          
-          {url && source === "Externe" && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={handleExternalLink}
-              className="text-blue-500 hover:text-blue-700"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Voir l'offre
-            </Button>
+          {job.budget > 0 && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Briefcase className="h-4 w-4" />
+              <span>{job.budget} CAD</span>
+            </div>
           )}
         </div>
+
+        {showActions && (
+          <div className="flex gap-2 pt-4">
+            {url ? (
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => window.open(url, '_blank')}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Voir l'offre
+              </Button>
+            ) : (
+              <>
+                {onApply && (
+                  <Button 
+                    variant="default" 
+                    className="w-full"
+                    onClick={onApply}
+                  >
+                    Postuler
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button 
+                    variant="destructive"
+                    onClick={onDelete}
+                  >
+                    Supprimer
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );
