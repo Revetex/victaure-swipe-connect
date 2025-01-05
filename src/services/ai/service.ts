@@ -9,19 +9,16 @@ import { supabase } from "@/integrations/supabase/client";
 
 export async function generateAIResponse(message: string): Promise<string> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), HUGGING_FACE_CONFIG.timeout);
+  const timeoutId = setTimeout(() => {
+    controller.abort('Request timeout');
+  }, HUGGING_FACE_CONFIG.timeout);
 
   try {
     const apiKey = await getHuggingFaceApiKey();
     const profile = await getUserProfile();
     const formattedProfile = formatUserProfile(profile);
     
-    const systemPrompt = SYSTEM_PROMPT
-      .replace('{role}', formattedProfile.role)
-      .replace('{skills}', formattedProfile.skills)
-      .replace('{city}', formattedProfile.city)
-      .replace('{state}', formattedProfile.state)
-      .replace('{country}', formattedProfile.country);
+    const systemPrompt = SYSTEM_PROMPT;
 
     let lastError = null;
     
@@ -38,6 +35,7 @@ export async function generateAIResponse(message: string): Promise<string> {
         );
 
         console.log('Réponse reçue avec succès');
+        clearTimeout(timeoutId);
         return response;
 
       } catch (error) {
@@ -79,7 +77,7 @@ export async function generateAIResponse(message: string): Promise<string> {
     
     throw error;
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(timeoutId);
   }
 }
 

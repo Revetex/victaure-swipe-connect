@@ -22,7 +22,7 @@ export async function callHuggingFaceAPI(
   systemPrompt: string,
   config: any,
   controller: AbortController
-) {
+): Promise<string> {
   const response = await fetch(
     `https://api-inference.huggingface.co/models/${config.model}`,
     {
@@ -39,8 +39,6 @@ export async function callHuggingFaceAPI(
     }
   );
 
-  console.log(`Statut de la réponse: ${response.status}`);
-
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.error || 'Erreur lors de la génération de la réponse');
@@ -52,5 +50,9 @@ export async function callHuggingFaceAPI(
     throw new Error('Format de réponse invalide');
   }
 
-  return data[0].generated_text.trim();
+  // Extract only the Assistant's response
+  const fullText = data[0].generated_text;
+  const assistantResponse = fullText.split('Assistant:').pop()?.trim();
+  
+  return assistantResponse || fullText;
 }
