@@ -1,144 +1,188 @@
 import { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
-import { Bot, Sparkles, Brain, MessageSquare } from "lucide-react";
-import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
-import { Message } from "./types";
 import { ChatHeader } from "./ChatHeader";
-import { QuickSuggestions } from "./QuickSuggestions";
 import { ChatInput } from "./ChatInput";
+import { QuickSuggestions } from "./QuickSuggestions";
+import { motion, AnimatePresence } from "framer-motion";
+import { useProfile } from "@/hooks/useProfile";
+import { Button } from "@/components/ui/button";
+import { Edit2, Save, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function CareerAdvisorChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const { profile, setProfile } = useProfile();
+  const { toast } = useToast();
 
-  const sendMessage = async (messageContent: string) => {
-    if (!messageContent.trim() || isLoading) return;
+  const handleSuggestionSelect = (suggestion: string) => {
+    // Handle suggestion selection logic here
+    setMessages((prev) => [...prev, { content: suggestion, sender: "user" }]);
+  };
 
+  const handleMessageSubmit = async (message: string) => {
+    // Handle message submission logic here
+    setMessages((prev) => [...prev, { content: message, sender: "user" }]);
+  };
+
+  const handleProfileUpdate = async () => {
     try {
-      setIsLoading(true);
-      setShowSuggestions(false);
-      
-      const userMessage: Message = {
-        id: crypto.randomUUID(),
-        content: messageContent,
-        sender: 'user',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, userMessage]);
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour utiliser cette fonctionnalité");
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke('career-advisor', {
-        body: { message: messageContent, userId: user.id }
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: profile?.full_name,
+          role: profile?.role,
+          bio: profile?.bio
+        })
+        .eq('id', profile?.id);
 
       if (error) throw error;
 
-      const advisorMessage: Message = {
-        id: crypto.randomUUID(),
-        content: data.response,
-        sender: 'advisor',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, advisorMessage]);
+      setIsEditing(false);
+      toast({
+        title: "Profil mis à jour",
+        description: "Vos informations ont été enregistrées avec succès",
+      });
     } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error("Une erreur est survenue lors de l'envoi du message");
-    } finally {
-      setIsLoading(false);
+      console.error('Error updating profile:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de mettre à jour le profil",
+      });
     }
   };
 
   return (
-    <div className="flex flex-col h-[600px] bg-gray-900/50 rounded-lg backdrop-blur-sm border border-gray-800">
-      <ChatHeader isLoading={isLoading} />
+    <div className="flex flex-col h-full bg-gray-900 text-gray-100">
+      <ChatHeader />
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gray-800/50 rounded-lg p-4 border border-gray-700"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-200">Mon Profil</h3>
+            {!isEditing ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditing(true)}
+                className="text-gray-400 hover:text-white"
+              >
+                <Edit2 className="h-4 w-4 mr-2" />
+                Modifier
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleProfileUpdate}
+                  className="text-green-500 hover:text-green-400"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Sauvegarder
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsEditing(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Annuler
+                </Button>
+              </div>
+            )}
+          </div>
 
-      <ScrollArea className="flex-1 p-4">
-        <AnimatePresence mode="popLayout">
-          {showSuggestions && messages.length === 0 && (
-            <QuickSuggestions onSelect={sendMessage} />
-          )}
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-gray-400 mb-1 block">Nom complet</label>
+              {isEditing ? (
+                <Input
+                  value={profile?.full_name || ""}
+                  onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                  className="bg-gray-700/50 border-gray-600"
+                  placeholder="Votre nom complet"
+                />
+              ) : (
+                <p className="text-gray-200">{profile?.full_name || "Non défini"}</p>
+              )}
+            </div>
 
-          {messages.map((message) => (
+            <div>
+              <label className="text-sm text-gray-400 mb-1 block">Rôle</label>
+              {isEditing ? (
+                <Input
+                  value={profile?.role || ""}
+                  onChange={(e) => setProfile({ ...profile, role: e.target.value })}
+                  className="bg-gray-700/50 border-gray-600"
+                  placeholder="Votre rôle professionnel"
+                />
+              ) : (
+                <p className="text-gray-200">{profile?.role || "Non défini"}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-400 mb-1 block">Bio</label>
+              {isEditing ? (
+                <Textarea
+                  value={profile?.bio || ""}
+                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                  className="bg-gray-700/50 border-gray-600"
+                  placeholder="Décrivez votre parcours professionnel"
+                />
+              ) : (
+                <p className="text-gray-200">{profile?.bio || "Non défini"}</p>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        <QuickSuggestions onSelect={handleSuggestionSelect} />
+
+        <AnimatePresence>
+          {messages.map((message, index) => (
             <motion.div
-              key={message.id}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className={`mb-4 ${message.sender === 'user' ? 'ml-auto' : 'mr-auto'}`}
+              className={`p-4 rounded-lg ${
+                message.sender === "user"
+                  ? "bg-blue-600/20 ml-auto"
+                  : "bg-gray-800/50"
+              } max-w-[80%] mb-4`}
             >
-              <div
-                className={`flex items-start gap-3 max-w-[80%] ${
-                  message.sender === 'user'
-                    ? 'flex-row-reverse ml-auto'
-                    : 'flex-row'
-                }`}
-              >
-                <div className={`flex-shrink-0 ${
-                  message.sender === 'user' 
-                    ? 'bg-indigo-600'
-                    : 'bg-gray-800'
-                } p-2 rounded-full`}>
-                  {message.sender === 'user' ? (
-                    <MessageSquare className="h-5 w-5 text-white" />
-                  ) : (
-                    <Brain className="h-5 w-5 text-indigo-400" />
-                  )}
-                </div>
-                <div
-                  className={`p-4 rounded-lg ${
-                    message.sender === 'user'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-800 text-gray-100'
-                  }`}
-                >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  <span className="text-xs opacity-70 mt-2 block">
-                    {message.timestamp.toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
+              <p className="text-gray-200">{message.content}</p>
             </motion.div>
           ))}
-
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 text-gray-400 mb-4"
-            >
-              <div className="bg-gray-800 p-2 rounded-full">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                >
-                  <Bot className="h-5 w-5 text-indigo-400" />
-                </motion.div>
-              </div>
-              <div className="bg-gray-800 p-4 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">M. Victaure réfléchit</span>
-                  <motion.div
-                    animate={{ opacity: [0, 1, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                  >
-                    <Sparkles className="h-4 w-4 text-yellow-500" />
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          )}
         </AnimatePresence>
-      </ScrollArea>
 
-      <ChatInput isLoading={isLoading} onSendMessage={sendMessage} />
+        {isTyping && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center space-x-2 text-gray-400"
+          >
+            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100" />
+            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200" />
+          </motion.div>
+        )}
+      </div>
+
+      <div className="p-4 border-t border-gray-800">
+        <ChatInput onSubmit={handleMessageSubmit} />
+      </div>
     </div>
   );
 }

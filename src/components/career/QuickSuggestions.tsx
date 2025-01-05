@@ -7,32 +7,38 @@ const QUICK_SUGGESTIONS = [
   {
     text: "Comment améliorer mon CV ?",
     icon: Briefcase,
-    color: "text-blue-500"
+    color: "text-blue-500",
+    description: "Conseils pour optimiser votre CV"
   },
   {
     text: "Quelles formations me correspondent ?",
     icon: GraduationCap,
-    color: "text-green-500"
+    color: "text-green-500",
+    description: "Formations adaptées à votre profil"
   },
   {
     text: "Compétences recherchées dans mon domaine",
     icon: Brain,
-    color: "text-purple-500"
+    color: "text-purple-500",
+    description: "Tendances du marché"
   },
   {
     text: "Conseils pour négocier mon salaire",
     icon: DollarSign,
-    color: "text-yellow-500"
+    color: "text-yellow-500",
+    description: "Stratégies de négociation"
   },
   {
     text: "Comment réussir mes entretiens ?",
     icon: Award,
-    color: "text-pink-500"
+    color: "text-pink-500",
+    description: "Préparation aux entretiens"
   },
   {
     text: "Parcours de formation recommandé",
     icon: BookOpen,
-    color: "text-indigo-500"
+    color: "text-indigo-500",
+    description: "Plan de développement personnalisé"
   }
 ];
 
@@ -42,18 +48,28 @@ export function QuickSuggestions({ onSelect }: QuickSuggestionsProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"
+      className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6"
     >
-      {QUICK_SUGGESTIONS.map(({ text, icon: Icon, color }) => (
-        <Button
+      {QUICK_SUGGESTIONS.map(({ text, icon: Icon, color, description }) => (
+        <motion.div
           key={text}
-          variant="outline"
-          className="flex items-center gap-2 text-sm text-gray-300 border-gray-700 hover:bg-gray-800/50 h-auto py-3"
-          onClick={() => onSelect(text)}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="group"
         >
-          <Icon className={`h-4 w-4 ${color}`} />
-          <span className="text-left">{text}</span>
-        </Button>
+          <Button
+            variant="outline"
+            className="w-full flex flex-col items-start gap-2 p-4 text-sm bg-gray-800/50 border-gray-700 hover:bg-gray-800/80 hover:border-gray-600 transition-all duration-200 min-h-[100px] relative overflow-hidden"
+            onClick={() => onSelect(text)}
+          >
+            <div className="flex items-center gap-2 w-full">
+              <Icon className={`h-5 w-5 ${color} transition-transform group-hover:scale-110`} />
+              <span className="font-medium text-left text-gray-200">{text}</span>
+            </div>
+            <p className="text-xs text-gray-400 text-left">{description}</p>
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-700/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Button>
+        </motion.div>
       ))}
     </motion.div>
   );
