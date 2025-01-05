@@ -1,11 +1,12 @@
-import { motion } from "framer-motion";
-import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
-import { ScrollArea } from "../ui/scroll-area";
-import { StickyNote as StickyNoteType } from "@/types/todo";
+import { NotesInput } from "./NotesInput";
 
 export interface NotesSectionProps {
-  notes: StickyNoteType[];
+  notes: Array<{
+    id: string;
+    text: string;
+    color: string;
+  }>;
   newNote: string;
   selectedColor: string;
   colors: { value: string; label: string; class: string; }[];
@@ -23,12 +24,11 @@ export function NotesSection({
   onNoteChange,
   onColorChange,
   onAdd,
-  onDelete
+  onDelete,
 }: NotesSectionProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-white/90">Mes notes</h2>
-      
+      <h2 className="text-lg font-semibold">Notes</h2>
       <NotesInput
         newNote={newNote}
         selectedColor={selectedColor}
@@ -37,21 +37,15 @@ export function NotesSection({
         onColorChange={onColorChange}
         onAdd={onAdd}
       />
-
-      <ScrollArea className="h-[400px] pr-4">
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-          layout
-        >
-          {notes.map((note) => (
-            <StickyNote
-              key={note.id}
-              note={note}
-              onDelete={() => onDelete(note.id)}
-            />
-          ))}
-        </motion.div>
-      </ScrollArea>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {notes.map((note) => (
+          <StickyNote
+            key={note.id}
+            note={note}
+            onDelete={() => onDelete(note.id)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
