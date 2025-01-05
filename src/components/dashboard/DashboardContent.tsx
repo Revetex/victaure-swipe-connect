@@ -1,145 +1,83 @@
-import { Messages } from "@/components/Messages";
-import { SwipeJob } from "@/components/SwipeJob";
-import { VCard } from "@/components/VCard";
-import { Settings } from "@/components/Settings";
-import { TodoSection } from "@/components/todo/TodoSection";
-import { NotesSection } from "@/components/todo/NotesSection";
-import { useTodoList } from "@/hooks/useTodoList";
-import { useNotes } from "@/hooks/useNotes";
+import { useState } from "react";
+import { TodoSection } from "../todo/TodoSection";
+import { NotesSection } from "../todo/NotesSection";
+import { DashboardStats } from "./DashboardStats";
+import { DashboardChart } from "./DashboardChart";
+import { QuickActions } from "./QuickActions";
+import { RecentActivity } from "./RecentActivity";
+import { MrVictaureWelcome } from "./MrVictaureWelcome";
+import { ScrapedJobs } from "./ScrapedJobs";
 
-interface DashboardContentProps {
-  currentPage: number;
-  isEditing: boolean;
-  viewportHeight: number;
-  onEditStateChange: (state: boolean) => void;
-  onRequestChat: () => void;
-}
+export function DashboardContent() {
+  const [todos, setTodos] = useState([]);
+  const [newTodo, setNewTodo] = useState("");
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
+  const colors = ["red", "blue", "green", "yellow"];
 
-export function DashboardContent({
-  currentPage,
-  isEditing,
-  viewportHeight,
-  onEditStateChange,
-  onRequestChat,
-}: DashboardContentProps) {
-  const {
-    todos,
-    newTodo,
-    selectedDate,
-    selectedTime,
-    allDay,
-    setNewTodo,
-    setSelectedDate,
-    setSelectedTime,
-    setAllDay,
-    addTodo,
-    toggleTodo,
-    deleteTodo
-  } = useTodoList();
+  const handleAddTodo = () => {
+    if (newTodo) {
+      setTodos([...todos, newTodo]);
+      setNewTodo("");
+    }
+  };
 
-  const {
-    notes,
-    newNote,
-    selectedColor,
-    setNewNote,
-    setSelectedColor,
-    addNote,
-    deleteNote
-  } = useNotes();
+  const handleToggleTodo = (index) => {
+    const updatedTodos = [...todos];
+    updatedTodos[index].completed = !updatedTodos[index].completed;
+    setTodos(updatedTodos);
+  };
 
-  const colors = [
-    { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
-    { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
-    { value: 'green', label: 'Vert', class: 'bg-green-200' },
-    { value: 'pink', label: 'Rose', class: 'bg-pink-200' },
-    { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
-    { value: 'orange', label: 'Orange', class: 'bg-orange-200' },
-  ];
+  const handleDeleteTodo = (index) => {
+    const updatedTodos = todos.filter((_, i) => i !== index);
+    setTodos(updatedTodos);
+  };
 
-  if (currentPage === 1) {
-    return (
-      <div 
-        className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm' : 'relative'}`}
-        style={{ 
-          height: isEditing ? viewportHeight : 'auto',
-          overflowY: isEditing ? 'auto' : 'visible',
-          WebkitOverflowScrolling: 'touch'
-        }}
-      >
-        <div className="dashboard-card h-full">
-          <div className="p-3 sm:p-4 md:p-6 h-full">
-            <VCard 
-              onEditStateChange={onEditStateChange}
-              onRequestChat={onRequestChat}
-            />
-          </div>
+  const handleAddNote = () => {
+    if (newNote) {
+      setNotes([...notes, { text: newNote, color: selectedColor }]);
+      setNewNote("");
+    }
+  };
+
+  const handleDeleteNote = (index) => {
+    const updatedNotes = notes.filter((_, i) => i !== index);
+    setNotes(updatedNotes);
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4">
+      <div className="lg:col-span-8 space-y-4">
+        <MrVictaureWelcome />
+        <DashboardStats />
+        <DashboardChart />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TodoSection
+            todos={todos}
+            newTodo={newTodo}
+            onTodoChange={setNewTodo}
+            onAdd={handleAddTodo}
+            onToggle={handleToggleTodo}
+            onDelete={handleDeleteTodo}
+          />
+          <NotesSection
+            notes={notes}
+            newNote={newNote}
+            selectedColor={selectedColor}
+            colors={colors}
+            onNoteChange={setNewNote}
+            onColorChange={setSelectedColor}
+            onAdd={handleAddNote}
+            onDelete={handleDeleteNote}
+          />
         </div>
       </div>
-    );
-  }
-
-  if (currentPage === 2) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <Messages />
-        </div>
+      <div className="lg:col-span-4 space-y-4">
+        <QuickActions />
+        <ScrapedJobs />
+        <RecentActivity />
       </div>
-    );
-  }
-
-  if (currentPage === 3) {
-    return (
-      <div className="dashboard-card h-full">
-        <SwipeJob />
-      </div>
-    );
-  }
-
-  if (currentPage === 4) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <div className="space-y-6">
-            <TodoSection
-              todos={todos}
-              newTodo={newTodo}
-              selectedDate={selectedDate}
-              selectedTime={selectedTime}
-              allDay={allDay}
-              onTodoChange={setNewTodo}
-              onDateChange={setSelectedDate}
-              onTimeChange={setSelectedTime}
-              onAllDayChange={setAllDay}
-              onAdd={addTodo}
-              onToggle={toggleTodo}
-              onDelete={deleteTodo}
-            />
-            <NotesSection
-              notes={notes}
-              newNote={newNote}
-              selectedColor={selectedColor}
-              colors={colors}
-              onNoteChange={setNewNote}
-              onColorChange={setSelectedColor}
-              onAdd={addNote}
-              onDelete={deleteNote}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (currentPage === 5) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <Settings />
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+    </div>
+  );
 }
