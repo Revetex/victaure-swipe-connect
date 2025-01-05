@@ -19,21 +19,61 @@ export function Marketplace() {
   const fetchJobs = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch regular jobs
+      const { data: regularJobs, error: regularError } = await supabase
         .from("jobs")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (regularError) throw regularError;
 
-      // Convert the status to the correct type
-      const typedJobs = (data || []).map(job => ({
+      // Fetch scraped jobs
+      const { data: scrapedJobs, error: scrapedError } = await supabase
+        .from("scraped_jobs")
+        .select("*")
+        .order("posted_at", { ascending: false });
+
+      if (scrapedError) throw scrapedError;
+
+      // Convert regular jobs to the correct type
+      const typedRegularJobs = (regularJobs || []).map(job => ({
         ...job,
         status: job.status as 'open' | 'closed' | 'in-progress',
-        source: 'Victaure' // Ajouter la source pour identifier les offres Victaure
+        source: 'Victaure'
       }));
 
-      setJobs(typedJobs);
+      // Convert scraped jobs to match the Job type
+      const typedScrapedJobs = (scrapedJobs || []).map(job => ({
+        id: job.id,
+        title: job.title,
+        description: job.description || '',
+        budget: 0, // Default value since scraped jobs might not have this
+        location: job.location,
+        employer_id: '', // Scraped jobs don't have this
+        status: 'open' as 'open' | 'closed' | 'in-progress',
+        company: job.company,
+        source: job.source || 'Externe',
+        created_at: job.created_at,
+        updated_at: job.updated_at,
+        category: 'Externe',
+        contract_type: 'full-time',
+        experience_level: 'mid-level',
+        url: job.url
+      }));
+
+      // Combine both types of jobs
+      const allJobs = [...typedRegularJobs, ...typedScrapedJobs];
+      
+      // Sort all jobs by creation date
+      const sortedJobs = allJobs.sort((a, b) => {
+        const dateA = new Date(a.created_at || '');
+        const dateB = new Date(b.created_at || '');
+        return dateB.getTime() - dateA.getTime();
+      });
+
+      setJobs(sortedJobs);
+      console.log("Fetched jobs:", sortedJobs);
     } catch (error) {
       console.error("Error fetching jobs:", error);
       toast.error("Erreur lors du chargement des offres");
