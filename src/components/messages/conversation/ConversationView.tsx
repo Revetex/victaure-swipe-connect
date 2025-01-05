@@ -14,7 +14,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack: () => void;
+  onBack?: () => void;  // Made optional with ?
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -64,7 +64,7 @@ export function ConversationView({
 
   const handleSendMessage = async (message: string) => {
     try {
-      console.log("Sending message:", message); // Add logging
+      console.log("Sending message:", message);
       await onSendMessage(message, profile);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -77,14 +77,16 @@ export function ConversationView({
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onBack}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
+            {onBack && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="shrink-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
               <AvatarFallback className="bg-primary/20">
