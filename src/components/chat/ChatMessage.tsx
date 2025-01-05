@@ -1,12 +1,14 @@
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Bot } from "lucide-react";
-import { memo } from "react";
+import { Bot, Copy, Check, Clock } from "lucide-react";
+import { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { ChatThinking } from "./ChatThinking";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useProfile } from "@/hooks/useProfile";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ChatMessageProps {
   content: string;
@@ -25,10 +27,25 @@ export const ChatMessage = memo(function ChatMessage({
 }: ChatMessageProps) {
   const isBot = sender === "assistant";
   const { profile } = useProfile();
+  const [isCopied, setIsCopied] = useState(false);
 
   if (thinking && isBot) {
     return <ChatThinking />;
   }
+
+  const handleCopyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      toast.success("Message copié !");
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      toast.error("Impossible de copier le message");
+    }
+  };
+
+  const formattedTime = timestamp ? format(new Date(timestamp), "HH:mm", { locale: fr }) : "";
+  const formattedDate = timestamp ? format(new Date(timestamp), "d MMMM", { locale: fr }) : "";
 
   return (
     <motion.div
@@ -37,7 +54,7 @@ export const ChatMessage = memo(function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors",
+        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors relative",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
@@ -66,11 +83,11 @@ export const ChatMessage = memo(function ChatMessage({
         )}
       </div>
       <div className={cn(
-        "flex flex-col gap-1 min-w-0 max-w-[85%]",
+        "flex flex-col gap-1 min-w-0 max-w-[85%] relative group",
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-4 py-2.5 shadow-sm",
+          "rounded-lg px-4 py-2.5 shadow-sm relative",
           isBot 
             ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
             : "bg-primary text-primary-foreground"
@@ -78,11 +95,31 @@ export const ChatMessage = memo(function ChatMessage({
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {content}
           </p>
+          <div className={cn(
+            "absolute top-2 opacity-0 group-hover:opacity-100 transition-opacity",
+            isBot ? "-right-12" : "-left-12"
+          )}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-muted"
+              onClick={handleCopyMessage}
+            >
+              {isCopied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
         {showTimestamp && timestamp && (
-          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-            {format(new Date(timestamp), "d MMMM 'à' HH:mm", { locale: fr })}
-          </span>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+            <Clock className="h-3 w-3" />
+            <span>{formattedTime}</span>
+            <span className="mx-1">•</span>
+            <span>{formattedDate}</span>
+          </div>
         )}
       </div>
     </motion.div>

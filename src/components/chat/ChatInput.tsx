@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Mic, Send } from "lucide-react";
+import { Mic, Send, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useState, useEffect } from "react";
 
 interface ChatInputProps {
   value: string;
@@ -14,6 +15,7 @@ interface ChatInputProps {
   isThinking?: boolean;
   className?: string;
   placeholder?: string;
+  maxLength?: number;
 }
 
 export function ChatInput({
@@ -25,7 +27,30 @@ export function ChatInput({
   isThinking = false,
   className,
   placeholder = "Comment puis-je vous aider aujourd'hui ?",
+  maxLength = 1000,
 }: ChatInputProps) {
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (value) {
+      setIsTyping(true);
+      if (typingTimeout) clearTimeout(typingTimeout);
+      
+      const timeout = setTimeout(() => {
+        setIsTyping(false);
+      }, 1000);
+      
+      setTypingTimeout(timeout);
+    } else {
+      setIsTyping(false);
+    }
+
+    return () => {
+      if (typingTimeout) clearTimeout(typingTimeout);
+    };
+  }, [value]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -51,12 +76,21 @@ export function ChatInput({
     }
   };
 
+  const characterCount = value.length;
+  const isNearLimit = characterCount > maxLength * 0.8;
+  const isAtLimit = characterCount >= maxLength;
+
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="relative w-full">
         <Textarea
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            if (newValue.length <= maxLength) {
+              onChange(newValue);
+            }
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full"
@@ -90,9 +124,34 @@ export function ChatInput({
             )}
             disabled={!value.trim() || isThinking}
           >
-            <Send className="h-4 w-4" />
+            {isThinking ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
+      </div>
+      <div className="flex justify-between items-center px-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2">
+          {isTyping && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-primary"
+            >
+              En train d'écrire...
+            </motion.span>
+          )}
+        </div>
+        <span className={cn(
+          "transition-colors",
+          isNearLimit && "text-warning",
+          isAtLimit && "text-destructive"
+        )}>
+          {characterCount}/{maxLength}
+        </span>
       </div>
     </div>
   );
