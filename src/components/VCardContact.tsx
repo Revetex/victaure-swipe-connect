@@ -90,7 +90,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-white">Contact</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Contact</h3>
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -103,8 +103,8 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <div className="p-2 rounded-full bg-white/10">
-              <field.icon className="h-4 w-4 text-white" />
+            <div className="p-2 rounded-full bg-gray-100 dark:bg-white/10">
+              <field.icon className="h-4 w-4 text-gray-600 dark:text-white" />
             </div>
             {isEditing ? (
               <Input
@@ -112,10 +112,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
-                className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="flex-1 bg-white dark:bg-white/10 border-gray-200 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/50"
               />
             ) : (
-              <span className="text-white/90">
+              <span className="text-gray-700 dark:text-gray-200">
                 {field.value || "Non défini"}
               </span>
             )}
@@ -128,10 +128,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <div className="p-2 rounded-full bg-white/10">
-              <MapPin className="h-4 w-4 text-white" />
+            <div className="p-2 rounded-full bg-gray-100 dark:bg-white/10">
+              <MapPin className="h-4 w-4 text-gray-600 dark:text-white" />
             </div>
-            <span className="text-white/90">
+            <span className="text-gray-700 dark:text-gray-200">
               {profile.state}, {profile.postal_code || ""}
             </span>
           </motion.div>
