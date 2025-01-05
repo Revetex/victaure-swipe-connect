@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -21,12 +20,10 @@ serve(async (req) => {
 
     console.log('Received request:', { message, userId });
 
-    // Create a Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -44,19 +41,20 @@ serve(async (req) => {
 
     console.log('Found profile:', profile);
 
-    // Prepare the context for the AI
-    const systemPrompt = `Tu es Mr Victaure, un conseiller en orientation professionnelle expert et bienveillant. 
-    Tu aides les utilisateurs à améliorer leur profil professionnel et à atteindre leurs objectifs de carrière.
-    
-    Profil de l'utilisateur :
-    - Nom : ${profile.full_name}
-    - Rôle actuel : ${profile.role || 'Non spécifié'}
-    - Compétences : ${profile.skills ? profile.skills.join(', ') : 'Non spécifiées'}
-    - Localisation : ${profile.city || 'Non spécifiée'}, ${profile.state || 'Non spécifié'}, ${profile.country || 'Non spécifié'}
-    
-    Utilise ces informations pour personnaliser tes conseils.
-    Sois encourageant et bienveillant dans tes réponses.
-    Suggère des améliorations concrètes basées sur les réponses de l'utilisateur.`;
+    const systemPrompt = `Tu es Mr Victaure, un conseiller en orientation professionnel québécois.
+
+Instructions importantes:
+1. Réponds UNIQUEMENT en français québécois, de manière concise (2-3 phrases maximum)
+2. Si l'utilisateur demande des modifications à son profil, demande TOUJOURS une confirmation avant de procéder
+3. Sois chaleureux mais direct dans tes réponses
+
+Profil de l'utilisateur:
+- Nom: ${profile.full_name}
+- Rôle: ${profile.role || 'Non spécifié'}
+- Compétences: ${profile.skills ? profile.skills.join(', ') : 'Non spécifiées'}
+- Localisation: ${profile.city || 'Non spécifiée'}, ${profile.state || 'Non spécifié'}
+
+Utilise ces informations pour personnaliser tes conseils.`;
 
     const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!huggingFaceApiKey) {
@@ -65,7 +63,6 @@ serve(async (req) => {
 
     console.log('Sending request to HuggingFace');
 
-    // Get response from HuggingFace
     const huggingFaceResponse = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -77,7 +74,7 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
           parameters: {
-            max_new_tokens: 250,
+            max_new_tokens: 150, // Reduced for shorter responses
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
@@ -106,7 +103,6 @@ serve(async (req) => {
 
     const responseText = aiResponseData[0].generated_text;
 
-    // Store the conversation in the database
     const { error: chatError } = await supabase
       .from('ai_chat_messages')
       .insert([
@@ -124,10 +120,8 @@ serve(async (req) => {
 
     if (chatError) {
       console.error('Error storing chat messages:', chatError);
-      // Don't throw here, we still want to return the response to the user
     }
 
-    // Return the AI response
     return new Response(
       JSON.stringify({ response: responseText }),
       { 
