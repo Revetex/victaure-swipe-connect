@@ -20,46 +20,50 @@ allprojects {
 
 tasks.register('clean', Delete) {
     delete rootProject.buildDir
-    // Add error handling and retry mechanism for directory deletion
+    
     doFirst {
-        def maxRetries = 3
+        def maxRetries = 5
         def retryCount = 0
         def success = false
         
         while (!success && retryCount < maxRetries) {
             try {
+                // Force garbage collection before cleanup
+                System.gc()
+                Thread.sleep(2000)
+                
                 // Delete root project build dir
                 project.buildDir.deleteDir()
                 
-                // Also try to clean Capacitor build directories
+                // Clean Capacitor build directories with extra care
                 def capacitorBuildDir = new File(rootProject.projectDir, '../node_modules/@capacitor/android/capacitor/build')
                 if (capacitorBuildDir.exists()) {
-                    // Force garbage collection and wait before deletion
-                    System.gc()
-                    Thread.sleep(2000)
-                    capacitorBuildDir.deleteDir()
-                }
-                
-                // Clean specific Capacitor directories with extra care
-                def capacitorDirs = [
-                    'intermediates/packaged_res/debug/packageDebugResources',
-                    'intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt',
-                    'intermediates/merged_shaders/debug/mergeDebugShaders/out',
-                    'intermediates/merged_jni_libs/debug/mergeDebugJniLibFolders/out'
-                ]
-                
-                capacitorDirs.each { dirPath ->
-                    def dir = new File(capacitorBuildDir, dirPath)
-                    if (dir.exists()) {
-                        // Force garbage collection and wait before each deletion
-                        System.gc()
-                        Thread.sleep(1000)
-                        if (!dir.deleteDir()) {
-                            // If deletion fails, try to delete files individually
-                            dir.listFiles()?.each { file ->
-                                file.delete()
+                    def capacitorDirs = [
+                        'intermediates/packaged_res/debug/packageDebugResources',
+                        'intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt',
+                        'intermediates/merged_shaders/debug/mergeDebugShaders/out',
+                        'intermediates/merged_jni_libs/debug/mergeDebugJniLibFolders/out'
+                    ]
+                    
+                    capacitorDirs.each { dirPath ->
+                        def dir = new File(capacitorBuildDir, dirPath)
+                        if (dir.exists()) {
+                            // Try to delete directory and its contents
+                            if (!dir.deleteDir()) {
+                                // If directory deletion fails, try to delete files individually
+                                dir.listFiles()?.each { file ->
+                                    for (int i = 0; i < 3; i++) {
+                                        if (file.exists() && !file.delete()) {
+                                            System.gc()
+                                            Thread.sleep(1000)
+                                        } else {
+                                            break
+                                        }
+                                    }
+                                }
+                                // Try to delete empty directory again
+                                dir.delete()
                             }
-                            dir.delete()
                         }
                     }
                 }
@@ -69,8 +73,10 @@ tasks.register('clean', Delete) {
                 retryCount++
                 if (retryCount == maxRetries) {
                     logger.warn("Failed to delete directory after $maxRetries attempts: ${e.message}")
+                    throw e
                 } else {
-                    Thread.sleep(2000) // Wait 2 seconds before retry
+                    System.gc()
+                    Thread.sleep(3000) // Longer wait between retries
                 }
             }
         }
