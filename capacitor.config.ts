@@ -21,7 +21,8 @@ const config: CapacitorConfig = {
       'https://mfjllillnpleasclqabb.supabase.co',
       'wss://mfjllillnpleasclqabb.supabase.co',
       'https://mfjllillnpleasclqabb.supabase.co:443',
-      '*.lovableproject.com'
+      '*.lovableproject.com',
+      '*.vercel.app'
     ]
   },
   android: {
