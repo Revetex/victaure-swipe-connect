@@ -9,7 +9,7 @@ import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DownloadApp } from "@/components/dashboard/DownloadApp";
+import DownloadApp from "@/components/dashboard/DownloadApp";
 
 export default function Auth() {
   const navigate = useNavigate();
