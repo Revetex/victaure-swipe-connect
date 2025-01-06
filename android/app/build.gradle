@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     namespace "com.victaure.app"
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.victaure.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -11,105 +11,32 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
-        }
-        ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-        }
-    }
-    signingConfigs {
-        release {
-            if (project.hasProperty('RELEASE_STORE_FILE')) {
-                storeFile file(RELEASE_STORE_FILE)
-                storePassword RELEASE_STORE_PASSWORD
-                keyAlias RELEASE_KEY_ALIAS
-                keyPassword RELEASE_KEY_PASSWORD
-            }
+            // Prevent errors with special characters in paths
+            cruncherEnabled = false
         }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if (project.hasProperty('RELEASE_STORE_FILE')) {
-                signingConfig signingConfigs.release
-            }
-        }
-        debug {
-            tasks.whenTaskAdded { task ->
-                if (task.name.contains('clean')) {
-                    task.doFirst {
-                        try {
-                            // Delete debug resources with retries
-                            def maxRetries = 3
-                            def retryCount = 0
-                            def success = false
-                            
-                            while (!success && retryCount < maxRetries) {
-                                try {
-                                    delete "${buildDir}/generated/res/resValues/debug"
-                                    
-                                    // Clean Capacitor debug directories
-                                    def capacitorDebugDir = new File(projectDir, '../node_modules/@capacitor/android/capacitor/build/intermediates')
-                                    if (capacitorDebugDir.exists()) {
-                                        System.gc()
-                                        Thread.sleep(2000)
-                                        
-                                        // Clean specific debug directories
-                                        def debugDirs = [
-                                            'packaged_res/debug',
-                                            'aapt_friendly_merged_manifests/debug',
-                                            'merged_shaders/debug',
-                                            'merged_jni_libs/debug'
-                                        ]
-                                        
-                                        debugDirs.each { dirPath ->
-                                            def dir = new File(capacitorDebugDir, dirPath)
-                                            if (dir.exists()) {
-                                                System.gc()
-                                                Thread.sleep(1000)
-                                                if (!dir.deleteDir()) {
-                                                    dir.listFiles()?.each { file ->
-                                                        file.delete()
-                                                    }
-                                                    dir.delete()
-                                                }
-                                            }
-                                        }
-                                    }
-                                    success = true
-                                } catch (Exception e) {
-                                    retryCount++
-                                    if (retryCount == maxRetries) {
-                                        throw e
-                                    }
-                                    Thread.sleep(2000)
-                                }
-                            }
-                        } catch (Exception e) {
-                            logger.warn("Failed to delete debug resources: ${e.message}")
-                            System.gc()
-                            Thread.sleep(2000)
-                            try {
-                                delete "${buildDir}/generated/res/resValues/debug"
-                            } catch (Exception e2) {
-                                logger.warn("Second attempt to delete debug resources failed: ${e2.message}")
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    buildFeatures {
+        viewBinding true
+    }
+    lint {
+        abortOnError false
+    }
 }
 
 repositories {
     google()
     mavenCentral()
+    maven { url 'https://jitpack.io' }
     // Only keep flatDir as fallback for libs that absolutely require it
     flatDir {
         dirs '../capacitor-cordova-android-plugins/src/main/libs'
@@ -118,21 +45,34 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':capacitor-android')
+    implementation project(':capacitor-cordova-android-plugins')
+    implementation "androidx.core:core:$androidxCoreVersion"
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
-    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
-    implementation project(':capacitor-android')
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation project(':capacitor-cordova-android-plugins')
 }
 
-apply from: 'capacitor.build.gradle'
+// Allow clean to retry on failure
+tasks.withType(Delete) {
+    retry {
+        maxRetries = 5
+        maxBackoffPeriod = 10
+    }
+    doFirst {
+        // Force garbage collection before deletion
+        System.gc()
+        // Small delay to ensure GC completes
+        sleep(2000)
+    }
+}
 
+// Apply Google Services plugin if google-services.json exists
 try {
-    def servicesJSON = file('google-services.json')
-    if (servicesJSON.text) {
+    def servicesJson = file('google-services.json')
+    if (servicesJson.text) {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch(Exception) {
