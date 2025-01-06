@@ -15,10 +15,17 @@ serve(async (req) => {
     const { message } = await req.json()
     console.log('Received message:', message)
 
-    const response = await fetch('https://api.huggingface.co/models/Qwen/QwQ-32B-Preview', {
+    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
+    if (!apiKey) {
+      console.error('Missing Hugging Face API key')
+      throw new Error('Configuration error: Missing API key')
+    }
+
+    console.log('Sending request to Hugging Face API...')
+    const response = await fetch('https://api.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('HUGGING_FACE_API_KEY')}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -29,8 +36,8 @@ serve(async (req) => {
                 
                 Assistant:`,
         parameters: {
-          max_new_tokens: 256,  // Reduced from 1024
-          temperature: 0.5,     // Reduced from 0.7
+          max_new_tokens: 256,
+          temperature: 0.5,
           top_p: 0.9,
           frequency_penalty: 0.0,
           presence_penalty: 0.0,
@@ -40,7 +47,9 @@ serve(async (req) => {
     })
 
     if (!response.ok) {
-      throw new Error(`Hugging Face API error: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error('Hugging Face API error:', errorText)
+      throw new Error(`Hugging Face API error: ${response.statusText}. Details: ${errorText}`)
     }
 
     const data = await response.json()
