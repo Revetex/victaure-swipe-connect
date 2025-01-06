@@ -11,8 +11,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
         ndk {
@@ -35,6 +33,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (project.hasProperty('RELEASE_STORE_FILE')) {
                 signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            // Add clean task for debug builds
+            tasks.whenTaskAdded { task ->
+                if (task.name.contains('clean')) {
+                    task.doFirst {
+                        delete "${buildDir}/generated/res/resValues/debug"
+                    }
+                }
             }
         }
     }

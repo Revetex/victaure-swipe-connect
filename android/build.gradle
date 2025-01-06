@@ -20,6 +20,10 @@ allprojects {
 
 tasks.register('clean', Delete) {
     delete rootProject.buildDir
+    // Add error handling for directory deletion
+    doFirst {
+        ant.delete(dir: rootProject.buildDir, failonerror: false)
+    }
 }
 
 // Ensure Java 17 compatibility
