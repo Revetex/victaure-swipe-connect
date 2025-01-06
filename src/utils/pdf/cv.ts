@@ -45,8 +45,8 @@ export const generateCV = async (
   doc.text(profile.role || '', 20, currentY);
   currentY += 15;
 
-  // Contact information
-  doc.setTextColor(51, 51, 51);
+  // Contact information with style colors
+  doc.setTextColor(selectedStyle.colors.text.primary);
   doc.setFontSize(12);
   if (profile.email) {
     doc.text(`Email: ${profile.email}`, 20, currentY);
@@ -61,7 +61,7 @@ export const generateCV = async (
     currentY += 10;
   }
 
-  // Bio section
+  // Bio section with style
   if (profile.bio) {
     doc.setTextColor(selectedStyle.color);
     doc.setFontSize(14);
@@ -69,7 +69,7 @@ export const generateCV = async (
     doc.text('À propos', 20, currentY);
     currentY += 8;
     
-    doc.setTextColor(51, 51, 51);
+    doc.setTextColor(selectedStyle.colors.text.secondary);
     doc.setFont(selectedStyle.font || 'helvetica', 'normal');
     doc.setFontSize(12);
     const bioLines = doc.splitTextToSize(profile.bio, 170);
@@ -77,7 +77,7 @@ export const generateCV = async (
     currentY += bioLines.length * 5 + 10;
   }
 
-  // Skills section
+  // Skills section with style
   if (profile.skills && profile.skills.length > 0) {
     doc.setTextColor(selectedStyle.color);
     doc.setFontSize(14);
@@ -85,7 +85,7 @@ export const generateCV = async (
     doc.text('Compétences', 20, currentY);
     currentY += 8;
     
-    doc.setTextColor(51, 51, 51);
+    doc.setTextColor(selectedStyle.colors.text.secondary);
     doc.setFont(selectedStyle.font || 'helvetica', 'normal');
     doc.setFontSize(12);
     const skillsText = profile.skills.join(' • ');
@@ -94,7 +94,7 @@ export const generateCV = async (
     currentY += skillsLines.length * 5 + 10;
   }
 
-  // Experience section
+  // Experience section with style
   if (profile.experiences && profile.experiences.length > 0) {
     doc.setTextColor(selectedStyle.color);
     doc.setFontSize(14);
@@ -103,7 +103,7 @@ export const generateCV = async (
     currentY += 8;
 
     profile.experiences.forEach(exp => {
-      doc.setTextColor(51, 51, 51);
+      doc.setTextColor(selectedStyle.colors.text.primary);
       doc.setFont(selectedStyle.font || 'helvetica', 'bold');
       doc.setFontSize(12);
       doc.text(exp.position, 20, currentY);
@@ -132,7 +132,7 @@ export const generateCV = async (
     });
   }
 
-  // Education section
+  // Education section with style
   if (profile.education && profile.education.length > 0) {
     doc.setTextColor(selectedStyle.color);
     doc.setFontSize(14);
@@ -141,7 +141,7 @@ export const generateCV = async (
     currentY += 8;
 
     profile.education.forEach(edu => {
-      doc.setTextColor(51, 51, 51);
+      doc.setTextColor(selectedStyle.colors.text.primary);
       doc.setFont(selectedStyle.font || 'helvetica', 'bold');
       doc.setFontSize(12);
       doc.text(edu.degree, 20, currentY);

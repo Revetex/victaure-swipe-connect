@@ -34,33 +34,19 @@ export function VCardActions({
           text: `Profil professionnel de ${profile.full_name || ''}`,
           url: window.location.href,
         });
-        toast({
-          title: "Succès",
-          description: "Profil partagé avec succès",
-        });
+        toast.success("Profil partagé avec succès");
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
-          toast({
-            variant: "destructive",
-            title: "Erreur",
-            description: "Impossible de partager le profil",
-          });
+          toast.error("Impossible de partager le profil");
         }
       }
     } else {
       // Fallback to copying link
       try {
         await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: "Succès",
-          description: "Lien copié dans le presse-papier",
-        });
+        toast.success("Lien copié dans le presse-papier");
       } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Impossible de copier le lien",
-        });
+        toast.error("Impossible de copier le lien");
       }
     }
   };
