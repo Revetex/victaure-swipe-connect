@@ -25,7 +25,7 @@ export const generateCV = async (
   let currentY = 20;
 
   // Header with profile info
-  currentY = await renderHeader(doc, profile, currentY, selectedStyle);
+  currentY = await renderHeader(doc, profile, currentY);
   currentY += 10;
 
   // Contact information
@@ -58,7 +58,7 @@ export const generateCV = async (
 
   // Certifications section
   if (profile.certifications && profile.certifications.length > 0) {
-    currentY = renderCertifications(doc, profile.certifications, currentY, pdfStyles);
+    currentY = renderCertifications(doc, profile.certifications, currentY);
     currentY += 10;
   }
 

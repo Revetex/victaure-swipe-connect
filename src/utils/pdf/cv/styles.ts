@@ -47,9 +47,6 @@ export const convertStyleOptionToPdfStyle = (styleOption: any): PDFStyles => {
       accent: styleOption.accentColor || pdfStyles.colors.accent
     },
     margins: pdfStyles.margins,
-    fonts: {
-      ...pdfStyles.fonts,
-      family: styleOption.font || 'helvetica'
-    }
+    fonts: pdfStyles.fonts
   };
 };
