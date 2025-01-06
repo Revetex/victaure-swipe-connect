@@ -10,35 +10,17 @@ const config: CapacitorConfig = {
     allowNavigation: [
       'mfjllillnpleasclqabb.supabase.co',
       '*.supabase.co',
-      '*.vercel.app'
+      '*.vercel.app',
+      'localhost',
+      'localhost:*'
     ]
   },
   android: {
     buildOptions: {
-      debuggable: true,
-      minSdkVersion: 21,
-      targetSdkVersion: 33,
-      keystorePath: null,
-      keystorePassword: null,
-      keyAlias: null,
-      keyPassword: null,
-    }
-  },
-  plugins: {
-    SplashScreen: {
-      launchShowDuration: 2000,
-      backgroundColor: "#ffffffff",
-      androidSplashResourceName: "splash",
-      androidScaleType: "CENTER_CROP",
-      showSpinner: true,
-      androidSpinnerStyle: "large",
-      spinnerColor: "#999999",
-    },
-  },
-  permissions: {
-    files: {
-      read: true,
-      write: true
+      keystorePath: undefined,
+      keystoreAlias: undefined,
+      keystorePassword: undefined,
+      keystoreAliasPassword: undefined,
     }
   }
 };
