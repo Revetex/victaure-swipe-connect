@@ -28,7 +28,15 @@ tasks.register('clean', Delete) {
         
         while (!success && retryCount < maxRetries) {
             try {
+                // Delete root project build dir
                 project.buildDir.deleteDir()
+                
+                // Also try to clean Capacitor build directories
+                def capacitorBuildDir = new File(rootProject.projectDir, '../node_modules/@capacitor/android/capacitor/build')
+                if (capacitorBuildDir.exists()) {
+                    capacitorBuildDir.deleteDir()
+                }
+                
                 success = true
             } catch (Exception e) {
                 retryCount++

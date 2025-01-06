@@ -40,9 +40,24 @@ android {
                 if (task.name.contains('clean')) {
                     task.doFirst {
                         try {
+                            // Delete debug resources
                             delete "${buildDir}/generated/res/resValues/debug"
+                            
+                            // Also clean Capacitor-specific debug directories
+                            def capacitorDebugDir = new File(projectDir, '../node_modules/@capacitor/android/capacitor/build/intermediates/incremental/debug')
+                            if (capacitorDebugDir.exists()) {
+                                capacitorDebugDir.deleteDir()
+                            }
                         } catch (Exception e) {
                             logger.warn("Failed to delete debug resources: ${e.message}")
+                            // Force garbage collection to release file handles
+                            System.gc()
+                            try {
+                                Thread.sleep(1000)
+                                delete "${buildDir}/generated/res/resValues/debug"
+                            } catch (Exception e2) {
+                                logger.warn("Second attempt to delete debug resources failed: ${e2.message}")
+                            }
                         }
                     }
                 }
