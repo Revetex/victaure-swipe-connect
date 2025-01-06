@@ -28,19 +28,20 @@ export default function DownloadApp() {
         return;
       }
 
-      const { data: { publicUrl }, error: urlError } = supabase.storage
+      // getPublicUrl doesn't return an error property, just the data object
+      const { data } = supabase.storage
         .from('vcards')
         .getPublicUrl('victaure.apk');
 
-      if (urlError || !publicUrl) {
-        console.error('Error getting public URL:', urlError);
+      if (!data.publicUrl) {
+        console.error('No public URL available');
         toast.error("Erreur lors de la récupération du lien de téléchargement");
         return;
       }
 
       // Create a temporary anchor element to trigger the download
       const link = document.createElement('a');
-      link.href = publicUrl;
+      link.href = data.publicUrl;
       link.setAttribute('download', 'victaure.apk');
       link.setAttribute('target', '_blank');
       document.body.appendChild(link);
@@ -52,7 +53,7 @@ export default function DownloadApp() {
       }, 100);
       
       toast.success("Téléchargement démarré");
-      console.log('Download URL:', publicUrl);
+      console.log('Download URL:', data.publicUrl);
       
     } catch (error) {
       console.error('Download error:', error);
