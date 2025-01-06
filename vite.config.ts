@@ -55,11 +55,13 @@ export default defineConfig(({ mode }) => ({
       origin: [
         'https://mfjllillnpleasclqabb.supabase.co',
         'http://localhost:8080',
-        'http://localhost:3000'
+        'http://localhost:3000',
+        'https://*.lovableproject.com',
+        'https://*.vercel.app'
       ],
       methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
       credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'apikey', 'x-client-info']
     },
     proxy: {
       '/auth/v1': {
