@@ -1,6 +1,4 @@
-import { PDFStyles } from '../types';
-
-export const pdfStyles: PDFStyles = {
+export const pdfStyles = {
   colors: {
     primary: '#1E40AF',
     secondary: '#1E40AF80',

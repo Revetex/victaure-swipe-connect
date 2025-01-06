@@ -1,6 +1,7 @@
-import { ExtendedJsPDF } from "@/types/pdf";
-import { UserProfile } from "@/types/profile";
-import { StyleOption } from "@/components/vcard/types";
+import { ExtendedJsPDF } from '../../types';
+import { UserProfile } from '@/types/profile';
+import { StyleOption } from '@/components/vcard/types';
+import { pdfStyles } from '../styles';
 
 export const renderHeader = async (
   doc: ExtendedJsPDF,
@@ -24,20 +25,20 @@ export const renderHeader = async (
       currentY += 40;
     } catch (error) {
       console.error('Error loading profile image:', error);
-      currentY += 5; // Add some spacing even if image fails to load
+      currentY += 5;
     }
   }
   
-  // Name with style-based formatting
+  // Name
   doc.setFontSize(24);
-  doc.setFont(style.font, 'bold');
+  doc.setFont('helvetica', 'bold');
   doc.setTextColor(style.colors.text.primary);
   doc.text(profile.full_name || 'No Name', 20, currentY);
   currentY += 8;
   
-  // Role with style-based formatting
+  // Role
   doc.setFontSize(16);
-  doc.setFont(style.font, 'normal');
+  doc.setFont('helvetica', 'normal');
   doc.setTextColor(style.colors.text.secondary);
   doc.text(profile.role || 'No Role', 20, currentY);
   currentY += 10;

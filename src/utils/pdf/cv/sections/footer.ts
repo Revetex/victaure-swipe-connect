@@ -7,7 +7,7 @@ export const renderFooter = async (
   style: StyleOption
 ): Promise<void> => {
   try {
-    // Generate QR code only once
+    // Generate QR code
     const qrDataUrl = await QRCode.toDataURL(window.location.href, {
       margin: 0,
       width: 256,

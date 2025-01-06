@@ -2,7 +2,6 @@ import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
 import { ExtendedJsPDF } from "@/types/pdf";
 import { StyleOption } from "@/components/vcard/types";
-import QRCode from "qrcode";
 import { renderHeader } from "./cv/sections/header";
 import { renderBio } from "./cv/sections/bio";
 import { renderContact } from "./cv/sections/contact";
@@ -23,52 +22,48 @@ export const generateCV = async (
     format: 'a4'
   }) as ExtendedJsPDF;
 
-  // Set colors based on selected style
-  const primaryColor = selectedStyle?.color || '#1E40AF';
-  const secondaryColor = selectedStyle?.secondaryColor || '#1E40AF80';
-  
   let currentY = 20;
 
-  // Add header with profile info
-  currentY = await renderHeader(doc, profile, currentY);
+  // Header with profile info
+  currentY = await renderHeader(doc, profile, currentY, selectedStyle);
   currentY += 10;
 
-  // Add contact information
+  // Contact information
   currentY = renderContact(doc, profile, currentY);
   currentY += 10;
 
-  // Add bio if available
+  // Bio section if available
   if (profile.bio) {
     currentY = renderBio(doc, profile, currentY);
     currentY += 10;
   }
 
-  // Add skills section
+  // Skills section
   if (profile.skills && profile.skills.length > 0) {
     currentY = renderSkills(doc, profile, currentY);
     currentY += 10;
   }
 
-  // Add experience section
+  // Experience section
   if (profile.experiences && profile.experiences.length > 0) {
     currentY = renderExperiences(doc, profile, currentY);
     currentY += 10;
   }
 
-  // Add education section
+  // Education section
   if (profile.education && profile.education.length > 0) {
     currentY = renderEducation(doc, profile, currentY);
     currentY += 10;
   }
 
-  // Add certifications section if available
+  // Certifications section
   if (profile.certifications && profile.certifications.length > 0) {
     currentY = renderCertifications(doc, profile.certifications, currentY, pdfStyles);
     currentY += 10;
   }
 
-  // Add footer with QR code and branding
-  await renderFooter(doc, primaryColor);
+  // Footer with QR code and branding
+  await renderFooter(doc, selectedStyle);
 
   return doc;
 };
