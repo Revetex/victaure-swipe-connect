@@ -57,17 +57,19 @@ export default defineConfig(({ mode }) => ({
         'http://localhost:8080',
         'http://localhost:3000',
         'https://*.lovableproject.com',
-        'https://*.vercel.app'
+        'https://*.vercel.app',
+        'https://*.supabase.co'
       ],
       methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
       credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'apikey', 'x-client-info']
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'apikey', 'x-client-info', 'Range']
     },
     proxy: {
       '/auth/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
         changeOrigin: true,
-        secure: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/auth\/v1/, '/auth/v1'),
         headers: {
           'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
         }
@@ -75,7 +77,8 @@ export default defineConfig(({ mode }) => ({
       '/rest/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
         changeOrigin: true,
-        secure: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/rest\/v1/, '/rest/v1'),
         headers: {
           'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
         }
