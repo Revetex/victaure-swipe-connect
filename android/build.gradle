@@ -34,7 +34,27 @@ tasks.register('clean', Delete) {
                 // Also try to clean Capacitor build directories
                 def capacitorBuildDir = new File(rootProject.projectDir, '../node_modules/@capacitor/android/capacitor/build')
                 if (capacitorBuildDir.exists()) {
+                    // Force garbage collection before deletion
+                    System.gc()
+                    Thread.sleep(1000)
                     capacitorBuildDir.deleteDir()
+                }
+                
+                // Clean additional Capacitor directories
+                def capacitorDirs = [
+                    'intermediates/packaged_res/debug/packageDebugResources',
+                    'intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt',
+                    'intermediates/merged_shaders/debug/mergeDebugShaders/out',
+                    'intermediates/merged_jni_libs/debug/mergeDebugJniLibFolders/out'
+                ]
+                
+                capacitorDirs.each { dirPath ->
+                    def dir = new File(capacitorBuildDir, dirPath)
+                    if (dir.exists()) {
+                        System.gc()
+                        Thread.sleep(500)
+                        dir.deleteDir()
+                    }
                 }
                 
                 success = true
