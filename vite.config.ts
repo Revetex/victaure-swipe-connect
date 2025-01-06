@@ -59,11 +59,23 @@ export default defineConfig(({ mode }) => ({
         'https://*.lovableproject.com',
         'https://*.vercel.app',
         'https://*.supabase.co',
+        'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
         '*'
       ],
       methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
       credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'apikey', 'x-client-info', 'Range', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Headers', 'Access-Control-Allow-Methods']
+      allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'apikey',
+        'x-client-info',
+        'Range',
+        'Access-Control-Allow-Origin',
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Methods',
+        'Access-Control-Allow-Credentials'
+      ]
     },
     proxy: {
       '/auth/v1': {
@@ -76,7 +88,7 @@ export default defineConfig(({ mode }) => ({
           'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, apikey, x-client-info, Range',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, apikey, x-client-info, Range, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Methods',
           'Access-Control-Allow-Credentials': 'true'
         }
       },
@@ -90,7 +102,7 @@ export default defineConfig(({ mode }) => ({
           'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, apikey, x-client-info, Range',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, apikey, x-client-info, Range, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Methods',
           'Access-Control-Allow-Credentials': 'true'
         }
       }
