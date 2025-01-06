@@ -6,13 +6,10 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https',
-    cleartext: true,
-    hostname: 'victaure.com'
+    cleartext: true
   },
   android: {
     buildOptions: {
-      keystorePath: 'release-key.keystore',
-      keystoreAlias: 'key0',
       releaseType: 'APK'
     }
   },
