@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState, useEffect } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
+import { UploadApk } from "./dashboard/UploadApk";
 
 export function Dashboard() {
   const { data: stats, isLoading, error } = useDashboardStats();
@@ -125,6 +126,10 @@ export function Dashboard() {
         
         <div className="mt-8">
           <QuickActions stats={stats} />
+        </div>
+
+        <div className="mt-8">
+          <UploadApk />
         </div>
 
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
