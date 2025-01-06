@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label";
 import { JobFilters } from "../JobFilterUtils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { missionCategories } from "@/types/categories";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { CategoryIcon } from "@/components/skills/CategoryIcon";
 
 interface CategoryFiltersProps {
   filters: JobFilters;
@@ -81,40 +84,48 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
             }
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Sélectionnez une catégorie" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
+            <ScrollArea className="h-[300px]">
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              {Object.entries(missionCategories).map(([key, category]) => (
+                <SelectItem key={key} value={key} className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <CategoryIcon category={key} />
+                    <span>{key}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </ScrollArea>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="space-y-2">
-        <Label>Sous-catégorie</Label>
-        <Select
-          value={filters.subcategory}
-          onValueChange={(value) => onFilterChange("subcategory", value)}
-          disabled={filters.category === 'all'}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez une sous-catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les sous-catégories</SelectItem>
-            {subcategories.map((subcategory) => (
-              <SelectItem key={subcategory.id} value={subcategory.id}>
-                {subcategory.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {filters.category !== 'all' && (
+        <div className="space-y-2">
+          <Label>Sous-catégorie</Label>
+          <Select
+            value={filters.subcategory}
+            onValueChange={(value) => onFilterChange("subcategory", value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sélectionnez une sous-catégorie" />
+            </SelectTrigger>
+            <SelectContent>
+              <ScrollArea className="h-[200px]">
+                <SelectItem value="all">Toutes les sous-catégories</SelectItem>
+                {missionCategories[filters.category as keyof typeof missionCategories]?.subcategories.map((subcategory) => (
+                  <SelectItem key={subcategory} value={subcategory}>
+                    {subcategory}
+                  </SelectItem>
+                ))}
+              </ScrollArea>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   );
 }
