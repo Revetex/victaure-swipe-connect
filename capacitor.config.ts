@@ -11,6 +11,7 @@ const config: CapacitorConfig = {
       'mfjllillnpleasclqabb.supabase.co',
       '*.supabase.co',
       '*.vercel.app',
+      '*.lovableproject.com',
       'localhost',
       'localhost:*',
       'http://localhost',
