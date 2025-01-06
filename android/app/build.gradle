@@ -92,18 +92,6 @@ task generateApk(type: Copy) {
     rename('app-debug.apk', 'victaure.apk')
 }
 
-// Allow clean to retry on failure
-tasks.withType(Delete) {
-    retry {
-        maxRetries = 5
-        maxBackoffPeriod = 10
-    }
-    doFirst {
-        System.gc()
-        sleep(2000)
-    }
-}
-
 // Apply Google Services plugin if google-services.json exists
 try {
     def servicesJson = file('google-services.json')
