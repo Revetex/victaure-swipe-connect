@@ -16,7 +16,8 @@ const config: CapacitorConfig = {
       'localhost:*',
       'http://localhost',
       'http://localhost:*',
-      'https://*.supabase.co'
+      'https://*.supabase.co',
+      'https://*.lovableproject.com'
     ]
   },
   android: {
