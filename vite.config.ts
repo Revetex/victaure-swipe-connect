@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => ({
           utils: ['date-fns', 'class-variance-authority', 'clsx', 'tailwind-merge']
         },
       },
-      external: ['/gptengineer.js']
+      external: ['https://cdn.gpteng.co/gptengineer.js']
     },
     chunkSizeWarningLimit: 1000,
   },
@@ -58,23 +58,6 @@ export default defineConfig(({ mode }) => ({
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
     },
     proxy: {
-      '/gptengineer.js': {
-        target: 'https://cdn.gpteng.co',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/gptengineer\.js/, '/gptengineer.js'),
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
-        }
-      },
       '/auth/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
         changeOrigin: true,
