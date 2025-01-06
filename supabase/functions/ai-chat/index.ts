@@ -7,7 +7,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -16,25 +15,26 @@ serve(async (req) => {
     const { message } = await req.json()
     console.log('Received message:', message)
 
-    const response = await fetch('https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview', {
+    const response = await fetch('https://api.huggingface.co/models/Qwen/QwQ-32B-Preview', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('HUGGING_FACE_API_KEY')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Canada. 
-                Tu communiques en français québécois de manière professionnelle et naturelle.
+        inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec. 
+                Sois concis et direct dans tes réponses.
                 
                 User: ${message}
                 
                 Assistant:`,
         parameters: {
-          max_new_tokens: 1024,
-          temperature: 0.7,
+          max_new_tokens: 256,  // Reduced from 1024
+          temperature: 0.5,     // Reduced from 0.7
           top_p: 0.9,
           frequency_penalty: 0.0,
           presence_penalty: 0.0,
+          return_full_text: false
         }
       }),
     })
@@ -46,7 +46,6 @@ serve(async (req) => {
     const data = await response.json()
     console.log('AI response:', data)
 
-    // Extract only the Assistant's response
     const assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
 
     return new Response(

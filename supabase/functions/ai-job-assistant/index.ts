@@ -7,41 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const SYSTEM_PROMPT = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec, spécialisé dans le domaine de la construction. Tu travailles sur une plateforme de mise en relation entre professionnels et employeurs de la construction.
-
-Tu dois adapter tes réponses en fonction du profil de l'utilisateur que tu reçois dans le contexte.
-Utilise son nom, ses compétences, son expérience et son rôle pour personnaliser tes réponses.
-
-Si l'utilisateur est un professionnel:
-- Aide-le à trouver des offres d'emploi pertinentes
-- Suggère-lui des moyens d'améliorer son profil
-- Conseille-le sur les certifications utiles dans son domaine
-
-Si l'utilisateur est un employeur:
-- Aide-le à rédiger et publier des offres d'emploi
-- Conseille-le sur les profils qui pourraient l'intéresser
-- Guide-le dans sa recherche de talents
-
-Ton rôle est d'aider les utilisateurs à:
-1. Trouver des offres d'emploi pertinentes dans la construction
-2. Comprendre les exigences du marché québécois
-3. Améliorer leur profil professionnel
-4. Obtenir des conseils personnalisés sur leur carrière
-
-Base de connaissances:
-- Tu connais parfaitement le marché de la construction au Québec
-- Tu comprends les différents métiers et leurs spécificités
-- Tu es au fait des certifications et formations requises
-- Tu maîtrises les normes et réglementations du secteur
-
-Règles de communication:
-- Tu communiques en français québécois de manière professionnelle
-- Tu es précis et concret dans tes recommandations
-- Tu poses des questions pour mieux comprendre les besoins
-- Tu suggères toujours des actions concrètes
-- Tu t'adresses à l'utilisateur par son nom quand tu le connais
-- Tu fais référence à son profil et son expérience dans tes réponses
-- Tu adaptes tes conseils selon que l'utilisateur est un professionnel ou un employeur`;
+const SYSTEM_PROMPT = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec, spécialisé dans le domaine de la construction. Sois concis et direct dans tes réponses.`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -106,31 +72,31 @@ serve(async (req) => {
       console.log('Handling job search request');
       response = await handleJobSearch(message, userProfile, supabase);
     } else {
-      // Prepare a personalized response using the user's complete profile
-      const userName = userProfile?.full_name || "cher utilisateur";
-      const userRole = userProfile?.role || '';
-      const userSkills = userProfile?.skills?.join(', ') || '';
-      const latestExperience = userProfile?.experiences?.[0];
-      const latestEducation = userProfile?.education?.[0];
-      const certifications = userProfile?.certifications || [];
+      const response = await fetch('https://api.huggingface.co/models/Qwen/QwQ-32B-Preview', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get('HUGGING_FACE_API_KEY')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: `${SYSTEM_PROMPT}\n\nUser: ${message}\n\nAssistant:`,
+          parameters: {
+            max_new_tokens: 256,  // Reduced from 1024
+            temperature: 0.5,     // Reduced from 0.7
+            top_p: 0.9,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+            return_full_text: false
+          }
+        }),
+      });
 
-      let personalizedContext = ``;
-      
-      if (userRole === 'professional') {
-        personalizedContext = `
-          ${userSkills ? `avec vos compétences en ${userSkills}` : ''} 
-          ${latestExperience ? `et votre expérience chez ${latestExperience.company} en tant que ${latestExperience.position}` : ''}
-          ${latestEducation ? `ainsi que votre formation en ${latestEducation.field_of_study || latestEducation.degree}` : ''}
-          ${certifications.length > 0 ? `et vos certifications en ${certifications.map(c => c.title).join(', ')}` : ''}
-        `.trim();
-      } else if (userRole === 'employer') {
-        personalizedContext = `en tant qu'employeur${userProfile?.company_name ? ` chez ${userProfile.company_name}` : ''}`;
-      }
+      const data = await response.json();
+      const assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim();
 
-      // Réponse générale avec suggestions d'actions
       response = {
-        message: `Bonjour ${userName}, je suis là pour vous aider ${personalizedContext}. Comment puis-je vous assister aujourd'hui ?`,
-        suggestedActions: userRole === 'professional' ? [
+        message: assistantResponse || "Je m'excuse, je n'ai pas bien compris. Pouvez-vous reformuler?",
+        suggestedActions: userProfile?.role === 'professional' ? [
           {
             type: 'navigate_to_jobs',
             label: 'Voir les offres disponibles',
@@ -155,9 +121,6 @@ serve(async (req) => {
         ]
       };
     }
-
-    // Log the response for debugging
-    console.log('AI Response:', response);
 
     return new Response(
       JSON.stringify(response),
