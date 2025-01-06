@@ -27,9 +27,14 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          pdf: ['jspdf', 'html2canvas'],
+          charts: ['recharts'],
+          forms: ['react-hook-form', '@hookform/resolvers'],
+          utils: ['date-fns', 'class-variance-authority', 'clsx', 'tailwind-merge']
         },
       },
     },
+    chunkSizeWarningLimit: 1000,
   },
   server: {
     host: '0.0.0.0',

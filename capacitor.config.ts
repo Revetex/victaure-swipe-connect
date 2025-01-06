@@ -30,6 +30,13 @@ const config: CapacitorConfig = {
       androidSpinnerStyle: "large",
       spinnerColor: "#999999",
     },
+  },
+  // Add permission handling
+  permissions: {
+    files: {
+      read: true,
+      write: true
+    }
   }
 };
 
