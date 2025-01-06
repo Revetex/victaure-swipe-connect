@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
@@ -6,11 +6,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const DownloadApp = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleDownload = async () => {
     try {
+      setIsLoading(true);
+      
+      // First check if the file exists
+      const { data: fileExists } = await supabase.storage
+        .from('vcards')
+        .list('', {
+          search: 'victaure.apk'
+        });
+
+      if (!fileExists || fileExists.length === 0) {
+        toast.error("Le fichier APK n'est pas disponible pour le moment");
+        return;
+      }
+
       const { data, error } = await supabase.storage
         .from('vcards')
-        .createSignedUrl('victaure.apk', 60); // URL valide pendant 60 secondes
+        .createSignedUrl('victaure.apk', 60);
 
       if (error) {
         console.error('Error getting download URL:', error);
@@ -20,10 +36,13 @@ export const DownloadApp = () => {
 
       if (data?.signedUrl) {
         window.open(data.signedUrl, '_blank');
+        toast.success("Téléchargement démarré");
       }
     } catch (error) {
       console.error('Download error:', error);
       toast.error("Erreur lors du téléchargement de l'application");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,9 +62,13 @@ export const DownloadApp = () => {
           includeMargin={true}
         />
       </div>
-      <Button variant="outline" onClick={handleDownload}>
+      <Button 
+        variant="outline" 
+        onClick={handleDownload}
+        disabled={isLoading}
+      >
         <Download className="mr-2 h-4 w-4" />
-        Télécharger l'APK
+        {isLoading ? 'Chargement...' : 'Télécharger l\'APK'}
       </Button>
     </div>
   );
