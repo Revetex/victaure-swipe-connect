@@ -30,39 +30,53 @@ export const generateBusinessCard = async (
         img.src = profile.avatar_url;
       });
       
-      // Create circular clip for the image
+      // Create circular clip for the image (smaller size)
+      const centerX = 12;
+      const centerY = 15;
+      const radius = 6;
+
       doc.setDrawColor(255, 255, 255);
       doc.setFillColor(255, 255, 255);
-      doc.circle(15, 15, 8, 'F'); // Smaller circle for the photo
-      doc.addImage(img, 'JPEG', 7, 7, 16, 16); // Smaller image size
+      doc.circle(centerX, centerY, radius, 'F');
+      
+      // Calculate image position to fit in circle
+      const imageSize = radius * 2;
+      doc.addImage(
+        img, 
+        'JPEG', 
+        centerX - radius,
+        centerY - radius,
+        imageSize,
+        imageSize
+      );
     }
 
-    // Add name and role with more space for content
+    // Add name and role with adjusted positioning
     doc.setTextColor(255, 255, 255);
     doc.setFont(selectedStyle.font || 'helvetica', 'bold');
     doc.setFontSize(14);
-    doc.text(profile.full_name || '', 30, 15);
+    doc.text(profile.full_name || '', 25, 15);
     
     doc.setFont(selectedStyle.font || 'helvetica', 'normal');
     doc.setFontSize(12);
-    doc.text(profile.role || '', 30, 22);
+    doc.text(profile.role || '', 25, 22);
 
-    // Add contact details
+    // Add contact details with adjusted positioning
     doc.setFontSize(9);
     let contactY = 32;
     
     if (profile.email) {
-      doc.text(profile.email, 30, contactY);
+      doc.text(profile.email, 25, contactY);
       contactY += 5;
     }
     
     if (profile.phone) {
-      doc.text(profile.phone, 30, contactY);
+      doc.text(profile.phone, 25, contactY);
       contactY += 5;
     }
     
     if (profile.city) {
-      doc.text([profile.city, profile.state, profile.country].filter(Boolean).join(', '), 30, contactY);
+      doc.text([profile.city, profile.state, profile.country].filter(Boolean).join(', '), 25, contactY);
     }
 
     // Add QR code
