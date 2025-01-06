@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
 import { Play } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { QRCodeSVG } from "qrcode.react";
 
 export const AuthVideo = () => {
   const [videoError, setVideoError] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const apkUrl = "http://localhost:5173/victaure.apk";
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     console.error("Erreur de chargement vidéo:", e);
@@ -84,11 +86,24 @@ export const AuthVideo = () => {
           >
             <Logo size="lg" className="mb-4" />
             <button
-              className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors mb-6"
               onClick={togglePlay}
             >
               <Play className="w-8 h-8 text-white" />
             </button>
+
+            {/* QR Code Section */}
+            <div className="bg-white p-4 rounded-lg">
+              <QRCodeSVG 
+                value={apkUrl}
+                size={150}
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+            <p className="text-white text-sm mt-2">
+              Scannez pour télécharger l'application
+            </p>
           </div>
         </div>
       )}
