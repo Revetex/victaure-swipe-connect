@@ -1,5 +1,5 @@
 import React from 'react';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -22,7 +22,7 @@ const DownloadApp = () => {
       <h3 className="text-lg font-semibold">Télécharger l'application</h3>
       
       <div className="bg-white p-2 rounded-lg">
-        <QRCode 
+        <QRCodeSVG 
           value={apkUrl}
           size={200}
           level="H"

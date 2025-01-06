@@ -4,7 +4,7 @@ import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useEffect } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
-import { DashboardContent } from "./dashboard/DashboardContent";
+import DashboardContent from "./dashboard/DashboardContent";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();

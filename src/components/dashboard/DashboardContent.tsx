@@ -1,14 +1,14 @@
 import React from 'react';
-import DashboardHeader from './DashboardHeader';
-import DashboardStats from './DashboardStats';
-import QuickActions from './QuickActions';
-import RecentActivity from './RecentActivity';
+import { DashboardHeader } from './DashboardHeader';
+import { DashboardStats } from './DashboardStats';
+import { QuickActions } from './QuickActions';
+import { RecentActivity } from './RecentActivity';
 import DownloadApp from './DownloadApp';
 
-const DashboardContent = () => {
+export const DashboardContent = () => {
   return (
     <div className="p-6 space-y-6">
-      <DashboardHeader />
+      <DashboardHeader title="Tableau de bord" description="Bienvenue sur votre espace personnel" />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
