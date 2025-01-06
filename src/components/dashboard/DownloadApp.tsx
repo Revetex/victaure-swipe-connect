@@ -27,8 +27,8 @@ export const DownloadApp = () => {
     }
   };
 
-  // On utilise la même URL pour le QR code
-  const publicUrl = `${supabase.storageUrl}/object/public/vcards/victaure.apk`;
+  // On utilise l'URL publique pour le QR code
+  const publicUrl = `${supabase.storage.from('vcards').getPublicUrl('victaure.apk').data.publicUrl}`;
 
   return (
     <div className="flex flex-col items-center gap-4 p-4 rounded-lg bg-card/50">
