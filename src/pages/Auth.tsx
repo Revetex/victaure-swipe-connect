@@ -90,7 +90,7 @@ export default function Auth() {
                 id="rememberMe" 
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                className="h-3 w-3"
+                className="h-3 w-3" // Fixed small size for all screens
               />
               <label 
                 htmlFor="rememberMe" 
