@@ -6,13 +6,25 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     androidScheme: 'https',
-    url: 'http://localhost:8080',
-    cleartext: true
+    cleartext: true,
+    hostname: 'victaure.com'
   },
   android: {
     buildOptions: {
       keystorePath: 'release-key.keystore',
       keystoreAlias: 'key0',
+      releaseType: 'APK'
+    }
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 3000,
+      backgroundColor: "#ffffffff",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: true,
+      splashFullScreen: true,
+      splashImmersive: true
     }
   }
 };
