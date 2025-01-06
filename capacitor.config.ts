@@ -5,23 +5,15 @@ const config: CapacitorConfig = {
   appName: 'Victaure',
   webDir: 'dist',
   server: {
-    androidScheme: 'https',
-    cleartext: true
+    androidScheme: 'http',
+    cleartext: true,
+    allowNavigation: ['*']
   },
   android: {
     buildOptions: {
-      releaseType: 'APK'
-    }
-  },
-  plugins: {
-    SplashScreen: {
-      launchShowDuration: 3000,
-      backgroundColor: "#ffffffff",
-      androidSplashResourceName: "splash",
-      androidScaleType: "CENTER_CROP",
-      showSpinner: true,
-      splashFullScreen: true,
-      splashImmersive: true
+      debuggable: true,
+      minSdkVersion: 21,
+      targetSdkVersion: 33,
     }
   }
 };
