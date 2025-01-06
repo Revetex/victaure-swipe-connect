@@ -34,13 +34,13 @@ tasks.register('clean', Delete) {
                 // Also try to clean Capacitor build directories
                 def capacitorBuildDir = new File(rootProject.projectDir, '../node_modules/@capacitor/android/capacitor/build')
                 if (capacitorBuildDir.exists()) {
-                    // Force garbage collection before deletion
+                    // Force garbage collection and wait before deletion
                     System.gc()
-                    Thread.sleep(1000)
+                    Thread.sleep(2000)
                     capacitorBuildDir.deleteDir()
                 }
                 
-                // Clean additional Capacitor directories
+                // Clean specific Capacitor directories with extra care
                 def capacitorDirs = [
                     'intermediates/packaged_res/debug/packageDebugResources',
                     'intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt',
@@ -51,9 +51,16 @@ tasks.register('clean', Delete) {
                 capacitorDirs.each { dirPath ->
                     def dir = new File(capacitorBuildDir, dirPath)
                     if (dir.exists()) {
+                        // Force garbage collection and wait before each deletion
                         System.gc()
-                        Thread.sleep(500)
-                        dir.deleteDir()
+                        Thread.sleep(1000)
+                        if (!dir.deleteDir()) {
+                            // If deletion fails, try to delete files individually
+                            dir.listFiles()?.each { file ->
+                                file.delete()
+                            }
+                            dir.delete()
+                        }
                     }
                 }
                 
@@ -63,7 +70,7 @@ tasks.register('clean', Delete) {
                 if (retryCount == maxRetries) {
                     logger.warn("Failed to delete directory after $maxRetries attempts: ${e.message}")
                 } else {
-                    Thread.sleep(1000) // Wait 1 second before retry
+                    Thread.sleep(2000) // Wait 2 seconds before retry
                 }
             }
         }
