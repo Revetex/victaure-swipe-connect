@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
   },
   server: {
-    host: true,
+    host: '0.0.0.0',
     port: 8080,
     strictPort: true,
     hmr: {
@@ -50,32 +50,7 @@ export default defineConfig(({ mode }) => ({
       usePolling: true,
       interval: 1000,
     },
-    cors: {
-      origin: [
-        'https://mfjllillnpleasclqabb.supabase.co',
-        'http://localhost:8080',
-        'http://localhost:3000',
-        'https://*.lovableproject.com',
-        'https://*.vercel.app',
-        'https://*.supabase.co',
-        'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-        '*'
-      ],
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-      credentials: true,
-      allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With',
-        'apikey',
-        'x-client-info',
-        'Range',
-        'Access-Control-Allow-Origin',
-        'Access-Control-Allow-Headers',
-        'Access-Control-Allow-Methods',
-        'Access-Control-Allow-Credentials'
-      ]
-    },
+    cors: true,
     proxy: {
       '/auth/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
@@ -84,11 +59,7 @@ export default defineConfig(({ mode }) => ({
         ws: true,
         rewrite: (path) => path.replace(/^\/auth\/v1/, '/auth/v1'),
         headers: {
-          'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, apikey, x-client-info, Range, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Methods',
-          'Access-Control-Allow-Credentials': 'true'
+          'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
         }
       },
       '/rest/v1': {
@@ -98,11 +69,7 @@ export default defineConfig(({ mode }) => ({
         ws: true,
         rewrite: (path) => path.replace(/^\/rest\/v1/, '/rest/v1'),
         headers: {
-          'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, apikey, x-client-info, Range, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Methods',
-          'Access-Control-Allow-Credentials': 'true'
+          'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
         }
       }
     }
