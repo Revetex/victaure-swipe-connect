@@ -51,7 +51,11 @@ export default defineConfig(({ mode }) => ({
       usePolling: true,
       interval: 1000,
     },
-    cors: true,
+    cors: {
+      origin: '*',
+      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      credentials: true
+    },
     proxy: {
       '/gptengineer.js': {
         target: 'https://cdn.gpteng.co',
