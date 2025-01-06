@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => ({
           utils: ['date-fns', 'class-variance-authority', 'clsx', 'tailwind-merge']
         },
       },
+      external: ['/gptengineer.js']
     },
     chunkSizeWarningLimit: 1000,
   },
