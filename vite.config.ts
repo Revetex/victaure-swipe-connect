@@ -50,7 +50,12 @@ export default defineConfig(({ mode }) => ({
       usePolling: true,
       interval: 1000,
     },
-    cors: true,
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      credentials: true
+    },
     proxy: {
       '/auth/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
