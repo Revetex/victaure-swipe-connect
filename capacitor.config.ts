@@ -12,7 +12,9 @@ const config: CapacitorConfig = {
       '*.supabase.co',
       '*.vercel.app',
       'localhost',
-      'localhost:*'
+      'localhost:*',
+      'http://localhost',
+      'http://localhost:*'
     ]
   },
   android: {

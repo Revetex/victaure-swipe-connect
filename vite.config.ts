@@ -52,13 +52,25 @@ export default defineConfig(({ mode }) => ({
       interval: 1000,
     },
     cors: {
-      origin: '*',
+      origin: [
+        'https://mfjllillnpleasclqabb.supabase.co',
+        'http://localhost:8080',
+        'http://localhost:3000'
+      ],
       methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
     },
     proxy: {
       '/auth/v1': {
+        target: 'https://mfjllillnpleasclqabb.supabase.co',
+        changeOrigin: true,
+        secure: true,
+        headers: {
+          'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
+        }
+      },
+      '/rest/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
         changeOrigin: true,
         secure: true,
