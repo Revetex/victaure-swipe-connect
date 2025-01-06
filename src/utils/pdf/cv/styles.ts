@@ -1,7 +1,9 @@
-export const pdfStyles = {
+import type { PDFStyles } from '../types';
+
+export const pdfStyles: PDFStyles = {
   colors: {
     primary: '#1E40AF',
-    secondary: '#1E40AF80',
+    secondary: '#60A5FA',
     background: '#FFFFFF',
     text: {
       primary: '#1A1F2C',
@@ -25,8 +27,29 @@ export const pdfStyles = {
       style: 'normal'
     },
     body: {
-      size: 10,
+      size: 11,
       style: 'normal'
     }
   }
+};
+
+export const convertStyleOptionToPdfStyle = (styleOption: any): PDFStyles => {
+  return {
+    colors: {
+      primary: styleOption.color || pdfStyles.colors.primary,
+      secondary: styleOption.secondaryColor || pdfStyles.colors.secondary,
+      background: styleOption.bgColor || pdfStyles.colors.background,
+      text: {
+        primary: styleOption.textColor || pdfStyles.colors.text.primary,
+        secondary: styleOption.mutedColor || pdfStyles.colors.text.secondary,
+        muted: styleOption.mutedColor || pdfStyles.colors.text.muted
+      },
+      accent: styleOption.accentColor || pdfStyles.colors.accent
+    },
+    margins: pdfStyles.margins,
+    fonts: {
+      ...pdfStyles.fonts,
+      family: styleOption.font || 'helvetica'
+    }
+  };
 };

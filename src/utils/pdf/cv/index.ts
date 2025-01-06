@@ -10,7 +10,6 @@ import { renderExperiences } from "./sections/experiences";
 import { renderEducation } from "./sections/education";
 import { renderCertifications } from "./sections/certifications";
 import { renderFooter } from "./sections/footer";
-import { pdfStyles } from "./styles";
 
 export const generateCV = async (
   profile: UserProfile,
@@ -25,7 +24,7 @@ export const generateCV = async (
   let currentY = 20;
 
   // Header with profile info
-  currentY = await renderHeader(doc, profile, currentY, selectedStyle);
+  currentY = await renderHeader(doc, profile, currentY);
   currentY += 10;
 
   // Contact information
