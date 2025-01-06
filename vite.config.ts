@@ -42,10 +42,9 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     strictPort: true,
     hmr: {
-      clientPort: 443,
-      protocol: 'wss',
-      host: 'mfjllillnpleasclqabb.supabase.co',
-      timeout: 120000
+      clientPort: 8080,
+      protocol: 'ws',
+      host: 'localhost'
     },
     watch: {
       usePolling: true,
