@@ -13,31 +13,45 @@ export const DownloadApp = () => {
       setIsLoading(true);
       
       // First check if the file exists
-      const { data: fileExists } = await supabase.storage
+      const { data: fileExists, error: listError } = await supabase.storage
         .from('vcards')
         .list('', {
           search: 'victaure.apk'
         });
+
+      if (listError) {
+        console.error('Error checking file:', listError);
+        toast.error("Erreur lors de la vérification du fichier");
+        return;
+      }
 
       if (!fileExists || fileExists.length === 0) {
         toast.error("Le fichier APK n'est pas disponible pour le moment");
         return;
       }
 
-      const { data, error } = await supabase.storage
+      // Get the download URL
+      const { data: downloadData, error: downloadError } = await supabase.storage
         .from('vcards')
-        .createSignedUrl('victaure.apk', 60);
+        .download('victaure.apk');
 
-      if (error) {
-        console.error('Error getting download URL:', error);
+      if (downloadError) {
+        console.error('Error downloading file:', downloadError);
         toast.error("Erreur lors du téléchargement de l'application");
         return;
       }
 
-      if (data?.signedUrl) {
-        window.open(data.signedUrl, '_blank');
-        toast.success("Téléchargement démarré");
-      }
+      // Create a download link
+      const url = window.URL.createObjectURL(downloadData);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'victaure.apk');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Téléchargement démarré");
     } catch (error) {
       console.error('Download error:', error);
       toast.error("Erreur lors du téléchargement de l'application");
