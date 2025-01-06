@@ -10,7 +10,10 @@
   </head>
   <body>
     <div id="root"></div>
-    <script src="/gptengineer.js" type="module"></script>
+    <script type="module">
+      // Ensure gptengineer.js loads before other scripts
+      import '/gptengineer.js';
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

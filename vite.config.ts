@@ -74,6 +74,14 @@ export default defineConfig(({ mode }) => ({
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
         }
+      },
+      '/auth/v1': {
+        target: 'https://mfjllillnpleasclqabb.supabase.co',
+        changeOrigin: true,
+        secure: true,
+        headers: {
+          'Origin': 'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
+        }
       }
     }
   },
