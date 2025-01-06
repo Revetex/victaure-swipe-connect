@@ -36,7 +36,6 @@ android {
             }
         }
         debug {
-            // Add clean task for debug builds
             tasks.whenTaskAdded { task ->
                 if (task.name.contains('clean')) {
                     task.doFirst {
