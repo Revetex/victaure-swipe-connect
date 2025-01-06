@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.7.3'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath 'com.google.gms:google-services:4.4.0'
     }
 }
@@ -28,46 +28,9 @@ tasks.register('clean', Delete) {
         
         while (!success && retryCount < maxRetries) {
             try {
-                // Force garbage collection before cleanup
                 System.gc()
                 Thread.sleep(2000)
-                
-                // Delete root project build dir
                 project.buildDir.deleteDir()
-                
-                // Clean Capacitor build directories with extra care
-                def capacitorBuildDir = new File(rootProject.projectDir, '../node_modules/@capacitor/android/capacitor/build')
-                if (capacitorBuildDir.exists()) {
-                    def capacitorDirs = [
-                        'intermediates/packaged_res/debug/packageDebugResources',
-                        'intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt',
-                        'intermediates/merged_shaders/debug/mergeDebugShaders/out',
-                        'intermediates/merged_jni_libs/debug/mergeDebugJniLibFolders/out'
-                    ]
-                    
-                    capacitorDirs.each { dirPath ->
-                        def dir = new File(capacitorBuildDir, dirPath)
-                        if (dir.exists()) {
-                            // Try to delete directory and its contents
-                            if (!dir.deleteDir()) {
-                                // If directory deletion fails, try to delete files individually
-                                dir.listFiles()?.each { file ->
-                                    for (int i = 0; i < 3; i++) {
-                                        if (file.exists() && !file.delete()) {
-                                            System.gc()
-                                            Thread.sleep(1000)
-                                        } else {
-                                            break
-                                        }
-                                    }
-                                }
-                                // Try to delete empty directory again
-                                dir.delete()
-                            }
-                        }
-                    }
-                }
-                
                 success = true
             } catch (Exception e) {
                 retryCount++
@@ -76,7 +39,7 @@ tasks.register('clean', Delete) {
                     throw e
                 } else {
                     System.gc()
-                    Thread.sleep(3000) // Longer wait between retries
+                    Thread.sleep(3000)
                 }
             }
         }
