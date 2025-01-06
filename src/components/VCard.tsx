@@ -50,9 +50,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
 
     try {
-      // Update profile including all related data
       await updateProfile(profile);
-
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -178,20 +176,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                   selectedStyle={selectedStyle}
                   onEditToggle={handleEditToggle}
                   onSave={handleSave}
-                  onDownloadVCard={async () => {
-                    if (!profile) return;
-                    setIsPdfGenerating(true);
-                    try {
-                      const doc = await generateVCard(profile);
-                      doc.save(`${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'vcard'}.pdf`);
-                      toast.success("PDF généré avec succès");
-                    } catch (error) {
-                      console.error('Error generating PDF:', error);
-                      toast.error("Erreur lors de la génération du PDF");
-                    } finally {
-                      setIsPdfGenerating(false);
-                    }
-                  }}
                   onDownloadBusinessCard={async () => {
                     if (!profile) return;
                     setIsPdfGenerating(true);
@@ -210,7 +194,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                     if (!profile) return;
                     setIsPdfGenerating(true);
                     try {
-                      const doc = await generateCV(profile);
+                      const doc = await generateCV(profile, selectedStyle);
                       doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
                       toast.success("CV PDF généré avec succès");
                     } catch (error) {

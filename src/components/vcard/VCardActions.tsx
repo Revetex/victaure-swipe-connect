@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Download, Share2, FileText, Edit } from "lucide-react";
+import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
-import { UserProfile } from "@/types/profile";
-import { StyleOption } from "./types";
 import { toast } from "sonner";
+import { StyleOption } from "./types";
+import { UserProfile } from "@/types/profile";
 
 interface VCardActionsProps {
   isEditing: boolean;
@@ -11,7 +11,7 @@ interface VCardActionsProps {
   profile: UserProfile;
   selectedStyle: StyleOption;
   onEditToggle: () => void;
-  onSave: () => Promise<void>;
+  onSave: () => void;
   onDownloadBusinessCard: () => Promise<void>;
   onDownloadCV: () => Promise<void>;
 }
@@ -24,7 +24,7 @@ export function VCardActions({
   onEditToggle,
   onSave,
   onDownloadBusinessCard,
-  onDownloadCV
+  onDownloadCV,
 }: VCardActionsProps) {
   const handleShare = async () => {
     if (navigator.share) {
@@ -36,19 +36,17 @@ export function VCardActions({
         });
         toast.success("Profil partagé avec succès");
       } catch (error) {
-        if ((error as Error).name !== 'AbortError') {
-          toast.error("Impossible de partager le profil");
-        }
+        console.error('Error sharing:', error);
+        toast.error("Impossible de partager le profil");
       }
     } else {
-      // Fallback to copying link
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Lien copié dans le presse-papier");
-      } catch (error) {
-        toast.error("Impossible de copier le lien");
-      }
+      handleCopyLink();
     }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Lien copié dans le presse-papier");
   };
 
   return (
@@ -67,9 +65,8 @@ export function VCardActions({
             <Button 
               onClick={onSave}
               className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
-              disabled={isPdfGenerating}
             >
-              <Edit className="mr-2 h-4 w-4" />
+              <Save className="mr-2 h-4 w-4" />
               Sauvegarder
             </Button>
           </motion.div>
@@ -84,7 +81,6 @@ export function VCardActions({
             <Button 
               onClick={handleShare}
               className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
-              disabled={isPdfGenerating}
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
@@ -99,7 +95,6 @@ export function VCardActions({
               onClick={onEditToggle}
               variant="outline"
               className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
-              disabled={isPdfGenerating}
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
@@ -117,7 +112,7 @@ export function VCardActions({
               disabled={isPdfGenerating}
             >
               <FileText className="mr-2 h-4 w-4" />
-              Business Card
+              Business PDF
             </Button>
           </motion.div>
           <motion.div 
@@ -132,7 +127,19 @@ export function VCardActions({
               disabled={isPdfGenerating}
             >
               <FileText className="mr-2 h-4 w-4" />
-              CV
+              CV PDF
+            </Button>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Button 
+              onClick={handleCopyLink}
+              variant="outline"
+              className="border-white/20 hover:bg-white/10 text-white transition-colors"
+            >
+              <Copy className="h-4 w-4" />
             </Button>
           </motion.div>
         </>
