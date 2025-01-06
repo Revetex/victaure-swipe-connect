@@ -20,9 +20,25 @@ allprojects {
 
 tasks.register('clean', Delete) {
     delete rootProject.buildDir
-    // Add error handling for directory deletion
+    // Add error handling and retry mechanism for directory deletion
     doFirst {
-        ant.delete(dir: rootProject.buildDir, failonerror: false)
+        def maxRetries = 3
+        def retryCount = 0
+        def success = false
+        
+        while (!success && retryCount < maxRetries) {
+            try {
+                project.buildDir.deleteDir()
+                success = true
+            } catch (Exception e) {
+                retryCount++
+                if (retryCount == maxRetries) {
+                    logger.warn("Failed to delete directory after $maxRetries attempts: ${e.message}")
+                } else {
+                    Thread.sleep(1000) // Wait 1 second before retry
+                }
+            }
+        }
     }
 }
 

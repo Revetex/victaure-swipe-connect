@@ -39,7 +39,11 @@ android {
             tasks.whenTaskAdded { task ->
                 if (task.name.contains('clean')) {
                     task.doFirst {
-                        delete "${buildDir}/generated/res/resValues/debug"
+                        try {
+                            delete "${buildDir}/generated/res/resValues/debug"
+                        } catch (Exception e) {
+                            logger.warn("Failed to delete debug resources: ${e.message}")
+                        }
                     }
                 }
             }
