@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       clientPort: 443,
       protocol: 'wss',
-      host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
+      host: 'mfjllillnpleasclqabb.supabase.co',
       timeout: 120000
     },
     watch: {
@@ -63,7 +63,7 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         secure: true,
         headers: {
-          'Origin': 'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
+          'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
         }
       }
     }

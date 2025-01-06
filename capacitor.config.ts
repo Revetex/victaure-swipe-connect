@@ -7,7 +7,11 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: 'https',
     cleartext: true,
-    allowNavigation: ['*']
+    allowNavigation: [
+      'mfjllillnpleasclqabb.supabase.co',
+      '*.supabase.co',
+      '*.vercel.app'
+    ]
   },
   android: {
     buildOptions: {
