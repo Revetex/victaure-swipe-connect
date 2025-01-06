@@ -31,7 +31,6 @@ const config: CapacitorConfig = {
       spinnerColor: "#999999",
     },
   },
-  // Add permission handling
   permissions: {
     files: {
       read: true,
