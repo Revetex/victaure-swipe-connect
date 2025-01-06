@@ -58,29 +58,34 @@ export default defineConfig(({ mode }) => ({
         'http://localhost:3000',
         'https://*.lovableproject.com',
         'https://*.vercel.app',
-        'https://*.supabase.co'
+        'https://*.supabase.co',
+        '*'
       ],
       methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
       credentials: true,
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'apikey', 'x-client-info', 'Range']
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'apikey', 'x-client-info', 'Range', 'Access-Control-Allow-Origin']
     },
     proxy: {
       '/auth/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
         changeOrigin: true,
         secure: false,
+        ws: true,
         rewrite: (path) => path.replace(/^\/auth\/v1/, '/auth/v1'),
         headers: {
-          'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
+          'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
+          'Access-Control-Allow-Origin': '*'
         }
       },
       '/rest/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
         changeOrigin: true,
         secure: false,
+        ws: true,
         rewrite: (path) => path.replace(/^\/rest\/v1/, '/rest/v1'),
         headers: {
-          'Origin': 'https://mfjllillnpleasclqabb.supabase.co'
+          'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
+          'Access-Control-Allow-Origin': '*'
         }
       }
     }
