@@ -1,12 +1,10 @@
-import { pdfStyles } from '../styles';
-import type { ExtendedJsPDF } from '../../types';
-import type { Certification } from '@/types/profile';
+import { ExtendedJsPDF } from '../../types';
+import { Certification } from '@/types/profile';
 
 export const renderCertifications = (
   doc: ExtendedJsPDF,
-  certifications: Certification[] | undefined,
-  yPos: number,
-  styles: typeof pdfStyles
+  certifications: Certification[],
+  yPos: number
 ): number => {
   let currentY = yPos;
 
@@ -15,37 +13,37 @@ export const renderCertifications = (
   }
 
   currentY += 10;
-  doc.setFontSize(styles.fonts.subheader.size);
+  doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(0, 0, 0);
-  doc.text('Certifications', styles.margins.left, currentY);
+  doc.text('Certifications', 20, currentY);
   currentY += 8;
 
   certifications.forEach(cert => {
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text(cert.title, styles.margins.left, currentY);
+    doc.text(cert.title, 20, currentY);
     currentY += 6;
 
-    doc.setFontSize(styles.fonts.body.size);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(cert.institution, styles.margins.left, currentY);
+    doc.text(cert.institution, 20, currentY);
     currentY += 6;
 
     if (cert.year) {
       doc.setTextColor(128, 128, 128);
-      doc.text(cert.year, styles.margins.left, currentY);
+      doc.text(cert.year, 20, currentY);
       currentY += 6;
     }
 
     if (cert.description) {
       doc.setTextColor(51, 51, 51);
       const descLines = doc.splitTextToSize(cert.description, 165);
-      doc.text(descLines, styles.margins.left, currentY);
+      doc.text(descLines, 20, currentY);
       currentY += (descLines.length * 5) + 4;
     }
 
-    currentY += 4; // Add some space between certification entries
+    currentY += 4;
   });
 
   return currentY;

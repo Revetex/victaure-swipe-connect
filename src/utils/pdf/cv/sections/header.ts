@@ -1,13 +1,12 @@
 import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { StyleOption } from '@/components/vcard/types';
-import { pdfStyles } from '../styles';
 
 export const renderHeader = async (
   doc: ExtendedJsPDF,
   profile: UserProfile,
   startY: number,
-  style: StyleOption
+  style?: StyleOption
 ): Promise<number> => {
   let currentY = startY;
 
@@ -32,14 +31,14 @@ export const renderHeader = async (
   // Name
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(style.colors.text.primary);
+  doc.setTextColor(style?.colors?.text?.primary || '#000000');
   doc.text(profile.full_name || 'No Name', 20, currentY);
   currentY += 8;
   
   // Role
   doc.setFontSize(16);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(style.colors.text.secondary);
+  doc.setTextColor(style?.colors?.text?.secondary || '#666666');
   doc.text(profile.role || 'No Role', 20, currentY);
   currentY += 10;
 
