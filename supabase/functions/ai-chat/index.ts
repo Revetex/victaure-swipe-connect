@@ -15,7 +15,7 @@ serve(async (req) => {
     const { message } = await req.json()
     console.log('Received message:', message)
 
-    const response = await fetch('https://api.huggingface.co/models/Qwen/QwQ-32B-Preview', {
+    const response = await fetch('https://api.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('HUGGING_FACE_API_KEY')}`,
@@ -29,8 +29,8 @@ serve(async (req) => {
                 
                 Assistant:`,
         parameters: {
-          max_new_tokens: 256,  // Reduced from 1024
-          temperature: 0.5,     // Reduced from 0.7
+          max_new_tokens: 256,
+          temperature: 0.5,
           top_p: 0.9,
           frequency_penalty: 0.0,
           presence_penalty: 0.0,
@@ -40,6 +40,7 @@ serve(async (req) => {
     })
 
     if (!response.ok) {
+      console.error('Hugging Face API error:', await response.text())
       throw new Error(`Hugging Face API error: ${response.statusText}`)
     }
 
