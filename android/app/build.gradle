@@ -108,8 +108,11 @@ android {
 }
 
 repositories {
+    google()
+    mavenCentral()
+    // Only keep flatDir as fallback for libs that absolutely require it
     flatDir {
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+        dirs '../capacitor-cordova-android-plugins/src/main/libs'
     }
 }
 
