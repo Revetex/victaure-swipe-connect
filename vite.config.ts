@@ -74,7 +74,9 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/auth\/v1/, '/auth/v1'),
         headers: {
           'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
-          'Access-Control-Allow-Origin': '*'
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+          'Access-Control-Allow-Credentials': 'true'
         }
       },
       '/rest/v1': {
@@ -85,7 +87,9 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/rest\/v1/, '/rest/v1'),
         headers: {
           'Origin': 'https://mfjllillnpleasclqabb.supabase.co',
-          'Access-Control-Allow-Origin': '*'
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+          'Access-Control-Allow-Credentials': 'true'
         }
       }
     }
