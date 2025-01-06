@@ -40,7 +40,7 @@ function App() {
         <div className="flex flex-col items-center gap-4">
           <Loader className="w-8 h-8" />
           <p className="text-sm text-muted-foreground animate-pulse">
-            Chargement de votre session...
+            Préparation de votre tableau de bord...
           </p>
         </div>
       </div>
