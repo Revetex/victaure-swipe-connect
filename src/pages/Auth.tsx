@@ -9,6 +9,7 @@ import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DownloadApp } from "@/components/dashboard/DownloadApp";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -90,7 +91,7 @@ export default function Auth() {
                 id="rememberMe" 
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                className="h-3 w-3" // Fixed small size for all screens
+                className="h-3 w-3"
               />
               <label 
                 htmlFor="rememberMe" 
@@ -104,6 +105,11 @@ export default function Auth() {
           {/* Video Section */}
           <div className="w-full">
             <AuthVideo />
+          </div>
+
+          {/* Download App Section */}
+          <div className="w-full">
+            <DownloadApp />
           </div>
 
           {/* Legal Links - Centered */}
