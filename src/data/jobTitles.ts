@@ -1,0 +1,67 @@
+export const jobTitles = [
+  // Construction & BTP
+  "Chef de Chantier",
+  "Conducteur de Travaux",
+  "Architecte",
+  "Maître d'Œuvre",
+  "Ingénieur Structure",
+  "Ingénieur BTP",
+  "Géomètre",
+  "Dessinateur BTP",
+  "Coordinateur de Sécurité",
+  "Expert en Construction Durable",
+  "Économiste de la Construction",
+  "Diagnostiqueur Immobilier",
+  "Responsable QSE",
+  
+  // Métiers Manuels & Artisanat
+  "Maçon",
+  "Charpentier",
+  "Menuisier",
+  "Plombier",
+  "Électricien",
+  "Couvreur",
+  "Carreleur",
+  "Peintre en Bâtiment",
+  "Plaquiste",
+  "Serrurier",
+  "Vitrier",
+  "Façadier",
+  "Ferronnier",
+  "Chauffagiste",
+  "Isolation Thermique",
+  "Étanchéiste",
+  "Ébéniste",
+  "Tapissier",
+  "Marbrier",
+  "Tailleur de pierre",
+  
+  // Espaces Verts & Paysage
+  "Paysagiste",
+  "Jardinier",
+  "Élagueur",
+  "Horticulteur",
+  "Arboriste",
+  "Concepteur Paysager",
+  
+  // Maintenance & Réparation
+  "Technicien de Maintenance",
+  "Mécanicien",
+  "Électromécanicien",
+  "Frigoriste",
+  "Ascensoriste",
+  "Technicien SAV",
+  "Réparateur Électroménager",
+  
+  // Management & Business
+  "Directeur Technique",
+  "Chef de Produit",
+  "Directeur de Projet",
+  "Business Analyst",
+  "Consultant",
+  "Responsable Innovation",
+  "Chef d'Équipe",
+  "Gestionnaire de Compte",
+  "Responsable des Opérations",
+  "Responsable Commercial"
+];
