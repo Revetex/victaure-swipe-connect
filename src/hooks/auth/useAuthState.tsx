@@ -8,6 +8,8 @@ export interface AuthState {
   user: User | null;
 }
 
+export type AuthStateDispatch = (state: AuthState | ((prev: AuthState) => AuthState)) => void;
+
 export const useAuthState = () => {
   const [state, setState] = useState<AuthState>({
     isLoading: true,

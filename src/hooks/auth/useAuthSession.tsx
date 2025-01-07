@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { AuthState } from './useAuthState';
+import { AuthState, AuthStateDispatch } from './useAuthState';
 import { useAuthHandlers } from './useAuthHandlers';
 
-export const useAuthSession = (state: AuthState, setState: (state: AuthState) => void) => {
+export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) => {
   const navigate = useNavigate();
   const { handleAuthError, retryCount, setRetryCount } = useAuthHandlers(setState);
 

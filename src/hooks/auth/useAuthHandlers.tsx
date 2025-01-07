@@ -3,9 +3,9 @@ import { AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { AuthState } from './useAuthState';
+import { AuthState, AuthStateDispatch } from './useAuthState';
 
-export const useAuthHandlers = (setState: (state: AuthState) => void) => {
+export const useAuthHandlers = (setState: AuthStateDispatch) => {
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
 
