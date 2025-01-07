@@ -20,9 +20,12 @@ export function VCardSectionsManager({
   const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
 
   useEffect(() => {
+    // Ensure education section is included in the default order
+    const defaultOrder = ['header', 'bio', 'contact', 'skills', 'education', 'experience'];
+    
     if (profile?.sections_order) {
-      // Ensure sections are unique
-      const uniqueSections = Array.from(new Set(profile.sections_order));
+      // Ensure sections are unique and include education
+      const uniqueSections = Array.from(new Set([...profile.sections_order, 'education']));
       if (uniqueSections.length !== profile.sections_order.length) {
         setProfile({
           ...profile,
@@ -31,14 +34,13 @@ export function VCardSectionsManager({
       }
       setSectionsOrder(uniqueSections);
     } else {
-      setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
+      setSectionsOrder(defaultOrder);
     }
   }, [profile, setProfile]);
 
   const handleAddSkill = () => {
     if (!profile || !newSkill.trim()) return;
     
-    // Ensure skills array exists and is unique
     const currentSkills = profile.skills || [];
     const newSkillTrimmed = newSkill.trim();
     

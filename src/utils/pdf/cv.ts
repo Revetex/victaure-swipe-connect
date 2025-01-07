@@ -80,9 +80,9 @@ export const generateCV = async (
       currentY = 20;
     }
 
-    // Experience section
-    if (profile.experiences && profile.experiences.length > 0) {
-      currentY = renderExperiences(doc, profile, currentY);
+    // Education section (moved before experience for better flow)
+    if (profile.education && profile.education.length > 0) {
+      currentY = renderEducation(doc, profile, currentY);
       currentY += 15;
     }
 
@@ -92,9 +92,9 @@ export const generateCV = async (
       currentY = 20;
     }
 
-    // Education section
-    if (profile.education && profile.education.length > 0) {
-      currentY = renderEducation(doc, profile, currentY);
+    // Experience section
+    if (profile.experiences && profile.experiences.length > 0) {
+      currentY = renderExperiences(doc, profile, currentY);
       currentY += 15;
     }
 
