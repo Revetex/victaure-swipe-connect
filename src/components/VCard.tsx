@@ -2,20 +2,15 @@ import { useState, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
-import { VCardHeader } from "./VCardHeader";
-import { VCardContact } from "./VCardContact";
 import { toast } from "sonner";
-import { VCardContent } from "./vcard/VCardContent";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
-import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
-import { VCardBio } from "./VCardBio";
-import { VCardEducation } from "./VCardEducation";
-import { VCardExperiences } from "./VCardExperiences";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
+import { VCardSections } from "./vcard/VCardSections";
+import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -74,77 +69,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     setSectionsOrder(items);
   };
 
-  const renderSection = (sectionId: string) => {
-    switch (sectionId) {
-      case 'header':
-        return (
-          <VCardHeader
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
-      case 'bio':
-        return (
-          <VCardBio
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
-      case 'contact':
-        return (
-          <VCardContact
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
-      case 'skills':
-        return (
-          <VCardContent
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
-            handleAddSkill={() => {
-              if (!profile || !newSkill.trim()) return;
-              const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-              setProfile({ ...profile, skills: updatedSkills });
-              setNewSkill("");
-            }}
-            handleRemoveSkill={(skillToRemove: string) => {
-              if (!profile) return;
-              const updatedSkills = (profile.skills || []).filter(
-                (skill) => skill !== skillToRemove
-              );
-              setProfile({ ...profile, skills: updatedSkills });
-            }}
-            selectedStyle={selectedStyle}
-          />
-        );
-      case 'education':
-        return (
-          <VCardEducation
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
-      case 'experience':
-        return (
-          <VCardExperiences
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   if (isLoading) {
     return <VCardSkeleton />;
   }
@@ -187,9 +111,29 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}
                       >
-                        {renderSection(sectionId)}
+                        <VCardSections
+                          profile={profile}
+                          isEditing={isEditing}
+                          setProfile={setProfile}
+                          newSkill={newSkill}
+                          setNewSkill={setNewSkill}
+                          handleAddSkill={() => {
+                            if (!profile || !newSkill.trim()) return;
+                            const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+                            setProfile({ ...profile, skills: updatedSkills });
+                            setNewSkill("");
+                          }}
+                          handleRemoveSkill={(skillToRemove: string) => {
+                            if (!profile) return;
+                            const updatedSkills = (profile.skills || []).filter(
+                              (skill) => skill !== skillToRemove
+                            );
+                            setProfile({ ...profile, skills: updatedSkills });
+                          }}
+                          selectedStyle={selectedStyle}
+                          sectionsOrder={sectionsOrder}
+                        />
                       </div>
                     )}
                   </Draggable>

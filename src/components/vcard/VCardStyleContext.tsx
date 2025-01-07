@@ -1,33 +1,22 @@
 import { createContext, useContext } from 'react';
-
-export interface StyleOption {
-  id: string;
-  name: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    text: {
-      primary: string;
-      secondary: string;
-      muted: string;
-    };
-  };
-  font: string;
-}
+import { StyleOption } from './types';
 
 const defaultStyle: StyleOption = {
   id: 'modern',
   name: 'Modern',
+  color: '#047857',
+  secondaryColor: '#10B981',
+  font: 'Inter, sans-serif',
+  bgGradient: 'bg-gradient-to-br from-emerald-50 via-teal-100 to-emerald-200',
   colors: {
-    primary: '#3b82f6',
-    secondary: '#6366f1',
+    primary: '#065F46',
+    secondary: '#10B981',
     text: {
-      primary: '#1f2937',
-      secondary: '#4b5563',
-      muted: '#9ca3af',
+      primary: '#064E3B',
+      secondary: '#065F46',
+      muted: '#047857',
     },
   },
-  font: 'Inter, sans-serif',
 };
 
 const VCardStyleContext = createContext<{
