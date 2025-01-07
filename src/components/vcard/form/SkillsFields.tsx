@@ -1,10 +1,16 @@
-import { useFormContext } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-export function SkillsFields() {
-  const form = useFormContext();
+interface SkillsFieldsProps {
+  form: UseFormReturn<{
+    skills?: string[];
+    full_name?: string;
+    phone?: string;
+  }>;
+}
 
+export function SkillsFields({ form }: SkillsFieldsProps) {
   return (
     <div className="space-y-4">
       <FormField
@@ -12,10 +18,10 @@ export function SkillsFields() {
         name="skills"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Skills</FormLabel>
+            <FormLabel>Compétences</FormLabel>
             <Input
               {...field}
-              placeholder="Enter your skills (comma separated)"
+              placeholder="Entrez vos compétences (séparées par des virgules)"
             />
             <FormMessage />
           </FormItem>
