@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { VCardSection } from "./VCardSection";
-import { Briefcase, X, Building2, Calendar } from "lucide-react";
+import { Briefcase, X, Building2, Calendar, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

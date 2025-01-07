@@ -15,7 +15,7 @@ export const generateCV = async (doc: ExtendedJsPDF, profile: UserProfile, style
   let currentY = pdfStyles.margins.top;
 
   // Header section with photo and basic info
-  currentY = renderHeader(doc, profile, currentY);
+  currentY = await renderHeader(doc, profile, currentY);
   currentY += 10;
 
   // Contact information
@@ -60,11 +60,11 @@ export const generateCV = async (doc: ExtendedJsPDF, profile: UserProfile, style
 
   // Certifications
   if (profile.certifications?.length) {
-    currentY = renderCertifications(doc, profile, currentY);
+    currentY = renderCertifications(doc, profile.certifications, currentY);
   }
 
   // Footer with page numbers
-  renderFooter(doc);
+  renderFooter(doc, style);
 
   return doc;
 };
