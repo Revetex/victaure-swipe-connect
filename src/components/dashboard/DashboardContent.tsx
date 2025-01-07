@@ -59,7 +59,7 @@ export function DashboardContent({
   if (currentPage === 1) {
     return (
       <div 
-        className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm' : 'relative'}`}
+        className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm pb-32' : 'relative min-h-[calc(100vh-4rem)]'}`}
         style={{ 
           height: isEditing ? viewportHeight : 'auto',
           overflowY: isEditing ? 'auto' : 'visible',

@@ -17,19 +17,18 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className={`vcard-root w-full max-w-4xl mx-auto ${
-          isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20 pt-4 px-4' : 'relative'
+          isEditing 
+            ? 'fixed inset-0 z-50 overflow-y-auto bg-background/95 backdrop-blur-sm pb-32 pt-4 px-4' 
+            : 'relative'
         }`}
         style={{
           fontFamily: selectedStyle.font,
-          background: isEditing ? `linear-gradient(135deg, ${selectedStyle.colors.primary}10, ${selectedStyle.colors.secondary}15)` : 'transparent',
         }}
       >
-        {isEditing && (
-          <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm -z-10" />
-        )}
-        
         <Card 
-          className={`relative border shadow-lg overflow-hidden transition-all duration-300 ${selectedStyle.colors.background.card}`}
+          className={`relative border shadow-lg overflow-hidden transition-all duration-300 mb-8 ${
+            isEditing ? 'mt-4' : ''
+          } ${selectedStyle.colors.background.card}`}
           style={{
             background: `linear-gradient(135deg, ${selectedStyle.colors.primary}05, ${selectedStyle.colors.secondary}10)`,
             borderColor: `${selectedStyle.colors.primary}20`,

@@ -21,7 +21,6 @@ export function DashboardLayout() {
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
 
-    // Déclenchement initial pour Safari iOS
     setTimeout(updateHeight, 100);
 
     return () => {
@@ -39,7 +38,7 @@ export function DashboardLayout() {
       <AnimatePresence mode="sync">
         <motion.div 
           variants={itemVariants} 
-          className="transform transition-all duration-300 w-full h-full"
+          className="transform transition-all duration-300 w-full h-full pb-32"
           style={{ 
             maxHeight: isEditing ? viewportHeight : `calc(${viewportHeight}px - 4rem)`,
             overflowY: 'auto',
