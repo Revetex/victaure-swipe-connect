@@ -15,12 +15,18 @@ export const generateBusinessCard = async (
     format: [85.6, 53.98]
   }));
 
-  // Set background gradient
-  const gradient = doc.setFillColor(selectedStyle.colors.primary)
-    .setDrawColor(selectedStyle.colors.secondary)
-    .setGlobalAlpha(0.1);
-  doc.rect(0, 0, 85.6, 53.98, 'F');
-  doc.setGlobalAlpha(1);
+  // Set background with style-specific gradient
+  doc.setFillColor(selectedStyle.colors.primary)
+     .setDrawColor(selectedStyle.colors.secondary);
+  
+  // Apply gradient background
+  const gradient = doc.internal.addHTML(`
+    <div style="
+      width: 85.6mm;
+      height: 53.98mm;
+      background: linear-gradient(135deg, ${selectedStyle.colors.primary}20, ${selectedStyle.colors.secondary}30);
+    "></div>
+  `);
 
   try {
     // Add name and role with styled positioning

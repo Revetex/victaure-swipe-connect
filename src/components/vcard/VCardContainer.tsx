@@ -33,6 +33,7 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
           style={{
             background: `linear-gradient(135deg, ${selectedStyle.colors.primary}05, ${selectedStyle.colors.secondary}10)`,
             borderColor: `${selectedStyle.colors.primary}20`,
+            boxShadow: `0 4px 6px -1px ${selectedStyle.colors.primary}10, 0 2px 4px -1px ${selectedStyle.colors.secondary}10`
           }}
         >
           <CardContent className="p-6">
