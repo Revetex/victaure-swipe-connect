@@ -37,32 +37,16 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
+      <div className="min-h-[100vh] min-h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col items-center gap-4"
         >
-          <div className="relative">
-            <Loader className="w-12 h-12 text-primary" />
-            <motion.div 
-              className="absolute inset-0"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.5, 1, 0.5] 
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <Loader className="w-12 h-12 text-primary/30" />
-            </motion.div>
-          </div>
-          <p className="text-base text-muted-foreground animate-pulse">
-            Préparation de votre tableau de bord...
+          <Loader className="h-8 w-8 text-primary" />
+          <p className="text-sm text-muted-foreground">
+            Chargement...
           </p>
         </motion.div>
       </div>
@@ -93,10 +77,10 @@ function App() {
                 <Navigate to="/dashboard" replace />
               ) : (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <Auth />
                 </motion.div>
@@ -109,10 +93,10 @@ function App() {
             element={
               <ProtectedRoute>
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <Dashboard />
                 </motion.div>
