@@ -27,11 +27,20 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   useEffect(() => {
     if (profile?.sections_order) {
-      setSectionsOrder(profile.sections_order);
+      // Ensure we don't have duplicate sections
+      const uniqueSections = Array.from(new Set(profile.sections_order));
+      if (uniqueSections.length !== profile.sections_order.length) {
+        // Update profile if we found duplicates
+        setProfile({
+          ...profile,
+          sections_order: uniqueSections
+        });
+      }
+      setSectionsOrder(uniqueSections);
     } else {
       setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
     }
-  }, [profile]);
+  }, [profile, setProfile]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -75,6 +84,17 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   if (!profile) {
     return <VCardEmpty />;
+  }
+
+  // Ensure profile skills are unique
+  if (profile.skills) {
+    const uniqueSkills = Array.from(new Set(profile.skills));
+    if (uniqueSkills.length !== profile.skills.length) {
+      setProfile({
+        ...profile,
+        skills: uniqueSkills
+      });
+    }
   }
 
   return (
@@ -121,7 +141,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                           handleAddSkill={() => {
                             if (!profile || !newSkill.trim()) return;
                             const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-                            setProfile({ ...profile, skills: updatedSkills });
+                            setProfile({ ...profile, skills: Array.from(new Set(updatedSkills)) });
                             setNewSkill("");
                           }}
                           handleRemoveSkill={(skillToRemove: string) => {
