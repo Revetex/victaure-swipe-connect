@@ -1,4 +1,4 @@
-import { StickyNote as StickyNoteIcon } from "lucide-react";
+import { StickyNoteIcon } from "lucide-react";
 import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
 import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
@@ -33,17 +33,17 @@ export function NotesSection({
       green: 'sticky-note-green',
       pink: 'sticky-note-pink',
       purple: 'sticky-note-purple',
-      peach: 'sticky-note-peach',
-      gray: 'sticky-note-gray',
       orange: 'sticky-note-orange',
     };
     return colorMap[colorValue] || 'sticky-note-yellow';
   };
 
   return (
-    <div className="space-y-4 h-[calc(100vh-8rem)] flex flex-col notes-section">
-      <div className="flex items-center gap-2 text-primary">
-        <StickyNoteIcon className="h-6 w-6" />
+    <div className="space-y-6 h-[calc(100vh-8rem)] flex flex-col notes-section">
+      <div className="flex items-center gap-3 text-primary">
+        <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
+          <StickyNoteIcon className="h-6 w-6" />
+        </div>
         <h2 className="text-xl font-semibold">Notes</h2>
       </div>
 
@@ -72,9 +72,17 @@ export function NotesSection({
             ))}
           </AnimatePresence>
           {notes.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 col-span-full text-lg">
-              Aucune note pour le moment
-            </div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-muted-foreground py-12 col-span-full"
+            >
+              <StickyNoteIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg">Aucune note pour le moment</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Créez votre première note en utilisant le formulaire ci-dessus
+              </p>
+            </motion.div>
           )}
         </motion.div>
       </ScrollArea>

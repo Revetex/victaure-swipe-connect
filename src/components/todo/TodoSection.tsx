@@ -3,6 +3,7 @@ import { TodoInput } from "./TodoInput";
 import { TodoItem } from "./TodoItem";
 import { Todo } from "@/types/todo";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TodoSectionProps {
   todos: Todo[];
@@ -39,9 +40,11 @@ export function TodoSection({
   const sectionClass = type === 'notes' ? 'notes-section' : 'task-section';
   
   return (
-    <div className={`space-y-4 h-[calc(100vh-8rem)] flex flex-col ${sectionClass}`}>
-      <div className="flex items-center gap-2 text-primary">
-        <ListTodo className="h-6 w-6" />
+    <div className={`space-y-6 h-[calc(100vh-8rem)] flex flex-col ${sectionClass}`}>
+      <div className="flex items-center gap-3 text-primary">
+        <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
+          <ListTodo className="h-6 w-6" />
+        </div>
         <h2 className="text-xl font-semibold">{title}</h2>
       </div>
 
@@ -58,21 +61,34 @@ export function TodoSection({
       />
 
       <ScrollArea className="flex-1 pr-4">
-        <div className="space-y-3">
-          {todos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onToggle={onToggle}
-              onDelete={onDelete}
-            />
-          ))}
+        <motion.div 
+          className="space-y-3"
+          layout
+        >
+          <AnimatePresence mode="popLayout">
+            {todos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={onToggle}
+                onDelete={onDelete}
+              />
+            ))}
+          </AnimatePresence>
           {todos.length === 0 && (
-            <div className="text-center text-muted-foreground py-8 text-lg">
-              Aucune {type === 'notes' ? 'note' : 'tâche'} pour le moment
-            </div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-muted-foreground py-12"
+            >
+              <ListTodo className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg">Aucune tâche pour le moment</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Créez votre première tâche en utilisant le formulaire ci-dessus
+              </p>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       </ScrollArea>
     </div>
   );
