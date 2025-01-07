@@ -2,21 +2,22 @@ import { Button } from "@/components/ui/button";
 import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useVCardStyle } from "./VCardStyleContext";
+import { StyleOption } from "./types";
 
 interface VCardActionsProps {
   isEditing: boolean;
   isPdfGenerating: boolean;
   isProcessing: boolean;
-  onShare: () => void;
-  onDownload: () => void;
-  onDownloadPDF: () => void;
-  onDownloadBusinessPDF: () => void;
-  onDownloadCVPDF: () => void;
-  onCopyLink: () => void;
+  onShare?: () => void;
+  onDownload?: () => void;
+  onDownloadPDF?: () => void;
+  onDownloadBusinessPDF: () => Promise<void>;
+  onDownloadCVPDF: () => Promise<void>;
+  onCopyLink?: () => void;
   onSave: () => void;
-  onApplyChanges: () => void;
+  onApplyChanges?: () => void;
   setIsEditing: (isEditing: boolean) => void;
+  selectedStyle: StyleOption;
 }
 
 export function VCardActions({
@@ -32,9 +33,8 @@ export function VCardActions({
   onSave,
   onApplyChanges,
   setIsEditing,
+  selectedStyle,
 }: VCardActionsProps) {
-  const { selectedStyle } = useVCardStyle();
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -72,45 +72,49 @@ export function VCardActions({
               )}
             </Button>
           </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[120px]"
-          >
-            <Button 
-              onClick={onApplyChanges}
-              disabled={isProcessing}
-              variant="outline" 
-              className="w-full transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+          {onApplyChanges && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex-1 min-w-[120px]"
             >
-              Appliquer
-            </Button>
-          </motion.div>
+              <Button 
+                onClick={onApplyChanges}
+                disabled={isProcessing}
+                variant="outline" 
+                className="w-full transition-colors"
+                style={{ 
+                  borderColor: `${selectedStyle.colors.primary}40`,
+                  color: selectedStyle.colors.text.primary,
+                }}
+              >
+                Appliquer
+              </Button>
+            </motion.div>
+          )}
         </>
       ) : (
         <>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
-          >
-            <Button 
-              onClick={onShare}
-              className="w-full transition-colors"
-              style={{ 
-                backgroundColor: selectedStyle.colors.primary,
-                color: 'white',
-                borderColor: `${selectedStyle.colors.primary}40`
-              }}
+          {onShare && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex-1 min-w-[100px]"
             >
-              <Share2 className="mr-2 h-4 w-4" />
-              Partager
-            </Button>
-          </motion.div>
+              <Button 
+                onClick={onShare}
+                className="w-full transition-colors"
+                style={{ 
+                  backgroundColor: selectedStyle.colors.primary,
+                  color: 'white',
+                  borderColor: `${selectedStyle.colors.primary}40`
+                }}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Partager
+              </Button>
+            </motion.div>
+          )}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,24 +133,26 @@ export function VCardActions({
               Mode édition
             </Button>
           </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
-          >
-            <Button 
-              onClick={onDownload}
-              variant="outline"
-              className="w-full transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+          {onDownload && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex-1 min-w-[100px]"
             >
-              <Download className="mr-2 h-4 w-4" />
-              Télécharger
-            </Button>
-          </motion.div>
+              <Button 
+                onClick={onDownload}
+                variant="outline"
+                className="w-full transition-colors"
+                style={{ 
+                  borderColor: `${selectedStyle.colors.primary}40`,
+                  color: selectedStyle.colors.text.primary,
+                }}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Télécharger
+              </Button>
+            </motion.div>
+          )}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -154,6 +160,7 @@ export function VCardActions({
           >
             <Button 
               onClick={onDownloadBusinessPDF}
+              disabled={isPdfGenerating}
               variant="outline"
               className="w-full transition-colors"
               style={{ 
@@ -172,6 +179,7 @@ export function VCardActions({
           >
             <Button 
               onClick={onDownloadCVPDF}
+              disabled={isPdfGenerating}
               variant="outline"
               className="w-full transition-colors"
               style={{ 
@@ -183,22 +191,24 @@ export function VCardActions({
               CV PDF
             </Button>
           </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Button 
-              onClick={onCopyLink}
-              variant="outline"
-              className="transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+          {onCopyLink && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
-              <Copy className="h-4 w-4" />
-            </Button>
-          </motion.div>
+              <Button 
+                onClick={onCopyLink}
+                variant="outline"
+                className="transition-colors"
+                style={{ 
+                  borderColor: `${selectedStyle.colors.primary}40`,
+                  color: selectedStyle.colors.text.primary,
+                }}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          )}
         </>
       )}
     </motion.div>
