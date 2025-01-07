@@ -101,8 +101,8 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
               >
                 {sectionsOrder.map((sectionId, index) => (
                   <Draggable
-                    key={sectionId}
-                    draggableId={sectionId}
+                    key={`${sectionId}-${index}`}
+                    draggableId={`${sectionId}-${index}`}
                     index={index}
                     isDragDisabled={!isEditing}
                   >
