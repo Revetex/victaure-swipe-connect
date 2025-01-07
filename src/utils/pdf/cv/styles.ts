@@ -1,16 +1,14 @@
-import type { PDFStyles } from '../types';
-
-export const pdfStyles: PDFStyles = {
+export const pdfStyles = {
   colors: {
     primary: '#1A1F2C',
     secondary: '#4B5563',
+    accent: '#E5DEFF',
     background: '#FFFFFF',
     text: {
       primary: '#1A1F2C',
       secondary: '#4B5563',
       muted: '#8E9196'
-    },
-    accent: '#E5DEFF'
+    }
   },
   margins: {
     top: 25,
@@ -33,18 +31,18 @@ export const pdfStyles: PDFStyles = {
   }
 };
 
-export const convertStyleOptionToPdfStyle = (styleOption: any): PDFStyles => {
+export const convertStyleOptionToPdfStyle = (styleOption: any) => {
   return {
     colors: {
       primary: styleOption.color || pdfStyles.colors.primary,
       secondary: styleOption.secondaryColor || pdfStyles.colors.secondary,
       background: styleOption.bgColor || pdfStyles.colors.background,
       text: {
-        primary: styleOption.textColor || pdfStyles.colors.text.primary,
-        secondary: styleOption.mutedColor || pdfStyles.colors.text.secondary,
-        muted: styleOption.mutedColor || pdfStyles.colors.text.muted
+        primary: styleOption.colors?.text?.primary || pdfStyles.colors.text.primary,
+        secondary: styleOption.colors?.text?.secondary || pdfStyles.colors.text.secondary,
+        muted: styleOption.colors?.text?.muted || pdfStyles.colors.text.muted
       },
-      accent: styleOption.accentColor || pdfStyles.colors.accent
+      accent: styleOption.accentGradient || pdfStyles.colors.accent
     },
     margins: pdfStyles.margins,
     fonts: pdfStyles.fonts

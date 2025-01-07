@@ -18,100 +18,84 @@ export const generateBusinessCard = async (
   // Front side
   try {
     // Set background with style-specific gradient
-    doc.setFillColor(selectedStyle.colors.primary);
-    doc.setDrawColor(selectedStyle.colors.secondary);
+    doc.setFillColor(selectedStyle.colors.background.card);
+    doc.setDrawColor(selectedStyle.colors.primary);
     
-    // Apply gradient background using rect with opacity
+    // Apply gradient background
     doc.setGlobalAlpha(0.1);
     doc.rect(0, 0, 85.6, 53.98, 'F');
     doc.setGlobalAlpha(1);
 
-    // Add name and role with styled positioning
+    // Add decorative accent line
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(selectedStyle.colors.secondary);
+    doc.line(10, 12, 75.6, 12);
+
+    // Add name with enhanced styling
     doc.setTextColor(selectedStyle.colors.text.primary);
     doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
-    doc.setFontSize(14);
-    doc.text(profile.full_name || '', 10, 15);
+    doc.setFontSize(16);
+    doc.text(profile.full_name || '', 10, 20);
     
+    // Add role with professional styling
     doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
     doc.setFontSize(12);
     doc.setTextColor(selectedStyle.colors.text.secondary);
-    doc.text(profile.role || '', 10, 22);
+    doc.text(profile.role || '', 10, 27);
 
-    // Add contact details with styling
+    // Add contact details with improved layout
     doc.setFontSize(9);
     doc.setTextColor(selectedStyle.colors.text.muted);
-    let contactY = 32;
+    let contactY = 35;
     
     if (profile.email) {
-      doc.text(profile.email, 10, contactY);
+      doc.text(`Email: ${profile.email}`, 10, contactY);
       contactY += 5;
     }
     
     if (profile.phone) {
-      doc.text(profile.phone, 10, contactY);
+      doc.text(`Tel: ${profile.phone}`, 10, contactY);
       contactY += 5;
     }
     
     if (profile.city) {
-      doc.text([profile.city, profile.state, profile.country].filter(Boolean).join(', '), 10, contactY);
+      const location = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
+      doc.text(location, 10, contactY);
     }
 
-    // Add QR code with style-matched frame - Adjusted positioning and size
-    try {
-      const qrCodeUrl = await QRCode.toDataURL(window.location.href, {
-        margin: 0,
-        width: 200,
-        errorCorrectionLevel: 'H'
-      });
-      doc.setDrawColor(selectedStyle.colors.primary);
-      doc.setLineWidth(0.5);
-      // Adjusted QR code position and size
-      const qrSize = 20;
-      const qrX = 85.6 - qrSize - 5; // 5mm from right edge
-      const qrY = (53.98 - qrSize) / 2; // Centered vertically
-      doc.roundedRect(qrX - 1, qrY - 1, qrSize + 2, qrSize + 2, 2, 2, 'S');
-      doc.addImage(qrCodeUrl, 'PNG', qrX, qrY, qrSize, qrSize);
-    } catch (error) {
-      console.error('Error generating QR code:', error);
-    }
-
-    // Add back side
+    // Add back side with professional design
     doc.addPage([85.6, 53.98], 'landscape');
     
-    // Add subtle background pattern
+    // Add subtle pattern background
     doc.setGlobalAlpha(0.05);
     for (let i = 0; i < 85.6; i += 5) {
       for (let j = 0; j < 53.98; j += 5) {
         doc.setFillColor(selectedStyle.colors.primary);
-        doc.circle(i, j, 0.5, 'F');
+        doc.circle(i, j, 0.3, 'F');
       }
     }
     doc.setGlobalAlpha(1);
 
-    // Add logo
-    try {
-      // Center the logo on the back
-      const logoSize = 30;
-      const logoX = (85.6 - logoSize) / 2;
-      const logoY = (53.98 - logoSize) / 2;
-      
-      doc.addImage(
-        "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
-        "PNG",
-        logoX,
-        logoY,
-        logoSize,
-        logoSize
-      );
+    // Add company info if available
+    if (profile.company_name) {
+      doc.setTextColor(selectedStyle.colors.text.primary);
+      doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
+      doc.setFontSize(14);
+      doc.text(profile.company_name, 10, 20);
 
-      // Add decorative border
-      doc.setDrawColor(selectedStyle.colors.primary);
-      doc.setLineWidth(0.5);
-      const margin = 5;
-      doc.roundedRect(margin, margin, 85.6 - 2 * margin, 53.98 - 2 * margin, 3, 3, 'S');
-    } catch (error) {
-      console.error('Error adding logo:', error);
+      if (profile.company_size) {
+        doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(selectedStyle.colors.text.secondary);
+        doc.text(`Taille: ${profile.company_size}`, 10, 27);
+      }
     }
+
+    // Add elegant border
+    doc.setDrawColor(selectedStyle.colors.primary);
+    doc.setLineWidth(0.5);
+    const margin = 5;
+    doc.roundedRect(margin, margin, 85.6 - 2 * margin, 53.98 - 2 * margin, 3, 3, 'S');
 
   } catch (error) {
     console.error('Error generating business card:', error);
