@@ -21,17 +21,31 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
         <motion.button
           key={id}
           onClick={() => onPageChange(id)}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: id * 0.1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ 
+            duration: 0.2,
+            delay: id * 0.1,
+            type: "spring",
+            stiffness: 500
+          }}
           className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${
             currentPage === id
-              ? "text-primary bg-primary/10"
+              ? "text-primary bg-primary/10 shadow-lg shadow-primary/20"
               : "text-muted-foreground hover:text-primary hover:bg-primary/5"
           }`}
         >
           <Icon className="h-5 w-5" />
           <span className="text-xs font-medium">{name}</span>
+          {currentPage === id && (
+            <motion.div
+              layoutId="activeTab"
+              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            />
+          )}
         </motion.button>
       ))}
     </div>

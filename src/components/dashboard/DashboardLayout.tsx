@@ -15,13 +15,14 @@ export function DashboardLayout() {
 
   useEffect(() => {
     const updateHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
       setViewportHeight(window.innerHeight);
     };
 
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
-
-    setTimeout(updateHeight, 100);
+    updateHeight();
 
     return () => {
       window.removeEventListener('resize', updateHeight);
@@ -38,7 +39,7 @@ export function DashboardLayout() {
       <AnimatePresence mode="sync">
         <motion.div 
           variants={itemVariants} 
-          className="transform transition-all duration-300 w-full min-h-screen pb-40"
+          className="transform transition-all duration-300 w-full min-h-[calc(var(--vh,1vh)*100)] pb-40"
           style={{ 
             maxHeight: isEditing ? viewportHeight : 'none',
             overflowY: isEditing ? 'auto' : 'visible',
@@ -57,8 +58,11 @@ export function DashboardLayout() {
       </AnimatePresence>
       
       {!isEditing && (
-        <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
+        <motion.nav 
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          exit={{ y: 100 }}
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 safe-area-bottom"
           style={{ 
             height: '4rem',
             paddingBottom: 'env(safe-area-inset-bottom)'
@@ -70,7 +74,7 @@ export function DashboardLayout() {
               onPageChange={setCurrentPage}
             />
           </div>
-        </nav>
+        </motion.nav>
       )}
     </DashboardContainer>
   );
