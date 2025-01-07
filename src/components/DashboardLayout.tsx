@@ -35,25 +35,27 @@ export function DashboardLayout() {
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
-      <AnimatePresence mode="sync">
-        <motion.div 
-          variants={itemVariants} 
-          className="transform transition-all duration-300 w-full min-h-screen pb-40"
-          style={{ 
-            maxHeight: isEditing ? viewportHeight : 'none',
-            overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch'
-          }}
-        >
+      <motion.div 
+        key="dashboard-content"
+        variants={itemVariants} 
+        className="transform transition-all duration-300 w-full min-h-screen pb-40"
+        style={{ 
+          maxHeight: isEditing ? viewportHeight : 'none',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
           <DashboardContent
+            key={`page-${currentPage}`}
             currentPage={currentPage}
             isEditing={isEditing}
             viewportHeight={viewportHeight}
             onEditStateChange={setIsEditing}
             onRequestChat={handleRequestChat}
           />
-        </motion.div>
-      </AnimatePresence>
+        </AnimatePresence>
+      </motion.div>
       
       {!isEditing && (
         <nav 
