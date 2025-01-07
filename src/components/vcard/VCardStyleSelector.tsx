@@ -21,8 +21,9 @@ export function VCardStyleSelector({
 
   const handleStyleSelect = async (style: StyleOption) => {
     try {
-      await onStyleSelect(style);
-      toast.success(`Style ${style.name} appliqué avec succès`);
+      // Appliquer immédiatement le style localement
+      onStyleSelect(style);
+      toast.success(`Style ${style.name} appliqué`);
     } catch (error) {
       console.error('Error updating style:', error);
       toast.error("Erreur lors de l'application du style");
