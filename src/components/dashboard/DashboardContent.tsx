@@ -61,6 +61,7 @@ export function DashboardContent({
       case 1:
         return (
           <div 
+            key="vcard-container"
             className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm pb-32' : 'relative min-h-[calc(100vh-4rem)]'}`}
             style={{ 
               height: isEditing ? viewportHeight : 'auto',
@@ -80,7 +81,7 @@ export function DashboardContent({
         );
       case 2:
         return (
-          <div className="dashboard-card h-full">
+          <div key="messages-container" className="dashboard-card h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
               <Messages />
             </div>
@@ -88,13 +89,13 @@ export function DashboardContent({
         );
       case 3:
         return (
-          <div className="dashboard-card h-full">
+          <div key="swipe-container" className="dashboard-card h-full">
             <SwipeJob />
           </div>
         );
       case 4:
         return (
-          <div className="dashboard-card h-full">
+          <div key="todo-notes-container" className="dashboard-card h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
                 <div className="h-full overflow-hidden">
@@ -131,7 +132,7 @@ export function DashboardContent({
         );
       case 5:
         return (
-          <div className="dashboard-card h-full">
+          <div key="settings-container" className="dashboard-card h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
               <Settings />
             </div>
