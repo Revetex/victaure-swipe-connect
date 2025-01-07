@@ -29,13 +29,26 @@ export function CategorizedSkills({
   const [selectedCategory, setSelectedCategory] = useState(Object.keys(skillCategories)[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Deduplicate skills and group them by category
   const groupedSkills = useMemo(() => {
+    // First, deduplicate the skills array
+    const uniqueSkills = profile.skills ? Array.from(new Set(profile.skills)) : [];
+    
+    // If we found duplicates, update the profile
+    if (profile.skills && profile.skills.length !== uniqueSkills.length) {
+      setProfile({
+        ...profile,
+        skills: uniqueSkills
+      });
+    }
+
+    // Then group the unique skills by category
     const grouped: Record<string, string[]> = {};
     Object.keys(skillCategories).forEach(category => {
       grouped[category] = [];
     });
 
-    (profile.skills || []).forEach(skill => {
+    uniqueSkills.forEach(skill => {
       let skillCategory = Object.entries(skillCategories).find(([_, skills]) =>
         skills.includes(skill)
       )?.[0];
@@ -47,11 +60,15 @@ export function CategorizedSkills({
       if (!grouped[skillCategory]) {
         grouped[skillCategory] = [];
       }
-      grouped[skillCategory].push(skill);
+      
+      // Only add the skill if it's not already in the category
+      if (!grouped[skillCategory].includes(skill)) {
+        grouped[skillCategory].push(skill);
+      }
     });
 
     return grouped;
-  }, [profile.skills]);
+  }, [profile.skills, setProfile]);
 
   const filteredSkills = skillCategories[selectedCategory] || [];
 
