@@ -74,5 +74,38 @@
     @apply bg-background text-foreground antialiased;
   }
   
-  /* ... keep existing code (touch targets and other styles) */
+  /* Amélioration des cibles tactiles */
+  button, 
+  input, 
+  select, 
+  textarea {
+    @apply min-h-[44px] touch-manipulation;
+  }
+
+  /* Espacement pour les cibles tactiles */
+  .touch-friendly {
+    @apply space-y-6;
+  }
+
+  /* Empêcher le zoom sur focus iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea {
+    @apply text-base;
+  }
+
+  /* Amélioration du défilement */
+  .smooth-scroll {
+    @apply scroll-smooth;
+  }
+
+  /* Amélioration de l'accessibilité tactile */
+  .touch-target {
+    @apply p-2 my-1;
+  }
 }
