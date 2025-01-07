@@ -106,7 +106,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           isEditing={isEditing}
           isPdfGenerating={isPdfGenerating}
           isProcessing={isAIProcessing}
-          profile={profile}
           selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
           onSave={handleSave}
