@@ -16,7 +16,9 @@ export function SkillCategory({
   searchTerm,
   onRemoveSkill,
 }: SkillCategoryProps) {
-  const filteredSkills = skills.filter((skill) =>
+  // Remove duplicates and filter based on search term
+  const uniqueSkills = Array.from(new Set(skills));
+  const filteredSkills = uniqueSkills.filter((skill) =>
     skill.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -29,29 +31,24 @@ export function SkillCategory({
         <h3 className="font-medium">{category}</h3>
       </div>
       <div className="flex flex-wrap gap-2">
-        {filteredSkills.map((skill) => {
-          // Create a unique key by combining category and skill
-          const uniqueKey = `${category}-${skill}-${Math.random()}`;
-          
-          return (
-            <motion.span
-              key={uniqueKey}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary relative group"
-            >
-              {skill}
-              {isEditing && (
-                <button
-                  onClick={() => onRemoveSkill(skill)}
-                  className="ml-1 text-primary/60 hover:text-primary focus:outline-none"
-                >
-                  ×
-                </button>
-              )}
-            </motion.span>
-          );
-        })}
+        {filteredSkills.map((skill, index) => (
+          <motion.span
+            key={`${category}-${skill}-${index}`}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary relative group"
+          >
+            {skill}
+            {isEditing && (
+              <button
+                onClick={() => onRemoveSkill(skill)}
+                className="ml-1 text-primary/60 hover:text-primary focus:outline-none"
+              >
+                ×
+              </button>
+            )}
+          </motion.span>
+        ))}
       </div>
     </div>
   );
