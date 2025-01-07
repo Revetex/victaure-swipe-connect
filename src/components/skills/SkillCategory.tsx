@@ -4,44 +4,48 @@ import { CategoryIcon } from "./CategoryIcon";
 interface SkillCategoryProps {
   category: string;
   skills: string[];
-  isEditing?: boolean;
-  onRemoveSkill?: (skill: string) => void;
+  isEditing: boolean;
+  searchTerm: string;
+  onRemoveSkill: (skill: string) => void;
 }
 
-export function SkillCategory({ category, skills, isEditing, onRemoveSkill }: SkillCategoryProps) {
+export function SkillCategory({
+  category,
+  skills,
+  isEditing,
+  searchTerm,
+  onRemoveSkill,
+}: SkillCategoryProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4"
-    >
+    <div className="space-y-2">
       <div className="flex items-center gap-2">
         <CategoryIcon category={category} />
-        <h3 className="text-lg font-semibold">{category}</h3>
+        <h3 className="font-medium">{category}</h3>
       </div>
-      
       <div className="flex flex-wrap gap-2">
-        {skills.map((skill) => (
-          <motion.div
-            key={`${category}-${skill}`}
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            className="relative group"
-          >
-            <div className="bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full text-sm">
+        {skills
+          .filter((skill) =>
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+          .map((skill) => (
+            <motion.span
+              key={`${category}-${skill}`}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary relative group"
+            >
               {skill}
-              {isEditing && onRemoveSkill && (
+              {isEditing && (
                 <button
                   onClick={() => onRemoveSkill(skill)}
-                  className="ml-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="ml-1 text-primary/60 hover:text-primary focus:outline-none"
                 >
                   ×
                 </button>
               )}
-            </div>
-          </motion.div>
-        ))}
+            </motion.span>
+          ))}
       </div>
-    </motion.div>
+    </div>
   );
 }

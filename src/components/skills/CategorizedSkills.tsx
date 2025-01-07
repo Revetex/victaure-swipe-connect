@@ -1,13 +1,16 @@
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { SkillCategory } from "./SkillCategory";
 import { SkillEditor } from "./SkillEditor";
 import { skillCategories } from "@/data/skills";
-import { useState } from "react";
+import { UserProfile } from "@/types/profile";
 
 interface CategorizedSkillsProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   onAddSkill: () => void;
@@ -26,25 +29,34 @@ export function CategorizedSkills({
   const [selectedCategory, setSelectedCategory] = useState(Object.keys(skillCategories)[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Group skills by category
-  const groupedSkills: Record<string, string[]> = {};
-  profile.skills?.forEach((skill: string) => {
-    let foundCategory = Object.entries(skillCategories).find(([_, skills]) =>
-      skills.includes(skill)
-    )?.[0];
-    
-    if (!foundCategory) foundCategory = "Autres";
-    
-    if (!groupedSkills[foundCategory]) {
-      groupedSkills[foundCategory] = [];
-    }
-    groupedSkills[foundCategory].push(skill);
-  });
+  const groupedSkills = useMemo(() => {
+    const grouped: Record<string, string[]> = {};
+    Object.keys(skillCategories).forEach(category => {
+      grouped[category] = [];
+    });
+
+    (profile.skills || []).forEach(skill => {
+      let skillCategory = Object.entries(skillCategories).find(([_, skills]) =>
+        skills.includes(skill)
+      )?.[0];
+
+      if (!skillCategory) {
+        skillCategory = "Autres";
+      }
+
+      if (!grouped[skillCategory]) {
+        grouped[skillCategory] = [];
+      }
+      grouped[skillCategory].push(skill);
+    });
+
+    return grouped;
+  }, [profile.skills]);
 
   const filteredSkills = skillCategories[selectedCategory] || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {isEditing && (
         <SkillEditor
           selectedCategory={selectedCategory}
@@ -57,29 +69,31 @@ export function CategorizedSkills({
         />
       )}
 
-      <motion.div 
-        className="space-y-6"
+      <div className="relative">
+        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Rechercher une compétence..."
+          className="pl-8"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        {Object.entries(groupedSkills).map(([category, skills]) => {
-          const filteredCategorySkills = skills.filter((skill) =>
-            skill.toLowerCase().includes(searchTerm.toLowerCase())
-          );
-          
-          if (filteredCategorySkills.length === 0) return null;
-          
-          return (
-            <SkillCategory
-              key={category}
-              category={category}
-              skills={filteredCategorySkills}
-              isEditing={isEditing}
-              onRemoveSkill={onRemoveSkill}
-            />
-          );
-        })}
+        {Object.entries(groupedSkills).map(([category, skills]) => (
+          <SkillCategory
+            key={category}
+            category={category}
+            skills={skills}
+            isEditing={isEditing}
+            searchTerm={searchTerm}
+            onRemoveSkill={onRemoveSkill}
+          />
+        ))}
       </motion.div>
     </div>
   );
