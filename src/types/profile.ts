@@ -54,4 +54,8 @@ export interface UserProfile {
   company_size?: string | null;
   industry?: string | null;
   style_id?: string;
+  custom_font?: string | null;
+  custom_background?: string | null;
+  custom_text_color?: string | null;
+  sections_order?: string[] | null;
 }
