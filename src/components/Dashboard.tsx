@@ -123,14 +123,13 @@ export function Dashboard() {
           <QuickActions stats={stats} />
         </div>
 
-        {/* Render VCard only once */}
         <motion.div 
-          key="vcard-container"
-          className="mt-8"
+          key="vcard-section"
           variants={{
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 }
           }}
+          className="mt-8"
         >
           <VCard />
         </motion.div>

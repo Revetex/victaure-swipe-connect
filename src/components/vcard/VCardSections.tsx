@@ -30,11 +30,14 @@ export function VCardSections({
   selectedStyle,
   sectionsOrder,
 }: VCardSectionsProps) {
-  const renderSection = (sectionId: string) => {
+  const renderSection = (sectionId: string, index: number) => {
+    const uniqueKey = `${sectionId}-${index}`;
+    
     switch (sectionId) {
       case 'header':
         return (
           <VCardHeader
+            key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
@@ -43,6 +46,7 @@ export function VCardSections({
       case 'bio':
         return (
           <VCardBio
+            key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
@@ -51,6 +55,7 @@ export function VCardSections({
       case 'contact':
         return (
           <VCardContact
+            key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
@@ -59,6 +64,7 @@ export function VCardSections({
       case 'skills':
         return (
           <VCardContent
+            key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
@@ -72,6 +78,7 @@ export function VCardSections({
       case 'education':
         return (
           <VCardEducation
+            key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
@@ -80,6 +87,7 @@ export function VCardSections({
       case 'experience':
         return (
           <VCardExperiences
+            key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
@@ -92,12 +100,12 @@ export function VCardSections({
 
   return (
     <div className="space-y-8">
-      {sectionsOrder.map((sectionId) => (
+      {sectionsOrder.map((sectionId, index) => (
         <div
-          key={sectionId}
+          key={`section-container-${sectionId}-${index}`}
           className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}
         >
-          {renderSection(sectionId)}
+          {renderSection(sectionId, index)}
         </div>
       ))}
     </div>
