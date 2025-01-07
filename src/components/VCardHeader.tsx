@@ -96,7 +96,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <Input
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
-              placeholder="Votre nom complet"
+              placeholder="Votre nom"
               className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
             />
             <Input
@@ -109,19 +109,19 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
         ) : (
           <>
             <h2 
-              className="text-xl sm:text-2xl font-semibold truncate text-white style-transition"
+              className="text-xl sm:text-2xl font-semibold truncate transition-colors"
               style={{ 
-                textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                color: '#FFFFFF'
+                color: selectedStyle.colors.text.primary,
+                textShadow: '0 1px 2px rgba(0,0,0,0.1)'
               }}
             >
               {profile.full_name || "Nom non défini"}
             </h2>
             <p 
-              className="text-sm sm:text-base text-white/90 style-transition"
+              className="text-sm sm:text-base transition-colors"
               style={{ 
-                textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                color: '#FFFFFF'
+                color: selectedStyle.colors.text.secondary,
+                textShadow: '0 1px 1px rgba(0,0,0,0.05)'
               }}
             >
               {profile.role || "Rôle non défini"}

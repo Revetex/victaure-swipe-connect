@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardContactProps {
   profile: any;
@@ -9,6 +10,8 @@ interface VCardContactProps {
 }
 
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
+  const { selectedStyle } = useVCardStyle();
+  
   const handleInputChange = (key: string, value: string) => {
     setProfile((prev: any) => ({ ...prev, [key]: value }));
   };
@@ -42,7 +45,12 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-white">Contact</h3>
+      <h3 
+        className="text-lg font-semibold"
+        style={{ color: selectedStyle.colors.text.primary }}
+      >
+        Contact
+      </h3>
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -55,8 +63,14 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <div className="p-2 rounded-full bg-white/10">
-              <field.icon className="h-4 w-4 text-white" />
+            <div 
+              className="p-2 rounded-full"
+              style={{ 
+                backgroundColor: `${selectedStyle.colors.primary}20`,
+                color: selectedStyle.colors.primary 
+              }}
+            >
+              <field.icon className="h-4 w-4" />
             </div>
             {isEditing ? (
               <Input
@@ -67,7 +81,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50"
               />
             ) : (
-              <span className="text-white/90">
+              <span style={{ color: selectedStyle.colors.text.secondary }}>
                 {field.value || "Non défini"}
               </span>
             )}

@@ -5,6 +5,7 @@ import { Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardBioProps {
   profile: any;
@@ -14,6 +15,7 @@ interface VCardBioProps {
 
 export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const { selectedStyle } = useVCardStyle();
 
   const generateBioWithAI = async () => {
     setIsGenerating(true);
@@ -53,14 +55,24 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       className="space-y-4"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">Présentation</h3>
+        <h3 
+          className="text-lg font-semibold"
+          style={{ color: selectedStyle.colors.text.primary }}
+        >
+          Présentation
+        </h3>
         {isEditing && (
           <Button
             variant="outline"
             size="sm"
             onClick={generateBioWithAI}
             disabled={isGenerating}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            style={{
+              backgroundColor: selectedStyle.colors.primary,
+              color: "white",
+              borderColor: `${selectedStyle.colors.primary}40`
+            }}
+            className="hover:opacity-90"
           >
             <Wand2 className="w-4 h-4 mr-2" />
             Générer avec l'IA
@@ -75,7 +87,10 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           className="min-h-[100px] bg-white/10 border-white/20 text-white placeholder:text-white/50"
         />
       ) : (
-        <p className="text-white/80 whitespace-pre-wrap">
+        <p 
+          className="whitespace-pre-wrap"
+          style={{ color: selectedStyle.colors.text.secondary }}
+        >
           {profile.bio || "Aucune présentation"}
         </p>
       )}

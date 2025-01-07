@@ -25,26 +25,21 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
         )}
         
         <Card 
-          className={`relative border-none shadow-lg ${
+          className={`relative border-none shadow-lg overflow-hidden ${
             isEditing 
               ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
-              : selectedStyle.bgGradient
-          } ${selectedStyle.borderStyle}`}
+              : ''
+          }`}
           style={{
             fontFamily: selectedStyle.font,
-            color: selectedStyle.colors.text.primary,
-            borderColor: `${selectedStyle.color}40`,
             background: isEditing 
               ? undefined 
-              : `linear-gradient(135deg, ${selectedStyle.colors.primary}10, ${selectedStyle.colors.secondary}20)`,
+              : `linear-gradient(135deg, ${selectedStyle.colors.primary}15, ${selectedStyle.colors.secondary}25)`,
+            borderColor: `${selectedStyle.color}40`,
+            color: selectedStyle.colors.text.primary
           }}
         >
-          <CardContent 
-            className="p-6"
-            style={{
-              color: selectedStyle.colors.text.primary
-            }}
-          >
+          <CardContent className="p-6">
             {children}
           </CardContent>
         </Card>
