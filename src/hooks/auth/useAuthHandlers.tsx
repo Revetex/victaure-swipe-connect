@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -9,34 +8,35 @@ export const useAuthHandlers = (setState: AuthStateDispatch) => {
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
 
-  const handleAuthError = (error: AuthError) => {
+  const handleAuthError = (error: Error) => {
     console.error('Auth error:', error);
-    setState(prev => ({ ...prev, error, isAuthenticated: false }));
     
-    if (error.message.includes('JWT expired')) {
-      toast.error('Votre session a expiré. Veuillez vous reconnecter.');
-      signOut();
-    } else if (error.message.includes('No user found')) {
-      toast.error('Utilisateur non trouvé. Veuillez vous reconnecter.');
-      signOut();
+    setState(prev => ({
+      ...prev,
+      isLoading: false,
+      error,
+      isAuthenticated: false
+    }));
+
+    if (error.message.includes('Failed to fetch')) {
+      toast.error("Erreur de connexion. Vérifiez votre connexion internet.");
     } else {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
     }
   };
 
   const signOut = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true }));
+      setState(prev => ({
+        ...prev,
+        isLoading: true,
+        error: null
+      }));
+
+      const { error } = await supabase.auth.signOut();
       
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      const { error: signOutError } = await supabase.auth.signOut({
-        scope: 'global'
-      });
-      
-      if (signOutError) throw signOutError;
-      
+      if (error) throw error;
+
       setState({
         isLoading: false,
         isAuthenticated: false,
@@ -44,20 +44,15 @@ export const useAuthHandlers = (setState: AuthStateDispatch) => {
         user: null
       });
 
-      const redirectTo = sessionStorage.getItem('redirectTo') || '/auth';
-      navigate(redirectTo, { replace: true });
-      
-      toast.success('Déconnexion réussie');
+      navigate('/auth');
     } catch (error) {
       console.error('Sign out error:', error);
-      setState(prev => ({ 
-        ...prev, 
-        isAuthenticated: false,
+      setState(prev => ({
+        ...prev,
         isLoading: false,
-        error: error instanceof Error ? error : new Error('Unknown error')
+        error: error instanceof Error ? error : new Error('Failed to sign out')
       }));
-      navigate('/auth', { replace: true });
-      toast.error('Erreur lors de la déconnexion');
+      toast.error("Erreur lors de la déconnexion. Veuillez réessayer.");
     }
   };
 

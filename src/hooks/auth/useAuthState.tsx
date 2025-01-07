@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, AuthError } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 
 export interface AuthState {
   isLoading: boolean;
@@ -18,8 +18,5 @@ export const useAuthState = () => {
     user: null
   });
 
-  return {
-    state,
-    setState
-  };
+  return { state, setState };
 };
