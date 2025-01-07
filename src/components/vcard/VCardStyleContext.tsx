@@ -16,6 +16,11 @@ const defaultStyle: StyleOption = {
       secondary: '#065F46',
       muted: '#047857',
     },
+    background: {
+      card: '#FFFFFF',
+      section: '#F9FAFB',
+      button: '#065F46'
+    }
   },
 };
 
