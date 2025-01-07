@@ -61,27 +61,27 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
 
   const handleStyleSelect = async (style: StyleOption) => {
     setSelectedStyle(style);
-    if (!isEditing) {
-      try {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ style_id: style.id })
-          .eq('id', profile?.id);
+    if (!profile) return;
 
-        if (error) throw error;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ style_id: style.id })
+        .eq('id', profile.id);
 
-        if (profile) {
-          setProfile({
-            ...profile,
-            style_id: style.id
-          });
-        }
+      if (error) throw error;
 
-        toast.success("Style mis à jour avec succès");
-      } catch (error) {
-        console.error('Error updating style:', error);
-        toast.error("Erreur lors de la mise à jour du style");
-      }
+      setProfile({
+        ...profile,
+        style_id: style.id
+      });
+
+      toast.success("Style mis à jour avec succès");
+    } catch (error) {
+      console.error('Error updating style:', error);
+      toast.error("Erreur lors de la mise à jour du style");
+      // Revert to previous style if update fails
+      setSelectedStyle(styleOptions.find(s => s.id === profile.style_id) || styleOptions[0]);
     }
   };
 
