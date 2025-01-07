@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
 import { DashboardContent } from "./dashboard/DashboardContent";
@@ -13,49 +13,58 @@ export function DashboardLayout() {
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
 
-  useEffect(() => {
-    const updateHeight = () => {
-      setViewportHeight(window.innerHeight);
-    };
+  const updateHeight = useCallback(() => {
+    setViewportHeight(window.innerHeight);
+  }, []);
 
+  useEffect(() => {
+    updateHeight();
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
 
-    setTimeout(updateHeight, 100);
+    const timeoutId = setTimeout(updateHeight, 100);
 
     return () => {
       window.removeEventListener('resize', updateHeight);
       window.removeEventListener('orientationchange', updateHeight);
+      clearTimeout(timeoutId);
     };
+  }, [updateHeight]);
+
+  const handleRequestChat = useCallback(() => {
+    setCurrentPage(2);
   }, []);
 
-  const handleRequestChat = () => {
-    setCurrentPage(2);
-  };
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const handleEditStateChange = useCallback((state: boolean) => {
+    setIsEditing(state);
+  }, []);
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
-      <motion.div 
-        key="dashboard-content"
-        variants={itemVariants} 
-        className="transform transition-all duration-300 w-full min-h-screen pb-40"
-        style={{ 
-          maxHeight: isEditing ? viewportHeight : 'none',
-          overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch'
-        }}
-      >
-        <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence mode="sync">
+        <motion.div 
+          variants={itemVariants} 
+          className="transform transition-all duration-300 w-full min-h-screen pb-40"
+          style={{ 
+            maxHeight: isEditing ? viewportHeight : 'none',
+            overflowY: isEditing ? 'auto' : 'visible',
+            WebkitOverflowScrolling: 'touch',
+            paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
+          }}
+        >
           <DashboardContent
-            key={`page-${currentPage}`}
             currentPage={currentPage}
             isEditing={isEditing}
             viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
+            onEditStateChange={handleEditStateChange}
             onRequestChat={handleRequestChat}
           />
-        </AnimatePresence>
-      </motion.div>
+        </motion.div>
+      </AnimatePresence>
       
       {!isEditing && (
         <nav 
@@ -68,7 +77,7 @@ export function DashboardLayout() {
           <div className="container mx-auto px-4 h-full flex items-center">
             <DashboardNavigation 
               currentPage={currentPage}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
             />
           </div>
         </nav>

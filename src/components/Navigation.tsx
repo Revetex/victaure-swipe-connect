@@ -6,16 +6,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import { memo } from 'react';
 
-export function Navigation() {
+const NavLinks = memo(() => {
+  const { signOut } = useAuth();
   const isMobile = useIsMobile();
-  const { signOut, isLoading } = useAuth();
-
-  if (isLoading) {
-    return null;
-  }
-
-  const NavLinks = () => (
+  
+  return (
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
       <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
         <span className="relative z-10">Trouver un Job</span>
@@ -42,6 +39,17 @@ export function Navigation() {
       </div>
     </nav>
   );
+});
+
+NavLinks.displayName = 'NavLinks';
+
+export function Navigation() {
+  const isMobile = useIsMobile();
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <motion.header 
