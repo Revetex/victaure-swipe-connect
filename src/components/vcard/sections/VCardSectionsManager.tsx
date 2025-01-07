@@ -21,6 +21,7 @@ export function VCardSectionsManager({
 
   useEffect(() => {
     if (profile?.sections_order) {
+      // Ensure sections are unique
       const uniqueSections = Array.from(new Set(profile.sections_order));
       if (uniqueSections.length !== profile.sections_order.length) {
         setProfile({
@@ -36,8 +37,15 @@ export function VCardSectionsManager({
 
   const handleAddSkill = () => {
     if (!profile || !newSkill.trim()) return;
-    const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-    setProfile({ ...profile, skills: Array.from(new Set(updatedSkills)) });
+    
+    // Ensure skills array exists and is unique
+    const currentSkills = profile.skills || [];
+    const newSkillTrimmed = newSkill.trim();
+    
+    if (!currentSkills.includes(newSkillTrimmed)) {
+      const updatedSkills = [...currentSkills, newSkillTrimmed];
+      setProfile({ ...profile, skills: updatedSkills });
+    }
     setNewSkill("");
   };
 

@@ -19,7 +19,13 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
 
   return (
     <div 
-      className={`relative p-6 rounded-xl shadow-lg bg-card dark:bg-card ${isEditing ? 'ring-2 ring-primary' : ''}`}
+      className={`
+        relative p-4 sm:p-6 rounded-xl shadow-lg bg-card dark:bg-card 
+        ${isEditing ? 'ring-2 ring-primary' : ''} 
+        transition-all duration-300 ease-in-out
+        w-full max-w-7xl mx-auto
+        min-h-[calc(100vh-4rem)] sm:min-h-0
+      `}
       style={containerStyle}
     >
       {children}

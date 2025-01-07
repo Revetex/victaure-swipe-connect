@@ -62,7 +62,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         textColor: profile.custom_text_color
       }}
     >
-      <div className="space-y-8">
+      <div className="space-y-8 max-w-4xl mx-auto">
         {isEditing && (
           <VCardCustomization profile={profile} setProfile={setProfile} />
         )}
