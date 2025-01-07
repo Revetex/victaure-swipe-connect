@@ -26,9 +26,7 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
         }}
       >
         <Card 
-          className={`relative border shadow-lg overflow-hidden transition-all duration-300 mb-8 ${
-            isEditing ? 'mt-4' : ''
-          } bg-white dark:bg-gray-900`}
+          className="relative border shadow-lg overflow-hidden transition-all duration-300 mb-8 bg-white dark:bg-gray-900"
           style={{
             background: `linear-gradient(135deg, ${selectedStyle.colors.primary}05, ${selectedStyle.colors.secondary}10)`,
             borderColor: `${selectedStyle.colors.primary}20`,
@@ -36,7 +34,9 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
           }}
         >
           <CardContent className="p-6">
-            {children}
+            <div className="prose prose-lg dark:prose-invert max-w-none">
+              {children}
+            </div>
           </CardContent>
         </Card>
       </motion.div>

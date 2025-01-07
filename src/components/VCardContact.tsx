@@ -47,7 +47,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     <div className="space-y-4">
       <h3 
         className="text-lg font-semibold"
-        style={{ color: selectedStyle.colors.text.primary }}
+        style={{ 
+          color: selectedStyle.colors.text.primary,
+          fontFamily: selectedStyle.font
+        }}
       >
         Contact
       </h3>
@@ -78,10 +81,19 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
-                className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="flex-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                style={{
+                  color: selectedStyle.colors.text.primary
+                }}
               />
             ) : (
-              <span style={{ color: selectedStyle.colors.text.secondary }}>
+              <span 
+                className="text-base"
+                style={{ 
+                  color: selectedStyle.colors.text.secondary,
+                  fontFamily: selectedStyle.font
+                }}
+              >
                 {field.value || "Non défini"}
               </span>
             )}

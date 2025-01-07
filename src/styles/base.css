@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 47% 33%, hsla(214.74, 95.56%, 87.96%, 0.4) 0, transparent 59%), 
+    radial-gradient(at 82% 65%, hsla(218.00, 39.29%, 11.96%, 0.1) 0, transparent 55%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
+  color: #1a1a1a;
+}
+
+.dark body {
+  background-color: #0f172a;
+  background-image: 
+    radial-gradient(at 47% 33%, hsla(222, 47%, 11%, 0.8) 0, transparent 59%), 
+    radial-gradient(at 82% 65%, hsla(225, 39%, 30%, 0.3) 0, transparent 55%);
+  color: #ffffff;
+}
