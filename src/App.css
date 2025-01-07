@@ -64,7 +64,7 @@
   }
 }
 
-/* Motif d'arrière-plan */
+/* Motif d'arrière-plan amélioré */
 body {
   background-color: #f8f9fa;
   background-image: 
@@ -74,4 +74,96 @@ body {
   min-height: 100vh;
   height: 100%;
   overflow-y: auto;
+}
+
+/* Styles pour le mode mobile */
+@media (max-width: 640px) {
+  .vcard-root {
+    padding: 0.5rem;
+  }
+
+  .glass-card {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+}
+
+/* Amélioration des styles de carte */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Styles pour les thèmes */
+.theme-modern {
+  --primary-color: #059669;
+  --secondary-color: #10B981;
+  --text-color: #064E3B;
+}
+
+.theme-elegant {
+  --primary-color: #8B5CF6;
+  --secondary-color: #A78BFA;
+  --text-color: #4C1D95;
+}
+
+.theme-bold {
+  --primary-color: #DB2777;
+  --secondary-color: #EC4899;
+  --text-color: #831843;
+}
+
+.theme-minimal {
+  --primary-color: #4B5563;
+  --secondary-color: #6B7280;
+  --text-color: #111827;
+}
+
+.theme-warm {
+  --primary-color: #D97706;
+  --secondary-color: #FBBF24;
+  --text-color: #78350F;
+}
+
+/* Amélioration des animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Amélioration des transitions */
+.style-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Amélioration du responsive design */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+  }
 }

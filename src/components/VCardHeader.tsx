@@ -60,7 +60,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-start gap-4"
+      className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4"
     >
       <div className="relative group">
         <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
@@ -90,7 +90,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
         )}
       </div>
 
-      <div className="flex-1 min-w-0 space-y-1">
+      <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
         {isEditing ? (
           <div className="space-y-4">
             <Input
@@ -109,19 +109,19 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
         ) : (
           <>
             <h2 
-              className="text-xl font-semibold truncate text-white"
+              className="text-xl sm:text-2xl font-semibold truncate text-white style-transition"
               style={{ 
                 textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                color: 'white' // Force white color regardless of style
+                color: selectedStyle.colors.text.primary
               }}
             >
               {profile.full_name || "Nom non défini"}
             </h2>
             <p 
-              className="text-sm text-white/90"
+              className="text-sm sm:text-base text-white/90 style-transition"
               style={{ 
                 textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                color: 'white' // Force white color regardless of style
+                color: selectedStyle.colors.text.secondary
               }}
             >
               {profile.role || "Rôle non défini"}

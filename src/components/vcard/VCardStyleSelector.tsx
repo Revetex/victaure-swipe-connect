@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styleOptions } from "./styles";
+import { toast } from "sonner";
 
 interface VCardStyleSelectorProps {
   selectedStyle: StyleOption;
@@ -18,10 +19,20 @@ export function VCardStyleSelector({
 }: VCardStyleSelectorProps) {
   if (!isEditing) return null;
 
+  const handleStyleSelect = async (style: StyleOption) => {
+    try {
+      await onStyleSelect(style);
+      toast.success(`Style ${style.name} appliqué avec succès`);
+    } catch (error) {
+      console.error('Error updating style:', error);
+      toast.error("Erreur lors de l'application du style");
+    }
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 fade-in">
       <h3 className="text-lg font-semibold text-white/90">Style</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <div className="responsive-grid">
         {styleOptions.map((style) => (
           <motion.div
             key={style.id}
@@ -32,11 +43,11 @@ export function VCardStyleSelector({
             transition={{ duration: 0.3 }}
           >
             <Button
-              onClick={() => onStyleSelect(style)}
+              onClick={() => handleStyleSelect(style)}
               className={cn(
                 "relative w-full h-16 rounded-xl transition-all duration-300 overflow-hidden group",
                 selectedStyle.id === style.id 
-                  ? 'ring-2 ring-white shadow-lg' 
+                  ? 'ring-2 ring-white shadow-lg scale-105' 
                   : 'hover:ring-1 hover:ring-white/50'
               )}
               style={{ 
