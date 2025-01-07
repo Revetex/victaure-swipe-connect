@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CategoryIcon } from "./CategoryIcon";
 
 interface SkillCategoryProps {
   category: string;
@@ -24,31 +23,29 @@ export function SkillCategory({
   if (filteredSkills.length === 0) return null;
 
   return (
-    <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">{category}</h3>
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <CategoryIcon category={category} />
+        <h3 className="font-medium">{category}</h3>
+      </div>
       <div className="flex flex-wrap gap-2">
         {filteredSkills.map((skill) => (
-          <motion.div
+          <motion.span
             key={`${category}-${skill}`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="relative group"
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary relative group"
           >
-            <div className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm">
-              {skill}
-              {isEditing && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => onRemoveSkill(skill)}
-                >
-                  <X className="h-2 w-2" />
-                </Button>
-              )}
-            </div>
-          </motion.div>
+            {skill}
+            {isEditing && (
+              <button
+                onClick={() => onRemoveSkill(skill)}
+                className="ml-1 text-primary/60 hover:text-primary focus:outline-none"
+              >
+                ×
+              </button>
+            )}
+          </motion.span>
         ))}
       </div>
     </div>
