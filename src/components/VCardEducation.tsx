@@ -37,9 +37,8 @@ export function VCardEducation({
     toast.success("Formation ajoutée");
   };
 
-  const handleRemoveEducation = (index: number) => {
-    const newEducation = [...(profile.education || [])];
-    newEducation.splice(index, 1);
+  const handleRemoveEducation = (educationId: string) => {
+    const newEducation = [...(profile.education || [])].filter(edu => edu.id !== educationId);
     setProfile({ ...profile, education: newEducation });
     toast.success("Formation supprimée");
   };
@@ -66,89 +65,94 @@ export function VCardEducation({
                       <GripVertical className="h-4 w-4 text-indigo-400" />
                     </div>
                     <div className="ml-6">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
-                    <Input
-                      value={edu.school_name}
-                      onChange={(e) => {
-                        const newEducation = [...(profile.education || [])];
-                        newEducation[index].school_name = e.target.value;
-                        setProfile({ ...profile, education: newEducation });
-                      }}
-                      placeholder="Nom de l'école"
-                      className="flex-1 bg-white/10 border-indigo-500/20"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4 text-indigo-400 shrink-0" />
-                    <Input
-                      value={edu.degree}
-                      onChange={(e) => {
-                        const newEducation = [...(profile.education || [])];
-                        newEducation[index].degree = e.target.value;
-                        setProfile({ ...profile, education: newEducation });
-                      }}
-                      placeholder="Diplôme"
-                      className="flex-1 bg-white/10 border-indigo-500/20"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={edu.field_of_study}
-                      onChange={(e) => {
-                        const newEducation = [...(profile.education || [])];
-                        newEducation[index].field_of_study = e.target.value;
-                        setProfile({ ...profile, education: newEducation });
-                      }}
-                      placeholder="Domaine d'études"
-                      className="flex-1 bg-white/10 border-indigo-500/20"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-indigo-400 shrink-0" />
-                      <Input
-                        type="date"
-                        value={edu.start_date}
-                        onChange={(e) => {
-                          const newEducation = [...(profile.education || [])];
-                          newEducation[index].start_date = e.target.value;
-                          setProfile({ ...profile, education: newEducation });
-                        }}
-                        className="flex-1 bg-white/10 border-indigo-500/20"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-indigo-400 shrink-0" />
-                      <Input
-                        type="date"
-                        value={edu.end_date}
-                        onChange={(e) => {
-                          const newEducation = [...(profile.education || [])];
-                          newEducation[index].end_date = e.target.value;
-                          setProfile({ ...profile, education: newEducation });
-                        }}
-                        className="flex-1 bg-white/10 border-indigo-500/20"
-                      />
-                    </div>
-                  </div>
-                  <div className="absolute top-2 right-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveEducation(index)}
-                      className="text-indigo-400 hover:text-red-400 transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
+                        <Input
+                          value={edu.school_name}
+                          onChange={(e) => {
+                            const newEducation = [...(profile.education || [])];
+                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
+                            newEducation[eduIndex] = { ...edu, school_name: e.target.value };
+                            setProfile({ ...profile, education: newEducation });
+                          }}
+                          placeholder="Nom de l'école"
+                          className="flex-1 bg-white/10 border-indigo-500/20"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <GraduationCap className="h-4 w-4 text-indigo-400 shrink-0" />
+                        <Input
+                          value={edu.degree}
+                          onChange={(e) => {
+                            const newEducation = [...(profile.education || [])];
+                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
+                            newEducation[eduIndex] = { ...edu, degree: e.target.value };
+                            setProfile({ ...profile, education: newEducation });
+                          }}
+                          placeholder="Diplôme"
+                          className="flex-1 bg-white/10 border-indigo-500/20"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={edu.field_of_study}
+                          onChange={(e) => {
+                            const newEducation = [...(profile.education || [])];
+                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
+                            newEducation[eduIndex] = { ...edu, field_of_study: e.target.value };
+                            setProfile({ ...profile, education: newEducation });
+                          }}
+                          placeholder="Domaine d'études"
+                          className="flex-1 bg-white/10 border-indigo-500/20"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-indigo-400 shrink-0" />
+                          <Input
+                            type="date"
+                            value={edu.start_date}
+                            onChange={(e) => {
+                              const newEducation = [...(profile.education || [])];
+                              const eduIndex = newEducation.findIndex(e => e.id === edu.id);
+                              newEducation[eduIndex] = { ...edu, start_date: e.target.value };
+                              setProfile({ ...profile, education: newEducation });
+                            }}
+                            className="flex-1 bg-white/10 border-indigo-500/20"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-indigo-400 shrink-0" />
+                          <Input
+                            type="date"
+                            value={edu.end_date}
+                            onChange={(e) => {
+                              const newEducation = [...(profile.education || [])];
+                              const eduIndex = newEducation.findIndex(e => e.id === edu.id);
+                              newEducation[eduIndex] = { ...edu, end_date: e.target.value };
+                              setProfile({ ...profile, education: newEducation });
+                            }}
+                            className="flex-1 bg-white/10 border-indigo-500/20"
+                          />
+                        </div>
+                      </div>
+                      <div className="absolute top-2 right-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveEducation(edu.id)}
+                          className="text-indigo-400 hover:text-red-400 transition-colors"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </motion.div>
                 </Reorder.Item>
               ))}
             </Reorder.Group>
           ) : (
-            (profile.education || []).map((edu: Education, index: number) => (
+            (profile.education || []).map((edu: Education) => (
               <motion.div 
                 key={edu.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -156,25 +160,25 @@ export function VCardEducation({
                 exit={{ opacity: 0, y: -20 }}
                 className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20"
               >
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
-                    <p className="font-medium text-white">{edu.school_name || "École non définie"}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4 text-indigo-400 shrink-0" />
-                    <p className="text-white/80">{edu.degree || "Diplôme non défini"}</p>
-                  </div>
-                  {edu.field_of_study && (
-                    <p className="text-white/70 pl-6">{edu.field_of_study}</p>
-                  )}
-                  <div className="flex items-center gap-2 text-sm text-white/60">
-                    <Calendar className="h-4 w-4" />
-                    <span>
-                      {edu.start_date ? new Date(edu.start_date).getFullYear() : "?"} 
-                      {" - "}
-                      {edu.end_date ? new Date(edu.end_date).getFullYear() : "Présent"}
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
+                  <p className="font-medium text-white">{edu.school_name || "École non définie"}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-indigo-400 shrink-0" />
+                  <p className="text-white/80">{edu.degree || "Diplôme non défini"}</p>
+                </div>
+                {edu.field_of_study && (
+                  <p className="text-white/70 pl-6">{edu.field_of_study}</p>
+                )}
+                <div className="flex items-center gap-2 text-sm text-white/60">
+                  <Calendar className="h-4 w-4" />
+                  <span>
+                    {edu.start_date ? new Date(edu.start_date).getFullYear() : "?"} 
+                    {" - "}
+                    {edu.end_date ? new Date(edu.end_date).getFullYear() : "Présent"}
+                  </span>
+                </div>
               </motion.div>
             ))
           )}

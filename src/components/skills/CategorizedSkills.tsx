@@ -5,7 +5,6 @@ import { UserProfile } from "@/types/profile";
 interface CategorizedSkillsProps {
   profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
   onRemoveSkill: (skill: string) => void;
 }
 
