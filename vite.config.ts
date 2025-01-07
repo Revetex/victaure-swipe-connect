@@ -17,24 +17,19 @@ export default defineConfig(({ mode }) => ({
     host: '0.0.0.0',
     port: 8080,
     hmr: {
-      clientPort: 443,
-      protocol: 'wss',
-      host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-      timeout: 120000
+      clientPort: 8080,
+      host: 'localhost',
+      protocol: 'ws'
     },
     watch: {
       usePolling: true,
       interval: 1000,
     },
-    cors: {
-      origin: [
-        'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-        'http://localhost:8080',
-        'https://mfjllillnpleasclqabb.supabase.co'
-      ],
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-      credentials: true
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
     },
     proxy: {
       '/api': {
