@@ -15,16 +15,17 @@ export const generateBusinessCard = async (
     format: [85.6, 53.98]
   }));
 
-  // Set background with style-specific gradient
-  doc.setFillColor(selectedStyle.colors.primary);
-  doc.setDrawColor(selectedStyle.colors.secondary);
-  
-  // Apply gradient background using rect with opacity
-  doc.setGlobalAlpha(0.1);
-  doc.rect(0, 0, 85.6, 53.98, 'F');
-  doc.setGlobalAlpha(1);
-
+  // Front side
   try {
+    // Set background with style-specific gradient
+    doc.setFillColor(selectedStyle.colors.primary);
+    doc.setDrawColor(selectedStyle.colors.secondary);
+    
+    // Apply gradient background using rect with opacity
+    doc.setGlobalAlpha(0.1);
+    doc.rect(0, 0, 85.6, 53.98, 'F');
+    doc.setGlobalAlpha(1);
+
     // Add name and role with styled positioning
     doc.setTextColor(selectedStyle.colors.text.primary);
     doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
@@ -55,15 +56,61 @@ export const generateBusinessCard = async (
       doc.text([profile.city, profile.state, profile.country].filter(Boolean).join(', '), 10, contactY);
     }
 
-    // Add QR code with style-matched frame
+    // Add QR code with style-matched frame - Adjusted positioning and size
     try {
-      const qrCodeUrl = await QRCode.toDataURL(window.location.href);
+      const qrCodeUrl = await QRCode.toDataURL(window.location.href, {
+        margin: 0,
+        width: 200,
+        errorCorrectionLevel: 'H'
+      });
       doc.setDrawColor(selectedStyle.colors.primary);
       doc.setLineWidth(0.5);
-      doc.roundedRect(63, 13, 19, 19, 2, 2, 'S');
-      doc.addImage(qrCodeUrl, 'PNG', 65, 15, 15, 15);
+      // Adjusted QR code position and size
+      const qrSize = 20;
+      const qrX = 85.6 - qrSize - 5; // 5mm from right edge
+      const qrY = (53.98 - qrSize) / 2; // Centered vertically
+      doc.roundedRect(qrX - 1, qrY - 1, qrSize + 2, qrSize + 2, 2, 2, 'S');
+      doc.addImage(qrCodeUrl, 'PNG', qrX, qrY, qrSize, qrSize);
     } catch (error) {
       console.error('Error generating QR code:', error);
+    }
+
+    // Add back side
+    doc.addPage([85.6, 53.98], 'landscape');
+    
+    // Add subtle background pattern
+    doc.setGlobalAlpha(0.05);
+    for (let i = 0; i < 85.6; i += 5) {
+      for (let j = 0; j < 53.98; j += 5) {
+        doc.setFillColor(selectedStyle.colors.primary);
+        doc.circle(i, j, 0.5, 'F');
+      }
+    }
+    doc.setGlobalAlpha(1);
+
+    // Add logo
+    try {
+      // Center the logo on the back
+      const logoSize = 30;
+      const logoX = (85.6 - logoSize) / 2;
+      const logoY = (53.98 - logoSize) / 2;
+      
+      doc.addImage(
+        "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
+        "PNG",
+        logoX,
+        logoY,
+        logoSize,
+        logoSize
+      );
+
+      // Add decorative border
+      doc.setDrawColor(selectedStyle.colors.primary);
+      doc.setLineWidth(0.5);
+      const margin = 5;
+      doc.roundedRect(margin, margin, 85.6 - 2 * margin, 53.98 - 2 * margin, 3, 3, 'S');
+    } catch (error) {
+      console.error('Error adding logo:', error);
     }
 
   } catch (error) {
