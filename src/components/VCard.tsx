@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
@@ -6,10 +6,9 @@ import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
-import { VCardSections } from "./vcard/VCardSections";
+import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 
 interface VCardProps {
@@ -20,27 +19,8 @@ interface VCardProps {
 export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
-  const [newSkill, setNewSkill] = useState("");
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
-  const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
   const { selectedStyle } = useVCardStyle();
-
-  useEffect(() => {
-    if (profile?.sections_order) {
-      // Ensure we don't have duplicate sections
-      const uniqueSections = Array.from(new Set(profile.sections_order));
-      if (uniqueSections.length !== profile.sections_order.length) {
-        // Update profile if we found duplicates
-        setProfile({
-          ...profile,
-          sections_order: uniqueSections
-        });
-      }
-      setSectionsOrder(uniqueSections);
-    } else {
-      setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
-    }
-  }, [profile, setProfile]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -53,10 +33,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
 
     try {
-      await updateProfile({
-        ...profile,
-        sections_order: sectionsOrder
-      });
+      await updateProfile(profile);
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -68,33 +45,12 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const items = Array.from(sectionsOrder);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setSectionsOrder(items);
-  };
-
   if (isLoading) {
     return <VCardSkeleton />;
   }
 
   if (!profile) {
     return <VCardEmpty />;
-  }
-
-  // Ensure profile skills are unique
-  if (profile.skills) {
-    const uniqueSkills = Array.from(new Set(profile.skills));
-    if (uniqueSkills.length !== profile.skills.length) {
-      setProfile({
-        ...profile,
-        skills: uniqueSkills
-      });
-    }
   }
 
   return (
@@ -111,58 +67,12 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           <VCardCustomization profile={profile} setProfile={setProfile} />
         )}
 
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="sections">
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="space-y-8"
-              >
-                {sectionsOrder.map((sectionId, index) => (
-                  <Draggable
-                    key={sectionId}
-                    draggableId={sectionId}
-                    index={index}
-                    isDragDisabled={!isEditing}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <VCardSections
-                          profile={profile}
-                          isEditing={isEditing}
-                          setProfile={setProfile}
-                          newSkill={newSkill}
-                          setNewSkill={setNewSkill}
-                          handleAddSkill={() => {
-                            if (!profile || !newSkill.trim()) return;
-                            const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-                            setProfile({ ...profile, skills: Array.from(new Set(updatedSkills)) });
-                            setNewSkill("");
-                          }}
-                          handleRemoveSkill={(skillToRemove: string) => {
-                            if (!profile) return;
-                            const updatedSkills = (profile.skills || []).filter(
-                              (skill) => skill !== skillToRemove
-                            );
-                            setProfile({ ...profile, skills: updatedSkills });
-                          }}
-                          selectedStyle={selectedStyle}
-                          sectionsOrder={sectionsOrder}
-                        />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <VCardSectionsManager
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+          selectedStyle={selectedStyle}
+        />
 
         <VCardFooter
           isEditing={isEditing}
