@@ -2,18 +2,45 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { AuthError, AuthTokenResponse, User } from '@supabase/supabase-js';
+
+interface AuthState {
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: Error | null;
+  user: User | null;
+}
 
 export function useAuth() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [state, setState] = useState<AuthState>({
+    isLoading: true,
+    isAuthenticated: false,
+    error: null,
+    user: null
+  });
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
 
+  const handleAuthError = (error: AuthError) => {
+    console.error('Auth error:', error);
+    setState(prev => ({ ...prev, error, isAuthenticated: false }));
+    
+    if (error.message.includes('JWT expired')) {
+      toast.error('Votre session a expiré. Veuillez vous reconnecter.');
+      signOut();
+    } else if (error.message.includes('No user found')) {
+      toast.error('Utilisateur non trouvé. Veuillez vous reconnecter.');
+      signOut();
+    } else {
+      toast.error("Une erreur est survenue. Veuillez réessayer.");
+    }
+  };
+
   const signOut = async () => {
     try {
-      setIsLoading(true);
+      setState(prev => ({ ...prev, isLoading: true }));
       
+      // Clear all storage
       localStorage.clear();
       sessionStorage.clear();
       
@@ -26,16 +53,28 @@ export function useAuth() {
         throw signOutError;
       }
       
-      setIsAuthenticated(false);
-      navigate('/auth', { replace: true });
+      setState({
+        isLoading: false,
+        isAuthenticated: false,
+        error: null,
+        user: null
+      });
+
+      // Get the stored redirect path or default to auth
+      const redirectTo = sessionStorage.getItem('redirectTo') || '/auth';
+      navigate(redirectTo, { replace: true });
+      
       toast.success('Déconnexion réussie');
     } catch (error) {
       console.error('Sign out error:', error);
-      setIsAuthenticated(false);
+      setState(prev => ({ 
+        ...prev, 
+        isAuthenticated: false,
+        isLoading: false,
+        error: error instanceof Error ? error : new Error('Unknown error')
+      }));
       navigate('/auth', { replace: true });
       toast.error('Erreur lors de la déconnexion');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -45,60 +84,70 @@ export function useAuth() {
 
     const checkAuth = async () => {
       try {
-        setIsLoading(true);
-        setError(null);
+        setState(prev => ({ ...prev, isLoading: true, error: null }));
         
+        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
           
-          if ((sessionError.message === "Failed to fetch" || sessionError.message.includes("NetworkError")) && retryCount < 3) {
+          if ((sessionError.message.includes('Failed to fetch') || 
+               sessionError.message.includes('NetworkError')) && 
+              retryCount < 3) {
             setRetryCount(prev => prev + 1);
             retryTimeout = setTimeout(checkAuth, 2000);
             return;
           }
           
           if (mounted) {
-            setError(sessionError);
-            setIsAuthenticated(false);
-            navigate('/auth', { replace: true });
+            handleAuthError(sessionError);
           }
           return;
         }
         
         if (!session) {
           if (mounted) {
-            setIsAuthenticated(false);
-            if (window.location.pathname !== '/auth') {
-              navigate('/auth', { replace: true });
-            }
+            setState({
+              isLoading: false,
+              isAuthenticated: false,
+              error: null,
+              user: null
+            });
           }
           return;
         }
 
+        // Verify user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
           console.error("User verification error:", userError);
           if (mounted) {
-            setError(userError);
-            setIsAuthenticated(false);
-            navigate('/auth', { replace: true });
+            handleAuthError(userError);
           }
           return;
         }
 
         if (!user) {
           if (mounted) {
-            setIsAuthenticated(false);
-            navigate('/auth', { replace: true });
+            setState({
+              isLoading: false,
+              isAuthenticated: false,
+              error: null,
+              user: null
+            });
           }
           return;
         }
 
         if (mounted) {
-          setIsAuthenticated(true);
+          setState({
+            isLoading: false,
+            isAuthenticated: true,
+            error: null,
+            user
+          });
           setRetryCount(0);
         }
       } catch (error) {
@@ -108,14 +157,13 @@ export function useAuth() {
             setRetryCount(prev => prev + 1);
             retryTimeout = setTimeout(checkAuth, 2000);
           } else {
-            setError(error instanceof Error ? error : new Error('Authentication check failed'));
-            setIsAuthenticated(false);
-            navigate('/auth', { replace: true });
+            setState(prev => ({
+              ...prev,
+              isLoading: false,
+              error: error instanceof Error ? error : new Error('Authentication check failed'),
+              isAuthenticated: false
+            }));
           }
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
         }
       }
     };
@@ -123,11 +171,22 @@ export function useAuth() {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event);
+      
       if (event === 'SIGNED_IN' && session) {
-        setIsAuthenticated(true);
+        setState(prev => ({
+          ...prev,
+          isAuthenticated: true,
+          user: session.user
+        }));
         navigate('/dashboard', { replace: true });
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
-        setIsAuthenticated(false);
+        setState({
+          isLoading: false,
+          isAuthenticated: false,
+          error: null,
+          user: null
+        });
         navigate('/auth', { replace: true });
       }
     });
@@ -139,5 +198,8 @@ export function useAuth() {
     };
   }, [navigate, retryCount]);
 
-  return { isLoading, isAuthenticated, error, signOut };
+  return { 
+    ...state,
+    signOut
+  };
 }
