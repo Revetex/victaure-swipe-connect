@@ -15,11 +15,18 @@ const config: CapacitorConfig = {
       'https://*.lovableproject.com',
       'https://mfjllillnpleasclqabb.supabase.co',
       'wss://mfjllillnpleasclqabb.supabase.co',
-      'https://mfjllillnpleasclqabb.supabase.co:443'
+      'https://mfjllillnpleasclqabb.supabase.co:443',
+      'https://*.lovableproject.com:443'
     ]
   },
   android: {
-    allowMixedContent: true
+    allowMixedContent: true,
+    webContentsDebuggingEnabled: true
+  },
+  plugins: {
+    CapacitorHttp: {
+      enabled: true
+    }
   }
 };
 
