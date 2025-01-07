@@ -21,7 +21,20 @@ export function VCardMainContent({
 }: VCardMainContentProps) {
   return (
     <div className="relative">
-      <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 rounded-xl opacity-50"
+        animate={{ 
+          opacity: [0.3, 0.5, 0.3],
+          scale: [1, 1.02, 1]
+        }}
+        transition={{ 
+          duration: 3,
+          repeat: Infinity,
+          repeatType: "reverse"
+        }}
+      />
+      
+      <div className="relative z-10 flex flex-col sm:flex-row items-start justify-between gap-6 p-6 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10">
         <div className="flex-1 min-w-0">
           <VCardHeader
             profile={profile}
@@ -34,6 +47,7 @@ export function VCardMainContent({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
+              className="mt-4"
             >
               <VCardContactInfo
                 email={profile.email}
