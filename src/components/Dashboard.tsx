@@ -123,9 +123,15 @@ export function Dashboard() {
           <QuickActions stats={stats} />
         </div>
 
-        <div className="mt-8">
+        <motion.div 
+          className="mt-8"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: { opacity: 1, y: 0 }
+          }}
+        >
           <VCard />
-        </div>
+        </motion.div>
 
         <div className="mt-8">
           <UploadApk />
