@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardActionsProps {
   isEditing: boolean;
@@ -28,11 +29,14 @@ export function VCardActions({
   onApplyChanges,
   setIsEditing,
 }: VCardActionsProps) {
+  const { selectedStyle } = useVCardStyle();
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-wrap gap-3 pt-4 border-t border-white/20"
+      className="flex flex-wrap gap-3 pt-4 border-t"
+      style={{ borderColor: `${selectedStyle.colors.primary}20` }}
     >
       {isEditing ? (
         <>
@@ -43,7 +47,12 @@ export function VCardActions({
           >
             <Button 
               onClick={onSave}
-              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
+              className="w-full transition-colors"
+              style={{ 
+                backgroundColor: selectedStyle.colors.primary,
+                color: 'white',
+                borderColor: `${selectedStyle.colors.primary}40`
+              }}
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
@@ -57,7 +66,11 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges}
               variant="outline" 
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors"
+              style={{ 
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
+              }}
             >
               Appliquer
             </Button>
@@ -72,7 +85,12 @@ export function VCardActions({
           >
             <Button 
               onClick={onShare}
-              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
+              className="w-full transition-colors"
+              style={{ 
+                backgroundColor: selectedStyle.colors.primary,
+                color: 'white',
+                borderColor: `${selectedStyle.colors.primary}40`
+              }}
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
@@ -86,7 +104,11 @@ export function VCardActions({
             <Button 
               onClick={() => setIsEditing(true)}
               variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors"
+              style={{ 
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
+              }}
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
@@ -100,7 +122,11 @@ export function VCardActions({
             <Button 
               onClick={onDownload}
               variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors"
+              style={{ 
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
+              }}
             >
               <Download className="mr-2 h-4 w-4" />
               Télécharger
@@ -114,7 +140,11 @@ export function VCardActions({
             <Button 
               onClick={onDownloadBusinessPDF}
               variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors"
+              style={{ 
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
+              }}
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
@@ -128,7 +158,11 @@ export function VCardActions({
             <Button 
               onClick={onDownloadCVPDF}
               variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors"
+              style={{ 
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
+              }}
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
@@ -141,7 +175,11 @@ export function VCardActions({
             <Button 
               onClick={onCopyLink}
               variant="outline"
-              className="border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="transition-colors"
+              style={{ 
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
+              }}
             >
               <Copy className="h-4 w-4" />
             </Button>
