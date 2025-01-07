@@ -69,8 +69,8 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             alt={profile.full_name || ''}
             className="object-cover w-full h-full"
           />
-          <AvatarFallback className="bg-muted">
-            <UserCircle2 className="h-14 w-14 text-muted-foreground" />
+          <AvatarFallback className="bg-[#1A1F2C]">
+            <UserCircle2 className="h-14 w-14 text-white" />
           </AvatarFallback>
         </Avatar>
         {isEditing && (
@@ -112,7 +112,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               className="text-xl sm:text-2xl font-semibold truncate text-white style-transition"
               style={{ 
                 textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                color: selectedStyle.colors.text.primary
+                color: '#FFFFFF'
               }}
             >
               {profile.full_name || "Nom non défini"}
@@ -121,7 +121,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               className="text-sm sm:text-base text-white/90 style-transition"
               style={{ 
                 textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                color: selectedStyle.colors.text.secondary
+                color: '#FFFFFF'
               }}
             >
               {profile.role || "Rôle non défini"}

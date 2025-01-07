@@ -64,16 +64,17 @@
   }
 }
 
-/* Motif d'arrière-plan amélioré */
+/* Motif d'arrière-plan amélioré avec meilleur contraste */
 body {
-  background-color: #f8f9fa;
+  background-color: #1A1F2C;
   background-image: 
-    radial-gradient(at 47% 33%, hsl(214.74, 95.56%, 87.96%) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsl(218.00, 39.29%, 11.96%) 0, transparent 55%);
+    radial-gradient(at 47% 33%, hsla(214.74, 95.56%, 87.96%, 0.25) 0, transparent 59%), 
+    radial-gradient(at 82% 65%, hsla(218.00, 39.29%, 11.96%, 0.4) 0, transparent 55%);
   background-attachment: fixed;
   min-height: 100vh;
   height: 100%;
   overflow-y: auto;
+  color: #FFFFFF;
 }
 
 /* Styles pour le mode mobile */
@@ -88,13 +89,14 @@ body {
   }
 }
 
-/* Amélioration des styles de carte */
+/* Amélioration des styles de carte avec meilleur contraste */
 .glass-card {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
+  color: #FFFFFF;
 }
 
 .glass-card:hover {
@@ -102,68 +104,35 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Styles pour les thèmes */
+/* Styles pour les thèmes avec meilleur contraste */
 .theme-modern {
   --primary-color: #059669;
   --secondary-color: #10B981;
-  --text-color: #064E3B;
+  --text-color: #FFFFFF;
 }
 
 .theme-elegant {
   --primary-color: #8B5CF6;
   --secondary-color: #A78BFA;
-  --text-color: #4C1D95;
+  --text-color: #FFFFFF;
 }
 
 .theme-bold {
   --primary-color: #DB2777;
   --secondary-color: #EC4899;
-  --text-color: #831843;
+  --text-color: #FFFFFF;
 }
 
 .theme-minimal {
-  --primary-color: #4B5563;
-  --secondary-color: #6B7280;
-  --text-color: #111827;
+  --primary-color: #F3F4F6;
+  --secondary-color: #E5E7EB;
+  --text-color: #FFFFFF;
 }
 
 .theme-warm {
   --primary-color: #D97706;
   --secondary-color: #FBBF24;
-  --text-color: #78350F;
+  --text-color: #FFFFFF;
 }
 
-/* Amélioration des animations */
-.fade-in {
-  animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Amélioration des transitions */
-.style-transition {
-  transition: all 0.3s ease-in-out;
-}
-
-/* Amélioration du responsive design */
-.responsive-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-  width: 100%;
-}
-
-@media (max-width: 640px) {
-  .responsive-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* ... keep existing code */
