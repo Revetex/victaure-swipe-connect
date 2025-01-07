@@ -20,11 +20,15 @@ export const generatePDF = async (profile: UserProfile, style: StyleOption) => {
       ...pdfStyles.colors,
       primary: '#00c896', // Emerald green
       secondary: '#808080', // Metallic gray
-      background: '#1a1a1a', // Dark background
       text: {
         primary: '#e6e6e6', // Light text
         secondary: '#b3b3b3', // Metallic silver
         muted: '#666666' // Darker silver
+      },
+      background: {
+        card: '#1a1a1a', // Dark background
+        section: '#242424', // Slightly lighter background for sections
+        button: '#2a2a2a' // Button background
       }
     }
   };
