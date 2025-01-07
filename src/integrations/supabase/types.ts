@@ -591,6 +591,9 @@ export type Database = {
           company_size: string | null
           country: string | null
           created_at: string | null
+          custom_background: string | null
+          custom_font: string | null
+          custom_text_color: string | null
           email: string
           full_name: string | null
           id: string
@@ -601,6 +604,7 @@ export type Database = {
           online_status: boolean | null
           phone: string | null
           role: string
+          sections_order: string[] | null
           skills: string[] | null
           state: string | null
           style_id: string | null
@@ -615,6 +619,9 @@ export type Database = {
           company_size?: string | null
           country?: string | null
           created_at?: string | null
+          custom_background?: string | null
+          custom_font?: string | null
+          custom_text_color?: string | null
           email: string
           full_name?: string | null
           id: string
@@ -625,6 +632,7 @@ export type Database = {
           online_status?: boolean | null
           phone?: string | null
           role: string
+          sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
           style_id?: string | null
@@ -639,6 +647,9 @@ export type Database = {
           company_size?: string | null
           country?: string | null
           created_at?: string | null
+          custom_background?: string | null
+          custom_font?: string | null
+          custom_text_color?: string | null
           email?: string
           full_name?: string | null
           id?: string
@@ -649,6 +660,7 @@ export type Database = {
           online_status?: boolean | null
           phone?: string | null
           role?: string
+          sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
           style_id?: string | null

@@ -5,9 +5,6 @@ import { VCardEmpty } from "./vcard/VCardEmpty";
 import { VCardHeader } from "./VCardHeader";
 import { VCardContact } from "./VCardContact";
 import { toast } from "sonner";
-import { styleOptions } from "./vcard/styles";
-import { StyleOption } from "./vcard/types";
-import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
 import { VCardContent } from "./vcard/VCardContent";
 import { supabase } from "@/integrations/supabase/client";
 import { updateProfile } from "@/utils/profileActions";
@@ -17,6 +14,9 @@ import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { VCardBio } from "./VCardBio";
 import { VCardEducation } from "./VCardEducation";
 import { VCardExperiences } from "./VCardExperiences";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -27,15 +27,14 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-  const [selectedStyle, setSelectedStyle] = useState<StyleOption>(styleOptions[0]);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
 
   useEffect(() => {
-    if (profile?.style_id) {
-      const savedStyle = styleOptions.find(style => style.id === profile.style_id);
-      if (savedStyle) {
-        setSelectedStyle(savedStyle);
-      }
+    if (profile?.sections_order) {
+      setSectionsOrder(profile.sections_order);
+    } else {
+      setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
     }
   }, [profile]);
 
@@ -50,7 +49,10 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
 
     try {
-      await updateProfile(profile);
+      await updateProfile({
+        ...profile,
+        sections_order: sectionsOrder
+      });
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -62,29 +64,83 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
-  const handleStyleSelect = async (style: StyleOption) => {
-    setSelectedStyle(style);
-    if (!profile) return;
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
 
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ style_id: style.id })
-        .eq('id', profile.id);
+    const items = Array.from(sectionsOrder);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
 
-      if (error) throw error;
+    setSectionsOrder(items);
+  };
 
-      setProfile({
-        ...profile,
-        style_id: style.id
-      });
-
-      toast.success("Style mis à jour avec succès");
-    } catch (error) {
-      console.error('Error updating style:', error);
-      toast.error("Erreur lors de la mise à jour du style");
-      // Revert to previous style if update fails
-      setSelectedStyle(styleOptions.find(s => s.id === profile.style_id) || styleOptions[0]);
+  const renderSection = (sectionId: string) => {
+    switch (sectionId) {
+      case 'header':
+        return (
+          <VCardHeader
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+        );
+      case 'bio':
+        return (
+          <VCardBio
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+        );
+      case 'contact':
+        return (
+          <VCardContact
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+        );
+      case 'skills':
+        return (
+          <VCardContent
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            newSkill={newSkill}
+            setNewSkill={setNewSkill}
+            handleAddSkill={() => {
+              if (!profile || !newSkill.trim()) return;
+              const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+              setProfile({ ...profile, skills: updatedSkills });
+              setNewSkill("");
+            }}
+            handleRemoveSkill={(skillToRemove: string) => {
+              if (!profile) return;
+              const updatedSkills = (profile.skills || []).filter(
+                (skill) => skill !== skillToRemove
+              );
+              setProfile({ ...profile, skills: updatedSkills });
+            }}
+          />
+        );
+      case 'education':
+        return (
+          <VCardEducation
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+        );
+      case 'experience':
+        return (
+          <VCardExperiences
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+        );
+      default:
+        return null;
     }
   };
 
@@ -97,78 +153,110 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   }
 
   return (
-    <VCardContainer isEditing={isEditing} selectedStyle={selectedStyle}>
+    <VCardContainer 
+      isEditing={isEditing} 
+      customStyles={{
+        font: profile.custom_font,
+        background: profile.custom_background,
+        textColor: profile.custom_text_color
+      }}
+    >
       <div className="space-y-8">
-        <VCardStyleSelector
-          selectedStyle={selectedStyle}
-          onStyleSelect={handleStyleSelect}
-          isEditing={isEditing}
-        />
+        {isEditing && (
+          <div className="space-y-4 p-4 bg-background/50 rounded-lg border">
+            <h3 className="text-lg font-semibold">Personnalisation</h3>
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="custom-font">Police personnalisée</Label>
+                <Input
+                  id="custom-font"
+                  value={profile.custom_font || ''}
+                  onChange={(e) => setProfile({ ...profile, custom_font: e.target.value })}
+                  placeholder="Nom de la police (ex: 'Roboto, sans-serif')"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="custom-background">Couleur de fond</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="custom-background"
+                    value={profile.custom_background || ''}
+                    onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
+                    placeholder="Code couleur (ex: #ffffff)"
+                  />
+                  <input
+                    type="color"
+                    value={profile.custom_background || '#ffffff'}
+                    onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
+                    className="w-10 h-10 rounded"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="custom-text-color">Couleur du texte</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="custom-text-color"
+                    value={profile.custom_text_color || ''}
+                    onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
+                    placeholder="Code couleur (ex: #000000)"
+                  />
+                  <input
+                    type="color"
+                    value={profile.custom_text_color || '#000000'}
+                    onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
+                    className="w-10 h-10 rounded"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-        <VCardHeader
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
-        />
-
-        <VCardBio
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
-        />
-
-        <VCardContact
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
-        />
-
-        <VCardContent
-          profile={profile}
-          isEditing={isEditing}
-          selectedStyle={selectedStyle}
-          setProfile={setProfile}
-          newSkill={newSkill}
-          setNewSkill={setNewSkill}
-          handleAddSkill={() => {
-            if (!profile || !newSkill.trim()) return;
-            const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-            setProfile({ ...profile, skills: updatedSkills });
-            setNewSkill("");
-          }}
-          handleRemoveSkill={(skillToRemove: string) => {
-            if (!profile) return;
-            const updatedSkills = (profile.skills || []).filter(
-              (skill) => skill !== skillToRemove
-            );
-            setProfile({ ...profile, skills: updatedSkills });
-          }}
-        />
-
-        <VCardEducation
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
-        />
-
-        <VCardExperiences
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
-        />
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="sections">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-8"
+              >
+                {sectionsOrder.map((sectionId, index) => (
+                  <Draggable
+                    key={sectionId}
+                    draggableId={sectionId}
+                    index={index}
+                    isDragDisabled={!isEditing}
+                  >
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}
+                      >
+                        {renderSection(sectionId)}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
 
         <VCardFooter
           isEditing={isEditing}
           isPdfGenerating={isPdfGenerating}
           profile={profile}
-          selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
           onSave={handleSave}
           onDownloadBusinessCard={async () => {
             if (!profile) return;
             setIsPdfGenerating(true);
             try {
-              const doc = await generateBusinessCard(profile, selectedStyle);
+              const doc = await generateBusinessCard(profile);
               doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
               toast.success("Business PDF généré avec succès");
             } catch (error) {
@@ -182,7 +270,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             if (!profile) return;
             setIsPdfGenerating(true);
             try {
-              const doc = await generateCV(profile, selectedStyle);
+              const doc = await generateCV(profile);
               doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
               toast.success("CV PDF généré avec succès");
             } catch (error) {
