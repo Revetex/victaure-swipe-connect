@@ -1,5 +1,5 @@
 import { LucideIcon } from "lucide-react";
-import { VCardStyledButton } from "../VCardStyledButton";
+import { Button } from "@/components/ui/button";
 import { useVCardStyle } from "../VCardStyleContext";
 
 interface VCardActionButtonProps {
@@ -22,48 +22,47 @@ export function VCardActionButton({
   const { selectedStyle } = useVCardStyle();
 
   const getButtonStyles = () => {
+    const baseStyles = {
+      transition: "all 0.2s ease",
+      color: variant === "primary" ? "white" : selectedStyle.colors.text.primary,
+    };
+
     switch (variant) {
       case "primary":
         return {
-          bg: selectedStyle.colors.background.button,
-          text: "text-white",
-          border: `border-${selectedStyle.colors.primary}`,
-          hover: `hover:bg-${selectedStyle.colors.primary}/90`
+          ...baseStyles,
+          backgroundColor: selectedStyle.colors.primary,
+          border: `1px solid ${selectedStyle.colors.primary}`,
+          "&:hover": {
+            backgroundColor: selectedStyle.colors.secondary,
+          }
         };
       case "secondary":
-        return {
-          bg: "bg-white dark:bg-gray-800",
-          text: `text-${selectedStyle.colors.text.primary} dark:text-white`,
-          border: `border-${selectedStyle.colors.primary}/20`,
-          hover: `hover:bg-${selectedStyle.colors.primary}/10`
-        };
       case "outline":
         return {
-          bg: "bg-transparent",
-          text: `text-${selectedStyle.colors.text.primary} dark:text-white`,
-          border: `border-${selectedStyle.colors.primary}/20`,
-          hover: `hover:bg-${selectedStyle.colors.primary}/10`
+          ...baseStyles,
+          backgroundColor: "transparent",
+          border: `1px solid ${selectedStyle.colors.primary}40`,
+          "&:hover": {
+            backgroundColor: `${selectedStyle.colors.primary}10`,
+          }
         };
       default:
-        return {
-          bg: selectedStyle.colors.background.button,
-          text: "text-white",
-          border: `border-${selectedStyle.colors.primary}`,
-          hover: `hover:bg-${selectedStyle.colors.primary}/90`
-        };
+        return baseStyles;
     }
   };
 
   const styles = getButtonStyles();
 
   return (
-    <VCardStyledButton
+    <Button
       onClick={onClick}
       disabled={disabled}
-      className={`${styles.bg} ${styles.text} ${styles.border} ${styles.hover} transition-all duration-200 ${className}`}
+      className={`${className} transition-all duration-200`}
+      style={styles}
     >
       <Icon className="mr-2 h-4 w-4" />
       {label}
-    </VCardStyledButton>
+    </Button>
   );
 }
