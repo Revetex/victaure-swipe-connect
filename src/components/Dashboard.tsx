@@ -14,7 +14,6 @@ import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
-import { VCard } from "./VCard";
 
 export function Dashboard() {
   const { data: stats, isLoading, error } = useDashboardStats();

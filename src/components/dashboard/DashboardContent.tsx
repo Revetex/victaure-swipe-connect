@@ -56,94 +56,91 @@ export function DashboardContent({
     { value: 'orange', label: 'Orange', class: 'bg-orange-200' },
   ];
 
-  if (currentPage === 1) {
-    return (
-      <div 
-        className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm pb-32' : 'relative min-h-[calc(100vh-4rem)]'}`}
-        style={{ 
-          height: isEditing ? viewportHeight : 'auto',
-          overflowY: isEditing ? 'auto' : 'visible',
-          WebkitOverflowScrolling: 'touch'
-        }}
-      >
-        <div className="dashboard-card h-full">
-          <div className="p-3 sm:p-4 md:p-6 h-full">
-            <VCard 
-              onEditStateChange={onEditStateChange}
-              onRequestChat={onRequestChat}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (currentPage === 2) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <Messages />
-        </div>
-      </div>
-    );
-  }
-
-  if (currentPage === 3) {
-    return (
-      <div className="dashboard-card h-full">
-        <SwipeJob />
-      </div>
-    );
-  }
-
-  if (currentPage === 4) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
-            <div className="h-full overflow-hidden">
-              <TodoSection
-                todos={todos}
-                newTodo={newTodo}
-                selectedDate={selectedDate}
-                selectedTime={selectedTime}
-                allDay={allDay}
-                onTodoChange={setNewTodo}
-                onDateChange={setSelectedDate}
-                onTimeChange={setSelectedTime}
-                onAllDayChange={setAllDay}
-                onAdd={addTodo}
-                onToggle={toggleTodo}
-                onDelete={deleteTodo}
-              />
-            </div>
-            <div className="h-full overflow-hidden">
-              <NotesSection
-                notes={notes}
-                newNote={newNote}
-                selectedColor={selectedColor}
-                colors={colors}
-                onNoteChange={setNewNote}
-                onColorChange={setSelectedColor}
-                onAdd={addNote}
-                onDelete={deleteNote}
-              />
+  const renderContent = () => {
+    switch (currentPage) {
+      case 1:
+        return (
+          <div 
+            className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm pb-32' : 'relative min-h-[calc(100vh-4rem)]'}`}
+            style={{ 
+              height: isEditing ? viewportHeight : 'auto',
+              overflowY: isEditing ? 'auto' : 'visible',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
+            <div className="dashboard-card h-full">
+              <div className="p-3 sm:p-4 md:p-6 h-full">
+                <VCard 
+                  onEditStateChange={onEditStateChange}
+                  onRequestChat={onRequestChat}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    );
-  }
+        );
+      case 2:
+        return (
+          <div className="dashboard-card h-full">
+            <div className="p-3 sm:p-4 md:p-6 h-full">
+              <Messages />
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="dashboard-card h-full">
+            <SwipeJob />
+          </div>
+        );
+      case 4:
+        return (
+          <div className="dashboard-card h-full">
+            <div className="p-3 sm:p-4 md:p-6 h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
+                <div className="h-full overflow-hidden">
+                  <TodoSection
+                    todos={todos}
+                    newTodo={newTodo}
+                    selectedDate={selectedDate}
+                    selectedTime={selectedTime}
+                    allDay={allDay}
+                    onTodoChange={setNewTodo}
+                    onDateChange={setSelectedDate}
+                    onTimeChange={setSelectedTime}
+                    onAllDayChange={setAllDay}
+                    onAdd={addTodo}
+                    onToggle={toggleTodo}
+                    onDelete={deleteTodo}
+                  />
+                </div>
+                <div className="h-full overflow-hidden">
+                  <NotesSection
+                    notes={notes}
+                    newNote={newNote}
+                    selectedColor={selectedColor}
+                    colors={colors}
+                    onNoteChange={setNewNote}
+                    onColorChange={setSelectedColor}
+                    onAdd={addNote}
+                    onDelete={deleteNote}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 5:
+        return (
+          <div className="dashboard-card h-full">
+            <div className="p-3 sm:p-4 md:p-6 h-full">
+              <Settings />
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
-  if (currentPage === 5) {
-    return (
-      <div className="dashboard-card h-full">
-        <div className="p-3 sm:p-4 md:p-6 h-full">
-          <Settings />
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+  return renderContent();
 }
