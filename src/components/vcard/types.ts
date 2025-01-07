@@ -15,6 +15,11 @@ export interface StyleOption {
       primary: string;
       secondary: string;
       muted: string;
-    }
+    };
+    background: {
+      card: string;
+      section: string;
+      button: string;
+    };
   }
 }

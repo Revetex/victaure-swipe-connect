@@ -15,23 +15,28 @@ export const generateBusinessCard = async (
     format: [85.6, 53.98]
   }));
 
-  // Set background color based on style
-  doc.setFillColor(selectedStyle.color);
+  // Set background gradient
+  const gradient = doc.setFillColor(selectedStyle.colors.primary)
+    .setDrawColor(selectedStyle.colors.secondary)
+    .setGlobalAlpha(0.1);
   doc.rect(0, 0, 85.6, 53.98, 'F');
+  doc.setGlobalAlpha(1);
 
   try {
-    // Add name and role with centered positioning
-    doc.setTextColor(255, 255, 255);
-    doc.setFont(selectedStyle.font || 'helvetica', 'bold');
+    // Add name and role with styled positioning
+    doc.setTextColor(selectedStyle.colors.text.primary);
+    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
     doc.setFontSize(14);
     doc.text(profile.full_name || '', 10, 15);
     
-    doc.setFont(selectedStyle.font || 'helvetica', 'normal');
+    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
     doc.setFontSize(12);
+    doc.setTextColor(selectedStyle.colors.text.secondary);
     doc.text(profile.role || '', 10, 22);
 
-    // Add contact details with adjusted positioning
+    // Add contact details with styling
     doc.setFontSize(9);
+    doc.setTextColor(selectedStyle.colors.text.muted);
     let contactY = 32;
     
     if (profile.email) {
@@ -48,9 +53,12 @@ export const generateBusinessCard = async (
       doc.text([profile.city, profile.state, profile.country].filter(Boolean).join(', '), 10, contactY);
     }
 
-    // Add QR code on the right side
+    // Add QR code with style-matched frame
     try {
       const qrCodeUrl = await QRCode.toDataURL(window.location.href);
+      doc.setDrawColor(selectedStyle.colors.primary);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(63, 13, 19, 19, 2, 2, 'S');
       doc.addImage(qrCodeUrl, 'PNG', 65, 15, 15, 15);
     } catch (error) {
       console.error('Error generating QR code:', error);
