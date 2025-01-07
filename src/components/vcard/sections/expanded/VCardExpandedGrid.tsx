@@ -1,21 +1,18 @@
 import { motion } from "framer-motion";
 import { VCardContact } from "@/components/VCardContact";
 import { VCardSkills } from "@/components/VCardSkills";
+import { UserProfile } from "@/types/profile";
 
 interface VCardExpandedGridProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
-  newSkill: string;
-  setNewSkill: (skill: string) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardExpandedGrid({ 
   profile, 
   isEditing, 
-  setProfile,
-  newSkill,
-  setNewSkill 
+  setProfile
 }: VCardExpandedGridProps) {
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -44,17 +41,6 @@ export function VCardExpandedGrid({
           profile={profile}
           isEditing={isEditing}
           setProfile={setProfile}
-          newSkill={newSkill}
-          setNewSkill={setNewSkill}
-          handleAddSkill={() => {
-            if (newSkill && !profile.skills?.includes(newSkill)) {
-              setProfile({
-                ...profile,
-                skills: [...(profile.skills || []), newSkill],
-              });
-              setNewSkill("");
-            }
-          }}
           handleRemoveSkill={(skillToRemove: string) => {
             setProfile({
               ...profile,

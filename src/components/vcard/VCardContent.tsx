@@ -19,9 +19,6 @@ export function VCardContent({
   isEditing,
   selectedStyle,
   setProfile,
-  newSkill,
-  setNewSkill,
-  handleAddSkill,
   handleRemoveSkill,
 }: VCardContentProps) {
   return (
@@ -30,9 +27,6 @@ export function VCardContent({
         profile={profile}
         isEditing={isEditing}
         setProfile={setProfile}
-        newSkill={newSkill}
-        setNewSkill={setNewSkill}
-        handleAddSkill={handleAddSkill}
         handleRemoveSkill={handleRemoveSkill}
       />
       
