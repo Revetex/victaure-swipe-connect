@@ -23,22 +23,17 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const response = await fetch("/api/generate-bio", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('generate-bio', {
+        body: {
           skills: profile.skills,
           experiences: profile.experiences,
           education: profile.education,
-        }),
+        }
       });
 
-      if (!response.ok) throw new Error("Failed to generate bio");
-
-      const { bio } = await response.json();
-      setProfile({ ...profile, bio });
+      if (error) throw error;
+      
+      setProfile({ ...profile, bio: data.bio });
       toast.success("Bio générée avec succès");
     } catch (error) {
       console.error("Error generating bio:", error);
