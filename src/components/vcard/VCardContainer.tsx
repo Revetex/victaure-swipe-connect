@@ -19,11 +19,6 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
         className={`vcard-root w-full max-w-4xl mx-auto ${
           isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20' : 'relative'
         }`}
-        style={{
-          '--accent-color': selectedStyle.color,
-          '--secondary-color': selectedStyle.secondaryColor,
-          '--font-family': selectedStyle.font,
-        } as React.CSSProperties}
       >
         {isEditing && (
           <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm" />
@@ -38,9 +33,18 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
           style={{
             fontFamily: selectedStyle.font,
             color: selectedStyle.colors.text.primary,
+            borderColor: `${selectedStyle.color}40`,
+            background: isEditing 
+              ? undefined 
+              : `linear-gradient(135deg, ${selectedStyle.colors.primary}10, ${selectedStyle.colors.secondary}20)`,
           }}
         >
-          <CardContent className="p-6">
+          <CardContent 
+            className="p-6"
+            style={{
+              color: selectedStyle.colors.text.primary
+            }}
+          >
             {children}
           </CardContent>
         </Card>

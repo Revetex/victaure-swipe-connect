@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardBadgeProps {
   text: string;
@@ -14,10 +15,16 @@ export function VCardBadge({
   onRemove,
   variant = "default" 
 }: VCardBadgeProps) {
-  const variants = {
-    default: "bg-blue-500/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/20 dark:hover:bg-blue-900/50 border-blue-500/20 dark:border-blue-400/20",
-    outline: "bg-transparent border-blue-500/50 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10",
-    secondary: "bg-gray-500/10 dark:bg-gray-800/30 text-gray-600 dark:text-gray-300 hover:bg-gray-500/20 dark:hover:bg-gray-800/50 border-gray-500/20 dark:border-gray-400/20"
+  const { selectedStyle } = useVCardStyle();
+  
+  const getVariantStyles = () => {
+    const baseStyles = {
+      default: `bg-${selectedStyle.colors.primary}/10 text-${selectedStyle.colors.primary} hover:bg-${selectedStyle.colors.primary}/20 border-${selectedStyle.colors.primary}/20`,
+      outline: `bg-transparent border-${selectedStyle.colors.primary}/50 text-${selectedStyle.colors.primary} hover:bg-${selectedStyle.colors.primary}/10`,
+      secondary: `bg-${selectedStyle.colors.secondary}/10 text-${selectedStyle.colors.secondary} hover:bg-${selectedStyle.colors.secondary}/20 border-${selectedStyle.colors.secondary}/20`
+    };
+
+    return baseStyles[variant];
   };
 
   return (
@@ -27,13 +34,25 @@ export function VCardBadge({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ scale: 1.05 }}
-      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors border shadow-sm ${variants[variant]}`}
+      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors border shadow-sm"
+      style={{
+        backgroundColor: variant === 'outline' ? 'transparent' : `${selectedStyle.color}15`,
+        borderColor: `${selectedStyle.color}30`,
+        color: selectedStyle.colors.text.primary
+      }}
     >
       {text}
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className="p-0.5 hover:bg-blue-600/20 dark:hover:bg-blue-800/50 rounded-full transition-colors"
+          className="p-0.5 rounded-full transition-colors"
+          style={{
+            backgroundColor: 'transparent',
+            color: selectedStyle.colors.text.primary,
+            '&:hover': {
+              backgroundColor: `${selectedStyle.color}20`
+            }
+          }}
         >
           <X className="h-3 w-3" />
         </button>
