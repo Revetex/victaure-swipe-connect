@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
 
@@ -21,13 +21,11 @@ export function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
 
-  // Fonction pour gérer les erreurs
   const handleError = (error: Error) => {
     console.error("Erreur du tableau de bord:", error);
     toast.error("Une erreur est survenue lors du chargement des données");
   };
 
-  // Fonction pour exporter les données
   const handleExport = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -60,7 +58,6 @@ export function Dashboard() {
     }
   };
 
-  // Fonction pour rafraîchir les données
   const handleRefresh = async () => {
     try {
       await useDashboardStats();
@@ -70,18 +67,15 @@ export function Dashboard() {
     }
   };
 
-  // Fonction pour naviguer vers la création de mission
   const handleCreateJob = () => {
     navigate("/jobs/create");
   };
 
-  // Fonction pour démarrer la conversation avec Mr Victaure
   const handleStartChat = () => {
     setShowWelcome(false);
     setShowAIAssistant(true);
   };
 
-  // Fonction pour fermer la fenêtre de bienvenue
   const handleDismissWelcome = () => {
     setShowWelcome(false);
   };
