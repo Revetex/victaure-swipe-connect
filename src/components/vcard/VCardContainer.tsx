@@ -17,26 +17,26 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className={`vcard-root w-full max-w-4xl mx-auto ${
-          isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20' : 'relative'
+          isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20 pt-4 px-4' : 'relative'
         }`}
+        style={{
+          background: isEditing ? `linear-gradient(135deg, ${selectedStyle.colors.primary}10, ${selectedStyle.colors.secondary}15)` : 'transparent',
+        }}
       >
         {isEditing && (
-          <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm -z-10" />
         )}
         
         <Card 
-          className={`relative border-none shadow-lg overflow-hidden ${
+          className={`relative border shadow-lg overflow-hidden ${
             isEditing 
-              ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
-              : ''
+              ? 'bg-white dark:bg-gray-900' 
+              : 'bg-white dark:bg-gray-900'
           }`}
           style={{
             fontFamily: selectedStyle.font,
-            background: isEditing 
-              ? undefined 
-              : `linear-gradient(135deg, ${selectedStyle.colors.primary}15, ${selectedStyle.colors.secondary}25)`,
-            borderColor: `${selectedStyle.color}40`,
-            color: selectedStyle.colors.text.primary
+            background: `linear-gradient(135deg, ${selectedStyle.colors.primary}05, ${selectedStyle.colors.secondary}10)`,
+            borderColor: `${selectedStyle.colors.primary}20`,
           }}
         >
           <CardContent className="p-6">

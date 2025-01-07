@@ -49,11 +49,43 @@ export function VCardActions({
     toast.success("Lien copié dans le presse-papier");
   };
 
+  const buttonStyle = {
+    light: {
+      primary: {
+        bg: selectedStyle.colors.primary,
+        text: 'white',
+        border: `${selectedStyle.colors.primary}40`,
+        hover: `${selectedStyle.colors.primary}90`
+      },
+      secondary: {
+        bg: 'transparent',
+        text: selectedStyle.colors.text.primary,
+        border: `${selectedStyle.colors.primary}20`,
+        hover: `${selectedStyle.colors.primary}10`
+      }
+    },
+    dark: {
+      primary: {
+        bg: selectedStyle.colors.primary,
+        text: 'white',
+        border: `${selectedStyle.colors.primary}40`,
+        hover: `${selectedStyle.colors.primary}90`
+      },
+      secondary: {
+        bg: 'transparent',
+        text: 'white',
+        border: `${selectedStyle.colors.primary}20`,
+        hover: `${selectedStyle.colors.primary}10`
+      }
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-wrap gap-3 pt-4 border-t border-white/20"
+      className="flex flex-wrap gap-3 pt-4 border-t"
+      style={{ borderColor: `${selectedStyle.colors.primary}20` }}
     >
       {isEditing ? (
         <>
@@ -64,7 +96,12 @@ export function VCardActions({
           >
             <Button 
               onClick={onSave}
-              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
+              className="w-full transition-colors hover:opacity-90"
+              style={{ 
+                backgroundColor: buttonStyle.light.primary.bg,
+                color: buttonStyle.light.primary.text,
+                borderColor: buttonStyle.light.primary.border
+              }}
             >
               <Save className="mr-2 h-4 w-4" />
               Sauvegarder
@@ -80,7 +117,12 @@ export function VCardActions({
           >
             <Button 
               onClick={handleShare}
-              className="w-full bg-white hover:bg-white/90 text-indigo-600 transition-colors"
+              className="w-full transition-colors hover:opacity-90"
+              style={{ 
+                backgroundColor: buttonStyle.light.primary.bg,
+                color: buttonStyle.light.primary.text,
+                borderColor: buttonStyle.light.primary.border
+              }}
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
@@ -94,7 +136,12 @@ export function VCardActions({
             <Button 
               onClick={onEditToggle}
               variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors hover:opacity-90"
+              style={{ 
+                backgroundColor: buttonStyle.light.secondary.bg,
+                color: buttonStyle.light.secondary.text,
+                borderColor: buttonStyle.light.secondary.border
+              }}
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
@@ -108,8 +155,13 @@ export function VCardActions({
             <Button 
               onClick={onDownloadBusinessCard}
               variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors hover:opacity-90"
               disabled={isPdfGenerating}
+              style={{ 
+                backgroundColor: buttonStyle.light.secondary.bg,
+                color: buttonStyle.light.secondary.text,
+                borderColor: buttonStyle.light.secondary.border
+              }}
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
@@ -123,8 +175,13 @@ export function VCardActions({
             <Button 
               onClick={onDownloadCV}
               variant="outline"
-              className="w-full border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="w-full transition-colors hover:opacity-90"
               disabled={isPdfGenerating}
+              style={{ 
+                backgroundColor: buttonStyle.light.secondary.bg,
+                color: buttonStyle.light.secondary.text,
+                borderColor: buttonStyle.light.secondary.border
+              }}
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
@@ -137,7 +194,12 @@ export function VCardActions({
             <Button 
               onClick={handleCopyLink}
               variant="outline"
-              className="border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="transition-colors hover:opacity-90"
+              style={{ 
+                backgroundColor: buttonStyle.light.secondary.bg,
+                color: buttonStyle.light.secondary.text,
+                borderColor: buttonStyle.light.secondary.border
+              }}
             >
               <Copy className="h-4 w-4" />
             </Button>
