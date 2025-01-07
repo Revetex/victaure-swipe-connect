@@ -10,6 +10,7 @@ import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -20,6 +21,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [isAIProcessing, setIsAIProcessing] = useState(false);
   const { selectedStyle } = useVCardStyle();
 
   const handleEditToggle = () => {
@@ -33,7 +35,31 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     if (!profile) return;
 
     try {
-      await updateProfile(profile);
+      setIsAIProcessing(true);
+      
+      // Call the AI assistant to review and correct the profile
+      const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
+        body: { profile }
+      });
+
+      if (aiError) throw aiError;
+
+      if (aiCorrections?.suggestions) {
+        const shouldApply = window.confirm(
+          "L'IA a détecté quelques améliorations possibles pour votre profil. Voulez-vous les appliquer ?\n\n" +
+          "Suggestions :\n" + aiCorrections.suggestions.join("\n")
+        );
+
+        if (shouldApply && aiCorrections.correctedProfile) {
+          await updateProfile(aiCorrections.correctedProfile);
+          setProfile(aiCorrections.correctedProfile);
+        } else {
+          await updateProfile(profile);
+        }
+      } else {
+        await updateProfile(profile);
+      }
+
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -42,6 +68,8 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     } catch (error) {
       console.error('Error saving profile:', error);
       toast.error("Erreur lors de la sauvegarde du profil");
+    } finally {
+      setIsAIProcessing(false);
     }
   };
 
@@ -77,6 +105,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         <VCardFooter
           isEditing={isEditing}
           isPdfGenerating={isPdfGenerating}
+          isProcessing={isAIProcessing}
           profile={profile}
           selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
