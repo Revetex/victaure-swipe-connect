@@ -11,6 +11,7 @@ import { renderEducation } from "./cv/sections/education";
 import { renderCertifications } from "./cv/sections/certifications";
 import { renderFooter } from "./cv/sections/footer";
 import { extendPdfDocument } from "./pdfExtensions";
+import QRCode from 'qrcode';
 
 export const generateCV = async (
   profile: UserProfile,
@@ -24,32 +25,38 @@ export const generateCV = async (
 
   try {
     // Set initial styles based on selected theme
-    doc.setFont("helvetica");
+    doc.setFont(selectedStyle.font || "helvetica");
     doc.setTextColor(selectedStyle.colors.text.primary);
 
     let currentY = 20;
 
-    // Add logo at the top
-    try {
-      const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
-      doc.addImage(logoUrl, 'PNG', 20, currentY, 15, 15);
-      currentY += 20;
-    } catch (logoError) {
-      console.error('Error adding logo to CV:', logoError);
-      currentY += 5;
-    }
-
-    // Add subtle background pattern
-    doc.setGlobalAlpha(0.03);
-    for (let i = 0; i < doc.internal.pageSize.width; i += 10) {
-      for (let j = 0; j < doc.internal.pageSize.height; j += 10) {
-        doc.setFillColor(selectedStyle.colors.primary);
-        doc.circle(i, j, 0.5, 'F');
-      }
-    }
+    // Add metallic effect background
+    doc.setGlobalAlpha(0.05);
+    const gradient = doc.createLinearGradient(0, 0, 210, 297);
+    gradient.addColorStop(0, selectedStyle.colors.primary);
+    gradient.addColorStop(1, selectedStyle.colors.secondary);
+    doc.setFillColor(gradient);
+    doc.rect(0, 0, 210, 297, 'F');
     doc.setGlobalAlpha(1);
 
-    // Header with profile info
+    // Add profile photo and QR code in header
+    if (profile.avatar_url) {
+      try {
+        const img = await loadImage(profile.avatar_url);
+        doc.addImage(img, 'JPEG', 20, currentY, 30, 30);
+        
+        // Generate and add QR code
+        const qrCodeUrl = await QRCode.toDataURL(window.location.href);
+        doc.addImage(qrCodeUrl, 'PNG', 160, currentY, 30, 30);
+        
+        currentY += 35;
+      } catch (error) {
+        console.error('Error adding profile photo or QR code:', error);
+        currentY += 5;
+      }
+    }
+
+    // Add header with profile info
     currentY = await renderHeader(doc, profile, currentY);
     currentY += 15;
 
@@ -80,7 +87,7 @@ export const generateCV = async (
       currentY = 20;
     }
 
-    // Education section (moved before experience for better flow)
+    // Education section
     if (profile.education && profile.education.length > 0) {
       currentY = renderEducation(doc, profile, currentY);
       currentY += 15;
@@ -107,7 +114,7 @@ export const generateCV = async (
       currentY = renderCertifications(doc, profile.certifications, currentY);
     }
 
-    // Footer with page numbers
+    // Footer with page numbers and style
     renderFooter(doc, selectedStyle);
 
     return doc;
@@ -115,4 +122,14 @@ export const generateCV = async (
     console.error('Error generating CV:', error);
     throw error;
   }
+};
+
+const loadImage = (url: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
 };
