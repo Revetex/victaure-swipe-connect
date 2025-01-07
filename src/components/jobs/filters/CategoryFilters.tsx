@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 import { JobFilters } from "../JobFilterUtils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { missionCategories } from "@/types/categories";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CategoryIcon } from "@/components/skills/CategoryIcon";
+import { toast } from "sonner";
 
 interface CategoryFiltersProps {
   filters: JobFilters;
@@ -19,8 +19,8 @@ interface CategoryFiltersProps {
 }
 
 export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProps) {
-  // Fetch categories from the database with distinct values
-  const { data: categories = [] } = useQuery({
+  // Fetch categories from the database
+  const { data: categories = [], isError: isCategoriesError } = useQuery({
     queryKey: ['job-categories'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -28,23 +28,22 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .select('*')
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        toast.error("Erreur lors du chargement des catégories");
+        throw error;
+      }
       
-      // Remove duplicates based on name
-      const uniqueCategories = data.reduce((acc: any[], current) => {
-        const x = acc.find(item => item.name === current.name);
-        if (!x) {
-          return acc.concat([current]);
-        }
-        return acc;
-      }, []);
+      // Create a Map to remove duplicates based on name
+      const uniqueCategories = Array.from(
+        new Map(data.map(item => [item.name, item])).values()
+      );
       
       return uniqueCategories;
     }
   });
 
   // Fetch subcategories based on selected category
-  const { data: subcategories = [] } = useQuery({
+  const { data: subcategories = [], isError: isSubcategoriesError } = useQuery({
     queryKey: ['job-subcategories', filters.category],
     queryFn: async () => {
       if (filters.category === 'all') return [];
@@ -55,21 +54,24 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .eq('category_id', filters.category)
         .order('name');
       
-      if (error) throw error;
+      if (error) {
+        toast.error("Erreur lors du chargement des sous-catégories");
+        throw error;
+      }
       
-      // Remove duplicates based on name
-      const uniqueSubcategories = data.reduce((acc: any[], current) => {
-        const x = acc.find(item => item.name === current.name);
-        if (!x) {
-          return acc.concat([current]);
-        }
-        return acc;
-      }, []);
+      // Create a Map to remove duplicates based on name
+      const uniqueSubcategories = Array.from(
+        new Map(data.map(item => [item.name, item])).values()
+      );
       
       return uniqueSubcategories;
     },
     enabled: filters.category !== 'all'
   });
+
+  if (isCategoriesError || isSubcategoriesError) {
+    toast.error("Une erreur est survenue lors du chargement des catégories");
+  }
 
   return (
     <div className="space-y-4">
@@ -90,11 +92,15 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
           <SelectContent>
             <ScrollArea className="h-[300px]">
               <SelectItem value="all">Toutes les catégories</SelectItem>
-              {Object.entries(missionCategories).map(([key, category]) => (
-                <SelectItem key={key} value={key} className="flex items-center gap-2">
+              {categories.map((category) => (
+                <SelectItem 
+                  key={category.id} 
+                  value={category.id}
+                  className="flex items-center gap-2"
+                >
                   <div className="flex items-center gap-2">
-                    <CategoryIcon category={key} />
-                    <span>{key}</span>
+                    <CategoryIcon category={category.name} />
+                    <span>{category.name}</span>
                   </div>
                 </SelectItem>
               ))}
@@ -116,9 +122,9 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
             <SelectContent>
               <ScrollArea className="h-[200px]">
                 <SelectItem value="all">Toutes les sous-catégories</SelectItem>
-                {missionCategories[filters.category as keyof typeof missionCategories]?.subcategories.map((subcategory) => (
-                  <SelectItem key={subcategory} value={subcategory}>
-                    {subcategory}
+                {subcategories.map((subcategory) => (
+                  <SelectItem key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
                   </SelectItem>
                 ))}
               </ScrollArea>
