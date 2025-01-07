@@ -1,13 +1,11 @@
 import { QRCodeSVG } from "qrcode.react";
 import { VCardActions } from "./VCardActions";
-import { UserProfile } from "@/types/profile";
 import { StyleOption } from "./types";
 
 interface VCardFooterProps {
   isEditing: boolean;
   isPdfGenerating: boolean;
-  isProcessing: boolean; // Added this prop
-  profile: UserProfile;
+  isProcessing: boolean;
   selectedStyle: StyleOption;
   onEditToggle: () => void;
   onSave: () => void;
@@ -19,7 +17,6 @@ export function VCardFooter({
   isEditing,
   isPdfGenerating,
   isProcessing,
-  profile,
   selectedStyle,
   onEditToggle,
   onSave,
@@ -32,16 +29,11 @@ export function VCardFooter({
         isEditing={isEditing}
         isPdfGenerating={isPdfGenerating}
         isProcessing={isProcessing}
-        profile={profile}
-        selectedStyle={selectedStyle}
-        onEditToggle={onEditToggle}
+        setIsEditing={() => onEditToggle()}
         onSave={onSave}
-        onDownloadBusinessCard={async () => {
-          await onDownloadBusinessCard();
-        }}
-        onDownloadCV={async () => {
-          await onDownloadCV();
-        }}
+        onDownloadBusinessPDF={onDownloadBusinessCard}
+        onDownloadCVPDF={onDownloadCV}
+        selectedStyle={selectedStyle}
       />
       
       <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
