@@ -1,12 +1,7 @@
-import { motion } from "framer-motion";
+import { VCardSkills } from "../VCardSkills";
 import { UserProfile } from "@/types/profile";
-import { VCardHeader } from "@/components/VCardHeader";
-import { VCardContact } from "@/components/VCardContact";
-import { VCardSkills } from "@/components/VCardSkills";
-import { VCardCertifications } from "@/components/VCardCertifications";
-import { VCardEducation } from "@/components/VCardEducation";
-import { VCardExperiences } from "@/components/VCardExperiences";
 import { StyleOption } from "./types";
+import { TouchFriendlySkillSelector } from "../skills/TouchFriendlySkillSelector";
 
 interface VCardContentProps {
   profile: UserProfile;
@@ -27,10 +22,10 @@ export function VCardContent({
   newSkill,
   setNewSkill,
   handleAddSkill,
-  handleRemoveSkill
+  handleRemoveSkill,
 }: VCardContentProps) {
   return (
-    <motion.div className="space-y-8 pt-6">
+    <div className="space-y-6">
       <VCardSkills
         profile={profile}
         isEditing={isEditing}
@@ -40,24 +35,17 @@ export function VCardContent({
         handleAddSkill={handleAddSkill}
         handleRemoveSkill={handleRemoveSkill}
       />
-
-      <VCardExperiences
-        profile={profile}
-        isEditing={isEditing}
-        setProfile={setProfile}
-      />
-
-      <VCardCertifications
-        profile={profile}
-        isEditing={isEditing}
-        setProfile={setProfile}
-      />
-
-      <VCardEducation
-        profile={profile}
-        isEditing={isEditing}
-        setProfile={setProfile}
-      />
-    </motion.div>
+      
+      {isEditing && (
+        <TouchFriendlySkillSelector
+          onSkillSelect={(skill) => {
+            if (!profile || profile.skills?.includes(skill)) return;
+            const updatedSkills = [...(profile.skills || []), skill];
+            setProfile({ ...profile, skills: updatedSkills });
+          }}
+          existingSkills={profile.skills || []}
+        />
+      )}
+    </div>
   );
 }

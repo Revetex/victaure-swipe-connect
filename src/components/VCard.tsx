@@ -1,22 +1,19 @@
-import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
-import { Card, CardContent } from "@/components/ui/card";
 import { VCardHeader } from "./VCardHeader";
 import { VCardContact } from "./VCardContact";
 import { toast } from "sonner";
 import { styleOptions } from "./vcard/styles";
 import { StyleOption } from "./vcard/types";
 import { VCardStyleSelector } from "./vcard/VCardStyleSelector";
-import { VCardActions } from "./vcard/VCardActions";
 import { VCardContent } from "./vcard/VCardContent";
-import { QRCodeSVG } from "qrcode.react";
-import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
-import { VCardStyleContext } from "./vcard/VCardStyleContext";
 import { updateProfile } from "@/utils/profileActions";
+import { VCardContainer } from "./vcard/VCardContainer";
+import { VCardFooter } from "./vcard/VCardFooter";
+import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -97,129 +94,85 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   }
 
   return (
-    <VCardStyleContext.Provider value={{ selectedStyle, isEditing }}>
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className={`vcard-root w-full max-w-4xl mx-auto ${
-          isEditing ? 'fixed inset-0 z-50 overflow-y-auto pb-20' : 'relative'
-        }`}
-        style={{
-          '--accent-color': selectedStyle.color,
-          '--secondary-color': selectedStyle.secondaryColor,
-          '--font-family': selectedStyle.font,
-        } as React.CSSProperties}
-      >
-        {isEditing && (
-          <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-sm" />
-        )}
-        
-        <Card 
-          className={`relative border-none shadow-lg ${
-            isEditing 
-              ? 'bg-white/10 backdrop-blur-md dark:bg-gray-900/30' 
-              : selectedStyle.bgGradient
-          } ${selectedStyle.borderStyle}`}
-          style={{
-            fontFamily: selectedStyle.font,
-            color: selectedStyle.colors.text.primary,
+    <VCardContainer isEditing={isEditing} selectedStyle={selectedStyle}>
+      <div className="space-y-8">
+        <VCardStyleSelector
+          selectedStyle={selectedStyle}
+          onStyleSelect={handleStyleSelect}
+          isEditing={isEditing}
+        />
+
+        <VCardHeader
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
+
+        <VCardContact
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
+
+        <VCardContent
+          profile={profile}
+          isEditing={isEditing}
+          selectedStyle={selectedStyle}
+          setProfile={setProfile}
+          newSkill={newSkill}
+          setNewSkill={setNewSkill}
+          handleAddSkill={() => {
+            if (!profile || !newSkill.trim()) return;
+            const updatedSkills = [...(profile.skills || []), newSkill.trim()];
+            setProfile({ ...profile, skills: updatedSkills });
+            setNewSkill("");
           }}
-        >
-          <CardContent className="p-6">
-            <div className="space-y-8">
-              <VCardStyleSelector
-                selectedStyle={selectedStyle}
-                onStyleSelect={handleStyleSelect}
-                isEditing={isEditing}
-              />
+          handleRemoveSkill={(skillToRemove: string) => {
+            if (!profile) return;
+            const updatedSkills = (profile.skills || []).filter(
+              (skill) => skill !== skillToRemove
+            );
+            setProfile({ ...profile, skills: updatedSkills });
+          }}
+        />
 
-              <VCardHeader
-                profile={profile}
-                isEditing={isEditing}
-                setProfile={setProfile}
-              />
-
-              <VCardContact
-                profile={profile}
-                isEditing={isEditing}
-                setProfile={setProfile}
-              />
-
-              <VCardContent
-                profile={profile}
-                isEditing={isEditing}
-                selectedStyle={selectedStyle}
-                setProfile={setProfile}
-                newSkill={newSkill}
-                setNewSkill={setNewSkill}
-                handleAddSkill={() => {
-                  if (!profile || !newSkill.trim()) return;
-                  const updatedSkills = [...(profile.skills || []), newSkill.trim()];
-                  setProfile({ ...profile, skills: updatedSkills });
-                  setNewSkill("");
-                }}
-                handleRemoveSkill={(skillToRemove: string) => {
-                  if (!profile) return;
-                  const updatedSkills = (profile.skills || []).filter(
-                    (skill) => skill !== skillToRemove
-                  );
-                  setProfile({ ...profile, skills: updatedSkills });
-                }}
-              />
-
-              <div className="flex justify-between items-center">
-                <VCardActions
-                  isEditing={isEditing}
-                  isPdfGenerating={isPdfGenerating}
-                  profile={profile}
-                  selectedStyle={selectedStyle}
-                  onEditToggle={handleEditToggle}
-                  onSave={handleSave}
-                  onDownloadBusinessCard={async () => {
-                    if (!profile) return;
-                    setIsPdfGenerating(true);
-                    try {
-                      const doc = await generateBusinessCard(profile, selectedStyle);
-                      doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-                      toast.success("Business PDF généré avec succès");
-                    } catch (error) {
-                      console.error('Error generating business PDF:', error);
-                      toast.error("Erreur lors de la génération du Business PDF");
-                    } finally {
-                      setIsPdfGenerating(false);
-                    }
-                  }}
-                  onDownloadCV={async () => {
-                    if (!profile) return;
-                    setIsPdfGenerating(true);
-                    try {
-                      const doc = await generateCV(profile, selectedStyle);
-                      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-                      toast.success("CV PDF généré avec succès");
-                    } catch (error) {
-                      console.error('Error generating CV PDF:', error);
-                      toast.error("Erreur lors de la génération du CV PDF");
-                    } finally {
-                      setIsPdfGenerating(false);
-                    }
-                  }}
-                />
-                
-                <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
-                  <QRCodeSVG
-                    value={window.location.href}
-                    size={85}
-                    level="H"
-                    includeMargin={false}
-                    className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                  />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </VCardStyleContext.Provider>
+        <VCardFooter
+          isEditing={isEditing}
+          isPdfGenerating={isPdfGenerating}
+          profile={profile}
+          selectedStyle={selectedStyle}
+          onEditToggle={handleEditToggle}
+          onSave={handleSave}
+          onDownloadBusinessCard={async () => {
+            if (!profile) return;
+            setIsPdfGenerating(true);
+            try {
+              const doc = await generateBusinessCard(profile, selectedStyle);
+              doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+              toast.success("Business PDF généré avec succès");
+            } catch (error) {
+              console.error('Error generating business PDF:', error);
+              toast.error("Erreur lors de la génération du Business PDF");
+            } finally {
+              setIsPdfGenerating(false);
+            }
+          }}
+          onDownloadCV={async () => {
+            if (!profile) return;
+            setIsPdfGenerating(true);
+            try {
+              const doc = await generateCV(profile, selectedStyle);
+              doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+              toast.success("CV PDF généré avec succès");
+            } catch (error) {
+              console.error('Error generating CV PDF:', error);
+              toast.error("Erreur lors de la génération du CV PDF");
+            } finally {
+              setIsPdfGenerating(false);
+            }
+          }}
+        />
+      </div>
+    </VCardContainer>
   );
 }
