@@ -8,18 +8,20 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
     const { profile } = await req.json()
 
-    // Create a prompt based on profile information
-    const prompt = `Generate a professional, concise slogan (max 6 words) for a business card that reflects this person's role and expertise. Here's their profile:
+    // Construct a prompt based on the profile information
+    const prompt = `Generate a professional, concise slogan (maximum 6 words) for a business card based on this professional profile:
+    Name: ${profile.full_name}
     Role: ${profile.role}
     Skills: ${profile.skills?.join(', ')}
     Bio: ${profile.bio}
-    Make it sound professional and memorable.`
+    
+    The slogan should be elegant, memorable, and reflect their expertise and professional identity.`
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -30,11 +32,9 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are a professional slogan generator. Create concise, impactful slogans that capture the essence of a professional\'s expertise.' },
+          { role: 'system', content: 'You are a professional branding expert that creates concise, impactful slogans.' },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 50,
-        temperature: 0.7,
       }),
     })
 
@@ -43,13 +43,18 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ slogan }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
     )
   } catch (error) {
     console.error('Error:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
     )
   }
 })
