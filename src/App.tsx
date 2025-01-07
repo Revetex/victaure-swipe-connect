@@ -1,75 +1,140 @@
-import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/toaster";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { useAuth } from "./hooks/useAuth";
+import { Loader } from "./components/ui/loader";
+import { useEffect } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 2,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    },
-  },
-});
+import { motion, AnimatePresence } from "framer-motion";
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const { isInitializing } = useAuth();
+  const { isAuthenticated, isLoading, error } = useAuth();
 
+  // Fix mobile viewport height on iOS
   useEffect(() => {
-    // Handle viewport height for mobile browsers
-    const setViewportHeight = () => {
+    const setVH = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
-    setViewportHeight();
-    window.addEventListener('resize', setViewportHeight);
-
-    // Simulate minimum loading time to prevent flash
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', setVH);
 
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('resize', setVH);
+      window.removeEventListener('orientationchange', setVH);
     };
   }, []);
 
-  // Show loading state if either initial app load or auth is initializing
-  if (isLoading || isInitializing) {
+  // Show error toast if authentication fails
+  useEffect(() => {
+    if (error) {
+      toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+    }
+  }, [error]);
+
+  if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Chargement...</p>
-        </div>
+      <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center gap-6"
+        >
+          <div className="relative">
+            <Loader className="w-12 h-12 text-primary" />
+            <motion.div 
+              className="absolute inset-0"
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5] 
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Loader className="w-12 h-12 text-primary/30" />
+            </motion.div>
+          </div>
+          <p className="text-base text-muted-foreground animate-pulse">
+            Préparation de votre tableau de bord...
+          </p>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key="content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="min-h-[calc(var(--vh,1vh)*100)]"
-          >
-            <Outlet />
-          </motion.div>
-        </AnimatePresence>
-        <Toaster />
-      </ThemeProvider>
-    </QueryClientProvider>
+    <div className="min-h-[100vh] min-h-[calc(var(--vh,1vh)*100)] w-full overflow-y-auto">
+      <AnimatePresence mode="wait">
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Navigate to="/auth" replace />
+              </motion.div>
+            } 
+          />
+          
+          <Route 
+            path="/auth" 
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Auth />
+                </motion.div>
+              )
+            } 
+          />
+          
+          <Route
+            path="/dashboard/*"
+            element={
+              <ProtectedRoute>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Dashboard />
+                </motion.div>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route 
+            path="*" 
+            element={
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Navigate to="/auth" replace />
+              </motion.div>
+            } 
+          />
+        </Routes>
+      </AnimatePresence>
+    </div>
   );
 }
 

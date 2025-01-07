@@ -10,20 +10,18 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, error, isInitializing } = useAuth();
+  const { isAuthenticated, isLoading, error } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
     if (error) {
-      console.error("Auth error:", error);
       toast.error("Accès refusé. Veuillez vous reconnecter.");
     }
   }, [error]);
 
-  // Show loading state while initializing or loading
-  if (isInitializing || isLoading) {
+  if (isLoading) {
     return (
-      <div className="h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background/80 backdrop-blur-sm">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
