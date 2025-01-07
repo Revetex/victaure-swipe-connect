@@ -7,16 +7,15 @@ import { VCardExpandedBio } from "./expanded/VCardExpandedBio";
 import { VCardExpandedEducation } from "./expanded/VCardExpandedEducation";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { UserProfile } from "@/types/profile";
 
 interface VCardExpandedContentProps {
   isExpanded: boolean;
   isEditing: boolean;
-  profile: any;
-  setProfile: (profile: any) => void;
+  profile: UserProfile;
+  setProfile: (profile: UserProfile) => void;
   setIsExpanded: (isExpanded: boolean) => void;
   setIsEditing: (isEditing: boolean) => void;
-  newSkill: string;
-  setNewSkill: (skill: string) => void;
   onShare: () => void;
   onDownload: () => void;
   onDownloadPDF: () => void;
@@ -34,8 +33,6 @@ export function VCardExpandedContent({
   setProfile,
   setIsExpanded,
   setIsEditing,
-  newSkill,
-  setNewSkill,
   onShare,
   onDownload,
   onDownloadPDF,
@@ -101,8 +98,6 @@ export function VCardExpandedContent({
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
           />
 
           <VCardExpandedBio

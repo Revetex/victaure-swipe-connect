@@ -6,6 +6,7 @@ import { StyleOption } from "./types";
 interface VCardFooterProps {
   isEditing: boolean;
   isPdfGenerating: boolean;
+  isProcessing: boolean; // Added this prop
   profile: UserProfile;
   selectedStyle: StyleOption;
   onEditToggle: () => void;
@@ -17,6 +18,7 @@ interface VCardFooterProps {
 export function VCardFooter({
   isEditing,
   isPdfGenerating,
+  isProcessing,
   profile,
   selectedStyle,
   onEditToggle,
@@ -29,6 +31,7 @@ export function VCardFooter({
       <VCardActions
         isEditing={isEditing}
         isPdfGenerating={isPdfGenerating}
+        isProcessing={isProcessing}
         profile={profile}
         selectedStyle={selectedStyle}
         onEditToggle={onEditToggle}
