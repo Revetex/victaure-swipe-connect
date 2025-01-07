@@ -7,11 +7,11 @@ import { DashboardChart } from "./dashboard/DashboardChart";
 import { RecentActivity } from "./dashboard/RecentActivity";
 import type { DashboardStats } from "@/types/dashboard";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { motion } from "framer-motion";
+import { motion, LazyMotion, domAnimation } from "framer-motion";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
 
@@ -84,100 +84,90 @@ export function Dashboard() {
     handleError(error as Error);
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
   return (
-    <motion.section 
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="py-8 min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
-    >
-      {showWelcome && (
-        <MrVictaureWelcome
-          onDismiss={handleDismissWelcome}
-          onStartChat={handleStartChat}
-        />
-      )}
+    <LazyMotion features={domAnimation}>
+      <motion.section 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="py-8 min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-x-hidden"
+      >
+        {showWelcome && (
+          <MrVictaureWelcome
+            onDismiss={handleDismissWelcome}
+            onStartChat={handleStartChat}
+          />
+        )}
 
-      {showAIAssistant && (
-        <AIAssistant onClose={() => setShowAIAssistant(false)} />
-      )}
+        {showAIAssistant && (
+          <AIAssistant onClose={() => setShowAIAssistant(false)} />
+        )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <DashboardHeader 
-          title="Tableau de bord"
-          description="Bienvenue ! Voici un aperçu de votre activité."
-        />
-        
-        <div className="mt-8">
-          <QuickActions stats={stats} />
-        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <DashboardHeader 
+            title="Tableau de bord"
+            description="Bienvenue ! Voici un aperçu de votre activité."
+          />
+          
+          <div className="mt-8">
+            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+              <QuickActions stats={stats} />
+            </Suspense>
+          </div>
 
-        <div className="mt-8">
-          <UploadApk />
-        </div>
+          <div className="mt-8">
+            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+              <UploadApk />
+            </Suspense>
+          </div>
 
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
+              <motion.div 
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 overflow-hidden"
+                layout
+              >
+                <h3 className="text-lg font-semibold mb-4">Activité récente</h3>
+                <DashboardChart />
+              </motion.div>
+            </Suspense>
+
+            <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
+              <motion.div 
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 overflow-hidden"
+                layout
+              >
+                <RecentActivity />
+              </motion.div>
+            </Suspense>
+          </div>
+
           <motion.div 
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: { opacity: 1, y: 0 }
-            }}
+            className="mt-8 flex flex-wrap justify-end gap-4"
+            layout
           >
-            <h3 className="text-lg font-semibold mb-4">Activité récente</h3>
-            <DashboardChart />
-          </motion.div>
-
-          <motion.div 
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: { opacity: 1, y: 0 }
-            }}
-          >
-            <RecentActivity />
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              className="w-full sm:w-auto bg-white dark:bg-gray-800 border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-300"
+            >
+              Actualiser
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              className="w-full sm:w-auto bg-white dark:bg-gray-800 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-gray-700 transition-all duration-300"
+            >
+              Exporter
+            </Button>
+            <Button
+              onClick={handleCreateJob}
+              className="w-full sm:w-auto bg-victaure-blue text-white hover:bg-victaure-blue/90 transition-all duration-300"
+            >
+              Créer une mission
+            </Button>
           </motion.div>
         </div>
-
-        <motion.div 
-          className="mt-8 flex justify-end gap-4"
-          variants={{
-            hidden: { opacity: 0, x: -20 },
-            visible: { opacity: 1, x: 0 }
-          }}
-        >
-          <Button
-            variant="outline"
-            onClick={handleRefresh}
-            className="bg-white dark:bg-gray-800 border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all duration-300"
-          >
-            Actualiser
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleExport}
-            className="bg-white dark:bg-gray-800 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-gray-700 transition-all duration-300"
-          >
-            Exporter
-          </Button>
-          <Button
-            onClick={handleCreateJob}
-            className="bg-victaure-blue text-white hover:bg-victaure-blue/90 transition-all duration-300"
-          >
-            Créer une mission
-          </Button>
-        </motion.div>
-      </div>
-    </motion.section>
+      </motion.section>
+    </LazyMotion>
   );
 }
