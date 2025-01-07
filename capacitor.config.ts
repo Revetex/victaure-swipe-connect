@@ -8,22 +8,18 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     cleartext: true,
     allowNavigation: [
-      'mfjllillnpleasclqabb.supabase.co',
-      '*.supabase.co',
-      '*.vercel.app',
-      '*.lovableproject.com',
       'localhost',
       'localhost:*',
       'http://localhost',
       'http://localhost:*',
+      '*.supabase.co',
+      '*.vercel.app',
+      '*.lovableproject.com',
       'https://*.supabase.co',
       'https://*.lovableproject.com',
       'https://mfjllillnpleasclqabb.supabase.co',
       'wss://mfjllillnpleasclqabb.supabase.co',
-      'https://mfjllillnpleasclqabb.supabase.co:443',
-      '*.lovableproject.com',
-      '*.vercel.app',
-      '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
+      'https://mfjllillnpleasclqabb.supabase.co:443'
     ]
   },
   android: {
