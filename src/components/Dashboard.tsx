@@ -14,6 +14,7 @@ import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
+import { VCard } from "./VCard";
 
 export function Dashboard() {
   const { data: stats, isLoading, error } = useDashboardStats();
@@ -120,6 +121,10 @@ export function Dashboard() {
         
         <div className="mt-8">
           <QuickActions stats={stats} />
+        </div>
+
+        <div className="mt-8">
+          <VCard />
         </div>
 
         <div className="mt-8">
