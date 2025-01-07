@@ -19,18 +19,29 @@ export default defineConfig(({ mode }) => ({
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization, apikey, x-client-info',
       'Access-Control-Allow-Credentials': 'true',
     },
     proxy: {
-      '/api': {
+      '/auth/v1': {
         target: 'https://mfjllillnpleasclqabb.supabase.co',
         changeOrigin: true,
-        secure: false,
+        secure: true,
+        ws: true,
+      },
+      '/rest/v1': {
+        target: 'https://mfjllillnpleasclqabb.supabase.co',
+        changeOrigin: true,
+        secure: true,
         ws: true,
       }
     },
-    cors: true,
+    cors: {
+      origin: '*',
+      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'apikey', 'x-client-info'],
+      credentials: true
+    },
     hmr: {
       protocol: 'ws',
       host: '0.0.0.0',

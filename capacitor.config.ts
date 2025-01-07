@@ -16,7 +16,10 @@ const config: CapacitorConfig = {
       'https://mfjllillnpleasclqabb.supabase.co',
       'wss://mfjllillnpleasclqabb.supabase.co',
       'https://mfjllillnpleasclqabb.supabase.co:443',
-      'https://*.lovableproject.com:443'
+      'https://*.lovableproject.com:443',
+      'https://*.supabase.co/*',
+      'https://mfjllillnpleasclqabb.supabase.co/auth/v1/*',
+      'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*'
     ]
   },
   android: {
