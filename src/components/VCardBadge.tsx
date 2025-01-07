@@ -45,13 +45,10 @@ export function VCardBadge({
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className="p-0.5 rounded-full transition-colors"
+          className={`p-0.5 rounded-full transition-colors hover:bg-opacity-20`}
           style={{
             backgroundColor: 'transparent',
-            color: selectedStyle.colors.text.primary,
-            '&:hover': {
-              backgroundColor: `${selectedStyle.color}20`
-            }
+            color: selectedStyle.colors.text.primary
           }}
         >
           <X className="h-3 w-3" />
