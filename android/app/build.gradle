@@ -16,6 +16,13 @@ android {
         
         // APK signing configuration
         signingConfig signingConfigs.debug
+        
+        // Enable R8 for better code optimization
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        
+        // Optimize resources
+        resConfigs "en", "fr"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -59,6 +66,9 @@ android {
             excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/license.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt', 'META-INF/notice.txt', 'META-INF/ASL2.0']
         }
     }
+    
+    // Enable NDK for better performance
+    ndkVersion "25.1.8937393"
 }
 
 repositories {
@@ -77,6 +87,9 @@ dependencies {
     
     // Add MultiDex
     implementation 'androidx.multidex:multidex:2.0.1'
+    
+    // Add performance monitoring
+    implementation 'com.google.firebase:firebase-perf:20.3.1'
     
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
