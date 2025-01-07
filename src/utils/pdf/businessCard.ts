@@ -3,7 +3,6 @@ import { UserProfile } from "@/types/profile";
 import { ExtendedJsPDF } from "@/types/pdf";
 import { extendPdfDocument } from "./pdfExtensions";
 import { StyleOption } from "@/components/vcard/types";
-import QRCode from "qrcode";
 
 export const generateBusinessCard = async (
   profile: UserProfile,
@@ -26,14 +25,6 @@ export const generateBusinessCard = async (
     doc.rect(0, 0, 85.6, 53.98, 'F');
     doc.setGlobalAlpha(1);
 
-    // Add logo
-    try {
-      const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
-      doc.addImage(logoUrl, 'PNG', 5, 5, 10, 10);
-    } catch (logoError) {
-      console.error('Error adding logo to business card:', logoError);
-    }
-
     // Add decorative accent line
     doc.setLineWidth(0.5);
     doc.setDrawColor(selectedStyle.colors.secondary);
@@ -41,12 +32,12 @@ export const generateBusinessCard = async (
 
     // Add name with enhanced styling
     doc.setTextColor(selectedStyle.colors.text.primary);
-    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
+    doc.setFont("helvetica", 'bold');
     doc.setFontSize(16);
     doc.text(profile.full_name || '', 10, 25);
     
     // Add role with professional styling
-    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
+    doc.setFont("helvetica", 'normal');
     doc.setFontSize(12);
     doc.setTextColor(selectedStyle.colors.text.secondary);
     doc.text(profile.role || '', 10, 32);
@@ -84,18 +75,26 @@ export const generateBusinessCard = async (
     }
     doc.setGlobalAlpha(1);
 
+    // Add logo on the back side
+    try {
+      const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+      doc.addImage(logoUrl, 'PNG', 35, 15, 15, 15);
+    } catch (logoError) {
+      console.error('Error adding logo to business card:', logoError);
+    }
+
     // Add company info if available
     if (profile.company_name) {
       doc.setTextColor(selectedStyle.colors.text.primary);
-      doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
+      doc.setFont("helvetica", 'bold');
       doc.setFontSize(14);
-      doc.text(profile.company_name, 10, 20);
+      doc.text(profile.company_name, 10, 40);
 
       if (profile.company_size) {
-        doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
+        doc.setFont("helvetica", 'normal');
         doc.setFontSize(10);
         doc.setTextColor(selectedStyle.colors.text.secondary);
-        doc.text(`Taille: ${profile.company_size}`, 10, 27);
+        doc.text(`Taille: ${profile.company_size}`, 10, 47);
       }
     }
 

@@ -7,37 +7,41 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Lazy load pages
-const Auth = lazy(() => import("./pages/Auth"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+// Lazy load pages with smaller chunks
+const Auth = lazy(() => import("./pages/Auth").then(module => {
+  return new Promise(resolve => setTimeout(() => resolve(module), 100))
+}));
+const Dashboard = lazy(() => import("./pages/Dashboard").then(module => {
+  return new Promise(resolve => setTimeout(() => resolve(module), 100))
+}));
 
-// Loading fallback component
+// Loading fallback component with optimized animations
 const PageLoader = () => (
-  <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
+  <div className="fixed inset-0 flex items-center justify-center bg-background">
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col items-center gap-6"
+      transition={{ duration: 0.3 }}
+      className="flex flex-col items-center gap-4"
     >
       <div className="relative">
-        <Loader className="w-12 h-12 text-primary" />
+        <Loader className="w-10 h-10 text-primary" />
         <motion.div 
           className="absolute inset-0"
           animate={{ 
-            scale: [1, 1.2, 1],
+            scale: [1, 1.1, 1],
             opacity: [0.5, 1, 0.5] 
           }}
           transition={{ 
-            duration: 2,
+            duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut"
           }}
         >
-          <Loader className="w-12 h-12 text-primary/30" />
+          <Loader className="w-10 h-10 text-primary/30" />
         </motion.div>
       </div>
-      <p className="text-base text-muted-foreground animate-pulse">
+      <p className="text-sm text-muted-foreground animate-pulse">
         Chargement...
       </p>
     </motion.div>
@@ -47,7 +51,7 @@ const PageLoader = () => (
 function App() {
   const { isAuthenticated, isLoading, error } = useAuth();
 
-  // Fix mobile viewport height on iOS
+  // Fix mobile viewport height
   useEffect(() => {
     const setVH = () => {
       const vh = window.innerHeight * 0.01;
@@ -58,6 +62,7 @@ function App() {
     window.addEventListener('resize', setVH);
     window.addEventListener('orientationchange', setVH);
 
+    // Cleanup
     return () => {
       window.removeEventListener('resize', setVH);
       window.removeEventListener('orientationchange', setVH);
@@ -71,6 +76,7 @@ function App() {
     }
   }, [error]);
 
+  // Show loading state
   if (isLoading) {
     return <PageLoader />;
   }

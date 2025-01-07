@@ -10,21 +10,21 @@ import { renderExperiences } from "./cv/sections/experiences";
 import { renderEducation } from "./cv/sections/education";
 import { renderCertifications } from "./cv/sections/certifications";
 import { renderFooter } from "./cv/sections/footer";
-import { pdfStyles } from "./cv/styles";
+import { extendPdfDocument } from "./pdfExtensions";
 
 export const generateCV = async (
   profile: UserProfile,
   selectedStyle: StyleOption
 ): Promise<ExtendedJsPDF> => {
-  const doc = new jsPDF({
+  const doc = extendPdfDocument(new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
-  }) as ExtendedJsPDF;
+  }));
 
   try {
     // Set initial styles based on selected theme
-    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''));
+    doc.setFont("helvetica");
     doc.setTextColor(selectedStyle.colors.text.primary);
 
     let currentY = 20;
