@@ -1,8 +1,8 @@
 import { VCardSection } from "./VCardSection";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X, GraduationCap, Building2, Calendar } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { X, GraduationCap, Building2, Calendar, GripVertical } from "lucide-react";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { toast } from "sonner";
 
 interface Education {
@@ -31,7 +31,7 @@ export function VCardEducation({
       ...profile,
       education: [
         ...(profile.education || []),
-        { school_name: "", degree: "", field_of_study: "", start_date: "", end_date: "" },
+        { id: crypto.randomUUID(), school_name: "", degree: "", field_of_study: "", start_date: "", end_date: "" },
       ],
     });
     toast.success("Formation ajoutée");
@@ -44,6 +44,10 @@ export function VCardEducation({
     toast.success("Formation supprimée");
   };
 
+  const handleReorder = (newOrder: Education[]) => {
+    setProfile({ ...profile, education: newOrder });
+  };
+
   return (
     <VCardSection 
       title="Formation"
@@ -51,16 +55,17 @@ export function VCardEducation({
     >
       <AnimatePresence mode="popLayout">
         <div className="space-y-6">
-          {(profile.education || []).map((edu: Education, index: number) => (
-            <motion.div 
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20 hover:border-indigo-500/30 transition-colors"
-            >
-              {isEditing ? (
-                <>
+          {isEditing ? (
+            <Reorder.Group axis="y" values={profile.education || []} onReorder={handleReorder}>
+              {(profile.education || []).map((edu: Education) => (
+                <Reorder.Item key={edu.id} value={edu}>
+                  <motion.div 
+                    className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20 hover:border-indigo-500/30 transition-colors"
+                  >
+                    <div className="absolute top-4 left-2 cursor-move">
+                      <GripVertical className="h-4 w-4 text-indigo-400" />
+                    </div>
+                    <div className="ml-6">
                   <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
                     <Input
@@ -137,9 +142,20 @@ export function VCardEducation({
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
-                </>
-              ) : (
-                <>
+                    </div>
+                  </motion.div>
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          ) : (
+            (profile.education || []).map((edu: Education, index: number) => (
+              <motion.div 
+                key={edu.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20"
+              >
                   <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
                     <p className="font-medium text-white">{edu.school_name || "École non définie"}</p>
@@ -159,10 +175,9 @@ export function VCardEducation({
                       {edu.end_date ? new Date(edu.end_date).getFullYear() : "Présent"}
                     </span>
                   </div>
-                </>
-              )}
-            </motion.div>
-          ))}
+              </motion.div>
+            ))
+          )}
           {isEditing && (
             <motion.div
               initial={{ opacity: 0 }}

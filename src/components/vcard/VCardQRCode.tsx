@@ -12,7 +12,7 @@ export function VCardQRCode() {
   return (
     <>
       <motion.div 
-        className="absolute top-4 right-4 p-2 glass-card group hover:scale-105 transition-transform duration-300 cursor-pointer"
+        className="absolute top-4 right-4 p-2 glass-card group hover:scale-105 transition-transform duration-300 cursor-pointer z-10"
         whileHover={{ scale: 1.05 }}
         onClick={() => setIsOpen(true)}
       >

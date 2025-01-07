@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { VCardSection } from "./VCardSection";
-import { Briefcase, X, Building2, Calendar, Plus } from "lucide-react";
+import { Briefcase, X, Building2, Calendar, Plus, GripVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { toast } from "sonner";
 import { UserProfile } from "@/types/profile";
 
@@ -42,6 +42,13 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
     toast.success("Expérience supprimée");
   };
 
+  const handleReorder = (newOrder: any[]) => {
+    setProfile({
+      ...profile,
+      experiences: newOrder
+    });
+  };
+
   return (
     <VCardSection
       title="Expériences professionnelles"
@@ -49,16 +56,17 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
     >
       <div className="space-y-6">
         <AnimatePresence>
-          {profile.experiences?.map((experience) => (
-            <motion.div
-              key={experience.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="relative p-4 rounded-lg bg-white/5 space-y-2"
-            >
-              {isEditing ? (
-                <>
+          {isEditing ? (
+            <Reorder.Group axis="y" values={profile.experiences || []} onReorder={handleReorder}>
+              {profile.experiences?.map((experience) => (
+                <Reorder.Item key={experience.id} value={experience}>
+                  <motion.div
+                    className="relative p-4 rounded-lg bg-white/5 space-y-2"
+                  >
+                    <div className="absolute top-4 left-2 cursor-move">
+                      <GripVertical className="h-4 w-4 text-indigo-400" />
+                    </div>
+                    <div className="ml-6">
                   <Input
                     value={experience.company}
                     onChange={(e) => {
@@ -124,9 +132,20 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   >
                     <X className="h-4 w-4" />
                   </Button>
-                </>
-              ) : (
-                <>
+                    </div>
+                  </motion.div>
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          ) : (
+            profile.experiences?.map((experience) => (
+              <motion.div
+                key={experience.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="relative p-4 rounded-lg bg-white/5 space-y-2"
+              >
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium text-white">{experience.position}</h4>
@@ -144,10 +163,9 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   {experience.description && (
                     <p className="text-sm text-white/70">{experience.description}</p>
                   )}
-                </>
-              )}
-            </motion.div>
-          ))}
+              </motion.div>
+            ))
+          )}
         </AnimatePresence>
 
         {isEditing && (
