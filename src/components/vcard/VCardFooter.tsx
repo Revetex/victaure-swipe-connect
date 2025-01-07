@@ -1,8 +1,8 @@
-import { VCardActions } from "./VCardActions";
-import { StyleOption } from "./types";
 import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
-import { toast } from "sonner";
+import { Share, Download, Edit2, Save, Loader2 } from "lucide-react";
+import { StyleOption } from "./types";
+import { useVCardHandlers } from "./handlers/useVCardHandlers";
+import { useProfile } from "@/hooks/useProfile";
 
 interface VCardFooterProps {
   isEditing: boolean;
@@ -11,8 +11,8 @@ interface VCardFooterProps {
   selectedStyle: StyleOption;
   onEditToggle: () => void;
   onSave: () => void;
-  onDownloadBusinessCard: () => Promise<void>;
-  onDownloadCV: () => Promise<void>;
+  onDownloadBusinessCard: () => void;
+  onDownloadCV: () => void;
 }
 
 export function VCardFooter({
@@ -23,56 +23,83 @@ export function VCardFooter({
   onEditToggle,
   onSave,
   onDownloadBusinessCard,
-  onDownloadCV,
+  onDownloadCV
 }: VCardFooterProps) {
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Mon profil professionnel',
-          url: window.location.href
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Lien copié dans le presse-papier");
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-      toast.error("Erreur lors du partage");
-    }
-  };
+  const { profile } = useProfile();
+  const { handleShare } = useVCardHandlers();
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-end items-center">
-        <VCardActions
-          isEditing={isEditing}
-          isPdfGenerating={isPdfGenerating}
-          isProcessing={isProcessing}
-          setIsEditing={() => onEditToggle()}
-          onSave={onSave}
-          onDownloadBusinessPDF={onDownloadBusinessCard}
-          onDownloadCVPDF={onDownloadCV}
-          selectedStyle={selectedStyle}
-        />
-      </div>
-      
-      {!isEditing && (
-        <div className="flex justify-center mt-8">
-          <Button
-            onClick={handleShare}
-            variant="outline"
-            className="w-full sm:w-auto"
-            style={{ 
-              borderColor: `${selectedStyle.colors.primary}40`,
-              color: selectedStyle.colors.text.primary,
-            }}
-          >
-            <Share2 className="mr-2 h-4 w-4" />
-            Partager mon profil
-          </Button>
+    <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 p-4 z-50">
+      <div className="container mx-auto flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-4">
+          {isEditing ? (
+            <>
+              <Button
+                variant="outline"
+                onClick={onEditToggle}
+                disabled={isProcessing}
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={onSave}
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sauvegarde...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Sauvegarder
+                  </>
+                )}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                onClick={onEditToggle}
+                className="flex-1"
+              >
+                <Edit2 className="mr-2 h-4 w-4" />
+                Modifier
+              </Button>
+              <Button
+                variant="outline"
+                onClick={onDownloadBusinessCard}
+                disabled={isPdfGenerating}
+                className="flex-1"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Carte
+              </Button>
+              <Button
+                variant="outline"
+                onClick={onDownloadCV}
+                disabled={isPdfGenerating}
+                className="flex-1"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                CV
+              </Button>
+            </>
+          )}
         </div>
-      )}
+        {!isEditing && (
+          <Button
+            variant="ghost"
+            onClick={() => profile && handleShare(profile)}
+            className="w-full"
+          >
+            <Share className="mr-2 h-4 w-4" />
+            Partager
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

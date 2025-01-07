@@ -7,13 +7,14 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Lazy load pages with smaller chunks
-const Auth = lazy(() => import("./pages/Auth").then(module => {
-  return new Promise(resolve => setTimeout(() => resolve(module), 100))
-}));
-const Dashboard = lazy(() => import("./pages/Dashboard").then(module => {
-  return new Promise(resolve => setTimeout(() => resolve(module), 100))
-}));
+// Lazy load pages with proper type annotations
+const Auth = lazy(() => import("./pages/Auth").then((module: any) => ({
+  default: module.default
+})));
+
+const Dashboard = lazy(() => import("./pages/Dashboard").then((module: any) => ({
+  default: module.default
+})));
 
 // Loading fallback component with optimized animations
 const PageLoader = () => (

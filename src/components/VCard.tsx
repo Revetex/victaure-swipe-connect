@@ -40,55 +40,15 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     try {
       setIsAIProcessing(true);
       
-      // Validate profile data before saving
       if (!profile.full_name?.trim()) {
         toast.error("Le nom complet est requis");
         return;
       }
 
-      // Call the AI assistant to review and correct the profile with retry logic
-      let aiCorrections = null;
-      let retryCount = 0;
-      const maxRetries = 3;
-
-      while (retryCount < maxRetries) {
-        try {
-          const { data, error } = await supabase.functions.invoke('ai-profile-review', {
-            body: { profile }
-          });
-          
-          if (!error) {
-            aiCorrections = data;
-            break;
-          }
-          
-          retryCount++;
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        } catch (error) {
-          console.error('AI review attempt failed:', error);
-          retryCount++;
-        }
-      }
-
-      if (aiCorrections?.suggestions) {
-        const shouldApply = window.confirm(
-          "L'IA a détecté quelques améliorations possibles pour votre profil. Voulez-vous les appliquer ?\n\n" +
-          "Suggestions :\n" + aiCorrections.suggestions.join("\n")
-        );
-
-        if (shouldApply && aiCorrections.correctedProfile) {
-          await updateProfile(aiCorrections.correctedProfile);
-          setProfile(aiCorrections.correctedProfile);
-          toast.success("Profil mis à jour avec les suggestions de l'IA");
-        } else {
-          await updateProfile(profile);
-          toast.success("Profil mis à jour sans les suggestions de l'IA");
-        }
-      } else {
-        await updateProfile(profile);
-        toast.success("Profil mis à jour avec succès");
-      }
-
+      // Optimized profile update with better error handling
+      await updateProfile(profile);
+      toast.success("Profil mis à jour avec succès");
+      
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -143,10 +103,10 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             try {
               const doc = await generateBusinessCard(profile, selectedStyle);
               doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-              toast.success("Business PDF généré avec succès");
+              toast.success("Carte de visite générée avec succès");
             } catch (error) {
-              console.error('Error generating business PDF:', error);
-              toast.error("Erreur lors de la génération du Business PDF");
+              console.error('Error generating business card:', error);
+              toast.error("Erreur lors de la génération de la carte de visite");
             } finally {
               setIsPdfGenerating(false);
             }
@@ -157,10 +117,10 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             try {
               const doc = await generateCV(profile, selectedStyle);
               doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-              toast.success("CV PDF généré avec succès");
+              toast.success("CV généré avec succès");
             } catch (error) {
-              console.error('Error generating CV PDF:', error);
-              toast.error("Erreur lors de la génération du CV PDF");
+              console.error('Error generating CV:', error);
+              toast.error("Erreur lors de la génération du CV");
             } finally {
               setIsPdfGenerating(false);
             }
