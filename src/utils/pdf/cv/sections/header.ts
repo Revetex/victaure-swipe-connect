@@ -1,6 +1,7 @@
 import { ExtendedJsPDF } from '../../types';
 import { UserProfile } from '@/types/profile';
 import { StyleOption } from '@/components/vcard/types';
+import { pdfStyles } from '../styles';
 
 export const renderHeader = async (
   doc: ExtendedJsPDF,
@@ -9,7 +10,8 @@ export const renderHeader = async (
   style?: StyleOption
 ): Promise<number> => {
   let currentY = startY;
-
+  const margin = pdfStyles.margins.left;
+  
   // Add profile photo if available
   if (profile.avatar_url) {
     try {
@@ -20,27 +22,39 @@ export const renderHeader = async (
         img.onerror = reject;
         img.src = profile.avatar_url;
       });
-      doc.addImage(img, 'JPEG', 20, currentY, 35, 35, undefined, 'MEDIUM');
-      currentY += 40;
+
+      // Add a white background circle for the image
+      doc.setFillColor(255, 255, 255);
+      doc.circle(margin + 20, currentY + 20, 20, 'F');
+      
+      // Add the image in a circular format
+      doc.addImage(img, 'JPEG', margin, currentY, 40, 40, undefined, 'MEDIUM');
+      
+      // Move to the right of the image for text
+      currentY += 5;
     } catch (error) {
       console.error('Error loading profile image:', error);
-      currentY += 5;
     }
   }
-  
+
   // Name
-  doc.setFontSize(24);
+  doc.setFontSize(pdfStyles.fonts.header.size);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(style?.colors?.text?.primary || '#000000');
-  doc.text(profile.full_name || 'No Name', 20, currentY);
-  currentY += 8;
+  doc.setTextColor(pdfStyles.colors.text.primary);
+  doc.text(profile.full_name || 'No Name', margin + 50, currentY + 20);
   
   // Role
-  doc.setFontSize(16);
+  currentY += 25;
+  doc.setFontSize(pdfStyles.fonts.subheader.size);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(style?.colors?.text?.secondary || '#666666');
-  doc.text(profile.role || 'No Role', 20, currentY);
-  currentY += 10;
+  doc.setTextColor(pdfStyles.colors.text.secondary);
+  doc.text(profile.role || 'No Role', margin + 50, currentY + 10);
 
-  return currentY;
+  // Add a subtle separator line
+  currentY += 25;
+  doc.setDrawColor(pdfStyles.colors.text.muted);
+  doc.setLineWidth(0.5);
+  doc.line(margin, currentY, doc.internal.pageSize.width - margin, currentY);
+
+  return currentY + 10;
 };

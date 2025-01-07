@@ -7,32 +7,51 @@ export const renderSkills = (
   profile: UserProfile,
   yPos: number
 ): number => {
-  let currentY = yPos;
+  let currentY = yPos + 10;
+  const { margins, fonts, colors } = pdfStyles;
 
   if (profile.skills && profile.skills.length > 0) {
-    doc.setFontSize(pdfStyles.fonts.subheader.size);
+    // Section title
+    doc.setFontSize(fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(pdfStyles.colors.text.primary);
-    doc.text('Compétences', pdfStyles.margins.left, currentY);
-    currentY += 8;
+    doc.setTextColor(colors.text.primary);
+    doc.text('Compétences', margins.left, currentY);
+    currentY += 12;
 
-    doc.setFontSize(pdfStyles.fonts.body.size);
+    // Create skill bubbles
+    doc.setFontSize(fonts.body.size);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(pdfStyles.colors.text.secondary);
     
-    const skillsPerRow = 3;
-    const skillChunks = [];
-    for (let i = 0; i < profile.skills.length; i += skillsPerRow) {
-      skillChunks.push(profile.skills.slice(i, i + skillsPerRow));
-    }
+    let xOffset = margins.left;
+    const maxWidth = doc.internal.pageSize.width - (margins.left + margins.right);
+    const bubblePadding = 10;
+    const bubbleSpacing = 5;
 
-    skillChunks.forEach(chunk => {
-      const skillsText = chunk.join(' • ');
-      doc.text(skillsText, pdfStyles.margins.left, currentY);
-      currentY += 6;
+    profile.skills.forEach((skill) => {
+      // Calculate bubble width
+      doc.setFont('helvetica', 'normal');
+      const textWidth = doc.getTextWidth(skill);
+      const bubbleWidth = textWidth + (bubblePadding * 2);
+
+      // Check if we need to move to next line
+      if (xOffset + bubbleWidth > maxWidth) {
+        xOffset = margins.left;
+        currentY += 15;
+      }
+
+      // Draw bubble background
+      doc.setFillColor(240, 240, 240);
+      doc.roundedRect(xOffset, currentY - 5, bubbleWidth, 10, 5, 5, 'F');
+
+      // Draw skill text
+      doc.setTextColor(colors.text.primary);
+      doc.text(skill, xOffset + bubblePadding, currentY);
+
+      xOffset += bubbleWidth + bubbleSpacing;
     });
-    currentY += 10;
+
+    currentY += 20;
   }
 
   return currentY;
-}
+};

@@ -2,32 +2,32 @@ import type { PDFStyles } from '../types';
 
 export const pdfStyles: PDFStyles = {
   colors: {
-    primary: '#1E40AF',
-    secondary: '#60A5FA',
+    primary: '#1A1F2C',
+    secondary: '#4B5563',
     background: '#FFFFFF',
     text: {
       primary: '#1A1F2C',
-      secondary: '#555555',
+      secondary: '#4B5563',
       muted: '#8E9196'
     },
     accent: '#E5DEFF'
   },
   margins: {
-    top: 20,
-    left: 20,
-    right: 20
+    top: 25,
+    left: 25,
+    right: 25
   },
   fonts: {
     header: {
-      size: 24,
+      size: 28,
       style: 'bold'
     },
     subheader: {
-      size: 16,
-      style: 'normal'
+      size: 18,
+      style: 'bold'
     },
     body: {
-      size: 11,
+      size: 12,
       style: 'normal'
     }
   }
