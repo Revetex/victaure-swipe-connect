@@ -38,9 +38,9 @@ export function DashboardLayout() {
       <AnimatePresence mode="sync">
         <motion.div 
           variants={itemVariants} 
-          className="transform transition-all duration-300 w-full h-full pb-32"
+          className="transform transition-all duration-300 w-full min-h-screen pb-40"
           style={{ 
-            maxHeight: isEditing ? viewportHeight : `calc(${viewportHeight}px - 4rem)`,
+            maxHeight: isEditing ? viewportHeight : 'none',
             overflowY: 'auto',
             WebkitOverflowScrolling: 'touch'
           }}

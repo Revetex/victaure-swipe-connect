@@ -18,7 +18,7 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
         transition={{ duration: 0.3 }}
         className={`vcard-root w-full max-w-4xl mx-auto ${
           isEditing 
-            ? 'fixed inset-0 z-50 overflow-y-auto bg-background/95 backdrop-blur-sm pb-32 pt-4 px-4' 
+            ? 'fixed inset-0 z-50 overflow-y-auto bg-background/95 backdrop-blur-sm pb-40 pt-4 px-4' 
             : 'relative'
         }`}
         style={{
@@ -28,7 +28,7 @@ export function VCardContainer({ children, isEditing, selectedStyle }: VCardCont
         <Card 
           className={`relative border shadow-lg overflow-hidden transition-all duration-300 mb-8 ${
             isEditing ? 'mt-4' : ''
-          } ${selectedStyle.colors.background.card}`}
+          } bg-white dark:bg-gray-900`}
           style={{
             background: `linear-gradient(135deg, ${selectedStyle.colors.primary}05, ${selectedStyle.colors.secondary}10)`,
             borderColor: `${selectedStyle.colors.primary}20`,
