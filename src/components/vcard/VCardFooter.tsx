@@ -10,8 +10,8 @@ interface VCardFooterProps {
   selectedStyle: StyleOption;
   onEditToggle: () => void;
   onSave: () => void;
-  onDownloadBusinessCard: () => void;
-  onDownloadCV: () => void;
+  onDownloadBusinessCard: () => Promise<void>;
+  onDownloadCV: () => Promise<void>;
 }
 
 export function VCardFooter({
@@ -33,8 +33,12 @@ export function VCardFooter({
         selectedStyle={selectedStyle}
         onEditToggle={onEditToggle}
         onSave={onSave}
-        onDownloadBusinessCard={onDownloadBusinessCard}
-        onDownloadCV={onDownloadCV}
+        onDownloadBusinessCard={async () => {
+          await onDownloadBusinessCard();
+        }}
+        onDownloadCV={async () => {
+          await onDownloadCV();
+        }}
       />
       
       <div className="p-2 glass-card group hover:scale-105 transition-transform duration-300">
