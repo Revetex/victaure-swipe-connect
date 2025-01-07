@@ -5,11 +5,16 @@ export interface StyleOption {
   secondaryColor: string;
   font: string;
   bgGradient: string;
-  borderStyle: string;
+  borderStyle?: string;
+  displayStyle?: string;
+  accentGradient?: string;
   colors: {
+    primary: string;
+    secondary: string;
     text: {
       primary: string;
       secondary: string;
-    };
-  };
+      muted: string;
+    }
+  }
 }

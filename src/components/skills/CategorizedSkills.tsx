@@ -1,13 +1,13 @@
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
-import { UserProfile } from "@/types/profile";
+import { motion } from "framer-motion";
+import { SkillCategory } from "./SkillCategory";
+import { SkillEditor } from "./SkillEditor";
+import { skillCategories } from "@/data/skills";
+import { useState } from "react";
 
 interface CategorizedSkillsProps {
-  profile: UserProfile;
+  profile: any;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
+  setProfile: (profile: any) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   onAddSkill: () => void;
@@ -17,43 +17,63 @@ interface CategorizedSkillsProps {
 export function CategorizedSkills({
   profile,
   isEditing,
+  setProfile,
   newSkill,
   setNewSkill,
   onAddSkill,
-  onRemoveSkill
+  onRemoveSkill,
 }: CategorizedSkillsProps) {
+  const [selectedCategory, setSelectedCategory] = useState(Object.keys(skillCategories)[0]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Group skills by category
+  const groupedSkills: Record<string, string[]> = {};
+  profile.skills?.forEach((skill: string) => {
+    let foundCategory = Object.entries(skillCategories).find(([_, skills]) =>
+      skills.includes(skill)
+    )?.[0];
+    
+    if (!foundCategory) foundCategory = "Autres";
+    
+    if (!groupedSkills[foundCategory]) {
+      groupedSkills[foundCategory] = [];
+    }
+    groupedSkills[foundCategory].push(skill);
+  });
+
+  const filteredSkills = skillCategories[selectedCategory] || [];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {isEditing && (
-        <div className="flex gap-2">
-          <Input
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            placeholder="Add a skill..."
-            className="flex-1"
-          />
-          <Button onClick={onAddSkill} disabled={!newSkill.trim()}>
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
+        <SkillEditor
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          newSkill={newSkill}
+          setNewSkill={setNewSkill}
+          handleAddSkill={onAddSkill}
+          skillCategories={skillCategories}
+          filteredSkills={filteredSkills}
+        />
       )}
-      <div className="flex flex-wrap gap-2">
-        {(profile.skills || []).map((skill, index) => (
-          <Badge
-            key={index}
-            variant={isEditing ? "secondary" : "default"}
-            className="flex items-center gap-1"
-          >
-            {skill}
-            {isEditing && (
-              <X
-                className="h-3 w-3 cursor-pointer"
-                onClick={() => onRemoveSkill(skill)}
-              />
-            )}
-          </Badge>
+
+      <motion.div 
+        className="space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        {Object.entries(groupedSkills).map(([category, skills]) => (
+          <SkillCategory
+            key={category}
+            category={category}
+            skills={skills}
+            isEditing={isEditing}
+            searchTerm={searchTerm}
+            onRemoveSkill={onRemoveSkill}
+          />
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

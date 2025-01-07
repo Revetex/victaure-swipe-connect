@@ -1,21 +1,9 @@
-import { jsPDF } from 'jspdf';
-import { UserProfile } from '@/types/profile';
-import { StyleOption } from '@/components/vcard/types';
+import { generateCV } from './pdf/cv';
+import { generateVCard } from './pdf/vcard';
+import { generateBusinessCard } from './pdf/businessCard';
 
-export const generateVCard = (profile: UserProfile) => {
-  const doc = new jsPDF();
-  // Implementation
-  return doc;
-};
-
-export const generateBusinessCard = (profile: UserProfile, style: StyleOption) => {
-  const doc = new jsPDF();
-  // Implementation
-  return doc;
-};
-
-export const generateCV = (profile: UserProfile, style: StyleOption) => {
-  const doc = new jsPDF();
-  // Implementation
-  return doc;
+export { 
+  generateVCard,
+  generateCV,
+  generateBusinessCard
 };

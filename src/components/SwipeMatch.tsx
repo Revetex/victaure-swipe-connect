@@ -1,8 +1,9 @@
-import { useSwipeJobs } from "./jobs/swipe/useSwipeJobs";
+import { motion } from "framer-motion";
+import { JobFilters } from "./jobs/JobFilterUtils";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
-import { JobFilters } from "@/types/filters";
-import { Loader2 } from "lucide-react";
-import { useMotionValue } from "framer-motion";
+import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
+import { SwipeControls } from "./jobs/swipe/SwipeControls";
+import { useSwipeMatch } from "@/hooks/useSwipeMatch";
 
 interface SwipeMatchProps {
   filters: JobFilters;
@@ -10,63 +11,92 @@ interface SwipeMatchProps {
 }
 
 export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
-  const { jobs, currentIndex, handleSwipe, loading } = useSwipeJobs(filters);
-  
-  // Initialize motion values
-  const x = useMotionValue(0);
-  const rotate = useMotionValue(0);
-  const opacity = useMotionValue(1);
-  const scale = useMotionValue(1);
+  const {
+    jobs,
+    currentIndex,
+    loading,
+    swipeDirection,
+    isDragging,
+    isAnimating,
+    x,
+    rotate,
+    opacity,
+    scale,
+    background,
+    handleDragStart,
+    handleDragEnd,
+    handleButtonSwipe,
+    fetchJobs,
+    setCurrentIndex
+  } = useSwipeMatch(filters, onMatchSuccess);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex items-center justify-center h-64"
+      >
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </motion.div>
     );
   }
 
-  if (!jobs.length) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Aucune offre disponible</p>
-      </div>
-    );
+  if (!jobs || jobs.length === 0) {
+    return <SwipeEmptyState onRefresh={fetchJobs} />;
   }
 
-  const currentJob = jobs[currentIndex];
-
-  if (!currentJob) {
+  if (currentIndex >= jobs.length) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Plus d'offres disponibles</p>
-      </div>
+      <SwipeEmptyState 
+        onRefresh={() => {
+          setCurrentIndex(0);
+          fetchJobs();
+        }} 
+      />
     );
   }
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[600px]">
-      <AnimatedJobCard
-        job={currentJob}
-        x={x}
-        rotate={rotate}
-        opacity={opacity}
-        scale={scale}
-        onDragStart={() => {}}
-        onDragEnd={async (_, info) => {
-          const offset = info.offset.x;
-          const velocity = info.velocity.x;
-
-          if (Math.abs(velocity) >= 500 || Math.abs(offset) >= 100) {
-            const direction = offset > 0 ? "right" : "left";
-            await handleSwipe(direction);
-            if (direction === "right") {
-              await onMatchSuccess(currentJob.id);
-            }
-          }
-        }}
-        isDragging={false}
+    <motion.div 
+      className="relative w-full max-w-md mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        style={{ background }}
+        className="absolute inset-0 rounded-3xl transition-colors"
       />
-    </div>
+      <motion.div
+        key={currentIndex}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ 
+          x: swipeDirection === "left" ? -200 : swipeDirection === "right" ? 200 : 0,
+          opacity: 0,
+          transition: { duration: 0.2 }
+        }}
+        transition={{ 
+          duration: 0.3,
+          type: "spring",
+          stiffness: 300,
+          damping: 25
+        }}
+      >
+        <AnimatedJobCard
+          job={jobs[currentIndex]}
+          x={x}
+          rotate={rotate}
+          opacity={opacity}
+          scale={scale}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          isDragging={isDragging}
+        />
+      </motion.div>
+      
+      <SwipeControls onSwipe={handleButtonSwipe} isAnimating={isAnimating} />
+    </motion.div>
   );
 }

@@ -1,30 +1,79 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Message } from '@/types/chat/messageTypes';
-import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+
+export interface Message {
+  id: string;
+  sender: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
+  content: string;
+  created_at: string;
+  read: boolean;
+}
 
 export function useMessages() {
-  const { data: messages = [] } = useQuery({
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: messages = [], isLoading } = useQuery({
     queryKey: ['messages'],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
         .from('messages')
-        .select('*')
+        .select(`
+          id,
+          content,
+          created_at,
+          read,
+          sender:profiles!messages_sender_id_fkey (
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq('receiver_id', user.id)
         .order('created_at', { ascending: false });
-      return data as Message[];
-    }
+
+      if (error) throw error;
+      
+      return (data as any[]).map(msg => ({
+        ...msg,
+        sender: Array.isArray(msg.sender) ? msg.sender[0] : msg.sender
+      })) as Message[];
+    },
   });
 
   const markAsRead = useMutation({
     mutationFn: async (messageId: string) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('messages')
         .update({ read: true })
         .eq('id', messageId);
-      
+
       if (error) throw error;
-      return data;
-    }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    },
+    onError: (error) => {
+      console.error('Error marking message as read:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de marquer le message comme lu",
+      });
+    },
   });
 
-  return { messages, markAsRead };
+  return {
+    messages,
+    isLoading,
+    markAsRead,
+  };
 }
