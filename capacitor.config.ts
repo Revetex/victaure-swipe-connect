@@ -8,10 +8,6 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     cleartext: true,
     allowNavigation: [
-      'localhost',
-      'localhost:*',
-      'http://localhost',
-      'http://localhost:*',
       '*.supabase.co',
       '*.vercel.app',
       '*.lovableproject.com',
@@ -23,22 +19,7 @@ const config: CapacitorConfig = {
     ]
   },
   android: {
-    buildOptions: {
-      keystorePath: undefined,
-      keystoreAlias: undefined,
-      keystorePassword: undefined,
-      keystoreAliasPassword: undefined,
-    }
-  },
-  plugins: {
-    SplashScreen: {
-      launchShowDuration: 2000,
-      backgroundColor: "#ffffffff",
-      androidScaleType: "CENTER_CROP",
-      showSpinner: true,
-      androidSpinnerStyle: "large",
-      spinnerColor: "#999999",
-    },
+    allowMixedContent: true
   }
 };
 
