@@ -26,27 +26,35 @@ export const generateBusinessCard = async (
     doc.rect(0, 0, 85.6, 53.98, 'F');
     doc.setGlobalAlpha(1);
 
+    // Add logo
+    try {
+      const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+      doc.addImage(logoUrl, 'PNG', 5, 5, 10, 10);
+    } catch (logoError) {
+      console.error('Error adding logo to business card:', logoError);
+    }
+
     // Add decorative accent line
     doc.setLineWidth(0.5);
     doc.setDrawColor(selectedStyle.colors.secondary);
-    doc.line(10, 12, 75.6, 12);
+    doc.line(10, 18, 75.6, 18);
 
     // Add name with enhanced styling
     doc.setTextColor(selectedStyle.colors.text.primary);
     doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
     doc.setFontSize(16);
-    doc.text(profile.full_name || '', 10, 20);
+    doc.text(profile.full_name || '', 10, 25);
     
     // Add role with professional styling
     doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
     doc.setFontSize(12);
     doc.setTextColor(selectedStyle.colors.text.secondary);
-    doc.text(profile.role || '', 10, 27);
+    doc.text(profile.role || '', 10, 32);
 
     // Add contact details with improved layout
     doc.setFontSize(9);
     doc.setTextColor(selectedStyle.colors.text.muted);
-    let contactY = 35;
+    let contactY = 40;
     
     if (profile.email) {
       doc.text(`Email: ${profile.email}`, 10, contactY);
@@ -99,6 +107,7 @@ export const generateBusinessCard = async (
 
   } catch (error) {
     console.error('Error generating business card:', error);
+    throw error;
   }
 
   return doc;

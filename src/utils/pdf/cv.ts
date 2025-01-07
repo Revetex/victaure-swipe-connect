@@ -22,82 +22,97 @@ export const generateCV = async (
     format: 'a4'
   }) as ExtendedJsPDF;
 
-  // Set initial styles based on selected theme
-  doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''));
-  doc.setTextColor(selectedStyle.colors.text.primary);
+  try {
+    // Set initial styles based on selected theme
+    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''));
+    doc.setTextColor(selectedStyle.colors.text.primary);
 
-  let currentY = 20;
+    let currentY = 20;
 
-  // Add subtle background pattern
-  doc.setGlobalAlpha(0.03);
-  for (let i = 0; i < doc.internal.pageSize.width; i += 10) {
-    for (let j = 0; j < doc.internal.pageSize.height; j += 10) {
-      doc.setFillColor(selectedStyle.colors.primary);
-      doc.circle(i, j, 0.5, 'F');
+    // Add logo at the top
+    try {
+      const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+      doc.addImage(logoUrl, 'PNG', 20, currentY, 15, 15);
+      currentY += 20;
+    } catch (logoError) {
+      console.error('Error adding logo to CV:', logoError);
+      currentY += 5;
     }
-  }
-  doc.setGlobalAlpha(1);
 
-  // Header with profile info
-  currentY = await renderHeader(doc, profile, currentY);
-  currentY += 15;
+    // Add subtle background pattern
+    doc.setGlobalAlpha(0.03);
+    for (let i = 0; i < doc.internal.pageSize.width; i += 10) {
+      for (let j = 0; j < doc.internal.pageSize.height; j += 10) {
+        doc.setFillColor(selectedStyle.colors.primary);
+        doc.circle(i, j, 0.5, 'F');
+      }
+    }
+    doc.setGlobalAlpha(1);
 
-  // Add decorative separator
-  doc.setDrawColor(selectedStyle.colors.primary);
-  doc.setLineWidth(0.5);
-  doc.line(20, currentY - 5, doc.internal.pageSize.width - 20, currentY - 5);
-
-  // Contact information
-  currentY = renderContact(doc, profile, currentY);
-  currentY += 15;
-
-  // Bio section if available
-  if (profile.bio) {
-    currentY = renderBio(doc, profile, currentY);
+    // Header with profile info
+    currentY = await renderHeader(doc, profile, currentY);
     currentY += 15;
-  }
 
-  // Skills section with improved layout
-  if (profile.skills && profile.skills.length > 0) {
-    currentY = renderSkills(doc, profile, currentY);
+    // Add decorative separator
+    doc.setDrawColor(selectedStyle.colors.primary);
+    doc.setLineWidth(0.5);
+    doc.line(20, currentY - 5, doc.internal.pageSize.width - 20, currentY - 5);
+
+    // Contact information
+    currentY = renderContact(doc, profile, currentY);
     currentY += 15;
-  }
 
-  // Check if we need a new page
-  if (currentY > doc.internal.pageSize.height - 50) {
-    doc.addPage();
-    currentY = 20;
-  }
+    // Bio section if available
+    if (profile.bio) {
+      currentY = renderBio(doc, profile, currentY);
+      currentY += 15;
+    }
 
-  // Experience section
-  if (profile.experiences && profile.experiences.length > 0) {
-    currentY = renderExperiences(doc, profile, currentY);
-    currentY += 15;
-  }
+    // Skills section with improved layout
+    if (profile.skills && profile.skills.length > 0) {
+      currentY = renderSkills(doc, profile, currentY);
+      currentY += 15;
+    }
 
-  // Check if we need a new page
-  if (currentY > doc.internal.pageSize.height - 50) {
-    doc.addPage();
-    currentY = 20;
-  }
-
-  // Education section
-  if (profile.education && profile.education.length > 0) {
-    currentY = renderEducation(doc, profile, currentY);
-    currentY += 15;
-  }
-
-  // Certifications section
-  if (profile.certifications && profile.certifications.length > 0) {
+    // Check if we need a new page
     if (currentY > doc.internal.pageSize.height - 50) {
       doc.addPage();
       currentY = 20;
     }
-    currentY = renderCertifications(doc, profile.certifications, currentY);
+
+    // Experience section
+    if (profile.experiences && profile.experiences.length > 0) {
+      currentY = renderExperiences(doc, profile, currentY);
+      currentY += 15;
+    }
+
+    // Check if we need a new page
+    if (currentY > doc.internal.pageSize.height - 50) {
+      doc.addPage();
+      currentY = 20;
+    }
+
+    // Education section
+    if (profile.education && profile.education.length > 0) {
+      currentY = renderEducation(doc, profile, currentY);
+      currentY += 15;
+    }
+
+    // Certifications section
+    if (profile.certifications && profile.certifications.length > 0) {
+      if (currentY > doc.internal.pageSize.height - 50) {
+        doc.addPage();
+        currentY = 20;
+      }
+      currentY = renderCertifications(doc, profile.certifications, currentY);
+    }
+
+    // Footer with page numbers
+    renderFooter(doc, selectedStyle);
+
+    return doc;
+  } catch (error) {
+    console.error('Error generating CV:', error);
+    throw error;
   }
-
-  // Footer with page numbers
-  renderFooter(doc, selectedStyle);
-
-  return doc;
 };
