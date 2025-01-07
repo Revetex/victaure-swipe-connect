@@ -6,6 +6,7 @@ import { SkillCategory } from "./SkillCategory";
 import { SkillEditor } from "./SkillEditor";
 import { skillCategories } from "@/data/skills";
 import { UserProfile } from "@/types/profile";
+import { TouchFriendlySkillSelector } from "./TouchFriendlySkillSelector";
 
 interface CategorizedSkillsProps {
   profile: UserProfile;
@@ -31,10 +32,8 @@ export function CategorizedSkills({
 
   // Deduplicate skills and group them by category
   const groupedSkills = useMemo(() => {
-    // First, deduplicate the skills array
     const uniqueSkills = profile.skills ? Array.from(new Set(profile.skills)) : [];
     
-    // If we found duplicates, update the profile
     if (profile.skills && profile.skills.length !== uniqueSkills.length) {
       setProfile({
         ...profile,
@@ -42,7 +41,6 @@ export function CategorizedSkills({
       });
     }
 
-    // Then group the unique skills by category
     const grouped: Record<string, string[]> = {};
     Object.keys(skillCategories).forEach(category => {
       grouped[category] = [];
@@ -61,7 +59,6 @@ export function CategorizedSkills({
         grouped[skillCategory] = [];
       }
       
-      // Only add the skill if it's not already in the category
       if (!grouped[skillCategory].includes(skill)) {
         grouped[skillCategory].push(skill);
       }
@@ -112,6 +109,20 @@ export function CategorizedSkills({
           />
         ))}
       </motion.div>
+
+      {isEditing && (
+        <TouchFriendlySkillSelector
+          onSkillSelect={(skill) => {
+            if (!profile.skills?.includes(skill)) {
+              setProfile({
+                ...profile,
+                skills: [...(profile.skills || []), skill]
+              });
+            }
+          }}
+          existingSkills={profile.skills || []}
+        />
+      )}
     </div>
   );
 }

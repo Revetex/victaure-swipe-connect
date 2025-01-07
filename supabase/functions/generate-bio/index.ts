@@ -19,7 +19,7 @@ serve(async (req) => {
       throw new Error('Missing Hugging Face API key');
     }
 
-    const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français canadien basée sur ces informations:
+    const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
 Compétences: ${skills?.join(', ') || 'Non spécifiées'}
 Expériences: ${experiences?.map((exp: any) => `${exp.position} chez ${exp.company}`).join(', ') || 'Non spécifiées'}
@@ -29,8 +29,10 @@ La bio doit:
 - Être rédigée en français québécois professionnel
 - Mettre l'accent sur les réalisations et l'expertise
 - Inclure des expressions typiquement québécoises appropriées
-- Être adaptée au marché du travail canadien
-- Rester concise (maximum 3-4 phrases)`;
+- Être adaptée au marché du travail québécois
+- Rester concise (maximum 3 phrases)
+- Ne pas inclure de notes ou de remarques à la fin
+- Utiliser un ton professionnel mais chaleureux`;
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
       method: 'POST',
@@ -41,7 +43,7 @@ La bio doit:
       body: JSON.stringify({
         inputs: prompt,
         parameters: {
-          max_new_tokens: 256,
+          max_new_tokens: 200,
           temperature: 0.7,
           top_p: 0.9,
           return_full_text: false
@@ -56,7 +58,10 @@ La bio doit:
     }
 
     const data = await response.json();
-    const bio = data[0].generated_text.trim();
+    let bio = data[0].generated_text.trim();
+    
+    // Remove any notes or remarks that might appear after the main bio
+    bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim();
 
     return new Response(
       JSON.stringify({ bio }),
