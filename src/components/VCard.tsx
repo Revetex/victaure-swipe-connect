@@ -32,17 +32,43 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   };
 
   const handleSave = async () => {
-    if (!profile) return;
+    if (!profile) {
+      toast.error("Aucun profil à sauvegarder");
+      return;
+    }
 
     try {
       setIsAIProcessing(true);
       
-      // Call the AI assistant to review and correct the profile
-      const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
-        body: { profile }
-      });
+      // Validate profile data before saving
+      if (!profile.full_name?.trim()) {
+        toast.error("Le nom complet est requis");
+        return;
+      }
 
-      if (aiError) throw aiError;
+      // Call the AI assistant to review and correct the profile with retry logic
+      let aiCorrections = null;
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      while (retryCount < maxRetries) {
+        try {
+          const { data, error } = await supabase.functions.invoke('ai-profile-review', {
+            body: { profile }
+          });
+          
+          if (!error) {
+            aiCorrections = data;
+            break;
+          }
+          
+          retryCount++;
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        } catch (error) {
+          console.error('AI review attempt failed:', error);
+          retryCount++;
+        }
+      }
 
       if (aiCorrections?.suggestions) {
         const shouldApply = window.confirm(
@@ -53,21 +79,23 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         if (shouldApply && aiCorrections.correctedProfile) {
           await updateProfile(aiCorrections.correctedProfile);
           setProfile(aiCorrections.correctedProfile);
+          toast.success("Profil mis à jour avec les suggestions de l'IA");
         } else {
           await updateProfile(profile);
+          toast.success("Profil mis à jour sans les suggestions de l'IA");
         }
       } else {
         await updateProfile(profile);
+        toast.success("Profil mis à jour avec succès");
       }
 
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
       }
-      toast.success("Profil mis à jour avec succès");
     } catch (error) {
       console.error('Error saving profile:', error);
-      toast.error("Erreur lors de la sauvegarde du profil");
+      toast.error("Erreur lors de la sauvegarde du profil. Veuillez réessayer.");
     } finally {
       setIsAIProcessing(false);
     }
@@ -90,7 +118,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         textColor: profile.custom_text_color
       }}
     >
-      <div className="space-y-8 max-w-4xl mx-auto">
+      <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {isEditing && (
           <VCardCustomization profile={profile} setProfile={setProfile} />
         )}
