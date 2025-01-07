@@ -3,7 +3,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFormContext } from "react-hook-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CategoryIcon } from "@/components/skills/CategoryIcon";
-import { missionCategories } from "@/types/categories";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -16,62 +15,82 @@ interface JobCategoryFieldsProps {
 
 export function JobCategoryFields({ category, onChange }: JobCategoryFieldsProps) {
   const { control, watch } = useFormContext();
-  const missionType = watch("mission_type");
   const selectedCategory = watch("category");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
-  // Fetch categories
+  // Fetch categories with proper error handling
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['job-categories'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('job_categories')
-        .select('*')
-        .order('name', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('job_categories')
+          .select('*')
+          .order('name', { ascending: true });
 
-      if (error) {
+        if (error) {
+          console.error('Error fetching categories:', error);
+          toast.error("Erreur lors du chargement des catégories");
+          throw error;
+        }
+
+        // Create a Map to remove duplicates based on name
+        const uniqueCategories = Array.from(
+          new Map(data.map(item => [item.name, item])).values()
+        );
+
+        return uniqueCategories;
+      } catch (error) {
+        console.error('Error in category fetch:', error);
         toast.error("Erreur lors du chargement des catégories");
         throw error;
       }
-
-      return data;
     }
   });
 
-  // Fetch subcategories based on selected category
+  // Fetch subcategories based on selected category ID
   const { data: subcategories, isLoading: subcategoriesLoading } = useQuery({
     queryKey: ['job-subcategories', selectedCategoryId],
     enabled: !!selectedCategoryId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('job_subcategories')
-        .select('*')
-        .eq('category_id', selectedCategoryId)
-        .order('name', { ascending: true });
+      try {
+        if (!selectedCategoryId) return [];
 
-      if (error) {
+        const { data, error } = await supabase
+          .from('job_subcategories')
+          .select('*')
+          .eq('category_id', selectedCategoryId)
+          .order('name', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching subcategories:', error);
+          toast.error("Erreur lors du chargement des sous-catégories");
+          throw error;
+        }
+
+        return data;
+      } catch (error) {
+        console.error('Error in subcategory fetch:', error);
         toast.error("Erreur lors du chargement des sous-catégories");
         throw error;
       }
-
-      return data;
     }
   });
 
   const handleCategoryChange = async (categoryName: string) => {
     try {
-      const { data, error } = await supabase
-        .from('job_categories')
-        .select('id')
-        .eq('name', categoryName)
-        .single();
-
-      if (error) throw error;
-
-      setSelectedCategoryId(data.id);
-      onChange?.({ category: categoryName, subcategory: null });
+      // Find the category object from our cached categories data
+      const selectedCategory = categories?.find(cat => cat.name === categoryName);
+      
+      if (selectedCategory) {
+        setSelectedCategoryId(selectedCategory.id);
+        onChange?.({ category: categoryName, subcategory: null });
+      } else {
+        console.error('Category not found:', categoryName);
+        toast.error("Catégorie non trouvée");
+      }
     } catch (error) {
-      console.error('Error fetching category ID:', error);
+      console.error('Error in handleCategoryChange:', error);
       toast.error("Erreur lors de la sélection de la catégorie");
     }
   };
