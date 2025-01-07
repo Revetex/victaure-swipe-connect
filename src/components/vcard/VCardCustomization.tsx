@@ -1,6 +1,6 @@
+import { UserProfile } from "@/types/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserProfile } from "@/types/profile";
 
 interface VCardCustomizationProps {
   profile: UserProfile;
@@ -9,51 +9,52 @@ interface VCardCustomizationProps {
 
 export function VCardCustomization({ profile, setProfile }: VCardCustomizationProps) {
   return (
-    <div className="space-y-4 p-4 bg-background/50 rounded-lg border">
-      <h3 className="text-lg font-semibold">Personnalisation</h3>
-      <div className="grid gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="custom-font">Police personnalisée</Label>
+    <div className="space-y-4 p-4 bg-accent/10 rounded-lg">
+      <div className="space-y-2">
+        <Label htmlFor="font">Police personnalisée</Label>
+        <Input
+          id="font"
+          value={profile.custom_font || ""}
+          onChange={(e) => setProfile({ ...profile, custom_font: e.target.value })}
+          placeholder="Ex: Arial, sans-serif"
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="background">Couleur de fond</Label>
+        <div className="flex gap-2">
           <Input
-            id="custom-font"
-            value={profile.custom_font || ''}
-            onChange={(e) => setProfile({ ...profile, custom_font: e.target.value })}
-            placeholder="Nom de la police (ex: 'Roboto, sans-serif')"
+            id="background"
+            type="color"
+            value={profile.custom_background || "#ffffff"}
+            onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
+            className="w-12"
+          />
+          <Input
+            value={profile.custom_background || ""}
+            onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
+            placeholder="Ex: #ffffff ou rgb(255, 255, 255)"
+            className="flex-1"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="custom-background">Couleur de fond</Label>
-          <div className="flex gap-2">
-            <Input
-              id="custom-background"
-              value={profile.custom_background || ''}
-              onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
-              placeholder="Code couleur (ex: #ffffff)"
-            />
-            <input
-              type="color"
-              value={profile.custom_background || '#ffffff'}
-              onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
-              className="w-10 h-10 rounded"
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="custom-text-color">Couleur du texte</Label>
-          <div className="flex gap-2">
-            <Input
-              id="custom-text-color"
-              value={profile.custom_text_color || ''}
-              onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
-              placeholder="Code couleur (ex: #000000)"
-            />
-            <input
-              type="color"
-              value={profile.custom_text_color || '#000000'}
-              onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
-              className="w-10 h-10 rounded"
-            />
-          </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="textColor">Couleur du texte</Label>
+        <div className="flex gap-2">
+          <Input
+            id="textColor"
+            type="color"
+            value={profile.custom_text_color || "#000000"}
+            onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
+            className="w-12"
+          />
+          <Input
+            value={profile.custom_text_color || ""}
+            onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
+            placeholder="Ex: #000000 ou rgb(0, 0, 0)"
+            className="flex-1"
+          />
         </div>
       </div>
     </div>

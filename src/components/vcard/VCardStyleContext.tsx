@@ -1,17 +1,43 @@
 import { createContext, useContext } from 'react';
-import { StyleOption } from './types';
 
-interface VCardStyleContextType {
+export interface StyleOption {
+  id: string;
+  name: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    text: {
+      primary: string;
+      secondary: string;
+      muted: string;
+    };
+  };
+  font: string;
+}
+
+const defaultStyle: StyleOption = {
+  id: 'modern',
+  name: 'Modern',
+  colors: {
+    primary: '#3b82f6',
+    secondary: '#6366f1',
+    text: {
+      primary: '#1f2937',
+      secondary: '#4b5563',
+      muted: '#9ca3af',
+    },
+  },
+  font: 'Inter, sans-serif',
+};
+
+const VCardStyleContext = createContext<{
   selectedStyle: StyleOption;
-  isEditing: boolean;
-}
+  setSelectedStyle: (style: StyleOption) => void;
+}>({
+  selectedStyle: defaultStyle,
+  setSelectedStyle: () => {},
+});
 
-export const VCardStyleContext = createContext<VCardStyleContextType | undefined>(undefined);
+export const useVCardStyle = () => useContext(VCardStyleContext);
 
-export function useVCardStyle() {
-  const context = useContext(VCardStyleContext);
-  if (!context) {
-    throw new Error('useVCardStyle must be used within a VCardStyleProvider');
-  }
-  return context;
-}
+export default VCardStyleContext;
