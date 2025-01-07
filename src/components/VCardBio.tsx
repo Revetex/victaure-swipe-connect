@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useVCardStyle } from "./vcard/VCardStyleContext";
+import { Loader } from "@/components/ui/loader";
 
 interface VCardBioProps {
   profile: any;
@@ -15,9 +13,10 @@ interface VCardBioProps {
 
 export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const { selectedStyle } = useVCardStyle();
 
-  const generateBioWithAI = async () => {
+  const handleGenerateBio = async () => {
+    if (!profile) return;
+    
     setIsGenerating(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -25,9 +24,9 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
 
       const { data, error } = await supabase.functions.invoke('generate-bio', {
         body: {
-          skills: profile.skills,
-          experiences: profile.experiences,
-          education: profile.education,
+          skills: profile.skills || [],
+          experiences: profile.experiences || [],
+          education: profile.education || [],
         }
       });
 
@@ -44,51 +43,36 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4"
-    >
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 
-          className="text-lg font-semibold"
-          style={{ color: selectedStyle.colors.text.primary }}
-        >
-          Présentation
-        </h3>
+        <h3 className="text-lg font-semibold">Présentation</h3>
         {isEditing && (
-          <Button
-            variant="outline"
+          <Button 
+            variant="outline" 
             size="sm"
-            onClick={generateBioWithAI}
+            onClick={handleGenerateBio}
             disabled={isGenerating}
-            style={{
-              backgroundColor: selectedStyle.colors.primary,
-              color: "white",
-              borderColor: `${selectedStyle.colors.primary}40`
-            }}
-            className="hover:opacity-90"
           >
-            <Wand2 className="w-4 h-4 mr-2" />
-            Générer avec l'IA
+            {isGenerating ? (
+              <Loader className="mr-2 h-4 w-4" />
+            ) : (
+              <Wand2 className="mr-2 h-4 w-4" />
+            )}
+            Générer
           </Button>
         )}
       </div>
+
       {isEditing ? (
-        <Textarea
-          value={profile.bio || ""}
+        <textarea
+          value={profile?.bio || ""}
           onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-          placeholder="Décrivez-vous en quelques lignes..."
-          className="min-h-[100px] bg-white/10 border-white/20 text-white placeholder:text-white/50"
+          placeholder="Écrivez une courte présentation..."
+          className="w-full min-h-[100px] p-2 border rounded-md bg-background"
         />
-      ) : (
-        <p 
-          className="whitespace-pre-wrap"
-          style={{ color: selectedStyle.colors.text.secondary }}
-        >
-          {profile.bio || "Aucune présentation"}
-        </p>
-      )}
-    </motion.div>
+      ) : profile?.bio ? (
+        <p className="text-muted-foreground">{profile.bio}</p>
+      ) : null}
+    </div>
   );
 }
