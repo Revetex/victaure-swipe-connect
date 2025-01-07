@@ -14,6 +14,9 @@ import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
+import { VCardBio } from "./VCardBio";
+import { VCardEducation } from "./VCardEducation";
+import { VCardExperiences } from "./VCardExperiences";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -108,6 +111,12 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           setProfile={setProfile}
         />
 
+        <VCardBio
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
+
         <VCardContact
           profile={profile}
           isEditing={isEditing}
@@ -134,6 +143,18 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             );
             setProfile({ ...profile, skills: updatedSkills });
           }}
+        />
+
+        <VCardEducation
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
+
+        <VCardExperiences
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
         />
 
         <VCardFooter

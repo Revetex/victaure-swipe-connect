@@ -14,15 +14,16 @@ export const renderBio = (
     doc.setFontSize(pdfStyles.fonts.subheader.size);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(pdfStyles.colors.text.primary);
-    doc.text('À propos', pdfStyles.margins.left, currentY);
-    
+    doc.text('Présentation', pdfStyles.margins.left, currentY);
     currentY += 8;
+
     doc.setFontSize(pdfStyles.fonts.body.size);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(pdfStyles.colors.text.secondary);
-    const bioLines = doc.splitTextToSize(profile.bio, 170);
+    
+    const bioLines = doc.splitTextToSize(profile.bio, 165);
     doc.text(bioLines, pdfStyles.margins.left, currentY);
-    currentY += (bioLines.length * 5) + 15;
+    currentY += (bioLines.length * 5) + 10;
   }
 
   return currentY;

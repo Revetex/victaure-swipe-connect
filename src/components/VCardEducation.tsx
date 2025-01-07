@@ -1,11 +1,12 @@
+import { VCardSection } from "./VCardSection";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X, GraduationCap, Building2, Calendar } from "lucide-react";
-import { VCardSection } from "./VCardSection";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 interface Education {
+  id: string;
   school_name: string;
   degree: string;
   field_of_study?: string;

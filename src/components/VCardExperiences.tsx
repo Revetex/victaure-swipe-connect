@@ -13,24 +13,22 @@ interface VCardExperiencesProps {
   setProfile: (profile: UserProfile) => void;
 }
 
-export function VCardExperiences({
-  profile,
-  isEditing,
-  setProfile,
-}: VCardExperiencesProps) {
+export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperiencesProps) {
   const handleAddExperience = () => {
-    const newExperience = {
+    if (!profile) return;
+
+    const experience = {
       id: crypto.randomUUID(),
       company: "",
       position: "",
       start_date: "",
       end_date: "",
-      description: "",
+      description: ""
     };
 
     setProfile({
       ...profile,
-      experiences: [...(profile.experiences || []), newExperience],
+      experiences: [...(profile.experiences || []), experience]
     });
     toast.success("Expérience ajoutée");
   };
@@ -38,18 +36,9 @@ export function VCardExperiences({
   const handleRemoveExperience = (id: string) => {
     setProfile({
       ...profile,
-      experiences: profile.experiences?.filter((exp) => exp.id !== id) || [],
+      experiences: profile.experiences?.filter(exp => exp.id !== id) || []
     });
     toast.success("Expérience supprimée");
-  };
-
-  const handleExperienceChange = (id: string, field: string, value: string) => {
-    setProfile({
-      ...profile,
-      experiences: profile.experiences?.map((exp) =>
-        exp.id === id ? { ...exp, [field]: value } : exp
-      ) || [],
-    });
   };
 
   return (
@@ -57,126 +46,125 @@ export function VCardExperiences({
       title="Expériences professionnelles"
       icon={<Briefcase className="h-5 w-5 text-indigo-400" />}
     >
-      <AnimatePresence mode="popLayout">
-        <div className="space-y-6">
-          {(profile.experiences || []).map((experience) => (
+      <div className="space-y-6">
+        <AnimatePresence>
+          {profile.experiences?.map((experience) => (
             <motion.div
               key={experience.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="relative p-4 rounded-lg bg-white/5 space-y-4 border border-indigo-500/20 hover:border-indigo-500/30 transition-colors"
+              className="relative p-4 rounded-lg bg-white/5 space-y-2"
             >
               {isEditing ? (
                 <>
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-indigo-400 shrink-0" />
+                  <Input
+                    value={experience.company}
+                    onChange={(e) => {
+                      const newExperiences = profile.experiences?.map(exp =>
+                        exp.id === experience.id ? { ...exp, company: e.target.value } : exp
+                      );
+                      setProfile({ ...profile, experiences: newExperiences });
+                    }}
+                    placeholder="Entreprise"
+                    className="mb-2 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                  <Input
+                    value={experience.position}
+                    onChange={(e) => {
+                      const newExperiences = profile.experiences?.map(exp =>
+                        exp.id === experience.id ? { ...exp, position: e.target.value } : exp
+                      );
+                      setProfile({ ...profile, experiences: newExperiences });
+                    }}
+                    placeholder="Poste"
+                    className="mb-2 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                  <div className="grid grid-cols-2 gap-4 mb-2">
                     <Input
-                      value={experience.company}
-                      onChange={(e) =>
-                        handleExperienceChange(experience.id, "company", e.target.value)
-                      }
-                      placeholder="Nom de l'entreprise"
-                      className="bg-white/10 border-indigo-500/20 text-white placeholder:text-white/50"
+                      type="date"
+                      value={experience.start_date || ""}
+                      onChange={(e) => {
+                        const newExperiences = profile.experiences?.map(exp =>
+                          exp.id === experience.id ? { ...exp, start_date: e.target.value } : exp
+                        );
+                        setProfile({ ...profile, experiences: newExperiences });
+                      }}
+                      className="bg-white/10 border-white/20 text-white"
                     />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5 text-indigo-400 shrink-0" />
                     <Input
-                      value={experience.position}
-                      onChange={(e) =>
-                        handleExperienceChange(experience.id, "position", e.target.value)
-                      }
-                      placeholder="Poste occupé"
-                      className="bg-white/10 border-indigo-500/20 text-white placeholder:text-white/50"
+                      type="date"
+                      value={experience.end_date || ""}
+                      onChange={(e) => {
+                        const newExperiences = profile.experiences?.map(exp =>
+                          exp.id === experience.id ? { ...exp, end_date: e.target.value } : exp
+                        );
+                        setProfile({ ...profile, experiences: newExperiences });
+                      }}
+                      className="bg-white/10 border-white/20 text-white"
                     />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-indigo-400 shrink-0" />
-                      <Input
-                        type="date"
-                        value={experience.start_date || ""}
-                        onChange={(e) =>
-                          handleExperienceChange(experience.id, "start_date", e.target.value)
-                        }
-                        className="bg-white/10 border-indigo-500/20 text-white"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-indigo-400 shrink-0" />
-                      <Input
-                        type="date"
-                        value={experience.end_date || ""}
-                        onChange={(e) =>
-                          handleExperienceChange(experience.id, "end_date", e.target.value)
-                        }
-                        className="bg-white/10 border-indigo-500/20 text-white"
-                      />
-                    </div>
                   </div>
                   <Textarea
                     value={experience.description || ""}
-                    onChange={(e) =>
-                      handleExperienceChange(experience.id, "description", e.target.value)
-                    }
+                    onChange={(e) => {
+                      const newExperiences = profile.experiences?.map(exp =>
+                        exp.id === experience.id ? { ...exp, description: e.target.value } : exp
+                      );
+                      setProfile({ ...profile, experiences: newExperiences });
+                    }}
                     placeholder="Description du poste"
-                    className="bg-white/10 border-indigo-500/20 text-white placeholder:text-white/50 min-h-[100px]"
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
                   />
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveExperience(experience.id)}
-                    className="absolute top-2 right-2 text-indigo-400 hover:text-red-400 transition-colors"
+                    className="absolute top-2 right-2 text-white/60 hover:text-white"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-indigo-400 shrink-0" />
-                    <h4 className="font-medium text-white">{experience.position}</h4>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5 text-indigo-400 shrink-0" />
-                    <p className="text-white/80">{experience.company}</p>
-                  </div>
-                  {experience.start_date && (
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-indigo-400 shrink-0" />
-                      <p className="text-white/60">
-                        {new Date(experience.start_date).toLocaleDateString()} - 
-                        {experience.end_date 
-                          ? new Date(experience.end_date).toLocaleDateString()
-                          : "Présent"}
-                      </p>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-medium text-white">{experience.position}</h4>
+                      <p className="text-sm text-white/80">{experience.company}</p>
+                      {experience.start_date && (
+                        <p className="text-sm text-white/60">
+                          {new Date(experience.start_date).toLocaleDateString()} - 
+                          {experience.end_date 
+                            ? new Date(experience.end_date).toLocaleDateString()
+                            : "Présent"}
+                        </p>
+                      )}
                     </div>
-                  )}
+                  </div>
                   {experience.description && (
-                    <p className="text-white/70 pl-6">{experience.description}</p>
+                    <p className="text-sm text-white/70">{experience.description}</p>
                   )}
                 </>
               )}
             </motion.div>
           ))}
-          {isEditing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+        </AnimatePresence>
+
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-4"
+          >
+            <Button
+              onClick={handleAddExperience}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
             >
-              <Button
-                onClick={handleAddExperience}
-                variant="outline"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500"
-              >
-                Ajouter une expérience
-              </Button>
-            </motion.div>
-          )}
-        </div>
-      </AnimatePresence>
+              <Plus className="h-4 w-4 mr-2" />
+              Ajouter une expérience
+            </Button>
+          </motion.div>
+        )}
+      </div>
     </VCardSection>
   );
 }
