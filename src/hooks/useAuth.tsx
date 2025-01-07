@@ -9,6 +9,7 @@ interface AuthState {
   isAuthenticated: boolean;
   error: Error | null;
   user: User | null;
+  isInitializing: boolean;
 }
 
 export function useAuth() {
@@ -16,7 +17,8 @@ export function useAuth() {
     isLoading: true,
     isAuthenticated: false,
     error: null,
-    user: null
+    user: null,
+    isInitializing: true
   });
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
@@ -39,8 +41,6 @@ export function useAuth() {
   const signOut = async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
-      
-      // Clear all storage
       localStorage.clear();
       sessionStorage.clear();
       
@@ -48,19 +48,16 @@ export function useAuth() {
         scope: 'global'
       });
       
-      if (signOutError) {
-        console.error("Sign out error:", signOutError);
-        throw signOutError;
-      }
+      if (signOutError) throw signOutError;
       
       setState({
         isLoading: false,
         isAuthenticated: false,
         error: null,
-        user: null
+        user: null,
+        isInitializing: false
       });
 
-      // Get the stored redirect path or default to auth
       const redirectTo = sessionStorage.getItem('redirectTo') || '/auth';
       navigate(redirectTo, { replace: true });
       
@@ -71,7 +68,8 @@ export function useAuth() {
         ...prev, 
         isAuthenticated: false,
         isLoading: false,
-        error: error instanceof Error ? error : new Error('Unknown error')
+        error: error instanceof Error ? error : new Error('Unknown error'),
+        isInitializing: false
       }));
       navigate('/auth', { replace: true });
       toast.error('Erreur lors de la déconnexion');
@@ -86,12 +84,9 @@ export function useAuth() {
       try {
         setState(prev => ({ ...prev, isLoading: true, error: null }));
         
-        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error("Session error:", sessionError);
-          
           if ((sessionError.message.includes('Failed to fetch') || 
                sessionError.message.includes('NetworkError')) && 
               retryCount < 3) {
@@ -102,6 +97,7 @@ export function useAuth() {
           
           if (mounted) {
             handleAuthError(sessionError);
+            setState(prev => ({ ...prev, isInitializing: false }));
           }
           return;
         }
@@ -112,19 +108,19 @@ export function useAuth() {
               isLoading: false,
               isAuthenticated: false,
               error: null,
-              user: null
+              user: null,
+              isInitializing: false
             });
           }
           return;
         }
 
-        // Verify user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
-          console.error("User verification error:", userError);
           if (mounted) {
             handleAuthError(userError);
+            setState(prev => ({ ...prev, isInitializing: false }));
           }
           return;
         }
@@ -135,7 +131,8 @@ export function useAuth() {
               isLoading: false,
               isAuthenticated: false,
               error: null,
-              user: null
+              user: null,
+              isInitializing: false
             });
           }
           return;
@@ -146,7 +143,8 @@ export function useAuth() {
             isLoading: false,
             isAuthenticated: true,
             error: null,
-            user
+            user,
+            isInitializing: false
           });
           setRetryCount(0);
         }
@@ -161,7 +159,8 @@ export function useAuth() {
               ...prev,
               isLoading: false,
               error: error instanceof Error ? error : new Error('Authentication check failed'),
-              isAuthenticated: false
+              isAuthenticated: false,
+              isInitializing: false
             }));
           }
         }
@@ -171,13 +170,12 @@ export function useAuth() {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
-      
       if (event === 'SIGNED_IN' && session) {
         setState(prev => ({
           ...prev,
           isAuthenticated: true,
-          user: session.user
+          user: session.user,
+          isInitializing: false
         }));
         navigate('/dashboard', { replace: true });
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
@@ -185,7 +183,8 @@ export function useAuth() {
           isLoading: false,
           isAuthenticated: false,
           error: null,
-          user: null
+          user: null,
+          isInitializing: false
         });
         navigate('/auth', { replace: true });
       }
