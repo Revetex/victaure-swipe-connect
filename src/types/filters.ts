@@ -11,4 +11,7 @@ export interface JobFilters {
   dateRange?: DateFilter;
   experienceLevel?: string;
   duration?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+  deadlineBefore?: string;
 }

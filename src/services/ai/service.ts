@@ -36,3 +36,23 @@ export const sendMessage = async (message: string): Promise<Message> => {
     throw error;
   }
 };
+
+export const generateAIResponse = async (message: string): Promise<string> => {
+  const response = await sendMessage(message);
+  return response.content;
+};
+
+export const saveMessage = async (message: Message): Promise<void> => {
+  // Implementation for saving message to database
+  console.log('Saving message:', message);
+};
+
+export const loadMessages = async (): Promise<Message[]> => {
+  // Implementation for loading messages from database
+  return [];
+};
+
+export const deleteAllMessages = async (): Promise<void> => {
+  // Implementation for deleting all messages
+  console.log('Deleting all messages');
+};

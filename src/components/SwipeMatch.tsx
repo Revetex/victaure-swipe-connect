@@ -2,6 +2,7 @@ import { useSwipeJobs } from "./jobs/swipe/useSwipeJobs";
 import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { JobFilters } from "@/types/filters";
 import { Loader2 } from "lucide-react";
+import { useMotionValue } from "framer-motion";
 
 interface SwipeMatchProps {
   filters: JobFilters;
@@ -10,6 +11,12 @@ interface SwipeMatchProps {
 
 export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
   const { jobs, currentIndex, handleSwipe, loading } = useSwipeJobs(filters);
+  
+  // Initialize motion values
+  const x = useMotionValue(0);
+  const rotate = useMotionValue(0);
+  const opacity = useMotionValue(1);
+  const scale = useMotionValue(1);
 
   if (loading) {
     return (
@@ -41,10 +48,10 @@ export function SwipeMatch({ filters, onMatchSuccess }: SwipeMatchProps) {
     <div className="relative w-full max-w-md mx-auto h-[600px]">
       <AnimatedJobCard
         job={currentJob}
-        x={0}
-        rotate={0}
-        opacity={1}
-        scale={1}
+        x={x}
+        rotate={rotate}
+        opacity={opacity}
+        scale={scale}
         onDragStart={() => {}}
         onDragEnd={async (_, info) => {
           const offset = info.offset.x;
