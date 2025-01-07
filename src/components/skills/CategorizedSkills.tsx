@@ -63,16 +63,23 @@ export function CategorizedSkills({
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        {Object.entries(groupedSkills).map(([category, skills]) => (
-          <SkillCategory
-            key={category}
-            category={category}
-            skills={skills}
-            isEditing={isEditing}
-            searchTerm={searchTerm}
-            onRemoveSkill={onRemoveSkill}
-          />
-        ))}
+        {Object.entries(groupedSkills).map(([category, skills]) => {
+          const filteredCategorySkills = skills.filter((skill) =>
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          
+          if (filteredCategorySkills.length === 0) return null;
+          
+          return (
+            <SkillCategory
+              key={category}
+              category={category}
+              skills={filteredCategorySkills}
+              isEditing={isEditing}
+              onRemoveSkill={onRemoveSkill}
+            />
+          );
+        })}
       </motion.div>
     </div>
   );
