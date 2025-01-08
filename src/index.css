@@ -1,11 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import './App.css';
 @import './styles/metallic.css';
 @import './styles/sticky-notes.css';
 @import './styles/glass.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {

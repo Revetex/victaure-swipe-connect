@@ -125,35 +125,36 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             selectedStyle={selectedStyle}
             onEditToggle={handleEditToggle}
             onSave={handleSave}
-          onDownloadBusinessCard={async () => {
-            if (!profile) return;
-            setIsPdfGenerating(true);
-            try {
-              const doc = await generateBusinessCard(profile, selectedStyle);
-              doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-              toast.success("Carte de visite générée avec succès");
-            } catch (error) {
-              console.error('Error generating business card:', error);
-              toast.error("Erreur lors de la génération de la carte de visite");
-            } finally {
-              setIsPdfGenerating(false);
-            }
-          }}
-          onDownloadCV={async () => {
-            if (!profile) return;
-            setIsPdfGenerating(true);
-            try {
-              const doc = await generateCV(profile, selectedStyle);
-              doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-              toast.success("CV généré avec succès");
-            } catch (error) {
-              console.error('Error generating CV:', error);
-              toast.error("Erreur lors de la génération du CV");
-            } finally {
-              setIsPdfGenerating(false);
-            }
-          }}
-        />
+            onDownloadBusinessCard={async () => {
+              if (!profile) return;
+              setIsPdfGenerating(true);
+              try {
+                const doc = await generateBusinessCard(profile, selectedStyle);
+                doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+                toast.success("Carte de visite générée avec succès");
+              } catch (error) {
+                console.error('Error generating business card:', error);
+                toast.error("Erreur lors de la génération de la carte de visite");
+              } finally {
+                setIsPdfGenerating(false);
+              }
+            }}
+            onDownloadCV={async () => {
+              if (!profile) return;
+              setIsPdfGenerating(true);
+              try {
+                const doc = await generateCV(profile, selectedStyle);
+                doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+                toast.success("CV généré avec succès");
+              } catch (error) {
+                console.error('Error generating CV:', error);
+                toast.error("Erreur lors de la génération du CV");
+              } finally {
+                setIsPdfGenerating(false);
+              }
+            }}
+          />
+        </motion.div>
       </div>
     </VCardContainer>
   );
