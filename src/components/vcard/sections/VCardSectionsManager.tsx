@@ -7,6 +7,8 @@ import { VCardEducation } from "../../VCardEducation";
 import { VCardExperiences } from "../../VCardExperiences";
 import { StyleOption } from "../types";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
@@ -22,6 +24,7 @@ export function VCardSectionsManager({
   selectedStyle,
 }: VCardSectionsManagerProps) {
   const [newSkill, setNewSkill] = useState("");
+  const isMobile = useIsMobile();
 
   const handleAddSkill = () => {
     if (!profile || !newSkill) return;
@@ -36,65 +39,34 @@ export function VCardSectionsManager({
     setProfile({ ...profile, skills: updatedSkills });
   };
 
-  // Default sections order if none is specified in profile
   const defaultSectionsOrder = ['header', 'bio', 'contact', 'education', 'experience', 'skills'];
   const sectionsOrder = profile.sections_order || defaultSectionsOrder;
 
   const renderSection = (sectionId: string) => {
+    const props = {
+      profile,
+      isEditing,
+      setProfile,
+      selectedStyle,
+      newSkill,
+      setNewSkill,
+      handleAddSkill,
+      handleRemoveSkill,
+    };
+
     switch (sectionId) {
       case 'header':
-        return (
-          <VCardHeader
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
+        return <VCardHeader {...props} />;
       case 'bio':
-        return (
-          <VCardBio
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
+        return <VCardBio {...props} />;
       case 'contact':
-        return (
-          <VCardContact
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
+        return <VCardContact {...props} />;
       case 'education':
-        return (
-          <VCardEducation
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
+        return <VCardEducation {...props} />;
       case 'experience':
-        return (
-          <VCardExperiences
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
+        return <VCardExperiences {...props} />;
       case 'skills':
-        return (
-          <VCardContent
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-            selectedStyle={selectedStyle}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
-            handleAddSkill={handleAddSkill}
-            handleRemoveSkill={handleRemoveSkill}
-          />
-        );
+        return <VCardContent {...props} />;
       default:
         return null;
     }
@@ -102,14 +74,22 @@ export function VCardSectionsManager({
 
   return (
     <div className="space-y-8">
-      {sectionsOrder.map((sectionId) => (
-        <div
-          key={sectionId}
-          className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}
-        >
-          {renderSection(sectionId)}
-        </div>
-      ))}
+      <AnimatePresence>
+        {sectionsOrder.map((sectionId) => (
+          <motion.div
+            key={sectionId}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`
+              ${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}
+              ${isMobile && isEditing ? 'p-4 touch-manipulation' : ''}
+            `}
+          >
+            {renderSection(sectionId)}
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
