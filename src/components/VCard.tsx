@@ -88,8 +88,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             <VCardEditingHeader
               onBack={handleEditToggle}
               onCustomize={() => setShowCustomization(!showCustomization)}
-              onSave={handleSave}
-              isProcessing={isAIProcessing}
               showCustomization={showCustomization}
             />
 
