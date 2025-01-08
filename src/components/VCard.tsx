@@ -5,13 +5,13 @@ import { VCardEmpty } from "./vcard/VCardEmpty";
 import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
-import { VCardLayout } from "./vcard/layout/VCardLayout";
-import { VCardEditingMode } from "./vcard/editing/VCardEditingMode";
-import { VCardMobileFooter } from "./vcard/footer/VCardMobileFooter";
+import { VCardFooter } from "./vcard/VCardFooter";
+import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
-import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
+import { motion, AnimatePresence } from "framer-motion";
+import { VCardEditingHeader } from "./vcard/sections/VCardEditingHeader";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -25,7 +25,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
   const { selectedStyle } = useVCardStyle();
-  const { handleShare } = useVCardHandlers();
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -83,15 +82,28 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       }}
       selectedStyle={selectedStyle}
     >
-      <VCardLayout isEditing={isEditing}>
+      <div className="relative space-y-8">
         {isEditing && (
-          <VCardEditingMode
-            showCustomization={showCustomization}
-            setShowCustomization={setShowCustomization}
-            onBack={handleEditToggle}
-            profile={profile}
-            setProfile={setProfile}
-          />
+          <>
+            <VCardEditingHeader
+              onBack={handleEditToggle}
+              onCustomize={() => setShowCustomization(!showCustomization)}
+              showCustomization={showCustomization}
+            />
+
+            <AnimatePresence>
+              {showCustomization && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <VCardCustomization profile={profile} setProfile={setProfile} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
         )}
 
         <VCardSectionsManager
@@ -101,8 +113,12 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           selectedStyle={selectedStyle}
         />
 
-        <div className={`fixed bottom-0 left-0 right-0 z-50 ${isEditing ? 'bg-background/80' : ''} p-4 transition-all duration-300 ease-in-out`}>
-          <VCardMobileFooter
+        <motion.div 
+          className={`sticky bottom-0 z-50 w-full bg-background/80 backdrop-blur-lg border-t ${
+            isEditing ? 'py-4' : 'py-2'
+          }`}
+        >
+          <VCardFooter
             isEditing={isEditing}
             isPdfGenerating={isPdfGenerating}
             isProcessing={isAIProcessing}
@@ -137,10 +153,9 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                 setIsPdfGenerating(false);
               }
             }}
-            onShare={() => profile && handleShare(profile)}
           />
-        </div>
-      </VCardLayout>
+        </motion.div>
+      </div>
     </VCardContainer>
   );
 }

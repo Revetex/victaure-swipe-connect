@@ -97,32 +97,3 @@ body {
          border-t border-gray-200 dark:border-gray-800
          flex justify-around items-center z-50;
 }
-
-/* VCard editing styles */
-.vcard-editing {
-  @apply bg-gray-50 dark:bg-gray-900;
-}
-
-.vcard-actions {
-  @apply fixed bottom-0 left-0 right-0 
-         bg-white dark:bg-gray-900
-         border-t border-gray-200 dark:border-gray-700
-         p-4 z-50;
-}
-
-.download-buttons {
-  @apply flex flex-col sm:flex-row gap-2 justify-center items-center
-         fixed bottom-20 left-0 right-0 
-         bg-white/95 dark:bg-gray-900/95
-         p-4 z-40
-         border-t border-gray-200 dark:border-gray-700;
-}
-
-/* Custom tab styles */
-.victaure-tab {
-  @apply text-red-500 hover:text-red-600 transition-colors;
-}
-
-.victaure-tab[data-state="active"] {
-  @apply text-red-500 border-red-500;
-}
