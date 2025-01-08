@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { AuthState, AuthStateDispatch } from './useAuthState';
+import { AuthStateDispatch } from './useAuthState';
+import { AuthError } from '@supabase/supabase-js';
 
 export const useAuthHandlers = (setState: AuthStateDispatch) => {
   const [retryCount, setRetryCount] = useState(0);
@@ -11,17 +12,26 @@ export const useAuthHandlers = (setState: AuthStateDispatch) => {
   const handleAuthError = (error: Error) => {
     console.error('Auth error:', error);
     
-    setState(prev => ({
-      ...prev,
+    setState({
       isLoading: false,
       error,
-      isAuthenticated: false
-    }));
+      isAuthenticated: false,
+      user: null
+    });
 
-    if (error.message.includes('Failed to fetch')) {
-      toast.error("Erreur de connexion. Vérifiez votre connexion internet.");
+    if (error instanceof AuthError) {
+      switch (error.message) {
+        case 'Failed to fetch':
+          toast.error("Erreur de connexion. Vérifiez votre connexion internet.");
+          break;
+        case 'Invalid login credentials':
+          toast.error("Identifiants invalides");
+          break;
+        default:
+          toast.error("Erreur d'authentification");
+      }
     } else {
-      toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+      toast.error("Une erreur est survenue");
     }
   };
 
@@ -52,7 +62,7 @@ export const useAuthHandlers = (setState: AuthStateDispatch) => {
         isLoading: false,
         error: error instanceof Error ? error : new Error('Failed to sign out')
       }));
-      toast.error("Erreur lors de la déconnexion. Veuillez réessayer.");
+      toast.error("Erreur lors de la déconnexion");
     }
   };
 
