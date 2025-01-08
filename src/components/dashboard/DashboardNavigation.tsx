@@ -31,18 +31,22 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
             type: "spring",
             stiffness: 500
           }}
-          className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${
+          className={`flex flex-col items-center justify-center w-20 gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${
             currentPage === id
-              ? "text-primary bg-primary/10 shadow-lg shadow-primary/20"
+              ? id === 2 
+                ? "text-red-500 bg-red-50 dark:bg-red-950/20" 
+                : "text-primary bg-primary/10"
               : "text-muted-foreground hover:text-primary hover:bg-primary/5"
           }`}
         >
           <Icon className="h-5 w-5" />
-          <span className="text-xs font-medium">{name}</span>
+          <span className="text-xs font-medium whitespace-nowrap">{name}</span>
           {currentPage === id && (
             <motion.div
               layoutId="activeTab"
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+              className={`absolute bottom-0 left-0 right-0 h-0.5 ${
+                id === 2 ? "bg-red-500" : "bg-primary"
+              }`}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
           )}
