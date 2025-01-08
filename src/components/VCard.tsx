@@ -5,13 +5,13 @@ import { VCardEmpty } from "./vcard/VCardEmpty";
 import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
-import { VCardFooter } from "./vcard/VCardFooter";
-import { VCardCustomization } from "./vcard/VCardCustomization";
+import { VCardLayout } from "./vcard/layout/VCardLayout";
+import { VCardEditingMode } from "./vcard/editing/VCardEditingMode";
+import { VCardMobileFooter } from "./vcard/footer/VCardMobileFooter";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
-import { motion, AnimatePresence } from "framer-motion";
-import { VCardEditingHeader } from "./vcard/sections/VCardEditingHeader";
+import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -25,6 +25,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
   const { selectedStyle } = useVCardStyle();
+  const { handleShare } = useVCardHandlers();
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -82,90 +83,64 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       }}
       selectedStyle={selectedStyle}
     >
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen w-full transition-all duration-300"
-      >
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 ${isEditing ? 'min-h-screen' : ''}`}>
-          {isEditing && (
-            <>
-              <VCardEditingHeader
-                onBack={handleEditToggle}
-                onCustomize={() => setShowCustomization(!showCustomization)}
-                showCustomization={showCustomization}
-              />
-
-              <AnimatePresence>
-                {showCustomization && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <VCardCustomization profile={profile} setProfile={setProfile} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </>
-          )}
-
-          <VCardSectionsManager
+      <VCardLayout isEditing={isEditing}>
+        {isEditing && (
+          <VCardEditingMode
+            showCustomization={showCustomization}
+            setShowCustomization={setShowCustomization}
+            onBack={handleEditToggle}
             profile={profile}
-            isEditing={isEditing}
             setProfile={setProfile}
-            selectedStyle={selectedStyle}
           />
+        )}
 
-          {isEditing && (
-            <motion.div 
-              className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-none border-t border-border/50 p-4 z-50"
-              initial={{ y: 100 }}
-              animate={{ y: 0 }}
-            >
-              <div className="max-w-7xl mx-auto">
-                <VCardFooter
-                  isEditing={isEditing}
-                  isPdfGenerating={isPdfGenerating}
-                  isProcessing={isAIProcessing}
-                  selectedStyle={selectedStyle}
-                  onEditToggle={handleEditToggle}
-                  onSave={handleSave}
-                  onDownloadBusinessCard={async () => {
-                    if (!profile) return;
-                    setIsPdfGenerating(true);
-                    try {
-                      const doc = await generateBusinessCard(profile, selectedStyle);
-                      doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-                      toast.success("Carte de visite générée avec succès");
-                    } catch (error) {
-                      console.error('Error generating business card:', error);
-                      toast.error("Erreur lors de la génération de la carte de visite");
-                    } finally {
-                      setIsPdfGenerating(false);
-                    }
-                  }}
-                  onDownloadCV={async () => {
-                    if (!profile) return;
-                    setIsPdfGenerating(true);
-                    try {
-                      const doc = await generateCV(profile, selectedStyle);
-                      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-                      toast.success("CV généré avec succès");
-                    } catch (error) {
-                      console.error('Error generating CV:', error);
-                      toast.error("Erreur lors de la génération du CV");
-                    } finally {
-                      setIsPdfGenerating(false);
-                    }
-                  }}
-                />
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </motion.div>
+        <VCardSectionsManager
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+          selectedStyle={selectedStyle}
+        />
+
+        {isEditing && (
+          <VCardMobileFooter
+            isEditing={isEditing}
+            isPdfGenerating={isPdfGenerating}
+            isProcessing={isAIProcessing}
+            selectedStyle={selectedStyle}
+            onEditToggle={handleEditToggle}
+            onSave={handleSave}
+            onDownloadBusinessCard={async () => {
+              if (!profile) return;
+              setIsPdfGenerating(true);
+              try {
+                const doc = await generateBusinessCard(profile, selectedStyle);
+                doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+                toast.success("Carte de visite générée avec succès");
+              } catch (error) {
+                console.error('Error generating business card:', error);
+                toast.error("Erreur lors de la génération de la carte de visite");
+              } finally {
+                setIsPdfGenerating(false);
+              }
+            }}
+            onDownloadCV={async () => {
+              if (!profile) return;
+              setIsPdfGenerating(true);
+              try {
+                const doc = await generateCV(profile, selectedStyle);
+                doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+                toast.success("CV généré avec succès");
+              } catch (error) {
+                console.error('Error generating CV:', error);
+                toast.error("Erreur lors de la génération du CV");
+              } finally {
+                setIsPdfGenerating(false);
+              }
+            }}
+            onShare={() => profile && handleShare(profile)}
+          />
+        )}
+      </VCardLayout>
     </VCardContainer>
   );
 }
