@@ -40,20 +40,20 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
           {todo.text}
         </p>
         
-        {(todo.due_date || todo.due_time) && (
+        {(todo.dueDate || todo.dueTime) && (
           <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-            {todo.due_date && (
+            {todo.dueDate && (
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <span>
-                  {format(new Date(todo.due_date), "d MMMM yyyy", { locale: fr })}
+                  {format(new Date(todo.dueDate), "d MMMM yyyy", { locale: fr })}
                 </span>
               </div>
             )}
-            {!todo.all_day && todo.due_time && (
+            {!todo.allDay && todo.dueTime && (
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                <span>{todo.due_time}</span>
+                <span>{todo.dueTime}</span>
               </div>
             )}
           </div>
