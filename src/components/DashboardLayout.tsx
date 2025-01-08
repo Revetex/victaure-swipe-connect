@@ -1,37 +1,18 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
 import { DashboardContent } from "./dashboard/DashboardContent";
+import { useViewportHeight } from "@/utils/layout/useViewportHeight";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-
-  const updateHeight = useCallback(() => {
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-    setViewportHeight(window.innerHeight);
-  }, []);
-
-  useEffect(() => {
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    window.addEventListener('orientationchange', updateHeight);
-
-    const timeoutId = setTimeout(updateHeight, 100);
-
-    return () => {
-      window.removeEventListener('resize', updateHeight);
-      window.removeEventListener('orientationchange', updateHeight);
-      clearTimeout(timeoutId);
-    };
-  }, [updateHeight]);
+  const viewportHeight = useViewportHeight();
 
   const handleRequestChat = useCallback(() => {
     setCurrentPage(2);
