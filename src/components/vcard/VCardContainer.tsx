@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { StyleOption } from "./types";
 import { motion } from "framer-motion";
+import { pdfColors } from "@/utils/pdf/colors";
 
 interface VCardContainerProps {
   children: ReactNode;
@@ -20,6 +21,9 @@ export function VCardContainer({
   customStyles,
   selectedStyle 
 }: VCardContainerProps) {
+  const textColor = customStyles?.textColor || selectedStyle.colors.text.primary || pdfColors.text.primary;
+  const backgroundColor = customStyles?.background || selectedStyle.colors.background.card || pdfColors.background;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,9 +35,11 @@ export function VCardContainer({
       )}
       style={{
         fontFamily: customStyles?.font || selectedStyle.font,
-        background: customStyles?.background || undefined,
-        color: customStyles?.textColor || undefined
-      }}
+        background: backgroundColor,
+        color: textColor,
+        "--text-color": textColor,
+        "--bg-color": backgroundColor,
+      } as React.CSSProperties}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}

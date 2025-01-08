@@ -5,6 +5,7 @@ import { Paintbrush, Type, Palette, TextCursor } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { ColorPicker } from "./ColorPicker";
+import { pdfColors } from "@/utils/pdf/colors";
 
 const fontOptions = [
   { value: "'Poppins', sans-serif", label: "Poppins" },
@@ -70,7 +71,7 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
             Arrière-plan
           </Label>
           <ColorPicker
-            color={profile.custom_background || "#ffffff"}
+            color={profile.custom_background || pdfColors.background}
             onChange={(color) => setProfile({ ...profile, custom_background: color })}
             className="w-full"
           />
@@ -87,7 +88,7 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
             Couleur du texte
           </Label>
           <ColorPicker
-            color={profile.custom_text_color || "#000000"}
+            color={profile.custom_text_color || pdfColors.text.primary}
             onChange={(color) => setProfile({ ...profile, custom_text_color: color })}
             className="w-full"
           />
