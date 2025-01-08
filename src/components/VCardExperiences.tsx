@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { VCardSection } from "./VCardSection";
 import { Button } from "@/components/ui/button";
-import { Briefcase, X, Plus } from "lucide-react";
+import { Briefcase, X, Plus, GripVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
