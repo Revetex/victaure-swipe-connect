@@ -16,6 +16,8 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
     const checkAuth = async () => {
       try {
         if (!mounted) return;
+
+        console.log('Checking auth status...');
         
         setState(prev => ({ ...prev, isLoading: true, error: null }));
         
@@ -25,26 +27,28 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
           console.error("Session error:", sessionError);
           
           if (mounted) {
-            setState(prev => ({
-              ...prev,
+            setState({
               isLoading: false,
               isAuthenticated: false,
               error: sessionError,
               user: null
-            }));
+            });
             
             if (sessionError.message.includes('Failed to fetch') && retryCount < 3) {
+              console.log(`Retrying auth check... Attempt ${retryCount + 1}`);
               setRetryCount(prev => prev + 1);
               retryTimeout = setTimeout(checkAuth, 2000);
               return;
             }
             
             handleAuthError(sessionError);
+            navigate('/auth');
           }
           return;
         }
 
         if (!session) {
+          console.log('No session found');
           if (mounted) {
             setState({
               isLoading: false,
@@ -52,10 +56,12 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
               error: null,
               user: null
             });
+            navigate('/auth');
           }
           return;
         }
 
+        console.log('Session found:', session.user.email);
         if (mounted) {
           setState({
             isLoading: false,
@@ -68,13 +74,14 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
       } catch (error) {
         console.error('Auth check error:', error);
         if (mounted) {
-          setState(prev => ({
-            ...prev,
+          setState({
             isLoading: false,
+            isAuthenticated: false,
             error: error instanceof Error ? error : new Error('Authentication check failed'),
-            isAuthenticated: false
-          }));
+            user: null
+          });
           toast.error("Erreur d'authentification. Veuillez réessayer.");
+          navigate('/auth');
         }
       }
     };
@@ -84,6 +91,8 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
+      if (!mounted) return;
+
       if (event === 'SIGNED_IN' && session) {
         setState({
           isLoading: false,
