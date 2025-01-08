@@ -1,6 +1,6 @@
 import { VCardSection } from "./VCardSection";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Building2, Calendar } from "lucide-react";
+import { GraduationCap, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Education } from "@/types/profile";
@@ -18,19 +18,19 @@ export function VCardEducation({
   setProfile,
 }: VCardEducationProps) {
   const handleAddEducation = () => {
+    const newEducation: Education = {
+      id: crypto.randomUUID(),
+      school_name: "",
+      degree: "",
+      field_of_study: "",
+      start_date: null,
+      end_date: null,
+      description: null
+    };
+
     setProfile({
       ...profile,
-      education: [
-        ...(profile.education || []),
-        { 
-          id: crypto.randomUUID(), 
-          school_name: "", 
-          degree: "", 
-          field_of_study: "", 
-          start_date: "", 
-          end_date: "" 
-        },
-      ],
+      education: [...(profile.education || []), newEducation],
     });
     toast.success("Formation ajoutée");
   };
@@ -75,8 +75,9 @@ export function VCardEducation({
             <Button 
               onClick={handleAddEducation} 
               variant="outline" 
-              className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500"
+              className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500 flex items-center justify-center gap-2"
             >
+              <Plus className="h-4 w-4" />
               Ajouter une formation
             </Button>
           </motion.div>

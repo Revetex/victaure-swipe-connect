@@ -113,13 +113,18 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           selectedStyle={selectedStyle}
         />
 
-        <VCardFooter
-          isEditing={isEditing}
-          isPdfGenerating={isPdfGenerating}
-          isProcessing={isAIProcessing}
-          selectedStyle={selectedStyle}
-          onEditToggle={handleEditToggle}
-          onSave={handleSave}
+        <motion.div 
+          className={`sticky bottom-0 z-50 w-full bg-background/80 backdrop-blur-lg border-t ${
+            isEditing ? 'py-4' : 'py-2'
+          }`}
+        >
+          <VCardFooter
+            isEditing={isEditing}
+            isPdfGenerating={isPdfGenerating}
+            isProcessing={isAIProcessing}
+            selectedStyle={selectedStyle}
+            onEditToggle={handleEditToggle}
+            onSave={handleSave}
           onDownloadBusinessCard={async () => {
             if (!profile) return;
             setIsPdfGenerating(true);

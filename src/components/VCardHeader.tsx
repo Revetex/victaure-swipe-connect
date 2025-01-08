@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { UserCircle2, Upload } from "lucide-react";
+import { UserCircle2, Upload, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "./ui/button";
 import { useState } from "react";
 
 interface VCardHeaderProps {
@@ -74,7 +75,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             className="object-cover w-full h-full"
           />
           <AvatarFallback className="bg-[#1A1F2C]">
-            <UserCircle2 className="h-14 w-14 text-white" />
+            <UserCircle2 className="h-14 w-14 text-gray-400" />
           </AvatarFallback>
         </Avatar>
         {isEditing && (
@@ -82,7 +83,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
             htmlFor="avatar-upload"
           >
-            <Upload className="h-6 w-6 text-white" />
+            <Upload className="h-6 w-6 text-gray-200" />
             <input
               id="avatar-upload"
               type="file"
@@ -101,13 +102,13 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom"
-              className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="text-xl font-semibold bg-white/10 border-white/20 text-gray-800 dark:text-gray-200 placeholder:text-gray-400"
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
+              className="text-sm bg-white/10 border-white/20 text-gray-700 dark:text-gray-300 placeholder:text-gray-400"
             />
           </div>
         ) : (
