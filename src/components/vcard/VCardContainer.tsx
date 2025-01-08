@@ -24,9 +24,9 @@ export function VCardContainer({
       className={cn(
         "relative w-full min-h-screen transition-all duration-300",
         isEditing ? "bg-background" : "bg-gradient-to-br from-background to-background/80",
-        selectedStyle === "modern" && !isEditing && "bg-gradient-to-br from-gray-900 to-gray-800",
-        selectedStyle === "minimal" && !isEditing && "bg-white dark:bg-gray-900",
-        selectedStyle === "creative" && !isEditing && "bg-gradient-to-br from-purple-900 to-indigo-900",
+        selectedStyle.id === "modern" && !isEditing && "bg-gradient-to-br from-gray-900 to-gray-800",
+        selectedStyle.id === "minimal" && !isEditing && "bg-white dark:bg-gray-900",
+        selectedStyle.id === "creative" && !isEditing && "bg-gradient-to-br from-purple-900 to-indigo-900",
         "pb-24 md:pb-16" // Add padding at the bottom for mobile footer
       )}
       style={{
