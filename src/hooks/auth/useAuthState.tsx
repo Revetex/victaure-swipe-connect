@@ -18,5 +18,13 @@ export const useAuthState = () => {
     user: null
   });
 
-  return { state, setState };
+  const safeSetState = (newState: AuthState | ((prev: AuthState) => AuthState)) => {
+    setState(prev => {
+      const nextState = typeof newState === 'function' ? newState(prev) : newState;
+      console.log('Auth state updated:', nextState);
+      return nextState;
+    });
+  };
+
+  return { state, setState: safeSetState };
 };

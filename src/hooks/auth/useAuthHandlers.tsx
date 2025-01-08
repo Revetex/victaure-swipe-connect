@@ -12,12 +12,13 @@ export const useAuthHandlers = (setState: AuthStateDispatch) => {
   const handleAuthError = (error: Error) => {
     console.error('Auth error:', error);
     
-    setState({
+    setState(prev => ({
+      ...prev,
       isLoading: false,
       error,
       isAuthenticated: false,
       user: null
-    });
+    }));
 
     if (error instanceof AuthError) {
       switch (error.message) {

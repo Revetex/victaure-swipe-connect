@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { AuthState, AuthStateDispatch } from './useAuthState';
@@ -8,43 +8,33 @@ import { toast } from 'sonner';
 export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) => {
   const navigate = useNavigate();
   const { handleAuthError, retryCount, setRetryCount } = useAuthHandlers(setState);
+  const mounted = useRef(true);
 
   useEffect(() => {
-    let mounted = true;
-    let retryTimeout: NodeJS.Timeout;
-
     const checkAuth = async () => {
-      if (!mounted) return;
-
+      if (!mounted.current) return;
+      
+      console.log('Checking auth status...');
+      
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
+        if (!mounted.current) return;
+
         if (sessionError) {
           console.error("Session error:", sessionError);
-          
-          if (!mounted) return;
-
-          if (sessionError.message.includes('Failed to fetch') && retryCount < 3) {
-            console.log(`Retrying auth check... Attempt ${retryCount + 1}`);
-            setRetryCount(prev => prev + 1);
-            retryTimeout = setTimeout(checkAuth, 2000);
-            return;
-          }
-
           setState({
             isLoading: false,
             isAuthenticated: false,
             error: sessionError,
             user: null
           });
-          
           handleAuthError(sessionError);
           return;
         }
 
         if (!session) {
-          if (!mounted) return;
-          
+          console.log('No session found');
           setState({
             isLoading: false,
             isAuthenticated: false,
@@ -54,28 +44,23 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
           return;
         }
 
-        if (!mounted) return;
-
+        console.log('Session found:', session.user.id);
         setState({
           isLoading: false,
           isAuthenticated: true,
           error: null,
           user: session.user
         });
-        
-        setRetryCount(0);
       } catch (error) {
         console.error('Auth check error:', error);
+        if (!mounted.current) return;
         
-        if (!mounted) return;
-
         setState({
           isLoading: false,
           isAuthenticated: false,
           error: error instanceof Error ? error : new Error('Authentication check failed'),
           user: null
         });
-        
         toast.error("Erreur d'authentification");
       }
     };
@@ -83,9 +68,9 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
+      if (!mounted.current) return;
 
-      console.log("Auth state changed:", event);
+      console.log('Auth state changed:', event);
 
       switch (event) {
         case 'SIGNED_IN':
@@ -96,6 +81,7 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
               error: null,
               user: session.user
             });
+            navigate('/dashboard');
           }
           break;
 
@@ -127,13 +113,25 @@ export const useAuthSession = (state: AuthState, setState: AuthStateDispatch) =>
             navigate('/auth');
           }
           break;
+
+        case 'USER_UPDATED':
+          if (session) {
+            setState({
+              isLoading: false,
+              isAuthenticated: true,
+              error: null,
+              user: session.user
+            });
+          }
+          break;
       }
     });
 
+    mounted.current = true;
+
     return () => {
-      mounted = false;
-      if (retryTimeout) clearTimeout(retryTimeout);
+      mounted.current = false;
       subscription.unsubscribe();
     };
-  }, [navigate, retryCount, setState, handleAuthError, setRetryCount]);
+  }, [navigate, setState, handleAuthError]);
 };
