@@ -12,7 +12,7 @@ import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "./ui/button";
-import { Paintbrush, Save, X } from "lucide-react";
+import { Paintbrush, Save, X, ChevronLeft } from "lucide-react";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -88,50 +88,54 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="sticky top-4 z-50 flex justify-end gap-2 pb-4"
+            className="sticky top-4 z-50 flex flex-col gap-4"
           >
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowCustomization(!showCustomization)}
-              className="gap-2"
-            >
-              <Paintbrush className="h-4 w-4" />
-              Personnalisation
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEditToggle}
-              className="gap-2"
-            >
-              <X className="h-4 w-4" />
-              Annuler
-            </Button>
-            <Button
-              onClick={handleSave}
-              size="sm"
-              className="gap-2"
-              disabled={isAIProcessing}
-            >
-              <Save className="h-4 w-4" />
-              Sauvegarder
-            </Button>
+            <div className="flex items-center justify-between bg-background/95 backdrop-blur-sm p-4 rounded-lg border shadow-sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleEditToggle}
+                className="gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Retour
+              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCustomization(!showCustomization)}
+                  className="gap-2"
+                >
+                  <Paintbrush className="h-4 w-4" />
+                  Personnalisation
+                </Button>
+                <Button
+                  onClick={handleSave}
+                  size="sm"
+                  className="gap-2"
+                  disabled={isAIProcessing}
+                >
+                  <Save className="h-4 w-4" />
+                  Sauvegarder
+                </Button>
+              </div>
+            </div>
+
+            <AnimatePresence>
+              {showCustomization && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <VCardCustomization profile={profile} setProfile={setProfile} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
-
-        <AnimatePresence>
-          {isEditing && showCustomization && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <VCardCustomization profile={profile} setProfile={setProfile} />
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <VCardSectionsManager
           profile={profile}
