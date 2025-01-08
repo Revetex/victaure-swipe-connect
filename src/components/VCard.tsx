@@ -10,7 +10,6 @@ import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
-import { supabase } from "@/integrations/supabase/client";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -45,7 +44,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      // Optimized profile update with better error handling
       await updateProfile(profile);
       toast.success("Profil mis à jour avec succès");
       
@@ -55,7 +53,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       }
     } catch (error) {
       console.error('Error saving profile:', error);
-      toast.error("Erreur lors de la sauvegarde du profil. Veuillez réessayer.");
+      toast.error("Erreur lors de la sauvegarde du profil");
     } finally {
       setIsAIProcessing(false);
     }
@@ -77,6 +75,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         background: profile.custom_background,
         textColor: profile.custom_text_color
       }}
+      selectedStyle={selectedStyle}
     >
       <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {isEditing && (
