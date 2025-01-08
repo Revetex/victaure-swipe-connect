@@ -10,6 +10,9 @@ import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "./ui/button";
+import { Paintbrush, Save, X } from "lucide-react";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -21,10 +24,12 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [showCustomization, setShowCustomization] = useState(false);
   const { selectedStyle } = useVCardStyle();
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
+    setShowCustomization(false);
     if (onEditStateChange) {
       onEditStateChange(!isEditing);
     }
@@ -48,6 +53,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       toast.success("Profil mis à jour avec succès");
       
       setIsEditing(false);
+      setShowCustomization(false);
       if (onEditStateChange) {
         onEditStateChange(false);
       }
@@ -77,10 +83,55 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       }}
       selectedStyle={selectedStyle}
     >
-      <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {isEditing && (
-          <VCardCustomization profile={profile} setProfile={setProfile} />
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="sticky top-4 z-50 flex justify-end gap-2 pb-4"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCustomization(!showCustomization)}
+              className="gap-2"
+            >
+              <Paintbrush className="h-4 w-4" />
+              Personnalisation
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEditToggle}
+              className="gap-2"
+            >
+              <X className="h-4 w-4" />
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSave}
+              size="sm"
+              className="gap-2"
+              disabled={isAIProcessing}
+            >
+              <Save className="h-4 w-4" />
+              Sauvegarder
+            </Button>
+          </motion.div>
         )}
+
+        <AnimatePresence>
+          {isEditing && showCustomization && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <VCardCustomization profile={profile} setProfile={setProfile} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <VCardSectionsManager
           profile={profile}
