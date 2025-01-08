@@ -1,6 +1,6 @@
 import { VCardSection } from "./VCardSection";
 import { Button } from "@/components/ui/button";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Building2, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Education } from "@/types/profile";
