@@ -49,25 +49,23 @@ export function DashboardLayout() {
         </motion.div>
       </AnimatePresence>
       
-      {!isEditing && (
-        <motion.nav 
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          exit={{ y: 100 }}
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 safe-area-bottom"
-          style={{ 
-            height: '4rem',
-            paddingBottom: 'env(safe-area-inset-bottom)'
-          }}
-        >
-          <div className="container mx-auto px-4 h-full flex items-center">
-            <DashboardNavigation 
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        </motion.nav>
-      )}
+      <motion.nav 
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        exit={{ y: 100 }}
+        className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-lg border-t border-border/50 z-50 safe-area-bottom"
+        style={{ 
+          height: '5rem',
+          paddingBottom: 'env(safe-area-inset-bottom)'
+        }}
+      >
+        <div className="container mx-auto px-4 h-full flex items-center">
+          <DashboardNavigation 
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </motion.nav>
     </DashboardContainer>
   );
 }
