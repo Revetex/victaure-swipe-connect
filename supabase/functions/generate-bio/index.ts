@@ -12,27 +12,59 @@ serve(async (req) => {
   }
 
   try {
-    const { skills, experiences, education } = await req.json();
+    const { 
+      full_name,
+      role,
+      skills,
+      experiences,
+      education,
+      certifications,
+      city,
+      state,
+      country,
+      industry
+    } = await req.json();
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
       throw new Error('Missing Hugging Face API key');
     }
 
+    // Format location
+    const location = [city, state, country].filter(Boolean).join(', ');
+
+    // Format latest experience
+    const latestExperience = experiences?.[0] ? 
+      `${experiences[0].position} chez ${experiences[0].company}` : '';
+
+    // Format education
+    const latestEducation = education?.[0] ? 
+      `${education[0].degree} en ${education[0].field_of_study || ''} à ${education[0].school_name}` : '';
+
+    // Format certifications
+    const certificationsList = certifications?.map((cert: any) => cert.title).join(', ') || '';
+
     const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
-Compétences: ${skills?.join(', ') || 'Non spécifiées'}
-Expériences: ${experiences?.map((exp: any) => `${exp.position} chez ${exp.company}`).join(', ') || 'Non spécifiées'}
-Formation: ${education?.map((edu: any) => `${edu.degree} en ${edu.field_of_study || ''} à ${edu.school_name}`).join(', ') || 'Non spécifiée'}
+Nom: ${full_name || 'Non spécifié'}
+Rôle: ${role || 'Professionnel'}
+Localisation: ${location || 'Québec, Canada'}
+Industrie: ${industry || 'Non spécifiée'}
+
+Compétences principales: ${skills?.slice(0, 5).join(', ') || 'Non spécifiées'}
+Expérience actuelle: ${latestExperience || 'Non spécifiée'}
+Formation: ${latestEducation || 'Non spécifiée'}
+Certifications: ${certificationsList || 'Non spécifiées'}
 
 La bio doit:
 - Être rédigée en français québécois professionnel
-- Mettre l'accent sur les réalisations et l'expertise
+- Mettre l'accent sur l'expertise et les réalisations principales
 - Inclure des expressions typiquement québécoises appropriées
 - Être adaptée au marché du travail québécois
-- Rester concise (maximum 3 phrases)
-- Ne pas inclure de notes ou de remarques à la fin
-- Utiliser un ton professionnel mais chaleureux`;
+- Rester concise (maximum 3-4 phrases)
+- Mentionner la localisation et l'industrie si spécifiées
+- Avoir un ton professionnel mais chaleureux
+- Ne pas inclure de notes ou de remarques à la fin`;
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
       method: 'POST',
@@ -43,7 +75,7 @@ La bio doit:
       body: JSON.stringify({
         inputs: prompt,
         parameters: {
-          max_new_tokens: 200,
+          max_new_tokens: 256,
           temperature: 0.7,
           top_p: 0.9,
           return_full_text: false
