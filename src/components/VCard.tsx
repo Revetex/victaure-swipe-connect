@@ -101,7 +101,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           selectedStyle={selectedStyle}
         />
 
-        {isEditing && (
+        <div className={`fixed bottom-0 left-0 right-0 z-50 ${isEditing ? 'bg-background/80' : ''} p-4 transition-all duration-300 ease-in-out`}>
           <VCardMobileFooter
             isEditing={isEditing}
             isPdfGenerating={isPdfGenerating}
@@ -139,7 +139,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             }}
             onShare={() => profile && handleShare(profile)}
           />
-        )}
+        </div>
       </VCardLayout>
     </VCardContainer>
   );

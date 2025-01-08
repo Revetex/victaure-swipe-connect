@@ -1,8 +1,6 @@
-import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { StyleOption } from "./types";
-import { motion } from "framer-motion";
-import { pdfColors } from "@/utils/pdf/colors";
+import { ReactNode } from "react";
 
 interface VCardContainerProps {
   children: ReactNode;
@@ -15,33 +13,31 @@ interface VCardContainerProps {
   selectedStyle: StyleOption;
 }
 
-export function VCardContainer({ 
-  children, 
+export function VCardContainer({
+  children,
   isEditing,
   customStyles,
-  selectedStyle 
+  selectedStyle
 }: VCardContainerProps) {
-  const textColor = customStyles?.textColor || selectedStyle.colors.text.primary || pdfColors.text.primary;
-  const backgroundColor = customStyles?.background || selectedStyle.colors.background.card || pdfColors.background;
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div 
       className={cn(
-        "min-h-screen w-full transition-all duration-300 overflow-x-hidden",
-        isEditing ? "bg-muted" : "bg-background",
-        selectedStyle.bgGradient
+        "relative w-full min-h-screen transition-all duration-300",
+        isEditing ? "bg-background" : "bg-gradient-to-br from-background to-background/80",
+        selectedStyle === "modern" && !isEditing && "bg-gradient-to-br from-gray-900 to-gray-800",
+        selectedStyle === "minimal" && !isEditing && "bg-white dark:bg-gray-900",
+        selectedStyle === "creative" && !isEditing && "bg-gradient-to-br from-purple-900 to-indigo-900",
+        "pb-24 md:pb-16" // Add padding at the bottom for mobile footer
       )}
       style={{
-        fontFamily: customStyles?.font || selectedStyle.font,
-        background: backgroundColor,
-        color: textColor,
-        "--text-color": textColor,
-        "--bg-color": backgroundColor,
-      } as React.CSSProperties}
+        fontFamily: customStyles?.font || undefined,
+        background: customStyles?.background || undefined,
+        color: customStyles?.textColor || undefined,
+      }}
     >
-      {children}
-    </motion.div>
+      <div className="container mx-auto px-4 py-8">
+        {children}
+      </div>
+    </div>
   );
 }

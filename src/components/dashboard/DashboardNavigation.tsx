@@ -10,7 +10,7 @@ interface DashboardNavigationProps {
 export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
   const items = [
     { icon: Home, label: "Accueil" },
-    { icon: BriefcaseIcon, label: "Emplois" },
+    { icon: BriefcaseIcon, label: "Missions" },
     { icon: MessageSquare, label: "M. Victaure", highlight: true },
     { icon: Settings, label: "Paramètres" }
   ];
@@ -29,7 +29,7 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
                 className={cn(
                   "flex flex-col items-center justify-center w-16 h-16 transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground hover:text-primary",
-                  item.highlight && "text-red-500 hover:text-red-600"
+                  item.highlight && (isActive ? "text-red-500" : "text-red-500/70 hover:text-red-600")
                 )}
               >
                 <Icon className="h-5 w-5" />
