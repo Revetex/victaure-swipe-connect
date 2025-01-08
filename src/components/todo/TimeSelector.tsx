@@ -1,49 +1,37 @@
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface TimeSelectorProps {
-  selectedTime?: string;
-  onTimeChange: (time: string) => void;
+  value?: string;
+  onChange: (time: string) => void;
 }
 
-export function TimeSelector({ selectedTime, onTimeChange }: TimeSelectorProps) {
-  const [inputValue, setInputValue] = useState(selectedTime || "");
+export function TimeSelector({ value, onChange }: TimeSelectorProps) {
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const minutes = ['00', '15', '30', '45'];
 
-  const formatTimeString = (value: string) => {
-    // Remove non-numeric characters
-    const numbers = value.replace(/[^\d]/g, "");
-    
-    if (numbers.length <= 2) {
-      return numbers;
-    }
-    
-    // Format as HH:MM
-    let hours = parseInt(numbers.substring(0, 2));
-    let minutes = parseInt(numbers.substring(2, 4));
-    
-    // Validate hours and minutes
-    hours = Math.min(Math.max(hours, 0), 23);
-    minutes = Math.min(Math.max(minutes || 0, 0), 59);
-    
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-  };
-
-  const handleTimeChange = (value: string) => {
-    setInputValue(value);
-    const formattedTime = formatTimeString(value);
-    if (formattedTime.length === 5) {
-      onTimeChange(formattedTime);
-    }
-  };
+  const timeSlots = hours.flatMap(hour => 
+    minutes.map(minute => `${hour.toString().padStart(2, '0')}:${minute}`)
+  );
 
   return (
-    <div className="relative">
-      <Input
-        value={inputValue}
-        onChange={(e) => handleTimeChange(e.target.value)}
-        placeholder="HH:MM"
-        className="w-[120px]"
-      />
-    </div>
+    <ScrollArea className="h-72 rounded-md border">
+      <div className="p-2">
+        {timeSlots.map((time) => (
+          <Button
+            key={time}
+            variant="ghost"
+            className={cn(
+              "w-full justify-start font-normal",
+              value === time && "bg-primary/10 text-primary"
+            )}
+            onClick={() => onChange(time)}
+          >
+            {time}
+          </Button>
+        ))}
+      </div>
+    </ScrollArea>
   );
 }

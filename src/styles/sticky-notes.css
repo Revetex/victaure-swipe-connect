@@ -18,31 +18,31 @@
 }
 
 .sticky-note-yellow {
-  --note-bg: #FEF7CD;
+  --note-bg: rgba(254, 247, 205, 0.95);
   border-color: rgba(251, 191, 36, 0.1);
 }
 
 .sticky-note-blue {
-  --note-bg: #D3E4FD;
+  --note-bg: rgba(211, 228, 253, 0.95);
   border-color: rgba(59, 130, 246, 0.1);
 }
 
 .sticky-note-green {
-  --note-bg: #F2FCE2;
+  --note-bg: rgba(242, 252, 226, 0.95);
   border-color: rgba(34, 197, 94, 0.1);
 }
 
 .sticky-note-pink {
-  --note-bg: #FFDEE2;
+  --note-bg: rgba(255, 222, 226, 0.95);
   border-color: rgba(236, 72, 153, 0.1);
 }
 
 .sticky-note-purple {
-  --note-bg: #E5DEFF;
+  --note-bg: rgba(229, 222, 255, 0.95);
   border-color: rgba(139, 92, 246, 0.1);
 }
 
 .sticky-note-orange {
-  --note-bg: #FEC6A1;
+  --note-bg: rgba(254, 198, 161, 0.95);
   border-color: rgba(249, 115, 22, 0.1);
 }
