@@ -37,7 +37,7 @@ export function VCardSectionsManager({
   };
 
   // Default sections order if none is specified in profile
-  const defaultSectionsOrder = ['header', 'bio', 'contact', 'education', 'experience', 'skills'];
+  const defaultSectionsOrder = ['header', 'bio', 'contact', 'education', 'mission', 'skills'];
   const sectionsOrder = profile.sections_order || defaultSectionsOrder;
 
   const renderSection = (sectionId: string) => {
@@ -74,7 +74,7 @@ export function VCardSectionsManager({
             setProfile={setProfile}
           />
         );
-      case 'experience':
+      case 'mission':
         return (
           <VCardExperiences
             profile={profile}
