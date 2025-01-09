@@ -1,91 +1,115 @@
-import { Menu, User, Briefcase, Building2, GraduationCap } from "lucide-react";
+import { 
+  Menu, 
+  User, 
+  Briefcase, 
+  Building2, 
+  GraduationCap,
+  MessageSquare,
+  Settings,
+  ClipboardList
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Logo } from "@/components/Logo";
-import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
-import { memo } from 'react';
-
-const NavLinks = memo(() => {
-  const { signOut } = useAuth();
-  const isMobile = useIsMobile();
-  
-  return (
-    <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
-      <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-        <Briefcase className="h-5 w-5" />
-      </Button>
-      <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-        <Building2 className="h-5 w-5" />
-      </Button>
-      <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-        <GraduationCap className="h-5 w-5" />
-      </Button>
-      <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
-        <ThemeToggle />
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={signOut}
-          className="text-primary hover:text-primary/80 hover:bg-primary/5"
-        >
-          <User className="h-5 w-5" />
-        </Button>
-      </div>
-    </nav>
-  );
-});
-
-NavLinks.displayName = 'NavLinks';
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export function Navigation() {
   const isMobile = useIsMobile();
-  const { isLoading } = useAuth();
+  const location = useLocation();
 
-  if (isLoading) {
-    return null;
-  }
+  const navigationItems = [
+    {
+      icon: MessageSquare,
+      href: "/dashboard",
+      label: "M. Victaure",
+      ariaLabel: "Accéder au chat"
+    },
+    {
+      icon: User,
+      href: "/profile",
+      label: "Profil",
+      ariaLabel: "Accéder au profil"
+    },
+    {
+      icon: Briefcase,
+      href: "/jobs",
+      label: "Emplois",
+      ariaLabel: "Voir les emplois"
+    },
+    {
+      icon: ClipboardList,
+      href: "/todos",
+      label: "Tâches/Notes",
+      ariaLabel: "Gérer les tâches et notes"
+    },
+    {
+      icon: Settings,
+      href: "/settings",
+      label: "Paramètre",
+      ariaLabel: "Accéder aux paramètres"
+    }
+  ];
 
-  return (
-    <motion.header 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="sticky top-0 bg-background/80 backdrop-blur-lg border-b border-border/40 z-50"
-    >
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <motion.a 
-          href="/" 
-          className="flex items-center gap-3 group"
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-        >
-          <Logo size={isMobile ? "sm" : "md"} />
-          <span className="font-bold text-xl md:text-2xl text-primary relative">
-            Victaure
-            <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
-          </span>
-        </motion.a>
-        
-        {isMobile ? (
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-[80vw] sm:w-[380px] bg-background/95 border-border">
-              <div className="flex flex-col gap-6 mt-8">
-                <NavLinks />
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <NavLinks />
-        )}
+  const mobileNav = (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t">
+      <div className="flex justify-around items-center p-2 pb-safe">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = location.pathname === item.href;
+          
+          return (
+            <Link
+              key={item.href}
+              to={item.href}
+              className="flex flex-col items-center gap-1 min-w-[3rem] py-2"
+              aria-label={item.ariaLabel}
+            >
+              <Icon 
+                className={cn(
+                  "h-6 w-6 transition-colors",
+                  isActive ? "text-primary" : "text-muted-foreground"
+                )} 
+              />
+            </Link>
+          );
+        })}
       </div>
-    </motion.header>
+    </nav>
   );
+
+  const desktopNav = (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="shrink-0">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left">
+        <nav className="grid gap-4 py-4">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.href;
+            
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
+                  isActive ? "bg-primary/10 text-primary" : "hover:bg-accent"
+                )}
+                aria-label={item.ariaLabel}
+              >
+                <Icon className="h-5 w-5 shrink-0" />
+              </Link>
+            );
+          })}
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+
+  return isMobile ? mobileNav : desktopNav;
 }
