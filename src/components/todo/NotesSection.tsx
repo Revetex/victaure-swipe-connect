@@ -32,18 +32,6 @@ export function NotesSection({
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const getColorClass = (colorValue: string) => {
-    const colorMap: { [key: string]: string } = {
-      yellow: 'sticky-note-yellow',
-      blue: 'sticky-note-blue',
-      green: 'sticky-note-green',
-      pink: 'sticky-note-pink',
-      purple: 'sticky-note-purple',
-      orange: 'sticky-note-orange',
-    };
-    return colorMap[colorValue] || 'sticky-note-yellow';
-  };
-
   return (
     <div className="space-y-6 h-[calc(100vh-8rem)] flex flex-col">
       <div className="flex items-center justify-between">
@@ -90,7 +78,7 @@ export function NotesSection({
                 <StickyNote
                   key={note.id}
                   note={note}
-                  colorClass={getColorClass(note.color)}
+                  colorClass={`sticky-note-${note.color}`}
                   onDelete={onDelete}
                 />
               ))}

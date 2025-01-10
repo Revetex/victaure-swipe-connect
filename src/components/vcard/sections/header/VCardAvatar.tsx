@@ -39,6 +39,16 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
+      // Delete old avatar if it exists
+      if (profile.avatar_url) {
+        const oldFileName = profile.avatar_url.split('/').pop();
+        if (oldFileName) {
+          await supabase.storage
+            .from('vcards')
+            .remove([oldFileName]);
+        }
+      }
+
       const { error: uploadError } = await supabase.storage
         .from('vcards')
         .upload(fileName, file);

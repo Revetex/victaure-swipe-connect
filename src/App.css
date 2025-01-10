@@ -110,6 +110,8 @@ body {
 }
 
 /* Enhanced sticky note styles */
+
+/* Enhanced sticky note styles */
 .sticky-note {
   @apply p-4 rounded-xl shadow-lg transition-all duration-300 
          hover:shadow-xl hover:-translate-y-1
