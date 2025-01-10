@@ -72,5 +72,12 @@ export default function Dashboard() {
     );
   }
 
-  return <DashboardLayout />;
+  return (
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Tableau de bord</h1>
+        {/* Dashboard content goes here */}
+      </div>
+    </DashboardLayout>
+  );
 }
