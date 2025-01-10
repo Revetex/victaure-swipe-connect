@@ -13,23 +13,48 @@ export function Dashboard() {
   const [isAuthChecking, setIsAuthChecking] = useState(true);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    const checkAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Auth session error:', error);
+          toast.error("Erreur d'authentification");
+          navigate('/auth');
+          return;
+        }
 
-  const checkAuth = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+        if (!session) {
+          console.log('No active session found');
+          navigate('/auth');
+          return;
+        }
+
+        // Set up auth state change listener
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            console.log('Auth state changed:', event);
+            if (event === 'SIGNED_OUT' || !session) {
+              navigate('/auth');
+            }
+          }
+        );
+
+        return () => {
+          subscription.unsubscribe();
+        };
+
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        toast.error("Erreur lors de la vérification de l'authentification");
         navigate('/auth');
-        return;
+      } finally {
+        setIsAuthChecking(false);
       }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-      toast.error("Erreur lors de la vérification de l'authentification");
-    } finally {
-      setIsAuthChecking(false);
-    }
-  };
+    };
+
+    checkAuth();
+  }, [navigate]);
 
   if (isAuthChecking || isProfileLoading) {
     return (
