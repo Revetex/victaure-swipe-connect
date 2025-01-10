@@ -14,7 +14,7 @@ import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
-import { pipeline, TextClassificationOutput } from "@huggingface/transformers";
+import { pipeline } from "@huggingface/transformers";
 
 export function Dashboard() {
   const queryClient = useQueryClient();
@@ -68,12 +68,20 @@ export function Dashboard() {
         'facebook/bart-large-mnli'
       );
       
+      // Use sequence classification instead of text_pair
       const result = await classifier(text, {
-        text_pair: ["pertinent", "non pertinent", "spam", "obsolète"]
-      }) as TextClassificationOutput[];
+        hypothesis: ["This text is pertinent", "This text is spam", "This text is obsolete"]
+      });
       
       console.log("Analyse du contenu:", result);
-      return result[0].score > 0.5;
+      
+      // Check if the first result (pertinent) has the highest score
+      if (Array.isArray(result)) {
+        const pertinentScore = result[0]?.score || 0;
+        return pertinentScore > 0.5;
+      }
+      
+      return true; // Default to keeping the job if result format is unexpected
     } catch (error) {
       console.error("Erreur lors de l'analyse du contenu:", error);
       return true; // En cas d'erreur, on garde l'emploi par défaut

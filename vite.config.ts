@@ -27,22 +27,10 @@ export default defineConfig(({ mode }) => ({
       interval: 1000,
     },
     cors: {
-      origin: [
-        'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-        'http://localhost:8080',
-        'https://mfjllillnpleasclqabb.supabase.co'
-      ],
+      origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Client-Info', 'apikey'],
       credentials: true
-    },
-    proxy: {
-      '/api': {
-        target: 'https://mfjllillnpleasclqabb.supabase.co',
-        changeOrigin: true,
-        secure: false,
-        ws: true
-      }
     }
   },
   build: {
