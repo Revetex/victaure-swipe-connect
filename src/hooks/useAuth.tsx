@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
 import { useSession } from './useSession';
 import { clearStorages } from '@/utils/authUtils';
+import { toast } from 'sonner';
 
 interface AuthState {
   isLoading: boolean;
@@ -53,15 +54,15 @@ export function useAuth() {
     }
   };
 
-  const sessionState = useSession(signOut);
+  const { session, user, isLoading: sessionLoading } = useSession(signOut);
 
   // Update auth state based on session
-  if (!state.isAuthenticated && sessionState.user) {
+  if (!state.isAuthenticated && user && !sessionLoading) {
     setState({
       isLoading: false,
       isAuthenticated: true,
       error: null,
-      user: sessionState.user
+      user
     });
   }
 
@@ -70,11 +71,12 @@ export function useAuth() {
     console.log("Auth state changed:", event);
     
     if (event === 'SIGNED_IN' && session) {
-      setState(prev => ({
-        ...prev,
+      setState({
+        isLoading: false,
         isAuthenticated: true,
+        error: null,
         user: session.user
-      }));
+      });
       navigate('/dashboard', { replace: true });
     } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
       setState({
@@ -86,6 +88,14 @@ export function useAuth() {
       navigate('/auth', { replace: true });
     }
   });
+
+  // Update loading state based on session loading
+  if (state.isLoading && !sessionLoading) {
+    setState(prev => ({
+      ...prev,
+      isLoading: false
+    }));
+  }
 
   return { 
     ...state,

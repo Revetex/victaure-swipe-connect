@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { handleAuthError } from '@/utils/authUtils';
+import { toast } from 'sonner';
 
 interface SessionState {
   session: Session | null;
@@ -17,10 +18,10 @@ export const useSession = (signOut: () => Promise<void>) => {
   });
 
   useEffect(() => {
+    let mounted = true;
+
     const checkSession = async () => {
       try {
-        setState(prev => ({ ...prev, isLoading: true }));
-        
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -30,7 +31,9 @@ export const useSession = (signOut: () => Promise<void>) => {
         }
         
         if (!session) {
-          setState({ session: null, user: null, isLoading: false });
+          if (mounted) {
+            setState({ session: null, user: null, isLoading: false });
+          }
           return;
         }
 
@@ -42,21 +45,30 @@ export const useSession = (signOut: () => Promise<void>) => {
           return;
         }
 
-        setState({
-          session,
-          user,
-          isLoading: false,
-        });
+        if (mounted) {
+          setState({
+            session,
+            user,
+            isLoading: false,
+          });
+        }
       } catch (error) {
         console.error('Session check error:', error);
-        setState(prev => ({
-          ...prev,
-          isLoading: false,
-        }));
+        if (mounted) {
+          setState(prev => ({
+            ...prev,
+            isLoading: false,
+          }));
+        }
+        toast.error("Erreur de vérification de session");
       }
     };
 
     checkSession();
+
+    return () => {
+      mounted = false;
+    };
   }, [signOut]);
 
   return state;
