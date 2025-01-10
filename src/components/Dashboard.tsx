@@ -5,6 +5,7 @@ import { QuickActions } from "./dashboard/QuickActions";
 import { DashboardHeader } from "./dashboard/DashboardHeader";
 import { DashboardChart } from "./dashboard/DashboardChart";
 import { RecentActivity } from "./dashboard/RecentActivity";
+import type { DashboardStats } from "@/types/dashboard";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -13,7 +14,6 @@ import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
-import { StatsGrid } from "./dashboard/stats/StatsGrid";
 
 export function Dashboard() {
   const { data: stats, isLoading, error } = useDashboardStats();
@@ -120,10 +120,6 @@ export function Dashboard() {
         
         <div className="mt-8">
           <QuickActions stats={stats} />
-        </div>
-
-        <div className="mt-8">
-          <StatsGrid stats={stats} />
         </div>
 
         <div className="mt-8">

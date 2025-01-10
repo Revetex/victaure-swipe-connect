@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 
 interface MessagesContentProps {
@@ -51,7 +52,7 @@ export function MessagesContent({
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-safe-top">
-      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 dark:border-gray-800">
+      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
             {onBack && (
@@ -71,7 +72,7 @@ export function MessagesContent({
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold truncate dark:text-white">M. Victaure</h2>
+              <h2 className="text-xl font-semibold truncate">M. Victaure</h2>
               <p className="text-sm text-muted-foreground truncate">
                 {isThinking ? "En train de réfléchir..." : "Conseiller en Orientation"}
               </p>
@@ -130,7 +131,7 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-safe-bottom fixed bottom-0 left-0 right-0 dark:border-gray-800">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-safe-bottom">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}

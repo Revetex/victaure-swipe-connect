@@ -1,65 +1,22 @@
-.glass-card {
-  background: rgba(26, 32, 44, 0.8);
-  backdrop-filter: blur(12px);
-  border-radius: 1rem;
+.dashboard-card {
+  @apply bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  color: #e6e6e6;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.2), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
 }
 
-.glass-card:hover {
-  background: rgba(26, 32, 44, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 10px 15px -3px rgba(0, 0, 0, 0.3), 
-    0 4px 6px -2px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
+.task-section {
+  @apply bg-background/80 backdrop-blur-sm p-6 rounded-lg border border-border/50;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-.glass-button {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  color: #e6e6e6;
-  box-shadow: 
-    0 2px 4px -1px rgba(0, 0, 0, 0.1), 
-    0 1px 2px -1px rgba(0, 0, 0, 0.05);
-}
-
-.glass-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.2), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e6e6e6;
-  transition: all 0.3s ease;
-}
-
-.glass-input:focus {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 0 0 2px rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 640px) {
-  .glass-card,
-  .glass-button,
-  .glass-input {
-    backdrop-filter: blur(8px);
-  }
+.notes-section {
+  @apply bg-background/80 backdrop-blur-sm p-6 rounded-lg border border-border/50;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

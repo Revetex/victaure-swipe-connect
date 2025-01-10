@@ -1,6 +1,5 @@
 import { UserCircle, MessageSquare, BriefcaseIcon, Settings, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -9,63 +8,30 @@ interface DashboardNavigationProps {
 
 export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
   const navigationItems = [
-    { id: 1, icon: UserCircle, isPrimary: false },
-    { id: 2, icon: MessageSquare, isPrimary: true },
-    { id: 3, icon: BriefcaseIcon, isPrimary: false },
-    { id: 4, icon: ClipboardList, isPrimary: false },
-    { id: 5, icon: Settings, isPrimary: false }
+    { id: 1, icon: UserCircle, name: "Profil" },
+    { id: 2, icon: MessageSquare, name: "M. Victaure" },
+    { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+    { id: 4, icon: ClipboardList, name: "Tâches/Notes" },
+    { id: 5, icon: Settings, name: "Paramètres" }
   ];
 
   return (
     <div className="flex items-center justify-around w-full">
-      {navigationItems.map(({ id, icon: Icon, isPrimary }) => (
+      {navigationItems.map(({ id, icon: Icon, name }) => (
         <motion.button
           key={id}
           onClick={() => onPageChange(id)}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ 
-            duration: 0.2,
-            delay: id * 0.1,
-            type: "spring",
-            stiffness: 500
-          }}
-          className={cn(
-            "relative p-3 rounded-xl transition-all duration-300",
-            currentPage === id && isPrimary 
-              ? "bg-primary/10 text-primary" 
-              : currentPage === id 
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
-            isPrimary && "scale-110"
-          )}
-          aria-label={navigationItems.find(item => item.id === id)?.icon.name}
+          transition={{ delay: id * 0.1 }}
+          className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${
+            currentPage === id
+              ? "text-primary bg-primary/10"
+              : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+          }`}
         >
-          <div className={cn(
-            "relative rounded-lg",
-            currentPage === id 
-              ? isPrimary
-                ? "text-primary"
-                : "text-accent-foreground"
-              : "text-muted-foreground"
-          )}>
-            <Icon className={cn(
-              "h-5 w-5",
-              currentPage === id && isPrimary && "animate-pulse"
-            )} />
-          </div>
-          {currentPage === id && (
-            <motion.div
-              layoutId="activeTab"
-              className={cn(
-                "absolute bottom-0 left-0 right-0 h-0.5",
-                isPrimary ? "bg-primary" : "bg-accent-foreground"
-              )}
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
-          )}
+          <Icon className="h-5 w-5" />
+          <span className="text-xs font-medium">{name}</span>
         </motion.button>
       ))}
     </div>

@@ -22,19 +22,11 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // Pass more complete profile data for better context
       const { data, error } = await supabase.functions.invoke('generate-bio', {
         body: {
-          full_name: profile.full_name,
-          role: profile.role,
           skills: profile.skills || [],
           experiences: profile.experiences || [],
           education: profile.education || [],
-          certifications: profile.certifications || [],
-          city: profile.city,
-          state: profile.state,
-          country: profile.country,
-          industry: profile.industry,
         }
       });
 
@@ -79,7 +71,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           className="w-full min-h-[100px] p-2 border rounded-md bg-background"
         />
       ) : profile?.bio ? (
-        <p className="text-muted-foreground whitespace-pre-wrap">{profile.bio}</p>
+        <p className="text-muted-foreground">{profile.bio}</p>
       ) : null}
     </div>
   );

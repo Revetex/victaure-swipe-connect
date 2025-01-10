@@ -3,17 +3,28 @@ import { JobList } from "./jobs/JobList";
 import { JobFilters } from "./jobs/JobFilters";
 import { Job } from "@/types/job";
 import { supabase } from "@/integrations/supabase/client";
-import { defaultFilters } from "./jobs/JobFilterUtils";
+import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
 import { Button } from "./ui/button";
 import { Filter, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
-import { useJobFilters } from "@/utils/filters/useJobFilters";
+
+interface ScrapedJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  description?: string;
+  url?: string;
+  posted_at: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export function Marketplace() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { filters, handleFilterChange } = useJobFilters();
+  const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -22,6 +33,7 @@ export function Marketplace() {
       setIsLoading(true);
       console.log("Starting job fetch...");
       
+      // Fetch regular jobs with detailed error logging
       const regularJobsResult = await supabase
         .from("jobs")
         .select("*")
@@ -36,6 +48,7 @@ export function Marketplace() {
       const regularJobs = regularJobsResult.data || [];
       console.log("Regular jobs fetched:", regularJobs.length);
 
+      // Fetch scraped jobs with detailed error logging
       const scrapedJobsResult = await supabase
         .from("scraped_jobs")
         .select("*")
@@ -49,6 +62,7 @@ export function Marketplace() {
       const scrapedJobs = scrapedJobsResult.data || [];
       console.log("Scraped jobs fetched:", scrapedJobs.length);
 
+      // Convert regular jobs to the correct type with explicit typing
       const typedRegularJobs: Job[] = regularJobs.map(job => ({
         id: job.id,
         title: job.title,
@@ -66,6 +80,7 @@ export function Marketplace() {
         experience_level: job.experience_level
       }));
 
+      // Convert scraped jobs to match the Job type with explicit typing
       const typedScrapedJobs: Job[] = scrapedJobs.map(job => ({
         id: job.id,
         title: job.title,
@@ -83,6 +98,7 @@ export function Marketplace() {
         experience_level: 'mid-level'
       }));
 
+      // Combine and sort all jobs
       const allJobs = [...typedRegularJobs, ...typedScrapedJobs];
       const sortedJobs = allJobs.sort((a, b) => {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -97,6 +113,10 @@ export function Marketplace() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { useToast } from "@/hooks/use-toast";
-import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
+import { generateVCardData } from "@/utils/profileActions";
+import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import type { UserProfile } from "@/types/profile";
 import type { StyleOption } from "../types";
 
@@ -33,6 +34,48 @@ export function useVCardHandlers() {
     }
   };
 
+  const handleDownloadBusinessPDF = async (profile: UserProfile, style: StyleOption) => {
+    if (!profile) return;
+    
+    try {
+      const doc = await generateBusinessCard(profile, style);
+      doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+      
+      toast({
+        title: "Succès",
+        description: "Business PDF téléchargé avec succès",
+      });
+    } catch (error) {
+      console.error('Error generating business PDF:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de générer le Business PDF",
+      });
+    }
+  };
+
+  const handleDownloadCVPDF = async (profile: UserProfile, style: StyleOption) => {
+    if (!profile) return;
+    
+    try {
+      const doc = await generateCV(profile, style);
+      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+      
+      toast({
+        title: "Succès",
+        description: "CV PDF téléchargé avec succès",
+      });
+    } catch (error) {
+      console.error('Error generating CV PDF:', error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de générer le CV PDF",
+      });
+    }
+  };
+
   const handleCopyLink = () => {
     try {
       navigator.clipboard.writeText(window.location.href);
@@ -52,6 +95,8 @@ export function useVCardHandlers() {
 
   return {
     handleShare,
+    handleDownloadBusinessPDF,
+    handleDownloadCVPDF,
     handleCopyLink,
   };
 }

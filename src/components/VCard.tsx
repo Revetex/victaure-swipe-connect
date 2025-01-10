@@ -10,8 +10,7 @@ import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
-import { motion, AnimatePresence } from "framer-motion";
-import { VCardEditingHeader } from "./vcard/sections/VCardEditingHeader";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -23,39 +22,49 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
-  const [showCustomization, setShowCustomization] = useState(false);
   const { selectedStyle } = useVCardStyle();
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
-    setShowCustomization(false);
     if (onEditStateChange) {
       onEditStateChange(!isEditing);
     }
   };
 
   const handleSave = async () => {
-    if (!profile) {
-      toast.error("Aucun profil à sauvegarder");
-      return;
-    }
+    if (!profile) return;
 
     try {
       setIsAIProcessing(true);
       
-      if (!profile.full_name?.trim()) {
-        toast.error("Le nom complet est requis");
-        return;
+      // Call the AI assistant to review and correct the profile
+      const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
+        body: { profile }
+      });
+
+      if (aiError) throw aiError;
+
+      if (aiCorrections?.suggestions) {
+        const shouldApply = window.confirm(
+          "L'IA a détecté quelques améliorations possibles pour votre profil. Voulez-vous les appliquer ?\n\n" +
+          "Suggestions :\n" + aiCorrections.suggestions.join("\n")
+        );
+
+        if (shouldApply && aiCorrections.correctedProfile) {
+          await updateProfile(aiCorrections.correctedProfile);
+          setProfile(aiCorrections.correctedProfile);
+        } else {
+          await updateProfile(profile);
+        }
+      } else {
+        await updateProfile(profile);
       }
 
-      await updateProfile(profile);
-      toast.success("Profil mis à jour avec succès");
-      
       setIsEditing(false);
-      setShowCustomization(false);
       if (onEditStateChange) {
         onEditStateChange(false);
       }
+      toast.success("Profil mis à jour avec succès");
     } catch (error) {
       console.error('Error saving profile:', error);
       toast.error("Erreur lors de la sauvegarde du profil");
@@ -80,40 +89,18 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         background: profile.custom_background,
         textColor: profile.custom_text_color
       }}
-      selectedStyle={selectedStyle}
     >
-      <div className="relative space-y-8 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+      <div className="space-y-8 max-w-4xl mx-auto">
         {isEditing && (
-          <>
-            <VCardEditingHeader
-              onBack={handleEditToggle}
-              onCustomize={() => setShowCustomization(!showCustomization)}
-              showCustomization={showCustomization}
-            />
-
-            <AnimatePresence>
-              {showCustomization && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-lg"
-                >
-                  <VCardCustomization profile={profile} setProfile={setProfile} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </>
+          <VCardCustomization profile={profile} setProfile={setProfile} />
         )}
 
-        <div className={`space-y-8 ${isEditing ? 'bg-background/50 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-border/50' : ''}`}>
-          <VCardSectionsManager
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-            selectedStyle={selectedStyle}
-          />
-        </div>
+        <VCardSectionsManager
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+          selectedStyle={selectedStyle}
+        />
 
         <VCardFooter
           isEditing={isEditing}
@@ -128,10 +115,10 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             try {
               const doc = await generateBusinessCard(profile, selectedStyle);
               doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-              toast.success("Carte de visite générée avec succès");
+              toast.success("Business PDF généré avec succès");
             } catch (error) {
-              console.error('Error generating business card:', error);
-              toast.error("Erreur lors de la génération de la carte de visite");
+              console.error('Error generating business PDF:', error);
+              toast.error("Erreur lors de la génération du Business PDF");
             } finally {
               setIsPdfGenerating(false);
             }
@@ -142,10 +129,10 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             try {
               const doc = await generateCV(profile, selectedStyle);
               doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-              toast.success("CV généré avec succès");
+              toast.success("CV PDF généré avec succès");
             } catch (error) {
-              console.error('Error generating CV:', error);
-              toast.error("Erreur lors de la génération du CV");
+              console.error('Error generating CV PDF:', error);
+              toast.error("Erreur lors de la génération du CV PDF");
             } finally {
               setIsPdfGenerating(false);
             }

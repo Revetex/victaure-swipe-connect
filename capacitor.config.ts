@@ -8,28 +8,41 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     cleartext: true,
     allowNavigation: [
+      'mfjllillnpleasclqabb.supabase.co',
       '*.supabase.co',
       '*.vercel.app',
       '*.lovableproject.com',
+      'localhost',
+      'localhost:*',
+      'http://localhost',
+      'http://localhost:*',
       'https://*.supabase.co',
       'https://*.lovableproject.com',
       'https://mfjllillnpleasclqabb.supabase.co',
       'wss://mfjllillnpleasclqabb.supabase.co',
       'https://mfjllillnpleasclqabb.supabase.co:443',
-      'https://*.lovableproject.com:443',
-      'https://*.supabase.co/*',
-      'https://mfjllillnpleasclqabb.supabase.co/auth/v1/*',
-      'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*'
+      '*.lovableproject.com',
+      '*.vercel.app',
+      '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
     ]
   },
   android: {
-    allowMixedContent: true,
-    webContentsDebuggingEnabled: true
+    buildOptions: {
+      keystorePath: undefined,
+      keystoreAlias: undefined,
+      keystorePassword: undefined,
+      keystoreAliasPassword: undefined,
+    }
   },
   plugins: {
-    CapacitorHttp: {
-      enabled: true
-    }
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: "#ffffffff",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: true,
+      androidSpinnerStyle: "large",
+      spinnerColor: "#999999",
+    },
   }
 };
 

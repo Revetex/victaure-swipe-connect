@@ -584,7 +584,6 @@ export type Database = {
       }
       profiles: {
         Row: {
-          auto_update_enabled: boolean | null
           avatar_url: string | null
           bio: string | null
           city: string | null
@@ -601,9 +600,7 @@ export type Database = {
           industry: string | null
           last_seen: string | null
           latitude: number | null
-          location_enabled: boolean | null
           longitude: number | null
-          notifications_enabled: boolean | null
           online_status: boolean | null
           phone: string | null
           role: string
@@ -611,12 +608,10 @@ export type Database = {
           skills: string[] | null
           state: string | null
           style_id: string | null
-          two_factor_enabled: boolean | null
           updated_at: string | null
           website: string | null
         }
         Insert: {
-          auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
@@ -633,9 +628,7 @@ export type Database = {
           industry?: string | null
           last_seen?: string | null
           latitude?: number | null
-          location_enabled?: boolean | null
           longitude?: number | null
-          notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
           role: string
@@ -643,12 +636,10 @@ export type Database = {
           skills?: string[] | null
           state?: string | null
           style_id?: string | null
-          two_factor_enabled?: boolean | null
           updated_at?: string | null
           website?: string | null
         }
         Update: {
-          auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
@@ -665,9 +656,7 @@ export type Database = {
           industry?: string | null
           last_seen?: string | null
           latitude?: number | null
-          location_enabled?: boolean | null
           longitude?: number | null
-          notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
           role?: string
@@ -675,7 +664,6 @@ export type Database = {
           skills?: string[] | null
           state?: string | null
           style_id?: string | null
-          two_factor_enabled?: boolean | null
           updated_at?: string | null
           website?: string | null
         }

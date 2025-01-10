@@ -3,9 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Paintbrush, Type, Palette, TextCursor } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { motion } from "framer-motion";
-import { ColorPicker } from "./ColorPicker";
-import { pdfColors } from "@/utils/pdf/colors";
 
 const fontOptions = [
   { value: "'Poppins', sans-serif", label: "Poppins" },
@@ -22,24 +19,15 @@ interface VCardCustomizationProps {
 
 export function VCardCustomization({ profile, setProfile }: VCardCustomizationProps) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6 p-6 bg-card backdrop-blur-sm rounded-xl shadow-lg border"
-    >
-      <div className="flex items-center gap-2 pb-4 border-b">
+    <div className="space-y-6 p-6 bg-white/95 dark:bg-gray-800/95 rounded-xl shadow-lg backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-2 border-b pb-4 border-gray-200 dark:border-gray-700">
         <Paintbrush className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-medium">Personnalisation</h3>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <motion.div 
-          className="space-y-2"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Label className="flex items-center gap-2 text-muted-foreground">
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2">
             <Type className="h-4 w-4" />
             Police
           </Label>
@@ -47,10 +35,10 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
             value={profile.custom_font || "'Poppins', sans-serif"}
             onValueChange={(value) => setProfile({ ...profile, custom_font: value })}
           >
-            <SelectTrigger className="w-full bg-background/50">
+            <SelectTrigger className="w-full bg-white dark:bg-gray-900">
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-900">
               {fontOptions.map((font) => (
                 <SelectItem key={font.value} value={font.value}>
                   <span style={{ fontFamily: font.value }}>{font.label}</span>
@@ -58,42 +46,34 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
               ))}
             </SelectContent>
           </Select>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          className="space-y-2"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Label className="flex items-center gap-2 text-muted-foreground">
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2">
             <Palette className="h-4 w-4" />
             Arrière-plan
           </Label>
-          <ColorPicker
-            color={profile.custom_background || pdfColors.background}
-            onChange={(color) => setProfile({ ...profile, custom_background: color })}
-            className="w-full"
+          <Input
+            type="color"
+            value={profile.custom_background || "#ffffff"}
+            onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
+            className="h-10 px-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md"
           />
-        </motion.div>
+        </div>
 
-        <motion.div 
-          className="space-y-2"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Label className="flex items-center gap-2 text-muted-foreground">
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2">
             <TextCursor className="h-4 w-4" />
             Couleur du texte
           </Label>
-          <ColorPicker
-            color={profile.custom_text_color || pdfColors.text.primary}
-            onChange={(color) => setProfile({ ...profile, custom_text_color: color })}
-            className="w-full"
+          <Input
+            type="color"
+            value={profile.custom_text_color || "#000000"}
+            onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
+            className="h-10 px-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md"
           />
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

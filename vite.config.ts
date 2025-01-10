@@ -14,48 +14,35 @@ export default defineConfig(({ mode }) => ({
     },
   },
   server: {
+    host: '0.0.0.0',
     port: 8080,
-    strictPort: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization, apikey, x-client-info',
-      'Access-Control-Allow-Credentials': 'true',
+    hmr: {
+      clientPort: 443,
+      protocol: 'wss',
+      host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
+      timeout: 120000
     },
-    proxy: {
-      '/auth/v1': {
-        target: 'https://mfjllillnpleasclqabb.supabase.co',
-        changeOrigin: true,
-        secure: true,
-        ws: true,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
-        }
-      },
-      '/rest/v1': {
-        target: 'https://mfjllillnpleasclqabb.supabase.co',
-        changeOrigin: true,
-        secure: true,
-        ws: true
-      }
+    watch: {
+      usePolling: true,
+      interval: 1000,
     },
     cors: {
-      origin: '*',
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-      allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'apikey', 'x-client-info'],
+      origin: [
+        'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
+        'http://localhost:8080',
+        'https://mfjllillnpleasclqabb.supabase.co'
+      ],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
       credentials: true
     },
-    hmr: {
-      protocol: 'ws',
-      host: '0.0.0.0',
+    proxy: {
+      '/api': {
+        target: 'https://mfjllillnpleasclqabb.supabase.co',
+        changeOrigin: true,
+        secure: false,
+        ws: true
+      }
     }
   },
   build: {
@@ -64,10 +51,9 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui': ['@radix-ui/react-dialog', '@radix-ui/react-slot'],
-        }
-      }
-    }
-  }
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
 }));

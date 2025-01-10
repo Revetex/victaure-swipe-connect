@@ -1,13 +1,13 @@
 export const pdfStyles = {
   colors: {
-    primary: '#00c896', // Emerald green
-    secondary: '#808080', // Metallic gray
-    accent: '#404040',
-    background: '#1a1a1a',
+    primary: '#1A1F2C',
+    secondary: '#4B5563',
+    accent: '#E5DEFF',
+    background: '#FFFFFF',
     text: {
-      primary: '#e6e6e6',
-      secondary: '#b3b3b3',
-      muted: '#666666'
+      primary: '#1A1F2C',
+      secondary: '#4B5563',
+      muted: '#8E9196'
     }
   },
   margins: {

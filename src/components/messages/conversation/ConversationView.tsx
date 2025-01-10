@@ -14,7 +14,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack?: () => void;
+  onBack?: () => void;  // Made optional with ?
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -157,7 +157,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 safe-area-bottom">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
         <div className="max-w-5xl mx-auto">
           <ChatInput
             value={inputMessage}

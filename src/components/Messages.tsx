@@ -27,6 +27,7 @@ export function Messages() {
     setShowConversation(true);
   };
 
+  // Create a wrapper function that calls the mutation
   const handleMarkAsRead = (messageId: string) => {
     markAsRead.mutate(messageId);
   };

@@ -1,91 +1,105 @@
 import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
+import { ExtendedJsPDF } from "@/types/pdf";
 import { extendPdfDocument } from "./pdfExtensions";
+import { StyleOption } from "@/components/vcard/types";
 import QRCode from "qrcode";
 
-export const generateBusinessCard = async (profile: UserProfile, slogan: string) => {
-  // Card dimensions in mm (standard business card size)
-  const width = 85;
-  const height = 55;
-  
-  // Initialize PDF
+export const generateBusinessCard = async (
+  profile: UserProfile,
+  selectedStyle: StyleOption
+): Promise<ExtendedJsPDF> => {
   const doc = extendPdfDocument(new jsPDF({
-    orientation: "landscape",
-    unit: "mm",
-    format: [width, height]
+    orientation: 'landscape',
+    unit: 'mm',
+    format: [85.6, 53.98]
   }));
 
   // Front side
-  // Metallic gradient background
-  doc.setFillColor(20, 20, 20);
-  doc.rect(0, 0, width, height, "F");
+  try {
+    // Set background with style-specific gradient
+    doc.setFillColor(selectedStyle.colors.background.card);
+    doc.setDrawColor(selectedStyle.colors.primary);
+    
+    // Apply gradient background
+    doc.setGlobalAlpha(0.1);
+    doc.rect(0, 0, 85.6, 53.98, 'F');
+    doc.setGlobalAlpha(1);
 
-  // Add metallic effect lines
-  doc.setDrawColor(40, 40, 40);
-  doc.setLineWidth(0.1);
-  for (let i = 0; i < width; i += 2) {
-    doc.line(i, 0, i, height);
-  }
-  
-  // Add name
-  doc.setFontSize(16);
-  doc.setTextColor(0, 200, 150); // Emerald green for metallic effect
-  doc.text(profile.full_name || "", 10, 15);
-  
-  // Add role
-  doc.setFontSize(12);
-  doc.setTextColor(180, 180, 180); // Metallic silver
-  doc.text(profile.role || "", 10, 22);
-  
-  // Add slogan in italics
-  doc.setFontSize(8);
-  doc.setTextColor(120, 120, 120);
-  const sloganLines = doc.splitTextToSize(slogan, 40);
-  doc.text(sloganLines, 10, 30);
-  
-  // Add contact info
-  doc.setFontSize(8);
-  doc.setTextColor(150, 150, 150);
-  if (profile.email) doc.text(profile.email, 10, 38);
-  if (profile.phone) doc.text(profile.phone, 10, 43);
-  if (profile.city) doc.text(`${profile.city}, ${profile.country}`, 10, 48);
-  
-  // Generate QR Code with profile URL
-  const profileUrl = `https://victaure.com/profile/${profile.id}`;
-  const qrCodeDataUrl = await QRCode.toDataURL(profileUrl, {
-    color: {
-      dark: '#00c896', // Emerald green QR code
-      light: '#00000000' // Transparent background
-    },
-    width: 500,
-    margin: 1
-  });
-  
-  // Add QR code
-  doc.addImage(qrCodeDataUrl, "PNG", 55, 10, 25, 25);
-  
-  // Back side
-  doc.addPage([width, height], "landscape");
-  
-  // Metallic background with dot pattern
-  doc.setFillColor(20, 20, 20);
-  doc.rect(0, 0, width, height, "F");
-  
-  // Add dot pattern
-  doc.setDrawColor(40, 120, 100);
-  doc.setLineWidth(0.1);
-  for (let x = 5; x < width - 5; x += 3) {
-    for (let y = 5; y < height - 5; y += 3) {
-      doc.circle(x, y, 0.2, 'F');
+    // Add decorative accent line
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(selectedStyle.colors.secondary);
+    doc.line(10, 12, 75.6, 12);
+
+    // Add name with enhanced styling
+    doc.setTextColor(selectedStyle.colors.text.primary);
+    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
+    doc.setFontSize(16);
+    doc.text(profile.full_name || '', 10, 20);
+    
+    // Add role with professional styling
+    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
+    doc.setFontSize(12);
+    doc.setTextColor(selectedStyle.colors.text.secondary);
+    doc.text(profile.role || '', 10, 27);
+
+    // Add contact details with improved layout
+    doc.setFontSize(9);
+    doc.setTextColor(selectedStyle.colors.text.muted);
+    let contactY = 35;
+    
+    if (profile.email) {
+      doc.text(`Email: ${profile.email}`, 10, contactY);
+      contactY += 5;
     }
+    
+    if (profile.phone) {
+      doc.text(`Tel: ${profile.phone}`, 10, contactY);
+      contactY += 5;
+    }
+    
+    if (profile.city) {
+      const location = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
+      doc.text(location, 10, contactY);
+    }
+
+    // Add back side with professional design
+    doc.addPage([85.6, 53.98], 'landscape');
+    
+    // Add subtle pattern background
+    doc.setGlobalAlpha(0.05);
+    for (let i = 0; i < 85.6; i += 5) {
+      for (let j = 0; j < 53.98; j += 5) {
+        doc.setFillColor(selectedStyle.colors.primary);
+        doc.circle(i, j, 0.3, 'F');
+      }
+    }
+    doc.setGlobalAlpha(1);
+
+    // Add company info if available
+    if (profile.company_name) {
+      doc.setTextColor(selectedStyle.colors.text.primary);
+      doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
+      doc.setFontSize(14);
+      doc.text(profile.company_name, 10, 20);
+
+      if (profile.company_size) {
+        doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(selectedStyle.colors.text.secondary);
+        doc.text(`Taille: ${profile.company_size}`, 10, 27);
+      }
+    }
+
+    // Add elegant border
+    doc.setDrawColor(selectedStyle.colors.primary);
+    doc.setLineWidth(0.5);
+    const margin = 5;
+    doc.roundedRect(margin, margin, 85.6 - 2 * margin, 53.98 - 2 * margin, 3, 3, 'S');
+
+  } catch (error) {
+    console.error('Error generating business card:', error);
   }
-  
-  // Add Victaure logo
-  doc.setFontSize(24);
-  doc.setTextColor(0, 200, 150);
-  const text = "Victaure";
-  const textWidth = doc.getTextWidth(text);
-  doc.text(text, (width - textWidth) / 2, height / 2);
-  
+
   return doc;
 };
