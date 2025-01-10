@@ -1,15 +1,12 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
+import { DashboardContent } from "./dashboard/DashboardContent";
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-}
-
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(2);
@@ -49,7 +46,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         }}
       >
         <AnimatePresence mode="wait" initial={false}>
-          {children}
+          <DashboardContent
+            key={`page-${currentPage}`}
+            currentPage={currentPage}
+            isEditing={isEditing}
+            viewportHeight={viewportHeight}
+            onEditStateChange={setIsEditing}
+            onRequestChat={handleRequestChat}
+          />
         </AnimatePresence>
       </motion.div>
       
