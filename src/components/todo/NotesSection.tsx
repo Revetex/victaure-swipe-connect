@@ -1,10 +1,10 @@
-import { StickyNoteIcon } from "lucide-react";
+import { StickyNoteIcon, Calendar } from "lucide-react";
 import { NotesInput } from "./NotesInput";
 import { StickyNote } from "./StickyNote";
 import { ColorOption, StickyNote as StickyNoteType } from "@/types/todo";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +62,7 @@ export function NotesSection({
           )}
         >
           <span className="sr-only">Toggle Calendar</span>
-          <StickyNoteIcon className="h-6 w-6" />
+          <Calendar className="h-6 w-6" />
         </button>
       </div>
 
@@ -126,7 +126,7 @@ export function NotesSection({
               "shadow-lg hidden lg:block"
             )}
           >
-            <Calendar
+            <CalendarComponent
               mode="single"
               selected={date}
               onSelect={setDate}

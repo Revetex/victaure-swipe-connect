@@ -40,7 +40,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
           size="icon"
           onClick={() => onDelete(note.id)}
           className={cn(
-            "opacity-0 group-hover:opacity-100",
+            "opacity-0 group-hover:opacity-100 sm:opacity-100",
             "transition-all duration-200",
             "hover:bg-black/10 hover:text-black",
             "-mt-2 -mr-2",
