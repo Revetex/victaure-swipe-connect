@@ -41,7 +41,10 @@ export const AuthVideo = () => {
   };
 
   const handlePause = () => {
-    setIsPlaying(false);
+    // Ne mettons pas à jour isPlaying si la pause est due au seeking
+    if (videoRef.current && !videoRef.current.seeking) {
+      setIsPlaying(false);
+    }
   };
 
   const handlePlay = () => {
