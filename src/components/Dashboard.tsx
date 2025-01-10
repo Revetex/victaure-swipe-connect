@@ -14,6 +14,7 @@ import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
+import { pipeline } from "@huggingface/transformers";
 
 export function Dashboard() {
   const queryClient = useQueryClient();
@@ -21,6 +22,7 @@ export function Dashboard() {
   const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(true);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleError = (error: Error) => {
     console.error("Erreur du tableau de bord:", error);
@@ -56,6 +58,67 @@ export function Dashboard() {
       toast.success("Export réussi !");
     } catch (error) {
       handleError(error as Error);
+    }
+  };
+
+  const analyzeJobContent = async (text: string) => {
+    try {
+      const classifier = await pipeline(
+        'text-classification',
+        'facebook/bart-large-mnli',
+        { device: 'cpu' }
+      );
+      
+      const result = await classifier(text, {
+        candidate_labels: ['pertinent', 'non pertinent', 'spam', 'obsolète']
+      });
+      
+      console.log("Analyse du contenu:", result);
+      return result.labels[0] === 'pertinent';
+    } catch (error) {
+      console.error("Erreur lors de l'analyse du contenu:", error);
+      return true; // En cas d'erreur, on garde l'emploi par défaut
+    }
+  };
+
+  const cleanupJobs = async () => {
+    try {
+      setIsProcessing(true);
+      console.log("Début du nettoyage intelligent des emplois...");
+
+      const { data: jobs, error: jobsError } = await supabase
+        .from('jobs')
+        .select('*');
+
+      if (jobsError) throw jobsError;
+
+      console.log(`Analyse de ${jobs?.length || 0} emplois...`);
+
+      for (const job of jobs || []) {
+        const shouldKeep = await analyzeJobContent(`${job.title} ${job.description}`);
+        
+        if (!shouldKeep) {
+          console.log(`Suppression de l'emploi: ${job.title}`);
+          const { error: deleteError } = await supabase
+            .from('jobs')
+            .delete()
+            .eq('id', job.id);
+
+          if (deleteError) {
+            console.error(`Erreur lors de la suppression de l'emploi ${job.id}:`, deleteError);
+          }
+        }
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      await queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      
+      toast.success("Nettoyage des emplois terminé !");
+    } catch (error) {
+      console.error("Erreur lors du nettoyage des emplois:", error);
+      toast.error("Une erreur est survenue lors du nettoyage des emplois");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -160,6 +223,14 @@ export function Dashboard() {
             visible: { opacity: 1, x: 0 }
           }}
         >
+          <Button
+            variant="outline"
+            onClick={cleanupJobs}
+            disabled={isProcessing}
+            className="bg-white dark:bg-gray-800 border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-gray-700 transition-all duration-300"
+          >
+            {isProcessing ? 'Nettoyage...' : 'Nettoyer les emplois'}
+          </Button>
           <Button
             variant="outline"
             onClick={handleRefresh}
