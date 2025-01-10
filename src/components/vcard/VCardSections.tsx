@@ -1,10 +1,10 @@
 import { UserProfile } from "@/types/profile";
-import { VCardHeader } from "../VCardHeader";
-import { VCardBio } from "../VCardBio";
-import { VCardContact } from "../VCardContact";
+import { VCardHeader } from "./VCardHeader";
+import { VCardBio } from "./VCardBio";
+import { VCardContact } from "./VCardContact";
 import { VCardContent } from "./VCardContent";
-import { VCardEducation } from "../VCardEducation";
-import { VCardExperiences } from "../VCardExperiences";
+import { VCardEducation } from "./VCardEducation";
+import { VCardExperiences } from "./VCardExperiences";
 import { StyleOption } from "./types";
 
 interface VCardSectionsProps {
