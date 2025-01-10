@@ -1,5 +1,5 @@
 import { FileText } from "lucide-react";
-import { VCardSection } from "@/components/VCardSection";
+import { VCardSection } from "../../VCardSection";
 import { Textarea } from "@/components/ui/textarea";
 
 interface VCardExpandedBioProps {

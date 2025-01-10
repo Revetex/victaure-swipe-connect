@@ -1,3 +1,4 @@
+export * from './VCardHeader';
 export * from './VCardBio';
 export * from './VCardContact';
 export * from './VCardEducation';

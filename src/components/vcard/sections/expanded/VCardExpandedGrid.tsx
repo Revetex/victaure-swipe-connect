@@ -2,7 +2,7 @@ import { UserProfile } from "@/types/profile";
 import { VCardExpandedHeader } from "./VCardExpandedHeader";
 import { VCardExpandedBio } from "./VCardExpandedBio";
 import { VCardExpandedEducation } from "./VCardExpandedEducation";
-import { VCardSkills } from "@/components/VCardSkills"; // Fixed import path
+import { VCardSkills } from "../../VCardSkills";
 import { VCardExpandedQR } from "./VCardExpandedQR";
 
 interface VCardExpandedGridProps {

@@ -37,8 +37,7 @@ export function VCardCertifications({ profile, isEditing, setProfile }: VCardCer
       year: newCertification.year || new Date().getFullYear().toString(),
       created_at: null,
       updated_at: null,
-      description: null,
-      skills: []
+      description: null
     };
 
     setProfile({
