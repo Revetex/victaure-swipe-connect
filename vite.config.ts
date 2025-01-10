@@ -29,8 +29,10 @@ export default defineConfig(({ mode }) => ({
     cors: {
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Client-Info', 'apikey'],
-      credentials: true
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Client-Info', 'apikey', 'X-Supabase-Auth'],
+      credentials: true,
+      preflightContinue: true,
+      optionsSuccessStatus: 204
     }
   },
   build: {
