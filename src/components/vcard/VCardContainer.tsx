@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 
 interface VCardContainerProps {
   children: ReactNode;
-  isEditing: boolean;
+  isEditing?: boolean;
   customStyles?: {
-    font?: string | null;
-    background?: string | null;
-    textColor?: string | null;
+    font?: string;
+    background?: string;
+    textColor?: string;
   };
   selectedStyle: StyleOption;
 }
@@ -24,12 +24,11 @@ export function VCardContainer({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className={cn(
-        "min-h-screen w-full transition-all duration-300",
-        isEditing 
-          ? "bg-background/95 backdrop-blur-sm" 
-          : "bg-gradient-to-br from-background via-background/80 to-background/60",
-        !isEditing && selectedStyle.bgGradient
+        "relative w-full min-h-screen",
+        selectedStyle.bgGradient,
+        isEditing && "bg-background/50"
       )}
       style={{
         fontFamily: customStyles?.font || selectedStyle.font,
