@@ -62,24 +62,24 @@ export function Settings() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 h-full overflow-y-auto"
+      className="space-y-6 p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border border-border/50 shadow-lg h-full overflow-y-auto"
     >
       <motion.h2 
         variants={itemVariants}
-        className="text-2xl font-semibold tracking-tight"
+        className="text-2xl font-semibold tracking-tight text-primary"
       >
         Paramètres
       </motion.h2>
       
-      <div className="space-y-6">
+      <div className="space-y-8">
         <motion.div variants={itemVariants}>
           <SettingsSection title="Apparence">
             <div className={cn(
-              "p-3 rounded-lg",
-              "hover:bg-muted/50 dark:hover:bg-muted/25 transition-colors",
+              "p-4 rounded-lg bg-muted/30",
+              "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
               "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
             )}>
-              <Label className="text-sm mb-4 flex items-center gap-2">
+              <Label className="text-sm mb-4 flex items-center gap-2 text-foreground/80">
                 <Moon className="h-4 w-4" />
                 Thème
               </Label>
@@ -89,7 +89,7 @@ export function Settings() {
                   setTheme(value);
                   toast.success(`Thème ${value === 'light' ? 'clair' : value === 'dark' ? 'sombre' : 'système'} activé`);
                 }}
-                className="grid gap-4 mt-2"
+                className="grid gap-4 mt-3"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="light" id="light" />
@@ -117,16 +117,16 @@ export function Settings() {
           </SettingsSection>
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <SettingsSection title="Notifications">
             <div className={cn(
-              "flex items-center justify-between space-x-4 p-3 rounded-lg",
-              "hover:bg-muted/50 dark:hover:bg-muted/25 transition-colors",
+              "flex items-center justify-between space-x-4 p-4 rounded-lg bg-muted/30",
+              "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
               "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
             )}>
-              <Label className="text-sm cursor-pointer flex items-center gap-2">
+              <Label className="text-sm cursor-pointer flex items-center gap-2 text-foreground/80">
                 <Bell className="h-4 w-4" />
                 Notifications
               </Label>
@@ -140,12 +140,12 @@ export function Settings() {
           </SettingsSection>
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <SettingsSection title="Sécurité">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
+            <div className="space-y-4 p-4 rounded-lg bg-muted/30">
+              <div className="flex items-center gap-2 text-foreground/80">
                 <Lock className="h-4 w-4" />
                 <h3 className="text-sm font-medium">Mot de passe</h3>
               </div>
@@ -154,7 +154,7 @@ export function Settings() {
           </SettingsSection>
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <Button 

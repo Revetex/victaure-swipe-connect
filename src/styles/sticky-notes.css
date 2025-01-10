@@ -3,32 +3,38 @@
     @apply p-4 rounded-lg shadow-sm transition-all duration-200 
            hover:shadow-md hover:-translate-y-0.5
            backdrop-blur-sm
-           sm:touch-none /* Désactive les optimisations tactiles sur desktop */
-           active:shadow-lg /* Feedback tactile */
-           active:scale-[0.98]; /* Animation au toucher */
+           sm:touch-none
+           active:shadow-lg
+           active:scale-[0.98];
   }
 
   .sticky-note-yellow {
     @apply bg-[#FEF7CD]/90 hover:bg-[#FEF7CD];
+    box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.1), 0 2px 4px -1px rgba(251, 191, 36, 0.06);
   }
 
   .sticky-note-blue {
     @apply bg-[#D3E4FD]/90 hover:bg-[#D3E4FD];
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
   }
 
   .sticky-note-green {
     @apply bg-[#F2FCE2]/90 hover:bg-[#F2FCE2];
+    box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.1), 0 2px 4px -1px rgba(34, 197, 94, 0.06);
   }
 
   .sticky-note-pink {
     @apply bg-[#FFDEE2]/90 hover:bg-[#FFDEE2];
+    box-shadow: 0 4px 6px -1px rgba(244, 114, 182, 0.1), 0 2px 4px -1px rgba(244, 114, 182, 0.06);
   }
 
   .sticky-note-purple {
     @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF];
+    box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.1), 0 2px 4px -1px rgba(168, 85, 247, 0.06);
   }
 
   .sticky-note-orange {
     @apply bg-[#FEC6A1]/90 hover:bg-[#FEC6A1];
+    box-shadow: 0 4px 6px -1px rgba(251, 146, 60, 0.1), 0 2px 4px -1px rgba(251, 146, 60, 0.06);
   }
 }
