@@ -40,7 +40,8 @@ export function VCardSections({
             key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
-            setProfile={setProfile}
+            selectedStyle={selectedStyle}
+            onProfileUpdate={setProfile}
           />
         );
       case 'bio':
