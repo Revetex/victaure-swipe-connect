@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { UserCircle2, Upload, Plus } from "lucide-react";
+import { UserCircle2, Upload } from "lucide-react";
 import { motion } from "framer-motion";
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "./ui/button";
 import { useState } from "react";
 
 interface VCardHeaderProps {
@@ -65,17 +64,17 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center sm:items-start gap-6 p-6"
+      className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4"
     >
-      <div className="relative group w-32 h-32 mx-auto sm:mx-0">
-        <Avatar className="w-full h-full ring-4 ring-background/80 shadow-xl">
+      <div className="relative group">
+        <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
           <AvatarImage 
             src={profile.avatar_url || ''} 
             alt={profile.full_name || ''}
-            className="object-cover"
+            className="object-cover w-full h-full"
           />
-          <AvatarFallback className="bg-muted">
-            <UserCircle2 className="w-12 h-12 text-muted-foreground/50" />
+          <AvatarFallback className="bg-[#1A1F2C]">
+            <UserCircle2 className="h-14 w-14 text-white" />
           </AvatarFallback>
         </Avatar>
         {isEditing && (
@@ -95,26 +94,26 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
         )}
       </div>
 
-      <div className="text-center sm:text-left space-y-2 w-full">
+      <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
         {isEditing ? (
           <div className="space-y-4">
             <Input
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom"
-              className="text-xl font-semibold bg-background/50 border-border/50"
+              className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-background/50 border-border/50"
+              className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
             />
           </div>
         ) : (
           <>
             <h2 
-              className="text-2xl font-semibold truncate"
+              className="text-xl sm:text-2xl font-semibold truncate transition-colors"
               style={{ 
                 color: selectedStyle.colors.text.primary,
                 textShadow: '0 1px 2px rgba(0,0,0,0.1)'
@@ -123,7 +122,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               {profile.full_name || "Nom non défini"}
             </h2>
             <p 
-              className="text-base"
+              className="text-sm sm:text-base transition-colors"
               style={{ 
                 color: selectedStyle.colors.text.secondary,
                 textShadow: '0 1px 1px rgba(0,0,0,0.05)'
@@ -137,26 +136,27 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
 
       {!isEditing && (
         <motion.div 
-          className="mt-4 w-full max-w-[200px] mx-auto"
+          className="shrink-0 cursor-pointer"
+          onClick={() => setIsQRDialogOpen(true)}
+          whileHover={{ scale: 1.05 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          onClick={() => setIsQRDialogOpen(true)}
         >
-          <div className="p-4 glass-card hover:scale-105 transition-transform duration-300 cursor-pointer">
+          <div className="p-2 glass-card">
             <QRCodeSVG
               value={window.location.href}
-              size={160}
+              size={80}
               level="H"
               includeMargin={false}
-              className="w-full h-auto rounded-lg"
+              className="rounded-lg opacity-80 hover:opacity-100 transition-opacity duration-300"
             />
           </div>
         </motion.div>
       )}
 
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-sm border-none">
           <div className="flex flex-col items-center space-y-4 p-6">
             <QRCodeSVG
               value={window.location.href}

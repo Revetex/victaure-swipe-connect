@@ -1,4 +1,4 @@
-import { Menu, User, Briefcase, Building2, GraduationCap } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -14,15 +14,18 @@ const NavLinks = memo(() => {
   
   return (
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
-      <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-        <Briefcase className="h-5 w-5" />
-      </Button>
-      <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-        <Building2 className="h-5 w-5" />
-      </Button>
-      <Button variant="ghost" size="icon" className="text-foreground/80 hover:text-primary">
-        <GraduationCap className="h-5 w-5" />
-      </Button>
+      <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
+        <span className="relative z-10">Trouver un Job</span>
+        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </a>
+      <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
+        <span className="relative z-10">Pour les Employeurs</span>
+        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </a>
+      <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
+        <span className="relative z-10">Formation</span>
+        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </a>
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
         <ThemeToggle />
         <Button 

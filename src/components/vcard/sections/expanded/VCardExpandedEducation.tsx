@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { VCardEducation } from "../../VCardEducation";
-import { VCardCertifications } from "../../VCardCertifications";
+import { VCardEducation } from "@/components/VCardEducation";
+import { VCardCertifications } from "@/components/VCardCertifications";
 
 interface VCardExpandedEducationProps {
   profile: any;
