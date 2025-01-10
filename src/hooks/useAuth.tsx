@@ -23,11 +23,11 @@ export function useAuth() {
   const handleAuthError = (error: AuthError) => {
     console.error('Auth error:', error);
     
-    // Gérer spécifiquement l'erreur de refresh token
+    // Handle refresh token errors specifically
     if (error.message.includes('refresh_token_not_found') || 
         error.message.includes('Invalid Refresh Token')) {
       console.log('Invalid refresh token, clearing session...');
-      signOut(); // Forcer une déconnexion propre
+      signOut(); // Force a clean sign out
       return;
     }
 
@@ -48,7 +48,7 @@ export function useAuth() {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
       
-      // Nettoyer le stockage local
+      // Clean up storage
       localStorage.clear();
       sessionStorage.clear();
       
@@ -86,7 +86,7 @@ export function useAuth() {
       try {
         setState(prev => ({ ...prev, isLoading: true, error: null }));
         
-        // Récupérer la session actuelle
+        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -109,7 +109,7 @@ export function useAuth() {
           return;
         }
 
-        // Vérifier l'utilisateur
+        // Verify user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
