@@ -27,21 +27,6 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const navigate = useNavigate();
   const { profile } = useProfile();
 
-  const createNotification = async (message: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      await supabase.from('notifications').insert({
-        user_id: user.id,
-        title: "Nouvelle réponse de M. Victaure",
-        message: message.substring(0, 200) + (message.length > 200 ? '...' : ''),
-      });
-    } catch (error) {
-      console.error('Error creating notification:', error);
-    }
-  };
-
   const handleAction = (action: string, data?: any) => {
     switch (action) {
       case 'navigate_to_jobs':
@@ -84,10 +69,9 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       }
 
       setMessages(prev => [...prev, { type: 'user', content: input }]);
-
       setIsTyping(true);
       
-      const { data, error } = await supabase.functions.invoke('ai-job-assistant', {
+      const { data, error } = await supabase.functions.invoke('ai-career-assistant', {
         body: { 
           message: input,
           userId: user.id,
@@ -100,22 +84,13 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
       if (error) throw error;
 
-      // Create notification for AI response
-      await createNotification(data.message);
-
       setMessages(prev => [...prev, { 
         type: 'assistant', 
         content: {
-          ...data,
-          suggestedActions: data.suggestedActions || []
+          message: data.message,
+          suggestedJobs: data.suggestedJobs || []
         }
       }]);
-
-      if (data.suggestedActions?.length > 0) {
-        data.suggestedActions.forEach((action: any) => {
-          handleAction(action.type, action.data);
-        });
-      }
 
       setInput("");
       

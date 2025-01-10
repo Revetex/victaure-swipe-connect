@@ -1,7 +1,9 @@
-import { Bot, User, Briefcase, Building2, GraduationCap } from "lucide-react";
+import { Bot, User, Briefcase, Building2, MapPin, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface AIMessageCardProps {
   message: {
@@ -47,52 +49,75 @@ export function AIMessageCard({ message }: AIMessageCardProps) {
         {message.type === 'user' ? (
           <p>{message.content}</p>
         ) : (
-          <div className="space-y-2">
-            <p>{message.content.message}</p>
-            {message.content.jobs && (
-              <div className="mt-2 space-y-2">
-                {message.content.jobs.map((job: any, i: number) => (
+          <div className="space-y-4">
+            <p className="whitespace-pre-wrap">{message.content.message}</p>
+            
+            {message.content.suggestedJobs?.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <h4 className="font-medium text-sm text-gray-500 dark:text-gray-400">
+                  Offres d'emploi suggérées :
+                </h4>
+                {message.content.suggestedJobs.map((job: any, i: number) => (
                   <motion.div 
-                    key={i} 
+                    key={job.id} 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 rounded cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                    className="flex flex-col gap-2 p-3 bg-white dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                     onClick={() => navigate(`/jobs/${job.id}`)}
                   >
-                    <Briefcase className="h-4 w-4" />
-                    <div>
-                      <p className="font-medium">{job.title}</p>
-                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="h-4 w-4 text-blue-500" />
+                        <h5 className="font-medium">{job.title}</h5>
+                      </div>
+                      {job.budget && (
+                        <span className="text-sm text-green-600 dark:text-green-400">
+                          {job.budget}$
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
                         <Building2 className="h-3 w-3" />
-                        <span>{job.company}</span>
-                        {job.required_skills && job.required_skills.length > 0 && (
-                          <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-2 py-0.5 rounded">
-                            {job.required_skills[0]}
-                            {job.required_skills.length > 1 && ` +${job.required_skills.length - 1}`}
+                        <span>{job.company || job.company_name || 'Entreprise'}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span>{job.location}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>
+                          {formatDistanceToNow(new Date(job.created_at), {
+                            addSuffix: true,
+                            locale: fr
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {job.required_skills && job.required_skills.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {job.required_skills.slice(0, 3).map((skill: string) => (
+                          <span 
+                            key={skill}
+                            className="px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {job.required_skills.length > 3 && (
+                          <span className="text-xs text-gray-500">
+                            +{job.required_skills.length - 3}
                           </span>
                         )}
                       </div>
-                    </div>
+                    )}
                   </motion.div>
-                ))}
-              </div>
-            )}
-            {message.content.suggestedActions && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {message.content.suggestedActions.map((action: any, i: number) => (
-                  <Button
-                    key={i}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAction(action.type, action.data)}
-                    className="flex items-center gap-1"
-                  >
-                    {action.icon === 'briefcase' && <Briefcase className="h-3 w-3" />}
-                    {action.icon === 'user' && <User className="h-3 w-3" />}
-                    {action.icon === 'graduation-cap' && <GraduationCap className="h-3 w-3" />}
-                    {action.label}
-                  </Button>
                 ))}
               </div>
             )}
