@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { QuickActions } from "./dashboard/QuickActions";
 import { DashboardHeader } from "./dashboard/DashboardHeader";
@@ -16,6 +16,7 @@ import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
 
 export function Dashboard() {
+  const queryClient = useQueryClient();
   const { data: stats, isLoading, error } = useDashboardStats();
   const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(true);
@@ -60,7 +61,10 @@ export function Dashboard() {
 
   const handleRefresh = async () => {
     try {
-      await useDashboardStats();
+      console.log("Refreshing dashboard data...");
+      await queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      await queryClient.invalidateQueries({ queryKey: ['scraped-jobs'] });
       toast.success("Données actualisées !");
     } catch (error) {
       handleError(error as Error);
