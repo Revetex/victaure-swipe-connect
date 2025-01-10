@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Building2, MapPin, ExternalLink } from "lucide-react";
+import { Briefcase, Building2, MapPin, ExternalLink, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export function ScrapedJobs() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -20,7 +22,7 @@ export function ScrapedJobs() {
       const { data, error } = await supabase
         .from('scraped_jobs')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('posted_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;
@@ -40,13 +42,18 @@ export function ScrapedJobs() {
   const refreshJobs = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.functions.invoke('scrape-jobs');
+      toast({
+        title: "Mise à jour",
+        description: "Recherche de nouveaux emplois en cours...",
+      });
+
+      const { error } = await supabase.functions.invoke('smart-job-scraper');
       if (error) throw error;
       
       await fetchJobs();
       toast({
         title: "Succès",
-        description: "Les emplois ont été mis à jour"
+        description: "Les emplois ont été mis à jour avec l'IA"
       });
     } catch (error) {
       console.error('Error refreshing jobs:', error);
@@ -68,8 +75,19 @@ export function ScrapedJobs() {
           onClick={refreshJobs} 
           disabled={isLoading}
           variant="outline"
+          className="flex items-center gap-2"
         >
-          Rafraîchir
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Recherche...
+            </>
+          ) : (
+            <>
+              <Briefcase className="h-4 w-4" />
+              Chercher des emplois
+            </>
+          )}
         </Button>
       </div>
 
@@ -86,7 +104,10 @@ export function ScrapedJobs() {
                 <div className="flex items-start justify-between">
                   <h3 className="font-semibold line-clamp-2">{job.title}</h3>
                   <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                    {job.source}
+                    {formatDistanceToNow(new Date(job.posted_at), {
+                      addSuffix: true,
+                      locale: fr
+                    })}
                   </span>
                 </div>
                 
@@ -121,7 +142,7 @@ export function ScrapedJobs() {
 
       {jobs.length === 0 && !isLoading && (
         <div className="text-center py-8 text-muted-foreground">
-          Aucun emploi trouvé. Cliquez sur Rafraîchir pour chercher de nouvelles offres.
+          Aucun emploi trouvé. Cliquez sur "Chercher des emplois" pour trouver de nouvelles offres.
         </div>
       )}
     </div>
