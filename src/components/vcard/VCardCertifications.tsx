@@ -1,4 +1,4 @@
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Certification } from "@/types/profile";
 import { VCardSection } from "./VCardSection";
 import { Award, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,21 +12,33 @@ interface VCardCertificationsProps {
 }
 
 export function VCardCertifications({ profile, isEditing, setProfile }: VCardCertificationsProps) {
-  const [newCertification, setNewCertification] = useState({
+  const [newCertification, setNewCertification] = useState<Partial<Certification>>({
     title: "",
     issuer: "",
     issue_date: "",
     expiry_date: "",
     credential_url: "",
+    institution: "",
+    year: new Date().getFullYear().toString(),
   });
 
   const handleAddCertification = () => {
     if (!newCertification.title || !newCertification.issuer) return;
 
-    const certification = {
+    const certification: Certification = {
       id: crypto.randomUUID(),
       profile_id: profile.id,
-      ...newCertification
+      title: newCertification.title || "",
+      issuer: newCertification.issuer || "",
+      issue_date: newCertification.issue_date || null,
+      expiry_date: newCertification.expiry_date || null,
+      credential_url: newCertification.credential_url || null,
+      institution: newCertification.institution || "",
+      year: newCertification.year || new Date().getFullYear().toString(),
+      created_at: null,
+      updated_at: null,
+      description: null,
+      skills: []
     };
 
     setProfile({
@@ -40,6 +52,8 @@ export function VCardCertifications({ profile, isEditing, setProfile }: VCardCer
       issue_date: "",
       expiry_date: "",
       credential_url: "",
+      institution: "",
+      year: new Date().getFullYear().toString(),
     });
   };
 
@@ -109,6 +123,14 @@ export function VCardCertifications({ profile, isEditing, setProfile }: VCardCer
               onChange={(e) => setNewCertification({ 
                 ...newCertification, 
                 issuer: e.target.value 
+              })}
+            />
+            <Input
+              placeholder="Institution"
+              value={newCertification.institution}
+              onChange={(e) => setNewCertification({ 
+                ...newCertification, 
+                institution: e.target.value 
               })}
             />
             <div className="grid grid-cols-2 gap-4">

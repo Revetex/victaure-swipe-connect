@@ -1,14 +1,16 @@
 import { UserProfile } from "@/types/profile";
-import { VCardHeader } from "../../VCardHeader";
-import { VCardBio } from "../../VCardBio";
-import { VCardContact } from "../../VCardContact";
-import { VCardContent } from "../VCardContent";
-import { VCardEducation } from "../../VCardEducation";
-import { VCardExperiences } from "../../VCardExperiences";
 import { StyleOption } from "../types";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  VCardBio,
+  VCardContact,
+  VCardEducation,
+  VCardExperiences,
+  VCardSkills,
+  VCardHeader
+} from "../index";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
@@ -66,7 +68,7 @@ export function VCardSectionsManager({
       case 'experience':
         return <VCardExperiences {...props} />;
       case 'skills':
-        return <VCardContent {...props} />;
+        return <VCardSkills {...props} />;
       default:
         return null;
     }
