@@ -97,7 +97,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden"
+                  className="overflow-hidden rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-lg"
                 >
                   <VCardCustomization profile={profile} setProfile={setProfile} />
                 </motion.div>
@@ -106,12 +106,14 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           </>
         )}
 
-        <VCardSectionsManager
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
-          selectedStyle={selectedStyle}
-        />
+        <div className={`space-y-8 ${isEditing ? 'bg-background/50 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-border/50' : ''}`}>
+          <VCardSectionsManager
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            selectedStyle={selectedStyle}
+          />
+        </div>
 
         <VCardFooter
           isEditing={isEditing}

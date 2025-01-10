@@ -1,5 +1,6 @@
 import { UserCircle, MessageSquare, BriefcaseIcon, Settings, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -8,11 +9,11 @@ interface DashboardNavigationProps {
 
 export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
   const navigationItems = [
-    { id: 1, icon: UserCircle, name: "Profil" },
-    { id: 2, icon: MessageSquare, name: "M. Victaure", isPrimary: true },
-    { id: 3, icon: BriefcaseIcon, name: "Emplois" },
-    { id: 4, icon: ClipboardList, name: "Tâches/Notes" },
-    { id: 5, icon: Settings, name: "Paramètres" }
+    { id: 1, icon: UserCircle, isPrimary: false },
+    { id: 2, icon: MessageSquare, isPrimary: true },
+    { id: 3, icon: BriefcaseIcon, isPrimary: false },
+    { id: 4, icon: ClipboardList, isPrimary: false },
+    { id: 5, icon: Settings, isPrimary: false }
   ];
 
   return (
@@ -31,38 +32,37 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
             type: "spring",
             stiffness: 500
           }}
-          className={`
-            relative p-3 rounded-xl transition-all duration-300
-            ${currentPage === id
-              ? isPrimary 
-                ? "bg-red-500/10 dark:bg-red-950/20 text-red-500 dark:text-red-400" 
-                : "bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-foreground"
-              : "text-muted-foreground hover:text-primary hover:bg-primary/5 dark:hover:bg-primary/10"
-            }
-            ${isPrimary ? "scale-110" : ""}
-          `}
-          aria-label={navigationItems.find(item => item.id === id)?.name}
+          className={cn(
+            "relative p-3 rounded-xl transition-all duration-300",
+            currentPage === id && isPrimary 
+              ? "bg-primary/10 text-primary" 
+              : currentPage === id 
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+            isPrimary && "scale-110"
+          )}
+          aria-label={navigationItems.find(item => item.id === id)?.icon.name}
         >
-          <div className={`
-            relative rounded-lg
-            ${currentPage === id 
+          <div className={cn(
+            "relative rounded-lg",
+            currentPage === id 
               ? isPrimary
-                ? "text-red-500 dark:text-red-400"
-                : "text-primary dark:text-primary-foreground"
+                ? "text-primary"
+                : "text-accent-foreground"
               : "text-muted-foreground"
-            }
-          `}>
-            <Icon className={`
-              h-5 w-5 
-              ${currentPage === id && isPrimary ? "animate-pulse" : ""}
-            `} />
+          )}>
+            <Icon className={cn(
+              "h-5 w-5",
+              currentPage === id && isPrimary && "animate-pulse"
+            )} />
           </div>
           {currentPage === id && (
             <motion.div
               layoutId="activeTab"
-              className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                isPrimary ? "bg-red-500 dark:bg-red-400" : "bg-primary dark:bg-primary-foreground"
-              }`}
+              className={cn(
+                "absolute bottom-0 left-0 right-0 h-0.5",
+                isPrimary ? "bg-primary" : "bg-accent-foreground"
+              )}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
           )}

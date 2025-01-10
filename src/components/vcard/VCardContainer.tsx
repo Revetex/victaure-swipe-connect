@@ -30,19 +30,27 @@ export function VCardContainer({
       animate={{ opacity: 1, y: 0 }}
       className={cn(
         "min-h-screen w-full transition-all duration-300",
-        isEditing ? "bg-muted/50 backdrop-blur-sm" : "bg-background",
-        selectedStyle.bgGradient
+        isEditing 
+          ? "bg-background/95 backdrop-blur-sm" 
+          : "bg-gradient-to-br from-background via-background/80 to-background/60",
+        !isEditing && selectedStyle.bgGradient
       )}
       style={{
         fontFamily: customStyles?.font || selectedStyle.font,
-        background: backgroundColor,
         color: textColor,
         "--text-color": textColor,
         "--bg-color": backgroundColor,
       } as React.CSSProperties}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+        <div className={cn(
+          "rounded-xl transition-all duration-300",
+          isEditing 
+            ? "bg-card/95 backdrop-blur-md shadow-xl border border-border/50" 
+            : "bg-transparent"
+        )}>
+          {children}
+        </div>
       </div>
     </motion.div>
   );
