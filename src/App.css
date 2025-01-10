@@ -115,7 +115,6 @@ body {
          hover:shadow-xl hover:-translate-y-1
          backdrop-blur-sm border border-transparent
          active:scale-[0.98];
-  background: var(--note-bg, #FEF7CD);
   box-shadow: 
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06),
@@ -131,31 +130,37 @@ body {
 
 .sticky-note-yellow {
   --note-bg: #FEF7CD;
+  background: var(--note-bg);
   border-color: rgba(251, 191, 36, 0.1);
 }
 
 .sticky-note-blue {
   --note-bg: #D3E4FD;
+  background: var(--note-bg);
   border-color: rgba(59, 130, 246, 0.1);
 }
 
 .sticky-note-green {
   --note-bg: #F2FCE2;
+  background: var(--note-bg);
   border-color: rgba(34, 197, 94, 0.1);
 }
 
 .sticky-note-pink {
   --note-bg: #FFDEE2;
+  background: var(--note-bg);
   border-color: rgba(236, 72, 153, 0.1);
 }
 
 .sticky-note-purple {
   --note-bg: #E5DEFF;
+  background: var(--note-bg);
   border-color: rgba(139, 92, 246, 0.1);
 }
 
 .sticky-note-orange {
   --note-bg: #FEC6A1;
+  background: var(--note-bg);
   border-color: rgba(249, 115, 22, 0.1);
 }
 
