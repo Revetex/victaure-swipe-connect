@@ -82,7 +82,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       }}
       selectedStyle={selectedStyle}
     >
-      <div className="relative space-y-8">
+      <div className="relative space-y-8 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
         {isEditing && (
           <>
             <VCardEditingHeader

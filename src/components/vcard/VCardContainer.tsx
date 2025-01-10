@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { StyleOption } from "./types";
 import { motion } from "framer-motion";
-import { pdfColors } from "@/utils/pdf/colors";
 
 interface VCardContainerProps {
   children: ReactNode;
@@ -21,9 +20,6 @@ export function VCardContainer({
   customStyles,
   selectedStyle 
 }: VCardContainerProps) {
-  const textColor = customStyles?.textColor || selectedStyle.colors.text.primary || pdfColors.text.primary;
-  const backgroundColor = customStyles?.background || selectedStyle.colors.background.card || pdfColors.background;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -37,14 +33,13 @@ export function VCardContainer({
       )}
       style={{
         fontFamily: customStyles?.font || selectedStyle.font,
-        color: textColor,
-        "--text-color": textColor,
-        "--bg-color": backgroundColor,
-      } as React.CSSProperties}
+        color: customStyles?.textColor || selectedStyle.colors.text.primary,
+        background: customStyles?.background || undefined,
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className={cn(
-          "rounded-xl transition-all duration-300",
+          "rounded-xl transition-all duration-300 overflow-hidden",
           isEditing 
             ? "bg-card/95 backdrop-blur-md shadow-xl border border-border/50" 
             : "bg-transparent"
