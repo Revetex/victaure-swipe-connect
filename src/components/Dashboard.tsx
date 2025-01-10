@@ -14,7 +14,7 @@ import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { useState } from "react";
 import { AIAssistant } from "./dashboard/AIAssistant";
 import { UploadApk } from "./dashboard/UploadApk";
-import { pipeline } from "@huggingface/transformers";
+import { pipeline, TextClassificationOutput } from "@huggingface/transformers";
 
 export function Dashboard() {
   const queryClient = useQueryClient();
@@ -65,16 +65,15 @@ export function Dashboard() {
     try {
       const classifier = await pipeline(
         'text-classification',
-        'facebook/bart-large-mnli',
-        { device: 'cpu' }
+        'facebook/bart-large-mnli'
       );
       
       const result = await classifier(text, {
-        candidate_labels: ['pertinent', 'non pertinent', 'spam', 'obsolète']
-      });
+        text_pair: ["pertinent", "non pertinent", "spam", "obsolète"]
+      }) as TextClassificationOutput[];
       
       console.log("Analyse du contenu:", result);
-      return result.labels[0] === 'pertinent';
+      return result[0].score > 0.5;
     } catch (error) {
       console.error("Erreur lors de l'analyse du contenu:", error);
       return true; // En cas d'erreur, on garde l'emploi par défaut
