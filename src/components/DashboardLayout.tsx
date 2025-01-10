@@ -4,7 +4,6 @@ import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useEffect, ReactNode } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
-import { DashboardContent } from "./dashboard/DashboardContent";
 
 interface DashboardLayoutProps {
   children: ReactNode;
