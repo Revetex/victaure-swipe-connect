@@ -16,11 +16,11 @@ export function VCardSection({ title, icon, children, className = "" }: VCardSec
       transition={{ duration: 0.3 }}
       className={`space-y-4 ${className}`}
     >
-      <div className="flex items-center gap-2 pb-2 border-b border-indigo-100 dark:border-indigo-900/30">
-        <div className="text-indigo-600 dark:text-indigo-400">
+      <div className="flex items-center gap-2 pb-2 border-b border-border/30 dark:border-border/20">
+        <div className="text-primary dark:text-primary/90">
           {icon}
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+        <h3 className="text-lg font-semibold text-foreground/90 dark:text-foreground/80">{title}</h3>
       </div>
       <div className="pt-2">
         {children}
