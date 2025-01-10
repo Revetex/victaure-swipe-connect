@@ -85,9 +85,9 @@ export function Marketplace() {
         id: job.id,
         title: job.title,
         description: job.description || '',
-        budget: 0,
+        budget: 0, // Since scraped jobs might not have budget info
         location: job.location,
-        employer_id: '',
+        employer_id: '', // Scraped jobs don't have an employer_id
         status: 'open' as const,
         company: job.company,
         source: 'Externe' as const,
@@ -95,7 +95,8 @@ export function Marketplace() {
         updated_at: job.updated_at,
         category: 'Externe',
         contract_type: 'full-time',
-        experience_level: 'mid-level'
+        experience_level: 'mid-level',
+        url: job.url // Add the URL for external jobs
       }));
 
       // Combine and sort all jobs

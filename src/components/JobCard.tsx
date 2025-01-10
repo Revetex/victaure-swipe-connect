@@ -18,7 +18,7 @@ interface JobCardProps {
   onApply?: () => void;
   onDelete?: () => void;
   showActions?: boolean;
-  url?: string; // Added url property
+  url?: string;
 }
 
 export function JobCard({ 
@@ -75,11 +75,11 @@ export function JobCard({
 
         {showActions && (
           <div className="flex gap-2 pt-4">
-            {url ? (
+            {job.url ? (
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => window.open(url, '_blank')}
+                onClick={() => window.open(job.url, '_blank')}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Voir l'offre
