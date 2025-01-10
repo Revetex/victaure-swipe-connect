@@ -24,14 +24,15 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: id * 0.1 }}
-          className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${
+          className={`flex flex-col items-center p-2 rounded-lg transition-all duration-300 ${
             currentPage === id
               ? "text-primary bg-primary/10"
               : "text-muted-foreground hover:text-primary hover:bg-primary/5"
           }`}
+          title={name}
         >
-          <Icon className="h-5 w-5" />
-          <span className="text-xs font-medium">{name}</span>
+          <Icon className="h-6 w-6" />
+          <span className="sr-only">{name}</span>
         </motion.button>
       ))}
     </div>
