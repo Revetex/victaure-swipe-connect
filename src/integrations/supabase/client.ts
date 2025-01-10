@@ -14,7 +14,8 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined
+      storage: localStorage,
+      storageKey: 'supabase.auth.token',
     },
     global: {
       headers: {
@@ -34,8 +35,16 @@ export const supabase = createClient<Database>(
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
     console.log('Auth state changed:', event);
-    toast.error("Votre session a expiré. Veuillez vous reconnecter.");
+    // Clear all storage to ensure no stale tokens remain
     localStorage.clear();
+    sessionStorage.clear();
+    
+    if (event === 'SIGNED_OUT') {
+      toast.info("Vous avez été déconnecté");
+    } else {
+      toast.error("Session expirée, veuillez vous reconnecter");
+    }
+    
     window.location.href = '/auth';
   }
 });

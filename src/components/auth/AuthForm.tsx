@@ -52,9 +52,29 @@ export const AuthForm = () => {
           password: formData.password,
         });
         if (error) throw error;
+
+        // Ensure we have a fresh session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        
+        if (!session) {
+          throw new Error("No session after login");
+        }
+
         navigate("/dashboard");
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      
+      // Handle specific error cases
+      if (error.message.includes('refresh_token_not_found') || 
+          error.message.includes('Invalid Refresh Token')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        toast.error("Session invalide. Veuillez vous reconnecter.");
+        return;
+      }
+      
       toast.error(error.message);
     } finally {
       setLoading(false);
@@ -71,7 +91,7 @@ export const AuthForm = () => {
       const { error } = await supabase.auth.resetPasswordForEmail(formData.email);
       if (error) throw error;
       toast.success("Instructions envoyées par email");
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.message);
     }
   };
