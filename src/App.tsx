@@ -62,7 +62,7 @@ function App() {
             </motion.div>
           </div>
           <p className="text-base text-muted-foreground animate-pulse">
-            Préparation de votre tableau de bord...
+            Chargement...
           </p>
         </motion.div>
       </div>
@@ -81,7 +81,11 @@ function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <Navigate to="/auth" replace />
+                {isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <Navigate to="/auth" replace />
+                )}
               </motion.div>
             } 
           />
