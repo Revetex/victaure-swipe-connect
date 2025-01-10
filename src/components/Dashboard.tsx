@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
-import { DashboardLayout } from "./dashboard/DashboardLayout";
+import { DashboardLayout } from "./DashboardLayout";
 import { VCardCreationForm } from "./VCardCreationForm";
 import { Loader } from "./ui/loader";
 import { toast } from "sonner";
@@ -13,6 +13,8 @@ export function Dashboard() {
   const [isAuthChecking, setIsAuthChecking] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAuth = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -40,6 +42,10 @@ export function Dashboard() {
           }
         );
 
+        if (mounted) {
+          setIsAuthChecking(false);
+        }
+
         return () => {
           subscription.unsubscribe();
         };
@@ -48,12 +54,14 @@ export function Dashboard() {
         console.error('Error checking auth status:', error);
         toast.error("Erreur lors de la vérification de l'authentification");
         navigate('/auth');
-      } finally {
-        setIsAuthChecking(false);
       }
     };
 
     checkAuth();
+
+    return () => {
+      mounted = false;
+    };
   }, [navigate]);
 
   if (isAuthChecking || isProfileLoading) {
