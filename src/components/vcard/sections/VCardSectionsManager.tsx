@@ -1,5 +1,3 @@
-import { UserProfile } from "@/types/profile";
-import { StyleOption } from "../types";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,6 +9,8 @@ import {
   VCardSkills,
   VCardHeader
 } from "../index";
+import { UserProfile } from "@/types/profile";
+import { StyleOption } from "../types";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
@@ -54,6 +54,7 @@ export function VCardSectionsManager({
       setNewSkill,
       handleAddSkill,
       handleRemoveSkill,
+      onProfileUpdate: setProfile
     };
 
     switch (sectionId) {

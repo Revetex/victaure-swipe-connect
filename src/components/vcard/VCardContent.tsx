@@ -1,4 +1,4 @@
-import { VCardSkills } from "../VCardSkills";
+import { VCardSkills } from "./VCardSkills";
 import { UserProfile } from "@/types/profile";
 import { StyleOption } from "./types";
 import { TouchFriendlySkillSelector } from "../skills/TouchFriendlySkillSelector";
