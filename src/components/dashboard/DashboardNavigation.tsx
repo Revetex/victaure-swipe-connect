@@ -17,7 +17,7 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
 
   return (
     <div className="flex items-center justify-around w-full">
-      {navigationItems.map(({ id, icon: Icon, name, isPrimary }) => (
+      {navigationItems.map(({ id, icon: Icon, isPrimary }) => (
         <motion.button
           key={id}
           onClick={() => onPageChange(id)}
@@ -32,25 +32,24 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
             stiffness: 500
           }}
           className={`
-            relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg 
-            transition-all duration-300 min-w-[4.5rem] sm:min-w-[5rem]
+            relative p-3 rounded-xl transition-all duration-300
             ${currentPage === id
               ? isPrimary 
-                ? "text-red-500 bg-red-50 dark:bg-red-950/20 shadow-lg shadow-red-500/20" 
-                : "text-primary bg-primary/10 shadow-lg shadow-primary/20"
-              : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                ? "bg-red-500/10 dark:bg-red-950/20 text-red-500 dark:text-red-400" 
+                : "bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-foreground"
+              : "text-muted-foreground hover:text-primary hover:bg-primary/5 dark:hover:bg-primary/10"
             }
-            ${isPrimary ? "order-first sm:order-none" : ""}
             ${isPrimary ? "scale-110" : ""}
           `}
+          aria-label={navigationItems.find(item => item.id === id)?.name}
         >
           <div className={`
-            relative p-2 rounded-full 
+            relative rounded-lg
             ${currentPage === id 
               ? isPrimary
-                ? "bg-red-100 dark:bg-red-900/20"
-                : "bg-primary/20"
-              : "bg-muted"
+                ? "text-red-500 dark:text-red-400"
+                : "text-primary dark:text-primary-foreground"
+              : "text-muted-foreground"
             }
           `}>
             <Icon className={`
@@ -58,12 +57,11 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
               ${currentPage === id && isPrimary ? "animate-pulse" : ""}
             `} />
           </div>
-          <span className="text-xs font-medium whitespace-nowrap">{name}</span>
           {currentPage === id && (
             <motion.div
               layoutId="activeTab"
               className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                isPrimary ? "bg-red-500" : "bg-primary"
+                isPrimary ? "bg-red-500 dark:bg-red-400" : "bg-primary dark:bg-primary-foreground"
               }`}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
