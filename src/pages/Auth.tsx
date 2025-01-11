@@ -112,9 +112,9 @@ export default function Auth() {
             <DownloadApp />
           </div>
 
-          {/* Legal Links - Centered */}
+          {/* Legal Links - Stacked Vertically */}
           <div className="text-center text-sm pb-8 space-y-4">
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-col space-y-4">
               <Dialog>
                 <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
                   Politique de confidentialité
