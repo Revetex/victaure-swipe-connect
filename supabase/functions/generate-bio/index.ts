@@ -22,6 +22,11 @@ serve(async (req) => {
       throw new Error('Missing Hugging Face API key');
     }
 
+    // Validate inputs
+    if (!skills?.length && !experiences?.length && !education?.length) {
+      throw new Error('At least one of skills, experiences, or education must be provided');
+    }
+
     const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
 Compétences: ${skills?.join(', ') || 'Non spécifiées'}
@@ -59,16 +64,24 @@ La bio doit:
     if (!response.ok) {
       const error = await response.text();
       console.error('Hugging Face API Error:', error);
-      throw new Error('Failed to generate bio');
+      throw new Error(`Hugging Face API error: ${error}`);
     }
 
     const data = await response.json();
     console.log('Received response from Hugging Face:', data);
+
+    if (!data?.[0]?.generated_text) {
+      throw new Error('Invalid response format from Hugging Face API');
+    }
     
     let bio = data[0].generated_text.trim();
     
     // Remove any notes or remarks that might appear after the main bio
     bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim();
+
+    if (!bio) {
+      throw new Error('Generated bio is empty');
+    }
 
     console.log('Final processed bio:', bio);
 
