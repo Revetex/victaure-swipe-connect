@@ -1,111 +1,101 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
-console.log("Starting Generate Bio function!");
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
-    // Handle CORS
-    if (req.method === 'OPTIONS') {
-      return new Response('ok', { headers: corsHeaders });
-    }
+    const { skills, experiences, education } = await req.json();
 
-    // Verify request method
-    if (req.method !== 'POST') {
-      throw new Error(`Method ${req.method} not allowed`);
-    }
-
-    // Parse request body
-    const { skills = [], experiences = [], education = [] } = await req.json();
-
-    // Get API key with error handling
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
       console.error('Missing Hugging Face API key');
       throw new Error('Configuration error: Missing API key');
     }
 
-    console.log('Starting bio generation with:', {
-      skillsCount: skills?.length,
+    console.log('Generating bio with data:', { 
+      skillsCount: skills?.length, 
       experiencesCount: experiences?.length,
-      educationCount: education?.length
+      educationCount: education?.length 
     });
 
     const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
-${experiences?.length ? `Expériences: ${experiences.map(e => `${e.position} chez ${e.company}`).join(', ')}` : ''}
-${education?.length ? `Formation: ${education.map(e => `${e.degree} en ${e.field_of_study || ''} à ${e.school_name}`).join(', ')}` : ''}
-${skills?.length ? `Compétences: ${skills.join(', ')}` : ''}
+Compétences: ${skills?.join(', ') || 'Non spécifiées'}
+Expériences: ${experiences?.map((exp: any) => `${exp.position} chez ${exp.company}`).join(', ') || 'Non spécifiées'}
+Formation: ${education?.map((edu: any) => `${edu.degree} en ${edu.field_of_study || ''} à ${edu.school_name}`).join(', ') || 'Non spécifiée'}
 
-Instructions:
+La bio doit:
+- Être rédigée en français québécois professionnel
+- Mettre l'accent sur les réalisations et l'expertise
+- Inclure des expressions typiquement québécoises appropriées
+- Être adaptée au marché du travail québécois
 - Rester concise (maximum 3 phrases)
 - Ne pas inclure de notes ou de remarques à la fin
 - Utiliser un ton professionnel mais chaleureux`;
 
-    console.log('Sending request to Hugging Face API');
+    console.log('Sending request to Hugging Face API with prompt length:', prompt.length);
 
-    const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inputs: prompt,
-          parameters: {
-            max_length: 200,
-            temperature: 0.7,
-            top_p: 0.9,
-            do_sample: true,
-          },
-        }),
-      }
-    );
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 200,
+          temperature: 0.7,
+          top_p: 0.9,
+          return_full_text: false
+        }
+      }),
+    });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Hugging Face API Error:', errorText);
-      throw new Error(`Erreur API: ${errorText}`);
+      const error = await response.text();
+      console.error('Hugging Face API Error:', error);
+      throw new Error('Failed to generate bio: API response error');
     }
 
     const data = await response.json();
-    console.log('Received response:', data);
+    console.log('Received response from Hugging Face:', data);
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid API response format:', data);
-      throw new Error('Format de réponse invalide');
+      console.error('Unexpected API response format:', data);
+      throw new Error('Invalid response format from API');
     }
 
     let bio = data[0].generated_text.trim();
+    
+    // Remove any notes or remarks that might appear after the main bio
     bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim();
 
     console.log('Generated bio:', bio);
 
     return new Response(
       JSON.stringify({ bio }),
-      {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Function error:', error);
+    console.error('Error in generate-bio function:', error);
     return new Response(
-      JSON.stringify({
-        error: 'Une erreur est survenue lors de la génération de la bio',
-        details: error.message
+      JSON.stringify({ 
+        error: "Une erreur est survenue lors de la génération de la bio",
+        details: error.message 
       }),
-      {
+      { 
         status: 500,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
