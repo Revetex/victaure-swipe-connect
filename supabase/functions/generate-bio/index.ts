@@ -36,12 +36,13 @@ La bio doit:
 - Être adaptée au marché du travail québécois
 - Rester concise (maximum 3 phrases)
 - Utiliser un ton professionnel mais chaleureux
-- Mettre en valeur les points forts du profil`
+- Mettre en valeur les points forts du profil
+- Utiliser des expressions québécoises appropriées`
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
-    // Using a more specialized model for professional content generation
-    const response = await fetch('https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview', {
+    // Using a more specialized model for professional French content
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingFaceApiKey}`,
