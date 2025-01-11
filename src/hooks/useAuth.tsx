@@ -67,17 +67,34 @@ export function useAuth() {
   }
 
   // Set up auth state change listener
-  supabase.auth.onAuthStateChange((event, session) => {
+  supabase.auth.onAuthStateChange(async (event, session) => {
     console.log("Auth state changed:", event);
     
     if (event === 'SIGNED_IN' && session) {
-      setState({
-        isLoading: false,
-        isAuthenticated: true,
-        error: null,
-        user: session.user
-      });
-      navigate('/dashboard', { replace: true });
+      // Verify the session is valid
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error("User verification error:", userError);
+        setState({
+          isLoading: false,
+          isAuthenticated: false,
+          error: new Error(userError.message),
+          user: null
+        });
+        navigate('/auth', { replace: true });
+        return;
+      }
+
+      if (currentUser) {
+        setState({
+          isLoading: false,
+          isAuthenticated: true,
+          error: null,
+          user: currentUser
+        });
+        navigate('/dashboard', { replace: true });
+      }
     } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
       setState({
         isLoading: false,
