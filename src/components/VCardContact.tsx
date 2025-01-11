@@ -46,9 +46,8 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
   return (
     <div className="space-y-4">
       <h3 
-        className="text-lg font-semibold"
+        className="text-lg font-semibold text-primary"
         style={{ 
-          color: selectedStyle.colors.text.primary,
           fontFamily: selectedStyle.font
         }}
       >
@@ -67,13 +66,9 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             className="flex items-center gap-3"
           >
             <div 
-              className="p-2 rounded-full"
-              style={{ 
-                backgroundColor: `${selectedStyle.colors.primary}20`,
-                color: selectedStyle.colors.primary 
-              }}
+              className="p-2 rounded-full bg-primary/10"
             >
-              <field.icon className="h-4 w-4" />
+              <field.icon className="h-4 w-4 text-primary" />
             </div>
             {isEditing ? (
               <Input
@@ -81,16 +76,12 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={field.value || ""}
                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
-                className="flex-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                style={{
-                  color: selectedStyle.colors.text.primary
-                }}
+                className="flex-1 bg-background border-border"
               />
             ) : (
               <span 
-                className="text-base"
+                className="text-base text-muted-foreground"
                 style={{ 
-                  color: selectedStyle.colors.text.secondary,
                   fontFamily: selectedStyle.font
                 }}
               >

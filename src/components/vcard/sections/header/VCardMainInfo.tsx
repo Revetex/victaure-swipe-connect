@@ -56,7 +56,7 @@ export function VCardMainInfo({ profile, isEditing, setProfile }: VCardMainInfoP
           <Input
             value={profile.full_name || ""}
             onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-            className="text-base font-semibold bg-white dark:bg-gray-800"
+            className="text-base font-semibold bg-background border-border"
             placeholder="Votre nom"
           />
         ) : (
@@ -64,20 +64,20 @@ export function VCardMainInfo({ profile, isEditing, setProfile }: VCardMainInfoP
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg font-semibold text-gray-900 dark:text-white"
+            className="text-lg font-semibold text-primary"
           >
             {profile.full_name || "Nom non défini"}
           </motion.h2>
         )}
       </div>
       <div className="flex items-center justify-center sm:justify-start gap-1.5">
-        <Briefcase className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
+        <Briefcase className="h-3.5 w-3.5 text-primary" />
         {isEditing ? (
           <Select
             value={profile.role || ""}
             onValueChange={handleRoleChange}
           >
-            <SelectTrigger className="w-full max-w-[250px] h-8 text-sm bg-white dark:bg-gray-800">
+            <SelectTrigger className="w-full max-w-[250px] h-8 text-sm bg-background border-border">
               <SelectValue placeholder="Sélectionnez un titre" />
             </SelectTrigger>
             <SelectContent>
@@ -93,7 +93,7 @@ export function VCardMainInfo({ profile, isEditing, setProfile }: VCardMainInfoP
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-sm text-gray-600 dark:text-gray-300"
+            className="text-sm text-muted-foreground"
           >
             {profile.role || "Titre non défini"}
           </motion.span>
