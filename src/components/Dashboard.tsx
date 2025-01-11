@@ -15,7 +15,7 @@ export function Dashboard() {
 
   useEffect(() => {
     let mounted = true;
-    let authSubscription: { data: { subscription: any }; unsubscribe: () => void } | null = null;
+    let authSubscription: { unsubscribe: () => void } | null = null;
 
     const checkAuth = async () => {
       try {
@@ -45,13 +45,22 @@ export function Dashboard() {
           return;
         }
 
-        // Set up auth state change listener with proper typing
-        const { data: { subscription } } = await supabase.auth.onAuthStateChange((event, session) => {
+        // Set up auth state change listener
+        const { data: authData } = supabase.auth.onAuthStateChange((event, session) => {
           console.log('Auth state changed:', event);
           if (event === 'SIGNED_OUT' || !session) {
             navigate('/auth');
           }
         });
+
+        // Store the subscription to clean it up later
+        authSubscription = {
+          unsubscribe: () => {
+            if (authData?.subscription) {
+              authData.subscription.unsubscribe();
+            }
+          }
+        };
 
         if (mounted) {
           setIsAuthChecking(false);
@@ -68,7 +77,7 @@ export function Dashboard() {
 
     return () => {
       mounted = false;
-      if (authSubscription?.unsubscribe) {
+      if (authSubscription) {
         authSubscription.unsubscribe();
       }
     };
