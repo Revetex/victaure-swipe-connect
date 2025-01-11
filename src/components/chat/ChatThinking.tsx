@@ -28,21 +28,47 @@ export function ChatThinking() {
         animate={{ opacity: 1, scale: 1 }}
         className="flex gap-1.5 items-center bg-card border rounded-2xl px-4 py-2.5 text-sm shadow-sm"
       >
-        <motion.span
-          className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-        <motion.span
-          className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-        />
-        <motion.span
-          className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
-        />
+        <motion.div className="flex items-center gap-1">
+          <motion.span
+            className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.5, 1, 0.5]
+            }}
+            transition={{ 
+              duration: 1,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.span
+            className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.5, 1, 0.5]
+            }}
+            transition={{ 
+              duration: 1,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.2
+            }}
+          />
+          <motion.span
+            className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.5, 1, 0.5]
+            }}
+            transition={{ 
+              duration: 1,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.4
+            }}
+          />
+        </motion.div>
+        <span className="text-muted-foreground text-xs ml-1">M. Victaure est en train d'écrire...</span>
       </motion.div>
     </motion.div>
   );
