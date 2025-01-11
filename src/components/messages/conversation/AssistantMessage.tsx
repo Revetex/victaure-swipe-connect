@@ -2,21 +2,29 @@ import { Bot } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { Clock } from "lucide-react";
+import { Message } from "@/types/chat/messageTypes";
 
 interface AssistantMessageProps {
-  chatMessages: any[];
-  onSelectConversation: (type: "assistant") => void;
+  message: Message;
+  chatMessages?: any[];
+  onSelectConversation?: (type: "assistant") => void;
 }
 
-export function AssistantMessage({ chatMessages, onSelectConversation }: AssistantMessageProps) {
+export function AssistantMessage({ message, chatMessages, onSelectConversation }: AssistantMessageProps) {
+  const handleClick = () => {
+    if (onSelectConversation) {
+      onSelectConversation("assistant");
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
-      onClick={() => onSelectConversation("assistant")}
-      className="group relative p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] bg-card hover:bg-card/80 border shadow-sm hover:shadow-md"
+      onClick={handleClick}
+      className={`group relative p-4 rounded-lg ${onSelectConversation ? 'cursor-pointer' : ''} transition-all duration-200 hover:scale-[1.02] bg-card hover:bg-card/80 border shadow-sm hover:shadow-md`}
     >
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
       <div className="relative flex gap-4">
@@ -34,9 +42,7 @@ export function AssistantMessage({ chatMessages, onSelectConversation }: Assista
             </span>
           </div>
           <p className="text-sm text-muted-foreground line-clamp-2 text-left">
-            {chatMessages.length > 0 
-              ? chatMessages[chatMessages.length - 1]?.content 
-              : "Bonjour! Comment puis-je vous aider aujourd'hui?"}
+            {message.content}
           </p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
             <Clock className="h-3 w-3" />
