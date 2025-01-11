@@ -44,26 +44,29 @@ La bio doit:
 
     console.log('Sending request to Hugging Face API with prompt length:', prompt.length);
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 200,
-          temperature: 0.7,
-          top_p: 0.9,
-          return_full_text: false
-        }
-      }),
-    });
+    const response = await fetch(
+      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          parameters: {
+            max_new_tokens: 200,
+            temperature: 0.7,
+            top_p: 0.9,
+            return_full_text: false
+          }
+        }),
+      }
+    );
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('Hugging Face API Error:', error);
+      const errorText = await response.text();
+      console.error('Hugging Face API Error Response:', errorText);
       throw new Error('Failed to generate bio: API response error');
     }
 
@@ -95,7 +98,6 @@ La bio doit:
   } catch (error) {
     console.error('Error in generate-bio function:', error);
     
-    // Return a more detailed error response
     return new Response(
       JSON.stringify({ 
         error: "Une erreur est survenue lors de la génération de la bio",
