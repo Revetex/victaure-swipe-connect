@@ -15,10 +15,10 @@ export function Dashboard() {
 
   useEffect(() => {
     let mounted = true;
+    let authSubscription: { unsubscribe: () => void } | null = null;
 
     const checkAuth = async () => {
       try {
-        // First check if we have a valid session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -30,41 +30,31 @@ export function Dashboard() {
 
         if (!session) {
           console.log('No active session found');
-          toast.error("Session expirée. Veuillez vous reconnecter.");
           navigate('/auth');
           return;
         }
 
-        // Then verify the user data can be accessed
+        // Verify user data can be accessed
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError || !user) {
           console.error('User data error:', userError);
-          toast.error("Impossible d'accéder aux données utilisateur. Veuillez vous reconnecter.");
+          toast.error("Impossible d'accéder aux données utilisateur");
           await supabase.auth.signOut();
           navigate('/auth');
           return;
         }
 
         // Set up auth state change listener
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
-            console.log('Auth state changed:', event);
-            if (event === 'SIGNED_OUT' || !session) {
-              navigate('/auth');
-            } else if (event === 'TOKEN_REFRESHED') {
-              console.log('Token refreshed successfully');
-            }
+        authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_OUT' || !session) {
+            navigate('/auth');
           }
-        );
+        });
 
         if (mounted) {
           setIsAuthChecking(false);
         }
-
-        return () => {
-          subscription.unsubscribe();
-        };
 
       } catch (error) {
         console.error('Error checking auth status:', error);
@@ -77,6 +67,9 @@ export function Dashboard() {
 
     return () => {
       mounted = false;
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
     };
   }, [navigate]);
 
