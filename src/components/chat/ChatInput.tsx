@@ -26,7 +26,7 @@ export function ChatInput({
   isListening = false,
   isThinking = false,
   className,
-  placeholder = "Comment puis-je vous aider aujourd'hui ?",
+  placeholder = "Posez vos questions à M. Victaure...",
   maxLength = 1000,
 }: ChatInputProps) {
   const [isTyping, setIsTyping] = useState(false);
@@ -55,103 +55,68 @@ export function ChatInput({
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim() && !isThinking) {
-        try {
-          onSend();
-        } catch (error) {
-          console.error("Error sending message:", error);
-          toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
-        }
-      }
-    }
-  };
-
-  const handleSendClick = () => {
-    if (value.trim() && !isThinking) {
-      try {
         onSend();
-      } catch (error) {
-        console.error("Error sending message:", error);
-        toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
       }
     }
   };
-
-  const characterCount = value.length;
-  const isNearLimit = characterCount > maxLength * 0.8;
-  const isAtLimit = characterCount >= maxLength;
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <div className="relative w-full">
-        <Textarea
-          value={value}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            if (newValue.length <= maxLength) {
-              onChange(newValue);
-            }
-          }}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full"
-          disabled={isThinking}
-        />
-        <div className="absolute bottom-2 right-2 flex items-center gap-2">
-          {onVoiceInput && (
-            <Button
-              type="button"
-              size="icon"
-              variant={isListening ? "default" : "ghost"}
-              onClick={onVoiceInput}
-              className="h-8 w-8"
-              disabled={isThinking}
-            >
-              <motion.div
-                animate={isListening ? { scale: [1, 1.2, 1] } : {}}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                <Mic className="h-4 w-4" />
-              </motion.div>
-            </Button>
-          )}
+    <div className={cn("flex flex-col gap-2 p-4 border-t bg-background/95 backdrop-blur-sm", className)}>
+      <div className="relative flex items-center gap-2">
+        {onVoiceInput && (
           <Button
             type="button"
             size="icon"
-            onClick={handleSendClick}
-            className={cn(
-              "h-8 w-8 transition-transform",
-              value.trim() && !isThinking && "hover:scale-105"
-            )}
-            disabled={!value.trim() || isThinking}
+            variant={isListening ? "default" : "ghost"}
+            onClick={onVoiceInput}
+            className="h-10 w-10 shrink-0"
+            disabled={isThinking}
           >
-            {isThinking ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </div>
-      <div className="flex justify-between items-center px-1 text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          {isTyping && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-primary"
+            <motion.div
+              animate={isListening ? { scale: [1, 1.2, 1] } : {}}
+              transition={{ repeat: Infinity, duration: 1.5 }}
             >
-              En train d'écrire...
-            </motion.span>
-          )}
+              <Mic className="h-5 w-5" />
+            </motion.div>
+          </Button>
+        )}
+
+        <div className="relative flex-1">
+          <Textarea
+            value={value}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              if (newValue.length <= maxLength) {
+                onChange(newValue);
+              }
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className="min-h-[44px] max-h-[200px] resize-none py-3 text-base focus-visible:ring-1"
+            disabled={isThinking}
+          />
         </div>
-        <span className={cn(
-          "transition-colors",
-          isNearLimit && "text-warning",
-          isAtLimit && "text-destructive"
-        )}>
-          {characterCount}/{maxLength}
-        </span>
+
+        <Button
+          type="button"
+          size="icon"
+          onClick={() => {
+            if (value.trim() && !isThinking) {
+              onSend();
+            }
+          }}
+          className={cn(
+            "h-10 w-10 shrink-0",
+            value.trim() && !isThinking && "bg-primary hover:bg-primary/90"
+          )}
+          disabled={!value.trim() || isThinking}
+        >
+          {isThinking ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Send className="h-5 w-5" />
+          )}
+        </Button>
       </div>
     </div>
   );

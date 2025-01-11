@@ -7,7 +7,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -26,7 +25,7 @@ serve(async (req) => {
     console.log('Attempting to call Hugging Face API')
 
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
         method: 'POST',
         headers: {
@@ -34,18 +33,30 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec. 
-                  Sois concis et direct dans tes réponses.
+          inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec.
+                  Tu communiques de manière professionnelle et naturelle en français québécois.
+                  Tu dois être concis, précis et pertinent dans tes réponses.
                   
-                  User: ${message}
+                  Contexte: Tu aides les utilisateurs à:
+                  - Trouver leur voie professionnelle
+                  - Améliorer leur profil
+                  - Chercher des opportunités d'emploi
+                  - Développer leurs compétences
                   
-                  Assistant:`,
+                  Message de l'utilisateur: ${message}
+                  
+                  Ta réponse doit être:
+                  - Professionnelle mais chaleureuse
+                  - Concise et directe
+                  - En français québécois
+                  - Axée sur des conseils pratiques
+                  
+                  Réponse:`,
           parameters: {
-            max_new_tokens: 256,
+            max_new_tokens: 512,
             temperature: 0.7,
             top_p: 0.9,
-            frequency_penalty: 0.0,
-            presence_penalty: 0.0,
+            do_sample: true,
             return_full_text: false
           }
         }),
@@ -61,7 +72,7 @@ serve(async (req) => {
         statusText: response.statusText,
         error: errorText
       })
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`)
+      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}\n${errorText}`)
     }
 
     const data = await response.json()
@@ -72,7 +83,7 @@ serve(async (req) => {
       throw new Error('Invalid response format from Hugging Face API')
     }
 
-    const assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
+    const assistantResponse = data[0].generated_text.split('Réponse:').pop()?.trim()
 
     return new Response(
       JSON.stringify({ response: assistantResponse || data[0].generated_text }),
