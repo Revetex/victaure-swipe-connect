@@ -37,12 +37,12 @@ La bio doit:
 - Rester concise (maximum 3 phrases)
 - Utiliser un ton professionnel mais chaleureux
 - Mettre en valeur les points forts du profil
-- Utiliser des expressions québécoises appropriées`
+- Utiliser des expressions québécoises appropriées
+- Être rédigée à la première personne`
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
-    // Using a more specialized model for professional French content
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-v0.1-8x7B', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingFaceApiKey}`,
