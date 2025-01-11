@@ -17,17 +17,36 @@ export function Dashboard() {
 
     const checkAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error('Auth session error:', error);
-          toast.error("Erreur d'authentification");
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
           navigate('/auth');
           return;
         }
 
         if (!session) {
           console.log('No active session found');
+          toast.error("Session expirée. Veuillez vous reconnecter.");
+          navigate('/auth');
+          return;
+        }
+
+        // Verify the user data can be accessed
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.error('User data error:', userError);
+          toast.error("Impossible d'accéder aux données utilisateur. Veuillez vous reconnecter.");
+          await supabase.auth.signOut();
+          navigate('/auth');
+          return;
+        }
+
+        if (!user) {
+          console.error('No user data found');
+          toast.error("Données utilisateur introuvables. Veuillez vous reconnecter.");
           navigate('/auth');
           return;
         }
@@ -38,6 +57,8 @@ export function Dashboard() {
             console.log('Auth state changed:', event);
             if (event === 'SIGNED_OUT' || !session) {
               navigate('/auth');
+            } else if (event === 'TOKEN_REFRESHED') {
+              console.log('Token refreshed successfully');
             }
           }
         );
