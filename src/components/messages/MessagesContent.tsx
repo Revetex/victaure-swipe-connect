@@ -51,7 +51,7 @@ export function MessagesContent({
   }, [messages, showScrollButton]);
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-safe-top">
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-safe-top pb-safe-bottom">
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ export function MessagesContent({
 
       <div className="flex-1 overflow-hidden bg-background/80">
         <ScrollArea 
-          className="h-full px-4 py-6" 
+          className="h-[calc(100vh-8rem)] px-4 py-6" 
           onScroll={handleScroll}
         >
           <div className="max-w-3xl mx-auto space-y-6">

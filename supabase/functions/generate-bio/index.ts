@@ -7,7 +7,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -15,7 +14,6 @@ serve(async (req) => {
   try {
     const { skills, experiences, education } = await req.json()
     
-    // Validate input
     console.log('Processing request with data:', { 
       skillsCount: skills?.length, 
       experiencesCount: experiences?.length,
@@ -24,11 +22,9 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
     if (!apiKey) {
-      console.error('Missing Hugging Face API key')
       throw new Error('Configuration error: Missing API key')
     }
 
-    // Format experiences and education for better prompt context
     const formattedExperiences = experiences?.map((exp: any) => 
       `${exp.position} chez ${exp.company} (${exp.start_date ? new Date(exp.start_date).getFullYear() : 'N/A'} - ${exp.end_date ? new Date(exp.end_date).getFullYear() : 'présent'})`
     ).join(', ') || 'Non spécifiées';
@@ -52,8 +48,6 @@ La bio doit:
 - Ne pas inclure de notes ou de remarques à la fin
 - Utiliser un ton professionnel mais chaleureux`
 
-    console.log('Sending request to Hugging Face API with prompt length:', prompt.length)
-
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
       {
@@ -75,8 +69,6 @@ La bio doit:
       }
     )
 
-    console.log('Hugging Face API Response Status:', response.status)
-
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Hugging Face API Error Response:', errorText)
@@ -84,26 +76,17 @@ La bio doit:
     }
 
     const data = await response.json()
-    console.log('Received response from Hugging Face:', data)
-
+    
     if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Unexpected API response format:', data)
       throw new Error('Invalid response format from API')
     }
 
     let bio = data[0].generated_text.trim()
     bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim()
 
-    console.log('Generated bio:', bio)
-
     return new Response(
       JSON.stringify({ bio }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
   } catch (error) {
@@ -117,10 +100,7 @@ La bio doit:
       }),
       { 
         status: 500,
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     )
   }
