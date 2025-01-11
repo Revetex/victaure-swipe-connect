@@ -16,8 +16,15 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
-      throw new Error('Missing Hugging Face API key');
+      console.error('Missing Hugging Face API key');
+      throw new Error('Configuration error: Missing API key');
     }
+
+    console.log('Generating bio with data:', { 
+      skillsCount: skills?.length, 
+      experiencesCount: experiences?.length,
+      educationCount: education?.length 
+    });
 
     const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
@@ -33,6 +40,8 @@ La bio doit:
 - Rester concise (maximum 3 phrases)
 - Ne pas inclure de notes ou de remarques à la fin
 - Utiliser un ton professionnel mais chaleureux`;
+
+    console.log('Sending request to Hugging Face API with prompt length:', prompt.length);
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
       method: 'POST',
@@ -54,14 +63,23 @@ La bio doit:
     if (!response.ok) {
       const error = await response.text();
       console.error('Hugging Face API Error:', error);
-      throw new Error('Failed to generate bio');
+      throw new Error('Failed to generate bio: API response error');
     }
 
     const data = await response.json();
+    console.log('Received response from Hugging Face:', data);
+
+    if (!Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Unexpected API response format:', data);
+      throw new Error('Invalid response format from API');
+    }
+
     let bio = data[0].generated_text.trim();
     
     // Remove any notes or remarks that might appear after the main bio
     bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim();
+
+    console.log('Generated bio:', bio);
 
     return new Response(
       JSON.stringify({ bio }),
