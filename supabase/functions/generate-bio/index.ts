@@ -14,98 +14,94 @@ serve(async (req) => {
   try {
     const { skills, experiences, education } = await req.json()
     
-    console.log('Processing request with data:', { 
-      skillsCount: skills?.length, 
-      experiencesCount: experiences?.length,
-      educationCount: education?.length 
-    })
+    console.log('Received profile data:', { skills, experiences, education })
 
-    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
-    if (!apiKey) {
-      throw new Error('Configuration error: Missing API key')
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured')
     }
 
-    const formattedExperiences = experiences?.map((exp: any) => 
-      `${exp.position} chez ${exp.company} (${exp.start_date ? new Date(exp.start_date).getFullYear() : 'N/A'} - ${exp.end_date ? new Date(exp.end_date).getFullYear() : 'présent'})`
-    ).join(', ') || 'Non spécifiées';
+    // Construct the prompt with the profile information
+    const prompt = `En tant qu'expert en rédaction de profils professionnels québécois, génère une bio professionnelle basée sur ces informations:
 
-    const formattedEducation = education?.map((edu: any) => 
-      `${edu.degree}${edu.field_of_study ? ` en ${edu.field_of_study}` : ''} à ${edu.school_name}`
-    ).join(', ') || 'Non spécifiée';
-
-    const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
-
-Compétences: ${(skills || []).join(', ') || 'Non spécifiées'}
-Expériences: ${formattedExperiences}
-Formation: ${formattedEducation}
+Compétences: ${skills ? skills.join(', ') : 'Non spécifiées'}
+${experiences && experiences.length > 0 ? `Expériences: ${experiences.map(exp => 
+  `${exp.position} chez ${exp.company} (${exp.start_date} - ${exp.end_date || 'Présent'})`
+).join(', ')}` : 'Pas d\'expérience professionnelle spécifiée'}
+${education && education.length > 0 ? `Formation: ${education.map(edu => 
+  `${edu.degree} en ${edu.field_of_study} à ${edu.school_name}`
+).join(', ')}` : 'Pas de formation spécifiée'}
 
 La bio doit:
-- Être rédigée en français québécois professionnel
-- Mettre l'accent sur les réalisations et l'expertise
-- Inclure des expressions typiquement québécoises appropriées
 - Être adaptée au marché du travail québécois
 - Rester concise (maximum 3 phrases)
-- Ne pas inclure de notes ou de remarques à la fin
-- Utiliser un ton professionnel mais chaleureux`;
+- Utiliser un ton professionnel mais chaleureux
+- Mettre en valeur les points forts du profil`
 
-    console.log('Sending prompt to Hugging Face:', prompt);
+    console.log('Sending prompt to OpenAI:', prompt)
 
-    const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inputs: prompt,
-          parameters: {
-            max_new_tokens: 256,
-            temperature: 0.7,
-            top_p: 0.9,
-            do_sample: true,
-            return_full_text: false
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'Tu es un expert en rédaction de profils professionnels québécois. Tu génères des bios concises et percutantes.'
+          },
+          {
+            role: 'user',
+            content: prompt
           }
-        }),
-      }
-    )
+        ],
+        temperature: 0.7,
+        max_tokens: 200,
+      }),
+    })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Hugging Face API Error Response:', errorText)
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`)
+      const error = await response.json()
+      console.error('OpenAI API error:', error)
+      throw new Error(`Erreur OpenAI: ${error.error?.message || 'Erreur inconnue'}`)
     }
 
     const data = await response.json()
-    console.log('Hugging Face API Response:', data);
-    
-    if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid response format:', data);
+    console.log('OpenAI API Response:', data)
+
+    if (!data.choices?.[0]?.message?.content) {
       throw new Error('Format de réponse invalide de l\'API')
     }
 
-    let bio = data[0].generated_text.trim()
-    // Remove any system messages or notes that might appear after double newlines
-    bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim()
+    const bio = data.choices[0].message.content.trim()
 
     return new Response(
       JSON.stringify({ bio }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
     )
 
   } catch (error) {
     console.error('Error in generate-bio function:', error)
-    
     return new Response(
-      JSON.stringify({ 
-        error: "Une erreur est survenue lors de la génération de la bio",
+      JSON.stringify({
+        error: 'Une erreur est survenue lors de la génération de la bio',
         details: error.message,
         timestamp: new Date().toISOString()
       }),
       { 
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
       }
     )
   }
