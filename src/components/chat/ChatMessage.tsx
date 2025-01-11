@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,46 +24,70 @@ export function ChatMessage({
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 px-4",
+        "flex gap-3 px-4 py-2",
         isAssistant ? "flex-row" : "flex-row-reverse"
       )}
     >
-      <Avatar className="h-8 w-8 shrink-0">
-        {isAssistant ? (
-          <>
-            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" />
-            <AvatarFallback>
-              <Bot className="h-5 w-5" />
-            </AvatarFallback>
-          </>
-        ) : (
-          <AvatarFallback>
-            <User className="h-5 w-5" />
-          </AvatarFallback>
-        )}
-      </Avatar>
+      <div className="relative">
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Avatar className={cn(
+            "h-8 w-8 ring-2 transition-shadow duration-200",
+            isAssistant 
+              ? "ring-primary/10 hover:ring-primary/20" 
+              : "ring-blue-500/10 hover:ring-blue-500/20"
+          )}>
+            {isAssistant ? (
+              <>
+                <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" />
+                <AvatarFallback className="bg-primary/5">
+                  <Bot className="h-4 w-4 text-primary" />
+                </AvatarFallback>
+              </>
+            ) : (
+              <AvatarFallback className="bg-blue-500/5">
+                <User className="h-4 w-4 text-blue-500" />
+              </AvatarFallback>
+            )}
+          </Avatar>
+        </motion.div>
+      </div>
 
       <div className={cn(
-        "flex flex-col gap-2 max-w-[80%] sm:max-w-[70%]",
+        "flex flex-col gap-1.5 max-w-[80%] sm:max-w-[70%]",
         isAssistant ? "items-start" : "items-end"
       )}>
-        <div className={cn(
-          "rounded-2xl px-4 py-2 text-sm",
-          isAssistant 
-            ? "bg-muted text-foreground rounded-tl-none" 
-            : "bg-primary text-primary-foreground rounded-tr-none"
-        )}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.2 }}
+          className={cn(
+            "rounded-2xl px-4 py-2.5 text-sm shadow-sm",
+            isAssistant 
+              ? "bg-card text-card-foreground rounded-tl-none border" 
+              : "bg-primary text-primary-foreground rounded-tr-none"
+          )}
+        >
           {content}
-        </div>
+        </motion.div>
         
         {showTimestamp && timestamp && (
-          <span className="text-xs text-muted-foreground">
+          <motion.span 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-xs text-muted-foreground px-1"
+          >
             {format(new Date(timestamp), "HH:mm", { locale: fr })}
-          </span>
+          </motion.span>
         )}
       </div>
     </motion.div>

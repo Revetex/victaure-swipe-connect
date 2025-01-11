@@ -64,23 +64,28 @@ export function ChatInput({
       "fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t z-50",
       className
     )}>
-      <div className="relative flex items-center gap-2 p-1 max-w-4xl mx-auto w-full">
+      <div className="relative flex items-center gap-2 p-2 max-w-4xl mx-auto w-full">
         {onVoiceInput && (
-          <Button
-            type="button"
-            size="icon"
-            variant={isListening ? "default" : "ghost"}
-            onClick={onVoiceInput}
-            className="h-8 w-8 shrink-0 rounded-full"
-            disabled={isThinking}
-          >
-            <motion.div
-              animate={isListening ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ repeat: Infinity, duration: 1.5 }}
+          <motion.div whileTap={{ scale: 0.95 }}>
+            <Button
+              type="button"
+              size="icon"
+              variant={isListening ? "default" : "ghost"}
+              onClick={onVoiceInput}
+              className="h-8 w-8 shrink-0 rounded-full"
+              disabled={isThinking}
             >
-              <Mic className="h-4 w-4" />
-            </motion.div>
-          </Button>
+              <motion.div
+                animate={isListening ? { 
+                  scale: [1, 1.2, 1],
+                  backgroundColor: ['hsl(var(--primary))', 'hsl(var(--primary))', 'hsl(var(--primary))']
+                } : {}}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                <Mic className="h-4 w-4" />
+              </motion.div>
+            </Button>
+          </motion.div>
         )}
 
         <div className="relative flex-1">
@@ -94,15 +99,16 @@ export function ChatInput({
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="min-h-[32px] max-h-[100px] resize-none py-1.5 text-base focus-visible:ring-1 pr-12 rounded-full bg-muted/50"
+            className="min-h-[36px] max-h-[100px] resize-none py-2 text-base focus-visible:ring-1 pr-12 rounded-full bg-muted/50"
             disabled={isThinking}
           />
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {value.trim() && !isThinking && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.15 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2"
               >
                 <Button
