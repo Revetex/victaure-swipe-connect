@@ -15,8 +15,8 @@ export function VCard({ onEditStateChange, onRequestChat }: {
   const generateBio = useCallback(async () => {
     try {
       setIsGenerating(true);
+      console.log("Starting bio generation...");
 
-      // Check authentication first
       const { data: { session }, error: authError } = await supabase.auth.getSession();
       
       if (authError) {
@@ -26,64 +26,46 @@ export function VCard({ onEditStateChange, onRequestChat }: {
       }
 
       if (!session) {
+        console.log("No session found");
         toast.error("Veuillez vous connecter pour générer une bio");
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error("Utilisateur non trouvé");
-        return;
-      }
+      console.log("Session found, calling generate-bio function...");
 
-      const response = await fetch(
-        'https://mfjllillnpleasclqabb.supabase.co/functions/v1/generate-bio',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            skills: profile?.skills || [],
-            experiences: profile?.experiences || [],
-            education: profile?.education || []
-          })
+      const { data, error } = await supabase.functions.invoke('generate-bio', {
+        body: {
+          skills: profile?.skills || [],
+          experiences: profile?.experiences || [],
+          education: profile?.education || []
         }
-      );
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Bio generation error:', errorData);
-        throw new Error(errorData.error || 'Erreur lors de la génération de la bio');
-      }
+      console.log("Response from generate-bio:", { data, error });
 
-      const { bio, error } = await response.json();
-      
       if (error) {
-        throw new Error(error);
+        throw error;
       }
 
-      if (!bio) {
-        throw new Error('Aucune bio générée');
+      if (!data?.bio) {
+        throw new Error("Aucune bio générée");
       }
 
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ bio })
-        .eq('id', user.id);
+        .update({ bio: data.bio })
+        .eq('id', session.user.id);
 
       if (updateError) {
         throw updateError;
       }
 
-      setProfile(prev => prev ? { ...prev, bio } : null);
+      setProfile(prev => prev ? { ...prev, bio: data.bio } : null);
       toast.success('Bio générée avec succès !');
 
     } catch (error) {
       console.error('Generate bio error:', error);
-      toast.error(error.message || "Erreur lors de la génération de la bio");
+      toast.error("Erreur lors de la génération de la bio");
     } finally {
       setIsGenerating(false);
     }

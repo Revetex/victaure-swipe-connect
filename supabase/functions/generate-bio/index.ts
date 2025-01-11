@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 
-console.log("Hello from Generate Bio function!");
+console.log("Starting Generate Bio function!");
 
 serve(async (req) => {
   try {
@@ -22,19 +22,7 @@ serve(async (req) => {
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
       console.error('Missing Hugging Face API key');
-      return new Response(
-        JSON.stringify({
-          error: 'Configuration error',
-          details: 'Missing API key'
-        }),
-        {
-          status: 500,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      throw new Error('Configuration error: Missing API key');
     }
 
     console.log('Starting bio generation with:', {
@@ -46,7 +34,7 @@ serve(async (req) => {
     const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
 ${experiences?.length ? `Expériences: ${experiences.map(e => `${e.position} chez ${e.company}`).join(', ')}` : ''}
-${education?.length ? `Formation: ${education.map(e => `${e.degree} en ${e.field_of_study} à ${e.school_name}`).join(', ')}` : ''}
+${education?.length ? `Formation: ${education.map(e => `${e.degree} en ${e.field_of_study || ''} à ${e.school_name}`).join(', ')}` : ''}
 ${skills?.length ? `Compétences: ${skills.join(', ')}` : ''}
 
 Instructions:
@@ -79,19 +67,7 @@ Instructions:
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Hugging Face API Error:', errorText);
-      return new Response(
-        JSON.stringify({
-          error: 'Erreur API',
-          details: errorText
-        }),
-        {
-          status: response.status,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      throw new Error(`Erreur API: ${errorText}`);
     }
 
     const data = await response.json();
@@ -99,19 +75,7 @@ Instructions:
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
       console.error('Invalid API response format:', data);
-      return new Response(
-        JSON.stringify({
-          error: 'Format de réponse invalide',
-          details: 'La réponse de l\'API n\'est pas dans le format attendu'
-        }),
-        {
-          status: 500,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      throw new Error('Format de réponse invalide');
     }
 
     let bio = data[0].generated_text.trim();
@@ -133,7 +97,7 @@ Instructions:
     console.error('Function error:', error);
     return new Response(
       JSON.stringify({
-        error: 'Une erreur est survenue',
+        error: 'Une erreur est survenue lors de la génération de la bio',
         details: error.message
       }),
       {
