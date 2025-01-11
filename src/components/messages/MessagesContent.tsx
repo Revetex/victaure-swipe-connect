@@ -5,7 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 
 interface MessagesContentProps {
@@ -53,7 +52,7 @@ export function MessagesContent({
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-safe-top pb-safe-bottom">
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
-        <div className="flex items-center justify-between max-w-5xl mx-auto">
+        <div className="flex items-center justify-between max-w-3xl mx-auto">
           <div className="flex items-center gap-3">
             {onBack && (
               <Button
@@ -65,16 +64,16 @@ export function MessagesContent({
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <Avatar className="h-12 w-12 ring-2 ring-primary/10">
+            <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
               <AvatarFallback className="bg-primary/20">
-                <Bot className="h-6 w-6 text-primary" />
+                <Bot className="h-5 w-5 text-primary" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-xl font-semibold truncate">M. Victaure</h2>
+              <h2 className="text-lg font-semibold truncate">M. Victaure</h2>
               <p className="text-sm text-muted-foreground truncate">
-                {isThinking ? "En train de réfléchir..." : "Conseiller en Orientation"}
+                {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
               </p>
             </div>
           </div>
@@ -89,12 +88,12 @@ export function MessagesContent({
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden bg-background/80">
+      <div className="flex-1 overflow-hidden">
         <ScrollArea 
-          className="h-[calc(100vh-8rem)] px-4 py-6" 
+          className="h-full px-4" 
           onScroll={handleScroll}
         >
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-4 py-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message) => (
                 <ChatMessage
@@ -131,20 +130,15 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-safe-bottom">
-        <div className="max-w-3xl mx-auto">
-          <ChatInput
-            value={inputMessage}
-            onChange={setInputMessage}
-            onSend={() => onSendMessage(inputMessage)}
-            onVoiceInput={onVoiceInput}
-            isListening={isListening}
-            isThinking={isThinking}
-            placeholder="Posez vos questions à M. Victaure..."
-            className="w-full"
-          />
-        </div>
-      </div>
+      <ChatInput
+        value={inputMessage}
+        onChange={setInputMessage}
+        onSend={() => onSendMessage(inputMessage)}
+        onVoiceInput={onVoiceInput}
+        isListening={isListening}
+        isThinking={isThinking}
+        className="border-t bg-background/95 backdrop-blur-sm"
+      />
     </div>
   );
 }
