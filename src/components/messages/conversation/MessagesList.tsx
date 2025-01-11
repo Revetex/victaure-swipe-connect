@@ -34,10 +34,12 @@ export function MessagesList({
   };
 
   const filteredMessages = messages.filter(message => {
-    const content = message.content?.toLowerCase() || '';
+    if (!message) return false;
+    
+    const content = (message.content || '').toLowerCase();
     const senderName = typeof message.sender === 'string' 
       ? message.sender.toLowerCase()
-      : (message.sender?.full_name || '').toLowerCase();
+      : ((message.sender as any)?.full_name || '').toLowerCase();
     
     return content.includes(searchQuery) || senderName.includes(searchQuery);
   });
@@ -95,7 +97,7 @@ export function MessagesList({
                       ...message,
                       sender: typeof message.sender === 'string' 
                         ? message.sender 
-                        : message.sender?.full_name || '',
+                        : ((message.sender as any)?.full_name || ''),
                       timestamp: new Date(message.created_at || '')
                     }}
                     onMarkAsRead={onMarkAsRead}
