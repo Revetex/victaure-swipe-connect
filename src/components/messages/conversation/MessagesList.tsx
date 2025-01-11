@@ -33,12 +33,14 @@ export function MessagesList({
     toast.success(`Messages triés par date ${sortOrder === "asc" ? "décroissante" : "croissante"}`);
   };
 
-  const filteredMessages = messages.filter(message => 
-    message.content.toLowerCase().includes(searchQuery) ||
-    (typeof message.sender === 'string' 
-      ? message.sender.toLowerCase().includes(searchQuery)
-      : message.sender.full_name.toLowerCase().includes(searchQuery))
-  );
+  const filteredMessages = messages.filter(message => {
+    const content = message.content?.toLowerCase() || '';
+    const senderName = typeof message.sender === 'string' 
+      ? message.sender.toLowerCase()
+      : (message.sender?.full_name || '').toLowerCase();
+    
+    return content.includes(searchQuery) || senderName.includes(searchQuery);
+  });
 
   const sortedMessages = [...filteredMessages].sort((a, b) => {
     const dateA = new Date(a.created_at || '').getTime();
@@ -91,7 +93,9 @@ export function MessagesList({
                     key={message.id}
                     message={{
                       ...message,
-                      sender: typeof message.sender === 'string' ? message.sender : message.sender.full_name,
+                      sender: typeof message.sender === 'string' 
+                        ? message.sender 
+                        : message.sender?.full_name || '',
                       timestamp: new Date(message.created_at || '')
                     }}
                     onMarkAsRead={onMarkAsRead}
