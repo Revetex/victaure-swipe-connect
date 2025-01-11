@@ -35,7 +35,9 @@ export function MessagesList({
 
   const filteredMessages = messages.filter(message => 
     message.content.toLowerCase().includes(searchQuery) ||
-    message.sender.toLowerCase().includes(searchQuery)
+    (typeof message.sender === 'string' 
+      ? message.sender.toLowerCase().includes(searchQuery)
+      : message.sender.full_name.toLowerCase().includes(searchQuery))
   );
 
   const sortedMessages = [...filteredMessages].sort((a, b) => {
@@ -89,6 +91,7 @@ export function MessagesList({
                     key={message.id}
                     message={{
                       ...message,
+                      sender: typeof message.sender === 'string' ? message.sender : message.sender.full_name,
                       timestamp: new Date(message.created_at || '')
                     }}
                     onMarkAsRead={onMarkAsRead}
