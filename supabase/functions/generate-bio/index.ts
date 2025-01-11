@@ -46,7 +46,9 @@ La bio doit:
 - Être adaptée au marché du travail québécois
 - Rester concise (maximum 3 phrases)
 - Ne pas inclure de notes ou de remarques à la fin
-- Utiliser un ton professionnel mais chaleureux`
+- Utiliser un ton professionnel mais chaleureux`;
+
+    console.log('Sending prompt to Hugging Face:', prompt);
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
@@ -59,11 +61,11 @@ La bio doit:
         body: JSON.stringify({
           inputs: prompt,
           parameters: {
-            max_new_tokens: 200,
+            max_new_tokens: 256,
             temperature: 0.7,
             top_p: 0.9,
-            return_full_text: false,
-            wait_for_model: true
+            do_sample: true,
+            return_full_text: false
           }
         }),
       }
@@ -76,12 +78,15 @@ La bio doit:
     }
 
     const data = await response.json()
+    console.log('Hugging Face API Response:', data);
     
     if (!Array.isArray(data) || !data[0]?.generated_text) {
-      throw new Error('Invalid response format from API')
+      console.error('Invalid response format:', data);
+      throw new Error('Format de réponse invalide de l\'API')
     }
 
     let bio = data[0].generated_text.trim()
+    // Remove any system messages or notes that might appear after double newlines
     bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim()
 
     return new Response(
