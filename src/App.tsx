@@ -7,7 +7,6 @@ import { Loader } from "./components/ui/loader";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import Index from "./pages/Index";
 
 function App() {
   const { isAuthenticated, isLoading, error } = useAuth();
@@ -32,7 +31,6 @@ function App() {
   // Show error toast if authentication fails
   useEffect(() => {
     if (error) {
-      console.error("Auth error:", error);
       toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
     }
   }, [error]);
@@ -83,7 +81,7 @@ function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <Index />
+                <Navigate to="/auth" replace />
               </motion.div>
             } 
           />
@@ -130,7 +128,7 @@ function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <Navigate to="/" replace />
+                <Navigate to="/auth" replace />
               </motion.div>
             } 
           />

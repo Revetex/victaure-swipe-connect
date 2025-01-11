@@ -19,23 +19,8 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
     
     setIsGenerating(true);
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError) {
-        console.error("Auth error:", authError);
-        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
-        return;
-      }
-
-      if (!user) {
-        toast.error("Utilisateur non authentifié");
-        return;
-      }
-
-      // Make sure we have at least some data to generate from
-      if (!profile.skills?.length && !profile.experiences?.length && !profile.education?.length) {
-        toast.error("Veuillez ajouter des compétences, expériences ou formations avant de générer une bio");
-        return;
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
 
       const { data, error } = await supabase.functions.invoke('generate-bio', {
         body: {
@@ -45,14 +30,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
         }
       });
 
-      if (error) {
-        console.error("Function error:", error);
-        throw error;
-      }
-
-      if (!data?.bio) {
-        throw new Error("Aucune bio n'a été générée");
-      }
+      if (error) throw error;
       
       setProfile({ ...profile, bio: data.bio });
       toast.success("Bio générée avec succès");
