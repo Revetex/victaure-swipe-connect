@@ -1,31 +1,32 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { skills, experiences, education } = await req.json();
-
-    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
-    if (!apiKey) {
-      console.error('Missing Hugging Face API key');
-      throw new Error('Configuration error: Missing API key');
-    }
-
-    console.log('Generating bio with data:', { 
+    const { skills, experiences, education } = await req.json()
+    
+    // Validate input
+    console.log('Processing request with data:', { 
       skillsCount: skills?.length, 
       experiencesCount: experiences?.length,
       educationCount: education?.length 
-    });
+    })
+
+    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
+    if (!apiKey) {
+      console.error('Missing Hugging Face API key')
+      throw new Error('Configuration error: Missing API key')
+    }
 
     const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
@@ -40,9 +41,9 @@ La bio doit:
 - Être adaptée au marché du travail québécois
 - Rester concise (maximum 3 phrases)
 - Ne pas inclure de notes ou de remarques à la fin
-- Utiliser un ton professionnel mais chaleureux`;
+- Utiliser un ton professionnel mais chaleureux`
 
-    console.log('Sending request to Hugging Face API with prompt length:', prompt.length);
+    console.log('Sending request to Hugging Face API with prompt length:', prompt.length)
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
@@ -62,28 +63,28 @@ La bio doit:
           }
         }),
       }
-    );
+    )
+
+    console.log('Hugging Face API Response Status:', response.status)
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Hugging Face API Error Response:', errorText);
-      throw new Error('Failed to generate bio: API response error');
+      const errorText = await response.text()
+      console.error('Hugging Face API Error Response:', errorText)
+      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`)
     }
 
-    const data = await response.json();
-    console.log('Received response from Hugging Face:', data);
+    const data = await response.json()
+    console.log('Received response from Hugging Face:', data)
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Unexpected API response format:', data);
-      throw new Error('Invalid response format from API');
+      console.error('Unexpected API response format:', data)
+      throw new Error('Invalid response format from API')
     }
 
-    let bio = data[0].generated_text.trim();
-    
-    // Remove any notes or remarks that might appear after the main bio
-    bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim();
+    let bio = data[0].generated_text.trim()
+    bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim()
 
-    console.log('Generated bio:', bio);
+    console.log('Generated bio:', bio)
 
     return new Response(
       JSON.stringify({ bio }),
@@ -93,10 +94,10 @@ La bio doit:
           'Content-Type': 'application/json' 
         } 
       }
-    );
+    )
 
   } catch (error) {
-    console.error('Error in generate-bio function:', error);
+    console.error('Error in generate-bio function:', error)
     
     return new Response(
       JSON.stringify({ 
@@ -111,6 +112,6 @@ La bio doit:
           'Content-Type': 'application/json' 
         }
       }
-    );
+    )
   }
-});
+})

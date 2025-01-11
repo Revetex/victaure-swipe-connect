@@ -31,7 +31,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       }
 
       if (!session) {
-        throw new Error("Session non trouvée");
+        throw new Error("Veuillez vous connecter pour générer une bio");
       }
 
       console.log("Generating bio with profile data:", {
@@ -50,7 +50,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
 
       if (error) {
         console.error("Error from generate-bio function:", error);
-        throw error;
+        throw new Error(error.message || "Erreur lors de la génération de la bio");
       }
 
       if (!data?.bio) {
