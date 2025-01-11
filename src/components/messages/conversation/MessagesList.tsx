@@ -35,12 +35,12 @@ export function MessagesList({
 
   const filteredMessages = messages.filter(message => 
     message.content.toLowerCase().includes(searchQuery) ||
-    message.sender.full_name.toLowerCase().includes(searchQuery)
+    message.sender.toLowerCase().includes(searchQuery)
   );
 
   const sortedMessages = [...filteredMessages].sort((a, b) => {
-    const dateA = new Date(a.created_at).getTime();
-    const dateB = new Date(b.created_at).getTime();
+    const dateA = new Date(a.created_at || '').getTime();
+    const dateB = new Date(b.created_at || '').getTime();
     return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
   });
 
@@ -87,7 +87,10 @@ export function MessagesList({
                 {sortedMessages.map((message) => (
                   <UserMessage
                     key={message.id}
-                    message={message}
+                    message={{
+                      ...message,
+                      timestamp: new Date(message.created_at || '')
+                    }}
                     onMarkAsRead={onMarkAsRead}
                   />
                 ))}
