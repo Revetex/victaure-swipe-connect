@@ -17,7 +17,6 @@ export default function Auth() {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
-    // Check current session
     const checkSession = async () => {
       try {
         setIsLoading(true);
@@ -42,7 +41,6 @@ export default function Auth() {
 
     checkSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       
@@ -116,7 +114,7 @@ export default function Auth() {
           <div className="text-center text-sm pb-8 space-y-4">
             <div className="flex flex-col space-y-4">
               <Dialog>
-                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                <DialogTrigger className="text-blue-500 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20">
                   Politique de confidentialité
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
@@ -150,7 +148,7 @@ export default function Auth() {
                 </DialogContent>
               </Dialog>
               <Dialog>
-                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                <DialogTrigger className="text-blue-500 hover:text-blue-600 transition-colors font-medium py-2 px-4 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20">
                   Conditions d'utilisation
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
@@ -176,7 +174,7 @@ export default function Auth() {
                 </DialogContent>
               </Dialog>
             </div>
-            <div className="text-muted-foreground">
+            <div className="text-muted-foreground mt-6">
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
             </div>
           </div>
