@@ -43,11 +43,16 @@ export function Messages() {
   };
 
   const handleSendMessageWithFeedback = async (message: string) => {
+    if (!message.trim()) {
+      toast.error("Veuillez entrer un message");
+      return;
+    }
+
     try {
       await handleSendMessage(message);
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Erreur lors de l'envoi du message");
+      toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
     }
   };
 
