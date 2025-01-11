@@ -21,30 +21,44 @@ serve(async (req) => {
       throw new Error('Hugging Face API key not configured')
     }
 
-    // Construct the prompt with the profile information
-    const prompt = `Tu es un expert en rédaction de profils professionnels québécois. Génère une bio professionnelle basée sur ces informations:
+    // Format experiences and education for the prompt
+    const experiencesText = experiences?.length > 0 
+      ? experiences.map(exp => 
+          `${exp.position} chez ${exp.company} (${exp.start_date} - ${exp.end_date || 'Présent'})`
+        ).join(', ')
+      : 'Pas d\'expérience professionnelle spécifiée';
 
-Compétences: ${skills ? skills.join(', ') : 'Non spécifiées'}
-${experiences && experiences.length > 0 ? `Expériences: ${experiences.map(exp => 
-  `${exp.position} chez ${exp.company} (${exp.start_date} - ${exp.end_date || 'Présent'})`
-).join(', ')}` : 'Pas d\'expérience professionnelle spécifiée'}
-${education && education.length > 0 ? `Formation: ${education.map(edu => 
-  `${edu.degree} en ${edu.field_of_study} à ${edu.school_name}`
-).join(', ')}` : 'Pas de formation spécifiée'}
+    const educationText = education?.length > 0
+      ? education.map(edu => 
+          `${edu.degree} en ${edu.field_of_study} à ${edu.school_name}`
+        ).join(', ')
+      : 'Pas de formation spécifiée';
 
-La bio doit:
-- Être adaptée au marché du travail québécois
-- Rester concise (maximum 3 phrases)
-- Utiliser un ton professionnel mais chaleureux
-- Mettre en valeur les points forts du profil
+    const skillsText = skills?.length > 0 
+      ? skills.join(', ') 
+      : 'Non spécifiées';
+
+    // Construct the prompt in the format expected by Mixtral
+    const prompt = `<s>[INST] Tu es un expert en rédaction de profils professionnels québécois. 
+Génère une bio professionnelle concise basée sur ces informations:
+
+Compétences: ${skillsText}
+Expériences: ${experiencesText}
+Formation: ${educationText}
+
+Directives:
+- Maximum 3 phrases
+- Ton professionnel mais chaleureux
+- Mettre en valeur les points forts
 - Utiliser des expressions québécoises appropriées
-- Être rédigée à la première personne
+- Rédiger à la première personne du singulier
+- Adapter au marché du travail québécois
 
-Génère uniquement la bio, sans autre texte ou explication.`
+Génère uniquement la bio, sans autre texte. [/INST]</s>`
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-v0.1-8x7B', {
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingFaceApiKey}`,
@@ -56,10 +70,8 @@ Génère uniquement la bio, sans autre texte ou explication.`
           max_new_tokens: 200,
           temperature: 0.7,
           top_p: 0.95,
-          return_full_text: false,
-          repetition_penalty: 1.2,
           do_sample: true,
-          top_k: 50
+          return_full_text: false
         }
       }),
     })
@@ -78,7 +90,12 @@ Génère uniquement la bio, sans autre texte ou explication.`
       throw new Error('Format de réponse invalide de l\'API')
     }
 
-    const bio = data[0].generated_text.trim()
+    // Clean up the generated text to remove any instruction artifacts
+    let bio = data[0].generated_text
+      .replace(/^.*\[\/INST\]/, '') // Remove any instruction text
+      .replace(/<s>|<\/s>/g, '') // Remove special tokens
+      .trim()
+
     console.log('Generated bio:', bio)
 
     return new Response(
