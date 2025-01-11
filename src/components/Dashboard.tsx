@@ -15,7 +15,7 @@ export function Dashboard() {
 
   useEffect(() => {
     let mounted = true;
-    let authSubscription: { unsubscribe: () => void } | null = null;
+    let authSubscription: { data: { subscription: any }; unsubscribe: () => void } | null = null;
 
     const checkAuth = async () => {
       try {
@@ -23,7 +23,7 @@ export function Dashboard() {
         
         if (sessionError) {
           console.error('Session error:', sessionError);
-          toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+          toast.error("Erreur d'authentification");
           navigate('/auth');
           return;
         }
@@ -45,8 +45,9 @@ export function Dashboard() {
           return;
         }
 
-        // Set up auth state change listener
-        authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+        // Set up auth state change listener with proper typing
+        const { data: { subscription } } = await supabase.auth.onAuthStateChange((event, session) => {
+          console.log('Auth state changed:', event);
           if (event === 'SIGNED_OUT' || !session) {
             navigate('/auth');
           }
@@ -67,7 +68,7 @@ export function Dashboard() {
 
     return () => {
       mounted = false;
-      if (authSubscription) {
+      if (authSubscription?.unsubscribe) {
         authSubscription.unsubscribe();
       }
     };
