@@ -61,10 +61,10 @@ export function ChatInput({
 
   return (
     <div className={cn(
-      "fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t z-50",
+      "fixed bottom-16 left-0 right-0 bg-background/80 backdrop-blur-md border-t z-50 transition-all duration-200",
       className
     )}>
-      <div className="relative flex items-center gap-2 p-2 max-w-4xl mx-auto w-full">
+      <div className="relative flex items-center gap-2 p-2 max-w-3xl mx-auto w-full">
         {onVoiceInput && (
           <motion.div whileTap={{ scale: 0.95 }}>
             <Button
@@ -72,7 +72,7 @@ export function ChatInput({
               size="icon"
               variant={isListening ? "default" : "ghost"}
               onClick={onVoiceInput}
-              className="h-8 w-8 shrink-0 rounded-full"
+              className="h-8 w-8 shrink-0 rounded-full opacity-70 hover:opacity-100 transition-opacity"
               disabled={isThinking}
             >
               <motion.div
@@ -99,7 +99,7 @@ export function ChatInput({
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="min-h-[36px] max-h-[100px] resize-none py-2 text-base focus-visible:ring-1 pr-12 rounded-full bg-muted/50"
+            className="min-h-[32px] max-h-[120px] resize-none py-1.5 text-sm focus-visible:ring-1 pr-12 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
             disabled={isThinking}
           />
           <AnimatePresence mode="wait">
@@ -115,7 +115,7 @@ export function ChatInput({
                   type="button"
                   size="icon"
                   onClick={onSend}
-                  className="h-6 w-6 rounded-full bg-primary hover:bg-primary/90"
+                  className="h-6 w-6 rounded-full bg-primary/90 hover:bg-primary shadow-sm"
                 >
                   <Send className="h-3 w-3 text-primary-foreground" />
                 </Button>
@@ -128,7 +128,7 @@ export function ChatInput({
                 exit={{ opacity: 0 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2"
               >
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/70" />
               </motion.div>
             )}
           </AnimatePresence>

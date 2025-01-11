@@ -1,22 +1,23 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bot, Trash2, ArrowDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChatMessage } from "@/components/chat/ChatMessage";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { Message } from "@/types/chat/messageTypes";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { AssistantMessage } from "./conversation/AssistantMessage";
+import { UserMessage } from "./conversation/UserMessage";
 
 interface MessagesContentProps {
-  messages: any[];
+  messages: Message[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
-  onBack?: () => void;
   onSendMessage: (message: string) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
   onClearChat: () => void;
+  onBack: () => void;
 }
 
 export function MessagesContent({
@@ -24,111 +25,73 @@ export function MessagesContent({
   inputMessage,
   isListening,
   isThinking,
-  onBack,
   onSendMessage,
   onVoiceInput,
   setInputMessage,
   onClearChat,
+  onBack,
 }: MessagesContentProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [showScrollButton, setShowScrollButton] = useState(false);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLDivElement;
-    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-    setShowScrollButton(!isNearBottom);
-  };
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!showScrollButton) {
-      scrollToBottom();
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, showScrollButton]);
+  }, [messages]);
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-safe-top pb-safe-bottom">
-      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
-        <div className="flex items-center justify-between max-w-3xl mx-auto">
-          <div className="flex items-center gap-3">
-            {onBack && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onBack}
-                className="shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            )}
-            <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
-              <AvatarFallback className="bg-primary/20">
-                <Bot className="h-5 w-5 text-primary" />
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <h2 className="text-lg font-semibold truncate">M. Victaure</h2>
-              <p className="text-sm text-muted-foreground truncate">
-                {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
-              </p>
-            </div>
-          </div>
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-background/80">
+      <header className="flex items-center justify-between p-2 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClearChat}
-            className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
+            onClick={onBack}
+            className="shrink-0"
           >
-            <Trash2 className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
           </Button>
+          <div className="flex flex-col">
+            <h2 className="text-sm font-medium">M. Victaure</h2>
+            <p className="text-xs text-muted-foreground">Assistant IA</p>
+          </div>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClearChat}
+          className="shrink-0 text-muted-foreground hover:text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </header>
 
-      <div className="flex-1 overflow-hidden">
-        <ScrollArea 
-          className="h-full px-4" 
-          onScroll={handleScroll}
-        >
-          <div className="max-w-3xl mx-auto space-y-4 py-4">
-            <AnimatePresence mode="popLayout">
-              {messages.map((message) => (
-                <ChatMessage
-                  key={message.id}
-                  content={message.content}
-                  sender={message.sender}
-                  thinking={message.thinking}
-                  showTimestamp={true}
-                  timestamp={message.timestamp}
-                />
-              ))}
-            </AnimatePresence>
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
-
-        <AnimatePresence>
-          {showScrollButton && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="fixed bottom-24 right-4"
-            >
-              <Button
-                size="icon"
-                className="rounded-full shadow-lg"
-                onClick={scrollToBottom}
+      <ScrollArea 
+        ref={scrollRef}
+        className="flex-1 p-4 overflow-y-auto"
+      >
+        <div className="space-y-4 max-w-3xl mx-auto">
+          <AnimatePresence initial={false}>
+            {messages.map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                ref={index === messages.length - 1 ? lastMessageRef : null}
               >
-                <ArrowDown className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+                {message.sender === "assistant" ? (
+                  <AssistantMessage message={message} />
+                ) : (
+                  <UserMessage message={message} />
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </ScrollArea>
 
       <ChatInput
         value={inputMessage}
@@ -137,7 +100,6 @@ export function MessagesContent({
         onVoiceInput={onVoiceInput}
         isListening={isListening}
         isThinking={isThinking}
-        className="border-t bg-background/95 backdrop-blur-sm"
       />
     </div>
   );
