@@ -1,10 +1,11 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DashboardNavigation } from "./DashboardNavigation";
 import { DashboardContainer } from "./DashboardContainer";
 import { DashboardContent } from "./DashboardContent";
+import { useDebounce } from "use-debounce";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -12,26 +13,49 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  
+  // Debounce viewport height updates
+  const [debouncedSetViewportHeight] = useDebounce(
+    (height: number) => setViewportHeight(height),
+    100
+  );
+
+  // Throttle page changes
+  const [lastPageChange, setLastPageChange] = useState(Date.now());
+  const THROTTLE_DELAY = 300; // milliseconds
+
+  const updateHeight = useCallback(() => {
+    debouncedSetViewportHeight(window.innerHeight);
+  }, [debouncedSetViewportHeight]);
 
   useEffect(() => {
-    const updateHeight = () => {
-      setViewportHeight(window.innerHeight);
-    };
-
     window.addEventListener('resize', updateHeight);
     window.addEventListener('orientationchange', updateHeight);
 
-    setTimeout(updateHeight, 100);
+    const timeoutId = setTimeout(updateHeight, 100);
 
     return () => {
       window.removeEventListener('resize', updateHeight);
       window.removeEventListener('orientationchange', updateHeight);
+      clearTimeout(timeoutId);
     };
-  }, []);
+  }, [updateHeight]);
 
-  const handleRequestChat = () => {
-    setCurrentPage(2);
-  };
+  const handlePageChange = useCallback((page: number) => {
+    const now = Date.now();
+    if (now - lastPageChange >= THROTTLE_DELAY) {
+      setCurrentPage(page);
+      setLastPageChange(now);
+    }
+  }, [lastPageChange]);
+
+  const handleRequestChat = useCallback(() => {
+    const now = Date.now();
+    if (now - lastPageChange >= THROTTLE_DELAY) {
+      setCurrentPage(2);
+      setLastPageChange(now);
+    }
+  }, [lastPageChange]);
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
@@ -67,7 +91,7 @@ export function DashboardLayout() {
           <div className="container mx-auto px-4 h-full flex items-center">
             <DashboardNavigation 
               currentPage={currentPage}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
             />
           </div>
         </nav>
