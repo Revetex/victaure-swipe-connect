@@ -4,13 +4,14 @@ import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDebounce } from "use-debounce";
 
 function App() {
   const { isAuthenticated, isLoading, error } = useAuth();
-
+  
   // Fix mobile viewport height on iOS
   useEffect(() => {
     const setVH = () => {
@@ -35,6 +36,7 @@ function App() {
     }
   }, [error]);
 
+  // Loading state
   if (isLoading) {
     return (
       <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
@@ -81,7 +83,11 @@ function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <Navigate to="/auth" replace />
+                {isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <Navigate to="/auth" replace />
+                )}
               </motion.div>
             } 
           />
@@ -128,7 +134,11 @@ function App() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <Navigate to="/auth" replace />
+                {isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <Navigate to="/auth" replace />
+                )}
               </motion.div>
             } 
           />
