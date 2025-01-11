@@ -40,7 +40,8 @@ La bio doit:
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+    // Using a more specialized model for professional content generation
+    const response = await fetch('https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingFaceApiKey}`,
@@ -53,6 +54,9 @@ La bio doit:
           temperature: 0.7,
           top_p: 0.95,
           return_full_text: false,
+          repetition_penalty: 1.2,
+          do_sample: true,
+          top_k: 50
         }
       }),
     })
