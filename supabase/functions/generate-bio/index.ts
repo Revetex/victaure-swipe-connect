@@ -7,15 +7,18 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { skills, experiences, education } = await req.json();
+    console.log('Received request with:', { skills, experiences, education });
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
+      console.error('Missing Hugging Face API key');
       throw new Error('Missing Hugging Face API key');
     }
 
@@ -33,6 +36,8 @@ La bio doit:
 - Rester concise (maximum 3 phrases)
 - Ne pas inclure de notes ou de remarques à la fin
 - Utiliser un ton professionnel mais chaleureux`;
+
+    console.log('Sending request to Hugging Face with prompt:', prompt);
 
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
       method: 'POST',
@@ -58,10 +63,14 @@ La bio doit:
     }
 
     const data = await response.json();
+    console.log('Received response from Hugging Face:', data);
+    
     let bio = data[0].generated_text.trim();
     
     // Remove any notes or remarks that might appear after the main bio
     bio = bio.split(/Note:|Remarque:|N\.B\.:|\n\n/)[0].trim();
+
+    console.log('Final processed bio:', bio);
 
     return new Response(
       JSON.stringify({ bio }),
