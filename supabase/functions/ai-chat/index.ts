@@ -7,43 +7,50 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { message } = await req.json()
+    const { message, userId } = await req.json()
     console.log('Received message:', message)
+    console.log('User ID:', userId)
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
-    console.log('API Key exists:', !!apiKey) // Log if API key exists without exposing it
+    if (!apiKey) {
+      console.error('Missing HUGGING_FACE_API_KEY')
+      throw new Error('Configuration error: Missing API key')
+    }
 
-    const modelUrl = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2'
-    console.log('Attempting to call Hugging Face API at:', modelUrl)
+    console.log('Attempting to call Hugging Face API')
 
-    const response = await fetch(modelUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec. 
-                Sois concis et direct dans tes réponses.
-                
-                User: ${message}
-                
-                Assistant:`,
-        parameters: {
-          max_new_tokens: 256,
-          temperature: 0.5,
-          top_p: 0.9,
-          frequency_penalty: 0.0,
-          presence_penalty: 0.0,
-          return_full_text: false
-        }
-      }),
-    })
+    const response = await fetch(
+      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec. 
+                  Sois concis et direct dans tes réponses.
+                  
+                  User: ${message}
+                  
+                  Assistant:`,
+          parameters: {
+            max_new_tokens: 256,
+            temperature: 0.7,
+            top_p: 0.9,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+            return_full_text: false
+          }
+        }),
+      }
+    )
 
     console.log('Hugging Face API Response Status:', response.status)
 
@@ -59,6 +66,11 @@ serve(async (req) => {
 
     const data = await response.json()
     console.log('AI response received:', data)
+
+    if (!data || !Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data)
+      throw new Error('Invalid response format from Hugging Face API')
+    }
 
     const assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
 

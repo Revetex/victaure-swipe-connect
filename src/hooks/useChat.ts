@@ -4,6 +4,7 @@ import { useMessages } from "./chat/useMessages";
 import { useChatActions } from "./chat/useChatActions";
 import type { ChatState, ChatActions } from "@/types/chat/messageTypes";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useChat(): ChatState & ChatActions {
   const [inputMessage, setInputMessage] = useState("");
@@ -18,7 +19,7 @@ export function useChat(): ChatState & ChatActions {
   } = useMessages();
 
   const {
-    handleSendMessage,
+    handleSendMessage: sendMessage,
     clearChat,
     restoreChat
   } = useChatActions(
@@ -29,6 +30,22 @@ export function useChat(): ChatState & ChatActions {
     setInputMessage,
     setIsThinking
   );
+
+  const handleSendMessage = async (message: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        toast.error("Vous devez être connecté pour utiliser le chat")
+        return
+      }
+      
+      await sendMessage(message)
+    } catch (error) {
+      console.error("Error in handleSendMessage:", error)
+      toast.error("Une erreur est survenue lors de l'envoi du message")
+      setIsThinking(false)
+    }
+  }
 
   const handleVoiceInput = () => {
     try {
