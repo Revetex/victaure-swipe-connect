@@ -6,6 +6,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const systemPrompt = `Tu es M. Victaure, un assistant virtuel sympathique et professionnel qui aide les utilisateurs dans leur recherche d'emploi au Québec. 
+
+Ton style de communication :
+- Utilise un français québécois naturel et professionnel
+- Sois chaleureux et empathique tout en restant professionnel
+- Adapte ton langage au contexte tout en évitant le langage trop familier
+- Utilise des expressions québécoises appropriées au contexte professionnel
+- Pose des questions pour mieux comprendre les besoins
+- Donne des exemples concrets et pertinents
+- Évite les réponses trop longues ou trop techniques
+
+Tes domaines d'expertise :
+- Le marché du travail au Québec
+- Les opportunités d'emploi dans la construction
+- L'amélioration des profils professionnels
+- Les conseils pour la recherche d'emploi
+- L'orientation professionnelle
+
+N'hésite pas à demander des précisions si nécessaire pour mieux aider l'utilisateur.`
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -13,16 +33,16 @@ serve(async (req) => {
 
   try {
     const { message, userId } = await req.json()
-    console.log('Received message:', message)
-    console.log('User ID:', userId)
+    console.log('Message reçu:', message)
+    console.log('ID utilisateur:', userId)
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
     if (!apiKey) {
-      console.error('Missing HUGGING_FACE_API_KEY')
-      throw new Error('Configuration error: Missing API key')
+      console.error('Clé API Hugging Face manquante')
+      throw new Error('Erreur de configuration: Clé API manquante')
     }
 
-    console.log('Attempting to call Hugging Face API')
+    console.log('Appel de l\'API Hugging Face')
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -33,10 +53,10 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: message,
+          inputs: `${systemPrompt}\n\nUtilisateur: ${message}\n\nAssistant:`,
           parameters: {
             max_new_tokens: 512,
-            temperature: 0.7,
+            temperature: 0.85,
             top_p: 0.9,
             do_sample: true,
             return_full_text: false
@@ -45,34 +65,38 @@ serve(async (req) => {
       }
     )
 
-    console.log('Hugging Face API Response Status:', response.status)
+    console.log('Statut de la réponse:', response.status)
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Hugging Face API Error Details:', {
+      console.error('Détails de l\'erreur:', {
         status: response.status,
         statusText: response.statusText,
         error: errorText
       })
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}\n${errorText}`)
+      throw new Error(`Erreur API: ${response.status} ${response.statusText}\n${errorText}`)
     }
 
     const data = await response.json()
-    console.log('AI response received:', data)
+    console.log('Réponse reçue:', data)
 
     if (!data || !Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid response format:', data)
-      throw new Error('Invalid response format from Hugging Face API')
+      console.error('Format de réponse invalide:', data)
+      throw new Error('Format de réponse invalide')
     }
 
-    const assistantResponse = data[0].generated_text.trim()
+    // Nettoyer la réponse pour enlever le préfixe "Assistant:" s'il existe
+    let assistantResponse = data[0].generated_text.trim()
+    if (assistantResponse.startsWith('Assistant:')) {
+      assistantResponse = assistantResponse.substring('Assistant:'.length).trim()
+    }
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.error('Detailed error in AI chat function:', {
+    console.error('Erreur détaillée:', {
       message: error.message,
       stack: error.stack,
       cause: error.cause
@@ -80,7 +104,7 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ 
-        error: 'Une erreur est survenue lors de la communication avec l\'API',
+        error: 'Une erreur est survenue lors de la communication avec l\'assistant',
         details: error.message 
       }),
       { 
