@@ -1,38 +1,38 @@
 import { Mail, Phone, MapPin } from "lucide-react";
+import { UserProfile } from "@/types/profile";
 
 interface VCardContactProps {
-  email?: string;
-  phone?: string;
-  city?: string;
-  state?: string;
+  profile: UserProfile;
+  isEditing: boolean;
+  setProfile: (profile: UserProfile) => void;
 }
 
-export function VCardContact({ email, phone, city, state }: VCardContactProps) {
+export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Contact</h3>
       <div className="space-y-2">
-        {email && (
+        {profile.email && (
           <div className="flex items-center gap-2">
             <Mail className="h-4 w-4 text-muted-foreground" />
-            <a href={`mailto:${email}`} className="text-sm hover:underline">
-              {email}
+            <a href={`mailto:${profile.email}`} className="text-sm hover:underline">
+              {profile.email}
             </a>
           </div>
         )}
-        {phone && (
+        {profile.phone && (
           <div className="flex items-center gap-2">
             <Phone className="h-4 w-4 text-muted-foreground" />
-            <a href={`tel:${phone}`} className="text-sm hover:underline">
-              {phone}
+            <a href={`tel:${profile.phone}`} className="text-sm hover:underline">
+              {profile.phone}
             </a>
           </div>
         )}
-        {(city || state) && (
+        {(profile.city || profile.state) && (
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm">
-              {[city, state].filter(Boolean).join(", ")}
+              {[profile.city, profile.state].filter(Boolean).join(", ")}
             </span>
           </div>
         )}
