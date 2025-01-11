@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
@@ -54,48 +54,88 @@ export function useAuth() {
     }
   };
 
-  const { session, user, isLoading: sessionLoading } = useSession(signOut);
-
-  // Update auth state based on session
-  if (!state.isAuthenticated && user && !sessionLoading) {
-    setState({
-      isLoading: false,
-      isAuthenticated: true,
-      error: null,
-      user
-    });
-  }
-
-  // Set up auth state change listener
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log("Auth state changed:", event);
+  useEffect(() => {
+    let mounted = true;
     
-    if (event === 'SIGNED_IN' && session) {
-      setState({
-        isLoading: false,
-        isAuthenticated: true,
-        error: null,
-        user: session.user
-      });
-      navigate('/dashboard', { replace: true });
-    } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
-      setState({
-        isLoading: false,
-        isAuthenticated: false,
-        error: null,
-        user: null
-      });
-      navigate('/auth', { replace: true });
-    }
-  });
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          throw sessionError;
+        }
 
-  // Update loading state based on session loading
-  if (state.isLoading && !sessionLoading) {
-    setState(prev => ({
-      ...prev,
-      isLoading: false
-    }));
-  }
+        if (!session) {
+          if (mounted) {
+            setState({
+              isLoading: false,
+              isAuthenticated: false,
+              error: null,
+              user: null
+            });
+          }
+          return;
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.error('User error:', userError);
+          throw userError;
+        }
+
+        if (mounted && user) {
+          setState({
+            isLoading: false,
+            isAuthenticated: true,
+            error: null,
+            user
+          });
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setState({
+            isLoading: false,
+            isAuthenticated: false,
+            error: error instanceof Error ? error : new Error('Authentication failed'),
+            user: null
+          });
+        }
+        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+        navigate('/auth', { replace: true });
+      }
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
+      
+      if (event === 'SIGNED_IN' && session) {
+        setState({
+          isLoading: false,
+          isAuthenticated: true,
+          error: null,
+          user: session.user
+        });
+      } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+        setState({
+          isLoading: false,
+          isAuthenticated: false,
+          error: null,
+          user: null
+        });
+        navigate('/auth', { replace: true });
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   return { 
     ...state,
