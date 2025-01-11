@@ -33,25 +33,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec.
-                  Tu communiques de manière professionnelle et naturelle en français québécois.
-                  Tu dois être concis, précis et pertinent dans tes réponses.
-                  
-                  Contexte: Tu aides les utilisateurs à:
-                  - Trouver leur voie professionnelle
-                  - Améliorer leur profil
-                  - Chercher des opportunités d'emploi
-                  - Développer leurs compétences
-                  
-                  Message de l'utilisateur: ${message}
-                  
-                  Ta réponse doit être:
-                  - Professionnelle mais chaleureuse
-                  - Concise et directe
-                  - En français québécois
-                  - Axée sur des conseils pratiques
-                  
-                  Réponse:`,
+          inputs: message,
           parameters: {
             max_new_tokens: 512,
             temperature: 0.7,
@@ -83,10 +65,10 @@ serve(async (req) => {
       throw new Error('Invalid response format from Hugging Face API')
     }
 
-    const assistantResponse = data[0].generated_text.split('Réponse:').pop()?.trim()
+    const assistantResponse = data[0].generated_text.trim()
 
     return new Response(
-      JSON.stringify({ response: assistantResponse || data[0].generated_text }),
+      JSON.stringify({ response: assistantResponse }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {

@@ -64,14 +64,14 @@ export function ChatInput({
       "fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t z-50",
       className
     )}>
-      <div className="relative flex items-center gap-2 p-2 max-w-4xl mx-auto w-full">
+      <div className="relative flex items-center gap-2 p-1 max-w-4xl mx-auto w-full">
         {onVoiceInput && (
           <Button
             type="button"
             size="icon"
             variant={isListening ? "default" : "ghost"}
             onClick={onVoiceInput}
-            className="h-9 w-9 shrink-0 rounded-full"
+            className="h-8 w-8 shrink-0 rounded-full"
             disabled={isThinking}
           >
             <motion.div
@@ -94,7 +94,7 @@ export function ChatInput({
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="min-h-[36px] max-h-[120px] resize-none py-2 text-base focus-visible:ring-1 pr-12 rounded-full bg-muted/50"
+            className="min-h-[32px] max-h-[100px] resize-none py-1.5 text-base focus-visible:ring-1 pr-12 rounded-full bg-muted/50"
             disabled={isThinking}
           />
           <AnimatePresence>
@@ -109,7 +109,7 @@ export function ChatInput({
                   type="button"
                   size="icon"
                   onClick={onSend}
-                  className="h-7 w-7 rounded-full bg-primary hover:bg-primary/90"
+                  className="h-6 w-6 rounded-full bg-primary hover:bg-primary/90"
                 >
                   <Send className="h-3 w-3 text-primary-foreground" />
                 </Button>
