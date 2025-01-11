@@ -28,11 +28,20 @@ serve(async (req) => {
       throw new Error('Configuration error: Missing API key')
     }
 
+    // Format experiences and education for better prompt context
+    const formattedExperiences = experiences?.map((exp: any) => 
+      `${exp.position} chez ${exp.company} (${exp.start_date ? new Date(exp.start_date).getFullYear() : 'N/A'} - ${exp.end_date ? new Date(exp.end_date).getFullYear() : 'présent'})`
+    ).join(', ') || 'Non spécifiées';
+
+    const formattedEducation = education?.map((edu: any) => 
+      `${edu.degree}${edu.field_of_study ? ` en ${edu.field_of_study}` : ''} à ${edu.school_name}`
+    ).join(', ') || 'Non spécifiée';
+
     const prompt = `En tant que professionnel québécois, générez une bio professionnelle concise et engageante en français québécois basée sur ces informations:
 
-Compétences: ${skills?.join(', ') || 'Non spécifiées'}
-Expériences: ${experiences?.map((exp: any) => `${exp.position} chez ${exp.company}`).join(', ') || 'Non spécifiées'}
-Formation: ${education?.map((edu: any) => `${edu.degree} en ${edu.field_of_study || ''} à ${edu.school_name}`).join(', ') || 'Non spécifiée'}
+Compétences: ${(skills || []).join(', ') || 'Non spécifiées'}
+Expériences: ${formattedExperiences}
+Formation: ${formattedEducation}
 
 La bio doit:
 - Être rédigée en français québécois professionnel
@@ -59,7 +68,8 @@ La bio doit:
             max_new_tokens: 200,
             temperature: 0.7,
             top_p: 0.9,
-            return_full_text: false
+            return_full_text: false,
+            wait_for_model: true
           }
         }),
       }

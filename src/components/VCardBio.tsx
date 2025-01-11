@@ -27,11 +27,22 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       
       if (sessionError) {
         console.error("Session error:", sessionError);
-        throw new Error("Erreur d'authentification");
+        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+        return;
       }
 
       if (!session) {
-        throw new Error("Veuillez vous connecter pour générer une bio");
+        toast.error("Veuillez vous connecter pour générer une bio");
+        return;
+      }
+
+      // Verify user data is accessible
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error("User verification error:", userError);
+        toast.error("Erreur de vérification utilisateur. Veuillez vous reconnecter.");
+        return;
       }
 
       console.log("Generating bio with profile data:", {
