@@ -13,6 +13,9 @@ interface AuthState {
   user: User | null;
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
 export function useAuth() {
   const navigate = useNavigate();
   const [state, setState] = useState<AuthState>({
@@ -54,6 +57,31 @@ export function useAuth() {
     }
   };
 
+  const verifyUser = async (retryCount = 0): Promise<User | null> => {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error) {
+        console.error('User verification error:', error);
+        if (retryCount < MAX_RETRIES) {
+          console.log(`Retrying verification (${retryCount + 1}/${MAX_RETRIES})...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return verifyUser(retryCount + 1);
+        }
+        throw error;
+      }
+      
+      return user;
+    } catch (error) {
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying after fetch error (${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return verifyUser(retryCount + 1);
+      }
+      throw error;
+    }
+  };
+
   const { session, user, isLoading: sessionLoading } = useSession(signOut);
 
   // Update auth state based on session
@@ -71,29 +99,28 @@ export function useAuth() {
     console.log("Auth state changed:", event);
     
     if (event === 'SIGNED_IN' && session) {
-      // Verify the session is valid
-      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError) {
-        console.error("User verification error:", userError);
+      try {
+        const currentUser = await verifyUser();
+        
+        if (currentUser) {
+          setState({
+            isLoading: false,
+            isAuthenticated: true,
+            error: null,
+            user: currentUser
+          });
+          navigate('/dashboard', { replace: true });
+        }
+      } catch (error) {
+        console.error("Session verification failed:", error);
         setState({
           isLoading: false,
           isAuthenticated: false,
-          error: new Error(userError.message),
+          error: error instanceof Error ? error : new Error('Session verification failed'),
           user: null
         });
+        toast.error("Erreur de vérification de session. Veuillez vous reconnecter.");
         navigate('/auth', { replace: true });
-        return;
-      }
-
-      if (currentUser) {
-        setState({
-          isLoading: false,
-          isAuthenticated: true,
-          error: null,
-          user: currentUser
-        });
-        navigate('/dashboard', { replace: true });
       }
     } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
       setState({
