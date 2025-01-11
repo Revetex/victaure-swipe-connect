@@ -2,8 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Mic, Send, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
 interface ChatInputProps {
@@ -61,15 +60,18 @@ export function ChatInput({
   };
 
   return (
-    <div className={cn("flex flex-col gap-2 p-4 border-t bg-background/95 backdrop-blur-sm", className)}>
-      <div className="relative flex items-center gap-2">
+    <div className={cn(
+      "flex flex-col gap-2 p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      className
+    )}>
+      <div className="relative flex items-center gap-2 max-w-4xl mx-auto w-full">
         {onVoiceInput && (
           <Button
             type="button"
             size="icon"
             variant={isListening ? "default" : "ghost"}
             onClick={onVoiceInput}
-            className="h-10 w-10 shrink-0"
+            className="h-10 w-10 shrink-0 rounded-full"
             disabled={isThinking}
           >
             <motion.div
@@ -92,31 +94,39 @@ export function ChatInput({
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="min-h-[44px] max-h-[200px] resize-none py-3 text-base focus-visible:ring-1"
+            className="min-h-[44px] max-h-[200px] resize-none py-3 text-base focus-visible:ring-1 pr-24 rounded-full bg-muted/50"
             disabled={isThinking}
           />
+          <AnimatePresence>
+            {value.trim() && !isThinking && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+              >
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={onSend}
+                  className="h-8 w-8 rounded-full bg-primary hover:bg-primary/90"
+                >
+                  <Send className="h-4 w-4 text-primary-foreground" />
+                </Button>
+              </motion.div>
+            )}
+            {isThinking && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+              >
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        <Button
-          type="button"
-          size="icon"
-          onClick={() => {
-            if (value.trim() && !isThinking) {
-              onSend();
-            }
-          }}
-          className={cn(
-            "h-10 w-10 shrink-0",
-            value.trim() && !isThinking && "bg-primary hover:bg-primary/90"
-          )}
-          disabled={!value.trim() || isThinking}
-        >
-          {isThinking ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Send className="h-5 w-5" />
-          )}
-        </Button>
       </div>
     </div>
   );

@@ -58,20 +58,20 @@ export const ChatMessage = memo(function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 px-4 py-2 items-start group hover:bg-muted/30 transition-colors",
+        "flex gap-3 px-4 py-2.5 items-start group hover:bg-muted/30 transition-colors",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
       <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full overflow-hidden">
         {isBot ? (
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-8 w-8 ring-2 ring-primary/10">
             <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
             <AvatarFallback className="bg-primary/20">
               <Bot className="h-4 w-4 text-primary" />
             </AvatarFallback>
           </Avatar>
         ) : (
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-8 w-8 ring-2 ring-primary/10">
             <AvatarImage 
               src={profile?.avatar_url} 
               alt={profile?.full_name || "User"} 
@@ -85,13 +85,13 @@ export const ChatMessage = memo(function ChatMessage({
       </div>
 
       <div className={cn(
-        "flex flex-col gap-1 min-w-0 max-w-[85%] relative group",
+        "flex flex-col gap-1.5 min-w-0 max-w-[85%] relative group",
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-2xl px-4 py-2 text-sm",
+          "rounded-2xl px-4 py-2.5 text-sm shadow-sm",
           isBot 
-            ? "bg-background border" 
+            ? "bg-card border" 
             : "bg-primary text-primary-foreground"
         )}>
           <p className="whitespace-pre-wrap break-words leading-relaxed">
@@ -112,7 +112,7 @@ export const ChatMessage = memo(function ChatMessage({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 hover:bg-muted"
+            className="h-8 w-8 rounded-full hover:bg-muted"
             onClick={handleCopyMessage}
           >
             {isCopied ? (
