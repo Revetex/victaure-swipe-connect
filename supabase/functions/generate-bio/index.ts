@@ -38,7 +38,9 @@ La bio doit:
 - Utiliser un ton professionnel mais chaleureux
 - Mettre en valeur les points forts du profil
 - Utiliser des expressions québécoises appropriées
-- Être rédigée à la première personne`
+- Être rédigée à la première personne
+
+Génère uniquement la bio, sans autre texte ou explication.`
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
@@ -63,19 +65,21 @@ La bio doit:
     })
 
     if (!response.ok) {
-      const error = await response.text()
-      console.error('Hugging Face API error:', error)
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`)
+      const errorText = await response.text()
+      console.error('Hugging Face API error response:', errorText)
+      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}\n${errorText}`)
     }
 
     const data = await response.json()
     console.log('Hugging Face API Response:', data)
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data)
       throw new Error('Format de réponse invalide de l\'API')
     }
 
     const bio = data[0].generated_text.trim()
+    console.log('Generated bio:', bio)
 
     return new Response(
       JSON.stringify({ bio }),
