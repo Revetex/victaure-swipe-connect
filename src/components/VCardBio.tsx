@@ -22,10 +22,16 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
     
     setIsGenerating(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Utilisateur non authentifié");
-        return;
+      // First check if we have an authenticated session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        throw new Error("Erreur d'authentification");
+      }
+
+      if (!session) {
+        throw new Error("Session non trouvée");
       }
 
       console.log("Generating bio with profile data:", {
@@ -53,9 +59,9 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       
       setProfile({ ...profile, bio: data.bio });
       toast.success("Bio générée avec succès");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating bio:", error);
-      toast.error("Erreur lors de la génération de la bio");
+      toast.error(error.message || "Erreur lors de la génération de la bio");
     } finally {
       setIsGenerating(false);
     }

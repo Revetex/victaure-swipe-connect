@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -83,19 +84,30 @@ La bio doit:
 
     return new Response(
       JSON.stringify({ bio }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     );
 
   } catch (error) {
     console.error('Error in generate-bio function:', error);
+    
+    // Return a more detailed error response
     return new Response(
       JSON.stringify({ 
         error: "Une erreur est survenue lors de la génération de la bio",
-        details: error.message 
+        details: error.message,
+        timestamp: new Date().toISOString()
       }),
       { 
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        }
       }
     );
   }
