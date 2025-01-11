@@ -6,6 +6,7 @@ import { DashboardLayout } from "./DashboardLayout";
 import { VCardCreationForm } from "./VCardCreationForm";
 import { Loader } from "./ui/loader";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export function Dashboard() {
 
     const checkAuth = async () => {
       try {
+        // First check if we have a valid session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -33,20 +35,13 @@ export function Dashboard() {
           return;
         }
 
-        // Verify the user data can be accessed
+        // Then verify the user data can be accessed
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
-        if (userError) {
+        if (userError || !user) {
           console.error('User data error:', userError);
           toast.error("Impossible d'accéder aux données utilisateur. Veuillez vous reconnecter.");
           await supabase.auth.signOut();
-          navigate('/auth');
-          return;
-        }
-
-        if (!user) {
-          console.error('No user data found');
-          toast.error("Données utilisateur introuvables. Veuillez vous reconnecter.");
           navigate('/auth');
           return;
         }
@@ -88,7 +83,16 @@ export function Dashboard() {
   if (isAuthChecking || isProfileLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader className="w-8 h-8" />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <Loader className="w-8 h-8 text-primary" />
+          <p className="text-sm text-muted-foreground animate-pulse">
+            Vérification de vos accès...
+          </p>
+        </motion.div>
       </div>
     );
   }
