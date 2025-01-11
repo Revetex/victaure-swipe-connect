@@ -34,9 +34,9 @@ export const pdfStyles = {
 export const convertStyleOptionToPdfStyle = (styleOption: any) => {
   return {
     colors: {
-      primary: styleOption.color || pdfStyles.colors.primary,
-      secondary: styleOption.secondaryColor || pdfStyles.colors.secondary,
-      background: styleOption.bgColor || pdfStyles.colors.background,
+      primary: styleOption.colors?.text?.primary || pdfStyles.colors.primary,
+      secondary: styleOption.colors?.text?.secondary || pdfStyles.colors.secondary,
+      background: styleOption.colors?.background?.card || pdfStyles.colors.background,
       text: {
         primary: styleOption.colors?.text?.primary || pdfStyles.colors.text.primary,
         secondary: styleOption.colors?.text?.secondary || pdfStyles.colors.text.secondary,
@@ -45,6 +45,9 @@ export const convertStyleOptionToPdfStyle = (styleOption: any) => {
       accent: styleOption.accentGradient || pdfStyles.colors.accent
     },
     margins: pdfStyles.margins,
-    fonts: pdfStyles.fonts
+    fonts: {
+      ...pdfStyles.fonts,
+      family: styleOption.font?.split(',')[0].replace(/['"]+/g, '') || 'Helvetica'
+    }
   };
 };

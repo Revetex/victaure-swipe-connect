@@ -17,15 +17,15 @@ export const generateBusinessCard = async (
 
   // Front side
   try {
+    // Add background logo with watermark effect
+    doc.setGlobalAlpha(0.1);
+    doc.addImage("/lovable-uploads/victaurepub.mp4.png", "PNG", 20, 10, 45.6, 33.98);
+    doc.setGlobalAlpha(1);
+
     // Set background with style-specific gradient
     doc.setFillColor(selectedStyle.colors.background.card);
     doc.setDrawColor(selectedStyle.colors.primary);
     
-    // Apply gradient background
-    doc.setGlobalAlpha(0.1);
-    doc.rect(0, 0, 85.6, 53.98, 'F');
-    doc.setGlobalAlpha(1);
-
     // Add decorative accent line
     doc.setLineWidth(0.5);
     doc.setDrawColor(selectedStyle.colors.secondary);
@@ -66,14 +66,9 @@ export const generateBusinessCard = async (
     // Add back side with professional design
     doc.addPage([85.6, 53.98], 'landscape');
     
-    // Add subtle pattern background
-    doc.setGlobalAlpha(0.05);
-    for (let i = 0; i < 85.6; i += 5) {
-      for (let j = 0; j < 53.98; j += 5) {
-        doc.setFillColor(selectedStyle.colors.primary);
-        doc.circle(i, j, 0.3, 'F');
-      }
-    }
+    // Add background logo with watermark effect
+    doc.setGlobalAlpha(0.1);
+    doc.addImage("/lovable-uploads/victaurepub.mp4.png", "PNG", 20, 10, 45.6, 33.98);
     doc.setGlobalAlpha(1);
 
     // Add company info if available
