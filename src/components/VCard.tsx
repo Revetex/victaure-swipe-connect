@@ -6,11 +6,13 @@ import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
-import { VCardCustomization } from "./vcard/VCardCustomization";
+import { VCardStyleEditor } from "./vcard/style/VCardStyleEditor";
+import { VCardProfileEditor } from "./vcard/profile/VCardProfileEditor";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
+import { UserProfile } from "@/types/profile";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -23,16 +25,28 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const { selectedStyle } = useVCardStyle();
+  const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
 
   const handleEditToggle = () => {
+    if (isEditing) {
+      setTempProfile(null);
+    } else if (profile) {
+      setTempProfile({ ...profile });
+    }
     setIsEditing(!isEditing);
     if (onEditStateChange) {
       onEditStateChange(!isEditing);
     }
   };
 
+  const handleProfileChange = (updates: Partial<UserProfile>) => {
+    if (tempProfile) {
+      setTempProfile({ ...tempProfile, ...updates });
+    }
+  };
+
   const handleSave = async () => {
-    if (!profile) {
+    if (!tempProfile) {
       toast.error("Aucun profil à sauvegarder");
       return;
     }
@@ -48,16 +62,8 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      // Save customization settings along with the profile
-      const updatedProfile = {
-        ...profile,
-        custom_font: profile.custom_font,
-        custom_background: profile.custom_background,
-        custom_text_color: profile.custom_text_color,
-      };
-
       const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
-        body: { profile: updatedProfile }
+        body: { profile: tempProfile }
       });
 
       if (aiError) {
@@ -71,22 +77,17 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         );
 
         if (shouldApply && aiCorrections.correctedProfile) {
-          // Preserve customization settings when applying AI corrections
-          const finalProfile = {
-            ...aiCorrections.correctedProfile,
-            custom_font: profile.custom_font,
-            custom_background: profile.custom_background,
-            custom_text_color: profile.custom_text_color,
-          };
-          await updateProfile(finalProfile);
-          setProfile(finalProfile);
+          await updateProfile(aiCorrections.correctedProfile);
+          setProfile(aiCorrections.correctedProfile);
           toast.success("Profil mis à jour avec les suggestions de l'IA");
         } else {
-          await updateProfile(updatedProfile);
+          await updateProfile(tempProfile);
+          setProfile(tempProfile);
           toast.success("Profil mis à jour sans les suggestions de l'IA");
         }
       } else {
-        await updateProfile(updatedProfile);
+        await updateProfile(tempProfile);
+        setProfile(tempProfile);
         toast.success("Profil mis à jour avec succès");
       }
 
@@ -110,24 +111,35 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     return <VCardEmpty />;
   }
 
+  const activeProfile = tempProfile || profile;
+
   return (
     <VCardContainer 
       isEditing={isEditing} 
       customStyles={{
-        font: profile.custom_font,
-        background: profile.custom_background,
-        textColor: profile.custom_text_color
+        font: activeProfile.custom_font,
+        background: activeProfile.custom_background,
+        textColor: activeProfile.custom_text_color
       }}
     >
       <div className="space-y-8 max-w-4xl mx-auto">
         {isEditing && (
-          <VCardCustomization profile={profile} setProfile={setProfile} />
+          <>
+            <VCardStyleEditor 
+              profile={activeProfile}
+              onStyleChange={handleProfileChange}
+            />
+            <VCardProfileEditor
+              profile={activeProfile}
+              onProfileChange={handleProfileChange}
+            />
+          </>
         )}
 
         <VCardSectionsManager
-          profile={profile}
+          profile={activeProfile}
           isEditing={isEditing}
-          setProfile={setProfile}
+          setProfile={isEditing ? handleProfileChange : setProfile}
           selectedStyle={selectedStyle}
         />
 
