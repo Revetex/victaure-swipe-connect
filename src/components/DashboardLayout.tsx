@@ -2,9 +2,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback } from "react";
-import { DashboardNavigation } from "./dashboard/DashboardNavigation";
-import { DashboardContainer } from "./dashboard/DashboardContainer";
-import { DashboardContent } from "./dashboard/DashboardContent";
+import { DashboardNavigation } from "./DashboardNavigation";
+import { DashboardContainer } from "./DashboardContainer";
+import { DashboardContent } from "./DashboardContent";
 import { useDebounce } from "use-debounce";
 
 const THROTTLE_DELAY = 300; // ms
@@ -16,7 +16,7 @@ export function DashboardLayout() {
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [lastPageChange, setLastPageChange] = useState(0);
-  const [showingChat, setShowingChat] = useState(currentPage === 2);
+  const [showingChat, setShowingChat] = useState(false);
 
   // Debounce viewport height updates
   const [debouncedSetViewportHeight] = useDebounce(
@@ -33,9 +33,9 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      setShowingChat(page === 2);
+      setShowingChat(page === 2 && !isEditing);
     }
-  }, [lastPageChange]);
+  }, [lastPageChange, isEditing]);
 
   const handleRequestChat = useCallback(() => {
     const now = Date.now();
@@ -64,13 +64,16 @@ export function DashboardLayout() {
             currentPage={currentPage}
             isEditing={isEditing}
             viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
+            onEditStateChange={(editing) => {
+              setIsEditing(editing);
+              setShowingChat(currentPage === 2 && !editing);
+            }}
             onRequestChat={handleRequestChat}
           />
         </AnimatePresence>
       </motion.div>
       
-      {!isEditing && !showingChat && (
+      {!showingChat && (
         <nav 
           className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
           style={{ 
