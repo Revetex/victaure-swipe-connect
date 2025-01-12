@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { DashboardNavigation } from "./DashboardNavigation";
 import { DashboardContainer } from "./DashboardContainer";
 import { DashboardContent } from "./DashboardContent";
@@ -13,6 +13,7 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [showingChat, setShowingChat] = useState(false);
   
   // Debounce viewport height updates
   const [debouncedSetViewportHeight] = useDebounce(
@@ -28,24 +29,12 @@ export function DashboardLayout() {
     debouncedSetViewportHeight(window.innerHeight);
   }, [debouncedSetViewportHeight]);
 
-  useEffect(() => {
-    window.addEventListener('resize', updateHeight);
-    window.addEventListener('orientationchange', updateHeight);
-
-    const timeoutId = setTimeout(updateHeight, 100);
-
-    return () => {
-      window.removeEventListener('resize', updateHeight);
-      window.removeEventListener('orientationchange', updateHeight);
-      clearTimeout(timeoutId);
-    };
-  }, [updateHeight]);
-
   const handlePageChange = useCallback((page: number) => {
     const now = Date.now();
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
+      setShowingChat(page === 2);
     }
   }, [lastPageChange]);
 
@@ -54,6 +43,7 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(2);
       setLastPageChange(now);
+      setShowingChat(true);
     }
   }, [lastPageChange]);
 
@@ -80,7 +70,7 @@ export function DashboardLayout() {
         </motion.div>
       </AnimatePresence>
       
-      {!isEditing && (
+      {!isEditing && !showingChat && (
         <nav 
           className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
           style={{ 
