@@ -4,11 +4,25 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Paintbrush } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
   onStyleChange: (updates: Partial<UserProfile>) => void;
 }
+
+const fontOptions = [
+  { value: 'Arial, sans-serif', label: 'Arial' },
+  { value: 'Helvetica, sans-serif', label: 'Helvetica' },
+  { value: 'Times New Roman, serif', label: 'Times New Roman' },
+  { value: 'Georgia, serif', label: 'Georgia' },
+  { value: 'Verdana, sans-serif', label: 'Verdana' },
+  { value: 'Roboto, sans-serif', label: 'Roboto' },
+  { value: 'Open Sans, sans-serif', label: 'Open Sans' },
+  { value: 'Lato, sans-serif', label: 'Lato' },
+  { value: 'Montserrat, sans-serif', label: 'Montserrat' },
+  { value: 'Poppins, sans-serif', label: 'Poppins' },
+];
 
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
   return (
@@ -21,12 +35,21 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label>Police de caractères</Label>
-          <Input
+          <Select
             value={profile.custom_font || ""}
-            onChange={(e) => onStyleChange({ custom_font: e.target.value })}
-            placeholder="Nom de la police (ex: Arial)"
-            className="bg-background/50 border-border/50"
-          />
+            onValueChange={(value) => onStyleChange({ custom_font: value })}
+          >
+            <SelectTrigger className="bg-background/50 border-border/50">
+              <SelectValue placeholder="Choisir une police" />
+            </SelectTrigger>
+            <SelectContent>
+              {fontOptions.map((font) => (
+                <SelectItem key={font.value} value={font.value}>
+                  <span style={{ fontFamily: font.value }}>{font.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
