@@ -37,9 +37,9 @@ export function MessagesList({
     if (!message) return false;
     
     const content = String(message.content || '').toLowerCase();
-    const senderName = typeof message.sender === 'string' 
-      ? message.sender.toLowerCase()
-      : ((message.sender as any)?.full_name || '').toLowerCase();
+    const senderName = typeof message.sender === 'object' && message.sender !== null
+      ? String(message.sender.full_name || '').toLowerCase()
+      : String(message.sender || '').toLowerCase();
     
     return content.includes(searchQuery) || senderName.includes(searchQuery);
   });
@@ -95,9 +95,9 @@ export function MessagesList({
                     key={message.id}
                     message={{
                       ...message,
-                      sender: typeof message.sender === 'string' 
-                        ? message.sender 
-                        : ((message.sender as any)?.full_name || ''),
+                      sender: typeof message.sender === 'object' && message.sender !== null
+                        ? message.sender.full_name || ''
+                        : String(message.sender || ''),
                       timestamp: new Date(message.created_at || '')
                     }}
                     onMarkAsRead={onMarkAsRead}
