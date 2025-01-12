@@ -1,8 +1,9 @@
 import { Upload, UserRound } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useVCardStyle } from "../../VCardStyleContext";
 
 interface VCardAvatarProps {
   profile: any;
@@ -11,7 +12,7 @@ interface VCardAvatarProps {
 }
 
 export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps) {
-  const { toast } = useToast();
+  const { selectedStyle } = useVCardStyle();
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -20,18 +21,18 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
     try {
       if (!file.type.startsWith('image/')) {
         toast({
-          variant: "destructive",
           title: "Erreur",
           description: "Veuillez sélectionner une image",
+          variant: "destructive"
         });
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
         toast({
-          variant: "destructive",
           title: "Erreur",
           description: "L'image ne doit pas dépasser 5MB",
+          variant: "destructive"
         });
         return;
       }
@@ -73,34 +74,45 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
       
       toast({
         title: "Succès",
-        description: "Photo de profil mise à jour",
+        description: "Photo de profil mise à jour"
       });
     } catch (error) {
       console.error('Error uploading avatar:', error);
       toast({
-        variant: "destructive",
         title: "Erreur",
         description: "Impossible de mettre à jour la photo de profil",
+        variant: "destructive"
       });
     }
   };
 
   return (
     <div className="relative group mx-auto sm:mx-0">
-      <div className={cn(
-        "relative rounded-full overflow-hidden",
-        "ring-4 ring-background dark:ring-background/80",
-        "shadow-xl hover:shadow-2xl transition-shadow duration-200",
-        "w-24 h-24 sm:w-32 sm:h-32"
-      )}>
+      <div 
+        className={cn(
+          "relative rounded-full overflow-hidden",
+          "ring-4 transition-shadow duration-200",
+          "w-24 h-24 sm:w-32 sm:h-32"
+        )}
+        style={{
+          ringColor: `${selectedStyle.colors.primary}30`,
+          boxShadow: `0 4px 12px ${selectedStyle.colors.primary}15`
+        }}
+      >
         <Avatar className="w-full h-full">
           <AvatarImage 
             src={profile.avatar_url} 
-            alt={profile.full_name}
+            alt={profile.full_name || "Profile picture"}
             className="object-cover w-full h-full"
           />
-          <AvatarFallback className="bg-muted">
-            <UserRound className="w-12 h-12 text-muted-foreground/50" />
+          <AvatarFallback 
+            className="bg-background/5 backdrop-blur-sm"
+            style={{
+              color: selectedStyle.colors.text.muted,
+              background: `${selectedStyle.colors.primary}10`
+            }}
+          >
+            <UserRound className="w-12 h-12" />
           </AvatarFallback>
         </Avatar>
         {isEditing && (

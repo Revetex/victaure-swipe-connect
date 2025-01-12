@@ -24,6 +24,8 @@ export function VCardContainer({ children, isEditing, className }: VCardContaine
       )}
       style={{
         background: `${selectedStyle.colors.primary}05`,
+        color: selectedStyle.colors.text.primary,
+        fontFamily: selectedStyle.font
       }}
     >
       <div className="container mx-auto px-4 py-8">
