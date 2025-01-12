@@ -4,13 +4,13 @@ import { motion } from "framer-motion";
 
 interface VCardEditingActionsProps {
   onSave: () => void;
-  onCancel: () => void;
+  onApplyChanges: () => void;
   isProcessing: boolean;
 }
 
 export function VCardEditingActions({
   onSave,
-  onCancel,
+  onApplyChanges,
   isProcessing
 }: VCardEditingActionsProps) {
   return (
@@ -25,7 +25,7 @@ export function VCardEditingActions({
       <VCardActionButton
         icon={X}
         label="Annuler"
-        onClick={onCancel}
+        onClick={onApplyChanges}
         variant="outline"
         disabled={isProcessing}
       />

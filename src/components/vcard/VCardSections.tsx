@@ -2,10 +2,9 @@ import { UserProfile } from "@/types/profile";
 import { VCardHeader } from "../VCardHeader";
 import { VCardBio } from "../VCardBio";
 import { VCardContact } from "../VCardContact";
-import { VCardSkills } from "../VCardSkills";
+import { VCardContent } from "./VCardContent";
 import { VCardEducation } from "../VCardEducation";
 import { VCardExperiences } from "../VCardExperiences";
-import { VCardQRCode } from "./VCardQRCode";
 import { StyleOption } from "./types";
 
 interface VCardSectionsProps {
@@ -43,69 +42,68 @@ export function VCardSections({
     switch (sectionId) {
       case 'header':
         return (
-          <div key={uniqueKey} className="w-full">
-            <VCardHeader
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              customStyles={customStyles}
-            />
-          </div>
-        );
-      case 'contact':
-        return (
-          <div key={uniqueKey} className="w-full mt-4">
-            <VCardContact
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              customStyles={customStyles}
-            />
-          </div>
+          <VCardHeader
+            key={uniqueKey}
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            customStyles={customStyles}
+          />
         );
       case 'bio':
         return (
-          <div key={uniqueKey} className="w-full mt-6">
-            <VCardBio
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              customStyles={customStyles}
-            />
-          </div>
+          <VCardBio
+            key={uniqueKey}
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            customStyles={customStyles}
+          />
+        );
+      case 'contact':
+        return (
+          <VCardContact
+            key={uniqueKey}
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            customStyles={customStyles}
+          />
         );
       case 'skills':
         return (
-          <div key={uniqueKey} className="w-full mt-6">
-            <VCardSkills
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              handleRemoveSkill={handleRemoveSkill}
-            />
-          </div>
+          <VCardContent
+            key={uniqueKey}
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            newSkill={newSkill}
+            setNewSkill={setNewSkill}
+            handleAddSkill={handleAddSkill}
+            handleRemoveSkill={handleRemoveSkill}
+            selectedStyle={selectedStyle}
+            customStyles={customStyles}
+          />
         );
       case 'education':
         return (
-          <div key={uniqueKey} className="w-full mt-6">
-            <VCardEducation
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              customStyles={customStyles}
-            />
-          </div>
+          <VCardEducation
+            key={uniqueKey}
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            customStyles={customStyles}
+          />
         );
       case 'experience':
         return (
-          <div key={uniqueKey} className="w-full mt-6">
-            <VCardExperiences
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              customStyles={customStyles}
-            />
-          </div>
+          <VCardExperiences
+            key={uniqueKey}
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            customStyles={customStyles}
+          />
         );
       default:
         return null;
@@ -114,28 +112,21 @@ export function VCardSections({
 
   return (
     <div 
-      className="max-w-4xl mx-auto px-4 md:px-6 py-8 space-y-6"
+      className="space-y-8"
       style={{
         fontFamily: customStyles?.font,
         backgroundColor: customStyles?.background,
         color: customStyles?.textColor,
       }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 space-y-6">
-          {sectionsOrder
-            .filter(section => ['header', 'contact', 'bio', 'skills', 'education', 'experience'].includes(section))
-            .map((sectionId, index) => renderSection(sectionId, index))}
+      {sectionsOrder.map((sectionId, index) => (
+        <div
+          key={`section-container-${sectionId}-${index}`}
+          className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}
+        >
+          {renderSection(sectionId, index)}
         </div>
-        
-        <div className="lg:col-span-4">
-          {!isEditing && (
-            <div className="sticky top-4">
-              <VCardQRCode />
-            </div>
-          )}
-        </div>
-      </div>
+      ))}
     </div>
   );
 }

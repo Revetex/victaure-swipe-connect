@@ -1,7 +1,6 @@
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
-import { cn } from "@/lib/utils";
 
 interface VCardBadgeProps {
   text: string;
@@ -35,10 +34,7 @@ export function VCardBadge({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ scale: 1.05 }}
-      className={cn(
-        "inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors border shadow-sm",
-        getVariantStyles()
-      )}
+      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors border shadow-sm"
       style={{
         backgroundColor: variant === 'outline' ? 'transparent' : `${selectedStyle.color}15`,
         borderColor: `${selectedStyle.color}30`,
@@ -49,9 +45,7 @@ export function VCardBadge({
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className={cn(
-            "p-0.5 rounded-full transition-colors hover:bg-opacity-20"
-          )}
+          className={`p-0.5 rounded-full transition-colors hover:bg-opacity-20`}
           style={{
             backgroundColor: 'transparent',
             color: selectedStyle.colors.text.primary
