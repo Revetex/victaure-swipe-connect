@@ -105,6 +105,7 @@ export function ChatInput({
             className="min-h-[36px] max-h-[120px] resize-none py-2 text-base focus-visible:ring-1 pr-12 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
             disabled={isThinking}
           />
+          
           <AnimatePresence mode="wait">
             {value.trim() && !isThinking && (
               <motion.div
@@ -118,12 +119,13 @@ export function ChatInput({
                   type="button"
                   size="icon"
                   onClick={onSend}
-                  className="h-6 w-6 rounded-full bg-primary hover:bg-primary/90 shadow-sm"
+                  className="h-7 w-7 rounded-full bg-primary hover:bg-primary/90 shadow-sm"
                 >
-                  <Send className="h-3 w-3 text-primary-foreground" />
+                  <Send className="h-3.5 w-3.5 text-primary-foreground" />
                 </Button>
               </motion.div>
             )}
+            
             {isThinking && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -131,7 +133,12 @@ export function ChatInput({
                 exit={{ opacity: 0 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2"
               >
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/70" />
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="h-4 w-4 text-muted-foreground/70" />
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>

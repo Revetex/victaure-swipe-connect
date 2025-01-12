@@ -78,25 +78,25 @@ export function ChatMessage({
         >
           {thinking ? (
             <motion.div className="flex items-center gap-2">
-              <motion.div className="flex gap-1">
+              <motion.div className="flex gap-1.5">
                 {[0, 1, 2].map((i) => (
                   <motion.span
                     key={i}
-                    className="w-2 h-2 bg-primary/50 rounded-full"
+                    className="w-1.5 h-1.5 bg-current rounded-full opacity-70"
                     animate={{ 
-                      scale: [1, 1.2, 1],
-                      opacity: [0.5, 1, 0.5]
+                      scale: [1, 1.3, 1],
+                      opacity: [0.4, 1, 0.4]
                     }}
                     transition={{ 
-                      duration: 1,
+                      duration: 0.8,
                       repeat: Infinity,
                       ease: "easeInOut",
-                      delay: i * 0.2
+                      delay: i * 0.15
                     }}
                   />
                 ))}
               </motion.div>
-              <span className="text-muted-foreground text-sm">M. Victaure réfléchit...</span>
+              <span className="text-muted-foreground text-xs font-medium">M. Victaure réfléchit...</span>
             </motion.div>
           ) : (
             content
