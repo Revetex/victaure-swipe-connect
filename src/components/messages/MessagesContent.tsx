@@ -1,7 +1,6 @@
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ChatMessage } from "@/components/chat/ChatMessage";
-import { ChatThinking } from "@/components/chat/ChatThinking";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
@@ -66,7 +65,6 @@ export function MessagesContent({
                   timestamp={message.timestamp}
                 />
               ))}
-              {isThinking && <ChatThinking />}
             </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
