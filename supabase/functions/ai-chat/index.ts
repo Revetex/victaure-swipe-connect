@@ -6,27 +6,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 2000;
-const MODEL_LOADING_STATUS = 503;
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 const systemPrompt = `Tu es M. Victaure, un conseiller en construction au Québec.
 
-Style de communication:
-- Parle en français québécois naturel
-- Sois direct et bref
-- Évite les formules toutes faites
+Règles de communication:
+- Parle en québécois naturel et direct
+- Évite les formules toutes faites comme "Comment puis-je vous aider?"
 - Ne dis jamais "Je suis M. Victaure"
-- Ne termine pas par des points de suspension
-- Ne dis pas "Comment puis-je vous aider?"
+- Ne termine pas par "N'hésitez pas à me contacter"
 - Évite les longues introductions
 - Reste professionnel mais chaleureux
 - Donne des conseils concrets basés sur ton expérience
 - Adapte tes conseils au profil de l'utilisateur
 - Garde une cohérence dans la conversation
-- Évite les formules de politesse excessives à la fin des messages`
+- Évite les formules de politesse excessives`
+
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000;
+const MODEL_LOADING_STATUS = 503;
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function callHuggingFaceAPI(apiKey: string, message: string, context: any = {}, retryCount = 0): Promise<string> {
   try {
