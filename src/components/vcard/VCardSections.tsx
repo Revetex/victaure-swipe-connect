@@ -42,19 +42,8 @@ export function VCardSections({
     switch (sectionId) {
       case 'header':
         return (
-          <div key={uniqueKey} className="w-full px-4 sm:px-6 md:px-8">
+          <div key={uniqueKey} className="w-full">
             <VCardHeader
-              profile={profile}
-              isEditing={isEditing}
-              setProfile={setProfile}
-              customStyles={customStyles}
-            />
-          </div>
-        );
-      case 'bio':
-        return (
-          <div key={uniqueKey} className="w-full px-4 sm:px-6 md:px-8">
-            <VCardBio
               profile={profile}
               isEditing={isEditing}
               setProfile={setProfile}
@@ -64,8 +53,19 @@ export function VCardSections({
         );
       case 'contact':
         return (
-          <div key={uniqueKey} className="w-full px-4 sm:px-6 md:px-8">
+          <div key={uniqueKey} className="w-full">
             <VCardContact
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
+              customStyles={customStyles}
+            />
+          </div>
+        );
+      case 'bio':
+        return (
+          <div key={uniqueKey} className="w-full">
+            <VCardBio
               profile={profile}
               isEditing={isEditing}
               setProfile={setProfile}
@@ -75,7 +75,7 @@ export function VCardSections({
         );
       case 'skills':
         return (
-          <div key={uniqueKey} className="w-full px-4 sm:px-6 md:px-8">
+          <div key={uniqueKey} className="w-full">
             <VCardContent
               profile={profile}
               isEditing={isEditing}
@@ -91,7 +91,7 @@ export function VCardSections({
         );
       case 'education':
         return (
-          <div key={uniqueKey} className="w-full px-4 sm:px-6 md:px-8">
+          <div key={uniqueKey} className="w-full">
             <VCardEducation
               profile={profile}
               isEditing={isEditing}
@@ -102,7 +102,7 @@ export function VCardSections({
         );
       case 'experience':
         return (
-          <div key={uniqueKey} className="w-full px-4 sm:px-6 md:px-8">
+          <div key={uniqueKey} className="w-full">
             <VCardExperiences
               profile={profile}
               isEditing={isEditing}
@@ -127,7 +127,7 @@ export function VCardSections({
     >
       <div className="lg:col-span-8 space-y-8">
         {sectionsOrder
-          .filter(section => ['header', 'bio', 'education', 'experience'].includes(section))
+          .filter(section => ['header', 'contact', 'bio', 'education', 'experience'].includes(section))
           .map((sectionId, index) => (
             <div
               key={`section-container-${sectionId}-${index}`}
@@ -140,7 +140,7 @@ export function VCardSections({
       
       <div className="lg:col-span-4 space-y-8">
         {sectionsOrder
-          .filter(section => ['contact', 'skills'].includes(section))
+          .filter(section => ['skills'].includes(section))
           .map((sectionId, index) => (
             <div
               key={`section-container-${sectionId}-${index}`}
