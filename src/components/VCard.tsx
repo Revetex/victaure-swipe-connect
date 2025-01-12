@@ -38,6 +38,14 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
+  const handleCancel = () => {
+    setTempProfile(null);
+    setIsEditing(false);
+    if (onEditStateChange) {
+      onEditStateChange(false);
+    }
+  };
+
   const handleProfileChange = (updates: Partial<UserProfile>) => {
     if (tempProfile) {
       setTempProfile({ ...tempProfile, ...updates });
@@ -142,6 +150,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           isProcessing={isAIProcessing}
           selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
+          onCancel={handleCancel}
           onSave={handleSave}
           onDownloadBusinessCard={async () => {
             if (!profile) return;
