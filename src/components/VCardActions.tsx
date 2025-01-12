@@ -43,7 +43,7 @@ export function VCardActions({
           >
             <Button 
               onClick={onSave}
-              className="w-full bg-primary hover:bg-primary/90"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >
               Sauvegarder
             </Button>
@@ -56,7 +56,7 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges}
               variant="outline" 
-              className="w-full"
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
               Appliquer
             </Button>
@@ -68,7 +68,7 @@ export function VCardActions({
             <Button 
               onClick={() => setIsEditing(false)}
               variant="outline"
-              className="transition-colors"
+              className="border-blue-500 text-blue-500 hover:bg-blue-50"
             >
               Annuler
             </Button>
@@ -84,11 +84,7 @@ export function VCardActions({
             <Button 
               onClick={() => setIsEditing(true)}
               variant="outline"
-              className="w-full"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
               <Edit className="mr-2 h-4 w-4" />
               Éditer
@@ -102,11 +98,7 @@ export function VCardActions({
             <Button 
               onClick={onShare}
               variant="outline"
-              className="w-full"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
               <Share2 className="mr-2 h-4 w-4" />
               Partager
@@ -120,11 +112,7 @@ export function VCardActions({
             <Button 
               onClick={onDownloadBusinessPDF}
               variant="outline"
-              className="w-full"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
@@ -138,11 +126,7 @@ export function VCardActions({
             <Button 
               onClick={onDownloadCVPDF}
               variant="outline"
-              className="w-full"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF

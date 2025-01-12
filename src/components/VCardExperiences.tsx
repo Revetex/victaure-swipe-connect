@@ -1,187 +1,161 @@
-import { useState } from "react";
-import { VCardSection } from "./VCardSection";
-import { Briefcase, X, Building2, Calendar, Plus, GripVertical } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { toast } from "sonner";
 import { UserProfile } from "@/types/profile";
+import { VCardSection } from "./VCardSection";
+import { Briefcase } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface VCardExperiencesProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
+  customStyles?: {
+    font?: string;
+    background?: string;
+    textColor?: string;
+  };
 }
 
-export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperiencesProps) {
+export function VCardExperiences({ profile, isEditing, setProfile, customStyles }: VCardExperiencesProps) {
   const handleAddExperience = () => {
-    if (!profile) return;
-
-    const experience = {
-      id: crypto.randomUUID(),
+    const newExperience = {
+      id: Date.now().toString(),
+      title: "",
       company: "",
-      position: "",
-      start_date: "",
-      end_date: "",
-      description: ""
+      location: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+      current: false,
     };
 
     setProfile({
       ...profile,
-      experiences: [...(profile.experiences || []), experience]
+      experiences: [...(profile.experiences || []), newExperience],
     });
-    toast.success("Expérience ajoutée");
   };
 
   const handleRemoveExperience = (id: string) => {
     setProfile({
       ...profile,
-      experiences: profile.experiences?.filter(exp => exp.id !== id) || []
+      experiences: (profile.experiences || []).filter((exp) => exp.id !== id),
     });
-    toast.success("Expérience supprimée");
   };
 
-  const handleReorder = (newOrder: any[]) => {
+  const handleExperienceChange = (id: string, field: string, value: string | boolean) => {
     setProfile({
       ...profile,
-      experiences: newOrder
+      experiences: (profile.experiences || []).map((exp) =>
+        exp.id === id ? { ...exp, [field]: value } : exp
+      ),
     });
   };
 
   return (
-    <VCardSection
-      title="Expériences professionnelles"
-      icon={<Briefcase className="h-5 w-5 text-indigo-400" />}
+    <VCardSection 
+      title="Expériences professionnelles" 
+      icon={<Briefcase className="h-5 w-5" />}
     >
-      <div className="space-y-6">
-        <AnimatePresence>
-          {isEditing ? (
-            <Reorder.Group axis="y" values={profile.experiences || []} onReorder={handleReorder}>
-              {profile.experiences?.map((experience) => (
-                <Reorder.Item key={experience.id} value={experience}>
-                  <motion.div
-                    className="relative p-4 rounded-lg bg-white/5 space-y-2"
-                  >
-                    <div className="absolute top-4 left-2 cursor-move">
-                      <GripVertical className="h-4 w-4 text-indigo-400" />
-                    </div>
-                    <div className="ml-6">
-                  <Input
-                    value={experience.company}
-                    onChange={(e) => {
-                      const newExperiences = profile.experiences?.map(exp =>
-                        exp.id === experience.id ? { ...exp, company: e.target.value } : exp
-                      );
-                      setProfile({ ...profile, experiences: newExperiences });
-                    }}
-                    placeholder="Entreprise"
-                    className="mb-2 bg-white/10 border-white/20 text-white placeholder:text-white/50"
-                  />
-                  <Input
-                    value={experience.position}
-                    onChange={(e) => {
-                      const newExperiences = profile.experiences?.map(exp =>
-                        exp.id === experience.id ? { ...exp, position: e.target.value } : exp
-                      );
-                      setProfile({ ...profile, experiences: newExperiences });
-                    }}
-                    placeholder="Poste"
-                    className="mb-2 bg-white/10 border-white/20 text-white placeholder:text-white/50"
-                  />
-                  <div className="grid grid-cols-2 gap-4 mb-2">
-                    <Input
-                      type="date"
-                      value={experience.start_date || ""}
-                      onChange={(e) => {
-                        const newExperiences = profile.experiences?.map(exp =>
-                          exp.id === experience.id ? { ...exp, start_date: e.target.value } : exp
-                        );
-                        setProfile({ ...profile, experiences: newExperiences });
-                      }}
-                      className="bg-white/10 border-white/20 text-white"
-                    />
-                    <Input
-                      type="date"
-                      value={experience.end_date || ""}
-                      onChange={(e) => {
-                        const newExperiences = profile.experiences?.map(exp =>
-                          exp.id === experience.id ? { ...exp, end_date: e.target.value } : exp
-                        );
-                        setProfile({ ...profile, experiences: newExperiences });
-                      }}
-                      className="bg-white/10 border-white/20 text-white"
-                    />
-                  </div>
-                  <Textarea
-                    value={experience.description || ""}
-                    onChange={(e) => {
-                      const newExperiences = profile.experiences?.map(exp =>
-                        exp.id === experience.id ? { ...exp, description: e.target.value } : exp
-                      );
-                      setProfile({ ...profile, experiences: newExperiences });
-                    }}
-                    placeholder="Description du poste"
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveExperience(experience.id)}
-                    className="absolute top-2 right-2 text-white/60 hover:text-white"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                    </div>
-                  </motion.div>
-                </Reorder.Item>
-              ))}
-            </Reorder.Group>
-          ) : (
-            profile.experiences?.map((experience) => (
-              <motion.div
-                key={experience.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="relative p-4 rounded-lg bg-white/5 space-y-2"
-              >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-medium text-white">{experience.position}</h4>
-                      <p className="text-sm text-white/80">{experience.company}</p>
-                      {experience.start_date && (
-                        <p className="text-sm text-white/60">
-                          {new Date(experience.start_date).toLocaleDateString()} - 
-                          {experience.end_date 
-                            ? new Date(experience.end_date).toLocaleDateString()
-                            : "Présent"}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  {experience.description && (
-                    <p className="text-sm text-white/70">{experience.description}</p>
-                  )}
-              </motion.div>
-            ))
-          )}
-        </AnimatePresence>
-
-        {isEditing && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-4"
+      <div className="space-y-4">
+        {(profile.experiences || []).map((experience) => (
+          <div
+            key={experience.id}
+            className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50"
           >
-            <Button
-              onClick={handleAddExperience}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter une expérience
-            </Button>
-          </motion.div>
+            {isEditing ? (
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  value={experience.title}
+                  onChange={(e) =>
+                    handleExperienceChange(experience.id, "title", e.target.value)
+                  }
+                  placeholder="Titre du poste"
+                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600"
+                />
+                <input
+                  type="text"
+                  value={experience.company}
+                  onChange={(e) =>
+                    handleExperienceChange(experience.id, "company", e.target.value)
+                  }
+                  placeholder="Entreprise"
+                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600"
+                />
+                <input
+                  type="text"
+                  value={experience.location}
+                  onChange={(e) =>
+                    handleExperienceChange(experience.id, "location", e.target.value)
+                  }
+                  placeholder="Localisation"
+                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600"
+                />
+                <div className="flex gap-4">
+                  <input
+                    type="date"
+                    value={experience.startDate}
+                    onChange={(e) =>
+                      handleExperienceChange(experience.id, "startDate", e.target.value)
+                    }
+                    className="flex-1 p-2 rounded border border-gray-300 dark:border-gray-600"
+                  />
+                  <input
+                    type="date"
+                    value={experience.endDate}
+                    onChange={(e) =>
+                      handleExperienceChange(experience.id, "endDate", e.target.value)
+                    }
+                    disabled={experience.current}
+                    className="flex-1 p-2 rounded border border-gray-300 dark:border-gray-600"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={experience.current}
+                    onChange={(e) =>
+                      handleExperienceChange(experience.id, "current", e.target.checked)
+                    }
+                    className="rounded border-gray-300 dark:border-gray-600"
+                  />
+                  <label>Poste actuel</label>
+                </div>
+                <textarea
+                  value={experience.description}
+                  onChange={(e) =>
+                    handleExperienceChange(experience.id, "description", e.target.value)
+                  }
+                  placeholder="Description du poste"
+                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 min-h-[100px]"
+                />
+                <Button
+                  onClick={() => handleRemoveExperience(experience.id)}
+                  variant="destructive"
+                  className="w-full"
+                >
+                  Supprimer
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <h4 className="font-semibold">{experience.title}</h4>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {experience.company} • {experience.location}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-500">
+                  {experience.startDate} - {experience.current ? "Présent" : experience.endDate}
+                </p>
+                <p className="text-gray-700 dark:text-gray-300">{experience.description}</p>
+              </div>
+            )}
+          </div>
+        ))}
+        {isEditing && (
+          <Button 
+            onClick={handleAddExperience}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Ajouter une expérience
+          </Button>
         )}
       </div>
     </VCardSection>

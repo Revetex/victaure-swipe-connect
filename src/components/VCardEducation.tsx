@@ -1,204 +1,151 @@
+import { UserProfile } from "@/types/profile";
 import { VCardSection } from "./VCardSection";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { X, GraduationCap, Building2, Calendar, GripVertical } from "lucide-react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { toast } from "sonner";
-
-interface Education {
-  id: string;
-  school_name: string;
-  degree: string;
-  field_of_study?: string;
-  start_date?: string;
-  end_date?: string;
-  description?: string;
-}
+import { GraduationCap } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface VCardEducationProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
+  customStyles?: {
+    font?: string;
+    background?: string;
+    textColor?: string;
+  };
 }
 
-export function VCardEducation({
-  profile,
-  isEditing,
-  setProfile,
-}: VCardEducationProps) {
+export function VCardEducation({ profile, isEditing, setProfile, customStyles }: VCardEducationProps) {
   const handleAddEducation = () => {
+    const newEducation = {
+      id: Date.now().toString(),
+      school: "",
+      degree: "",
+      field: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+    };
+
     setProfile({
       ...profile,
-      education: [
-        ...(profile.education || []),
-        { id: crypto.randomUUID(), school_name: "", degree: "", field_of_study: "", start_date: "", end_date: "" },
-      ],
+      education: [...(profile.education || []), newEducation],
     });
-    toast.success("Formation ajoutée");
   };
 
-  const handleRemoveEducation = (educationId: string) => {
-    const newEducation = [...(profile.education || [])].filter(edu => edu.id !== educationId);
-    setProfile({ ...profile, education: newEducation });
-    toast.success("Formation supprimée");
+  const handleRemoveEducation = (id: string) => {
+    setProfile({
+      ...profile,
+      education: (profile.education || []).filter((edu) => edu.id !== id),
+    });
   };
 
-  const handleReorder = (newOrder: Education[]) => {
-    setProfile({ ...profile, education: newOrder });
+  const handleEducationChange = (id: string, field: string, value: string) => {
+    setProfile({
+      ...profile,
+      education: (profile.education || []).map((edu) =>
+        edu.id === id ? { ...edu, [field]: value } : edu
+      ),
+    });
   };
 
   return (
     <VCardSection 
-      title="Formation"
-      icon={<GraduationCap className="h-4 w-4 text-indigo-400" />}
+      title="Formation" 
+      icon={<GraduationCap className="h-5 w-5" />}
     >
-      <AnimatePresence mode="popLayout">
-        <div className="space-y-6">
-          {isEditing ? (
-            <Reorder.Group axis="y" values={profile.education || []} onReorder={handleReorder}>
-              {(profile.education || []).map((edu: Education) => (
-                <Reorder.Item key={edu.id} value={edu}>
-                  <motion.div 
-                    className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20 hover:border-indigo-500/30 transition-colors"
-                  >
-                    <div className="absolute top-4 left-2 cursor-move">
-                      <GripVertical className="h-4 w-4 text-indigo-400" />
-                    </div>
-                    <div className="ml-6">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
-                        <Input
-                          value={edu.school_name}
-                          onChange={(e) => {
-                            const newEducation = [...(profile.education || [])];
-                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                            newEducation[eduIndex] = { ...edu, school_name: e.target.value };
-                            setProfile({ ...profile, education: newEducation });
-                          }}
-                          placeholder="Nom de l'école"
-                          className="flex-1 bg-white/10 border-indigo-500/20"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <GraduationCap className="h-4 w-4 text-indigo-400 shrink-0" />
-                        <Input
-                          value={edu.degree}
-                          onChange={(e) => {
-                            const newEducation = [...(profile.education || [])];
-                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                            newEducation[eduIndex] = { ...edu, degree: e.target.value };
-                            setProfile({ ...profile, education: newEducation });
-                          }}
-                          placeholder="Diplôme"
-                          className="flex-1 bg-white/10 border-indigo-500/20"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          value={edu.field_of_study}
-                          onChange={(e) => {
-                            const newEducation = [...(profile.education || [])];
-                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                            newEducation[eduIndex] = { ...edu, field_of_study: e.target.value };
-                            setProfile({ ...profile, education: newEducation });
-                          }}
-                          placeholder="Domaine d'études"
-                          className="flex-1 bg-white/10 border-indigo-500/20"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-indigo-400 shrink-0" />
-                          <Input
-                            type="date"
-                            value={edu.start_date}
-                            onChange={(e) => {
-                              const newEducation = [...(profile.education || [])];
-                              const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                              newEducation[eduIndex] = { ...edu, start_date: e.target.value };
-                              setProfile({ ...profile, education: newEducation });
-                            }}
-                            className="flex-1 bg-white/10 border-indigo-500/20"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-indigo-400 shrink-0" />
-                          <Input
-                            type="date"
-                            value={edu.end_date}
-                            onChange={(e) => {
-                              const newEducation = [...(profile.education || [])];
-                              const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                              newEducation[eduIndex] = { ...edu, end_date: e.target.value };
-                              setProfile({ ...profile, education: newEducation });
-                            }}
-                            className="flex-1 bg-white/10 border-indigo-500/20"
-                          />
-                        </div>
-                      </div>
-                      <div className="absolute top-2 right-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemoveEducation(edu.id)}
-                          className="text-indigo-400 hover:text-red-400 transition-colors"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </motion.div>
-                </Reorder.Item>
-              ))}
-            </Reorder.Group>
-          ) : (
-            (profile.education || []).map((edu: Education) => (
-              <motion.div 
-                key={edu.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20"
-              >
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
-                  <p className="font-medium text-white">{edu.school_name || "École non définie"}</p>
+      <div className="space-y-4">
+        {(profile.education || []).map((education) => (
+          <div
+            key={education.id}
+            className="p-4 rounded-lg border bg-card"
+          >
+            {isEditing ? (
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  value={education.school}
+                  onChange={(e) =>
+                    handleEducationChange(education.id, "school", e.target.value)
+                  }
+                  placeholder="École"
+                  className="w-full p-2 rounded border"
+                />
+                <input
+                  type="text"
+                  value={education.degree}
+                  onChange={(e) =>
+                    handleEducationChange(education.id, "degree", e.target.value)
+                  }
+                  placeholder="Diplôme"
+                  className="w-full p-2 rounded border"
+                />
+                <input
+                  type="text"
+                  value={education.field}
+                  onChange={(e) =>
+                    handleEducationChange(education.id, "field", e.target.value)
+                  }
+                  placeholder="Domaine d'études"
+                  className="w-full p-2 rounded border"
+                />
+                <div className="flex gap-4">
+                  <input
+                    type="text"
+                    value={education.startDate}
+                    onChange={(e) =>
+                      handleEducationChange(education.id, "startDate", e.target.value)
+                    }
+                    placeholder="Date de début"
+                    className="w-full p-2 rounded border"
+                  />
+                  <input
+                    type="text"
+                    value={education.endDate}
+                    onChange={(e) =>
+                      handleEducationChange(education.id, "endDate", e.target.value)
+                    }
+                    placeholder="Date de fin"
+                    className="w-full p-2 rounded border"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4 text-indigo-400 shrink-0" />
-                  <p className="text-white/80">{edu.degree || "Diplôme non défini"}</p>
-                </div>
-                {edu.field_of_study && (
-                  <p className="text-white/70 pl-6">{edu.field_of_study}</p>
-                )}
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {edu.start_date ? new Date(edu.start_date).getFullYear() : "?"} 
-                    {" - "}
-                    {edu.end_date ? new Date(edu.end_date).getFullYear() : "Présent"}
-                  </span>
-                </div>
-              </motion.div>
-            ))
-          )}
-          {isEditing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Button 
-                onClick={handleAddEducation} 
-                variant="outline" 
-                className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500"
-              >
-                Ajouter une formation
-              </Button>
-            </motion.div>
-          )}
-        </div>
-      </AnimatePresence>
+                <textarea
+                  value={education.description}
+                  onChange={(e) =>
+                    handleEducationChange(education.id, "description", e.target.value)
+                  }
+                  placeholder="Description"
+                  className="w-full p-2 rounded border min-h-[100px]"
+                />
+                <Button
+                  onClick={() => handleRemoveEducation(education.id)}
+                  variant="destructive"
+                  className="w-full"
+                >
+                  Supprimer
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <h4 className="font-semibold">{education.school}</h4>
+                <p>{education.degree}</p>
+                <p className="text-muted-foreground">{education.field}</p>
+                <p className="text-sm text-muted-foreground">
+                  {education.startDate} - {education.endDate}
+                </p>
+                <p className="text-sm">{education.description}</p>
+              </div>
+            )}
+          </div>
+        ))}
+        {isEditing && (
+          <Button 
+            onClick={handleAddEducation}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Ajouter une formation
+          </Button>
+        )}
+      </div>
     </VCardSection>
   );
 }
