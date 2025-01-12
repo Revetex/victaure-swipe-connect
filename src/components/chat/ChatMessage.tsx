@@ -22,7 +22,7 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const isAssistant = sender === "assistant";
   
-  // Only render thinking messages if they have the thinking prop explicitly set
+  // Skip rendering empty messages that aren't thinking messages
   if (!content && !thinking) return null;
   
   return (
