@@ -8,6 +8,7 @@ const config: CapacitorConfig = {
     androidScheme: 'https',
     cleartext: true,
     allowNavigation: [
+      '*',
       'mfjllillnpleasclqabb.supabase.co',
       '*.supabase.co',
       '*.vercel.app',

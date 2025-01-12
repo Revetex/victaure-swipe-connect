@@ -27,15 +27,7 @@ export default defineConfig(({ mode }) => ({
       interval: 1000,
     },
     cors: {
-      origin: [
-        'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-        'https://mfjllillnpleasclqabb.supabase.co',
-        'https://mfjllillnpleasclqabb.supabase.co/auth/v1/*',
-        'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*',
-        'https://mfjllillnpleasclqabb.supabase.co/storage/v1/*',
-        'http://localhost:8080',
-        'http://10.0.2.2:8080'
-      ],
+      origin: '*',
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: [
         'Content-Type', 
@@ -44,11 +36,15 @@ export default defineConfig(({ mode }) => ({
         'apikey', 
         'X-Supabase-Auth',
         'Range',
-        'Prefer'
+        'Prefer',
+        'Origin',
+        'Accept',
+        'Access-Control-Request-Method',
+        'Access-Control-Request-Headers'
       ],
       exposedHeaders: ['Content-Range'],
       credentials: true,
-      preflightContinue: true,
+      preflightContinue: false,
       optionsSuccessStatus: 204
     }
   },
