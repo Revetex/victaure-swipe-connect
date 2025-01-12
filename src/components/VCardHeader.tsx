@@ -1,6 +1,6 @@
 import { UserProfile } from "@/types/profile";
-import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -13,33 +13,32 @@ interface VCardHeaderProps {
   };
 }
 
-export function VCardHeader({ profile, isEditing, setProfile, customStyles }: VCardHeaderProps) {
+export function VCardHeader({ profile, customStyles }: VCardHeaderProps) {
   return (
     <div 
-      className="flex items-center gap-4 p-4 rounded-lg border bg-card"
+      className={cn(
+        "flex flex-col items-center text-center p-6 rounded-lg border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "md:flex-row md:text-left md:items-start md:gap-6"
+      )}
       style={{
         fontFamily: customStyles?.font,
         backgroundColor: customStyles?.background,
         color: customStyles?.textColor,
       }}
     >
-      <Avatar className="h-20 w-20">
+      <Avatar className="h-24 w-24 border-4 border-background shadow-xl">
         <AvatarImage src={profile.avatar_url || ""} alt={profile.full_name || ""} />
         <AvatarFallback>{profile.full_name?.charAt(0) || "?"}</AvatarFallback>
       </Avatar>
       
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold">{profile.full_name}</h1>
-        <p className="text-muted-foreground">{profile.email}</p>
-        {isEditing && (
-          <Button
-            onClick={() => setProfile({ ...profile, full_name: "" })}
-            variant="ghost"
-            size="sm"
-            className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 mt-2"
-          >
-            Modifier
-          </Button>
+      <div className="mt-4 md:mt-0 space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight">
+          {profile.full_name || "Sans nom"}
+        </h1>
+        {profile.role && (
+          <p className="text-lg text-muted-foreground">
+            {profile.role}
+          </p>
         )}
       </div>
     </div>

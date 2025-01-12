@@ -17,11 +17,17 @@ export function VCardSectionsManager({
   selectedStyle,
 }: VCardSectionsManagerProps) {
   const [newSkill, setNewSkill] = useState("");
-  const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
+  const [sectionsOrder, setSectionsOrder] = useState<string[]>([
+    'header',
+    'contact',
+    'bio',
+    'skills',
+    'education',
+    'experience'
+  ]);
 
   useEffect(() => {
     if (profile?.sections_order) {
-      // Ensure sections are unique
       const uniqueSections = Array.from(new Set(profile.sections_order));
       if (uniqueSections.length !== profile.sections_order.length) {
         setProfile({
@@ -30,15 +36,12 @@ export function VCardSectionsManager({
         });
       }
       setSectionsOrder(uniqueSections);
-    } else {
-      setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
     }
   }, [profile, setProfile]);
 
   const handleAddSkill = () => {
     if (!profile || !newSkill.trim()) return;
     
-    // Ensure skills array exists and is unique
     const currentSkills = profile.skills || [];
     const newSkillTrimmed = newSkill.trim();
     
@@ -68,6 +71,11 @@ export function VCardSectionsManager({
       handleRemoveSkill={handleRemoveSkill}
       selectedStyle={selectedStyle}
       sectionsOrder={sectionsOrder}
+      customStyles={{
+        font: profile.custom_font,
+        background: profile.custom_background,
+        textColor: profile.custom_text_color
+      }}
     />
   );
 }

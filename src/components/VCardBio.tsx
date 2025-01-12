@@ -1,4 +1,5 @@
 import { UserProfile } from "@/types/profile";
+import { cn } from "@/lib/utils";
 
 export interface VCardBioProps {
   profile: UserProfile;
@@ -20,7 +21,10 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Présentation</h2>
       <div
-        className="p-4 rounded-lg border bg-card"
+        className={cn(
+          "p-6 rounded-lg border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+          "transition-all duration-200"
+        )}
         style={{
           fontFamily: customStyles?.font,
           backgroundColor: customStyles?.background,
@@ -32,22 +36,27 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
             value={profile.bio || ""}
             onChange={(e) => handleBioChange(e.target.value)}
             placeholder="Votre bio"
-            className="w-full p-2 rounded border min-h-[100px] bg-background"
+            className={cn(
+              "w-full p-4 rounded-md border min-h-[150px] bg-background/50",
+              "focus:ring-2 focus:ring-primary/50 focus:outline-none"
+            )}
             style={{
               fontFamily: customStyles?.font,
               color: customStyles?.textColor,
             }}
           />
         ) : (
-          <p 
-            className="whitespace-pre-wrap"
+          <div 
+            className="prose prose-sm max-w-none"
             style={{
               fontFamily: customStyles?.font,
               color: customStyles?.textColor,
             }}
           >
-            {profile.bio}
-          </p>
+            <p className="whitespace-pre-wrap leading-relaxed">
+              {profile.bio || "Aucune présentation disponible"}
+            </p>
+          </div>
         )}
       </div>
     </div>
