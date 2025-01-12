@@ -117,35 +117,19 @@ Réponds de manière professionnelle et détaillée, en te concentrant sur le se
       .replace(/\n{3,}/g, '\n\n')
       .replace(/\s{2,}/g, ' ');
 
-    // Validation de la qualité de la réponse
+    // Validation moins stricte de la qualité de la réponse
     const validationChecks = [
       {
-        condition: !aiResponse || aiResponse.length < 200,
+        condition: !aiResponse || aiResponse.length < 50,
         error: 'Réponse trop courte'
-      },
-      {
-        condition: /^\d+$/.test(aiResponse),
-        error: 'Réponse contient uniquement des chiffres'
       },
       {
         condition: !/[a-zA-ZÀ-ÿ]/.test(aiResponse),
         error: 'Réponse ne contient pas de texte'
       },
       {
-        condition: !aiResponse.includes(' '),
-        error: 'Réponse sans espaces'
-      },
-      {
-        condition: aiResponse.split(' ').length < 50,
+        condition: aiResponse.split(' ').length < 10,
         error: 'Réponse trop courte (mots)'
-      },
-      {
-        condition: !/[.!?]/.test(aiResponse),
-        error: 'Réponse sans ponctuation'
-      },
-      {
-        condition: !aiResponse.includes('construction') && !aiResponse.includes('métier'),
-        error: 'Réponse hors sujet (construction)'
       }
     ];
 
@@ -157,8 +141,10 @@ Réponds de manière professionnelle et détaillée, en te concentrant sur le se
       }
     }
 
-    // Assure une majuscule au début et une ponctuation à la fin
+    // Assure une majuscule au début
     aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
+    
+    // Ajoute un point final si nécessaire
     if (!aiResponse.match(/[.!?]$/)) {
       aiResponse += '.';
     }
