@@ -49,7 +49,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
   return (
     <VCardSection 
       title="Formation" 
-      icon={<GraduationCap className="h-5 w-5" />}
+      icon={<GraduationCap className="h-5 w-5" style={{ color: selectedStyle.colors.primary }} />}
     >
       <div className="space-y-4">
         {(profile.education || []).map((education) => (
@@ -74,7 +74,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                   className="w-full p-2 rounded border"
                   style={{
                     borderColor: `${selectedStyle.colors.primary}30`,
-                    color: selectedStyle.colors.text.primary
+                    color: selectedStyle.colors.text.primary,
+                    backgroundColor: `${selectedStyle.colors.primary}05`
                   }}
                 />
                 <input
@@ -87,7 +88,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                   className="w-full p-2 rounded border"
                   style={{
                     borderColor: `${selectedStyle.colors.primary}30`,
-                    color: selectedStyle.colors.text.primary
+                    color: selectedStyle.colors.text.primary,
+                    backgroundColor: `${selectedStyle.colors.primary}05`
                   }}
                 />
                 <input
@@ -100,7 +102,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                   className="w-full p-2 rounded border"
                   style={{
                     borderColor: `${selectedStyle.colors.primary}30`,
-                    color: selectedStyle.colors.text.primary
+                    color: selectedStyle.colors.text.primary,
+                    backgroundColor: `${selectedStyle.colors.primary}05`
                   }}
                 />
                 <div className="flex gap-4">
@@ -113,7 +116,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                     className="flex-1 p-2 rounded border"
                     style={{
                       borderColor: `${selectedStyle.colors.primary}30`,
-                      color: selectedStyle.colors.text.primary
+                      color: selectedStyle.colors.text.primary,
+                      backgroundColor: `${selectedStyle.colors.primary}05`
                     }}
                   />
                   <input
@@ -125,7 +129,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                     className="flex-1 p-2 rounded border"
                     style={{
                       borderColor: `${selectedStyle.colors.primary}30`,
-                      color: selectedStyle.colors.text.primary
+                      color: selectedStyle.colors.text.primary,
+                      backgroundColor: `${selectedStyle.colors.primary}05`
                     }}
                   />
                 </div>
@@ -138,7 +143,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                   className="w-full p-2 rounded border min-h-[100px]"
                   style={{
                     borderColor: `${selectedStyle.colors.primary}30`,
-                    color: selectedStyle.colors.text.primary
+                    color: selectedStyle.colors.text.primary,
+                    backgroundColor: `${selectedStyle.colors.primary}05`
                   }}
                 />
                 <Button
