@@ -1,10 +1,13 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
 import { DashboardContent } from "./dashboard/DashboardContent";
+import { useDebounce } from "use-debounce";
+
+const THROTTLE_DELAY = 300; // ms
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -12,26 +15,36 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [lastPageChange, setLastPageChange] = useState(0);
+  const [showingChat, setShowingChat] = useState(currentPage === 2);
 
-  useEffect(() => {
-    const updateHeight = () => {
-      setViewportHeight(window.innerHeight);
-    };
+  // Debounce viewport height updates
+  const [debouncedSetViewportHeight] = useDebounce(
+    (height: number) => setViewportHeight(height),
+    100
+  );
 
-    window.addEventListener('resize', updateHeight);
-    window.addEventListener('orientationchange', updateHeight);
+  const updateHeight = useCallback(() => {
+    debouncedSetViewportHeight(window.innerHeight);
+  }, [debouncedSetViewportHeight]);
 
-    setTimeout(updateHeight, 100);
+  const handlePageChange = useCallback((page: number) => {
+    const now = Date.now();
+    if (now - lastPageChange >= THROTTLE_DELAY) {
+      setCurrentPage(page);
+      setLastPageChange(now);
+      setShowingChat(page === 2);
+    }
+  }, [lastPageChange]);
 
-    return () => {
-      window.removeEventListener('resize', updateHeight);
-      window.removeEventListener('orientationchange', updateHeight);
-    };
-  }, []);
-
-  const handleRequestChat = () => {
-    setCurrentPage(2);
-  };
+  const handleRequestChat = useCallback(() => {
+    const now = Date.now();
+    if (now - lastPageChange >= THROTTLE_DELAY) {
+      setCurrentPage(2);
+      setLastPageChange(now);
+      setShowingChat(true);
+    }
+  }, [lastPageChange]);
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
@@ -57,7 +70,7 @@ export function DashboardLayout() {
         </AnimatePresence>
       </motion.div>
       
-      {!isEditing && (
+      {!isEditing && !showingChat && (
         <nav 
           className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
           style={{ 
@@ -68,7 +81,7 @@ export function DashboardLayout() {
           <div className="container mx-auto px-4 h-full flex items-center">
             <DashboardNavigation 
               currentPage={currentPage}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
             />
           </div>
         </nav>

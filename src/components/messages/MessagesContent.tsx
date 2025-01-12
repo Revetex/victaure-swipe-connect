@@ -4,7 +4,7 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatThinking } from "@/components/chat/ChatThinking";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 interface MessagesContentProps {
   messages: any[];
@@ -30,24 +30,11 @@ export function MessagesContent({
   onBack,
 }: MessagesContentProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    if (!hasScrolled || messages[messages.length - 1]?.sender === "user") {
-      scrollToBottom();
-    }
-  }, [messages, hasScrolled]);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLDivElement;
-    const isAtBottom = target.scrollHeight - target.scrollTop === target.clientHeight;
-    setHasScrolled(!isAtBottom);
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -62,7 +49,6 @@ export function MessagesContent({
         <ScrollArea 
           ref={scrollAreaRef}
           className="h-full"
-          onScroll={handleScroll}
         >
           <div className="p-4 space-y-4">
             <AnimatePresence mode="popLayout">
