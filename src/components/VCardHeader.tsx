@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface VCardHeaderProps {
@@ -21,6 +21,15 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
   const { selectedStyle } = useVCardStyle();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    // Reset loading state when profile.avatar_url changes
+    if (profile.avatar_url) {
+      setIsImageLoading(true);
+      setImageError(false);
+    }
+  }, [profile.avatar_url]);
 
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
@@ -55,6 +64,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       }
 
       setIsImageLoading(true);
+      setImageError(false);
 
       const { error: uploadError } = await supabase.storage
         .from('vcards')
@@ -77,14 +87,24 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       if (updateError) throw updateError;
 
       setProfile({ ...profile, avatar_url: publicUrl });
-      
       toast.success("Photo de profil mise à jour");
     } catch (error) {
       console.error('Error uploading avatar:', error);
+      setImageError(true);
       toast.error("Impossible de mettre à jour la photo de profil");
     } finally {
       setIsImageLoading(false);
     }
+  };
+
+  const handleImageLoad = () => {
+    setIsImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setIsImageLoading(false);
+    setImageError(true);
   };
 
   return (
@@ -99,22 +119,24 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     >
       <div className="relative group w-24 h-24 sm:w-32 sm:h-32">
         <div className="relative rounded-full overflow-hidden w-full h-full ring-4 ring-background/80 shadow-xl transition-shadow duration-200">
-          {isImageLoading ? (
-            <Skeleton className="w-full h-full rounded-full" />
-          ) : (
-            <Avatar className="w-full h-full">
-              <AvatarImage 
-                src={profile.avatar_url} 
-                alt={profile.full_name}
-                className="object-cover w-full h-full"
-                onLoad={() => setIsImageLoading(false)}
-                loading="lazy"
-              />
-              <AvatarFallback className="bg-muted">
-                <UserCircle2 className="w-12 h-12 text-muted-foreground/50" />
-              </AvatarFallback>
-            </Avatar>
+          {isImageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-muted">
+              <Skeleton className="w-full h-full rounded-full animate-pulse" />
+            </div>
           )}
+          <Avatar className="w-full h-full">
+            <AvatarImage 
+              src={profile.avatar_url} 
+              alt={profile.full_name}
+              className="object-cover w-full h-full"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              loading="lazy"
+            />
+            <AvatarFallback className="bg-muted">
+              <UserCircle2 className="w-12 h-12 text-muted-foreground/50" />
+            </AvatarFallback>
+          </Avatar>
           {isEditing && (
             <label 
               className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
