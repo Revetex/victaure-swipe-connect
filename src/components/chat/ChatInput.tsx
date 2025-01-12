@@ -60,7 +60,7 @@ export function ChatInput({
   };
 
   return (
-    <div className={cn("p-4", className)}>
+    <div className={cn("p-2", className)}>
       <div className="relative flex items-center gap-2">
         {onVoiceInput && (
           <motion.div whileTap={{ scale: 0.95 }}>
@@ -70,7 +70,7 @@ export function ChatInput({
               variant={isListening ? "default" : "ghost"}
               onClick={onVoiceInput}
               className={cn(
-                "h-8 w-8 shrink-0 rounded-full transition-all duration-200",
+                "h-7 w-7 shrink-0 rounded-full transition-all duration-200",
                 isListening ? "bg-primary text-primary-foreground shadow-lg scale-110" : "opacity-70 hover:opacity-100"
               )}
               disabled={isThinking}
@@ -82,7 +82,7 @@ export function ChatInput({
                 } : {}}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               >
-                <Mic className="h-4 w-4" />
+                <Mic className="h-3.5 w-3.5" />
               </motion.div>
             </Button>
           </motion.div>
@@ -99,7 +99,7 @@ export function ChatInput({
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="min-h-[36px] w-full pr-12 py-2 resize-none text-base focus-visible:ring-1 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
+            className="min-h-[32px] w-full pr-12 py-1.5 resize-none text-sm focus-visible:ring-1 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
             disabled={isThinking}
           />
           
@@ -116,9 +116,9 @@ export function ChatInput({
                   type="button"
                   size="icon"
                   onClick={onSend}
-                  className="h-7 w-7 rounded-full bg-primary hover:bg-primary/90 shadow-sm"
+                  className="h-6 w-6 rounded-full bg-primary hover:bg-primary/90 shadow-sm"
                 >
-                  <Send className="h-3.5 w-3.5 text-primary-foreground" />
+                  <Send className="h-3 w-3 text-primary-foreground" />
                 </Button>
               </motion.div>
             )}
@@ -134,7 +134,7 @@ export function ChatInput({
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 >
-                  <Loader2 className="h-4 w-4 text-muted-foreground/70" />
+                  <Loader2 className="h-3.5 w-3.5 text-muted-foreground/70" />
                 </motion.div>
               </motion.div>
             )}
