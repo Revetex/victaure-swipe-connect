@@ -70,7 +70,7 @@ export function ChatMessage({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
           className={cn(
-            "rounded-2xl px-4 py-2.5 text-sm shadow-sm",
+            "rounded-2xl px-4 py-2.5 text-sm shadow-sm whitespace-pre-wrap break-words",
             isAssistant 
               ? "bg-card text-card-foreground rounded-tl-none border" 
               : "bg-primary text-primary-foreground rounded-tr-none"
