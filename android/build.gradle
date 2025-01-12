@@ -46,10 +46,10 @@ tasks.register('clean', Delete) {
     }
 }
 
-// Ensure Java 17 compatibility
+// Ensure Java 21 compatibility
 allprojects {
     tasks.withType(JavaCompile) {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 }
