@@ -1,8 +1,9 @@
 import { UserProfile } from "@/types/profile";
-import { ColorPicker } from "../ColorPicker";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Paintbrush } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -10,61 +11,62 @@ interface VCardStyleEditorProps {
 }
 
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
-  const fonts = [
-    { value: "'Inter', sans-serif", label: "Inter" },
-    { value: "'Playfair Display', serif", label: "Playfair Display" },
-    { value: "'Montserrat', sans-serif", label: "Montserrat" },
-    { value: "'Poppins', sans-serif", label: "Poppins" },
-    { value: "'DM Sans', sans-serif", label: "DM Sans" },
-  ];
-
   return (
-    <div className="space-y-6 p-6 bg-card rounded-xl shadow-lg backdrop-blur-sm border border-border">
-      <div className="flex items-center gap-2 border-b border-border pb-4">
+    <div className="space-y-6 p-6 bg-card rounded-xl shadow-lg backdrop-blur-sm border">
+      <div className="flex items-center gap-2 border-b pb-4">
         <Paintbrush className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-medium text-foreground">Personnalisation</h3>
+        <h3 className="text-lg font-medium">Personnalisation du style</h3>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label className="text-foreground">Police</Label>
-          <Select
+          <Label>Police de caractères</Label>
+          <Input
             value={profile.custom_font || ""}
-            onValueChange={(value) => onStyleChange({ custom_font: value })}
+            onChange={(e) => onStyleChange({ custom_font: e.target.value })}
+            placeholder="Nom de la police (ex: Arial)"
+            className="bg-background/50 border-border/50"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Couleur de fond</Label>
+          <Input
+            type="color"
+            value={profile.custom_background || "#ffffff"}
+            onChange={(e) => onStyleChange({ custom_background: e.target.value })}
+            className={cn(
+              "h-10 px-2 py-1",
+              "bg-background/50 border-border/50"
+            )}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Couleur du texte</Label>
+          <Input
+            type="color"
+            value={profile.custom_text_color || "#000000"}
+            onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
+            className={cn(
+              "h-10 px-2 py-1",
+              "bg-background/50 border-border/50"
+            )}
+          />
+        </div>
+
+        <div className="flex items-end">
+          <Button
+            variant="outline"
+            onClick={() => onStyleChange({
+              custom_font: undefined,
+              custom_background: undefined,
+              custom_text_color: undefined
+            })}
+            className="w-full"
           >
-            <SelectTrigger className="w-full bg-background border-border">
-              <SelectValue placeholder="Choisir une police" />
-            </SelectTrigger>
-            <SelectContent>
-              {fonts.map((font) => (
-                <SelectItem
-                  key={font.value}
-                  value={font.value}
-                  style={{ fontFamily: font.value }}
-                >
-                  {font.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-foreground">Couleur d'arrière-plan</Label>
-          <ColorPicker
-            color={profile.custom_background || "#ffffff"}
-            onChange={(color) => onStyleChange({ custom_background: color })}
-            className="bg-background border-border"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-foreground">Couleur du texte</Label>
-          <ColorPicker
-            color={profile.custom_text_color || "#000000"}
-            onChange={(color) => onStyleChange({ custom_text_color: color })}
-            className="bg-background border-border"
-          />
+            Réinitialiser le style
+          </Button>
         </div>
       </div>
     </div>

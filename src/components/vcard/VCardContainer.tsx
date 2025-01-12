@@ -23,7 +23,7 @@ export function VCardContainer({
       <div 
         className="space-y-8"
         style={{
-          // Only apply custom styles when not editing
+          // N'appliquer les styles personnalisés que lorsqu'on n'est pas en mode édition
           fontFamily: !isEditing ? customStyles?.font : undefined,
           color: !isEditing ? customStyles?.textColor : undefined,
         }}
@@ -31,11 +31,10 @@ export function VCardContainer({
         <div 
           className={cn(
             "rounded-xl p-6",
-            // Use default background in editing mode for better visibility
             isEditing ? "bg-card" : ""
           )}
           style={{
-            // Only apply custom background when not editing
+            // N'appliquer le fond personnalisé que lorsqu'on n'est pas en mode édition
             backgroundColor: !isEditing ? customStyles?.background : undefined,
           }}
         >
