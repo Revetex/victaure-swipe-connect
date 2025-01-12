@@ -29,7 +29,7 @@ export function ChatMessage({
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 px-4 py-2",
+        "flex gap-3 px-3 py-2 sm:px-4",
         isAssistant ? "flex-row" : "flex-row-reverse"
       )}
     >
@@ -62,7 +62,7 @@ export function ChatMessage({
       </div>
 
       <div className={cn(
-        "flex flex-col gap-1.5 max-w-[80%] sm:max-w-[70%]",
+        "flex flex-col gap-1.5 max-w-[85%] sm:max-w-[75%]",
         isAssistant ? "items-start" : "items-end"
       )}>
         <motion.div

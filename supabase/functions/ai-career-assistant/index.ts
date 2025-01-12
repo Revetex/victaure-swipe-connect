@@ -29,22 +29,52 @@ serve(async (req) => {
       throw new Error('Hugging Face API key not configured');
     }
 
-    // Prepare conversation context
-    const conversationContext = `Tu es M. Victaure, un assistant de carrière spécialisé dans les emplois de construction au Québec.
-    Ton rôle est d'aider les utilisateurs à identifier leurs compétences et leurs aspirations professionnelles.
-    Tu dois poser des questions pertinentes sur leur expérience et leurs préférences.
-    Basé sur leurs réponses, suggère des catégories d'emploi et aide à mettre à jour leur profil.
-    Communique toujours en français et maintiens un ton professionnel mais amical.
+    // Fetch additional user data
+    const { data: userEducation } = await supabase
+      .from('education')
+      .select('*')
+      .eq('profile_id', userId);
+
+    const { data: userExperiences } = await supabase
+      .from('experiences')
+      .select('*')
+      .eq('profile_id', userId);
+
+    const { data: userCertifications } = await supabase
+      .from('certifications')
+      .select('*')
+      .eq('profile_id', userId);
+
+    // Prepare conversation context with rich user data
+    const conversationContext = `Tu es M. Victaure, un assistant de carrière spécialisé dans les emplois au Québec.
+    Ton rôle est d'aider les utilisateurs dans leur parcours professionnel de manière naturelle et personnalisée.
     
-    Profil de l'utilisateur:
+    Voici le profil complet de l'utilisateur:
+    
+    Informations de base:
     ${JSON.stringify(userProfile, null, 2)}
+    
+    Formation:
+    ${JSON.stringify(userEducation, null, 2)}
+    
+    Expérience professionnelle:
+    ${JSON.stringify(userExperiences, null, 2)}
+    
+    Certifications:
+    ${JSON.stringify(userCertifications, null, 2)}
+    
+    Style de communication:
+    - Utilise un français québécois naturel et professionnel
+    - Sois chaleureux et empathique
+    - Adapte ton langage au contexte
+    - Utilise des expressions québécoises appropriées
+    - Pose des questions pertinentes pour mieux comprendre les besoins
+    - Donne des exemples concrets basés sur le profil de l'utilisateur
     
     Messages précédents:
     ${previousMessages.map((msg: any) => `${msg.sender}: ${msg.content}`).join('\n')}
     
     Message actuel: ${message}`;
-
-    console.log("Sending request to Hugging Face API");
 
     // Call Hugging Face API
     const response = await fetch(
@@ -73,55 +103,9 @@ serve(async (req) => {
     }
 
     const result = await response.json();
-    console.log("Received response from Hugging Face:", result);
-
     const assistantMessage = result[0]?.generated_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
 
-    // Update user profile if needed
-    if (userProfile && message.toLowerCase().includes('oui') && previousMessages.length > 0) {
-      try {
-        // Extract skills from the conversation
-        const skillsResponse = await fetch(
-          "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
-          {
-            headers: {
-              "Authorization": `Bearer ${huggingFaceApiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              inputs: `Extrais les compétences professionnelles mentionnées dans ce texte et retourne-les sous forme de liste: ${message}`,
-              parameters: {
-                max_new_tokens: 100,
-                temperature: 0.3,
-              }
-            }),
-          }
-        );
-
-        if (skillsResponse.ok) {
-          const skillsResult = await skillsResponse.json();
-          const skills = skillsResult[0]?.generated_text
-            .split('\n')
-            .filter((skill: string) => skill.trim().length > 0)
-            .map((skill: string) => skill.trim().replace(/^[-*]\s*/, ''));
-
-          if (skills.length > 0) {
-            const { error: updateError } = await supabase
-              .from('profiles')
-              .update({ skills })
-              .eq('id', userId);
-
-            if (updateError) {
-              console.error("Error updating profile:", updateError);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error processing skills:", error);
-      }
-    }
-
-    // Search for relevant jobs
+    // Search for relevant jobs based on user profile and conversation
     const { data: jobs, error: jobsError } = await supabase
       .from('jobs')
       .select('*')
