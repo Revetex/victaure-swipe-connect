@@ -35,6 +35,17 @@ export function VCardActions({
   setIsEditing,
   selectedStyle,
 }: VCardActionsProps) {
+  const buttonStyle = {
+    backgroundColor: '#3B82F6', // Bleu
+    color: 'white',
+    borderColor: '#2563EB',
+  };
+
+  const outlineButtonStyle = {
+    borderColor: '#3B82F6',
+    color: '#3B82F6',
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -53,11 +64,7 @@ export function VCardActions({
               onClick={onSave}
               disabled={isProcessing}
               className="w-full transition-colors relative"
-              style={{ 
-                backgroundColor: selectedStyle.colors.primary,
-                color: 'white',
-                borderColor: `${selectedStyle.colors.primary}40`
-              }}
+              style={buttonStyle}
             >
               {isProcessing ? (
                 <span className="flex items-center gap-2">
@@ -83,10 +90,7 @@ export function VCardActions({
                 disabled={isProcessing}
                 variant="outline" 
                 className="w-full transition-colors"
-                style={{ 
-                  borderColor: `${selectedStyle.colors.primary}40`,
-                  color: selectedStyle.colors.text.primary,
-                }}
+                style={outlineButtonStyle}
               >
                 Appliquer
               </Button>
@@ -104,11 +108,7 @@ export function VCardActions({
               <Button 
                 onClick={onShare}
                 className="w-full transition-colors"
-                style={{ 
-                  backgroundColor: selectedStyle.colors.primary,
-                  color: 'white',
-                  borderColor: `${selectedStyle.colors.primary}40`
-                }}
+                style={buttonStyle}
               >
                 <Share2 className="mr-2 h-4 w-4" />
                 Partager
@@ -124,10 +124,7 @@ export function VCardActions({
               onClick={() => setIsEditing(true)}
               variant="outline"
               className="w-full transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+              style={outlineButtonStyle}
             >
               <Edit className="mr-2 h-4 w-4" />
               Mode édition
@@ -143,10 +140,7 @@ export function VCardActions({
                 onClick={onDownload}
                 variant="outline"
                 className="w-full transition-colors"
-                style={{ 
-                  borderColor: `${selectedStyle.colors.primary}40`,
-                  color: selectedStyle.colors.text.primary,
-                }}
+                style={outlineButtonStyle}
               >
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger
@@ -163,10 +157,7 @@ export function VCardActions({
               disabled={isPdfGenerating}
               variant="outline"
               className="w-full transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+              style={outlineButtonStyle}
             >
               <FileText className="mr-2 h-4 w-4" />
               Business PDF
@@ -182,10 +173,7 @@ export function VCardActions({
               disabled={isPdfGenerating}
               variant="outline"
               className="w-full transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
+              style={outlineButtonStyle}
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
@@ -200,10 +188,7 @@ export function VCardActions({
                 onClick={onCopyLink}
                 variant="outline"
                 className="transition-colors"
-                style={{ 
-                  borderColor: `${selectedStyle.colors.primary}40`,
-                  color: selectedStyle.colors.text.primary,
-                }}
+                style={outlineButtonStyle}
               >
                 <Copy className="h-4 w-4" />
               </Button>
