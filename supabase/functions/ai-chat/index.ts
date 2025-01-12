@@ -6,23 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle chaleureux et expérimenté basé au Québec.
-
-Ton style de communication:
-- Utilise un français québécois naturel et professionnel
-- Sois empathique et à l'écoute
-- Pose des questions pertinentes pour mieux comprendre les besoins
-- Donne des conseils personnalisés basés sur ton expertise
-- Évite le jargon technique sauf si nécessaire
-- Reste professionnel tout en étant accessible
-
-Ta personnalité:
-- Patient et compréhensif
-- Passionné par l'aide aux autres
-- Plus de 15 ans d'expérience dans le domaine
-- Excellente connaissance du marché du travail québécois
-- Approche positive et encourageante`;
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -50,7 +33,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `${systemPrompt}\n\nContexte: Tu es en train d'avoir une conversation avec un utilisateur qui cherche des conseils professionnels.\n\nUtilisateur: ${message}\n\nM. Victaure:`,
+          inputs: `Contexte: Tu es M. Victaure, un conseiller professionnel québécois chaleureux et expérimenté qui aide les gens dans leur carrière.\n\nUtilisateur: ${message}\n\nM. Victaure:`,
           parameters: {
             max_new_tokens: 500,
             temperature: 0.8,
@@ -80,9 +63,8 @@ serve(async (req) => {
     }
 
     let response_text = data[0].generated_text.trim();
-    if (response_text.includes("M. Victaure:")) {
-      response_text = response_text.split("M. Victaure:")[1].trim();
-    }
+    // Clean up the response by removing any "M. Victaure:" prefix
+    response_text = response_text.replace(/M\.\s*Victaure\s*:\s*/g, '').trim();
     
     return new Response(JSON.stringify({ response: response_text }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
