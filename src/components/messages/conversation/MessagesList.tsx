@@ -69,7 +69,6 @@ export function MessagesList({
 
       <ScrollArea className="flex-1">
         <div className="space-y-2 p-4">
-          {/* Pinned Assistant Message */}
           <div className="mb-6">
             <AssistantMessage 
               chatMessages={chatMessages}
@@ -77,7 +76,6 @@ export function MessagesList({
             />
           </div>
 
-          {/* User Messages Section */}
           {sortedMessages.length > 0 ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between px-4">
