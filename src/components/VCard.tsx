@@ -11,6 +11,10 @@ import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
+import { Button } from "./ui/button";
+import { Save, Paintbrush2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { VCardStyleEditor } from "./vcard/style/VCardStyleEditor";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -22,6 +26,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [isCustomizing, setIsCustomizing] = useState(false);
   const { selectedStyle } = useVCardStyle();
   const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
 
@@ -133,6 +138,47 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           setProfile={isEditing ? handleProfileChange : setProfile}
           selectedStyle={selectedStyle}
         />
+
+        <div className="flex justify-end gap-4 pt-4">
+          {isEditing && (
+            <>
+              <Button
+                onClick={() => setIsCustomizing(!isCustomizing)}
+                variant="outline"
+                className="gap-2"
+              >
+                <Paintbrush2 className="h-4 w-4" />
+                Personnalisation
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="gap-2 bg-green-500 hover:bg-green-600"
+                disabled={isAIProcessing}
+              >
+                <Save className="h-4 w-4" />
+                Sauvegarder
+              </Button>
+            </>
+          )}
+        </div>
+
+        <AnimatePresence>
+          {isCustomizing && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="border rounded-lg p-4 bg-card mt-4">
+                <VCardStyleEditor
+                  profile={activeProfile}
+                  onStyleChange={handleProfileChange}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <VCardFooter
           isEditing={isEditing}
