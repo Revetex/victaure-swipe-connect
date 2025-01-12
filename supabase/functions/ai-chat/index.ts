@@ -26,19 +26,23 @@ serve(async (req) => {
     }
 
     const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle expérimenté au Québec. 
-    Ton rôle est d'aider les utilisateurs dans leur recherche d'emploi et leur développement de carrière.
+    Tu dois répondre en français de manière professionnelle et bienveillante.
     
-    Directives:
-    - Réponds de manière professionnelle et bienveillante
+    Directives importantes:
+    - Réponds TOUJOURS en français
     - Donne des conseils pratiques et concrets
     - Adapte tes réponses au contexte québécois
     - Utilise un français correct et professionnel
     - Évite le jargon technique sauf si nécessaire
     - Limite tes réponses à 2-3 paragraphes maximum
+    - Ne génère JAMAIS de réponses qui sont uniquement des chiffres ou des caractères spéciaux
+    - Assure-toi que ta réponse soit toujours cohérente et complète
     
     Question de l'utilisateur: ${message}
     
     Ta réponse doit être claire, concise et utile.`;
+
+    console.log('Envoi de la requête à Hugging Face...');
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -51,7 +55,7 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 500,
+            max_new_tokens: 1000,
             temperature: 0.7,
             top_p: 0.95,
             do_sample: true,
@@ -62,6 +66,7 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
+      console.error('Erreur API Hugging Face:', response.status, response.statusText);
       throw new Error(`Erreur API: ${response.status} ${response.statusText}`);
     }
 
@@ -75,12 +80,18 @@ serve(async (req) => {
     // Clean up the response
     let aiResponse = data[0].generated_text
       .replace(/^[^:]*:/, '') // Remove any prefix before first colon
+      .replace(/Assistant:/gi, '') // Remove "Assistant:" prefix
       .replace(/^\s*$[\n\r]{1,}/gm, '') // Remove empty lines
       .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
       .trim();
 
-    // Validate the response content
-    if (!aiResponse || aiResponse.length < 10 || /^[0-9\s]+$/.test(aiResponse)) {
+    // Additional validation
+    if (!aiResponse || 
+        aiResponse.length < 10 || 
+        /^[0-9\s]+$/.test(aiResponse) ||
+        aiResponse.includes("undefined") ||
+        aiResponse.includes("[object Object]")) {
+      console.error('Réponse invalide générée:', aiResponse);
       throw new Error('Réponse invalide générée');
     }
 
