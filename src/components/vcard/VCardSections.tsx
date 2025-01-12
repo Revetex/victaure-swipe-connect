@@ -2,7 +2,7 @@ import { UserProfile } from "@/types/profile";
 import { VCardHeader } from "../VCardHeader";
 import { VCardBio } from "../VCardBio";
 import { VCardContact } from "../VCardContact";
-import { VCardContent } from "./VCardContent";
+import { VCardSkills } from "../VCardSkills";
 import { VCardEducation } from "../VCardEducation";
 import { VCardExperiences } from "../VCardExperiences";
 import { StyleOption } from "./types";
@@ -42,24 +42,13 @@ export function VCardSections({
     switch (sectionId) {
       case 'header':
         return (
-          <div key={uniqueKey} className="w-full space-y-2">
+          <div key={uniqueKey} className="w-full">
             <VCardHeader
               profile={profile}
               isEditing={isEditing}
               setProfile={setProfile}
               customStyles={customStyles}
             />
-            {profile.role && (
-              <p 
-                className="text-muted-foreground px-4"
-                style={{
-                  fontFamily: customStyles?.font,
-                  color: customStyles?.textColor,
-                }}
-              >
-                {profile.role}
-              </p>
-            )}
           </div>
         );
       case 'contact':
@@ -86,23 +75,18 @@ export function VCardSections({
         );
       case 'skills':
         return (
-          <div key={uniqueKey} className="w-full">
-            <VCardContent
+          <div key={uniqueKey} className="w-full mt-6">
+            <VCardSkills
               profile={profile}
               isEditing={isEditing}
               setProfile={setProfile}
-              newSkill={newSkill}
-              setNewSkill={setNewSkill}
-              handleAddSkill={handleAddSkill}
               handleRemoveSkill={handleRemoveSkill}
-              selectedStyle={selectedStyle}
-              customStyles={customStyles}
             />
           </div>
         );
       case 'education':
         return (
-          <div key={uniqueKey} className="w-full">
+          <div key={uniqueKey} className="w-full mt-6">
             <VCardEducation
               profile={profile}
               isEditing={isEditing}
@@ -113,7 +97,7 @@ export function VCardSections({
         );
       case 'experience':
         return (
-          <div key={uniqueKey} className="w-full">
+          <div key={uniqueKey} className="w-full mt-6">
             <VCardExperiences
               profile={profile}
               isEditing={isEditing}
@@ -129,37 +113,25 @@ export function VCardSections({
 
   return (
     <div 
-      className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 py-8"
+      className="max-w-4xl mx-auto px-4 md:px-6 py-8 space-y-6"
       style={{
         fontFamily: customStyles?.font,
         backgroundColor: customStyles?.background,
         color: customStyles?.textColor,
       }}
     >
-      <div className="lg:col-span-8 space-y-8">
-        {sectionsOrder
-          .filter(section => ['header', 'contact', 'bio', 'education', 'experience'].includes(section))
-          .map((sectionId, index) => (
-            <div
-              key={`section-container-${sectionId}-${index}`}
-              className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors p-4' : ''}`}
-            >
-              {renderSection(sectionId, index)}
-            </div>
-          ))}
-      </div>
-      
-      <div className="lg:col-span-4 space-y-8">
-        {sectionsOrder
-          .filter(section => ['skills'].includes(section))
-          .map((sectionId, index) => (
-            <div
-              key={`section-container-${sectionId}-${index}`}
-              className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors p-4' : ''}`}
-            >
-              {renderSection(sectionId, index)}
-            </div>
-          ))}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 space-y-6">
+          {sectionsOrder
+            .filter(section => ['header', 'contact', 'bio', 'education', 'experience'].includes(section))
+            .map((sectionId, index) => renderSection(sectionId, index))}
+        </div>
+        
+        <div className="lg:col-span-4 space-y-6">
+          {sectionsOrder
+            .filter(section => ['skills'].includes(section))
+            .map((sectionId, index) => renderSection(sectionId, index))}
+        </div>
       </div>
     </div>
   );

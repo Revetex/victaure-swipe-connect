@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 import { StyleOption } from "../types";
 import { VCardSections } from "../VCardSections";
+import { VCardQRCode } from "../VCardQRCode";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
@@ -61,21 +62,24 @@ export function VCardSectionsManager({
   };
 
   return (
-    <VCardSections
-      profile={profile}
-      isEditing={isEditing}
-      setProfile={setProfile}
-      newSkill={newSkill}
-      setNewSkill={setNewSkill}
-      handleAddSkill={handleAddSkill}
-      handleRemoveSkill={handleRemoveSkill}
-      selectedStyle={selectedStyle}
-      sectionsOrder={sectionsOrder}
-      customStyles={{
-        font: profile.custom_font,
-        background: profile.custom_background,
-        textColor: profile.custom_text_color
-      }}
-    />
+    <div className="relative">
+      {!isEditing && <VCardQRCode />}
+      <VCardSections
+        profile={profile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+        newSkill={newSkill}
+        setNewSkill={setNewSkill}
+        handleAddSkill={handleAddSkill}
+        handleRemoveSkill={handleRemoveSkill}
+        selectedStyle={selectedStyle}
+        sectionsOrder={sectionsOrder}
+        customStyles={{
+          font: profile.custom_font,
+          background: profile.custom_background,
+          textColor: profile.custom_text_color
+        }}
+      />
+    </div>
   );
 }
