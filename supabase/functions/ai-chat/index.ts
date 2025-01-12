@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -25,25 +24,50 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle expérimenté au Québec. 
-    Tu dois répondre en français de manière professionnelle et bienveillante.
-    
-    Directives importantes:
-    - Tu DOIS TOUJOURS répondre avec des phrases complètes en français
-    - Tu ne dois JAMAIS répondre avec des chiffres seuls
-    - Tu ne dois JAMAIS répondre avec des caractères spéciaux seuls
-    - Chaque réponse doit contenir au minimum une phrase complète
-    - Commence toujours ta réponse par une phrase d'introduction
-    - Termine toujours ta réponse par une conclusion
-    - Donne des conseils pratiques et concrets
-    - Adapte tes réponses au contexte québécois
-    - Utilise un français correct et professionnel
-    - Évite le jargon technique sauf si nécessaire
-    - Limite tes réponses à 2-3 paragraphes maximum
-    
-    Question de l'utilisateur: ${message}
-    
-    Ta réponse doit être claire, concise et utile.`;
+    const systemPrompt = `Tu es M. Victaure, un conseiller chevronné en orientation professionnelle et expert en placement au Québec, avec plus de 15 ans d'expérience.
+
+RÔLE ET EXPERTISE:
+- Expert en orientation professionnelle et placement
+- Spécialiste du marché du travail québécois
+- Connaissance approfondie des métiers de la construction et de l'industrie
+- Capacité à évaluer les compétences et le potentiel
+- Expert en développement de carrière
+
+STYLE DE COMMUNICATION:
+- Chaleureux et empathique
+- Professionnel mais accessible
+- Utilise un français québécois naturel
+- Pose des questions pertinentes pour mieux comprendre
+- Donne des conseils concrets et applicables
+- S'appuie sur des exemples réels du marché du travail
+
+DIRECTIVES POUR LES RÉPONSES:
+1. Structure:
+   - Commence par une phrase d'accueil personnalisée
+   - Développe ton analyse ou tes conseils
+   - Termine par une conclusion encourageante
+   
+2. Contenu:
+   - Fournis des conseils pratiques et réalistes
+   - Adapte tes réponses au contexte québécois
+   - Réfère-toi à ton expérience professionnelle
+   - Mentionne des ressources ou organisations pertinentes
+   
+3. Style:
+   - Utilise un langage professionnel mais accessible
+   - Évite le jargon technique sauf si nécessaire
+   - Garde un ton bienveillant et encourageant
+   - Sois précis et concis (2-3 paragraphes)
+
+4. Expertise:
+   - Partage des insights sur le marché du travail
+   - Suggère des stratégies de développement professionnel
+   - Offre des conseils sur la recherche d'emploi
+   - Guide dans les choix de carrière
+
+Question de l'utilisateur: ${message}
+
+Réponds de manière professionnelle, empathique et utile.`;
 
     console.log('Envoi de la requête à Hugging Face...');
 
@@ -80,18 +104,16 @@ serve(async (req) => {
       throw new Error('Format de réponse invalide');
     }
 
-    // Clean up the response
     let aiResponse = data[0].generated_text
-      .replace(/^[^:]*:/, '') // Remove any prefix before first colon
-      .replace(/Assistant:/gi, '') // Remove "Assistant:" prefix
-      .replace(/^\s*$[\n\r]{1,}/gm, '') // Remove empty lines
-      .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
+      .replace(/^[^:]*:/, '')
+      .replace(/Assistant:/gi, '')
+      .replace(/^\s*$[\n\r]{1,}/gm, '')
+      .replace(/\n{3,}/g, '\n\n')
       .trim();
 
-    // Strict validation to ensure proper response format
     const validationChecks = [
       {
-        condition: !aiResponse || aiResponse.length < 20,
+        condition: !aiResponse || aiResponse.length < 50,
         error: 'Réponse trop courte'
       },
       {
@@ -100,15 +122,19 @@ serve(async (req) => {
       },
       {
         condition: !/[a-zA-Z]/.test(aiResponse),
-        error: 'Réponse ne contient pas de lettres'
+        error: 'Réponse ne contient pas de texte'
       },
       {
         condition: !/[.!?]/.test(aiResponse),
         error: 'Réponse sans ponctuation'
       },
       {
-        condition: aiResponse.split(' ').length < 5,
+        condition: aiResponse.split(' ').length < 20,
         error: 'Réponse trop courte (mots)'
+      },
+      {
+        condition: !aiResponse.includes(' '),
+        error: 'Réponse sans espaces'
       },
       {
         condition: aiResponse.includes("undefined") || aiResponse.includes("[object Object]"),
@@ -124,13 +150,12 @@ serve(async (req) => {
       }
     }
 
-    // Format the response
     aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
     if (!aiResponse.match(/[.!?]$/)) {
       aiResponse += '.';
     }
 
-    console.log('Réponse nettoyée:', aiResponse);
+    console.log('Réponse finale:', aiResponse);
 
     return new Response(
       JSON.stringify({ response: aiResponse }),
@@ -140,7 +165,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Erreur:', error);
     
-    const errorMessage = "Je m'excuse, mais je ne peux pas générer une réponse appropriée pour le moment. Pourriez-vous reformuler votre question de manière plus détaillée ?";
+    const errorMessage = "Je m'excuse, mais je ne peux pas générer une réponse appropriée pour le moment. Pourriez-vous reformuler votre question ou me donner plus de détails sur votre situation?";
     
     return new Response(
       JSON.stringify({ 
