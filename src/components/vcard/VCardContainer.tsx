@@ -17,24 +17,22 @@ export function VCardContainer({
 }: VCardContainerProps) {
   return (
     <div className={cn(
-      "relative min-h-screen w-full p-4",
+      "relative min-h-screen w-full p-2 sm:p-4 md:p-6",
       isEditing ? "bg-background" : ""
     )}>
       <div 
-        className="space-y-8"
+        className="space-y-6 sm:space-y-8"
         style={{
-          // N'appliquer les styles personnalisés que lorsqu'on n'est pas en mode édition
           fontFamily: !isEditing ? customStyles?.font : undefined,
           color: !isEditing ? customStyles?.textColor : undefined,
         }}
       >
         <div 
           className={cn(
-            "rounded-xl p-6",
+            "rounded-xl p-4 sm:p-6 md:p-8",
             isEditing ? "bg-card" : ""
           )}
           style={{
-            // N'appliquer le fond personnalisé que lorsqu'on n'est pas en mode édition
             backgroundColor: !isEditing ? customStyles?.background : undefined,
           }}
         >
