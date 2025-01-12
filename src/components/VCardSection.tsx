@@ -6,32 +6,15 @@ interface VCardSectionProps {
   icon: ReactNode;
   children: ReactNode;
   className?: string;
-  customStyles?: {
-    font?: string;
-    background?: string;
-    textColor?: string;
-  };
 }
 
-export function VCardSection({ 
-  title, 
-  icon, 
-  children, 
-  className = "",
-  customStyles = {} 
-}: VCardSectionProps) {
-  const { font, background, textColor } = customStyles;
-  
+export function VCardSection({ title, icon, children, className = "" }: VCardSectionProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`space-y-4 rounded-lg p-4 ${background || 'bg-transparent'} ${className}`}
-      style={{
-        fontFamily: font || 'inherit',
-        color: textColor || 'inherit'
-      }}
+      className={`space-y-4 ${className}`}
     >
       <div className="flex items-center gap-2 pb-2 border-b border-border">
         <div className="text-primary">
