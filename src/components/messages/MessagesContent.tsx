@@ -42,7 +42,7 @@ export function MessagesContent({
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] bg-background/80">
-      <header className="flex items-center justify-between p-2 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <header className="flex items-center justify-between p-4 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -69,7 +69,7 @@ export function MessagesContent({
 
       <ScrollArea 
         ref={scrollRef}
-        className="flex-1 px-2 py-4 md:px-4 overflow-y-auto"
+        className="flex-1 px-4 py-4 pb-[120px] overflow-y-auto"
       >
         <div className="space-y-4 max-w-3xl mx-auto">
           <AnimatePresence initial={false}>
@@ -81,7 +81,6 @@ export function MessagesContent({
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
                 ref={index === messages.length - 1 ? lastMessageRef : null}
-                className="px-2 md:px-0"
               >
                 {message.sender === "assistant" ? (
                   <AssistantMessage message={message} />
@@ -94,20 +93,15 @@ export function MessagesContent({
         </div>
       </ScrollArea>
 
-      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t p-2 md:p-4">
-        <div className="max-w-3xl mx-auto">
-          <ChatInput
-            value={inputMessage}
-            onChange={setInputMessage}
-            onSend={() => onSendMessage(inputMessage)}
-            onVoiceInput={onVoiceInput}
-            isListening={isListening}
-            isThinking={isThinking}
-            placeholder="Écrivez votre message..."
-            className="w-full"
-          />
-        </div>
-      </div>
+      <ChatInput
+        value={inputMessage}
+        onChange={setInputMessage}
+        onSend={() => onSendMessage(inputMessage)}
+        onVoiceInput={onVoiceInput}
+        isListening={isListening}
+        isThinking={isThinking}
+        placeholder="Écrivez votre message..."
+      />
     </div>
   );
 }
