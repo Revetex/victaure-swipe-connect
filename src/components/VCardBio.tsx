@@ -48,12 +48,6 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           return;
         }
 
-        console.log("Generating bio with profile data:", {
-          skills: profile.skills,
-          experiences: profile.experiences,
-          education: profile.education,
-        });
-
         const { data, error } = await supabase.functions.invoke('generate-bio', {
           body: {
             skills: profile.skills || [],
@@ -65,7 +59,6 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
         if (error) {
           console.error("Error from generate-bio function:", error);
           
-          // Check if we should retry
           if (attempt < 3 && (error.message?.includes('Failed to fetch') || error.status === 503)) {
             console.log(`Retry attempt ${attempt + 1} of 3`);
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -84,7 +77,6 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       } catch (error: any) {
         console.error("Error generating bio:", error);
         
-        // If we haven't exceeded max retries and it's a network error, retry
         if (attempt < 3 && (error.message?.includes('Failed to fetch') || error.status === 503)) {
           console.log(`Retry attempt ${attempt + 1} of 3`);
           await new Promise(resolve => setTimeout(resolve, 2000));
@@ -133,7 +125,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
             value={profile?.bio || ""}
             onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
             placeholder="Écrivez une courte présentation..."
-            className="w-full min-h-[100px] p-2 rounded-md bg-background border"
+            className="w-full min-h-[150px] p-4 rounded-lg bg-background/50 border resize-none"
             style={{ 
               color: selectedStyle.colors.text.primary,
               borderColor: `${selectedStyle.colors.primary}30`,
@@ -142,12 +134,17 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
             }}
           />
         ) : profile?.bio ? (
-          <p style={{ 
-            color: selectedStyle.colors.text.primary,
-            fontFamily: selectedStyle.font
-          }}>
-            {profile.bio}
-          </p>
+          <div 
+            className="prose prose-sm max-w-none"
+            style={{ 
+              color: selectedStyle.colors.text.primary,
+              fontFamily: selectedStyle.font
+            }}
+          >
+            {profile.bio.split('\n').map((paragraph: string, index: number) => (
+              <p key={index} className="mb-4">{paragraph}</p>
+            ))}
+          </div>
         ) : null}
       </div>
     </VCardSection>

@@ -7,21 +7,15 @@ interface VCardSectionProps {
   icon: ReactNode;
   children: ReactNode;
   className?: string;
-  useCustomStyles?: boolean;
 }
 
 export function VCardSection({ 
   title, 
   icon, 
   children, 
-  className = "",
-  useCustomStyles = true 
+  className = "" 
 }: VCardSectionProps) {
   const { selectedStyle } = useVCardStyle();
-
-  const textColor = useCustomStyles ? selectedStyle.colors.text.primary : undefined;
-  const primaryColor = useCustomStyles ? selectedStyle.colors.primary : undefined;
-  const fontFamily = useCustomStyles ? selectedStyle.font : undefined;
 
   return (
     <motion.div 
@@ -30,19 +24,19 @@ export function VCardSection({
       transition={{ duration: 0.3 }}
       className={`space-y-4 ${className}`}
       style={{ 
-        color: textColor,
-        fontFamily: fontFamily
+        color: selectedStyle.colors.text.primary,
+        fontFamily: selectedStyle.font
       }}
     >
-      <div className="flex items-center gap-2 pb-2 border-b border-border">
-        <div style={{ color: primaryColor }}>
+      <div className="flex items-center gap-2 pb-2 border-b" style={{ borderColor: `${selectedStyle.colors.primary}30` }}>
+        <div style={{ color: selectedStyle.colors.primary }}>
           {icon}
         </div>
         <h3 
           className="text-lg font-semibold"
           style={{ 
-            color: textColor,
-            fontFamily: fontFamily
+            color: selectedStyle.colors.text.primary,
+            fontFamily: selectedStyle.font
           }}
         >
           {title}
