@@ -46,7 +46,7 @@ export function MessagesContent({
         />
       </div>
 
-      <div className="flex-1 overflow-hidden mt-[72px] mb-[64px]">
+      <div className="fixed top-[72px] bottom-[64px] left-0 right-0 overflow-hidden">
         <ScrollArea 
           ref={scrollAreaRef}
           className="h-full"
