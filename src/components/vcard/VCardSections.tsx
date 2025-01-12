@@ -51,7 +51,7 @@ export function VCardSections({
             />
             {profile.role && (
               <p 
-                className="text-muted-foreground"
+                className="text-muted-foreground px-4"
                 style={{
                   fontFamily: customStyles?.font,
                   color: customStyles?.textColor,

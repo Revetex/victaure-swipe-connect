@@ -20,7 +20,7 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Présentation</h2>
       <div
-        className="p-4 rounded-lg border bg-card shadow-sm"
+        className="p-4 rounded-lg border bg-card"
         style={{
           fontFamily: customStyles?.font,
           backgroundColor: customStyles?.background,
@@ -39,7 +39,15 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
             }}
           />
         ) : (
-          <p className="whitespace-pre-wrap">{profile.bio}</p>
+          <p 
+            className="whitespace-pre-wrap"
+            style={{
+              fontFamily: customStyles?.font,
+              color: customStyles?.textColor,
+            }}
+          >
+            {profile.bio}
+          </p>
         )}
       </div>
     </div>
