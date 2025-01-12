@@ -18,11 +18,11 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
   const handleAddEducation = () => {
     const newEducation = {
       id: Date.now().toString(),
-      school: "",
+      school_name: "",
       degree: "",
-      field: "",
-      startDate: "",
-      endDate: "",
+      field_of_study: "",
+      start_date: "",
+      end_date: "",
       description: "",
     };
 
@@ -63,9 +63,9 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
               <div className="space-y-4">
                 <input
                   type="text"
-                  value={education.school}
+                  value={education.school_name}
                   onChange={(e) =>
-                    handleEducationChange(education.id, "school", e.target.value)
+                    handleEducationChange(education.id, "school_name", e.target.value)
                   }
                   placeholder="École"
                   className="w-full p-2 rounded border"
@@ -81,28 +81,28 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
                 />
                 <input
                   type="text"
-                  value={education.field}
+                  value={education.field_of_study}
                   onChange={(e) =>
-                    handleEducationChange(education.id, "field", e.target.value)
+                    handleEducationChange(education.id, "field_of_study", e.target.value)
                   }
                   placeholder="Domaine d'études"
                   className="w-full p-2 rounded border"
                 />
                 <div className="flex gap-4">
                   <input
-                    type="text"
-                    value={education.startDate}
+                    type="date"
+                    value={education.start_date}
                     onChange={(e) =>
-                      handleEducationChange(education.id, "startDate", e.target.value)
+                      handleEducationChange(education.id, "start_date", e.target.value)
                     }
                     placeholder="Date de début"
                     className="w-full p-2 rounded border"
                   />
                   <input
-                    type="text"
-                    value={education.endDate}
+                    type="date"
+                    value={education.end_date}
                     onChange={(e) =>
-                      handleEducationChange(education.id, "endDate", e.target.value)
+                      handleEducationChange(education.id, "end_date", e.target.value)
                     }
                     placeholder="Date de fin"
                     className="w-full p-2 rounded border"
@@ -126,11 +126,11 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="font-semibold">{education.school}</h4>
+                <h4 className="font-semibold">{education.school_name}</h4>
                 <p>{education.degree}</p>
-                <p className="text-muted-foreground">{education.field}</p>
+                <p className="text-muted-foreground">{education.field_of_study}</p>
                 <p className="text-sm text-muted-foreground">
-                  {education.startDate} - {education.endDate}
+                  {education.start_date} - {education.end_date}
                 </p>
                 <p className="text-sm">{education.description}</p>
               </div>

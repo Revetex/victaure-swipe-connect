@@ -1,33 +1,36 @@
-import { VCardSkills } from "../VCardSkills";
 import { UserProfile } from "@/types/profile";
 import { StyleOption } from "./types";
 
-interface VCardContentProps {
+export interface VCardContentProps {
   profile: UserProfile;
   isEditing: boolean;
-  selectedStyle: StyleOption;
   setProfile: (profile: UserProfile) => void;
   newSkill: string;
   setNewSkill: (skill: string) => void;
   handleAddSkill: () => void;
   handleRemoveSkill: (skill: string) => void;
+  selectedStyle: StyleOption;
+  customStyles?: {
+    font?: string;
+    background?: string;
+    textColor?: string;
+  };
 }
 
 export function VCardContent({
   profile,
   isEditing,
-  selectedStyle,
   setProfile,
+  newSkill,
+  setNewSkill,
+  handleAddSkill,
   handleRemoveSkill,
+  selectedStyle,
+  customStyles,
 }: VCardContentProps) {
   return (
-    <div className="space-y-6">
-      <VCardSkills
-        profile={profile}
-        isEditing={isEditing}
-        setProfile={setProfile}
-        handleRemoveSkill={handleRemoveSkill}
-      />
+    <div>
+      {/* Your content rendering logic here */}
     </div>
   );
 }
