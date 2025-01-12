@@ -29,13 +29,13 @@ serve(async (req) => {
     Tu dois répondre en français de manière professionnelle et bienveillante.
     
     Directives importantes:
-    - Réponds TOUJOURS en français
+    - Réponds TOUJOURS en français avec des phrases complètes
+    - Ne réponds JAMAIS avec uniquement des chiffres ou des caractères spéciaux
     - Donne des conseils pratiques et concrets
     - Adapte tes réponses au contexte québécois
     - Utilise un français correct et professionnel
     - Évite le jargon technique sauf si nécessaire
     - Limite tes réponses à 2-3 paragraphes maximum
-    - Ne génère JAMAIS de réponses qui sont uniquement des chiffres ou des caractères spéciaux
     - Assure-toi que ta réponse soit toujours cohérente et complète
     
     Question de l'utilisateur: ${message}
@@ -85,14 +85,21 @@ serve(async (req) => {
       .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
       .trim();
 
-    // Additional validation
+    // Additional validation to ensure we have a proper response
     if (!aiResponse || 
         aiResponse.length < 10 || 
-        /^[0-9\s]+$/.test(aiResponse) ||
+        /^\d+$/.test(aiResponse) || // Check if response is only numbers
+        !/[a-zA-Z]/.test(aiResponse) || // Ensure response contains letters
         aiResponse.includes("undefined") ||
         aiResponse.includes("[object Object]")) {
       console.error('Réponse invalide générée:', aiResponse);
       throw new Error('Réponse invalide générée');
+    }
+
+    // Ensure the response starts with a capital letter and ends with punctuation
+    aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
+    if (!aiResponse.match(/[.!?]$/)) {
+      aiResponse += '.';
     }
 
     console.log('Réponse nettoyée:', aiResponse);
