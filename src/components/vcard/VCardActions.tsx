@@ -8,11 +8,6 @@ interface VCardActionsProps {
   isPdfGenerating: boolean;
   isProcessing: boolean;
   onShare?: () => void;
-  onDownload?: () => void;
-  onDownloadPDF?: () => void;
-  onDownloadBusinessPDF: () => void;
-  onDownloadCVPDF: () => void;
-  onCopyLink?: () => void;
   onSave: () => void;
   onApplyChanges?: () => void;
   setIsEditing: (isEditing: boolean) => void;
@@ -24,10 +19,6 @@ export function VCardActions({
   isPdfGenerating,
   isProcessing,
   onShare,
-  onDownload,
-  onDownloadBusinessPDF,
-  onDownloadCVPDF,
-  onCopyLink,
   onSave,
   onApplyChanges,
   setIsEditing,
@@ -50,10 +41,6 @@ export function VCardActions({
         <VCardViewingActions
           onShare={onShare}
           onEdit={() => setIsEditing(true)}
-          onDownload={onDownload}
-          onDownloadBusinessPDF={onDownloadBusinessPDF}
-          onDownloadCVPDF={onDownloadCVPDF}
-          onCopyLink={onCopyLink}
           isPdfGenerating={isPdfGenerating}
         />
       )}
