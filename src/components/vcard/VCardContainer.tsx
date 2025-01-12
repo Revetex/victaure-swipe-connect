@@ -15,17 +15,19 @@ export function VCardContainer({
   isEditing,
   customStyles 
 }: VCardContainerProps) {
+  const containerStyle = {
+    fontFamily: customStyles?.font || "inherit",
+    backgroundColor: customStyles?.background || undefined,
+    color: customStyles?.textColor || undefined,
+  };
+
   return (
     <div
       className={cn(
         "relative min-h-screen w-full p-4 transition-colors",
-        isEditing ? "bg-background" : "bg-gradient-to-br from-indigo-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
+        isEditing ? "bg-background" : ""
       )}
-      style={{
-        fontFamily: customStyles?.font || "inherit",
-        backgroundColor: customStyles?.background || undefined,
-        color: customStyles?.textColor || undefined,
-      }}
+      style={containerStyle}
     >
       {children}
     </div>
