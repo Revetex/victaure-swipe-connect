@@ -20,7 +20,7 @@ export function VCardSection({ title, icon, children, className = "" }: VCardSec
       className={`space-y-4 ${className}`}
       style={{ color: selectedStyle.colors.text.primary }}
     >
-      <div className="flex items-center gap-2 pb-2 border-b border-border">
+      <div className="flex items-center gap-2 pb-2" style={{ borderBottom: `1px solid ${selectedStyle.colors.primary}20` }}>
         <div style={{ color: selectedStyle.colors.primary }}>
           {icon}
         </div>
