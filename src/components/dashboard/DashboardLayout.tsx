@@ -15,15 +15,13 @@ export function DashboardLayout() {
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [showingChat, setShowingChat] = useState(false);
   
-  // Debounce viewport height updates
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
     100
   );
 
-  // Throttle page changes
+  const THROTTLE_DELAY = 300;
   const [lastPageChange, setLastPageChange] = useState(Date.now());
-  const THROTTLE_DELAY = 300; // milliseconds
 
   const updateHeight = useCallback(() => {
     debouncedSetViewportHeight(window.innerHeight);
