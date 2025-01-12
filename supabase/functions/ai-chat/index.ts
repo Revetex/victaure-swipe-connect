@@ -3,7 +3,10 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Max-Age': '86400',
+  'Content-Type': 'application/json'
 }
 
 const MAX_RETRIES = 3;
@@ -75,8 +78,12 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { 
+      status: 204, 
+      headers: corsHeaders 
+    });
   }
 
   try {
@@ -94,7 +101,7 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: corsHeaders }
     );
   } catch (error) {
     console.error('Erreur détaillée:', {
@@ -109,7 +116,7 @@ serve(async (req) => {
         details: error.message 
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: corsHeaders,
         status: 500 
       }
     );
