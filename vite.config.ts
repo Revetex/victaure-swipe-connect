@@ -29,16 +29,22 @@ export default defineConfig(({ mode }) => ({
     cors: {
       origin: [
         'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-        'https://mfjllillnpleasclqabb.supabase.co'
+        'https://mfjllillnpleasclqabb.supabase.co',
+        'https://mfjllillnpleasclqabb.supabase.co/auth/v1/*',
+        'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*',
+        'https://mfjllillnpleasclqabb.supabase.co/storage/v1/*'
       ],
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: [
         'Content-Type', 
         'Authorization', 
         'X-Client-Info', 
         'apikey', 
-        'X-Supabase-Auth'
+        'X-Supabase-Auth',
+        'Range',
+        'Prefer'
       ],
+      exposedHeaders: ['Content-Range'],
       credentials: true,
       preflightContinue: true,
       optionsSuccessStatus: 204
