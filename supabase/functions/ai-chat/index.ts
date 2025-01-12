@@ -26,16 +26,12 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    const systemPrompt = `Tu es M. Victaure, conseiller en orientation dans la construction au Québec.
-
-- Réponds en 1-2 phrases maximum
-- Sois direct et chaleureux
+    const systemPrompt = `Tu es M. Victaure, conseiller en construction au Québec.
+- Réponds en UNE phrase courte et claire
+- Pose UNE question précise pour continuer la conversation
 - Utilise un français québécois simple
-- Pose une question pour encourager le dialogue
 
-Question: ${message}
-
-Réponds de façon concise et naturelle.`;
+Question: ${message}`;
 
     console.log('Envoi de la requête à Hugging Face...');
 
@@ -50,7 +46,7 @@ Réponds de façon concise et naturelle.`;
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 100,
+            max_new_tokens: 50,
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
@@ -98,7 +94,7 @@ Réponds de façon concise et naturelle.`;
     
     return new Response(
       JSON.stringify({ 
-        response: "Parlez-moi de votre expérience dans la construction?",
+        response: "Quel type de travail vous intéresse dans la construction?",
         error: error.message 
       }),
       { 
