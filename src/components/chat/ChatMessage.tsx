@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot, User } from "lucide-react";
+import { Bot, User, Loader2 } from "lucide-react";
 
 interface ChatMessageProps {
   content: string;
@@ -78,23 +78,17 @@ export function ChatMessage({
         >
           {thinking ? (
             <motion.div className="flex items-center gap-2">
-              <motion.div className="flex gap-1.5">
-                {[0, 1, 2].map((i) => (
-                  <motion.span
-                    key={i}
-                    className="w-1.5 h-1.5 bg-current rounded-full opacity-70"
-                    animate={{ 
-                      scale: [1, 1.3, 1],
-                      opacity: [0.4, 1, 0.4]
-                    }}
-                    transition={{ 
-                      duration: 0.8,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: i * 0.15
-                    }}
-                  />
-                ))}
+              <motion.div 
+                animate={{ 
+                  rotate: 360,
+                  transition: {
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }
+                }}
+              >
+                <Loader2 className="h-4 w-4 text-muted-foreground" />
               </motion.div>
               <span className="text-muted-foreground text-xs font-medium">M. Victaure réfléchit...</span>
             </motion.div>
