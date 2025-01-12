@@ -26,7 +26,7 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    const systemPrompt = `Tu es M. Victaure, conseiller en construction au Québec.
+    const systemPrompt = `Tu es M. Victaure, conseiller en orientation professionnelle au Québec.
 - Réponds en UNE phrase courte et claire
 - Pose UNE question précise pour continuer la conversation
 - Utilise un français québécois simple
@@ -94,7 +94,7 @@ Question: ${message}`;
     
     return new Response(
       JSON.stringify({ 
-        response: "Quel type de travail vous intéresse dans la construction?",
+        response: "Quel type de carrière ou de domaine professionnel vous intéresse?",
         error: error.message 
       }),
       { 
