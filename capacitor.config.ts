@@ -29,7 +29,9 @@ const config: CapacitorConfig = {
       'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com:443',
       '10.0.2.2',
       '10.0.2.2:*',
-      'http://10.0.2.2:*'
+      'http://10.0.2.2:*',
+      'http://10.0.2.2',
+      'https://10.0.2.2'
     ]
   },
   android: {
