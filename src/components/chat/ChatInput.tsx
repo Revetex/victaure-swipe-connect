@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Mic, Send, Loader2 } from "lucide-react";
+import { Mic, ArrowRight, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
@@ -104,26 +104,7 @@ export function ChatInput({
           />
           
           <AnimatePresence mode="wait">
-            {value.trim() && !isThinking && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.15 }}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2"
-              >
-                <Button
-                  type="button"
-                  size="icon"
-                  onClick={onSend}
-                  className="h-5 w-5 rounded-full bg-primary hover:bg-primary/90"
-                >
-                  <Send className="h-2.5 w-2.5 text-primary-foreground" />
-                </Button>
-              </motion.div>
-            )}
-            
-            {isThinking && (
+            {isThinking ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -137,6 +118,20 @@ export function ChatInput({
                   <Loader2 className="h-3 w-3 text-muted-foreground/70" />
                 </motion.div>
               </motion.div>
+            ) : (
+              <Button
+                type="button"
+                size="icon"
+                onClick={onSend}
+                disabled={!value.trim()}
+                className={cn(
+                  "absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full",
+                  "bg-primary hover:bg-primary/90 transition-colors",
+                  "disabled:opacity-50 disabled:cursor-not-allowed"
+                )}
+              >
+                <ArrowRight className="h-3 w-3 text-primary-foreground" />
+              </Button>
             )}
           </AnimatePresence>
         </div>
