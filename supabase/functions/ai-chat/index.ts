@@ -29,7 +29,7 @@ serve(async (req) => {
 RÔLE ET EXPERTISE:
 - Expert en orientation professionnelle et placement
 - Spécialiste du marché du travail québécois
-- Connaissance approfondie des métiers de la construction et de l'industrie
+- Connaissance approfondie des métiers et des industries
 - Capacité à évaluer les compétences et le potentiel
 - Expert en développement de carrière
 
@@ -44,8 +44,8 @@ STYLE DE COMMUNICATION:
 DIRECTIVES POUR LES RÉPONSES:
 1. Structure:
    - Commence par une phrase d'accueil personnalisée
-   - Développe ton analyse ou tes conseils
-   - Termine par une conclusion encourageante
+   - Développe ton analyse ou tes conseils de manière détaillée
+   - Termine par une conclusion encourageante et une invitation à poursuivre la discussion
    
 2. Contenu:
    - Fournis des conseils pratiques et réalistes
@@ -57,7 +57,9 @@ DIRECTIVES POUR LES RÉPONSES:
    - Utilise un langage professionnel mais accessible
    - Évite le jargon technique sauf si nécessaire
    - Garde un ton bienveillant et encourageant
-   - Sois précis et concis (2-3 paragraphes)
+   - Sois précis et détaillé dans tes explications
+   - Utilise la ponctuation appropriée
+   - Assure-toi que tes réponses sont bien structurées
 
 4. Expertise:
    - Partage des insights sur le marché du travail
@@ -65,9 +67,15 @@ DIRECTIVES POUR LES RÉPONSES:
    - Offre des conseils sur la recherche d'emploi
    - Guide dans les choix de carrière
 
+IMPORTANT:
+- Chaque réponse doit être complète et bien structurée
+- Utilise toujours une ponctuation appropriée
+- Évite les réponses trop courtes ou simplistes
+- Assure-toi que chaque réponse apporte une réelle valeur ajoutée
+
 Question de l'utilisateur: ${message}
 
-Réponds de manière professionnelle, empathique et utile.`;
+Réponds de manière professionnelle, empathique et utile, en suivant strictement les directives ci-dessus.`;
 
     console.log('Envoi de la requête à Hugging Face...');
 
@@ -105,15 +113,27 @@ Réponds de manière professionnelle, empathique et utile.`;
     }
 
     let aiResponse = data[0].generated_text
-      .replace(/^[^:]*:/, '')
-      .replace(/Assistant:/gi, '')
-      .replace(/^\s*$[\n\r]{1,}/gm, '')
-      .replace(/\n{3,}/g, '\n\n')
+      .split('Assistant:').pop()
+      ?.split('Human:')[0]
+      ?.replace(/^\s*$[\n\r]{1,}/gm, '')
       .trim();
 
+    if (!aiResponse) {
+      throw new Error('Réponse vide après nettoyage');
+    }
+
+    // Ensure the response starts with a capital letter
+    aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
+
+    // Add a period if the response doesn't end with proper punctuation
+    if (!aiResponse.match(/[.!?]$/)) {
+      aiResponse += '.';
+    }
+
+    // Validation checks
     const validationChecks = [
       {
-        condition: !aiResponse || aiResponse.length < 50,
+        condition: !aiResponse || aiResponse.length < 100,
         error: 'Réponse trop courte'
       },
       {
@@ -121,12 +141,8 @@ Réponds de manière professionnelle, empathique et utile.`;
         error: 'Réponse contient uniquement des chiffres'
       },
       {
-        condition: !/[a-zA-Z]/.test(aiResponse),
+        condition: !/[a-zA-ZÀ-ÿ]/.test(aiResponse),
         error: 'Réponse ne contient pas de texte'
-      },
-      {
-        condition: !/[.!?]/.test(aiResponse),
-        error: 'Réponse sans ponctuation'
       },
       {
         condition: aiResponse.split(' ').length < 20,
@@ -150,11 +166,6 @@ Réponds de manière professionnelle, empathique et utile.`;
       }
     }
 
-    aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
-    if (!aiResponse.match(/[.!?]$/)) {
-      aiResponse += '.';
-    }
-
     console.log('Réponse finale:', aiResponse);
 
     return new Response(
@@ -165,11 +176,9 @@ Réponds de manière professionnelle, empathique et utile.`;
   } catch (error) {
     console.error('Erreur:', error);
     
-    const errorMessage = "Je m'excuse, mais je ne peux pas générer une réponse appropriée pour le moment. Pourriez-vous reformuler votre question ou me donner plus de détails sur votre situation?";
-    
     return new Response(
       JSON.stringify({ 
-        response: errorMessage,
+        response: "Je m'excuse, mais je ne peux pas générer une réponse appropriée pour le moment. Pourriez-vous reformuler votre question ou me donner plus de détails sur votre situation?",
         error: error.message 
       }),
       { 
