@@ -98,3 +98,23 @@ export async function deleteAllMessages(): Promise<void> {
     throw error;
   }
 }
+
+export async function provideFeedback(messageId: string, score: number): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('ai_learning_data')
+      .update({ feedback_score: score })
+      .eq('id', messageId)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    toast.success("Merci pour votre feedback!");
+  } catch (error) {
+    console.error('Error providing feedback:', error);
+    toast.error("Une erreur est survenue lors de l'envoi du feedback");
+    throw error;
+  }
+}

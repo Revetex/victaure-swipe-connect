@@ -36,6 +36,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_learning_data: {
+        Row: {
+          context: Json | null
+          created_at: string | null
+          feedback_score: number | null
+          id: string
+          question: string
+          response: string
+          tags: string[] | null
+          user_id: string
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          question: string
+          response: string
+          tags?: string[] | null
+          user_id: string
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          question?: string
+          response?: string
+          tags?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       certifications: {
         Row: {
           created_at: string | null

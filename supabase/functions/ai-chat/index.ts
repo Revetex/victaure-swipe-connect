@@ -22,7 +22,6 @@ serve(async (req) => {
       throw new Error('Clé API manquante');
     }
 
-    // Créer un client Supabase pour accéder au profil
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -37,6 +36,18 @@ serve(async (req) => {
     if (profileError) {
       console.error('Erreur lors de la récupération du profil:', profileError);
     }
+
+    // Récupérer les données d'apprentissage pertinentes
+    const { data: learningData } = await supabase
+      .from('ai_learning_data')
+      .select('question, response')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    const relevantLearning = learningData?.map(data => 
+      `Q: ${data.question}\nR: ${data.response}`
+    ).join('\n') || '';
 
     const userContext = profile ? `
 Informations sur l'utilisateur:
@@ -59,6 +70,9 @@ Instructions strictes:
 - Évite tout formatage superflu
 
 ${userContext}
+
+Apprentissage précédent:
+${relevantLearning}
 
 Conversation précédente:
 ${context?.previousMessages?.map((msg: any) => `${msg.sender}: ${msg.content}`).join('\n') || ''}
@@ -106,6 +120,19 @@ Question actuelle: ${message}`;
       .replace(/\s{2,}/g, ' ')
       .replace(/([0-9]+\.|•|-)\s/g, '')
       .replace(/(exemple|par exemple|voici|comme suit)/gi, '');
+
+    // Sauvegarder l'interaction pour l'apprentissage
+    await supabase
+      .from('ai_learning_data')
+      .insert({
+        user_id: userId,
+        question: message,
+        response: aiResponse,
+        context: {
+          profile: profile,
+          previousMessages: context?.previousMessages
+        }
+      });
 
     console.log('Réponse envoyée:', aiResponse);
 
