@@ -61,7 +61,7 @@ export function ChatInput({
 
   return (
     <div className={cn(
-      "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t z-50 pb-safe",
+      "fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur-md border-t z-50 pb-safe",
       className
     )}>
       <div className="relative flex items-center gap-2 p-4 max-w-3xl mx-auto w-full">
