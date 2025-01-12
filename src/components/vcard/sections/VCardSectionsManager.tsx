@@ -20,18 +20,38 @@ export function VCardSectionsManager({
   const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
 
   useEffect(() => {
+    // Définir l'ordre par défaut avec contact avant bio
+    const defaultOrder = ['header', 'contact', 'bio', 'skills', 'education', 'experience'];
+    
     if (profile?.sections_order) {
-      // Ensure sections are unique
-      const uniqueSections = Array.from(new Set(profile.sections_order));
-      if (uniqueSections.length !== profile.sections_order.length) {
+      // Si l'ordre actuel a bio avant contact, on le corrige
+      const currentOrder = profile.sections_order;
+      const bioIndex = currentOrder.indexOf('bio');
+      const contactIndex = currentOrder.indexOf('contact');
+      
+      if (bioIndex < contactIndex) {
+        // Créer un nouvel ordre avec contact avant bio
+        const newOrder = [...currentOrder];
+        newOrder.splice(bioIndex, 1); // Retirer bio
+        newOrder.splice(contactIndex - 1, 0, 'bio'); // Insérer bio après contact
+        
+        // Mettre à jour le profil avec le nouvel ordre
         setProfile({
           ...profile,
-          sections_order: uniqueSections
+          sections_order: newOrder
         });
+        setSectionsOrder(newOrder);
+      } else {
+        // L'ordre est déjà correct
+        setSectionsOrder(currentOrder);
       }
-      setSectionsOrder(uniqueSections);
     } else {
-      setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
+      // Utiliser l'ordre par défaut si aucun ordre n'est défini
+      setSectionsOrder(defaultOrder);
+      setProfile({
+        ...profile,
+        sections_order: defaultOrder
+      });
     }
   }, [profile, setProfile]);
 
