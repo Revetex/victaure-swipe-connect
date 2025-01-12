@@ -26,11 +26,11 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
       <div
         className={cn(
           "p-6 rounded-lg border",
-          isEditing ? "bg-background" : "bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          isEditing ? "bg-card shadow-lg" : "bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
         )}
         style={{
           fontFamily: customStyles?.font,
-          backgroundColor: customStyles?.background,
+          backgroundColor: !isEditing ? customStyles?.background : undefined,
           color: customStyles?.textColor,
         }}
       >
@@ -46,7 +46,6 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
             )}
             style={{
               fontFamily: customStyles?.font,
-              color: customStyles?.textColor,
             }}
           />
         ) : (

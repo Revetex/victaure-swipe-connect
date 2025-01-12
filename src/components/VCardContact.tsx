@@ -1,9 +1,9 @@
 import { UserProfile } from "@/types/profile";
-import { Input } from "./ui/input";
-import { Phone, MapPin, Globe, Mail } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Mail, Phone, MapPin, Globe, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export interface VCardContactProps {
+interface VCardContactProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
@@ -19,17 +19,23 @@ export function VCardContact({ profile, isEditing, setProfile, customStyles }: V
     setProfile({ ...profile, [field]: value });
   };
 
-  const ContactItem = ({ icon: Icon, value, label }: { icon: any, value?: string | null, label: string }) => {
-    if (!value && !isEditing) return null;
-    
+  const contactFields = [
+    { icon: Mail, label: "Email", value: profile.email },
+    { icon: Phone, label: "Phone", value: profile.phone },
+    { icon: MapPin, label: "City", value: profile.city },
+    { icon: Building2, label: "Company", value: profile.company_name },
+    { icon: Globe, label: "Website", value: profile.website },
+  ];
+
+  const renderContactField = ({ icon: Icon, label, value }: { icon: any; label: string; value: string | null }) => {
     return (
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-          <Icon className="h-5 w-5 text-primary" />
-        </div>
+      <div key={label} className="flex items-center gap-3">
+        <Icon className={cn(
+          "h-4 w-4",
+          customStyles?.textColor ? "" : "text-muted-foreground"
+        )} />
         {isEditing ? (
           <Input
-            type="text"
             value={value || ""}
             onChange={(e) => handleChange(label.toLowerCase() as keyof UserProfile, e.target.value)}
             placeholder={label}
@@ -39,7 +45,7 @@ export function VCardContact({ profile, isEditing, setProfile, customStyles }: V
           <span className={cn(
             "text-sm",
             customStyles?.textColor ? "" : "text-foreground"
-          )}>{value}</span>
+          )}>{value || `Aucun ${label.toLowerCase()}`}</span>
         )}
       </div>
     );
@@ -49,23 +55,20 @@ export function VCardContact({ profile, isEditing, setProfile, customStyles }: V
     <div 
       className={cn(
         "space-y-4 p-6 rounded-lg border",
-        isEditing ? "bg-background" : "bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        isEditing ? "bg-card shadow-lg" : "bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       )}
       style={{ 
         fontFamily: customStyles?.font,
-        backgroundColor: customStyles?.background,
+        backgroundColor: !isEditing ? customStyles?.background : undefined,
         color: customStyles?.textColor,
       }}
     >
-      <div className="grid gap-4">
-        <ContactItem icon={Mail} value={profile.email} label="Email" />
-        <ContactItem icon={Phone} value={profile.phone} label="Phone" />
-        <ContactItem 
-          icon={MapPin} 
-          value={[profile.city, profile.state, profile.country].filter(Boolean).join(", ")} 
-          label="Location" 
-        />
-        <ContactItem icon={Globe} value={profile.website} label="Website" />
+      <h2 className={cn(
+        "text-lg font-semibold mb-4",
+        customStyles?.textColor ? "" : "text-foreground"
+      )}>Contact</h2>
+      <div className="space-y-4">
+        {contactFields.map(renderContactField)}
       </div>
     </div>
   );

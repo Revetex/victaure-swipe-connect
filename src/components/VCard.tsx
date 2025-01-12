@@ -126,67 +126,74 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const activeProfile = tempProfile || profile;
 
   return (
-    <VCardContainer 
-      isEditing={isEditing} 
-      customStyles={{
-        font: activeProfile.custom_font,
-        background: activeProfile.custom_background,
-        textColor: activeProfile.custom_text_color
-      }}
-    >
-      <div className="space-y-8 max-w-4xl mx-auto">
-        {isEditing && (
-          <VCardStyleEditor 
-            profile={activeProfile}
-            onStyleChange={handleProfileChange}
-          />
-        )}
-
-        <VCardSectionsManager
-          profile={activeProfile}
-          isEditing={isEditing}
-          setProfile={isEditing ? handleProfileChange : setProfile}
-          selectedStyle={selectedStyle}
-        />
-
-        <VCardFooter
-          isEditing={isEditing}
-          isPdfGenerating={isPdfGenerating}
-          isProcessing={isAIProcessing}
-          selectedStyle={selectedStyle}
-          onEditToggle={handleEditToggle}
-          onCancel={handleCancel}
-          onSave={handleSave}
-          onDownloadBusinessCard={async () => {
-            if (!profile) return;
-            setIsPdfGenerating(true);
-            try {
-              const doc = await generateBusinessCard(profile, selectedStyle);
-              doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-              toast.success("Business PDF généré avec succès");
-            } catch (error) {
-              console.error('Error generating business PDF:', error);
-              toast.error("Erreur lors de la génération du Business PDF");
-            } finally {
-              setIsPdfGenerating(false);
-            }
+    <div className={cn(
+      "relative min-h-screen w-full transition-all duration-300",
+      isEditing ? "bg-background/95 backdrop-blur-sm fixed inset-0 z-50 overflow-y-auto pb-32" : ""
+    )}>
+      <div className="container mx-auto px-4 py-6">
+        <VCardContainer 
+          isEditing={isEditing} 
+          customStyles={{
+            font: activeProfile.custom_font,
+            background: activeProfile.custom_background,
+            textColor: activeProfile.custom_text_color
           }}
-          onDownloadCV={async () => {
-            if (!profile) return;
-            setIsPdfGenerating(true);
-            try {
-              const doc = await generateCV(profile, selectedStyle);
-              doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-              toast.success("CV PDF généré avec succès");
-            } catch (error) {
-              console.error('Error generating CV PDF:', error);
-              toast.error("Erreur lors de la génération du CV PDF");
-            } finally {
-              setIsPdfGenerating(false);
-            }
-          }}
-        />
+        >
+          <div className="space-y-8 max-w-4xl mx-auto">
+            {isEditing && (
+              <VCardStyleEditor 
+                profile={activeProfile}
+                onStyleChange={handleProfileChange}
+              />
+            )}
+
+            <VCardSectionsManager
+              profile={activeProfile}
+              isEditing={isEditing}
+              setProfile={isEditing ? handleProfileChange : setProfile}
+              selectedStyle={selectedStyle}
+            />
+
+            <VCardFooter
+              isEditing={isEditing}
+              isPdfGenerating={isPdfGenerating}
+              isProcessing={isAIProcessing}
+              selectedStyle={selectedStyle}
+              onEditToggle={handleEditToggle}
+              onCancel={handleCancel}
+              onSave={handleSave}
+              onDownloadBusinessCard={async () => {
+                if (!profile) return;
+                setIsPdfGenerating(true);
+                try {
+                  const doc = await generateBusinessCard(profile, selectedStyle);
+                  doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+                  toast.success("Business PDF généré avec succès");
+                } catch (error) {
+                  console.error('Error generating business PDF:', error);
+                  toast.error("Erreur lors de la génération du Business PDF");
+                } finally {
+                  setIsPdfGenerating(false);
+                }
+              }}
+              onDownloadCV={async () => {
+                if (!profile) return;
+                setIsPdfGenerating(true);
+                try {
+                  const doc = await generateCV(profile, selectedStyle);
+                  doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+                  toast.success("CV PDF généré avec succès");
+                } catch (error) {
+                  console.error('Error generating CV PDF:', error);
+                  toast.error("Erreur lors de la génération du CV PDF");
+                } finally {
+                  setIsPdfGenerating(false);
+                }
+              }}
+            />
+          </div>
+        </VCardContainer>
       </div>
-    </VCardContainer>
+    </div>
   );
 }
