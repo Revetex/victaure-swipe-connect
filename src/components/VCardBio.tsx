@@ -136,14 +136,14 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           value={profile?.bio || ""}
           onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
           placeholder="Écrivez une courte présentation..."
-          className="w-full min-h-[100px] p-2 rounded-md bg-background"
+          className="w-full min-h-[100px] p-2 rounded-md bg-background border"
           style={{ 
             color: selectedStyle.colors.text.primary,
             borderColor: `${selectedStyle.colors.primary}30`
           }}
         />
       ) : profile?.bio ? (
-        <p style={{ color: selectedStyle.colors.text.secondary }}>
+        <p style={{ color: selectedStyle.colors.text.primary }}>
           {profile.bio}
         </p>
       ) : null}

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Paintbrush } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useVCardStyle } from "../VCardStyleContext";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -13,47 +12,36 @@ interface VCardStyleEditorProps {
 }
 
 const fontOptions = [
-  { value: 'Arial, sans-serif', label: 'Arial' },
-  { value: 'Helvetica, sans-serif', label: 'Helvetica' },
-  { value: 'Times New Roman, serif', label: 'Times New Roman' },
-  { value: 'Georgia, serif', label: 'Georgia' },
-  { value: 'Verdana, sans-serif', label: 'Verdana' },
-  { value: 'Roboto, sans-serif', label: 'Roboto' },
-  { value: 'Open Sans, sans-serif', label: 'Open Sans' },
-  { value: 'Lato, sans-serif', label: 'Lato' },
-  { value: 'Montserrat, sans-serif', label: 'Montserrat' },
-  { value: 'Poppins, sans-serif', label: 'Poppins' },
+  { value: "'Poppins', sans-serif", label: "Poppins" },
+  { value: "'Montserrat', sans-serif", label: "Montserrat" },
+  { value: "'Playfair Display', serif", label: "Playfair Display" },
+  { value: "'DM Sans', sans-serif", label: "DM Sans" },
+  { value: "'Inter', sans-serif", label: "Inter" },
+  { value: "'Roboto', sans-serif", label: "Roboto" },
+  { value: "'Open Sans', sans-serif", label: "Open Sans" },
+  { value: "'Lora', serif", label: "Lora" },
+  { value: "'Source Sans Pro', sans-serif", label: "Source Sans Pro" },
+  { value: "'Work Sans', sans-serif", label: "Work Sans" },
 ];
 
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
-  const { selectedStyle } = useVCardStyle();
-
   return (
-    <div 
-      className="space-y-6 p-6 rounded-xl shadow-lg border"
-      style={{
-        backgroundColor: selectedStyle.colors.background.card,
-        borderColor: `${selectedStyle.colors.primary}20`,
-      }}
-    >
-      <div className="flex items-center gap-2 border-b pb-4" style={{ borderColor: `${selectedStyle.colors.primary}20` }}>
-        <Paintbrush className="h-5 w-5" style={{ color: selectedStyle.colors.primary }} />
-        <h3 className="text-lg font-medium" style={{ color: selectedStyle.colors.text.primary }}>
+    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-card">
+      <div className="flex items-center gap-2 border-b pb-4">
+        <Paintbrush className="h-5 w-5 text-primary" />
+        <h3 className="text-lg font-medium text-foreground">
           Personnalisation du style
         </h3>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label style={{ color: selectedStyle.colors.text.primary }}>Police de caractères</Label>
+          <Label className="text-foreground">Police de caractères</Label>
           <Select
             value={profile.custom_font || ""}
             onValueChange={(value) => onStyleChange({ custom_font: value })}
           >
-            <SelectTrigger 
-              className="bg-background/50"
-              style={{ borderColor: `${selectedStyle.colors.primary}30` }}
-            >
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
             <SelectContent>
@@ -67,30 +55,28 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
         </div>
 
         <div className="space-y-2">
-          <Label style={{ color: selectedStyle.colors.text.primary }}>Couleur de fond</Label>
+          <Label className="text-foreground">Couleur de fond</Label>
           <Input
             type="color"
             value={profile.custom_background || "#ffffff"}
             onChange={(e) => onStyleChange({ custom_background: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background/50"
+              "bg-background"
             )}
-            style={{ borderColor: `${selectedStyle.colors.primary}30` }}
           />
         </div>
 
         <div className="space-y-2">
-          <Label style={{ color: selectedStyle.colors.text.primary }}>Couleur du texte</Label>
+          <Label className="text-foreground">Couleur du texte</Label>
           <Input
             type="color"
-            value={profile.custom_text_color || selectedStyle.colors.text.primary}
+            value={profile.custom_text_color || "#000000"}
             onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background/50"
+              "bg-background"
             )}
-            style={{ borderColor: `${selectedStyle.colors.primary}30` }}
           />
         </div>
 
@@ -103,10 +89,6 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
               custom_text_color: undefined
             })}
             className="w-full"
-            style={{
-              borderColor: selectedStyle.colors.primary,
-              color: selectedStyle.colors.primary
-            }}
           >
             Réinitialiser le style
           </Button>

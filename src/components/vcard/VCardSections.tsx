@@ -17,11 +17,6 @@ interface VCardSectionsProps {
   handleRemoveSkill: (skill: string) => void;
   selectedStyle: StyleOption;
   sectionsOrder: string[];
-  customStyles?: {
-    font?: string;
-    background?: string;
-    textColor?: string;
-  };
 }
 
 export function VCardSections({
@@ -34,7 +29,6 @@ export function VCardSections({
   handleRemoveSkill,
   selectedStyle,
   sectionsOrder,
-  customStyles,
 }: VCardSectionsProps) {
   const renderSection = (sectionId: string, index: number) => {
     const uniqueKey = `${sectionId}-${index}`;
@@ -47,7 +41,6 @@ export function VCardSections({
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-            customStyles={customStyles}
           />
         );
       case 'bio':
@@ -57,7 +50,6 @@ export function VCardSections({
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-            customStyles={customStyles}
           />
         );
       case 'contact':
@@ -67,7 +59,6 @@ export function VCardSections({
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-            customStyles={customStyles}
           />
         );
       case 'skills':
@@ -82,7 +73,6 @@ export function VCardSections({
             handleAddSkill={handleAddSkill}
             handleRemoveSkill={handleRemoveSkill}
             selectedStyle={selectedStyle}
-            customStyles={customStyles}
           />
         );
       case 'education':
@@ -92,7 +82,6 @@ export function VCardSections({
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-            customStyles={customStyles}
           />
         );
       case 'experience':
@@ -102,7 +91,6 @@ export function VCardSections({
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-            customStyles={customStyles}
           />
         );
       default:
@@ -111,14 +99,7 @@ export function VCardSections({
   };
 
   return (
-    <div 
-      className="space-y-8"
-      style={{
-        fontFamily: customStyles?.font,
-        backgroundColor: customStyles?.background,
-        color: customStyles?.textColor,
-      }}
-    >
+    <div className="space-y-8">
       {sectionsOrder.map((sectionId, index) => (
         <div
           key={`section-container-${sectionId}-${index}`}

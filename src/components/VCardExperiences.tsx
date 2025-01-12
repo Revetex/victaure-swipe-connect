@@ -18,7 +18,6 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
       id: Date.now().toString(),
       position: "",
       company: "",
-      location: "",
       start_date: "",
       end_date: "",
       description: "",
@@ -90,23 +89,10 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                     color: selectedStyle.colors.text.primary
                   }}
                 />
-                <input
-                  type="text"
-                  value={experience.location}
-                  onChange={(e) =>
-                    handleExperienceChange(experience.id, "location", e.target.value)
-                  }
-                  placeholder="Localisation"
-                  className="w-full p-2 rounded border"
-                  style={{
-                    borderColor: `${selectedStyle.colors.primary}30`,
-                    color: selectedStyle.colors.text.primary
-                  }}
-                />
                 <div className="flex gap-4">
                   <input
                     type="date"
-                    value={experience.start_date}
+                    value={experience.start_date || ""}
                     onChange={(e) =>
                       handleExperienceChange(experience.id, "start_date", e.target.value)
                     }
@@ -118,7 +104,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   />
                   <input
                     type="date"
-                    value={experience.end_date}
+                    value={experience.end_date || ""}
                     onChange={(e) =>
                       handleExperienceChange(experience.id, "end_date", e.target.value)
                     }
@@ -130,7 +116,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   />
                 </div>
                 <textarea
-                  value={experience.description}
+                  value={experience.description || ""}
                   onChange={(e) =>
                     handleExperienceChange(experience.id, "description", e.target.value)
                   }
@@ -155,7 +141,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   {experience.position}
                 </h4>
                 <p style={{ color: selectedStyle.colors.text.primary }}>
-                  {experience.company} • {experience.location}
+                  {experience.company}
                 </p>
                 <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
                   {experience.start_date} - {experience.end_date}
