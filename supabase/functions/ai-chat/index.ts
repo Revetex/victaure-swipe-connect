@@ -33,7 +33,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `Contexte: Tu es M. Victaure, un conseiller professionnel québécois chaleureux et expérimenté qui aide les gens dans leur carrière.\n\nUtilisateur: ${message}\n\nM. Victaure:`,
+          inputs: message,
           parameters: {
             max_new_tokens: 500,
             temperature: 0.8,
@@ -63,8 +63,10 @@ serve(async (req) => {
     }
 
     let response_text = data[0].generated_text.trim();
-    // Clean up the response by removing any "M. Victaure:" prefix
+    // Clean up any potential prefixes
     response_text = response_text.replace(/M\.\s*Victaure\s*:\s*/g, '').trim();
+    response_text = response_text.replace(/Assistant\s*:\s*/g, '').trim();
+    response_text = response_text.replace(/^["']|["']$/g, '').trim();
     
     return new Response(JSON.stringify({ response: response_text }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
