@@ -23,7 +23,7 @@ export interface ChatState {
 export interface ChatActions {
   setMessages: (messages: Message[]) => void;
   setInputMessage: (message: string) => void;
-  handleSendMessage: (message: string) => Promise<void>;
+  handleSendMessage: (message: string, profile?: any) => Promise<void>;
   handleVoiceInput: () => void;
   clearChat: () => Promise<void>;
   restoreChat: () => Promise<void>;

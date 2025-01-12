@@ -3,57 +3,34 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Max-Age': '86400',
+  'Content-Type': 'application/json'
 }
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 2000;
-const MODEL_LOADING_STATUS = 503;
+const systemPrompt = `Tu es M. Victaure, un conseiller professionnel spécialisé en placement et orientation professionnelle au Québec.
+Tu as plus de 15 ans d'expérience dans le domaine et tu connais parfaitement le marché du travail québécois.
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+Ton rôle est de:
+- Analyser les besoins professionnels des utilisateurs
+- Fournir des conseils pratiques et personnalisés pour leur carrière
+- Aider dans la recherche d'emploi et le développement professionnel
+- Guider sur les formations et certifications pertinentes
 
-const systemPrompt = `Tu es M. Victaure, un conseiller en construction au Québec.
+Règles importantes:
+1. Communique toujours en français québécois professionnel
+2. Donne des réponses courtes et précises (2-3 phrases maximum)
+3. Concentre-toi sur des conseils pratiques et applicables
+4. Base tes conseils sur ta connaissance du marché québécois
+5. Reste professionnel mais chaleureux dans ton approche`;
 
-Style de communication:
-- Parle en français québécois naturel
-- Sois direct et bref
-- Évite les formules toutes faites
-- Ne dis jamais "Je suis M. Victaure"
-- Ne termine pas par des points de suspension
-- Ne dis pas "Comment puis-je vous aider?"
-- Évite les longues introductions
-- Reste professionnel mais chaleureux
-- Donne des conseils concrets basés sur ton expérience
-- Adapte tes conseils au profil de l'utilisateur
-- Garde une cohérence dans la conversation
-- Évite les formules de politesse excessives à la fin des messages`
-
-async function callHuggingFaceAPI(apiKey: string, message: string, context: any = {}, retryCount = 0): Promise<string> {
+async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 0): Promise<string> {
   try {
-    console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`);
-    
-    const previousMessages = context?.previousMessages || [];
-    const conversationContext = previousMessages.length > 0 
-      ? previousMessages
-          .map((msg: any) => `${msg.sender === 'user' ? 'Utilisateur' : 'M. Victaure'}: ${msg.content}`)
-          .join('\n')
-      : '';
-
-    const userProfile = context?.userProfile ? `
-Informations sur l'utilisateur:
-- Nom: ${context.userProfile.full_name || 'Non spécifié'}
-- Rôle: ${context.userProfile.role || 'Non spécifié'}
-- Compétences: ${context.userProfile.skills?.join(', ') || 'Non spécifiées'}
-- Ville: ${context.userProfile.city || 'Non spécifiée'}
-- Bio: ${context.userProfile.bio || 'Non spécifiée'}
-    ` : '';
-
-    const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\nConversation précédente:\n${conversationContext}\n\nUtilisateur: ${message}\n\nM. Victaure:`;
-    
-    console.log('Envoi du prompt à Hugging Face:', fullPrompt);
+    console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/3)`);
     
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
         method: 'POST',
         headers: {
@@ -61,33 +38,26 @@ Informations sur l'utilisateur:
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: fullPrompt,
+          inputs: `${systemPrompt}\n\nUtilisateur: ${message}\n\nM. Victaure:`,
           parameters: {
-            max_new_tokens: 1024,
-            temperature: 0.7,
+            max_new_tokens: 100,
+            temperature: 0.5,
             top_p: 0.9,
-            do_sample: true,
-            return_full_text: false
+            return_full_text: false,
+            do_sample: true
           }
         }),
       }
-    )
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Erreur de l\'API:', {
+      console.error('Erreur API:', {
         status: response.status,
         statusText: response.statusText,
         error: errorText
       });
-
-      if (response.status === MODEL_LOADING_STATUS && retryCount < MAX_RETRIES) {
-        console.log(`Modèle en cours de chargement, nouvelle tentative dans ${RETRY_DELAY/1000} secondes...`);
-        await sleep(RETRY_DELAY);
-        return callHuggingFaceAPI(apiKey, message, context, retryCount + 1);
-      }
-
-      throw new Error(`Erreur API: ${response.status} ${response.statusText}\n${errorText}`);
+      throw new Error(`Erreur API: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -97,46 +67,54 @@ Informations sur l'utilisateur:
       throw new Error('Format de réponse invalide');
     }
 
-    let assistantResponse = data[0].generated_text.trim();
-    if (assistantResponse.startsWith('M. Victaure:')) {
-      assistantResponse = assistantResponse.substring('M. Victaure:'.length).trim();
+    // Clean up the response to only keep M. Victaure's part
+    let response_text = data[0].generated_text.trim();
+    if (response_text.includes("M. Victaure:")) {
+      response_text = response_text.split("M. Victaure:")[1].trim();
     }
-
-    return assistantResponse;
+    
+    return response_text;
   } catch (error) {
     console.error('Error in callHuggingFaceAPI:', error);
-    if (retryCount < MAX_RETRIES) {
-      console.log(`Erreur lors de l'appel API, nouvelle tentative dans ${RETRY_DELAY/1000} secondes... (${error.message})`);
-      await sleep(RETRY_DELAY);
-      return callHuggingFaceAPI(apiKey, message, context, retryCount + 1);
+    if (retryCount < 2) {
+      console.log(`Nouvelle tentative dans 2 secondes...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return callHuggingFaceAPI(apiKey, message, retryCount + 1);
     }
     throw error;
   }
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
   try {
-    const { message, userId, context } = await req.json();
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { 
+        status: 204,
+        headers: corsHeaders 
+      });
+    }
+
+    if (req.method !== 'POST') {
+      throw new Error(`Method ${req.method} not allowed`);
+    }
+
+    const { message } = await req.json();
     console.log('Message reçu:', message);
-    console.log('ID utilisateur:', userId);
-    console.log('Contexte:', context);
+
+    if (!message || typeof message !== 'string') {
+      throw new Error('Message invalide ou manquant');
+    }
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
-      console.error('Clé API Hugging Face manquante');
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    console.log('Appel de l\'API Hugging Face');
-    const assistantResponse = await callHuggingFaceAPI(apiKey, message, context);
+    const assistantResponse = await callHuggingFaceAPI(apiKey, message);
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: corsHeaders }
     );
   } catch (error) {
     console.error('Erreur détaillée:', {
@@ -151,7 +129,7 @@ serve(async (req) => {
         details: error.message 
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: corsHeaders,
         status: 500 
       }
     );
