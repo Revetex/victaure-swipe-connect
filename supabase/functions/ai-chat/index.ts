@@ -6,44 +6,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const systemPrompt = `T'es M. Victaure, un gars de chantier québécois qui s'y connaît en construction.
-
-Règles:
-- Parle comme un vrai québécois, utilise le slang naturellement
-- Réponds direct, sans bullshit
-- Donne des vrais conseils basés sur ton expérience
-- Adapte-toi au gars qui te parle
-- Garde une suite logique dans conversation
-- Pas de politesse excessive, parle naturel`
-
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
 const MODEL_LOADING_STATUS = 503;
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function callHuggingFaceAPI(apiKey: string, message: string, context: any = {}, retryCount = 0): Promise<string> {
+async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 0): Promise<string> {
   try {
     console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`);
-    
-    const previousMessages = context?.previousMessages || [];
-    const conversationContext = previousMessages.length > 0 
-      ? previousMessages
-          .map((msg: any) => `${msg.sender === 'user' ? 'Gars' : 'Moi'}: ${msg.content}`)
-          .join('\n')
-      : '';
-
-    const userProfile = context?.userProfile ? `
-Info sur le gars:
-${context.userProfile.full_name ? '- Nom: ' + context.userProfile.full_name : ''}
-${context.userProfile.role ? '- Job: ' + context.userProfile.role : ''}
-${context.userProfile.skills?.length ? '- Skills: ' + context.userProfile.skills.join(', ') : ''}
-${context.userProfile.city ? '- Ville: ' + context.userProfile.city : ''}
-${context.userProfile.bio ? '- Bio: ' + context.userProfile.bio : ''}` : '';
-
-    const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\n${conversationContext}\n\nGars: ${message}\n\nMoi:`;
-    
-    console.log('Envoi du prompt à Hugging Face:', fullPrompt);
     
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
@@ -54,9 +25,9 @@ ${context.userProfile.bio ? '- Bio: ' + context.userProfile.bio : ''}` : '';
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: fullPrompt,
+          inputs: message,
           parameters: {
-            max_new_tokens: 150,
+            max_new_tokens: 100,
             temperature: 1.2,
             top_p: 0.95,
             do_sample: true,
@@ -77,7 +48,7 @@ ${context.userProfile.bio ? '- Bio: ' + context.userProfile.bio : ''}` : '';
       if (response.status === MODEL_LOADING_STATUS && retryCount < MAX_RETRIES) {
         console.log(`Modèle en cours de chargement, nouvelle tentative dans ${RETRY_DELAY/1000} secondes...`);
         await sleep(RETRY_DELAY);
-        return callHuggingFaceAPI(apiKey, message, context, retryCount + 1);
+        return callHuggingFaceAPI(apiKey, message, retryCount + 1);
       }
 
       throw new Error(`Erreur API: ${response.status} ${response.statusText}\n${errorText}`);
@@ -91,17 +62,13 @@ ${context.userProfile.bio ? '- Bio: ' + context.userProfile.bio : ''}` : '';
     }
 
     let assistantResponse = data[0].generated_text.trim();
-    if (assistantResponse.startsWith('Moi:')) {
-      assistantResponse = assistantResponse.substring('Moi:'.length).trim();
-    }
-
     return assistantResponse;
   } catch (error) {
     console.error('Error in callHuggingFaceAPI:', error);
     if (retryCount < MAX_RETRIES) {
       console.log(`Erreur lors de l'appel API, nouvelle tentative dans ${RETRY_DELAY/1000} secondes... (${error.message})`);
       await sleep(RETRY_DELAY);
-      return callHuggingFaceAPI(apiKey, message, context, retryCount + 1);
+      return callHuggingFaceAPI(apiKey, message, retryCount + 1);
     }
     throw error;
   }
@@ -113,10 +80,8 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, context } = await req.json();
+    const { message } = await req.json();
     console.log('Message reçu:', message);
-    console.log('ID utilisateur:', userId);
-    console.log('Contexte:', context);
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
@@ -125,7 +90,7 @@ serve(async (req) => {
     }
 
     console.log('Appel de l\'API Hugging Face');
-    const assistantResponse = await callHuggingFaceAPI(apiKey, message, context);
+    const assistantResponse = await callHuggingFaceAPI(apiKey, message);
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),
