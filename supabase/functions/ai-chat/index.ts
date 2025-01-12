@@ -8,6 +8,7 @@ const corsHeaders = {
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000; // 2 seconds
+const MODEL_LOADING_STATUS = 503;
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -71,7 +72,7 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
       })
 
       // Si le modèle est en cours de chargement et qu'on n'a pas dépassé le nombre max de tentatives
-      if (response.status === 503 && retryCount < MAX_RETRIES) {
+      if (response.status === MODEL_LOADING_STATUS && retryCount < MAX_RETRIES) {
         console.log('Modèle en cours de chargement, nouvelle tentative dans 2 secondes...')
         await sleep(RETRY_DELAY)
         return callHuggingFaceAPI(apiKey, message, retryCount + 1)
