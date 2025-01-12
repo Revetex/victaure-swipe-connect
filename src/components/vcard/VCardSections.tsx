@@ -5,6 +5,7 @@ import { VCardContact } from "../VCardContact";
 import { VCardSkills } from "../VCardSkills";
 import { VCardEducation } from "../VCardEducation";
 import { VCardExperiences } from "../VCardExperiences";
+import { VCardQRCode } from "./VCardQRCode";
 import { StyleOption } from "./types";
 
 interface VCardSectionsProps {
@@ -123,14 +124,12 @@ export function VCardSections({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           {sectionsOrder
-            .filter(section => ['header', 'contact', 'bio', 'education', 'experience'].includes(section))
+            .filter(section => ['header', 'contact', 'bio', 'skills', 'education', 'experience'].includes(section))
             .map((sectionId, index) => renderSection(sectionId, index))}
         </div>
         
         <div className="lg:col-span-4 space-y-6">
-          {sectionsOrder
-            .filter(section => ['skills'].includes(section))
-            .map((sectionId, index) => renderSection(sectionId, index))}
+          {!isEditing && <VCardQRCode />}
         </div>
       </div>
     </div>
