@@ -115,7 +115,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <h2 
               className="text-xl sm:text-2xl font-semibold truncate transition-colors"
               style={{ 
-                color: selectedStyle.colors.text.primary,
+                color: profile.custom_text_color || selectedStyle.colors.text.primary,
                 textShadow: '0 1px 2px rgba(0,0,0,0.1)'
               }}
             >
@@ -124,7 +124,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <p 
               className="text-sm sm:text-base transition-colors"
               style={{ 
-                color: selectedStyle.colors.text.secondary,
+                color: profile.custom_text_color || selectedStyle.colors.text.secondary,
                 textShadow: '0 1px 1px rgba(0,0,0,0.05)'
               }}
             >
