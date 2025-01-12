@@ -9,6 +9,7 @@ import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -19,6 +20,7 @@ interface VCardHeaderProps {
 export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps) {
   const { selectedStyle } = useVCardStyle();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
@@ -42,6 +44,18 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       const fileExt = file.name.split('.').pop();
       const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
+      // Delete old avatar if it exists
+      if (profile.avatar_url) {
+        const oldFileName = profile.avatar_url.split('/').pop();
+        if (oldFileName) {
+          await supabase.storage
+            .from('vcards')
+            .remove([oldFileName]);
+        }
+      }
+
+      setIsImageLoading(true);
+
       const { error: uploadError } = await supabase.storage
         .from('vcards')
         .upload(filePath, file);
@@ -52,16 +66,26 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
         .from('vcards')
         .getPublicUrl(filePath);
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Aucun utilisateur authentifié");
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
       setProfile({ ...profile, avatar_url: publicUrl });
+      
       toast.success("Photo de profil mise à jour");
     } catch (error) {
       console.error('Error uploading avatar:', error);
       toast.error("Impossible de mettre à jour la photo de profil");
+    } finally {
+      setIsImageLoading(false);
     }
   };
-
-  const textColor = profile.custom_text_color || selectedStyle.colors.text.primary;
-  const secondaryTextColor = profile.custom_text_color || selectedStyle.colors.text.secondary;
 
   return (
     <motion.div 
@@ -70,40 +94,48 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4"
       style={{ 
         fontFamily: profile.custom_font || selectedStyle.font,
-        color: textColor
+        color: profile.custom_text_color || selectedStyle.colors.text.primary
       }}
     >
-      <div className="relative group">
-        <Avatar className="h-24 w-24 ring-4 ring-white/30 shrink-0 shadow-2xl backdrop-blur-sm">
-          <AvatarImage 
-            src={profile.avatar_url || ''} 
-            alt={profile.full_name || ''}
-            className="object-cover w-full h-full"
-          />
-          <AvatarFallback className="bg-[#1A1F2C]">
-            <UserCircle2 className="h-14 w-14 text-white" />
-          </AvatarFallback>
-        </Avatar>
-        {isEditing && (
-          <label 
-            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
-            htmlFor="avatar-upload"
-          >
-            <Upload className="h-6 w-6 text-white" />
-            <input
-              id="avatar-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarUpload}
-            />
-          </label>
-        )}
+      <div className="relative group w-24 h-24 sm:w-32 sm:h-32">
+        <div className="relative rounded-full overflow-hidden w-full h-full ring-4 ring-background/80 shadow-xl transition-shadow duration-200">
+          {isImageLoading ? (
+            <Skeleton className="w-full h-full rounded-full" />
+          ) : (
+            <Avatar className="w-full h-full">
+              <AvatarImage 
+                src={profile.avatar_url} 
+                alt={profile.full_name}
+                className="object-cover w-full h-full"
+                onLoad={() => setIsImageLoading(false)}
+                loading="lazy"
+              />
+              <AvatarFallback className="bg-muted">
+                <UserCircle2 className="w-12 h-12 text-muted-foreground/50" />
+              </AvatarFallback>
+            </Avatar>
+          )}
+          {isEditing && (
+            <label 
+              className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
+              htmlFor="avatar-upload"
+            >
+              <Upload className="h-8 w-8 text-white" />
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+            </label>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
         {isEditing ? (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full max-w-md mx-auto sm:mx-0">
             <Input
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
@@ -111,7 +143,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               className="text-xl font-semibold bg-white/10 border-white/20 placeholder:text-white/50"
               style={{ 
                 fontFamily: profile.custom_font || selectedStyle.font,
-                color: textColor
+                color: profile.custom_text_color || selectedStyle.colors.text.primary
               }}
             />
             <Input
@@ -121,7 +153,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               className="text-sm bg-white/10 border-white/20 placeholder:text-white/50"
               style={{ 
                 fontFamily: profile.custom_font || selectedStyle.font,
-                color: secondaryTextColor
+                color: profile.custom_text_color || selectedStyle.colors.text.secondary
               }}
             />
           </div>
@@ -130,7 +162,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <h2 
               className="text-xl sm:text-2xl font-semibold truncate transition-colors"
               style={{ 
-                color: textColor,
+                color: profile.custom_text_color || selectedStyle.colors.text.primary,
                 fontFamily: profile.custom_font || selectedStyle.font,
                 textShadow: '0 1px 2px rgba(0,0,0,0.1)'
               }}
@@ -140,7 +172,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <p 
               className="text-sm sm:text-base transition-colors"
               style={{ 
-                color: secondaryTextColor,
+                color: profile.custom_text_color || selectedStyle.colors.text.secondary,
                 fontFamily: profile.custom_font || selectedStyle.font,
                 textShadow: '0 1px 1px rgba(0,0,0,0.05)'
               }}
@@ -153,7 +185,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
 
       {!isEditing && (
         <motion.div 
-          className="shrink-0 cursor-pointer"
+          className="shrink-0 cursor-pointer hidden sm:block"
           onClick={() => setIsQRDialogOpen(true)}
           whileHover={{ scale: 1.05 }}
           initial={{ opacity: 0 }}
