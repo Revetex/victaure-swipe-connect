@@ -28,7 +28,10 @@ export default defineConfig(({ mode }) => ({
       usePolling: true,
       interval: 1000,
     },
-    https: true,
+    https: {
+      key: undefined,
+      cert: undefined
+    },
     cors: {
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
