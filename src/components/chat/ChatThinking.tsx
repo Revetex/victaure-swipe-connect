@@ -28,6 +28,7 @@ export function ChatThinking() {
         animate={{ opacity: 1, scale: 1 }}
         className="flex gap-1.5 items-center bg-card border rounded-2xl px-4 py-2.5 text-sm shadow-sm"
       >
+        <span className="text-muted-foreground text-xs ml-1">M. Victaure réfléchit...</span>
         <motion.div className="flex items-center gap-1">
           <motion.span
             className="w-2 h-2 bg-primary/50 rounded-full"
@@ -68,7 +69,6 @@ export function ChatThinking() {
             }}
           />
         </motion.div>
-        <span className="text-muted-foreground text-xs ml-1">M. Victaure est en train de réfléchir...</span>
       </motion.div>
     </motion.div>
   );
