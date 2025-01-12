@@ -4,6 +4,7 @@ import { Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/ui/loader";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardBioProps {
   profile: any;
@@ -13,9 +14,7 @@ interface VCardBioProps {
 
 export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
-  const RETRY_DELAY = 2000; // 2 seconds
+  const { selectedStyle } = useVCardStyle();
 
   const handleGenerateBio = async () => {
     if (!profile) {
@@ -24,7 +23,6 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
     }
     
     setIsGenerating(true);
-    setRetryCount(0);
 
     const attemptGeneration = async (attempt: number): Promise<void> => {
       try {
@@ -67,9 +65,9 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           console.error("Error from generate-bio function:", error);
           
           // Check if we should retry
-          if (attempt < MAX_RETRIES && (error.message?.includes('Failed to fetch') || error.status === 503)) {
-            console.log(`Retry attempt ${attempt + 1} of ${MAX_RETRIES}`);
-            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          if (attempt < 3 && (error.message?.includes('Failed to fetch') || error.status === 503)) {
+            console.log(`Retry attempt ${attempt + 1} of 3`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
             return attemptGeneration(attempt + 1);
           }
           
@@ -86,9 +84,9 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
         console.error("Error generating bio:", error);
         
         // If we haven't exceeded max retries and it's a network error, retry
-        if (attempt < MAX_RETRIES && (error.message?.includes('Failed to fetch') || error.status === 503)) {
-          console.log(`Retry attempt ${attempt + 1} of ${MAX_RETRIES}`);
-          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        if (attempt < 3 && (error.message?.includes('Failed to fetch') || error.status === 503)) {
+          console.log(`Retry attempt ${attempt + 1} of 3`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
           return attemptGeneration(attempt + 1);
         }
         
@@ -106,13 +104,19 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Présentation</h3>
+        <h3 
+          className="text-lg font-semibold"
+          style={{ color: selectedStyle.colors.text.primary }}
+        >
+          Présentation
+        </h3>
         {isEditing && (
           <Button 
             variant="outline" 
             size="sm"
             onClick={handleGenerateBio}
             disabled={isGenerating}
+            style={{ color: selectedStyle.colors.primary }}
           >
             {isGenerating ? (
               <Loader className="mr-2 h-4 w-4" />
@@ -130,9 +134,12 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
           placeholder="Écrivez une courte présentation..."
           className="w-full min-h-[100px] p-2 border rounded-md bg-background"
+          style={{ color: selectedStyle.colors.text.primary }}
         />
       ) : profile?.bio ? (
-        <p className="text-muted-foreground">{profile.bio}</p>
+        <p style={{ color: selectedStyle.colors.text.secondary }}>
+          {profile.bio}
+        </p>
       ) : null}
     </div>
   );

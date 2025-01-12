@@ -1,7 +1,8 @@
-import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
+import { useVCardStyle } from "./VCardStyleContext";
 
 interface VCardContainerProps {
-  children: React.ReactNode;
+  children: ReactNode;
   isEditing?: boolean;
   customStyles?: {
     font?: string;
@@ -15,32 +16,20 @@ export function VCardContainer({
   isEditing,
   customStyles 
 }: VCardContainerProps) {
+  const { selectedStyle } = useVCardStyle();
+
+  const containerStyle = {
+    fontFamily: customStyles?.font || selectedStyle.font,
+    backgroundColor: customStyles?.background || "transparent",
+    color: customStyles?.textColor || selectedStyle.colors.text.primary,
+  };
+
   return (
-    <div className={cn(
-      "relative min-h-screen w-full p-4",
-      isEditing ? "bg-background" : ""
-    )}>
-      <div 
-        className="space-y-8"
-        style={{
-          // N'appliquer les styles personnalisés que lorsqu'on n'est pas en mode édition
-          fontFamily: !isEditing ? customStyles?.font : undefined,
-          color: !isEditing ? customStyles?.textColor : undefined,
-        }}
-      >
-        <div 
-          className={cn(
-            "rounded-xl p-6",
-            isEditing ? "bg-card" : ""
-          )}
-          style={{
-            // N'appliquer le fond personnalisé que lorsqu'on n'est pas en mode édition
-            backgroundColor: !isEditing ? customStyles?.background : undefined,
-          }}
-        >
-          {children}
-        </div>
-      </div>
+    <div 
+      className={`relative min-h-screen w-full p-4 md:p-8 ${isEditing ? 'editing-mode' : ''}`}
+      style={containerStyle}
+    >
+      {children}
     </div>
   );
 }

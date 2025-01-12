@@ -68,7 +68,10 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4"
-      style={{ fontFamily: profile.custom_font || selectedStyle.font }}
+      style={{ 
+        fontFamily: profile.custom_font || selectedStyle.font,
+        color: textColor
+      }}
     >
       <div className="relative group">
         <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
@@ -105,15 +108,21 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom"
-              className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              style={{ fontFamily: profile.custom_font || selectedStyle.font }}
+              className="text-xl font-semibold bg-white/10 border-white/20 placeholder:text-white/50"
+              style={{ 
+                fontFamily: profile.custom_font || selectedStyle.font,
+                color: textColor
+              }}
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
-              style={{ fontFamily: profile.custom_font || selectedStyle.font }}
+              className="text-sm bg-white/10 border-white/20 placeholder:text-white/50"
+              style={{ 
+                fontFamily: profile.custom_font || selectedStyle.font,
+                color: secondaryTextColor
+              }}
             />
           </div>
         ) : (
