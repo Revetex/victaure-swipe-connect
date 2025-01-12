@@ -20,7 +20,7 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
     console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`);
     
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
         method: 'POST',
         headers: {
@@ -30,10 +30,9 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
         body: JSON.stringify({
           inputs: message,
           parameters: {
-            max_new_tokens: 100,
-            temperature: 1.2,
-            top_p: 0.95,
-            do_sample: true,
+            max_new_tokens: 150,
+            temperature: 0.7,
+            top_p: 0.9,
             return_full_text: false
           }
         }),
@@ -64,8 +63,7 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
       throw new Error('Format de réponse invalide');
     }
 
-    let assistantResponse = data[0].generated_text.trim();
-    return assistantResponse;
+    return data[0].generated_text.trim();
   } catch (error) {
     console.error('Error in callHuggingFaceAPI:', error);
     if (retryCount < MAX_RETRIES) {
