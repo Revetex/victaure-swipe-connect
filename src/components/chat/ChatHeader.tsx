@@ -1,10 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bot } from "lucide-react";
+import { ArrowLeft, Bot, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatHeaderProps {
   onBack?: () => void;
+  onDelete?: () => void;
   title?: string;
   subtitle?: string;
   avatarUrl?: string;
@@ -13,7 +14,8 @@ interface ChatHeaderProps {
 
 export function ChatHeader({
   onBack,
-  title = "M. Victor",
+  onDelete,
+  title = "Mr. Victaure",
   subtitle = "Assistant de Placement Virtuel",
   avatarUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
   isThinking = false,
@@ -52,6 +54,18 @@ export function ChatHeader({
             {isThinking ? "En train de réfléchir..." : subtitle}
           </p>
         </div>
+      </div>
+      <div className="flex items-center gap-2">
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onDelete}
+            className="text-muted-foreground hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );
