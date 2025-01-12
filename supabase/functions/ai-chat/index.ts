@@ -6,6 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 seconds
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const systemPrompt = `Tu es M. Victaure, un conseiller en emploi expérimenté au Québec qui aide les professionnels dans leur recherche d'emploi et leur développement de carrière.
 
 Ton style de communication:
@@ -32,24 +37,10 @@ Règles importantes:
 - Offre des suggestions pratiques et applicables
 - Adapte tes conseils au profil et au contexte de l'utilisateur`
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
-
+async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 0): Promise<string> {
   try {
-    const { message, userId } = await req.json()
-    console.log('Message reçu:', message)
-    console.log('ID utilisateur:', userId)
-
-    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
-    if (!apiKey) {
-      console.error('Clé API Hugging Face manquante')
-      throw new Error('Erreur de configuration: Clé API manquante')
-    }
-
-    console.log('Appel de l\'API Hugging Face')
-
+    console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`)
+    
     const response = await fetch(
       'https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview',
       {
@@ -71,15 +62,21 @@ serve(async (req) => {
       }
     )
 
-    console.log('Statut de la réponse:', response.status)
-
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Détails de l\'erreur:', {
+      console.error('Erreur de l\'API:', {
         status: response.status,
         statusText: response.statusText,
         error: errorText
       })
+
+      // Si le modèle est en cours de chargement et qu'on n'a pas dépassé le nombre max de tentatives
+      if (response.status === 503 && retryCount < MAX_RETRIES) {
+        console.log('Modèle en cours de chargement, nouvelle tentative dans 2 secondes...')
+        await sleep(RETRY_DELAY)
+        return callHuggingFaceAPI(apiKey, message, retryCount + 1)
+      }
+
       throw new Error(`Erreur API: ${response.status} ${response.statusText}\n${errorText}`)
     }
 
@@ -87,7 +84,6 @@ serve(async (req) => {
     console.log('Réponse reçue:', data)
 
     if (!data || !Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Format de réponse invalide:', data)
       throw new Error('Format de réponse invalide')
     }
 
@@ -95,6 +91,36 @@ serve(async (req) => {
     if (assistantResponse.startsWith('M. Victaure:')) {
       assistantResponse = assistantResponse.substring('M. Victaure:'.length).trim()
     }
+
+    return assistantResponse
+  } catch (error) {
+    if (retryCount < MAX_RETRIES) {
+      console.log(`Erreur lors de l'appel API, nouvelle tentative dans 2 secondes... (${error.message})`)
+      await sleep(RETRY_DELAY)
+      return callHuggingFaceAPI(apiKey, message, retryCount + 1)
+    }
+    throw error
+  }
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
+  try {
+    const { message, userId } = await req.json()
+    console.log('Message reçu:', message)
+    console.log('ID utilisateur:', userId)
+
+    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
+    if (!apiKey) {
+      console.error('Clé API Hugging Face manquante')
+      throw new Error('Erreur de configuration: Clé API manquante')
+    }
+
+    console.log('Appel de l\'API Hugging Face')
+    const assistantResponse = await callHuggingFaceAPI(apiKey, message)
 
     return new Response(
       JSON.stringify({ response: assistantResponse }),
