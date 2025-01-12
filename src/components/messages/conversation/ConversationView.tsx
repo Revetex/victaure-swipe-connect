@@ -14,7 +14,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack?: () => void;  // Made optional with ?
+  onBack?: () => void;
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -64,17 +64,16 @@ export function ConversationView({
 
   const handleSendMessage = async (message: string) => {
     try {
-      console.log("Sending message:", message);
       await onSendMessage(message, profile);
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Erreur lors de l'envoi du message");
+      toast.error("Une erreur est survenue lors de l'envoi du message");
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-14">
-      <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
             {onBack && (
@@ -111,7 +110,7 @@ export function ConversationView({
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden bg-background/80">
+      <div className="flex-1 overflow-hidden bg-background/80 mt-[4.5rem] mb-[4.5rem]">
         <ScrollArea 
           className="h-full px-4 py-4" 
           onScroll={handleScroll}
@@ -157,7 +156,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
+      <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto">
           <ChatInput
             value={inputMessage}
@@ -167,7 +166,6 @@ export function ConversationView({
             isListening={isListening}
             isThinking={isThinking}
             placeholder="Écrivez votre message..."
-            className="w-full"
           />
         </div>
       </div>

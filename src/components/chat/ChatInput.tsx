@@ -60,11 +60,8 @@ export function ChatInput({
   };
 
   return (
-    <div className={cn(
-      "fixed bottom-[4.5rem] left-0 right-0 bg-background/95 backdrop-blur-md border-t z-50 pb-safe",
-      className
-    )}>
-      <div className="relative flex items-center gap-1.5 p-2 max-w-3xl mx-auto w-full">
+    <div className={cn("p-4", className)}>
+      <div className="relative flex items-center gap-2">
         {onVoiceInput && (
           <motion.div whileTap={{ scale: 0.95 }}>
             <Button
@@ -102,7 +99,7 @@ export function ChatInput({
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="min-h-[36px] max-h-[120px] resize-none py-2 text-base focus-visible:ring-1 pr-12 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
+            className="min-h-[36px] w-full pr-12 py-2 resize-none text-base focus-visible:ring-1 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
             disabled={isThinking}
           />
           
