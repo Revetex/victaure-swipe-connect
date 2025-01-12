@@ -9,16 +9,15 @@ const corsHeaders = {
   'Content-Type': 'application/json'
 }
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 2000;
-const MODEL_LOADING_STATUS = 503;
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const systemPrompt = `Vous êtes M. Victaure, un conseiller professionnel expert en placement et orientation professionnelle au Canada. 
+Votre rôle est d'aider les utilisateurs dans leur développement de carrière avec des conseils pratiques et personnalisés.
+Communiquez de manière professionnelle mais chaleureuse, en français québécois.
+Concentrez-vous sur des réponses courtes et précises.
+Évitez les longues explications théoriques.`;
 
 async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 0): Promise<string> {
   try {
-    console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`);
-    console.log('Message:', message);
+    console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/3)`);
     
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -29,7 +28,7 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: message,
+          inputs: `${systemPrompt}\n\nUtilisateur: ${message}\n\nM. Victaure:`,
           parameters: {
             max_new_tokens: 150,
             temperature: 0.7,
@@ -38,39 +37,31 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
           }
         }),
       }
-    )
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Erreur de l\'API:', {
+      console.error('Erreur API:', {
         status: response.status,
         statusText: response.statusText,
         error: errorText
       });
-
-      if (response.status === MODEL_LOADING_STATUS && retryCount < MAX_RETRIES) {
-        console.log(`Modèle en cours de chargement, nouvelle tentative dans ${RETRY_DELAY/1000} secondes...`);
-        await sleep(RETRY_DELAY);
-        return callHuggingFaceAPI(apiKey, message, retryCount + 1);
-      }
-
-      throw new Error(`Erreur API: ${response.status} ${response.statusText}\n${errorText}`);
+      throw new Error(`Erreur API: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     console.log('Réponse reçue:', data);
 
     if (!data || !Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Format de réponse invalide:', data);
       throw new Error('Format de réponse invalide');
     }
 
     return data[0].generated_text.trim();
   } catch (error) {
     console.error('Error in callHuggingFaceAPI:', error);
-    if (retryCount < MAX_RETRIES) {
-      console.log(`Erreur lors de l'appel API, nouvelle tentative dans ${RETRY_DELAY/1000} secondes... (${error.message})`);
-      await sleep(RETRY_DELAY);
+    if (retryCount < 2) {
+      console.log(`Nouvelle tentative dans 2 secondes...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
       return callHuggingFaceAPI(apiKey, message, retryCount + 1);
     }
     throw error;
@@ -79,10 +70,9 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
 
 serve(async (req) => {
   try {
-    // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
       return new Response(null, { 
-        status: 204, 
+        status: 204,
         headers: corsHeaders 
       });
     }
@@ -100,11 +90,9 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
-      console.error('Clé API Hugging Face manquante');
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    console.log('Appel de l\'API Hugging Face');
     const assistantResponse = await callHuggingFaceAPI(apiKey, message);
 
     return new Response(
