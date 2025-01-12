@@ -77,46 +77,26 @@ export function ChatMessage({
           )}
         >
           {thinking ? (
-            <motion.div className="flex items-center gap-1.5">
-              <motion.span
-                className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
-                animate={{ 
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{ 
-                  duration: 1,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              <motion.span
-                className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
-                animate={{ 
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{ 
-                  duration: 1,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.2
-                }}
-              />
-              <motion.span
-                className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
-                animate={{ 
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{ 
-                  duration: 1,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.4
-                }}
-              />
-              <span className="text-muted-foreground text-xs ml-1">En train d'écrire...</span>
+            <motion.div className="flex items-center gap-2">
+              <motion.div className="flex gap-1">
+                {[0, 1, 2].map((i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 bg-primary/50 rounded-full"
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.5, 1, 0.5]
+                    }}
+                    transition={{ 
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.2
+                    }}
+                  />
+                ))}
+              </motion.div>
+              <span className="text-muted-foreground text-sm">M. Victaure réfléchit...</span>
             </motion.div>
           ) : (
             content

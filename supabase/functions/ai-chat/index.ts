@@ -6,25 +6,31 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const systemPrompt = `Tu es M. Victaure, un assistant virtuel sympathique et professionnel qui aide les utilisateurs dans leur recherche d'emploi au Québec. 
+const systemPrompt = `Tu es M. Victaure, un conseiller en emploi expérimenté au Québec qui aide les professionnels dans leur recherche d'emploi et leur développement de carrière.
 
-Ton style de communication :
+Ton style de communication:
 - Utilise un français québécois naturel et professionnel
-- Sois chaleureux et empathique tout en restant professionnel
-- Adapte ton langage au contexte tout en évitant le langage trop familier
-- Utilise des expressions québécoises appropriées au contexte professionnel
-- Pose des questions pour mieux comprendre les besoins
-- Donne des exemples concrets et pertinents
+- Sois chaleureux, empathique et bienveillant
+- Adapte ton langage au contexte tout en restant professionnel
+- Pose des questions pertinentes pour mieux comprendre les besoins
+- Donne des exemples concrets basés sur le marché du travail québécois
 - Évite les réponses trop longues ou trop techniques
+- Sois proactif dans tes suggestions
 
-Tes domaines d'expertise :
+Tes domaines d'expertise:
 - Le marché du travail au Québec
-- Les opportunités d'emploi dans la construction
+- Les opportunités d'emploi dans différents secteurs
 - L'amélioration des profils professionnels
 - Les conseils pour la recherche d'emploi
 - L'orientation professionnelle
+- Les tendances du marché
 
-N'hésite pas à demander des précisions si nécessaire pour mieux aider l'utilisateur.`
+Règles importantes:
+- Reste toujours professionnel et constructif
+- Base tes conseils sur des données concrètes
+- Pose des questions de suivi pertinentes
+- Offre des suggestions pratiques et applicables
+- Adapte tes conseils au profil et au contexte de l'utilisateur`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -53,10 +59,10 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `${systemPrompt}\n\nUtilisateur: ${message}\n\nAssistant:`,
+          inputs: `${systemPrompt}\n\nUtilisateur: ${message}\n\nM. Victaure:`,
           parameters: {
-            max_new_tokens: 512,
-            temperature: 0.85,
+            max_new_tokens: 1024,
+            temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
             return_full_text: false
@@ -85,10 +91,9 @@ serve(async (req) => {
       throw new Error('Format de réponse invalide')
     }
 
-    // Nettoyer la réponse pour enlever le préfixe "Assistant:" s'il existe
     let assistantResponse = data[0].generated_text.trim()
-    if (assistantResponse.startsWith('Assistant:')) {
-      assistantResponse = assistantResponse.substring('Assistant:'.length).trim()
+    if (assistantResponse.startsWith('M. Victaure:')) {
+      assistantResponse = assistantResponse.substring('M. Victaure:'.length).trim()
     }
 
     return new Response(
