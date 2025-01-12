@@ -33,10 +33,13 @@ export function VCardContact({ profile, isEditing, setProfile, customStyles }: V
             value={value || ""}
             onChange={(e) => handleChange(label.toLowerCase() as keyof UserProfile, e.target.value)}
             placeholder={label}
-            className="flex-1"
+            className="flex-1 bg-background text-foreground"
           />
         ) : (
-          <span className="text-sm">{value}</span>
+          <span className={cn(
+            "text-sm",
+            customStyles?.textColor ? "" : "text-foreground"
+          )}>{value}</span>
         )}
       </div>
     );
@@ -45,8 +48,8 @@ export function VCardContact({ profile, isEditing, setProfile, customStyles }: V
   return (
     <div 
       className={cn(
-        "space-y-4 p-6 rounded-lg border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-        "transition-all duration-200"
+        "space-y-4 p-6 rounded-lg border",
+        isEditing ? "bg-background" : "bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       )}
       style={{ 
         fontFamily: customStyles?.font,

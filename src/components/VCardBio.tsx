@@ -19,11 +19,14 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Présentation</h2>
+      <h2 className={cn(
+        "text-lg font-semibold",
+        customStyles?.textColor ? "" : "text-foreground"
+      )}>Présentation</h2>
       <div
         className={cn(
-          "p-6 rounded-lg border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-          "transition-all duration-200"
+          "p-6 rounded-lg border",
+          isEditing ? "bg-background" : "bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
         )}
         style={{
           fontFamily: customStyles?.font,
@@ -37,8 +40,9 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
             onChange={(e) => handleBioChange(e.target.value)}
             placeholder="Votre bio"
             className={cn(
-              "w-full p-4 rounded-md border min-h-[150px] bg-background/50",
-              "focus:ring-2 focus:ring-primary/50 focus:outline-none"
+              "w-full p-4 rounded-md border min-h-[150px]",
+              "focus:ring-2 focus:ring-primary/50 focus:outline-none",
+              "bg-background text-foreground"
             )}
             style={{
               fontFamily: customStyles?.font,
@@ -47,7 +51,10 @@ export function VCardBio({ profile, isEditing, setProfile, customStyles }: VCard
           />
         ) : (
           <div 
-            className="prose prose-sm max-w-none"
+            className={cn(
+              "prose prose-sm max-w-none",
+              customStyles?.textColor ? "" : "text-foreground"
+            )}
             style={{
               fontFamily: customStyles?.font,
               color: customStyles?.textColor,
