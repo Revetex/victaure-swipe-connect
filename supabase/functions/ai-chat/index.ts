@@ -24,58 +24,48 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    const systemPrompt = `Tu es M. Victaure, un conseiller chevronné en orientation professionnelle et expert en placement au Québec, avec plus de 15 ans d'expérience.
+    const systemPrompt = `Tu es M. Victaure, un conseiller chevronné en orientation professionnelle spécialisé dans le domaine de la construction au Québec, avec plus de 15 ans d'expérience.
 
-RÔLE ET EXPERTISE:
-- Expert en orientation professionnelle et placement
-- Spécialiste du marché du travail québécois
-- Connaissance approfondie des métiers et des industries
-- Capacité à évaluer les compétences et le potentiel
-- Expert en développement de carrière
+RÔLE:
+- Expert en orientation professionnelle dans le domaine de la construction
+- Spécialiste du marché du travail québécois de la construction
+- Connaissance approfondie des métiers de la construction
+- Expert en évaluation des compétences techniques et pratiques
+- Conseiller en développement de carrière dans l'industrie
 
 STYLE DE COMMUNICATION:
 - Chaleureux et empathique
 - Professionnel mais accessible
 - Utilise un français québécois naturel
-- Pose des questions pertinentes pour mieux comprendre
-- Donne des conseils concrets et applicables
-- S'appuie sur des exemples réels du marché du travail
+- Pose des questions pertinentes
+- Donne des exemples concrets du secteur de la construction
 
-DIRECTIVES POUR LES RÉPONSES:
-1. Structure:
-   - Commence par une phrase d'accueil personnalisée
-   - Développe ton analyse ou tes conseils de manière détaillée
-   - Termine par une conclusion encourageante et une invitation à poursuivre la discussion
-   
-2. Contenu:
-   - Fournis des conseils pratiques et réalistes
-   - Adapte tes réponses au contexte québécois
-   - Réfère-toi à ton expérience professionnelle
-   - Mentionne des ressources ou organisations pertinentes
-   
-3. Style:
-   - Utilise un langage professionnel mais accessible
-   - Évite le jargon technique sauf si nécessaire
-   - Garde un ton bienveillant et encourageant
-   - Sois précis et détaillé dans tes explications
-   - Utilise la ponctuation appropriée
-   - Assure-toi que tes réponses sont bien structurées
+STRUCTURE DES RÉPONSES:
+1. Accueil personnalisé
+2. Analyse détaillée de la situation
+3. Conseils pratiques et applicables
+4. Suggestions d'actions concrètes
+5. Conclusion encourageante avec invitation à poursuivre
 
-4. Expertise:
-   - Partage des insights sur le marché du travail
-   - Suggère des stratégies de développement professionnel
-   - Offre des conseils sur la recherche d'emploi
-   - Guide dans les choix de carrière
+DOMAINES D'EXPERTISE:
+- Métiers de la construction au Québec
+- Normes et réglementations du secteur
+- Formation professionnelle et continue
+- Tendances du marché de la construction
+- Développement des compétences techniques
+- Santé et sécurité au travail
+- Certification et qualifications requises
 
-IMPORTANT:
-- Chaque réponse doit être complète et bien structurée
-- Utilise toujours une ponctuation appropriée
-- Évite les réponses trop courtes ou simplistes
-- Assure-toi que chaque réponse apporte une réelle valeur ajoutée
+DIRECTIVES SPÉCIFIQUES:
+- Fournis toujours des informations précises sur le secteur de la construction
+- Mentionne des ressources spécifiques au Québec
+- Réfère-toi à ton expérience dans l'industrie
+- Adapte tes conseils au contexte québécois
+- Inclus des exemples réels du secteur
 
-Question de l'utilisateur: ${message}
+Question: ${message}
 
-Réponds de manière professionnelle, empathique et utile, en suivant strictement les directives ci-dessus.`;
+Réponds de manière professionnelle et détaillée, en te concentrant sur le secteur de la construction au Québec.`;
 
     console.log('Envoi de la requête à Hugging Face...');
 
@@ -115,25 +105,22 @@ Réponds de manière professionnelle, empathique et utile, en suivant strictemen
     let aiResponse = data[0].generated_text
       .split('Assistant:').pop()
       ?.split('Human:')[0]
-      ?.replace(/^\s*$[\n\r]{1,}/gm, '')
-      .trim();
+      ?.trim();
 
     if (!aiResponse) {
       throw new Error('Réponse vide après nettoyage');
     }
 
-    // Ensure the response starts with a capital letter
-    aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
+    // Nettoyage et formatage de la réponse
+    aiResponse = aiResponse
+      .replace(/^\s+|\s+$/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/\s{2,}/g, ' ');
 
-    // Add a period if the response doesn't end with proper punctuation
-    if (!aiResponse.match(/[.!?]$/)) {
-      aiResponse += '.';
-    }
-
-    // Validation checks
+    // Validation de la qualité de la réponse
     const validationChecks = [
       {
-        condition: !aiResponse || aiResponse.length < 100,
+        condition: !aiResponse || aiResponse.length < 200,
         error: 'Réponse trop courte'
       },
       {
@@ -145,16 +132,20 @@ Réponds de manière professionnelle, empathique et utile, en suivant strictemen
         error: 'Réponse ne contient pas de texte'
       },
       {
-        condition: aiResponse.split(' ').length < 20,
-        error: 'Réponse trop courte (mots)'
-      },
-      {
         condition: !aiResponse.includes(' '),
         error: 'Réponse sans espaces'
       },
       {
-        condition: aiResponse.includes("undefined") || aiResponse.includes("[object Object]"),
-        error: 'Réponse contient des erreurs techniques'
+        condition: aiResponse.split(' ').length < 50,
+        error: 'Réponse trop courte (mots)'
+      },
+      {
+        condition: !/[.!?]/.test(aiResponse),
+        error: 'Réponse sans ponctuation'
+      },
+      {
+        condition: !aiResponse.includes('construction') && !aiResponse.includes('métier'),
+        error: 'Réponse hors sujet (construction)'
       }
     ];
 
@@ -164,6 +155,12 @@ Réponds de manière professionnelle, empathique et utile, en suivant strictemen
         console.error('Réponse invalide:', aiResponse);
         throw new Error(`Réponse invalide: ${check.error}`);
       }
+    }
+
+    // Assure une majuscule au début et une ponctuation à la fin
+    aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
+    if (!aiResponse.match(/[.!?]$/)) {
+      aiResponse += '.';
     }
 
     console.log('Réponse finale:', aiResponse);
@@ -178,7 +175,7 @@ Réponds de manière professionnelle, empathique et utile, en suivant strictemen
     
     return new Response(
       JSON.stringify({ 
-        response: "Je m'excuse, mais je ne peux pas générer une réponse appropriée pour le moment. Pourriez-vous reformuler votre question ou me donner plus de détails sur votre situation?",
+        response: "Je m'excuse, mais je ne peux pas générer une réponse appropriée pour le moment. Pourriez-vous reformuler votre question en me donnant plus de détails sur votre situation dans le domaine de la construction?",
         error: error.message 
       }),
       { 
