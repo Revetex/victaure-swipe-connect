@@ -4,11 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useVCardStyle } from "../../VCardStyleContext";
+import { UserProfile } from "@/types/profile";
 
 interface VCardAvatarProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps) {
@@ -20,20 +21,12 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
 
     try {
       if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Erreur",
-          description: "Veuillez sélectionner une image",
-          variant: "destructive"
-        });
+        toast.error("Veuillez sélectionner une image");
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Erreur",
-          description: "L'image ne doit pas dépasser 5MB",
-          variant: "destructive"
-        });
+        toast.error("L'image ne doit pas dépasser 5MB");
         return;
       }
 
@@ -71,18 +64,10 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
       if (updateError) throw updateError;
 
       setProfile({ ...profile, avatar_url: publicUrl });
-      
-      toast({
-        title: "Succès",
-        description: "Photo de profil mise à jour"
-      });
+      toast.success("Photo de profil mise à jour");
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour la photo de profil",
-        variant: "destructive"
-      });
+      toast.error("Impossible de mettre à jour la photo de profil");
     }
   };
 
@@ -95,14 +80,14 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
           "w-24 h-24 sm:w-32 sm:h-32"
         )}
         style={{
-          ringColor: `${selectedStyle.colors.primary}30`,
+          borderColor: `${selectedStyle.colors.primary}30`,
           boxShadow: `0 4px 12px ${selectedStyle.colors.primary}15`
         }}
       >
         <Avatar className="w-full h-full">
           <AvatarImage 
             src={profile.avatar_url} 
-            alt={profile.full_name || "Profile picture"}
+            alt={profile.full_name || "Photo de profil"}
             className="object-cover w-full h-full"
           />
           <AvatarFallback 
