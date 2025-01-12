@@ -7,12 +7,13 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { message, userId } = await req.json();
+    const { message } = await req.json();
     console.log('Message reçu:', message);
 
     if (!message || typeof message !== 'string') {
@@ -24,34 +25,6 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle expérimenté au Québec avec plus de 15 ans d'expérience.
-
-PERSONNALITÉ:
-- Chaleureux et empathique
-- Professionnel mais accessible
-- Utilise un français québécois naturel
-- Passionné par l'aide aux autres
-- Expert du marché du travail québécois
-
-TON RÔLE:
-- Écouter attentivement les besoins
-- Poser des questions pertinentes pour mieux comprendre la situation
-- Donner des conseils pratiques et personnalisés
-- Partager ton expertise du marché local
-- Aider à identifier les opportunités d'emploi pertinentes
-- Guider dans les choix de carrière
-
-IMPORTANT:
-- Reste toujours professionnel et bienveillant
-- Donne des conseils concrets et applicables
-- Adapte tes réponses au contexte québécois
-- Utilise ton expertise pour guider vers les meilleures opportunités
-- Pose des questions pour approfondir la discussion si nécessaire
-
-Utilisateur: ${message}
-
-M. Victaure:`;
-
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -61,12 +34,11 @@ M. Victaure:`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: systemPrompt,
+          inputs: `Tu es M. Victaure, un conseiller en orientation professionnelle expérimenté au Québec. Réponds de manière concise et professionnelle à la question suivante: ${message}`,
           parameters: {
-            max_new_tokens: 500,
-            temperature: 0.8,
+            max_new_tokens: 250,
+            temperature: 0.7,
             top_p: 0.95,
-            repetition_penalty: 1.2,
             do_sample: true
           }
         }),
@@ -74,12 +46,6 @@ M. Victaure:`;
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erreur API:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText
-      });
       throw new Error(`Erreur API: ${response.status} ${response.statusText}`);
     }
 
@@ -90,46 +56,27 @@ M. Victaure:`;
       throw new Error('Format de réponse invalide');
     }
 
-    let response_text = data[0].generated_text.trim();
-    
     // Clean up the response
-    response_text = response_text
-      .replace(/M\.\s*Victaure\s*:\s*/g, '')
-      .replace(/Assistant\s*:\s*/g, '')
-      .replace(/^["']|["']$/g, '')
-      .replace(/Utilisateur\s*:\s*.+\s*M\.\s*Victaure\s*:\s*/g, '')
+    let aiResponse = data[0].generated_text
+      .replace(/^[^:]*:/, '') // Remove any prefix before first colon
       .trim();
 
-    // Remove any remaining system prompt or user message that might be in the response
-    const promptParts = systemPrompt.split('Utilisateur:');
-    const systemPart = promptParts[0].trim();
-    response_text = response_text
-      .replace(new RegExp(systemPart, 'g'), '')
-      .replace(new RegExp(message, 'g'), '')
-      .trim();
-
-    console.log('Réponse nettoyée:', response_text);
+    console.log('Réponse nettoyée:', aiResponse);
 
     return new Response(
-      JSON.stringify({ response: response_text }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      JSON.stringify({ response: aiResponse }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
-    console.error('Erreur détaillée:', {
-      message: error.message,
-      stack: error.stack,
-      cause: error.cause
-    });
 
+  } catch (error) {
+    console.error('Erreur:', error);
     return new Response(
       JSON.stringify({ 
-        error: 'Une erreur est survenue lors de la communication avec l\'assistant',
+        error: 'Une erreur est survenue',
         details: error.message 
       }),
       { 
-        headers: corsHeaders,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
       }
     );
