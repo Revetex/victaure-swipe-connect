@@ -64,32 +64,28 @@ export function DashboardLayout() {
             currentPage={currentPage}
             isEditing={isEditing}
             viewportHeight={viewportHeight}
-            onEditStateChange={(editing) => {
-              setIsEditing(editing);
-            }}
+            onEditStateChange={setIsEditing}
             onRequestChat={handleRequestChat}
           />
         </AnimatePresence>
       </motion.div>
       
-      {!isEditing && !showingChat && (
-        <motion.nav 
-          initial={{ y: 0, opacity: 1 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
-          style={{ 
-            height: '4rem',
-            paddingBottom: 'env(safe-area-inset-bottom)'
-          }}
-        >
-          <div className="container mx-auto px-4 h-full flex items-center">
-            <DashboardNavigation 
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        </motion.nav>
-      )}
+      <nav 
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 transition-opacity duration-300 ${
+          !isEditing && !showingChat ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        style={{ 
+          height: '4rem',
+          paddingBottom: 'env(safe-area-inset-bottom)'
+        }}
+      >
+        <div className="container mx-auto px-4 h-full flex items-center">
+          <DashboardNavigation 
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </nav>
     </DashboardContainer>
   );
 }

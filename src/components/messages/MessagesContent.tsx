@@ -49,7 +49,7 @@ export function MessagesContent({
         />
       </div>
 
-      <div className="fixed top-[72px] bottom-[64px] left-0 right-0 overflow-hidden">
+      <div className="fixed top-[72px] bottom-[108px] left-0 right-0 overflow-hidden">
         <ScrollArea 
           ref={scrollAreaRef}
           className="h-full"
@@ -73,7 +73,7 @@ export function MessagesContent({
         </ScrollArea>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="fixed bottom-[64px] left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatInput
           value={inputMessage}
           onChange={setInputMessage}
