@@ -139,7 +139,8 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           className="w-full min-h-[100px] p-2 rounded-md bg-background border"
           style={{ 
             color: selectedStyle.colors.text.primary,
-            borderColor: `${selectedStyle.colors.primary}30`
+            borderColor: `${selectedStyle.colors.primary}30`,
+            backgroundColor: `${selectedStyle.colors.primary}05`
           }}
         />
       ) : profile?.bio ? (

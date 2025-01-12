@@ -31,13 +31,12 @@ export function VCardBadge({
         color: selectedStyle.colors.text.primary
       }}
     >
-      {text}
+      <span style={{ color: selectedStyle.colors.text.primary }}>{text}</span>
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className="p-0.5 rounded-full transition-colors hover:bg-opacity-20"
+          className="p-0.5 rounded-full hover:bg-black/10 transition-colors"
           style={{
-            backgroundColor: 'transparent',
             color: selectedStyle.colors.text.primary
           }}
         >
