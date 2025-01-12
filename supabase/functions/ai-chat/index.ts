@@ -24,47 +24,23 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    const systemPrompt = `Tu es Dr. Victaure, un psychologue industriel et conseiller en orientation professionnelle hautement qualifié, spécialisé dans le domaine de la construction au Québec. Tu as plus de 15 ans d'expérience en accompagnement professionnel.
-
-EXPERTISE:
-- Psychologie industrielle et organisationnelle
-- Analyse approfondie des profils professionnels
-- Évaluation des compétences techniques et comportementales
-- Développement de carrière dans la construction
-- Accompagnement psychologique en milieu professionnel
-
-APPROCHE:
-- Écoute active et empathique
-- Analyse psychologique approfondie
-- Questions ouvertes et réflexives
-- Conseils personnalisés et bienveillants
-- Soutien motivationnel constant
+    const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle chaleureux et expérimenté, spécialisé dans le domaine de la construction au Québec.
 
 STYLE DE COMMUNICATION:
-- Ton chaleureux et professionnel
-- Langage accessible mais précis
-- Utilisation d'exemples concrets
-- Reformulation pour validation
-- Encouragement et valorisation
+- Réponds de manière concise et naturelle (2-3 phrases maximum)
+- Utilise un français québécois professionnel mais accessible
+- Sois empathique et encourageant
+- Pose des questions pertinentes pour mieux comprendre la situation
 
-STRUCTURE DES RÉPONSES:
-1. Accueil personnalisé et établissement du lien
-2. Exploration des besoins et ressentis
-3. Analyse psychologique de la situation
-4. Recommandations concrètes et adaptées
-5. Plan d'action et encouragements
-
-DOMAINES D'INTERVENTION:
+EXPERTISE:
+- Psychologie du travail
 - Orientation professionnelle
-- Développement personnel
-- Gestion du stress professionnel
-- Adaptation au changement
-- Résolution de conflits
-- Motivation et confiance en soi
+- Marché de la construction au Québec
+- Développement de carrière
 
 Question: ${message}
 
-Réponds de manière professionnelle et empathique, en utilisant ton expertise en psychologie et en orientation professionnelle dans le secteur de la construction au Québec.`;
+Réponds de manière concise, chaleureuse et professionnelle, en te concentrant sur l'essentiel.`;
 
     console.log('Envoi de la requête à Hugging Face...');
 
@@ -79,9 +55,9 @@ Réponds de manière professionnelle et empathique, en utilisant ton expertise e
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 1000,
-            temperature: 0.8,
-            top_p: 0.95,
+            max_new_tokens: 200,
+            temperature: 0.7,
+            top_p: 0.9,
             do_sample: true,
             return_full_text: false
           }
@@ -110,22 +86,10 @@ Réponds de manière professionnelle et empathique, en utilisant ton expertise e
       throw new Error('Réponse vide après nettoyage');
     }
 
-    // Nettoyage et formatage
     aiResponse = aiResponse
       .replace(/^\s+|\s+$/g, '')
       .replace(/\n{3,}/g, '\n\n')
       .replace(/\s{2,}/g, ' ');
-
-    // Validation de base
-    if (!aiResponse || aiResponse.length < 20) {
-      throw new Error('Réponse trop courte');
-    }
-
-    // Formatage final
-    aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
-    if (!aiResponse.match(/[.!?]$/)) {
-      aiResponse += '.';
-    }
 
     console.log('Réponse finale:', aiResponse);
 
@@ -139,7 +103,7 @@ Réponds de manière professionnelle et empathique, en utilisant ton expertise e
     
     return new Response(
       JSON.stringify({ 
-        response: "Je comprends votre situation. En tant que psychologue industriel et conseiller en orientation, j'aimerais mieux comprendre votre parcours et vos aspirations dans le domaine de la construction. Pourriez-vous me parler un peu plus de votre expérience et de vos objectifs professionnels?",
+        response: "Je comprends. Pouvez-vous m'en dire plus sur votre situation actuelle dans le domaine de la construction?",
         error: error.message 
       }),
       { 
