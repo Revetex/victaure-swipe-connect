@@ -25,6 +25,9 @@ export function ChatMessage({
   // Skip rendering empty messages that aren't thinking messages
   if (!content && !thinking) return null;
   
+  // Skip rendering thinking messages - they should be handled by ChatThinking component
+  if (thinking) return null;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
