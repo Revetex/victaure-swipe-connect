@@ -2,12 +2,13 @@ import { UserProfile } from "@/types/profile";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Paintbrush } from "lucide-react";
+import { Paintbrush, Type, Palette, TextCursor, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useVCardStyle } from "../VCardStyleContext";
 import { toast } from "sonner";
 import { VCardSection } from "@/components/VCardSection";
+import { motion } from "framer-motion";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -41,21 +42,39 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
   };
 
   return (
-    <VCardSection
-      title="Personnalisation du style"
-      icon={<Paintbrush className="h-5 w-5" />}
-      useCustomStyles={false}
-      className="space-y-6 p-6 rounded-xl shadow-lg border bg-card"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label>Police de caractères</Label>
+      <div className="flex items-center justify-between border-b pb-4">
+        <div className="flex items-center gap-2">
+          <Paintbrush className="h-5 w-5 text-primary" />
+          <h3 className="text-lg font-medium">Personnalisation</h3>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleStyleReset}
+          className="text-muted-foreground hover:text-primary"
+        >
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Réinitialiser
+        </Button>
+      </div>
+
+      <div className="space-y-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Type className="h-4 w-4" />
+            Police de caractères
+          </div>
           <Select
             value={profile.custom_font || selectedStyle.font}
             onValueChange={(value) => onStyleChange({ custom_font: value })}
           >
             <SelectTrigger 
-              className="bg-background"
+              className="w-full bg-background/50 backdrop-blur-sm border-primary/20"
               style={{ fontFamily: profile.custom_font || selectedStyle.font }}
             >
               <SelectValue placeholder="Choisir une police" />
@@ -74,42 +93,38 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label>Couleur de fond</Label>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Palette className="h-4 w-4" />
+            Couleur de fond
+          </div>
           <Input
             type="color"
             value={profile.custom_background || selectedStyle.colors.background.card}
             onChange={(e) => onStyleChange({ custom_background: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background"
+              "bg-background/50 backdrop-blur-sm border-primary/20"
             )}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Couleur du texte</Label>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <TextCursor className="h-4 w-4" />
+            Couleur du texte
+          </div>
           <Input
             type="color"
             value={profile.custom_text_color || selectedStyle.colors.text.primary}
             onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background"
+              "bg-background/50 backdrop-blur-sm border-primary/20"
             )}
           />
         </div>
-
-        <div className="flex items-end">
-          <Button
-            variant="outline"
-            onClick={handleStyleReset}
-            className="w-full"
-          >
-            Réinitialiser le style
-          </Button>
-        </div>
       </div>
-    </VCardSection>
+    </motion.div>
   );
 }

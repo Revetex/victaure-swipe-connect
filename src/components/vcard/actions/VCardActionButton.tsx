@@ -10,8 +10,9 @@ interface VCardActionButtonProps {
   onClick: () => void;
   disabled?: boolean;
   isProcessing?: boolean;
-  variant?: "default" | "outline";
+  variant?: "default" | "outline" | "ghost";
   className?: string;
+  size?: "default" | "sm" | "lg";
 }
 
 export function VCardActionButton({
@@ -21,16 +22,19 @@ export function VCardActionButton({
   disabled,
   isProcessing,
   variant = "default",
+  size = "default",
   className
 }: VCardActionButtonProps) {
   return (
     <Button
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || isProcessing}
       variant={variant}
+      size={size}
       className={cn(
-        "group relative overflow-hidden",
-        "transition-all duration-300 ease-in-out",
+        "relative overflow-hidden transition-all duration-300",
+        "hover:shadow-md active:shadow-sm",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     >
@@ -42,8 +46,8 @@ export function VCardActionButton({
           y: isProcessing ? -20 : 0
         }}
       >
-        <Icon className="h-4 w-4 group-hover:scale-110 transition-transform" />
-        {label}
+        <Icon className="h-4 w-4 transition-transform group-hover:scale-110" />
+        <span>{label}</span>
       </motion.div>
       
       {isProcessing && (
