@@ -40,7 +40,7 @@ export function VCardActionButton({
         onClick={onClick}
         variant={variant}
         disabled={disabled || isProcessing}
-        className={`w-full transition-colors ${className}`}
+        className={`w-full hover:bg-blue-600 transition-colors ${className}`}
         style={buttonStyle}
       >
         {Icon && <Icon className="mr-2 h-4 w-4" />}
