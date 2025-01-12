@@ -22,10 +22,12 @@ const config: CapacitorConfig = {
       'https://mfjllillnpleasclqabb.supabase.co',
       'wss://mfjllillnpleasclqabb.supabase.co',
       'https://mfjllillnpleasclqabb.supabase.co:443',
-      '*.lovableproject.com',
+      '*.lovableproject.com:443',
+      'https://*.lovableproject.com:443',
       '*.vercel.app',
       '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
       'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
+      'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com:443',
       '10.0.2.2',
       '10.0.2.2:*'
     ]
