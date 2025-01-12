@@ -69,8 +69,14 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
+      // Include the selected style in the profile data
+      const profileWithStyle = {
+        ...tempProfile,
+        style_id: selectedStyle.id
+      };
+
       const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
-        body: { profile: tempProfile }
+        body: { profile: profileWithStyle }
       });
 
       if (aiError) {
@@ -88,13 +94,13 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           setProfile(aiCorrections.correctedProfile);
           toast.success("Profil mis à jour avec les suggestions de l'IA");
         } else {
-          await updateProfile(tempProfile);
-          setProfile(tempProfile);
+          await updateProfile(profileWithStyle);
+          setProfile(profileWithStyle);
           toast.success("Profil mis à jour sans les suggestions de l'IA");
         }
       } else {
-        await updateProfile(tempProfile);
-        setProfile(tempProfile);
+        await updateProfile(profileWithStyle);
+        setProfile(profileWithStyle);
         toast.success("Profil mis à jour avec succès");
       }
 
