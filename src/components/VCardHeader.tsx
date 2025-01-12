@@ -60,11 +60,15 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     }
   };
 
+  const textColor = profile.custom_text_color || selectedStyle.colors.text.primary;
+  const secondaryTextColor = profile.custom_text_color || selectedStyle.colors.text.secondary;
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4"
+      style={{ fontFamily: profile.custom_font || selectedStyle.font }}
     >
       <div className="relative group">
         <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
@@ -102,12 +106,14 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom"
               className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              style={{ fontFamily: profile.custom_font || selectedStyle.font }}
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
               className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
+              style={{ fontFamily: profile.custom_font || selectedStyle.font }}
             />
           </div>
         ) : (
@@ -115,7 +121,8 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <h2 
               className="text-xl sm:text-2xl font-semibold truncate transition-colors"
               style={{ 
-                color: profile.custom_text_color || selectedStyle.colors.text.primary,
+                color: textColor,
+                fontFamily: profile.custom_font || selectedStyle.font,
                 textShadow: '0 1px 2px rgba(0,0,0,0.1)'
               }}
             >
@@ -124,7 +131,8 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <p 
               className="text-sm sm:text-base transition-colors"
               style={{ 
-                color: profile.custom_text_color || selectedStyle.colors.text.secondary,
+                color: secondaryTextColor,
+                fontFamily: profile.custom_font || selectedStyle.font,
                 textShadow: '0 1px 1px rgba(0,0,0,0.05)'
               }}
             >

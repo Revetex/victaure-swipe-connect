@@ -3,13 +3,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Paintbrush, Type, Palette, TextCursor } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useVCardStyle } from "./VCardStyleContext";
 
 const fontOptions = [
   { value: "'Poppins', sans-serif", label: "Poppins" },
   { value: "'Montserrat', sans-serif", label: "Montserrat" },
   { value: "'Playfair Display', serif", label: "Playfair Display" },
+  { value: "'DM Sans', sans-serif", label: "DM Sans" },
+  { value: "'Inter', sans-serif", label: "Inter" },
   { value: "'Roboto', sans-serif", label: "Roboto" },
   { value: "'Open Sans', sans-serif", label: "Open Sans" },
+  { value: "'Lora', serif", label: "Lora" },
+  { value: "'Source Sans Pro', sans-serif", label: "Source Sans Pro" },
+  { value: "'Work Sans', sans-serif", label: "Work Sans" },
 ];
 
 interface VCardCustomizationProps {
@@ -18,8 +24,16 @@ interface VCardCustomizationProps {
 }
 
 export function VCardCustomization({ profile, setProfile }: VCardCustomizationProps) {
+  const { selectedStyle } = useVCardStyle();
+
   return (
-    <div className="space-y-6 p-6 bg-white/95 dark:bg-gray-800/95 rounded-xl shadow-lg backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+    <div 
+      className="space-y-6 p-6 bg-white/95 dark:bg-gray-800/95 rounded-xl shadow-lg backdrop-blur-sm border border-gray-200 dark:border-gray-700"
+      style={{ 
+        borderColor: `${selectedStyle.colors.primary}20`,
+        background: profile.custom_background || undefined
+      }}
+    >
       <div className="flex items-center gap-2 border-b pb-4 border-gray-200 dark:border-gray-700">
         <Paintbrush className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-medium">Personnalisation</h3>
@@ -32,7 +46,7 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
             Police
           </Label>
           <Select
-            value={profile.custom_font || "'Poppins', sans-serif"}
+            value={profile.custom_font || selectedStyle.font}
             onValueChange={(value) => setProfile({ ...profile, custom_font: value })}
           >
             <SelectTrigger className="w-full bg-white dark:bg-gray-900">
@@ -68,7 +82,7 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
           </Label>
           <Input
             type="color"
-            value={profile.custom_text_color || "#000000"}
+            value={profile.custom_text_color || selectedStyle.colors.text.primary}
             onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
             className="h-10 px-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md"
           />
