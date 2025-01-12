@@ -4,10 +4,47 @@ import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { useDebounce } from "use-debounce";
+
+const pageTransitionVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+    scale: 0.98,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1],
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    scale: 0.98,
+    transition: {
+      duration: 0.3,
+      ease: [0.4, 0, 1, 1],
+    },
+  },
+};
+
+const loaderVariants = {
+  initial: { opacity: 0, scale: 0.9 },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  },
+};
 
 function App() {
   const { isAuthenticated, isLoading, error } = useAuth();
@@ -32,18 +69,21 @@ function App() {
   // Show error toast if authentication fails
   useEffect(() => {
     if (error) {
-      toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+      toast.error("Erreur d'authentification. Veuillez vous reconnecter.", {
+        duration: 5000,
+      });
+      console.error("Auth error:", error);
     }
   }, [error]);
 
-  // Loading state
+  // Loading state with enhanced animation
   if (isLoading) {
     return (
       <div className="h-[100vh] h-[calc(var(--vh,1vh)*100)] w-full flex items-center justify-center bg-background">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          variants={loaderVariants}
+          initial="initial"
+          animate="animate"
           className="flex flex-col items-center gap-6"
         >
           <div className="relative">
@@ -73,15 +113,16 @@ function App() {
 
   return (
     <div className="min-h-[100vh] min-h-[calc(var(--vh,1vh)*100)] w-full overflow-y-auto">
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <Routes>
           <Route 
             path="/" 
             element={
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                variants={pageTransitionVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
               >
                 {isAuthenticated ? (
                   <Navigate to="/dashboard" replace />
@@ -99,10 +140,10 @@ function App() {
                 <Navigate to="/dashboard" replace />
               ) : (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
+                  variants={pageTransitionVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
                 >
                   <Auth />
                 </motion.div>
@@ -115,10 +156,10 @@ function App() {
             element={
               <ProtectedRoute>
                 <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
+                  variants={pageTransitionVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
                 >
                   <Dashboard />
                 </motion.div>
@@ -130,9 +171,10 @@ function App() {
             path="*" 
             element={
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                variants={pageTransitionVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
               >
                 {isAuthenticated ? (
                   <Navigate to="/dashboard" replace />
