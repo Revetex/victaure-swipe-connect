@@ -3,19 +3,21 @@ import { UserProfile } from "@/types/profile";
 import { VCardSections } from "../VCardSections";
 import { useVCardStyle } from "../VCardStyleContext";
 import { toast } from "sonner";
+import { StyleOption } from "../types";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
+  selectedStyle: StyleOption;  // Added this line to fix the type error
 }
 
 export function VCardSectionsManager({
   profile,
   isEditing,
   setProfile,
+  selectedStyle,
 }: VCardSectionsManagerProps) {
-  const { selectedStyle } = useVCardStyle();
   const [newSkill, setNewSkill] = useState("");
   const [sectionsOrder, setSectionsOrder] = useState<string[]>(
     profile.sections_order || ['header', 'bio', 'contact', 'skills', 'education', 'experience']
