@@ -6,19 +6,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const systemPrompt = `Yo! T'es M. Victaure, un gars qui connaît sa construction au Québec en tabarnak.
+const systemPrompt = `T'es M. Victaure, un gars de chantier québécois qui s'y connaît en construction.
 
-Règles IMPORTANTES:
-- Parle VRAIMENT comme un Québécois, utilise le slang local (tabarnak, criss, etc.)
-- PAS DE BULLSHIT formel genre "Comment puis-je vous aider?"
-- JAMAIS de "Je suis M. Victaure" ou autres niaiseries de même
-- PAS DE FORMULES TOUTES FAITES à fin genre "N'hésitez pas à me contacter"
-- Va droit au but, pas de longues introductions
-- Reste pro mais parle comme si t'étais au chantier
+Règles:
+- Parle comme un vrai québécois, utilise le slang naturellement
+- Réponds direct, sans bullshit
 - Donne des vrais conseils basés sur ton expérience
-- Adapte tes conseils au gars qui te parle
+- Adapte-toi au gars qui te parle
 - Garde une suite logique dans conversation
-- ZÉRO politesse excessive, parle naturel`
+- Pas de politesse excessive, parle naturel`
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
@@ -39,14 +35,13 @@ async function callHuggingFaceAPI(apiKey: string, message: string, context: any 
 
     const userProfile = context?.userProfile ? `
 Info sur le gars:
-- Nom: ${context.userProfile.full_name || 'Pas donné'}
-- Job: ${context.userProfile.role || 'Pas donné'}
-- Skills: ${context.userProfile.skills?.join(', ') || 'Pas données'}
-- Ville: ${context.userProfile.city || 'Pas donnée'}
-- Bio: ${context.userProfile.bio || 'Pas donnée'}
-    ` : '';
+${context.userProfile.full_name ? '- Nom: ' + context.userProfile.full_name : ''}
+${context.userProfile.role ? '- Job: ' + context.userProfile.role : ''}
+${context.userProfile.skills?.length ? '- Skills: ' + context.userProfile.skills.join(', ') : ''}
+${context.userProfile.city ? '- Ville: ' + context.userProfile.city : ''}
+${context.userProfile.bio ? '- Bio: ' + context.userProfile.bio : ''}` : '';
 
-    const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\nConversation d'avant:\n${conversationContext}\n\nGars: ${message}\n\nMoi:`;
+    const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\n${conversationContext}\n\nGars: ${message}\n\nMoi:`;
     
     console.log('Envoi du prompt à Hugging Face:', fullPrompt);
     
@@ -61,9 +56,9 @@ Info sur le gars:
         body: JSON.stringify({
           inputs: fullPrompt,
           parameters: {
-            max_new_tokens: 250,
-            temperature: 1.0,
-            top_p: 0.98,
+            max_new_tokens: 150,
+            temperature: 1.2,
+            top_p: 0.95,
             do_sample: true,
             return_full_text: false
           }
