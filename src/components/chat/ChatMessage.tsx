@@ -22,6 +22,9 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const isAssistant = sender === "assistant";
   
+  // Don't render empty messages unless they're "thinking" messages
+  if (!content && !thinking) return null;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
