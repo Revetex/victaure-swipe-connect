@@ -1,17 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
+import { Share2, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardActionsProps {
   isEditing: boolean;
   onShare: () => void;
-  onDownload: () => void;
-  onDownloadPDF: () => void;
   onDownloadBusinessPDF: () => void;
   onDownloadCVPDF: () => void;
-  onCopyLink: () => void;
   onSave: () => void;
   onApplyChanges: () => void;
   setIsEditing: (isEditing: boolean) => void;
@@ -20,23 +16,33 @@ interface VCardActionsProps {
 export function VCardActions({
   isEditing,
   onShare,
-  onDownload,
-  onDownloadPDF,
   onDownloadBusinessPDF,
   onDownloadCVPDF,
-  onCopyLink,
   onSave,
   onApplyChanges,
   setIsEditing,
 }: VCardActionsProps) {
   const { selectedStyle } = useVCardStyle();
 
+  // Couleurs spécifiques pour le mode édition
+  const editModeColors = {
+    primary: "#9b87f5", // Purple primary
+    secondary: "#7E69AB", // Purple secondary
+    text: "#FFFFFF",
+    border: "rgba(255, 255, 255, 0.2)"
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="flex flex-wrap gap-3 pt-4 border-t"
-      style={{ borderColor: `${selectedStyle.colors.primary}20` }}
+      style={{ 
+        borderColor: isEditing ? editModeColors.border : `${selectedStyle.colors.primary}20`,
+        background: isEditing ? "rgba(26, 31, 44, 0.8)" : "transparent", // Dark background in edit mode
+        padding: isEditing ? "1rem" : undefined,
+        borderRadius: isEditing ? "0.5rem" : undefined,
+      }}
     >
       {isEditing ? (
         <>
@@ -47,14 +53,13 @@ export function VCardActions({
           >
             <Button 
               onClick={onSave}
-              className="w-full transition-colors"
+              className="w-full transition-colors hover:bg-opacity-90"
               style={{ 
-                backgroundColor: selectedStyle.colors.primary,
-                color: 'white',
-                borderColor: `${selectedStyle.colors.primary}40`
+                backgroundColor: editModeColors.primary,
+                color: editModeColors.text,
+                borderColor: editModeColors.border
               }}
             >
-              <Save className="mr-2 h-4 w-4" />
               Sauvegarder
             </Button>
           </motion.div>
@@ -66,10 +71,10 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges}
               variant="outline" 
-              className="w-full transition-colors"
+              className="w-full transition-colors hover:bg-white/10"
               style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
+                borderColor: editModeColors.border,
+                color: editModeColors.text,
               }}
             >
               Appliquer
@@ -120,24 +125,6 @@ export function VCardActions({
             className="flex-1 min-w-[100px]"
           >
             <Button 
-              onClick={onDownload}
-              variant="outline"
-              className="w-full transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Télécharger
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
-          >
-            <Button 
               onClick={onDownloadBusinessPDF}
               variant="outline"
               className="w-full transition-colors"
@@ -166,22 +153,6 @@ export function VCardActions({
             >
               <FileText className="mr-2 h-4 w-4" />
               CV PDF
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Button 
-              onClick={onCopyLink}
-              variant="outline"
-              className="transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
-            >
-              <Copy className="h-4 w-4" />
             </Button>
           </motion.div>
         </>
