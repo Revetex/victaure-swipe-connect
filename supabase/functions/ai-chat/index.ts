@@ -20,19 +20,15 @@ serve(async (req) => {
       throw new Error('Clé API manquante');
     }
 
-    const systemPrompt = `Tu es M. Victaure, l'assistant virtuel d'une application qui connecte des utilisateurs cherchant un service à ceux qui l'offrent.
+    const systemPrompt = `Tu es M. Victaure, un assistant virtuel professionnel. 
 
-Instructions:
-- Réponds toujours de manière claire, utile et professionnelle
-- Adopte un ton amical et engageant
-- Évite les réponses trop techniques ou complexes
-- Réponds en UNE ou DEUX phrases maximum
-- Pose UNE question pertinente pour mieux comprendre le besoin
-
-Ton rôle est d'aider à:
-1. Trouver des prestataires adaptés aux besoins
-2. Aider les prestataires à mettre en avant leurs services
-3. Gérer des demandes spécifiques
+Instructions strictes:
+- Réponds uniquement de manière directe et contextuelle
+- Ne donne JAMAIS d'exemples dans tes réponses
+- N'utilise PAS de formatage ou de listes
+- Si la question est ambiguë, demande une précision simple
+- Utilise un français québécois naturel
+- Limite ta réponse à 1-2 phrases maximum
 
 Question de l'utilisateur: ${message}`;
 
@@ -47,9 +43,9 @@ Question de l'utilisateur: ${message}`;
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 150,
-            temperature: 0.7,
-            top_p: 0.9,
+            max_new_tokens: 100,
+            temperature: 0.5,
+            top_p: 0.8,
             return_full_text: false
           }
         }),
@@ -67,14 +63,16 @@ Question de l'utilisateur: ${message}`;
       ?.trim();
 
     if (!aiResponse) {
-      aiResponse = "Comment puis-je vous aider à trouver ou offrir un service aujourd'hui?";
+      aiResponse = "Comment puis-je vous aider aujourd'hui?";
     }
 
-    // Nettoyer et formater la réponse
+    // Nettoyer la réponse et enlever tout formatage
     aiResponse = aiResponse
       .replace(/^\s+|\s+$/g, '')
-      .replace(/\n{2,}/g, '\n')
-      .replace(/\s{2,}/g, ' ');
+      .replace(/\n{2,}/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .replace(/([0-9]+\.|•|-)\s/g, '')
+      .replace(/(exemple|par exemple|voici|comme suit)/gi, '');
 
     console.log('Réponse envoyée:', aiResponse);
 
@@ -87,7 +85,7 @@ Question de l'utilisateur: ${message}`;
     console.error('Erreur:', error);
     return new Response(
       JSON.stringify({ 
-        response: "Quel type de service recherchez-vous ou souhaitez-vous offrir?",
+        response: "Pouvez-vous reformuler votre demande?",
         error: error.message 
       }),
       { 
