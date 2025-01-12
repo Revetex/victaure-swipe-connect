@@ -28,11 +28,7 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
 
   return (
     <div 
-      className="space-y-6 p-6 bg-white/95 dark:bg-gray-800/95 rounded-xl shadow-lg backdrop-blur-sm border border-gray-200 dark:border-gray-700"
-      style={{ 
-        borderColor: `${selectedStyle.colors.primary}20`,
-        background: profile.custom_background || undefined
-      }}
+      className="space-y-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
     >
       <div className="flex items-center gap-2 border-b pb-4 border-gray-200 dark:border-gray-700">
         <Paintbrush className="h-5 w-5 text-primary" />
