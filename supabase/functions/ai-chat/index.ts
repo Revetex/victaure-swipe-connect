@@ -29,14 +29,17 @@ serve(async (req) => {
     Tu dois répondre en français de manière professionnelle et bienveillante.
     
     Directives importantes:
-    - Réponds TOUJOURS en français avec des phrases complètes
-    - Ne réponds JAMAIS avec uniquement des chiffres ou des caractères spéciaux
+    - Tu DOIS TOUJOURS répondre avec des phrases complètes en français
+    - Tu ne dois JAMAIS répondre avec des chiffres seuls
+    - Tu ne dois JAMAIS répondre avec des caractères spéciaux seuls
+    - Chaque réponse doit contenir au minimum une phrase complète
+    - Commence toujours ta réponse par une phrase d'introduction
+    - Termine toujours ta réponse par une conclusion
     - Donne des conseils pratiques et concrets
     - Adapte tes réponses au contexte québécois
     - Utilise un français correct et professionnel
     - Évite le jargon technique sauf si nécessaire
     - Limite tes réponses à 2-3 paragraphes maximum
-    - Assure-toi que ta réponse soit toujours cohérente et complète
     
     Question de l'utilisateur: ${message}
     
@@ -85,18 +88,43 @@ serve(async (req) => {
       .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
       .trim();
 
-    // Additional validation to ensure we have a proper response
-    if (!aiResponse || 
-        aiResponse.length < 10 || 
-        /^\d+$/.test(aiResponse) || // Check if response is only numbers
-        !/[a-zA-Z]/.test(aiResponse) || // Ensure response contains letters
-        aiResponse.includes("undefined") ||
-        aiResponse.includes("[object Object]")) {
-      console.error('Réponse invalide générée:', aiResponse);
-      throw new Error('Réponse invalide générée');
+    // Strict validation to ensure proper response format
+    const validationChecks = [
+      {
+        condition: !aiResponse || aiResponse.length < 20,
+        error: 'Réponse trop courte'
+      },
+      {
+        condition: /^\d+$/.test(aiResponse),
+        error: 'Réponse contient uniquement des chiffres'
+      },
+      {
+        condition: !/[a-zA-Z]/.test(aiResponse),
+        error: 'Réponse ne contient pas de lettres'
+      },
+      {
+        condition: !/[.!?]/.test(aiResponse),
+        error: 'Réponse sans ponctuation'
+      },
+      {
+        condition: aiResponse.split(' ').length < 5,
+        error: 'Réponse trop courte (mots)'
+      },
+      {
+        condition: aiResponse.includes("undefined") || aiResponse.includes("[object Object]"),
+        error: 'Réponse contient des erreurs techniques'
+      }
+    ];
+
+    for (const check of validationChecks) {
+      if (check.condition) {
+        console.error('Validation échouée:', check.error);
+        console.error('Réponse invalide:', aiResponse);
+        throw new Error(`Réponse invalide: ${check.error}`);
+      }
     }
 
-    // Ensure the response starts with a capital letter and ends with punctuation
+    // Format the response
     aiResponse = aiResponse.charAt(0).toUpperCase() + aiResponse.slice(1);
     if (!aiResponse.match(/[.!?]$/)) {
       aiResponse += '.';
@@ -112,8 +140,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Erreur:', error);
     
-    // Send a user-friendly error message
-    const errorMessage = "Je suis désolé, j'ai du mal à comprendre votre demande pour le moment. Pourriez-vous reformuler votre question différemment ?";
+    const errorMessage = "Je m'excuse, mais je ne peux pas générer une réponse appropriée pour le moment. Pourriez-vous reformuler votre question de manière plus détaillée ?";
     
     return new Response(
       JSON.stringify({ 
