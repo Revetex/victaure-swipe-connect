@@ -9,5 +9,6 @@
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">mfjllillnpleasclqabb.supabase.co</domain>
+        <domain includeSubdomains="true">052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com</domain>
     </domain-config>
 </network-security-config>

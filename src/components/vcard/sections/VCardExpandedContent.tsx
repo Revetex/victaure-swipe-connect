@@ -3,12 +3,13 @@ import { VCardBio } from "@/components/VCardBio";
 import { VCardCertifications } from "@/components/VCardCertifications";
 import { VCardContact } from "@/components/VCardContact";
 import { VCardEducation } from "@/components/VCardEducation";
-import { VCardExperience } from "@/components/VCardExperience";
+import { VCardExperiences } from "@/components/vcard/VCardExperiences";
 import { VCardHeader } from "@/components/VCardHeader";
 import { VCardSkills } from "@/components/VCardSkills";
 import { UserProfile } from "@/types/profile";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { toast } from "sonner";
+import { useVCardStyle } from "../VCardStyleContext";
 
 interface VCardExpandedContentProps {
   profile: UserProfile;
@@ -23,6 +24,8 @@ export function VCardExpandedContent({
   setIsEditing,
   setProfile 
 }: VCardExpandedContentProps) {
+  const { selectedStyle } = useVCardStyle();
+
   const handleShare = async () => {
     try {
       if (navigator.share) {
@@ -43,7 +46,6 @@ export function VCardExpandedContent({
 
   const handleSave = async () => {
     try {
-      // Save logic will be handled by parent component
       toast.success("Modifications sauvegardées");
       setIsEditing(false);
     } catch (error) {
@@ -54,7 +56,6 @@ export function VCardExpandedContent({
 
   const handleApplyChanges = async () => {
     try {
-      // Apply changes logic will be handled by parent component
       toast.success("Changements appliqués");
     } catch (error) {
       console.error('Error applying changes:', error);
@@ -76,7 +77,7 @@ export function VCardExpandedContent({
         onShare={handleShare}
         onDownloadBusinessPDF={async () => {
           try {
-            const doc = await generateBusinessCard(profile);
+            const doc = await generateBusinessCard(profile, selectedStyle);
             doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
             toast.success("Carte de visite générée avec succès");
           } catch (error) {
@@ -86,7 +87,7 @@ export function VCardExpandedContent({
         }}
         onDownloadCVPDF={async () => {
           try {
-            const doc = await generateCV(profile);
+            const doc = await generateCV(profile, selectedStyle);
             doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
             toast.success("CV généré avec succès");
           } catch (error) {
@@ -112,7 +113,7 @@ export function VCardExpandedContent({
             setProfile={setProfile}
           />
 
-          <VCardExperience
+          <VCardExperiences
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
