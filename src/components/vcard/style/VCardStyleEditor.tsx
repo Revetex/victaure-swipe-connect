@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Paintbrush, Type, Palette } from "lucide-react";
 import { styleOptions } from "../styles";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const fontOptions = [
   { value: "'Poppins', sans-serif", label: "Poppins" },
@@ -33,17 +34,48 @@ interface VCardStyleEditorProps {
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
   const { selectedStyle, setSelectedStyle } = useVCardStyle();
 
-  const handleStyleChange = (styleId: string) => {
+  const handleStyleChange = async (styleId: string) => {
     const newStyle = styleOptions.find(style => style.id === styleId);
     if (newStyle) {
       setSelectedStyle(newStyle);
-      onStyleChange({
+      const updates = {
         style_id: styleId,
         custom_font: newStyle.font,
         custom_background: newStyle.colors.background.card,
         custom_text_color: newStyle.colors.text.primary
-      });
-      toast.success("Style appliqué avec succès");
+      };
+      
+      onStyleChange(updates);
+
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('id', profile.id);
+
+        if (error) throw error;
+        toast.success("Style appliqué et sauvegardé");
+      } catch (error) {
+        console.error('Error saving style:', error);
+        toast.error("Erreur lors de la sauvegarde du style");
+      }
+    }
+  };
+
+  const handleCustomStyleChange = async (updates: Partial<UserProfile>) => {
+    onStyleChange(updates);
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', profile.id);
+
+      if (error) throw error;
+      toast.success("Style personnalisé sauvegardé");
+    } catch (error) {
+      console.error('Error saving custom style:', error);
+      toast.error("Erreur lors de la sauvegarde du style personnalisé");
     }
   };
 
@@ -62,7 +94,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           </Label>
           <Select
             value={profile.custom_font || selectedStyle.font}
-            onValueChange={(value) => onStyleChange({ custom_font: value })}
+            onValueChange={(value) => handleCustomStyleChange({ custom_font: value })}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choisir une police" />
@@ -85,7 +117,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           <Input
             type="color"
             value={profile.custom_text_color || selectedStyle.colors.text.primary}
-            onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
+            onChange={(e) => handleCustomStyleChange({ custom_text_color: e.target.value })}
             className="h-10 px-2"
           />
         </div>
@@ -98,7 +130,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           <Input
             type="color"
             value={profile.custom_background || selectedStyle.colors.background.card}
-            onChange={(e) => onStyleChange({ custom_background: e.target.value })}
+            onChange={(e) => handleCustomStyleChange({ custom_background: e.target.value })}
             className="h-10 px-2"
           />
         </div>

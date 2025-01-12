@@ -15,21 +15,27 @@ export function VCardContainer({
   isEditing,
   customStyles 
 }: VCardContainerProps) {
-  const containerStyle = {
-    fontFamily: customStyles?.font || "inherit",
-    backgroundColor: customStyles?.background || undefined,
-    color: customStyles?.textColor || undefined,
-  };
-
   return (
-    <div
-      className={cn(
-        "relative min-h-screen w-full p-4 transition-colors",
-        isEditing ? "bg-background" : ""
-      )}
-      style={containerStyle}
-    >
-      {children}
+    <div className={cn(
+      "relative min-h-screen w-full p-4",
+      isEditing ? "bg-background" : ""
+    )}>
+      <div 
+        className="space-y-8"
+        style={{
+          fontFamily: customStyles?.font || "inherit",
+          color: customStyles?.textColor || undefined,
+        }}
+      >
+        <div 
+          className="rounded-xl p-6"
+          style={{
+            backgroundColor: customStyles?.background || undefined,
+          }}
+        >
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

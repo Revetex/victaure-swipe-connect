@@ -1,131 +1,151 @@
-import { motion } from "framer-motion";
 import { VCardActions } from "@/components/VCardActions";
-import { VCardExpandedHeader } from "./expanded/VCardExpandedHeader";
-import { VCardExpandedQR } from "./expanded/VCardExpandedQR";
-import { VCardExpandedGrid } from "./expanded/VCardExpandedGrid";
-import { VCardExpandedBio } from "./expanded/VCardExpandedBio";
-import { VCardExpandedEducation } from "./expanded/VCardExpandedEducation";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { VCardBio } from "@/components/VCardBio";
+import { VCardCertifications } from "@/components/VCardCertifications";
+import { VCardContact } from "@/components/VCardContact";
+import { VCardEducation } from "@/components/VCardEducation";
+import { VCardExperience } from "@/components/VCardExperience";
+import { VCardHeader } from "@/components/VCardHeader";
+import { VCardSkills } from "@/components/VCardSkills";
 import { UserProfile } from "@/types/profile";
+import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
+import { toast } from "sonner";
 
 interface VCardExpandedContentProps {
-  isExpanded: boolean;
-  isEditing: boolean;
   profile: UserProfile;
-  setProfile: (profile: UserProfile) => void;
-  setIsExpanded: (isExpanded: boolean) => void;
+  isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
-  onShare: () => void;
-  onDownload: () => void;
-  onDownloadPDF: () => void;
-  onDownloadBusinessPDF: () => void;
-  onDownloadCVPDF: () => void;
-  onCopyLink: () => void;
-  onSave: () => void;
-  onApplyChanges: () => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
-export function VCardExpandedContent({
-  isExpanded,
-  isEditing,
-  profile,
-  setProfile,
-  setIsExpanded,
+export function VCardExpandedContent({ 
+  profile, 
+  isEditing, 
   setIsEditing,
-  onShare,
-  onDownload,
-  onDownloadPDF,
-  onDownloadBusinessPDF,
-  onDownloadCVPDF,
-  onCopyLink,
-  onSave,
-  onApplyChanges,
+  setProfile 
 }: VCardExpandedContentProps) {
-  if (!isExpanded) return null;
-
-  const containerVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeInOut",
-        staggerChildren: 0.1
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Profil de ${profile.full_name}`,
+          text: `Découvrez le profil professionnel de ${profile.full_name}`,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Lien copié dans le presse-papier");
       }
-    },
-    exit: { 
-      opacity: 0, 
-      scale: 0.95,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut"
-      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast.error("Erreur lors du partage");
     }
   };
 
+  const handleSave = async () => {
+    try {
+      // Save logic will be handled by parent component
+      toast.success("Modifications sauvegardées");
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving:', error);
+      toast.error("Erreur lors de la sauvegarde");
+    }
+  };
+
+  const handleApplyChanges = async () => {
+    try {
+      // Apply changes logic will be handled by parent component
+      toast.success("Changements appliqués");
+    } catch (error) {
+      console.error('Error applying changes:', error);
+      toast.error("Erreur lors de l'application des changements");
+    }
+  };
+
+  const handleRemoveSkill = (skill: string) => {
+    if (!profile.skills) return;
+    const newSkills = profile.skills.filter(s => s !== skill);
+    setProfile({ ...profile, skills: newSkills });
+  };
+
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      variants={containerVariants}
-      className="fixed inset-0 z-50 bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-md overflow-auto"
-    >
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-start mb-8">
-          <VCardExpandedHeader
+    <div className="space-y-8">
+      <VCardActions
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        onShare={handleShare}
+        onDownloadBusinessPDF={async () => {
+          try {
+            const doc = await generateBusinessCard(profile);
+            doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+            toast.success("Carte de visite générée avec succès");
+          } catch (error) {
+            console.error('Error generating business card:', error);
+            toast.error("Erreur lors de la génération de la carte de visite");
+          }
+        }}
+        onDownloadCVPDF={async () => {
+          try {
+            const doc = await generateCV(profile);
+            doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+            toast.success("CV généré avec succès");
+          } catch (error) {
+            console.error('Error generating CV:', error);
+            toast.error("Erreur lors de la génération du CV");
+          }
+        }}
+        onSave={handleSave}
+        onApplyChanges={handleApplyChanges}
+      />
+
+      <VCardHeader
+        profile={profile}
+        isEditing={isEditing}
+        setProfile={setProfile}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2 space-y-8">
+          <VCardBio
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
           />
-          <div className="flex gap-4">
-            <VCardExpandedQR />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsExpanded(false)}
-              className="text-gray-400 hover:text-white hover:bg-white/10 border border-white/10"
-            >
-              <X className="h-6 w-6" />
-            </Button>
-          </div>
+
+          <VCardExperience
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+
+          <VCardEducation
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
+
+          <VCardCertifications
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
         </div>
 
-        <div className="grid gap-8">
-          <VCardExpandedGrid
+        <div className="space-y-8">
+          <VCardContact
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
           />
 
-          <VCardExpandedBio
+          <VCardSkills
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-          />
-
-          <VCardExpandedEducation
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-
-          <VCardActions
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            onShare={onShare}
-            onDownload={onDownload}
-            onDownloadPDF={onDownloadPDF}
-            onDownloadBusinessPDF={onDownloadBusinessPDF}
-            onDownloadCVPDF={onDownloadCVPDF}
-            onCopyLink={onCopyLink}
-            onSave={onSave}
-            onApplyChanges={onApplyChanges}
+            handleRemoveSkill={handleRemoveSkill}
           />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

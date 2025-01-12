@@ -24,41 +24,25 @@ export function VCardActions({
 }: VCardActionsProps) {
   const { selectedStyle } = useVCardStyle();
 
-  // Couleurs spécifiques pour le mode édition
-  const editModeColors = {
-    primary: "#9b87f5", // Purple primary
-    secondary: "#7E69AB", // Purple secondary
-    text: "#FFFFFF",
-    border: "rgba(255, 255, 255, 0.2)"
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-wrap gap-3 pt-4 border-t"
-      style={{ 
-        borderColor: isEditing ? editModeColors.border : `${selectedStyle.colors.primary}20`,
-        background: isEditing ? "rgba(26, 31, 44, 0.8)" : "transparent", // Dark background in edit mode
-        padding: isEditing ? "1rem" : undefined,
-        borderRadius: isEditing ? "0.5rem" : undefined,
-      }}
+      className={cn(
+        "flex flex-wrap gap-3 pt-4 border-t",
+        isEditing ? "bg-background/80 p-4 rounded-lg border border-border" : ""
+      )}
     >
       {isEditing ? (
         <>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[120px]"
+            className="flex-1 min-w-[100px]"
           >
             <Button 
               onClick={onSave}
-              className="w-full transition-colors hover:bg-opacity-90"
-              style={{ 
-                backgroundColor: editModeColors.primary,
-                color: editModeColors.text,
-                borderColor: editModeColors.border
-              }}
+              className="w-full bg-primary hover:bg-primary/90"
             >
               Sauvegarder
             </Button>
@@ -66,18 +50,26 @@ export function VCardActions({
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[120px]"
+            className="flex-1 min-w-[100px]"
           >
             <Button 
               onClick={onApplyChanges}
               variant="outline" 
-              className="w-full transition-colors hover:bg-white/10"
-              style={{ 
-                borderColor: editModeColors.border,
-                color: editModeColors.text,
-              }}
+              className="w-full"
             >
               Appliquer
+            </Button>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Button 
+              onClick={() => setIsEditing(false)}
+              variant="outline"
+              className="transition-colors"
+            >
+              Annuler
             </Button>
           </motion.div>
         </>
@@ -89,12 +81,30 @@ export function VCardActions({
             className="flex-1 min-w-[100px]"
           >
             <Button 
-              onClick={onShare}
-              className="w-full transition-colors"
+              onClick={() => setIsEditing(true)}
+              variant="outline"
+              className="w-full"
               style={{ 
-                backgroundColor: selectedStyle.colors.primary,
-                color: 'white',
-                borderColor: `${selectedStyle.colors.primary}40`
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
+              }}
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Éditer
+            </Button>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1 min-w-[100px]"
+          >
+            <Button 
+              onClick={onShare}
+              variant="outline"
+              className="w-full"
+              style={{ 
+                borderColor: `${selectedStyle.colors.primary}40`,
+                color: selectedStyle.colors.text.primary,
               }}
             >
               <Share2 className="mr-2 h-4 w-4" />
@@ -107,27 +117,9 @@ export function VCardActions({
             className="flex-1 min-w-[100px]"
           >
             <Button 
-              onClick={() => setIsEditing(true)}
-              variant="outline"
-              className="w-full transition-colors"
-              style={{ 
-                borderColor: `${selectedStyle.colors.primary}40`,
-                color: selectedStyle.colors.text.primary,
-              }}
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              Mode édition
-            </Button>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
-          >
-            <Button 
               onClick={onDownloadBusinessPDF}
               variant="outline"
-              className="w-full transition-colors"
+              className="w-full"
               style={{ 
                 borderColor: `${selectedStyle.colors.primary}40`,
                 color: selectedStyle.colors.text.primary,
@@ -145,7 +137,7 @@ export function VCardActions({
             <Button 
               onClick={onDownloadCVPDF}
               variant="outline"
-              className="w-full transition-colors"
+              className="w-full"
               style={{ 
                 borderColor: `${selectedStyle.colors.primary}40`,
                 color: selectedStyle.colors.text.primary,
