@@ -42,18 +42,29 @@ export function VCardSections({
     switch (sectionId) {
       case 'header':
         return (
-          <div key={uniqueKey} className="w-full">
+          <div key={uniqueKey} className="w-full space-y-2">
             <VCardHeader
               profile={profile}
               isEditing={isEditing}
               setProfile={setProfile}
               customStyles={customStyles}
             />
+            {profile.role && (
+              <p 
+                className="text-muted-foreground"
+                style={{
+                  fontFamily: customStyles?.font,
+                  color: customStyles?.textColor,
+                }}
+              >
+                {profile.role}
+              </p>
+            )}
           </div>
         );
       case 'contact':
         return (
-          <div key={uniqueKey} className="w-full">
+          <div key={uniqueKey} className="w-full mt-4">
             <VCardContact
               profile={profile}
               isEditing={isEditing}
@@ -64,7 +75,7 @@ export function VCardSections({
         );
       case 'bio':
         return (
-          <div key={uniqueKey} className="w-full">
+          <div key={uniqueKey} className="w-full mt-6">
             <VCardBio
               profile={profile}
               isEditing={isEditing}
