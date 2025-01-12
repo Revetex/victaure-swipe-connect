@@ -31,7 +31,9 @@ export function VCardBadge({
         color: selectedStyle.colors.text.primary
       }}
     >
-      <span style={{ color: selectedStyle.colors.text.primary }}>{text}</span>
+      <span className="text-sm font-medium" style={{ color: selectedStyle.colors.text.primary }}>
+        {text}
+      </span>
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
