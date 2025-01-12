@@ -61,7 +61,7 @@ Info sur le gars:
         body: JSON.stringify({
           inputs: fullPrompt,
           parameters: {
-            max_new_tokens: 1024,
+            max_new_tokens: 250,
             temperature: 1.0,
             top_p: 0.98,
             do_sample: true,
