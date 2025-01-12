@@ -2,29 +2,26 @@ import { UserProfile } from "@/types/profile";
 import { VCardSection } from "./VCardSection";
 import { Briefcase } from "lucide-react";
 import { Button } from "./ui/button";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardExperiencesProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
-  customStyles?: {
-    font?: string;
-    background?: string;
-    textColor?: string;
-  };
 }
 
-export function VCardExperiences({ profile, isEditing, setProfile, customStyles }: VCardExperiencesProps) {
+export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperiencesProps) {
+  const { selectedStyle } = useVCardStyle();
+
   const handleAddExperience = () => {
     const newExperience = {
       id: Date.now().toString(),
-      title: "",
+      position: "",
       company: "",
       location: "",
-      startDate: "",
-      endDate: "",
+      start_date: "",
+      end_date: "",
       description: "",
-      current: false,
     };
 
     setProfile({
@@ -40,7 +37,7 @@ export function VCardExperiences({ profile, isEditing, setProfile, customStyles 
     });
   };
 
-  const handleExperienceChange = (id: string, field: string, value: string | boolean) => {
+  const handleExperienceChange = (id: string, field: string, value: string) => {
     setProfile({
       ...profile,
       experiences: (profile.experiences || []).map((exp) =>
@@ -58,18 +55,27 @@ export function VCardExperiences({ profile, isEditing, setProfile, customStyles 
         {(profile.experiences || []).map((experience) => (
           <div
             key={experience.id}
-            className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50"
+            className="p-4 rounded-lg border"
+            style={{
+              backgroundColor: `${selectedStyle.colors.primary}05`,
+              borderColor: `${selectedStyle.colors.primary}20`,
+              color: selectedStyle.colors.text.primary
+            }}
           >
             {isEditing ? (
               <div className="space-y-4">
                 <input
                   type="text"
-                  value={experience.title}
+                  value={experience.position}
                   onChange={(e) =>
-                    handleExperienceChange(experience.id, "title", e.target.value)
+                    handleExperienceChange(experience.id, "position", e.target.value)
                   }
                   placeholder="Titre du poste"
-                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600"
+                  className="w-full p-2 rounded border"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <input
                   type="text"
@@ -78,7 +84,11 @@ export function VCardExperiences({ profile, isEditing, setProfile, customStyles 
                     handleExperienceChange(experience.id, "company", e.target.value)
                   }
                   placeholder="Entreprise"
-                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600"
+                  className="w-full p-2 rounded border"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <input
                   type="text"
@@ -87,37 +97,37 @@ export function VCardExperiences({ profile, isEditing, setProfile, customStyles 
                     handleExperienceChange(experience.id, "location", e.target.value)
                   }
                   placeholder="Localisation"
-                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600"
+                  className="w-full p-2 rounded border"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <div className="flex gap-4">
                   <input
                     type="date"
-                    value={experience.startDate}
+                    value={experience.start_date}
                     onChange={(e) =>
-                      handleExperienceChange(experience.id, "startDate", e.target.value)
+                      handleExperienceChange(experience.id, "start_date", e.target.value)
                     }
-                    className="flex-1 p-2 rounded border border-gray-300 dark:border-gray-600"
+                    className="flex-1 p-2 rounded border"
+                    style={{
+                      borderColor: `${selectedStyle.colors.primary}30`,
+                      color: selectedStyle.colors.text.primary
+                    }}
                   />
                   <input
                     type="date"
-                    value={experience.endDate}
+                    value={experience.end_date}
                     onChange={(e) =>
-                      handleExperienceChange(experience.id, "endDate", e.target.value)
+                      handleExperienceChange(experience.id, "end_date", e.target.value)
                     }
-                    disabled={experience.current}
-                    className="flex-1 p-2 rounded border border-gray-300 dark:border-gray-600"
+                    className="flex-1 p-2 rounded border"
+                    style={{
+                      borderColor: `${selectedStyle.colors.primary}30`,
+                      color: selectedStyle.colors.text.primary
+                    }}
                   />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={experience.current}
-                    onChange={(e) =>
-                      handleExperienceChange(experience.id, "current", e.target.checked)
-                    }
-                    className="rounded border-gray-300 dark:border-gray-600"
-                  />
-                  <label>Poste actuel</label>
                 </div>
                 <textarea
                   value={experience.description}
@@ -125,7 +135,11 @@ export function VCardExperiences({ profile, isEditing, setProfile, customStyles 
                     handleExperienceChange(experience.id, "description", e.target.value)
                   }
                   placeholder="Description du poste"
-                  className="w-full p-2 rounded border border-gray-300 dark:border-gray-600 min-h-[100px]"
+                  className="w-full p-2 rounded border min-h-[100px]"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <Button
                   onClick={() => handleRemoveExperience(experience.id)}
@@ -137,14 +151,16 @@ export function VCardExperiences({ profile, isEditing, setProfile, customStyles 
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="font-semibold">{experience.title}</h4>
-                <p className="text-gray-600 dark:text-gray-400">
+                <h4 className="font-semibold" style={{ color: selectedStyle.colors.text.primary }}>
+                  {experience.position}
+                </h4>
+                <p style={{ color: selectedStyle.colors.text.primary }}>
                   {experience.company} • {experience.location}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">
-                  {experience.startDate} - {experience.current ? "Présent" : experience.endDate}
+                <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
+                  {experience.start_date} - {experience.end_date}
                 </p>
-                <p className="text-gray-700 dark:text-gray-300">{experience.description}</p>
+                <p style={{ color: selectedStyle.colors.text.secondary }}>{experience.description}</p>
               </div>
             )}
           </div>
@@ -152,7 +168,11 @@ export function VCardExperiences({ profile, isEditing, setProfile, customStyles 
         {isEditing && (
           <Button 
             onClick={handleAddExperience}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            className="w-full"
+            style={{
+              backgroundColor: selectedStyle.colors.primary,
+              color: "white"
+            }}
           >
             Ajouter une expérience
           </Button>

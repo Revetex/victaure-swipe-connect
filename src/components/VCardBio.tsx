@@ -116,7 +116,10 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
             size="sm"
             onClick={handleGenerateBio}
             disabled={isGenerating}
-            style={{ color: selectedStyle.colors.primary }}
+            style={{ 
+              borderColor: selectedStyle.colors.primary,
+              color: selectedStyle.colors.primary 
+            }}
           >
             {isGenerating ? (
               <Loader className="mr-2 h-4 w-4" />
@@ -133,8 +136,11 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           value={profile?.bio || ""}
           onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
           placeholder="Écrivez une courte présentation..."
-          className="w-full min-h-[100px] p-2 border rounded-md bg-background"
-          style={{ color: selectedStyle.colors.text.primary }}
+          className="w-full min-h-[100px] p-2 rounded-md bg-background"
+          style={{ 
+            color: selectedStyle.colors.text.primary,
+            borderColor: `${selectedStyle.colors.primary}30`
+          }}
         />
       ) : profile?.bio ? (
         <p style={{ color: selectedStyle.colors.text.secondary }}>

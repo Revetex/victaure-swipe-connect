@@ -2,27 +2,25 @@ import { UserProfile } from "@/types/profile";
 import { VCardSection } from "./VCardSection";
 import { GraduationCap } from "lucide-react";
 import { Button } from "./ui/button";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardEducationProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
-  customStyles?: {
-    font?: string;
-    background?: string;
-    textColor?: string;
-  };
 }
 
-export function VCardEducation({ profile, isEditing, setProfile, customStyles }: VCardEducationProps) {
+export function VCardEducation({ profile, isEditing, setProfile }: VCardEducationProps) {
+  const { selectedStyle } = useVCardStyle();
+
   const handleAddEducation = () => {
     const newEducation = {
       id: Date.now().toString(),
-      school: "",
+      school_name: "",
       degree: "",
-      field: "",
-      startDate: "",
-      endDate: "",
+      field_of_study: "",
+      start_date: "",
+      end_date: "",
       description: "",
     };
 
@@ -57,18 +55,27 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
         {(profile.education || []).map((education) => (
           <div
             key={education.id}
-            className="p-4 rounded-lg border bg-card"
+            className="p-4 rounded-lg border"
+            style={{
+              backgroundColor: `${selectedStyle.colors.primary}05`,
+              borderColor: `${selectedStyle.colors.primary}20`,
+              color: selectedStyle.colors.text.primary
+            }}
           >
             {isEditing ? (
               <div className="space-y-4">
                 <input
                   type="text"
-                  value={education.school}
+                  value={education.school_name}
                   onChange={(e) =>
-                    handleEducationChange(education.id, "school", e.target.value)
+                    handleEducationChange(education.id, "school_name", e.target.value)
                   }
                   placeholder="École"
                   className="w-full p-2 rounded border"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <input
                   type="text"
@@ -78,34 +85,48 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
                   }
                   placeholder="Diplôme"
                   className="w-full p-2 rounded border"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <input
                   type="text"
-                  value={education.field}
+                  value={education.field_of_study}
                   onChange={(e) =>
-                    handleEducationChange(education.id, "field", e.target.value)
+                    handleEducationChange(education.id, "field_of_study", e.target.value)
                   }
                   placeholder="Domaine d'études"
                   className="w-full p-2 rounded border"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <div className="flex gap-4">
                   <input
-                    type="text"
-                    value={education.startDate}
+                    type="date"
+                    value={education.start_date}
                     onChange={(e) =>
-                      handleEducationChange(education.id, "startDate", e.target.value)
+                      handleEducationChange(education.id, "start_date", e.target.value)
                     }
-                    placeholder="Date de début"
-                    className="w-full p-2 rounded border"
+                    className="flex-1 p-2 rounded border"
+                    style={{
+                      borderColor: `${selectedStyle.colors.primary}30`,
+                      color: selectedStyle.colors.text.primary
+                    }}
                   />
                   <input
-                    type="text"
-                    value={education.endDate}
+                    type="date"
+                    value={education.end_date}
                     onChange={(e) =>
-                      handleEducationChange(education.id, "endDate", e.target.value)
+                      handleEducationChange(education.id, "end_date", e.target.value)
                     }
-                    placeholder="Date de fin"
-                    className="w-full p-2 rounded border"
+                    className="flex-1 p-2 rounded border"
+                    style={{
+                      borderColor: `${selectedStyle.colors.primary}30`,
+                      color: selectedStyle.colors.text.primary
+                    }}
                   />
                 </div>
                 <textarea
@@ -115,6 +136,10 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
                   }
                   placeholder="Description"
                   className="w-full p-2 rounded border min-h-[100px]"
+                  style={{
+                    borderColor: `${selectedStyle.colors.primary}30`,
+                    color: selectedStyle.colors.text.primary
+                  }}
                 />
                 <Button
                   onClick={() => handleRemoveEducation(education.id)}
@@ -126,13 +151,15 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="font-semibold">{education.school}</h4>
-                <p>{education.degree}</p>
-                <p className="text-muted-foreground">{education.field}</p>
-                <p className="text-sm text-muted-foreground">
-                  {education.startDate} - {education.endDate}
+                <h4 className="font-semibold" style={{ color: selectedStyle.colors.text.primary }}>
+                  {education.school_name}
+                </h4>
+                <p style={{ color: selectedStyle.colors.text.primary }}>{education.degree}</p>
+                <p style={{ color: selectedStyle.colors.text.secondary }}>{education.field_of_study}</p>
+                <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
+                  {education.start_date} - {education.end_date}
                 </p>
-                <p className="text-sm">{education.description}</p>
+                <p style={{ color: selectedStyle.colors.text.secondary }}>{education.description}</p>
               </div>
             )}
           </div>
@@ -140,7 +167,11 @@ export function VCardEducation({ profile, isEditing, setProfile, customStyles }:
         {isEditing && (
           <Button 
             onClick={handleAddEducation}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            className="w-full"
+            style={{
+              backgroundColor: selectedStyle.colors.primary,
+              color: "white"
+            }}
           >
             Ajouter une formation
           </Button>

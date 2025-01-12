@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Paintbrush } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useVCardStyle } from "../VCardStyleContext";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -25,21 +26,34 @@ const fontOptions = [
 ];
 
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
+  const { selectedStyle } = useVCardStyle();
+
   return (
-    <div className="space-y-6 p-6 bg-card rounded-xl shadow-lg backdrop-blur-sm border">
-      <div className="flex items-center gap-2 border-b pb-4">
-        <Paintbrush className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-medium">Personnalisation du style</h3>
+    <div 
+      className="space-y-6 p-6 rounded-xl shadow-lg border"
+      style={{
+        backgroundColor: selectedStyle.colors.background.card,
+        borderColor: `${selectedStyle.colors.primary}20`,
+      }}
+    >
+      <div className="flex items-center gap-2 border-b pb-4" style={{ borderColor: `${selectedStyle.colors.primary}20` }}>
+        <Paintbrush className="h-5 w-5" style={{ color: selectedStyle.colors.primary }} />
+        <h3 className="text-lg font-medium" style={{ color: selectedStyle.colors.text.primary }}>
+          Personnalisation du style
+        </h3>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label>Police de caractères</Label>
+          <Label style={{ color: selectedStyle.colors.text.primary }}>Police de caractères</Label>
           <Select
             value={profile.custom_font || ""}
             onValueChange={(value) => onStyleChange({ custom_font: value })}
           >
-            <SelectTrigger className="bg-background/50 border-border/50">
+            <SelectTrigger 
+              className="bg-background/50"
+              style={{ borderColor: `${selectedStyle.colors.primary}30` }}
+            >
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
             <SelectContent>
@@ -53,28 +67,30 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
         </div>
 
         <div className="space-y-2">
-          <Label>Couleur de fond</Label>
+          <Label style={{ color: selectedStyle.colors.text.primary }}>Couleur de fond</Label>
           <Input
             type="color"
             value={profile.custom_background || "#ffffff"}
             onChange={(e) => onStyleChange({ custom_background: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background/50 border-border/50"
+              "bg-background/50"
             )}
+            style={{ borderColor: `${selectedStyle.colors.primary}30` }}
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Couleur du texte</Label>
+          <Label style={{ color: selectedStyle.colors.text.primary }}>Couleur du texte</Label>
           <Input
             type="color"
-            value={profile.custom_text_color || "#000000"}
+            value={profile.custom_text_color || selectedStyle.colors.text.primary}
             onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background/50 border-border/50"
+              "bg-background/50"
             )}
+            style={{ borderColor: `${selectedStyle.colors.primary}30` }}
           />
         </div>
 
@@ -87,6 +103,10 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
               custom_text_color: undefined
             })}
             className="w-full"
+            style={{
+              borderColor: selectedStyle.colors.primary,
+              color: selectedStyle.colors.primary
+            }}
           >
             Réinitialiser le style
           </Button>
