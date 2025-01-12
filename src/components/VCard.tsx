@@ -38,6 +38,14 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
+  const handleCancel = () => {
+    setTempProfile(null);
+    setIsEditing(false);
+    if (onEditStateChange) {
+      onEditStateChange(false);
+    }
+  };
+
   const handleProfileChange = (updates: Partial<UserProfile>) => {
     if (tempProfile) {
       setTempProfile({ ...tempProfile, ...updates });
@@ -61,7 +69,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      // Update the sections order to ensure contact is above bio
       const updatedProfile = {
         ...tempProfile,
         sections_order: ['header', 'contact', 'bio', 'skills', 'education', 'experience']
@@ -148,6 +155,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           isProcessing={isAIProcessing}
           selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
+          onCancel={handleCancel}
           onSave={handleSave}
           onDownloadBusinessCard={async () => {
             if (!profile) return;

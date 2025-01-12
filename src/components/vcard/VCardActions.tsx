@@ -11,7 +11,7 @@ interface VCardActionsProps {
   onDownloadBusinessPDF: () => void;
   onDownloadCVPDF: () => void;
   onSave: () => void;
-  onApplyChanges?: () => void;
+  onCancel: () => void;
   setIsEditing: (isEditing: boolean) => void;
   selectedStyle: StyleOption;
 }
@@ -24,7 +24,7 @@ export function VCardActions({
   onDownloadBusinessPDF,
   onDownloadCVPDF,
   onSave,
-  onApplyChanges,
+  onCancel,
   setIsEditing,
   selectedStyle,
 }: VCardActionsProps) {
@@ -38,7 +38,7 @@ export function VCardActions({
       {isEditing ? (
         <VCardEditingActions
           onSave={onSave}
-          onApplyChanges={onApplyChanges}
+          onCancel={onCancel}
           isProcessing={isProcessing}
         />
       ) : (

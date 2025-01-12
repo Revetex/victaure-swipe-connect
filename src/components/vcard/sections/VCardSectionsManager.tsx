@@ -63,7 +63,6 @@ export function VCardSectionsManager({
 
   return (
     <div className="relative">
-      {!isEditing && <VCardQRCode />}
       <VCardSections
         profile={profile}
         isEditing={isEditing}
@@ -80,6 +79,7 @@ export function VCardSectionsManager({
           textColor: profile.custom_text_color
         }}
       />
+      {!isEditing && <VCardQRCode />}
     </div>
   );
 }
