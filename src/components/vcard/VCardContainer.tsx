@@ -18,8 +18,9 @@ export function VCardContainer({
   return (
     <div className={cn(
       "rounded-xl p-4 sm:p-6 md:p-8",
+      "transition-all duration-300",
       isEditing ? "bg-card shadow-lg border border-border/50" : "",
-      "transition-all duration-300"
+      !isEditing && customStyles?.background ? "bg-transparent" : ""
     )}>
       <div 
         className="space-y-6 sm:space-y-8"

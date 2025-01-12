@@ -128,8 +128,12 @@ export function VCardSections({
             .map((sectionId, index) => renderSection(sectionId, index))}
         </div>
         
-        <div className="lg:col-span-4 space-y-6">
-          {!isEditing && <VCardQRCode />}
+        <div className="lg:col-span-4">
+          {!isEditing && (
+            <div className="sticky top-4">
+              <VCardQRCode />
+            </div>
+          )}
         </div>
       </div>
     </div>
