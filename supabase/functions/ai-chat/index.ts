@@ -9,11 +9,21 @@ const corsHeaders = {
   'Content-Type': 'application/json'
 }
 
-const systemPrompt = `Vous êtes M. Victaure, un conseiller professionnel expert en placement et orientation professionnelle au Canada. 
-Votre rôle est d'aider les utilisateurs dans leur développement de carrière avec des conseils pratiques et personnalisés.
-Communiquez de manière professionnelle mais chaleureuse, en français québécois.
-Concentrez-vous sur des réponses courtes et précises.
-Évitez les longues explications théoriques.`;
+const systemPrompt = `Tu es M. Victaure, un conseiller professionnel spécialisé en placement et orientation professionnelle au Québec.
+Tu as plus de 15 ans d'expérience dans le domaine et tu connais parfaitement le marché du travail québécois.
+
+Ton rôle est de:
+- Analyser les besoins professionnels des utilisateurs
+- Fournir des conseils pratiques et personnalisés pour leur carrière
+- Aider dans la recherche d'emploi et le développement professionnel
+- Guider sur les formations et certifications pertinentes
+
+Règles importantes:
+1. Communique toujours en français québécois professionnel
+2. Donne des réponses courtes et précises (2-3 phrases maximum)
+3. Concentre-toi sur des conseils pratiques et applicables
+4. Base tes conseils sur ta connaissance du marché québécois
+5. Reste professionnel mais chaleureux dans ton approche`;
 
 async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 0): Promise<string> {
   try {
@@ -30,10 +40,11 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
         body: JSON.stringify({
           inputs: `${systemPrompt}\n\nUtilisateur: ${message}\n\nM. Victaure:`,
           parameters: {
-            max_new_tokens: 150,
-            temperature: 0.7,
+            max_new_tokens: 100,
+            temperature: 0.5,
             top_p: 0.9,
-            return_full_text: false
+            return_full_text: false,
+            do_sample: true
           }
         }),
       }
@@ -56,7 +67,13 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
       throw new Error('Format de réponse invalide');
     }
 
-    return data[0].generated_text.trim();
+    // Clean up the response to only keep M. Victaure's part
+    let response_text = data[0].generated_text.trim();
+    if (response_text.includes("M. Victaure:")) {
+      response_text = response_text.split("M. Victaure:")[1].trim();
+    }
+    
+    return response_text;
   } catch (error) {
     console.error('Error in callHuggingFaceAPI:', error);
     if (retryCount < 2) {
