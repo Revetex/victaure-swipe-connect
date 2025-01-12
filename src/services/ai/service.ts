@@ -8,7 +8,13 @@ export async function generateAIResponse(message: string): Promise<string> {
     if (!user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase.functions.invoke('ai-chat', {
-      body: { message }
+      body: { 
+        message,
+        userId: user.id,
+        context: {
+          previousMessages: await loadMessages()
+        }
+      }
     });
 
     if (error) throw error;
