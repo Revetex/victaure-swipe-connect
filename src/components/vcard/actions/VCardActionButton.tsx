@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/ui/loader";
 import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface VCardActionButtonProps {
-  icon?: LucideIcon;
-  label?: string;
+  icon: LucideIcon;
+  label: string;
   onClick: () => void;
-  variant?: "default" | "outline";
   disabled?: boolean;
   isProcessing?: boolean;
+  variant?: "default" | "outline";
   className?: string;
 }
 
@@ -16,36 +18,43 @@ export function VCardActionButton({
   icon: Icon,
   label,
   onClick,
+  disabled,
+  isProcessing,
   variant = "default",
-  disabled = false,
-  isProcessing = false,
-  className = "",
+  className
 }: VCardActionButtonProps) {
-  const buttonStyle = variant === "default" ? {
-    backgroundColor: '#3B82F6',
-    color: 'white',
-    borderColor: '#2563EB',
-  } : {
-    borderColor: '#3B82F6',
-    color: '#3B82F6',
-  };
-
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex-1 min-w-[100px]"
+    <Button
+      onClick={onClick}
+      disabled={disabled}
+      variant={variant}
+      className={cn(
+        "group relative overflow-hidden",
+        "transition-all duration-300 ease-in-out",
+        className
+      )}
     >
-      <Button
-        onClick={onClick}
-        variant={variant}
-        disabled={disabled || isProcessing}
-        className={`w-full transition-colors ${className}`}
-        style={buttonStyle}
+      <motion.div
+        className="flex items-center justify-center gap-2"
+        initial={false}
+        animate={{
+          opacity: isProcessing ? 0 : 1,
+          y: isProcessing ? -20 : 0
+        }}
       >
-        {Icon && <Icon className="mr-2 h-4 w-4" />}
+        <Icon className="h-4 w-4 group-hover:scale-110 transition-transform" />
         {label}
-      </Button>
-    </motion.div>
+      </motion.div>
+      
+      {isProcessing && (
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Loader className="h-4 w-4" />
+        </motion.div>
+      )}
+    </Button>
   );
 }
