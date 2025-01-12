@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UserCircle, Mail, Phone, MapPin, Building2, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useVCardStyle } from "../VCardStyleContext";
 
 interface VCardProfileEditorProps {
   profile: UserProfile;
@@ -11,16 +12,34 @@ interface VCardProfileEditorProps {
 }
 
 export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEditorProps) {
+  const { selectedStyle } = useVCardStyle();
+
+  // Use custom styles or fall back to selected style
+  const textColor = profile.custom_text_color || selectedStyle.colors.text.primary;
+  const backgroundColor = profile.custom_background || selectedStyle.colors.background.card;
+  const fontFamily = profile.custom_font || selectedStyle.font;
+
+  const inputStyles = {
+    color: textColor,
+    backgroundColor: backgroundColor,
+    fontFamily: fontFamily,
+  };
+
   return (
-    <div className="space-y-6 p-6 bg-card rounded-xl shadow-lg backdrop-blur-sm border">
+    <div 
+      className="space-y-6 p-6 rounded-xl shadow-lg border bg-card"
+      style={{ backgroundColor, color: textColor, fontFamily }}
+    >
       <div className="flex items-center gap-2 border-b pb-4">
         <UserCircle className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-medium">Informations personnelles</h3>
+        <h3 className="text-lg font-medium" style={{ color: textColor }}>
+          Informations personnelles
+        </h3>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2" style={{ color: textColor }}>
             <UserCircle className="h-4 w-4" />
             Nom complet
           </Label>
@@ -32,11 +51,12 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
               "bg-background/50 border-border/50",
               "focus:ring-2 focus:ring-primary/50"
             )}
+            style={inputStyles}
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2" style={{ color: textColor }}>
             <Mail className="h-4 w-4" />
             Email
           </Label>
@@ -49,11 +69,12 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
               "bg-background/50 border-border/50",
               "focus:ring-2 focus:ring-primary/50"
             )}
+            style={inputStyles}
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2" style={{ color: textColor }}>
             <Phone className="h-4 w-4" />
             Téléphone
           </Label>
@@ -66,11 +87,12 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
               "bg-background/50 border-border/50",
               "focus:ring-2 focus:ring-primary/50"
             )}
+            style={inputStyles}
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2" style={{ color: textColor }}>
             <Building2 className="h-4 w-4" />
             Entreprise
           </Label>
@@ -82,11 +104,12 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
               "bg-background/50 border-border/50",
               "focus:ring-2 focus:ring-primary/50"
             )}
+            style={inputStyles}
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2" style={{ color: textColor }}>
             <Globe className="h-4 w-4" />
             Site web
           </Label>
@@ -99,11 +122,12 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
               "bg-background/50 border-border/50",
               "focus:ring-2 focus:ring-primary/50"
             )}
+            style={inputStyles}
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2" style={{ color: textColor }}>
             <MapPin className="h-4 w-4" />
             Ville
           </Label>
@@ -115,12 +139,13 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
               "bg-background/50 border-border/50",
               "focus:ring-2 focus:ring-primary/50"
             )}
+            style={inputStyles}
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label className="flex items-center gap-2">Bio</Label>
+        <Label className="flex items-center gap-2" style={{ color: textColor }}>Bio</Label>
         <Textarea
           value={profile.bio || ""}
           onChange={(e) => onProfileChange({ bio: e.target.value })}
@@ -130,6 +155,7 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
             "bg-background/50 border-border/50",
             "focus:ring-2 focus:ring-primary/50"
           )}
+          style={inputStyles}
         />
       </div>
     </div>
