@@ -15,14 +15,14 @@ export function ColorPicker({ color, onChange, className }: ColorPickerProps) {
           type="color"
           value={color}
           onChange={(e) => onChange(e.target.value)}
-          className="w-12 h-10 p-1 bg-background/50"
+          className="w-12 h-10 p-1 bg-background/50 border-border"
         />
       </div>
       <Input
         value={color}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Ex: #000000 ou rgb(0, 0, 0)"
-        className="flex-1 bg-background/50"
+        className="flex-1 bg-background/50 border-border text-foreground"
       />
     </div>
   );

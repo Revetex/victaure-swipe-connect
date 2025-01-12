@@ -23,14 +23,20 @@ export function VCardContainer({
       <div 
         className="space-y-8"
         style={{
-          fontFamily: customStyles?.font || "inherit",
-          color: customStyles?.textColor || undefined,
+          // Only apply custom styles when not editing
+          fontFamily: !isEditing ? customStyles?.font : undefined,
+          color: !isEditing ? customStyles?.textColor : undefined,
         }}
       >
         <div 
-          className="rounded-xl p-6"
+          className={cn(
+            "rounded-xl p-6",
+            // Use default background in editing mode for better visibility
+            isEditing ? "bg-card" : ""
+          )}
           style={{
-            backgroundColor: customStyles?.background || undefined,
+            // Only apply custom background when not editing
+            backgroundColor: !isEditing ? customStyles?.background : undefined,
           }}
         >
           {children}
