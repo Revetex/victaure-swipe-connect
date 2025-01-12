@@ -81,30 +81,51 @@ export function DashboardLayout() {
       
       {!isEditing && (
         <>
-          {showNavigation && (
-            <nav 
-              className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
-              style={{ 
-                height: '4rem',
-                paddingBottom: 'env(safe-area-inset-bottom)'
-              }}
-            >
-              <div className="container mx-auto px-4 h-full flex items-center">
-                <DashboardNavigation 
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                />
-              </div>
-            </nav>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="fixed bottom-4 right-4 z-50 bg-background/95 backdrop-blur-sm shadow-md hover:bg-accent"
-            onClick={toggleNavigation}
+          <AnimatePresence mode="sync">
+            {showNavigation && (
+              <motion.nav 
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                  mass: 0.8
+                }}
+                className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
+                style={{ 
+                  height: '4rem',
+                  paddingBottom: 'env(safe-area-inset-bottom)'
+                }}
+              >
+                <div className="container mx-auto px-4 h-full flex items-center">
+                  <DashboardNavigation 
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              </motion.nav>
+            )}
+          </AnimatePresence>
+          
+          <motion.div
+            initial={false}
+            animate={{ 
+              scale: showNavigation ? [1.1, 1] : [0.9, 1],
+              rotate: showNavigation ? [0, 360] : [-180, 0]
+            }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            {showNavigation ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="fixed bottom-4 right-4 z-50 bg-background/95 backdrop-blur-sm shadow-md hover:bg-accent"
+              onClick={toggleNavigation}
+            >
+              {showNavigation ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </Button>
+          </motion.div>
         </>
       )}
     </DashboardContainer>
