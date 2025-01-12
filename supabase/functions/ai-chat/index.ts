@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message } = await req.json();
+    const { message, userId } = await req.json();
     console.log('Message reçu:', message);
 
     if (!message || typeof message !== 'string') {
@@ -84,22 +84,38 @@ M. Victaure:`;
     }
 
     const data = await response.json();
-    console.log('Réponse reçue:', data);
+    console.log('Réponse brute:', data);
 
     if (!data || !Array.isArray(data) || !data[0]?.generated_text) {
       throw new Error('Format de réponse invalide');
     }
 
     let response_text = data[0].generated_text.trim();
-    // Clean up any potential prefixes
-    response_text = response_text.replace(/M\.\s*Victaure\s*:\s*/g, '').trim();
-    response_text = response_text.replace(/Assistant\s*:\s*/g, '').trim();
-    response_text = response_text.replace(/^["']|["']$/g, '').trim();
-    response_text = response_text.replace(/Utilisateur\s*:\s*.+\s*M\.\s*Victaure\s*:\s*/g, '').trim();
     
-    return new Response(JSON.stringify({ response: response_text }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // Clean up the response
+    response_text = response_text
+      .replace(/M\.\s*Victaure\s*:\s*/g, '')
+      .replace(/Assistant\s*:\s*/g, '')
+      .replace(/^["']|["']$/g, '')
+      .replace(/Utilisateur\s*:\s*.+\s*M\.\s*Victaure\s*:\s*/g, '')
+      .trim();
+
+    // Remove any remaining system prompt or user message that might be in the response
+    const promptParts = systemPrompt.split('Utilisateur:');
+    const systemPart = promptParts[0].trim();
+    response_text = response_text
+      .replace(new RegExp(systemPart, 'g'), '')
+      .replace(new RegExp(message, 'g'), '')
+      .trim();
+
+    console.log('Réponse nettoyée:', response_text);
+
+    return new Response(
+      JSON.stringify({ response: response_text }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
     console.error('Erreur détaillée:', {
       message: error.message,
