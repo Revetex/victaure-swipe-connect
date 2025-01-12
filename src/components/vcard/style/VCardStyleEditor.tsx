@@ -1,13 +1,8 @@
 import { UserProfile } from "@/types/profile";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Paintbrush, Type, Palette, TextCursor, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useVCardStyle } from "../VCardStyleContext";
-import { toast } from "sonner";
-import { VCardSection } from "@/components/VCardSection";
 import { motion } from "framer-motion";
 
 interface VCardStyleEditorProps {
@@ -15,31 +10,8 @@ interface VCardStyleEditorProps {
   onStyleChange: (updates: Partial<UserProfile>) => void;
 }
 
-const fontOptions = [
-  { value: "'Poppins', sans-serif", label: "Poppins" },
-  { value: "'Montserrat', sans-serif", label: "Montserrat" },
-  { value: "'Playfair Display', serif", label: "Playfair Display" },
-  { value: "'DM Sans', sans-serif", label: "DM Sans" },
-  { value: "'Inter', sans-serif", label: "Inter" },
-  { value: "'Roboto', sans-serif", label: "Roboto" },
-  { value: "'Open Sans', sans-serif", label: "Open Sans" },
-  { value: "'Lora', serif", label: "Lora" },
-  { value: "'Source Sans Pro', sans-serif", label: "Source Sans Pro" },
-  { value: "'Work Sans', sans-serif", label: "Work Sans" },
-];
-
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
   const { selectedStyle } = useVCardStyle();
-
-  const handleStyleReset = () => {
-    onStyleChange({
-      custom_font: undefined,
-      custom_background: undefined,
-      custom_text_color: undefined,
-      style_id: selectedStyle.id
-    });
-    toast.success("Style réinitialisé avec succès");
-  };
 
   return (
     <motion.div
@@ -48,81 +20,79 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
       className="space-y-6"
     >
       <div className="flex items-center justify-between border-b pb-4">
-        <div className="flex items-center gap-2">
-          <Paintbrush className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-medium">Personnalisation</h3>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleStyleReset}
-          className="text-muted-foreground hover:text-primary"
-        >
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Réinitialiser
-        </Button>
+        <h3 className="text-lg font-semibold">Personnalisation</h3>
       </div>
 
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Type className="h-4 w-4" />
-            Police de caractères
-          </div>
-          <Select
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label>Police de caractères</Label>
+          <select
             value={profile.custom_font || selectedStyle.font}
-            onValueChange={(value) => onStyleChange({ custom_font: value })}
+            onChange={(e) => onStyleChange({ custom_font: e.target.value })}
+            className={cn(
+              "w-full rounded-md border bg-background px-3 py-2",
+              "focus:outline-none focus:ring-2 focus:ring-primary/50"
+            )}
           >
-            <SelectTrigger 
-              className="w-full bg-background/50 backdrop-blur-sm border-primary/20"
-              style={{ fontFamily: profile.custom_font || selectedStyle.font }}
+            <option value="Inter, sans-serif">Inter</option>
+            <option value="Roboto, sans-serif">Roboto</option>
+            <option value="Poppins, sans-serif">Poppins</option>
+            <option value="Montserrat, sans-serif">Montserrat</option>
+            <option value="Open Sans, sans-serif">Open Sans</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Couleur d'arrière-plan</Label>
+          <div className="flex gap-2">
+            <Input
+              type="color"
+              value={profile.custom_background || selectedStyle.colors.background.card}
+              onChange={(e) => onStyleChange({ custom_background: e.target.value })}
+              className="h-10 w-full cursor-pointer"
+            />
+            <button
+              onClick={() => onStyleChange({ custom_background: null })}
+              className={cn(
+                "px-3 py-1 text-sm rounded-md",
+                "border border-input hover:bg-accent",
+                "transition-colors duration-200"
+              )}
             >
-              <SelectValue placeholder="Choisir une police" />
-            </SelectTrigger>
-            <SelectContent>
-              {fontOptions.map((font) => (
-                <SelectItem 
-                  key={font.value} 
-                  value={font.value}
-                  style={{ fontFamily: font.value }}
-                >
-                  {font.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              Réinitialiser
+            </button>
+          </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Palette className="h-4 w-4" />
-            Couleur de fond
+        <div className="space-y-2">
+          <Label>Couleur du texte</Label>
+          <div className="flex gap-2">
+            <Input
+              type="color"
+              value={profile.custom_text_color || selectedStyle.colors.text.primary}
+              onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
+              className="h-10 w-full cursor-pointer"
+            />
+            <button
+              onClick={() => onStyleChange({ custom_text_color: null })}
+              className={cn(
+                "px-3 py-1 text-sm rounded-md",
+                "border border-input hover:bg-accent",
+                "transition-colors duration-200"
+              )}
+            >
+              Réinitialiser
+            </button>
           </div>
-          <Input
-            type="color"
-            value={profile.custom_background || selectedStyle.colors.background.card}
-            onChange={(e) => onStyleChange({ custom_background: e.target.value })}
-            className={cn(
-              "h-10 px-2 py-1",
-              "bg-background/50 backdrop-blur-sm border-primary/20"
-            )}
-          />
         </div>
+      </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <TextCursor className="h-4 w-4" />
-            Couleur du texte
-          </div>
-          <Input
-            type="color"
-            value={profile.custom_text_color || selectedStyle.colors.text.primary}
-            onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
-            className={cn(
-              "h-10 px-2 py-1",
-              "bg-background/50 backdrop-blur-sm border-primary/20"
-            )}
-          />
+      <div className="pt-4 border-t">
+        <div className="rounded-lg bg-muted/50 p-4">
+          <p className="text-sm text-muted-foreground">
+            Ces modifications seront appliquées uniquement à votre profil. 
+            Vous pouvez les réinitialiser à tout moment.
+          </p>
         </div>
       </div>
     </motion.div>

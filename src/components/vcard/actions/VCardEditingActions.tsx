@@ -19,7 +19,7 @@ export function VCardEditingActions({
   return (
     <AnimatePresence mode="wait">
       <motion.div 
-        className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t z-50"
+        className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-md border-t z-50"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
@@ -38,8 +38,8 @@ export function VCardEditingActions({
               disabled={isProcessing}
               isProcessing={isProcessing}
               className={cn(
-                "w-full bg-primary hover:bg-primary/90",
-                "text-primary-foreground"
+                "w-full bg-primary hover:bg-primary/90 text-primary-foreground",
+                "shadow-lg hover:shadow-xl transition-all"
               )}
             />
           </motion.div>
@@ -59,7 +59,7 @@ export function VCardEditingActions({
                 variant="outline"
                 className={cn(
                   "w-full border-primary text-primary",
-                  "hover:bg-primary/10"
+                  "hover:bg-primary/10 shadow hover:shadow-lg transition-all"
                 )}
               />
             </motion.div>
@@ -76,7 +76,7 @@ export function VCardEditingActions({
               onClick={onCancel}
               disabled={isProcessing}
               variant="ghost"
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground hover:bg-background/80"
             />
           </motion.div>
         </div>
