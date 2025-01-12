@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useVCardStyle } from "./VCardStyleContext";
 
 interface VCardContainerProps {
   children: ReactNode;
@@ -9,6 +10,8 @@ interface VCardContainerProps {
 }
 
 export function VCardContainer({ children, isEditing, className }: VCardContainerProps) {
+  const { selectedStyle } = useVCardStyle();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -19,6 +22,9 @@ export function VCardContainer({ children, isEditing, className }: VCardContaine
         isEditing && "bg-background/95 backdrop-blur-sm",
         className
       )}
+      style={{
+        background: `${selectedStyle.colors.primary}05`,
+      }}
     >
       <div className="container mx-auto px-4 py-8">
         {children}

@@ -69,7 +69,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 rounded-xl"
+      className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 rounded-xl shadow-lg"
       style={{ 
         fontFamily,
         color: textColor,
