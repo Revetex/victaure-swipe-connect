@@ -27,10 +27,8 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
   const { selectedStyle } = useVCardStyle();
 
   return (
-    <div 
-      className="space-y-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
-    >
-      <div className="flex items-center gap-2 border-b pb-4 border-gray-200 dark:border-gray-700">
+    <div className="space-y-6 p-6 bg-card rounded-xl shadow-lg border border-border">
+      <div className="flex items-center gap-2 border-b pb-4 border-muted">
         <Paintbrush className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-medium">Personnalisation</h3>
       </div>
@@ -45,10 +43,10 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
             value={profile.custom_font || selectedStyle.font}
             onValueChange={(value) => setProfile({ ...profile, custom_font: value })}
           >
-            <SelectTrigger className="w-full bg-white dark:bg-gray-900">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-900">
+            <SelectContent>
               {fontOptions.map((font) => (
                 <SelectItem key={font.value} value={font.value}>
                   <span style={{ fontFamily: font.value }}>{font.label}</span>
@@ -67,7 +65,7 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
             type="color"
             value={profile.custom_background || "#ffffff"}
             onChange={(e) => setProfile({ ...profile, custom_background: e.target.value })}
-            className="h-10 px-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md"
+            className="h-10 px-2"
           />
         </div>
 
@@ -80,7 +78,7 @@ export function VCardCustomization({ profile, setProfile }: VCardCustomizationPr
             type="color"
             value={profile.custom_text_color || selectedStyle.colors.text.primary}
             onChange={(e) => setProfile({ ...profile, custom_text_color: e.target.value })}
-            className="h-10 px-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md"
+            className="h-10 px-2"
           />
         </div>
       </div>
