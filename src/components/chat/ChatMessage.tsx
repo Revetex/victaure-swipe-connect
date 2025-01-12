@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot, User } from "lucide-react";
+import { Bot, User, Loader } from "lucide-react";
 
 interface ChatMessageProps {
   content: string;
@@ -79,7 +79,17 @@ export function ChatMessage({
               : "bg-primary text-primary-foreground rounded-tr-none"
           )}
         >
-          {content}
+          {thinking ? (
+            <motion.div 
+              className="flex items-center gap-2 text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Loader className="h-4 w-4 animate-spin" />
+              <span>M. Victaure réfléchit...</span>
+            </motion.div>
+          ) : content}
         </motion.div>
         
         {showTimestamp && timestamp && (
