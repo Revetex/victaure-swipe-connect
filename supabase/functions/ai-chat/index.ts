@@ -6,19 +6,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const systemPrompt = `Tu es M. Victaure, un conseiller en construction au Québec qui parle de façon naturelle et directe.
+const systemPrompt = `Yo! T'es M. Victaure, un gars qui connaît sa construction au Québec en tabarnak.
 
-Règles importantes:
-- Parle comme un vrai Québécois, utilise le langage familier
-- Évite COMPLÈTEMENT les formules du genre "Comment puis-je vous aider?"
-- Ne dis JAMAIS "Je suis M. Victaure"
-- Ne termine JAMAIS par des formules comme "N'hésitez pas à me contacter"
-- Pas de longues introductions
-- Reste professionnel mais chaleureux
-- Donne des conseils concrets basés sur ton expérience
-- Adapte tes conseils au profil de l'utilisateur
-- Garde une cohérence dans la conversation
-- Évite les formules de politesse excessives`
+Règles IMPORTANTES:
+- Parle VRAIMENT comme un Québécois, utilise le slang local (tabarnak, criss, etc.)
+- PAS DE BULLSHIT formel genre "Comment puis-je vous aider?"
+- JAMAIS de "Je suis M. Victaure" ou autres niaiseries de même
+- PAS DE FORMULES TOUTES FAITES à fin genre "N'hésitez pas à me contacter"
+- Va droit au but, pas de longues introductions
+- Reste pro mais parle comme si t'étais au chantier
+- Donne des vrais conseils basés sur ton expérience
+- Adapte tes conseils au gars qui te parle
+- Garde une suite logique dans conversation
+- ZÉRO politesse excessive, parle naturel`
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
@@ -33,20 +33,20 @@ async function callHuggingFaceAPI(apiKey: string, message: string, context: any 
     const previousMessages = context?.previousMessages || [];
     const conversationContext = previousMessages.length > 0 
       ? previousMessages
-          .map((msg: any) => `${msg.sender === 'user' ? 'Utilisateur' : 'M. Victaure'}: ${msg.content}`)
+          .map((msg: any) => `${msg.sender === 'user' ? 'Gars' : 'Moi'}: ${msg.content}`)
           .join('\n')
       : '';
 
     const userProfile = context?.userProfile ? `
-Informations sur l'utilisateur:
-- Nom: ${context.userProfile.full_name || 'Non spécifié'}
-- Rôle: ${context.userProfile.role || 'Non spécifié'}
-- Compétences: ${context.userProfile.skills?.join(', ') || 'Non spécifiées'}
-- Ville: ${context.userProfile.city || 'Non spécifiée'}
-- Bio: ${context.userProfile.bio || 'Non spécifiée'}
+Info sur le gars:
+- Nom: ${context.userProfile.full_name || 'Pas donné'}
+- Job: ${context.userProfile.role || 'Pas donné'}
+- Skills: ${context.userProfile.skills?.join(', ') || 'Pas données'}
+- Ville: ${context.userProfile.city || 'Pas donnée'}
+- Bio: ${context.userProfile.bio || 'Pas donnée'}
     ` : '';
 
-    const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\nConversation précédente:\n${conversationContext}\n\nUtilisateur: ${message}\n\nM. Victaure:`;
+    const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\nConversation d'avant:\n${conversationContext}\n\nGars: ${message}\n\nMoi:`;
     
     console.log('Envoi du prompt à Hugging Face:', fullPrompt);
     
@@ -62,8 +62,8 @@ Informations sur l'utilisateur:
           inputs: fullPrompt,
           parameters: {
             max_new_tokens: 1024,
-            temperature: 0.9,
-            top_p: 0.95,
+            temperature: 1.0,
+            top_p: 0.98,
             do_sample: true,
             return_full_text: false
           }
@@ -96,8 +96,8 @@ Informations sur l'utilisateur:
     }
 
     let assistantResponse = data[0].generated_text.trim();
-    if (assistantResponse.startsWith('M. Victaure:')) {
-      assistantResponse = assistantResponse.substring('M. Victaure:'.length).trim();
+    if (assistantResponse.startsWith('Moi:')) {
+      assistantResponse = assistantResponse.substring('Moi:'.length).trim();
     }
 
     return assistantResponse;
