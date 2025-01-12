@@ -60,8 +60,10 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     }
   };
 
+  // Use custom styles or fall back to selected style
   const textColor = profile.custom_text_color || selectedStyle.colors.text.primary;
-  const secondaryTextColor = profile.custom_text_color || selectedStyle.colors.text.secondary;
+  const backgroundColor = profile.custom_background || `${selectedStyle.colors.primary}05`;
+  const fontFamily = profile.custom_font || selectedStyle.font;
 
   return (
     <motion.div 
@@ -69,9 +71,10 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 rounded-xl"
       style={{ 
-        fontFamily: profile.custom_font || selectedStyle.font,
+        fontFamily,
         color: textColor,
-        background: profile.custom_background || `${selectedStyle.colors.primary}05`,
+        background: backgroundColor,
+        borderColor: `${selectedStyle.colors.primary}15`,
       }}
     >
       <div className="relative group">
@@ -111,7 +114,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               placeholder="Votre nom"
               className="text-xl font-semibold bg-background/50 backdrop-blur-sm border-primary/20 placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50"
               style={{ 
-                fontFamily: profile.custom_font || selectedStyle.font,
+                fontFamily,
                 color: textColor
               }}
             />
@@ -121,8 +124,8 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               placeholder="Votre rôle"
               className="text-base bg-background/50 backdrop-blur-sm border-primary/20 placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50"
               style={{ 
-                fontFamily: profile.custom_font || selectedStyle.font,
-                color: secondaryTextColor
+                fontFamily,
+                color: textColor
               }}
             />
           </div>
@@ -134,7 +137,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               className="text-2xl sm:text-3xl font-bold tracking-tight"
               style={{ 
                 color: textColor,
-                fontFamily: profile.custom_font || selectedStyle.font,
+                fontFamily,
                 textShadow: '0 1px 2px rgba(0,0,0,0.1)'
               }}
             >
@@ -146,8 +149,9 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               transition={{ delay: 0.1 }}
               className="text-lg"
               style={{ 
-                color: secondaryTextColor,
-                fontFamily: profile.custom_font || selectedStyle.font,
+                color: textColor,
+                fontFamily,
+                opacity: 0.9,
                 textShadow: '0 1px 1px rgba(0,0,0,0.05)'
               }}
             >
