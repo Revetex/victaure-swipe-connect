@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useVCardStyle } from "../VCardStyleContext";
 import { toast } from "sonner";
+import { VCardSection } from "@/components/VCardSection";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -39,26 +40,16 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
     toast.success("Style réinitialisé avec succès");
   };
 
-  // Use custom styles or fall back to selected style
-  const textColor = profile.custom_text_color || selectedStyle.colors.text.primary;
-  const backgroundColor = profile.custom_background || selectedStyle.colors.background.card;
-  const fontFamily = profile.custom_font || selectedStyle.font;
-
   return (
-    <div 
+    <VCardSection
+      title="Personnalisation du style"
+      icon={<Paintbrush className="h-5 w-5" />}
+      useCustomStyles={false}
       className="space-y-6 p-6 rounded-xl shadow-lg border bg-card"
-      style={{ backgroundColor, color: textColor, fontFamily }}
     >
-      <div className="flex items-center gap-2 border-b pb-4">
-        <Paintbrush className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-medium">
-          Personnalisation du style
-        </h3>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label className="text-foreground">Police de caractères</Label>
+          <Label>Police de caractères</Label>
           <Select
             value={profile.custom_font || selectedStyle.font}
             onValueChange={(value) => onStyleChange({ custom_font: value })}
@@ -84,7 +75,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
         </div>
 
         <div className="space-y-2">
-          <Label className="text-foreground">Couleur de fond</Label>
+          <Label>Couleur de fond</Label>
           <Input
             type="color"
             value={profile.custom_background || selectedStyle.colors.background.card}
@@ -97,7 +88,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
         </div>
 
         <div className="space-y-2">
-          <Label className="text-foreground">Couleur du texte</Label>
+          <Label>Couleur du texte</Label>
           <Input
             type="color"
             value={profile.custom_text_color || selectedStyle.colors.text.primary}
@@ -119,6 +110,6 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           </Button>
         </div>
       </div>
-    </div>
+    </VCardSection>
   );
 }
