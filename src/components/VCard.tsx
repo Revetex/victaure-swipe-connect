@@ -48,8 +48,16 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
+      // Save customization settings along with the profile
+      const updatedProfile = {
+        ...profile,
+        custom_font: profile.custom_font,
+        custom_background: profile.custom_background,
+        custom_text_color: profile.custom_text_color,
+      };
+
       const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
-        body: { profile }
+        body: { profile: updatedProfile }
       });
 
       if (aiError) {
@@ -63,15 +71,22 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         );
 
         if (shouldApply && aiCorrections.correctedProfile) {
-          await updateProfile(aiCorrections.correctedProfile);
-          setProfile(aiCorrections.correctedProfile);
+          // Preserve customization settings when applying AI corrections
+          const finalProfile = {
+            ...aiCorrections.correctedProfile,
+            custom_font: profile.custom_font,
+            custom_background: profile.custom_background,
+            custom_text_color: profile.custom_text_color,
+          };
+          await updateProfile(finalProfile);
+          setProfile(finalProfile);
           toast.success("Profil mis à jour avec les suggestions de l'IA");
         } else {
-          await updateProfile(profile);
+          await updateProfile(updatedProfile);
           toast.success("Profil mis à jour sans les suggestions de l'IA");
         }
       } else {
-        await updateProfile(profile);
+        await updateProfile(updatedProfile);
         toast.success("Profil mis à jour avec succès");
       }
 
