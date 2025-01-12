@@ -2,6 +2,7 @@ import { VCardSection } from "./VCardSection";
 import { Code } from "lucide-react";
 import { CategorizedSkills } from "./skills/CategorizedSkills";
 import { UserProfile } from "@/types/profile";
+import { TouchFriendlySkillSelector } from "./skills/TouchFriendlySkillSelector";
 
 interface VCardSkillsProps {
   profile: UserProfile;
@@ -27,16 +28,34 @@ export function VCardSkills({
     });
   }
 
+  const handleAddSkill = (skill: string) => {
+    if (!uniqueSkills.includes(skill)) {
+      setProfile({
+        ...profile,
+        skills: [...uniqueSkills, skill]
+      });
+    }
+  };
+
   return (
     <VCardSection
       title="Compétences"
       icon={<Code className="h-5 w-5 text-muted-foreground" />}
     >
-      <CategorizedSkills
-        profile={{ ...profile, skills: uniqueSkills }}
-        isEditing={isEditing}
-        onRemoveSkill={handleRemoveSkill}
-      />
+      <div className="space-y-4">
+        <CategorizedSkills
+          profile={{ ...profile, skills: uniqueSkills }}
+          isEditing={isEditing}
+          onRemoveSkill={handleRemoveSkill}
+        />
+        
+        {isEditing && (
+          <TouchFriendlySkillSelector
+            onSkillSelect={handleAddSkill}
+            existingSkills={uniqueSkills}
+          />
+        )}
+      </div>
     </VCardSection>
   );
 }

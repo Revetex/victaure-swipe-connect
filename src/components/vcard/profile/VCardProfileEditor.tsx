@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UserCircle, Mail, Phone, MapPin, Building2, Globe } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface VCardProfileEditorProps {
   profile: UserProfile;
@@ -27,6 +28,10 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
             value={profile.full_name || ""}
             onChange={(e) => onProfileChange({ full_name: e.target.value })}
             placeholder="Votre nom complet"
+            className={cn(
+              "bg-background/50 border-border/50",
+              "focus:ring-2 focus:ring-primary/50"
+            )}
           />
         </div>
 
@@ -40,6 +45,10 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
             onChange={(e) => onProfileChange({ email: e.target.value })}
             placeholder="Votre email"
             type="email"
+            className={cn(
+              "bg-background/50 border-border/50",
+              "focus:ring-2 focus:ring-primary/50"
+            )}
           />
         </div>
 
@@ -53,6 +62,10 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
             onChange={(e) => onProfileChange({ phone: e.target.value })}
             placeholder="Votre numéro de téléphone"
             type="tel"
+            className={cn(
+              "bg-background/50 border-border/50",
+              "focus:ring-2 focus:ring-primary/50"
+            )}
           />
         </div>
 
@@ -65,6 +78,10 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
             value={profile.company_name || ""}
             onChange={(e) => onProfileChange({ company_name: e.target.value })}
             placeholder="Nom de votre entreprise"
+            className={cn(
+              "bg-background/50 border-border/50",
+              "focus:ring-2 focus:ring-primary/50"
+            )}
           />
         </div>
 
@@ -78,6 +95,10 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
             onChange={(e) => onProfileChange({ website: e.target.value })}
             placeholder="Votre site web"
             type="url"
+            className={cn(
+              "bg-background/50 border-border/50",
+              "focus:ring-2 focus:ring-primary/50"
+            )}
           />
         </div>
 
@@ -90,6 +111,10 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
             value={profile.city || ""}
             onChange={(e) => onProfileChange({ city: e.target.value })}
             placeholder="Votre ville"
+            className={cn(
+              "bg-background/50 border-border/50",
+              "focus:ring-2 focus:ring-primary/50"
+            )}
           />
         </div>
       </div>
@@ -100,7 +125,11 @@ export function VCardProfileEditor({ profile, onProfileChange }: VCardProfileEdi
           value={profile.bio || ""}
           onChange={(e) => onProfileChange({ bio: e.target.value })}
           placeholder="Décrivez votre parcours professionnel..."
-          className="min-h-[150px]"
+          className={cn(
+            "min-h-[150px]",
+            "bg-background/50 border-border/50",
+            "focus:ring-2 focus:ring-primary/50"
+          )}
         />
       </div>
     </div>
