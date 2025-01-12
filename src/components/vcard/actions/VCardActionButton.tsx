@@ -1,13 +1,14 @@
-import { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useVCardStyle } from "../VCardStyleContext";
+import { LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface VCardActionButtonProps {
-  icon: LucideIcon;
-  label: string;
+  icon?: LucideIcon;
+  label?: string;
   onClick: () => void;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "default" | "outline";
   disabled?: boolean;
+  isProcessing?: boolean;
   className?: string;
 }
 
@@ -15,54 +16,36 @@ export function VCardActionButton({
   icon: Icon,
   label,
   onClick,
-  variant = "primary",
-  disabled,
-  className
+  variant = "default",
+  disabled = false,
+  isProcessing = false,
+  className = "",
 }: VCardActionButtonProps) {
-  const { selectedStyle } = useVCardStyle();
-
-  const getButtonStyles = () => {
-    const baseStyles = {
-      transition: "all 0.2s ease",
-      color: variant === "primary" ? "white" : selectedStyle.colors.text.primary,
-    };
-
-    switch (variant) {
-      case "primary":
-        return {
-          ...baseStyles,
-          backgroundColor: selectedStyle.colors.primary,
-          border: `1px solid ${selectedStyle.colors.primary}`,
-          "&:hover": {
-            backgroundColor: selectedStyle.colors.secondary,
-          }
-        };
-      case "secondary":
-      case "outline":
-        return {
-          ...baseStyles,
-          backgroundColor: "transparent",
-          border: `1px solid ${selectedStyle.colors.primary}40`,
-          "&:hover": {
-            backgroundColor: `${selectedStyle.colors.primary}10`,
-          }
-        };
-      default:
-        return baseStyles;
-    }
+  const buttonStyle = variant === "default" ? {
+    backgroundColor: '#3B82F6',
+    color: 'white',
+    borderColor: '#2563EB',
+  } : {
+    borderColor: '#3B82F6',
+    color: '#3B82F6',
   };
 
-  const styles = getButtonStyles();
-
   return (
-    <Button
-      onClick={onClick}
-      disabled={disabled}
-      className={`${className} transition-all duration-200`}
-      style={styles}
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex-1 min-w-[100px]"
     >
-      <Icon className="mr-2 h-4 w-4" />
-      {label}
-    </Button>
+      <Button
+        onClick={onClick}
+        variant={variant}
+        disabled={disabled || isProcessing}
+        className={`w-full transition-colors ${className}`}
+        style={buttonStyle}
+      >
+        {Icon && <Icon className="mr-2 h-4 w-4" />}
+        {label}
+      </Button>
+    </motion.div>
   );
 }
