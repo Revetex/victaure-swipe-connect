@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Paintbrush } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -25,8 +26,13 @@ const fontOptions = [
 ];
 
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
+  const handleStyleChange = (updates: Partial<UserProfile>) => {
+    onStyleChange(updates);
+    toast.success("Style mis à jour");
+  };
+
   return (
-    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-card">
+    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-card/50 backdrop-blur-sm">
       <div className="flex items-center gap-2 border-b pb-4">
         <Paintbrush className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-medium text-foreground">
@@ -39,9 +45,9 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           <Label className="text-foreground">Police de caractères</Label>
           <Select
             value={profile.custom_font || ""}
-            onValueChange={(value) => onStyleChange({ custom_font: value })}
+            onValueChange={(value) => handleStyleChange({ custom_font: value })}
           >
-            <SelectTrigger className="bg-background">
+            <SelectTrigger className="bg-background/50 backdrop-blur-sm">
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
             <SelectContent>
@@ -59,10 +65,10 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           <Input
             type="color"
             value={profile.custom_background || "#ffffff"}
-            onChange={(e) => onStyleChange({ custom_background: e.target.value })}
+            onChange={(e) => handleStyleChange({ custom_background: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background"
+              "bg-background/50 backdrop-blur-sm"
             )}
           />
         </div>
@@ -72,10 +78,10 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
           <Input
             type="color"
             value={profile.custom_text_color || "#000000"}
-            onChange={(e) => onStyleChange({ custom_text_color: e.target.value })}
+            onChange={(e) => handleStyleChange({ custom_text_color: e.target.value })}
             className={cn(
               "h-10 px-2 py-1",
-              "bg-background"
+              "bg-background/50 backdrop-blur-sm"
             )}
           />
         </div>
@@ -83,12 +89,12 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
         <div className="flex items-end">
           <Button
             variant="outline"
-            onClick={() => onStyleChange({
+            onClick={() => handleStyleChange({
               custom_font: undefined,
               custom_background: undefined,
               custom_text_color: undefined
             })}
-            className="w-full"
+            className="w-full bg-background/50 backdrop-blur-sm hover:bg-background/80"
           >
             Réinitialiser le style
           </Button>
