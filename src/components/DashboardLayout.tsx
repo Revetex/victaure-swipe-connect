@@ -6,8 +6,6 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useDebounce } from "use-debounce";
-import { Button } from "@/components/ui/button";
-import { EyeOff, Eye } from "lucide-react";
 
 const THROTTLE_DELAY = 300; // ms
 
@@ -19,7 +17,6 @@ export function DashboardLayout() {
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [lastPageChange, setLastPageChange] = useState(0);
   const [showingChat, setShowingChat] = useState(false);
-  const [showNavigation, setShowNavigation] = useState(true);
 
   // Debounce viewport height updates
   const [debouncedSetViewportHeight] = useDebounce(
@@ -49,10 +46,6 @@ export function DashboardLayout() {
     }
   }, [lastPageChange]);
 
-  const toggleNavigation = () => {
-    setShowNavigation(prev => !prev);
-  };
-
   return (
     <DashboardContainer containerVariants={containerVariants}>
       <motion.div 
@@ -79,54 +72,23 @@ export function DashboardLayout() {
         </AnimatePresence>
       </motion.div>
       
-      {!isEditing && (
-        <>
-          <AnimatePresence mode="sync">
-            {showNavigation && (
-              <motion.nav 
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
-                transition={{ 
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
-                  mass: 0.8
-                }}
-                className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
-                style={{ 
-                  height: '4rem',
-                  paddingBottom: 'env(safe-area-inset-bottom)'
-                }}
-              >
-                <div className="container mx-auto px-4 h-full flex items-center">
-                  <DashboardNavigation 
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              </motion.nav>
-            )}
-          </AnimatePresence>
-          
-          <motion.div
-            initial={false}
-            animate={{ 
-              scale: showNavigation ? [1.1, 1] : [0.9, 1],
-              rotate: showNavigation ? [0, 360] : [-180, 0]
-            }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              className="fixed bottom-4 right-4 z-50 bg-background/95 backdrop-blur-sm shadow-md hover:bg-accent"
-              onClick={toggleNavigation}
-            >
-              {showNavigation ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </Button>
-          </motion.div>
-        </>
+      {!isEditing && !showingChat && (
+        <motion.nav 
+          initial={{ y: 0, opacity: 1 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
+          style={{ 
+            height: '4rem',
+            paddingBottom: 'env(safe-area-inset-bottom)'
+          }}
+        >
+          <div className="container mx-auto px-4 h-full flex items-center">
+            <DashboardNavigation 
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </motion.nav>
       )}
     </DashboardContainer>
   );
