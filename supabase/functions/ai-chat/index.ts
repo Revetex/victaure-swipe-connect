@@ -71,10 +71,12 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
         error: errorText
       })
 
-      // Si le modèle est en cours de chargement et qu'on n'a pas dépassé le nombre max de tentatives
+      // If the model is loading and we haven't exceeded max retries
       if (response.status === MODEL_LOADING_STATUS && retryCount < MAX_RETRIES) {
-        console.log('Modèle en cours de chargement, nouvelle tentative dans 2 secondes...')
-        await sleep(RETRY_DELAY)
+        const errorJson = JSON.parse(errorText);
+        const estimatedTime = errorJson.estimated_time || RETRY_DELAY;
+        console.log(`Modèle en cours de chargement, nouvelle tentative dans ${Math.ceil(estimatedTime/1000)} secondes...`)
+        await sleep(Math.min(estimatedTime, RETRY_DELAY))
         return callHuggingFaceAPI(apiKey, message, retryCount + 1)
       }
 
@@ -96,7 +98,7 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
     return assistantResponse
   } catch (error) {
     if (retryCount < MAX_RETRIES) {
-      console.log(`Erreur lors de l'appel API, nouvelle tentative dans 2 secondes... (${error.message})`)
+      console.log(`Erreur lors de l'appel API, nouvelle tentative dans ${RETRY_DELAY/1000} secondes... (${error.message})`)
       await sleep(RETRY_DELAY)
       return callHuggingFaceAPI(apiKey, message, retryCount + 1)
     }
