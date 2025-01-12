@@ -13,7 +13,7 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(2);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  const [showingChat, setShowingChat] = useState(false);
+  const [showingChat, setShowingChat] = useState(currentPage === 2);
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -47,26 +47,27 @@ export function DashboardLayout() {
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
-      <AnimatePresence mode="sync">
-        <motion.div 
-          variants={itemVariants} 
-          className="transform transition-all duration-300 w-full min-h-screen pb-20"
-          style={{ 
-            maxHeight: isEditing ? viewportHeight : 'none',
-            overflowY: isEditing ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch',
-            paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '5rem'
-          }}
-        >
+      <motion.div 
+        key="dashboard-content"
+        variants={itemVariants} 
+        className="transform transition-all duration-300 w-full min-h-screen pb-40"
+        style={{ 
+          maxHeight: isEditing ? viewportHeight : 'none',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
           <DashboardContent
+            key={`page-${currentPage}`}
             currentPage={currentPage}
             isEditing={isEditing}
             viewportHeight={viewportHeight}
             onEditStateChange={setIsEditing}
             onRequestChat={handleRequestChat}
           />
-        </motion.div>
-      </AnimatePresence>
+        </AnimatePresence>
+      </motion.div>
       
       {!isEditing && !showingChat && (
         <nav 
