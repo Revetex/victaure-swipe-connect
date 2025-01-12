@@ -51,7 +51,7 @@ serve(async (req) => {
     console.log('Appel de l\'API Hugging Face')
 
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
+      'https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview',
       {
         method: 'POST',
         headers: {

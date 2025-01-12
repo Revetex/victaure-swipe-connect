@@ -1,6 +1,6 @@
 export const HUGGING_FACE_CONFIG = {
   model: "Qwen/QwQ-32B-Preview",
-  timeout: 60000, // Increased to 60 seconds
+  timeout: 60000, // 60 seconds
   parameters: {
     max_new_tokens: 1024,
     temperature: 0.7,
