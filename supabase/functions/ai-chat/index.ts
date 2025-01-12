@@ -43,7 +43,7 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
     console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`)
     
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview',
+      'https://api-inference.huggingface.co/models/deepseek-ai/Janus-1.3B',
       {
         method: 'POST',
         headers: {
