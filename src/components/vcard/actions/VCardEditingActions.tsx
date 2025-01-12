@@ -1,5 +1,5 @@
 import { VCardActionButton } from "./VCardActionButton";
-import { Save } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface VCardEditingActionsProps {
@@ -23,7 +23,8 @@ export function VCardEditingActions({
         isProcessing={isProcessing}
       />
       <VCardActionButton
-        label="Appliquer"
+        icon={X}
+        label="Annuler"
         onClick={onApplyChanges}
         variant="outline"
         disabled={isProcessing}

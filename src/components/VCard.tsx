@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
-import { VCardStyleEditor } from "./vcard/style/VCardStyleEditor";
 import { VCardProfileEditor } from "./vcard/profile/VCardProfileEditor";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
@@ -124,16 +123,10 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     >
       <div className="space-y-8 max-w-4xl mx-auto">
         {isEditing && (
-          <>
-            <VCardStyleEditor 
-              profile={activeProfile}
-              onStyleChange={handleProfileChange}
-            />
-            <VCardProfileEditor
-              profile={activeProfile}
-              onProfileChange={handleProfileChange}
-            />
-          </>
+          <VCardProfileEditor
+            profile={activeProfile}
+            onProfileChange={handleProfileChange}
+          />
         )}
 
         <VCardSectionsManager
