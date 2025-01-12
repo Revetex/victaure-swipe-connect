@@ -1,72 +1,53 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { ArrowLeft, Bot, Trash2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatHeaderProps {
   onBack?: () => void;
   onDelete?: () => void;
-  title?: string;
-  subtitle?: string;
-  avatarUrl?: string;
   isThinking?: boolean;
+  showingChat?: boolean;
 }
 
-export function ChatHeader({
-  onBack,
-  onDelete,
-  title = "Mr. Victaure",
-  subtitle = "Assistant de Placement Virtuel",
-  avatarUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
-  isThinking = false,
-}: ChatHeaderProps) {
+export function ChatHeader({ onBack, onDelete, isThinking, showingChat }: ChatHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex items-center gap-3">
-        {onBack && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="mr-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        )}
-        <motion.div
-          animate={isThinking ? { scale: [1, 1.05, 1] } : {}}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="relative"
-        >
-          <Avatar className="h-10 w-10 ring-2 ring-primary/10">
-            <AvatarImage src={avatarUrl} alt={title} className="object-cover" />
+    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
+      <div className="flex items-center justify-between max-w-5xl mx-auto">
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          )}
+          <Avatar className="h-10 w-10 shrink-0">
+            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
             <AvatarFallback className="bg-primary/20">
               <Bot className="h-5 w-5 text-primary" />
             </AvatarFallback>
           </Avatar>
-          {isThinking && (
-            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 ring-2 ring-white" />
-          )}
-        </motion.div>
-        <div>
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <p className="text-sm text-muted-foreground">
-            {isThinking ? "En train de réfléchir..." : subtitle}
-          </p>
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+            <p className="text-sm text-muted-foreground truncate">
+              {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
         {onDelete && (
           <Button
             variant="ghost"
             size="icon"
             onClick={onDelete}
-            className="text-muted-foreground hover:text-destructive"
+            className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         )}
       </div>
-    </div>
+    </header>
   );
 }

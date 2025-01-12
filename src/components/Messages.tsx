@@ -69,6 +69,7 @@ export function Messages() {
           setInputMessage={setInputMessage}
           onClearChat={clearChat}
           onBack={handleBack}
+          showingChat={showConversation}
         />
       ) : (
         <MessagesList

@@ -16,6 +16,7 @@ interface MessagesContentProps {
   setInputMessage: (message: string) => void;
   onClearChat?: () => void;
   onBack?: () => void;
+  showingChat?: boolean;
 }
 
 export function MessagesContent({
@@ -28,6 +29,7 @@ export function MessagesContent({
   setInputMessage,
   onClearChat,
   onBack,
+  showingChat
 }: MessagesContentProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -43,6 +45,7 @@ export function MessagesContent({
           onBack={onBack}
           onDelete={onClearChat}
           isThinking={isThinking}
+          showingChat={showingChat}
         />
       </div>
 
