@@ -13,6 +13,9 @@ interface VCardBioProps {
 
 export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 seconds
 
   const handleGenerateBio = async () => {
     if (!profile) {
@@ -21,58 +24,80 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
     }
     
     setIsGenerating(true);
-    try {
-      // First check if we have an authenticated session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
-        return;
-      }
+    setRetryCount(0);
 
-      if (!session) {
-        toast.error("Veuillez vous connecter pour générer une bio");
-        return;
-      }
-
-      // Verify user data is accessible
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-        console.error("User verification error:", userError);
-        toast.error("Erreur de vérification utilisateur. Veuillez vous reconnecter.");
-        return;
-      }
-
-      console.log("Generating bio with profile data:", {
-        skills: profile.skills,
-        experiences: profile.experiences,
-        education: profile.education,
-      });
-
-      const { data, error } = await supabase.functions.invoke('generate-bio', {
-        body: {
-          skills: profile.skills || [],
-          experiences: profile.experiences || [],
-          education: profile.education || [],
+    const attemptGeneration = async (attempt: number): Promise<void> => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+          return;
         }
-      });
 
-      if (error) {
-        console.error("Error from generate-bio function:", error);
-        throw new Error(error.message || "Erreur lors de la génération de la bio");
-      }
+        if (!session) {
+          toast.error("Veuillez vous connecter pour générer une bio");
+          return;
+        }
 
-      if (!data?.bio) {
-        throw new Error("Aucune bio générée");
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          console.error("User verification error:", userError);
+          toast.error("Erreur de vérification utilisateur. Veuillez vous reconnecter.");
+          return;
+        }
+
+        console.log("Generating bio with profile data:", {
+          skills: profile.skills,
+          experiences: profile.experiences,
+          education: profile.education,
+        });
+
+        const { data, error } = await supabase.functions.invoke('generate-bio', {
+          body: {
+            skills: profile.skills || [],
+            experiences: profile.experiences || [],
+            education: profile.education || [],
+          }
+        });
+
+        if (error) {
+          console.error("Error from generate-bio function:", error);
+          
+          // Check if we should retry
+          if (attempt < MAX_RETRIES && (error.message?.includes('Failed to fetch') || error.status === 503)) {
+            console.log(`Retry attempt ${attempt + 1} of ${MAX_RETRIES}`);
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            return attemptGeneration(attempt + 1);
+          }
+          
+          throw error;
+        }
+
+        if (!data?.bio) {
+          throw new Error("Aucune bio générée");
+        }
+        
+        setProfile({ ...profile, bio: data.bio });
+        toast.success("Bio générée avec succès");
+      } catch (error: any) {
+        console.error("Error generating bio:", error);
+        
+        // If we haven't exceeded max retries and it's a network error, retry
+        if (attempt < MAX_RETRIES && (error.message?.includes('Failed to fetch') || error.status === 503)) {
+          console.log(`Retry attempt ${attempt + 1} of ${MAX_RETRIES}`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          return attemptGeneration(attempt + 1);
+        }
+        
+        toast.error(error.message || "Erreur lors de la génération de la bio");
       }
-      
-      setProfile({ ...profile, bio: data.bio });
-      toast.success("Bio générée avec succès");
-    } catch (error: any) {
-      console.error("Error generating bio:", error);
-      toast.error(error.message || "Erreur lors de la génération de la bio");
+    };
+
+    try {
+      await attemptGeneration(0);
     } finally {
       setIsGenerating(false);
     }

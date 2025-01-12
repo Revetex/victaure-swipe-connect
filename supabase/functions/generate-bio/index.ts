@@ -6,7 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 seconds
+
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -38,7 +42,6 @@ serve(async (req) => {
       ? skills.join(', ') 
       : 'Non spécifiées';
 
-    // Construct the prompt in the format expected by Mixtral
     const prompt = `<s>[INST] Tu es un expert en rédaction de profils professionnels québécois. 
 Génère une bio professionnelle concise basée sur ces informations:
 
@@ -58,55 +61,76 @@ Génère uniquement la bio, sans autre texte. [/INST]</s>`
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${huggingFaceApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 200,
-          temperature: 0.7,
-          top_p: 0.95,
-          do_sample: true,
-          return_full_text: false
+    // Implement retry logic for the API call
+    let lastError = null;
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${huggingFaceApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            inputs: prompt,
+            parameters: {
+              max_new_tokens: 200,
+              temperature: 0.7,
+              top_p: 0.95,
+              do_sample: true,
+              return_full_text: false
+            }
+          }),
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error(`Attempt ${attempt + 1} failed:`, errorText)
+          
+          // If it's a 503 (model loading) and we haven't exceeded retries, wait and retry
+          if (response.status === 503 && attempt < MAX_RETRIES - 1) {
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            continue;
+          }
+          
+          throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}\n${errorText}`)
         }
-      }),
-    })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Hugging Face API error response:', errorText)
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}\n${errorText}`)
-    }
+        const data = await response.json()
+        console.log('Hugging Face API Response:', data)
 
-    const data = await response.json()
-    console.log('Hugging Face API Response:', data)
+        if (!Array.isArray(data) || !data[0]?.generated_text) {
+          throw new Error('Format de réponse invalide de l\'API')
+        }
 
-    if (!Array.isArray(data) || !data[0]?.generated_text) {
-      console.error('Invalid response format:', data)
-      throw new Error('Format de réponse invalide de l\'API')
-    }
+        let bio = data[0].generated_text
+          .replace(/^.*\[\/INST\]/, '')
+          .replace(/<s>|<\/s>/g, '')
+          .trim()
 
-    // Clean up the generated text to remove any instruction artifacts
-    let bio = data[0].generated_text
-      .replace(/^.*\[\/INST\]/, '') // Remove any instruction text
-      .replace(/<s>|<\/s>/g, '') // Remove special tokens
-      .trim()
+        console.log('Generated bio:', bio)
 
-    console.log('Generated bio:', bio)
-
-    return new Response(
-      JSON.stringify({ bio }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
+        return new Response(
+          JSON.stringify({ bio }),
+          { 
+            headers: { 
+              ...corsHeaders,
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+      } catch (error) {
+        console.error(`Attempt ${attempt + 1} error:`, error)
+        lastError = error;
+        
+        if (attempt < MAX_RETRIES - 1) {
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         }
       }
-    )
+    }
+
+    // If we've exhausted all retries, throw the last error
+    throw lastError || new Error('Maximum retry attempts exceeded')
 
   } catch (error) {
     console.error('Error in generate-bio function:', error)
