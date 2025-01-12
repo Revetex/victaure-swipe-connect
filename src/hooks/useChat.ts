@@ -31,7 +31,7 @@ export function useChat(): ChatState & ChatActions {
     setIsThinking
   );
 
-  const handleSendMessage = async (message: string, profile?: any) => {
+  const handleSendMessage = async (message: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
