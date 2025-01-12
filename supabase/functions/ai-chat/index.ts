@@ -45,8 +45,8 @@ async function callHuggingFaceAPI(apiKey: string, message: string, context: any,
     console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`)
     
     const conversationContext = context.previousMessages
-      .map((msg: any) => `${msg.sender === 'user' ? 'Utilisateur' : 'M. Victaure'}: ${msg.content}`)
-      .join('\n');
+      ?.map((msg: any) => `${msg.sender === 'user' ? 'Utilisateur' : 'M. Victaure'}: ${msg.content}`)
+      .join('\n') || '';
 
     const userProfile = context.userProfile ? `
 Informations sur l'utilisateur:
@@ -58,6 +58,8 @@ Informations sur l'utilisateur:
     ` : '';
 
     const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\nConversation précédente:\n${conversationContext}\n\nUtilisateur: ${message}\n\nM. Victaure:`;
+    
+    console.log('Sending prompt to Hugging Face:', fullPrompt);
     
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
@@ -119,6 +121,7 @@ Informations sur l'utilisateur:
 
     return assistantResponse
   } catch (error) {
+    console.error('Error in callHuggingFaceAPI:', error)
     if (retryCount < MAX_RETRIES) {
       console.log(`Erreur lors de l'appel API, nouvelle tentative dans ${RETRY_DELAY/1000} secondes... (${error.message})`)
       await sleep(RETRY_DELAY)
