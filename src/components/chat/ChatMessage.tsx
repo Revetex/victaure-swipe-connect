@@ -76,7 +76,51 @@ export function ChatMessage({
               : "bg-primary text-primary-foreground rounded-tr-none"
           )}
         >
-          {content}
+          {thinking ? (
+            <motion.div className="flex items-center gap-1.5">
+              <motion.span
+                className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{ 
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.span
+                className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{ 
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.2
+                }}
+              />
+              <motion.span
+                className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{ 
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.4
+                }}
+              />
+              <span className="text-muted-foreground text-xs ml-1">En train d'écrire...</span>
+            </motion.div>
+          ) : (
+            content
+          )}
         </motion.div>
         
         {showTimestamp && timestamp && (

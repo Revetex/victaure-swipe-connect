@@ -30,7 +30,7 @@ export function ChatThinking() {
       >
         <motion.div className="flex items-center gap-1">
           <motion.span
-            className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+            className="w-2 h-2 bg-primary/50 rounded-full"
             animate={{ 
               scale: [1, 1.2, 1],
               opacity: [0.5, 1, 0.5]
@@ -42,7 +42,7 @@ export function ChatThinking() {
             }}
           />
           <motion.span
-            className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+            className="w-2 h-2 bg-primary/50 rounded-full"
             animate={{ 
               scale: [1, 1.2, 1],
               opacity: [0.5, 1, 0.5]
@@ -55,7 +55,7 @@ export function ChatThinking() {
             }}
           />
           <motion.span
-            className="w-1.5 h-1.5 bg-foreground/50 rounded-full"
+            className="w-2 h-2 bg-primary/50 rounded-full"
             animate={{ 
               scale: [1, 1.2, 1],
               opacity: [0.5, 1, 0.5]
@@ -68,7 +68,7 @@ export function ChatThinking() {
             }}
           />
         </motion.div>
-        <span className="text-muted-foreground text-xs ml-1">M. Victaure est en train d'écrire...</span>
+        <span className="text-muted-foreground text-xs ml-1">M. Victaure est en train de réfléchir...</span>
       </motion.div>
     </motion.div>
   );
