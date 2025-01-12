@@ -40,7 +40,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     try {
       setIsAIProcessing(true);
       
-      // Get current user to ensure we're authenticated
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       
@@ -49,14 +48,12 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      // Call the AI assistant to review and correct the profile
       const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
         body: { profile }
       });
 
       if (aiError) {
         console.error('AI review error:', aiError);
-        // Continue with save even if AI review fails
       }
 
       if (aiCorrections?.suggestions) {
@@ -107,7 +104,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         textColor: profile.custom_text_color
       }}
     >
-      <div className="space-y-8 max-w-4xl mx-auto text-gray-900 dark:text-gray-100">
+      <div className="space-y-8 max-w-4xl mx-auto">
         {isEditing && (
           <VCardCustomization profile={profile} setProfile={setProfile} />
         )}
