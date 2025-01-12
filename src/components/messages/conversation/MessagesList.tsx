@@ -36,7 +36,7 @@ export function MessagesList({
   const filteredMessages = messages.filter(message => {
     if (!message) return false;
     
-    const content = (message.content || '').toLowerCase();
+    const content = String(message.content || '').toLowerCase();
     const senderName = typeof message.sender === 'string' 
       ? message.sender.toLowerCase()
       : ((message.sender as any)?.full_name || '').toLowerCase();
