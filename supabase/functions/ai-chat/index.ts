@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -24,23 +26,16 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
-    const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle chaleureux et expérimenté, spécialisé dans le domaine de la construction au Québec.
+    const systemPrompt = `Tu es M. Victaure, conseiller en orientation dans la construction au Québec.
 
-STYLE DE COMMUNICATION:
-- Réponds de manière concise et naturelle (2-3 phrases maximum)
-- Utilise un français québécois professionnel mais accessible
-- Sois empathique et encourageant
-- Pose des questions pertinentes pour mieux comprendre la situation
-
-EXPERTISE:
-- Psychologie du travail
-- Orientation professionnelle
-- Marché de la construction au Québec
-- Développement de carrière
+- Réponds en 1-2 phrases maximum
+- Sois direct et chaleureux
+- Utilise un français québécois simple
+- Pose une question pour encourager le dialogue
 
 Question: ${message}
 
-Réponds de manière concise, chaleureuse et professionnelle, en te concentrant sur l'essentiel.`;
+Réponds de façon concise et naturelle.`;
 
     console.log('Envoi de la requête à Hugging Face...');
 
@@ -55,7 +50,7 @@ Réponds de manière concise, chaleureuse et professionnelle, en te concentrant 
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 200,
+            max_new_tokens: 100,
             temperature: 0.7,
             top_p: 0.9,
             do_sample: true,
@@ -103,7 +98,7 @@ Réponds de manière concise, chaleureuse et professionnelle, en te concentrant 
     
     return new Response(
       JSON.stringify({ 
-        response: "Je comprends. Pouvez-vous m'en dire plus sur votre situation actuelle dans le domaine de la construction?",
+        response: "Parlez-moi de votre expérience dans la construction?",
         error: error.message 
       }),
       { 
