@@ -74,7 +74,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       }}
     >
       <div className="relative group">
-        <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
+        <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0 shadow-xl">
           <AvatarImage 
             src={profile.avatar_url || ''} 
             alt={profile.full_name || ''}
