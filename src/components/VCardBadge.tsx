@@ -26,20 +26,20 @@ export function VCardBadge({
       whileHover={{ scale: 1.05 }}
       className="relative inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all group"
       style={{
-        backgroundColor: `${selectedStyle.colors.primary}08`,
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        border: `1px solid ${selectedStyle.colors.primary}15`,
-        boxShadow: `0 2px 10px ${selectedStyle.colors.primary}10`,
+        backgroundColor: `${selectedStyle.colors.primary}15`,
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: `1px solid ${selectedStyle.colors.primary}30`,
+        boxShadow: `0 4px 15px ${selectedStyle.colors.primary}20`,
         color: selectedStyle.colors.text.primary,
         fontFamily: selectedStyle.font,
       }}
     >
       <div 
-        className="absolute inset-0 rounded-full opacity-10"
+        className="absolute inset-0 rounded-full opacity-20"
         style={{
-          background: `linear-gradient(135deg, ${selectedStyle.colors.primary}15, ${selectedStyle.colors.secondary}10)`,
-          filter: 'blur(4px)',
+          background: `linear-gradient(135deg, ${selectedStyle.colors.primary}30, ${selectedStyle.colors.secondary}20)`,
+          filter: 'blur(6px)',
         }}
       />
       
@@ -47,8 +47,8 @@ export function VCardBadge({
         className="relative text-sm font-medium z-10" 
         style={{ 
           color: selectedStyle.colors.text.primary,
-          opacity: 0.9,
-          textShadow: '0 0.5px 0.5px rgba(0,0,0,0.05)',
+          opacity: 0.95,
+          textShadow: '0 1px 2px rgba(0,0,0,0.1)',
           fontFamily: selectedStyle.font
         }}
       >
@@ -58,7 +58,7 @@ export function VCardBadge({
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className="relative z-10 p-0.5 rounded-full hover:bg-black/5 transition-colors"
+          className="relative z-10 p-0.5 rounded-full hover:bg-black/10 transition-colors"
           style={{
             color: selectedStyle.colors.text.primary
           }}
