@@ -41,11 +41,12 @@ export function MessagesContent({
       <div className="fixed top-0 left-0 right-0 z-50">
         <ChatHeader
           onBack={onBack}
+          onDelete={onClearChat}
           isThinking={isThinking}
         />
       </div>
 
-      <div className="flex-1 overflow-hidden mt-[72px] mb-[76px]">
+      <div className="flex-1 overflow-hidden mt-[72px] mb-[64px]">
         <ScrollArea 
           ref={scrollAreaRef}
           className="h-full"
