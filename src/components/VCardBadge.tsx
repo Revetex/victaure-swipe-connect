@@ -29,14 +29,16 @@ export function VCardBadge({
         backgroundColor: variant === 'outline' ? 'transparent' : `${selectedStyle.colors.primary}15`,
         borderColor: `${selectedStyle.colors.primary}30`,
         color: selectedStyle.colors.text.primary,
-        boxShadow: `0 1px 2px ${selectedStyle.colors.primary}10`
+        boxShadow: `0 1px 2px ${selectedStyle.colors.primary}10`,
+        fontFamily: selectedStyle.font
       }}
     >
       <span 
         className="text-sm font-medium" 
         style={{ 
           color: selectedStyle.colors.text.primary,
-          textShadow: '0 0.5px 0.5px rgba(0,0,0,0.1)'
+          textShadow: '0 0.5px 0.5px rgba(0,0,0,0.1)',
+          fontFamily: selectedStyle.font
         }}
       >
         {text}
