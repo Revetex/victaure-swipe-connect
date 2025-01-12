@@ -33,9 +33,9 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      setShowingChat(page === 2 && !isEditing);
+      setShowingChat(false);
     }
-  }, [lastPageChange, isEditing]);
+  }, [lastPageChange]);
 
   const handleRequestChat = useCallback(() => {
     const now = Date.now();
