@@ -1,34 +1,46 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import "https://deno.land/x/xhr@0.1.0/mod.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Max-Age': '86400',
-  'Content-Type': 'application/json'
-}
+};
 
-const systemPrompt = `Tu es M. Victaure, un conseiller professionnel spécialisé en placement et orientation professionnelle au Québec.
-Tu as plus de 15 ans d'expérience dans le domaine et tu connais parfaitement le marché du travail québécois.
+const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle chaleureux et expérimenté basé au Québec.
 
-Ton rôle est de:
-- Analyser les besoins professionnels des utilisateurs
-- Fournir des conseils pratiques et personnalisés pour leur carrière
-- Aider dans la recherche d'emploi et le développement professionnel
-- Guider sur les formations et certifications pertinentes
+Ton style de communication:
+- Utilise un français québécois naturel et professionnel
+- Sois empathique et à l'écoute
+- Pose des questions pertinentes pour mieux comprendre les besoins
+- Donne des conseils personnalisés basés sur ton expertise
+- Évite le jargon technique sauf si nécessaire
+- Reste professionnel tout en étant accessible
 
-Règles importantes:
-1. Communique toujours en français québécois professionnel
-2. Donne des réponses courtes et précises (2-3 phrases maximum)
-3. Concentre-toi sur des conseils pratiques et applicables
-4. Base tes conseils sur ta connaissance du marché québécois
-5. Reste professionnel mais chaleureux dans ton approche`;
+Ta personnalité:
+- Patient et compréhensif
+- Passionné par l'aide aux autres
+- Plus de 15 ans d'expérience dans le domaine
+- Excellente connaissance du marché du travail québécois
+- Approche positive et encourageante`;
 
-async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 0): Promise<string> {
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
-    console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/3)`);
-    
+    const { message } = await req.json();
+    console.log('Message reçu:', message);
+
+    if (!message || typeof message !== 'string') {
+      throw new Error('Message invalide ou manquant');
+    }
+
+    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
+    if (!apiKey) {
+      throw new Error('Erreur de configuration: Clé API manquante');
+    }
+
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -38,12 +50,12 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `${systemPrompt}\n\nUtilisateur: ${message}\n\nM. Victaure:`,
+          inputs: `${systemPrompt}\n\nContexte: Tu es en train d'avoir une conversation avec un utilisateur qui cherche des conseils professionnels.\n\nUtilisateur: ${message}\n\nM. Victaure:`,
           parameters: {
-            max_new_tokens: 100,
-            temperature: 0.5,
-            top_p: 0.9,
-            return_full_text: false,
+            max_new_tokens: 500,
+            temperature: 0.8,
+            top_p: 0.95,
+            repetition_penalty: 1.2,
             do_sample: true
           }
         }),
@@ -67,55 +79,14 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
       throw new Error('Format de réponse invalide');
     }
 
-    // Clean up the response to only keep M. Victaure's part
     let response_text = data[0].generated_text.trim();
     if (response_text.includes("M. Victaure:")) {
       response_text = response_text.split("M. Victaure:")[1].trim();
     }
     
-    return response_text;
-  } catch (error) {
-    console.error('Error in callHuggingFaceAPI:', error);
-    if (retryCount < 2) {
-      console.log(`Nouvelle tentative dans 2 secondes...`);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      return callHuggingFaceAPI(apiKey, message, retryCount + 1);
-    }
-    throw error;
-  }
-}
-
-serve(async (req) => {
-  try {
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { 
-        status: 204,
-        headers: corsHeaders 
-      });
-    }
-
-    if (req.method !== 'POST') {
-      throw new Error(`Method ${req.method} not allowed`);
-    }
-
-    const { message } = await req.json();
-    console.log('Message reçu:', message);
-
-    if (!message || typeof message !== 'string') {
-      throw new Error('Message invalide ou manquant');
-    }
-
-    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
-    if (!apiKey) {
-      throw new Error('Erreur de configuration: Clé API manquante');
-    }
-
-    const assistantResponse = await callHuggingFaceAPI(apiKey, message);
-
-    return new Response(
-      JSON.stringify({ response: assistantResponse }),
-      { headers: corsHeaders }
-    );
+    return new Response(JSON.stringify({ response: response_text }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Erreur détaillée:', {
       message: error.message,
@@ -134,4 +105,4 @@ serve(async (req) => {
       }
     );
   }
-})
+});
