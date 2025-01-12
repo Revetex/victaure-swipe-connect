@@ -9,12 +9,7 @@ interface VCardSectionProps {
   className?: string;
 }
 
-export function VCardSection({ 
-  title, 
-  icon, 
-  children, 
-  className = "" 
-}: VCardSectionProps) {
+export function VCardSection({ title, icon, children, className = "" }: VCardSectionProps) {
   const { selectedStyle } = useVCardStyle();
 
   return (
@@ -23,21 +18,15 @@ export function VCardSection({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={`space-y-4 ${className}`}
-      style={{ 
-        color: selectedStyle.colors.text.primary,
-        fontFamily: selectedStyle.font
-      }}
+      style={{ color: selectedStyle.colors.text.primary }}
     >
-      <div className="flex items-center gap-2 pb-2 border-b" style={{ borderColor: `${selectedStyle.colors.primary}30` }}>
+      <div className="flex items-center gap-2 pb-2 border-b border-border">
         <div style={{ color: selectedStyle.colors.primary }}>
           {icon}
         </div>
         <h3 
           className="text-lg font-semibold"
-          style={{ 
-            color: selectedStyle.colors.text.primary,
-            fontFamily: selectedStyle.font
-          }}
+          style={{ color: selectedStyle.colors.text.primary }}
         >
           {title}
         </h3>

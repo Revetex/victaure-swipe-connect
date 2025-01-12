@@ -3,7 +3,6 @@ import { MessagesContent } from "./messages/MessagesContent";
 import { useState } from "react";
 import { MessagesList } from "./messages/conversation/MessagesList";
 import { useMessages } from "@/hooks/useMessages";
-import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 
 export function Messages() {
@@ -19,7 +18,6 @@ export function Messages() {
   } = useChat();
 
   const { messages, markAsRead } = useMessages();
-  const { profile } = useProfile();
   const [showConversation, setShowConversation] = useState(false);
 
   const handleBack = () => {
@@ -51,7 +49,7 @@ export function Messages() {
     }
 
     try {
-      await handleSendMessage(message, profile);
+      await handleSendMessage(message);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");

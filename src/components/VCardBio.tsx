@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/ui/loader";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
-import { VCardSection } from "./VCardSection";
 
 interface VCardBioProps {
   profile: any;
@@ -48,6 +47,12 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           return;
         }
 
+        console.log("Generating bio with profile data:", {
+          skills: profile.skills,
+          experiences: profile.experiences,
+          education: profile.education,
+        });
+
         const { data, error } = await supabase.functions.invoke('generate-bio', {
           body: {
             skills: profile.skills || [],
@@ -59,6 +64,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
         if (error) {
           console.error("Error from generate-bio function:", error);
           
+          // Check if we should retry
           if (attempt < 3 && (error.message?.includes('Failed to fetch') || error.status === 503)) {
             console.log(`Retry attempt ${attempt + 1} of 3`);
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -77,6 +83,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       } catch (error: any) {
         console.error("Error generating bio:", error);
         
+        // If we haven't exceeded max retries and it's a network error, retry
         if (attempt < 3 && (error.message?.includes('Failed to fetch') || error.status === 503)) {
           console.log(`Retry attempt ${attempt + 1} of 3`);
           await new Promise(resolve => setTimeout(resolve, 2000));
@@ -95,11 +102,14 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   };
 
   return (
-    <VCardSection 
-      title="Présentation"
-      icon={<Wand2 className="h-5 w-5" />}
-    >
-      <div className="space-y-4">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 
+          className="text-lg font-semibold"
+          style={{ color: selectedStyle.colors.text.primary }}
+        >
+          Présentation
+        </h3>
         {isEditing && (
           <Button 
             variant="outline" 
@@ -119,34 +129,25 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
             Générer
           </Button>
         )}
-
-        {isEditing ? (
-          <textarea
-            value={profile?.bio || ""}
-            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-            placeholder="Écrivez une courte présentation..."
-            className="w-full min-h-[150px] p-4 rounded-lg bg-background/50 border resize-none"
-            style={{ 
-              color: selectedStyle.colors.text.primary,
-              borderColor: `${selectedStyle.colors.primary}30`,
-              backgroundColor: `${selectedStyle.colors.primary}05`,
-              fontFamily: selectedStyle.font
-            }}
-          />
-        ) : profile?.bio ? (
-          <div 
-            className="prose prose-sm max-w-none"
-            style={{ 
-              color: selectedStyle.colors.text.primary,
-              fontFamily: selectedStyle.font
-            }}
-          >
-            {profile.bio.split('\n').map((paragraph: string, index: number) => (
-              <p key={index} className="mb-4">{paragraph}</p>
-            ))}
-          </div>
-        ) : null}
       </div>
-    </VCardSection>
+
+      {isEditing ? (
+        <textarea
+          value={profile?.bio || ""}
+          onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+          placeholder="Écrivez une courte présentation..."
+          className="w-full min-h-[100px] p-2 rounded-md bg-background border"
+          style={{ 
+            color: selectedStyle.colors.text.primary,
+            borderColor: `${selectedStyle.colors.primary}30`,
+            backgroundColor: `${selectedStyle.colors.primary}05`
+          }}
+        />
+      ) : profile?.bio ? (
+        <p style={{ color: selectedStyle.colors.text.primary }}>
+          {profile.bio}
+        </p>
+      ) : null}
+    </div>
   );
 }

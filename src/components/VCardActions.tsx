@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Share2, FileText, Edit, Save, X, Check } from "lucide-react";
+import { Share2, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { cn } from "@/lib/utils";
@@ -30,8 +30,8 @@ export function VCardActions({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "flex flex-wrap gap-3 pt-4",
-        isEditing ? "sticky bottom-0 bg-background/95 backdrop-blur-sm p-4 rounded-lg border shadow-lg z-50" : "border-t"
+        "flex flex-wrap gap-3 pt-4 border-t",
+        isEditing ? "bg-background/80 p-4 rounded-lg border border-border" : ""
       )}
     >
       {isEditing ? (
@@ -43,9 +43,8 @@ export function VCardActions({
           >
             <Button 
               onClick={onSave}
-              className="w-full bg-green-500 hover:bg-green-600 text-white group transition-all duration-300"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >
-              <Save className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
               Sauvegarder
             </Button>
           </motion.div>
@@ -57,9 +56,8 @@ export function VCardActions({
             <Button 
               onClick={onApplyChanges}
               variant="outline" 
-              className="w-full border-green-500 text-green-500 hover:bg-green-50 group"
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
-              <Check className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
               Appliquer
             </Button>
           </motion.div>
@@ -70,9 +68,8 @@ export function VCardActions({
             <Button 
               onClick={() => setIsEditing(false)}
               variant="outline"
-              className="border-red-500 text-red-500 hover:bg-red-50 group"
+              className="border-blue-500 text-blue-500 hover:bg-blue-50"
             >
-              <X className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
               Annuler
             </Button>
           </motion.div>
@@ -87,9 +84,9 @@ export function VCardActions({
             <Button 
               onClick={() => setIsEditing(true)}
               variant="outline"
-              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50 group"
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
-              <Edit className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+              <Edit className="mr-2 h-4 w-4" />
               Éditer
             </Button>
           </motion.div>
@@ -101,9 +98,9 @@ export function VCardActions({
             <Button 
               onClick={onShare}
               variant="outline"
-              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50 group"
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
-              <Share2 className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+              <Share2 className="mr-2 h-4 w-4" />
               Partager
             </Button>
           </motion.div>
@@ -115,9 +112,9 @@ export function VCardActions({
             <Button 
               onClick={onDownloadBusinessPDF}
               variant="outline"
-              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50 group"
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
-              <FileText className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+              <FileText className="mr-2 h-4 w-4" />
               Business PDF
             </Button>
           </motion.div>
@@ -129,9 +126,9 @@ export function VCardActions({
             <Button 
               onClick={onDownloadCVPDF}
               variant="outline"
-              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50 group"
+              className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
             >
-              <FileText className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+              <FileText className="mr-2 h-4 w-4" />
               CV PDF
             </Button>
           </motion.div>

@@ -1,36 +1,35 @@
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { useVCardStyle } from "./VCardStyleContext";
 
 interface VCardContainerProps {
   children: ReactNode;
-  isEditing: boolean;
-  className?: string;
+  isEditing?: boolean;
+  customStyles?: {
+    font?: string;
+    background?: string;
+    textColor?: string;
+  };
 }
 
-export function VCardContainer({ children, isEditing, className }: VCardContainerProps) {
+export function VCardContainer({ 
+  children, 
+  isEditing,
+  customStyles 
+}: VCardContainerProps) {
   const { selectedStyle } = useVCardStyle();
 
+  const containerStyle = {
+    fontFamily: customStyles?.font || selectedStyle.font,
+    backgroundColor: customStyles?.background || "transparent",
+    color: customStyles?.textColor || selectedStyle.colors.text.primary,
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={cn(
-        "relative w-full min-h-screen pb-24 transition-all duration-300",
-        isEditing && "bg-background/95 backdrop-blur-sm",
-        className
-      )}
-      style={{
-        background: `${selectedStyle.colors.primary}05`,
-        color: selectedStyle.colors.text.primary,
-        fontFamily: selectedStyle.font
-      }}
+    <div 
+      className={`relative min-h-screen w-full p-4 md:p-8 ${isEditing ? 'editing-mode' : ''}`}
+      style={containerStyle}
     >
-      <div className="container mx-auto px-4 py-8">
-        {children}
-      </div>
-    </motion.div>
+      {children}
+    </div>
   );
 }

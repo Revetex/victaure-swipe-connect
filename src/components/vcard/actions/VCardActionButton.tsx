@@ -1,64 +1,51 @@
 import { Button } from "@/components/ui/button";
-import { Loader } from "@/components/ui/loader";
 import { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface VCardActionButtonProps {
-  icon: LucideIcon;
-  label: string;
+  icon?: LucideIcon;
+  label?: string;
   onClick: () => void;
+  variant?: "default" | "outline";
   disabled?: boolean;
   isProcessing?: boolean;
-  variant?: "default" | "outline" | "ghost";
   className?: string;
-  size?: "default" | "sm" | "lg";
 }
 
 export function VCardActionButton({
   icon: Icon,
   label,
   onClick,
-  disabled,
-  isProcessing,
   variant = "default",
-  size = "default",
-  className
+  disabled = false,
+  isProcessing = false,
+  className = "",
 }: VCardActionButtonProps) {
+  const buttonStyle = variant === "default" ? {
+    backgroundColor: '#3B82F6',
+    color: 'white',
+    borderColor: '#2563EB',
+  } : {
+    borderColor: '#3B82F6',
+    color: '#3B82F6',
+  };
+
   return (
-    <Button
-      onClick={onClick}
-      disabled={disabled || isProcessing}
-      variant={variant}
-      size={size}
-      className={cn(
-        "relative overflow-hidden transition-all duration-300",
-        "hover:shadow-md active:shadow-sm",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex-1 min-w-[100px]"
     >
-      <motion.div
-        className="flex items-center justify-center gap-2"
-        initial={false}
-        animate={{
-          opacity: isProcessing ? 0 : 1,
-          y: isProcessing ? -20 : 0
-        }}
+      <Button
+        onClick={onClick}
+        variant={variant}
+        disabled={disabled || isProcessing}
+        className={`w-full transition-colors ${className}`}
+        style={buttonStyle}
       >
-        <Icon className="h-4 w-4 transition-transform group-hover:scale-110" />
-        <span>{label}</span>
-      </motion.div>
-      
-      {isProcessing && (
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <Loader className="h-4 w-4" />
-        </motion.div>
-      )}
-    </Button>
+        {Icon && <Icon className="mr-2 h-4 w-4" />}
+        {label}
+      </Button>
+    </motion.div>
   );
 }
