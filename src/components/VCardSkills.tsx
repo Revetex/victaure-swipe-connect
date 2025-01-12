@@ -3,6 +3,7 @@ import { Code } from "lucide-react";
 import { CategorizedSkills } from "./skills/CategorizedSkills";
 import { UserProfile } from "@/types/profile";
 import { TouchFriendlySkillSelector } from "./skills/TouchFriendlySkillSelector";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardSkillsProps {
   profile: UserProfile;
@@ -17,10 +18,9 @@ export function VCardSkills({
   setProfile,
   handleRemoveSkill,
 }: VCardSkillsProps) {
-  // Remove duplicates from skills array before passing it to CategorizedSkills
+  const { selectedStyle } = useVCardStyle();
   const uniqueSkills = profile.skills ? Array.from(new Set(profile.skills)) : [];
   
-  // Update profile if we found and removed duplicates
   if (profile.skills && profile.skills.length !== uniqueSkills.length) {
     setProfile({
       ...profile,
@@ -40,9 +40,9 @@ export function VCardSkills({
   return (
     <VCardSection
       title="Compétences"
-      icon={<Code className="h-5 w-5 text-muted-foreground" />}
+      icon={<Code className="h-5 w-5" />}
     >
-      <div className="space-y-4">
+      <div className="space-y-4" style={{ fontFamily: selectedStyle.font }}>
         <CategorizedSkills
           profile={{ ...profile, skills: uniqueSkills }}
           isEditing={isEditing}

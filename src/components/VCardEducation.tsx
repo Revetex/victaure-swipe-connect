@@ -59,7 +59,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             style={{
               backgroundColor: `${selectedStyle.colors.primary}05`,
               borderColor: `${selectedStyle.colors.primary}20`,
-              color: selectedStyle.colors.text.primary
+              color: selectedStyle.colors.text.primary,
+              fontFamily: selectedStyle.font
             }}
           >
             {isEditing ? (
@@ -74,7 +75,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                   className="w-full p-2 rounded border"
                   style={{
                     borderColor: `${selectedStyle.colors.primary}30`,
-                    color: selectedStyle.colors.text.primary
+                    color: selectedStyle.colors.text.primary,
+                    fontFamily: selectedStyle.font
                   }}
                 />
                 <input
@@ -151,15 +153,30 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="font-semibold" style={{ color: selectedStyle.colors.text.primary }}>
+                <h4 className="font-semibold" style={{ 
+                  color: selectedStyle.colors.text.primary,
+                  fontFamily: selectedStyle.font 
+                }}>
                   {education.school_name}
                 </h4>
-                <p style={{ color: selectedStyle.colors.text.primary }}>{education.degree}</p>
-                <p style={{ color: selectedStyle.colors.text.secondary }}>{education.field_of_study}</p>
-                <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
+                <p style={{ 
+                  color: selectedStyle.colors.text.primary,
+                  fontFamily: selectedStyle.font 
+                }}>{education.degree}</p>
+                <p style={{ 
+                  color: selectedStyle.colors.text.secondary,
+                  fontFamily: selectedStyle.font 
+                }}>{education.field_of_study}</p>
+                <p className="text-sm" style={{ 
+                  color: selectedStyle.colors.text.muted,
+                  fontFamily: selectedStyle.font 
+                }}>
                   {education.start_date} - {education.end_date}
                 </p>
-                <p style={{ color: selectedStyle.colors.text.secondary }}>{education.description}</p>
+                <p style={{ 
+                  color: selectedStyle.colors.text.secondary,
+                  fontFamily: selectedStyle.font 
+                }}>{education.description}</p>
               </div>
             )}
           </div>
@@ -170,7 +187,8 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             className="w-full"
             style={{
               backgroundColor: selectedStyle.colors.primary,
-              color: "white"
+              color: "white",
+              fontFamily: selectedStyle.font
             }}
           >
             Ajouter une formation

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/ui/loader";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
+import { VCardSection } from "./VCardSection";
 
 interface VCardBioProps {
   profile: any;
@@ -102,14 +103,11 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 
-          className="text-lg font-semibold"
-          style={{ color: selectedStyle.colors.text.primary }}
-        >
-          Présentation
-        </h3>
+    <VCardSection 
+      title="Présentation"
+      icon={<Wand2 className="h-5 w-5" />}
+    >
+      <div className="space-y-4">
         {isEditing && (
           <Button 
             variant="outline" 
@@ -129,25 +127,29 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
             Générer
           </Button>
         )}
-      </div>
 
-      {isEditing ? (
-        <textarea
-          value={profile?.bio || ""}
-          onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-          placeholder="Écrivez une courte présentation..."
-          className="w-full min-h-[100px] p-2 rounded-md bg-background border"
-          style={{ 
+        {isEditing ? (
+          <textarea
+            value={profile?.bio || ""}
+            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+            placeholder="Écrivez une courte présentation..."
+            className="w-full min-h-[100px] p-2 rounded-md bg-background border"
+            style={{ 
+              color: selectedStyle.colors.text.primary,
+              borderColor: `${selectedStyle.colors.primary}30`,
+              backgroundColor: `${selectedStyle.colors.primary}05`,
+              fontFamily: selectedStyle.font
+            }}
+          />
+        ) : profile?.bio ? (
+          <p style={{ 
             color: selectedStyle.colors.text.primary,
-            borderColor: `${selectedStyle.colors.primary}30`,
-            backgroundColor: `${selectedStyle.colors.primary}05`
-          }}
-        />
-      ) : profile?.bio ? (
-        <p style={{ color: selectedStyle.colors.text.primary }}>
-          {profile.bio}
-        </p>
-      ) : null}
-    </div>
+            fontFamily: selectedStyle.font
+          }}>
+            {profile.bio}
+          </p>
+        ) : null}
+      </div>
+    </VCardSection>
   );
 }

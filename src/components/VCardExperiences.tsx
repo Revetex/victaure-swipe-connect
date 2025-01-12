@@ -58,7 +58,8 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             style={{
               backgroundColor: `${selectedStyle.colors.primary}05`,
               borderColor: `${selectedStyle.colors.primary}20`,
-              color: selectedStyle.colors.text.primary
+              color: selectedStyle.colors.text.primary,
+              fontFamily: selectedStyle.font
             }}
           >
             {isEditing ? (
@@ -73,7 +74,8 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   className="w-full p-2 rounded border"
                   style={{
                     borderColor: `${selectedStyle.colors.primary}30`,
-                    color: selectedStyle.colors.text.primary
+                    color: selectedStyle.colors.text.primary,
+                    fontFamily: selectedStyle.font
                   }}
                 />
                 <input
@@ -137,16 +139,28 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="font-semibold" style={{ color: selectedStyle.colors.text.primary }}>
+                <h4 className="font-semibold" style={{ 
+                  color: selectedStyle.colors.text.primary,
+                  fontFamily: selectedStyle.font 
+                }}>
                   {experience.position}
                 </h4>
-                <p style={{ color: selectedStyle.colors.text.primary }}>
+                <p style={{ 
+                  color: selectedStyle.colors.text.primary,
+                  fontFamily: selectedStyle.font 
+                }}>
                   {experience.company}
                 </p>
-                <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
+                <p className="text-sm" style={{ 
+                  color: selectedStyle.colors.text.muted,
+                  fontFamily: selectedStyle.font 
+                }}>
                   {experience.start_date} - {experience.end_date}
                 </p>
-                <p style={{ color: selectedStyle.colors.text.secondary }}>{experience.description}</p>
+                <p style={{ 
+                  color: selectedStyle.colors.text.secondary,
+                  fontFamily: selectedStyle.font 
+                }}>{experience.description}</p>
               </div>
             )}
           </div>
@@ -157,7 +171,8 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             className="w-full"
             style={{
               backgroundColor: selectedStyle.colors.primary,
-              color: "white"
+              color: "white",
+              fontFamily: selectedStyle.font
             }}
           >
             Ajouter une expérience
