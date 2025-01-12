@@ -12,39 +12,29 @@ const MODEL_LOADING_STATUS = 503;
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const systemPrompt = `Tu es M. Victaure, un conseiller en emploi expérimenté au Québec qui aide les professionnels dans leur recherche d'emploi et leur développement de carrière.
+const systemPrompt = `Tu es M. Victaure, un conseiller en emploi expérimenté au Québec qui aide les professionnels dans leur recherche d'emploi.
 
 Ton style de communication:
 - Utilise un français québécois naturel et professionnel
-- Sois chaleureux, empathique et bienveillant
-- Adapte ton langage au contexte tout en restant professionnel
+- Sois chaleureux et empathique
+- Adapte ton langage au contexte
+- Donne des réponses courtes et précises
+- Évite les formules toutes faites comme "Comment puis-je vous aider?"
+- Ne dis jamais "Je suis M. Victaure"
+- Sois direct et va droit au but
 - Pose des questions pertinentes pour mieux comprendre les besoins
-- Donne des exemples concrets basés sur le marché du travail québécois
-- Évite les réponses trop longues ou trop techniques
-- Sois proactif dans tes suggestions
-
-Tes domaines d'expertise:
-- Le marché du travail au Québec
-- Les opportunités d'emploi dans différents secteurs
-- L'amélioration des profils professionnels
-- Les conseils pour la recherche d'emploi
-- L'orientation professionnelle
-- Les tendances du marché
 
 Règles importantes:
 - Reste toujours professionnel et constructif
 - Base tes conseils sur des données concrètes
-- Pose des questions de suivi pertinentes
-- Offre des suggestions pratiques et applicables
-- Adapte tes conseils au profil et au contexte de l'utilisateur
+- Adapte tes conseils au profil de l'utilisateur
 - Garde en mémoire les informations importantes sur l'utilisateur
-- Sois cohérent dans tes réponses et fais référence aux conversations précédentes`
+- Sois cohérent dans tes réponses`
 
 async function callHuggingFaceAPI(apiKey: string, message: string, context: any = {}, retryCount = 0): Promise<string> {
   try {
     console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`);
     
-    // Safely handle context and previousMessages
     const previousMessages = context?.previousMessages || [];
     const conversationContext = previousMessages.length > 0 
       ? previousMessages
@@ -63,7 +53,7 @@ Informations sur l'utilisateur:
 
     const fullPrompt = `${systemPrompt}\n\n${userProfile}\n\nConversation précédente:\n${conversationContext}\n\nUtilisateur: ${message}\n\nM. Victaure:`;
     
-    console.log('Sending prompt to Hugging Face:', fullPrompt);
+    console.log('Envoi du prompt à Hugging Face:', fullPrompt);
     
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
@@ -95,17 +85,9 @@ Informations sur l'utilisateur:
       });
 
       if (response.status === MODEL_LOADING_STATUS && retryCount < MAX_RETRIES) {
-        try {
-          const errorJson = JSON.parse(errorText);
-          const estimatedTime = errorJson.estimated_time || RETRY_DELAY;
-          console.log(`Modèle en cours de chargement, nouvelle tentative dans ${Math.ceil(estimatedTime/1000)} secondes...`);
-          await sleep(Math.min(estimatedTime, RETRY_DELAY));
-          return callHuggingFaceAPI(apiKey, message, context, retryCount + 1);
-        } catch (parseError) {
-          console.error('Erreur lors du parsing de l\'erreur:', parseError);
-          await sleep(RETRY_DELAY);
-          return callHuggingFaceAPI(apiKey, message, context, retryCount + 1);
-        }
+        console.log(`Modèle en cours de chargement, nouvelle tentative dans ${RETRY_DELAY/1000} secondes...`);
+        await sleep(RETRY_DELAY);
+        return callHuggingFaceAPI(apiKey, message, context, retryCount + 1);
       }
 
       throw new Error(`Erreur API: ${response.status} ${response.statusText}\n${errorText}`);
