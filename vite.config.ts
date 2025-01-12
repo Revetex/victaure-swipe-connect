@@ -20,12 +20,15 @@ export default defineConfig(({ mode }) => ({
       clientPort: 443,
       protocol: 'wss',
       host: '052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-      timeout: 120000
+      timeout: 120000,
+      path: '/@vite/client',
+      overlay: true
     },
     watch: {
       usePolling: true,
       interval: 1000,
     },
+    https: true,
     cors: {
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
