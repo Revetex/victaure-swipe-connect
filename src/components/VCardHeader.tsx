@@ -67,29 +67,30 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4"
+      className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 rounded-xl"
       style={{ 
         fontFamily: profile.custom_font || selectedStyle.font,
-        color: textColor
+        color: textColor,
+        background: profile.custom_background || `${selectedStyle.colors.primary}05`,
       }}
     >
       <div className="relative group">
-        <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
+        <Avatar className="h-32 w-32 ring-4 ring-background shadow-xl">
           <AvatarImage 
             src={profile.avatar_url || ''} 
             alt={profile.full_name || ''}
-            className="object-cover w-full h-full"
+            className="object-cover"
           />
-          <AvatarFallback className="bg-[#1A1F2C]">
-            <UserCircle2 className="h-14 w-14 text-white" />
+          <AvatarFallback className="bg-primary/10">
+            <UserCircle2 className="h-16 w-16 text-primary" />
           </AvatarFallback>
         </Avatar>
         {isEditing && (
           <label 
-            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
+            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-300"
             htmlFor="avatar-upload"
           >
-            <Upload className="h-6 w-6 text-white" />
+            <Upload className="h-8 w-8 text-white" />
             <input
               id="avatar-upload"
               type="file"
@@ -101,14 +102,14 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
         )}
       </div>
 
-      <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
+      <div className="flex-1 min-w-0 space-y-4 text-center sm:text-left">
         {isEditing ? (
           <div className="space-y-4">
             <Input
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom"
-              className="text-xl font-semibold bg-white/10 border-white/20 placeholder:text-white/50"
+              className="text-xl font-semibold bg-background/50 backdrop-blur-sm border-primary/20 placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50"
               style={{ 
                 fontFamily: profile.custom_font || selectedStyle.font,
                 color: textColor
@@ -118,7 +119,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 placeholder:text-white/50"
+              className="text-base bg-background/50 backdrop-blur-sm border-primary/20 placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50"
               style={{ 
                 fontFamily: profile.custom_font || selectedStyle.font,
                 color: secondaryTextColor
@@ -127,8 +128,10 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
           </div>
         ) : (
           <>
-            <h2 
-              className="text-xl sm:text-2xl font-semibold truncate transition-colors"
+            <motion.h2 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-2xl sm:text-3xl font-bold tracking-tight"
               style={{ 
                 color: textColor,
                 fontFamily: profile.custom_font || selectedStyle.font,
@@ -136,9 +139,12 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               }}
             >
               {profile.full_name || "Nom non défini"}
-            </h2>
-            <p 
-              className="text-sm sm:text-base transition-colors"
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="text-lg"
               style={{ 
                 color: secondaryTextColor,
                 fontFamily: profile.custom_font || selectedStyle.font,
@@ -146,27 +152,26 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               }}
             >
               {profile.role || "Rôle non défini"}
-            </p>
+            </motion.p>
           </>
         )}
       </div>
 
       {!isEditing && (
         <motion.div 
-          className="shrink-0 cursor-pointer"
+          className="shrink-0 cursor-pointer hover:scale-105 transition-transform duration-300"
           onClick={() => setIsQRDialogOpen(true)}
-          whileHover={{ scale: 1.05 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="p-2 glass-card">
+          <div className="p-3 rounded-xl bg-background/50 backdrop-blur-sm shadow-lg border border-primary/10">
             <QRCodeSVG
               value={window.location.href}
               size={80}
               level="H"
               includeMargin={false}
-              className="rounded-lg opacity-80 hover:opacity-100 transition-opacity duration-300"
+              className="rounded-lg opacity-90 hover:opacity-100 transition-opacity duration-300"
             />
           </div>
         </motion.div>
