@@ -12,6 +12,7 @@ import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
+import { cn } from "@/lib/utils";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
