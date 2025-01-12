@@ -18,6 +18,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 0): Promise<string> {
   try {
     console.log(`Tentative d'appel à l'API Hugging Face (essai ${retryCount + 1}/${MAX_RETRIES})`);
+    console.log('Message:', message);
     
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -60,6 +61,7 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
     console.log('Réponse reçue:', data);
 
     if (!data || !Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Format de réponse invalide:', data);
       throw new Error('Format de réponse invalide');
     }
 
@@ -76,17 +78,25 @@ async function callHuggingFaceAPI(apiKey: string, message: string, retryCount = 
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { 
-      status: 204, 
-      headers: corsHeaders 
-    });
-  }
-
   try {
+    // Handle CORS preflight requests
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { 
+        status: 204, 
+        headers: corsHeaders 
+      });
+    }
+
+    if (req.method !== 'POST') {
+      throw new Error(`Method ${req.method} not allowed`);
+    }
+
     const { message } = await req.json();
     console.log('Message reçu:', message);
+
+    if (!message || typeof message !== 'string') {
+      throw new Error('Message invalide ou manquant');
+    }
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
