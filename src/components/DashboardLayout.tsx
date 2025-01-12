@@ -66,7 +66,6 @@ export function DashboardLayout() {
             viewportHeight={viewportHeight}
             onEditStateChange={(editing) => {
               setIsEditing(editing);
-              setShowingChat(currentPage === 2 && !editing);
             }}
             onRequestChat={handleRequestChat}
           />
