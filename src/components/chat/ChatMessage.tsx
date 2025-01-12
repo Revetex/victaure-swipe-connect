@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot, User, Loader2 } from "lucide-react";
+import { Bot, User } from "lucide-react";
 
 interface ChatMessageProps {
   content: string;
@@ -76,25 +76,7 @@ export function ChatMessage({
               : "bg-primary text-primary-foreground rounded-tr-none"
           )}
         >
-          {thinking ? (
-            <motion.div className="flex items-center gap-2">
-              <motion.div 
-                animate={{ 
-                  rotate: 360,
-                  transition: {
-                    duration: 1,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }
-                }}
-              >
-                <Loader2 className="h-4 w-4 text-muted-foreground" />
-              </motion.div>
-              <span className="text-muted-foreground text-xs font-medium">M. Victaure réfléchit...</span>
-            </motion.div>
-          ) : (
-            content
-          )}
+          {content}
         </motion.div>
         
         {showTimestamp && timestamp && (

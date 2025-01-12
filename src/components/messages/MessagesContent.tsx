@@ -49,42 +49,24 @@ export function MessagesContent({
     setHasScrolled(!isAtBottom);
   };
 
-  const fixedMessages = messages.slice(0, 2); // First two messages are fixed
-  const scrollableMessages = messages.slice(2); // Rest are scrollable
-
   return (
     <div className="flex flex-col h-full bg-background">
-      <ChatHeader
-        onBack={onBack}
-        isThinking={isThinking}
-      />
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <ChatHeader
+          onBack={onBack}
+          isThinking={isThinking}
+        />
+      </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Fixed messages section */}
-        <div className="flex-shrink-0 border-b">
-          <AnimatePresence mode="popLayout">
-            {fixedMessages.map((message) => (
-              <ChatMessage
-                key={message.id}
-                content={message.content}
-                sender={message.sender}
-                thinking={message.thinking}
-                showTimestamp={true}
-                timestamp={message.timestamp}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {/* Scrollable messages section */}
+      <div className="flex-1 overflow-hidden mt-[72px] mb-[76px]">
         <ScrollArea 
           ref={scrollAreaRef}
-          className="flex-1"
+          className="h-full"
           onScroll={handleScroll}
         >
           <div className="p-4 space-y-4">
             <AnimatePresence mode="popLayout">
-              {scrollableMessages.map((message) => (
+              {messages.map((message) => (
                 <ChatMessage
                   key={message.id}
                   content={message.content}
@@ -101,15 +83,17 @@ export function MessagesContent({
         </ScrollArea>
       </div>
 
-      <ChatInput
-        value={inputMessage}
-        onChange={setInputMessage}
-        onSend={() => onSendMessage(inputMessage)}
-        onVoiceInput={onVoiceInput}
-        isListening={isListening}
-        isThinking={isThinking}
-        className="border-t"
-      />
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <ChatInput
+          value={inputMessage}
+          onChange={setInputMessage}
+          onSend={() => onSendMessage(inputMessage)}
+          onVoiceInput={onVoiceInput}
+          isListening={isListening}
+          isThinking={isThinking}
+          className="border-t"
+        />
+      </div>
     </div>
   );
 }
