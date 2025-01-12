@@ -30,6 +30,12 @@ export function VCardSections({
   selectedStyle,
   sectionsOrder,
 }: VCardSectionsProps) {
+  // Define a default order that puts contact before bio
+  const defaultOrder = ['header', 'contact', 'bio', 'skills', 'education', 'experience'];
+  
+  // Use the provided sectionsOrder or fall back to defaultOrder
+  const finalSectionsOrder = sectionsOrder?.length ? sectionsOrder : defaultOrder;
+
   const renderSection = (sectionId: string, index: number) => {
     const uniqueKey = `${sectionId}-${index}`;
     
@@ -100,7 +106,7 @@ export function VCardSections({
 
   return (
     <div className="space-y-8">
-      {sectionsOrder.map((sectionId, index) => (
+      {finalSectionsOrder.map((sectionId, index) => (
         <div
           key={`section-container-${sectionId}-${index}`}
           className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}

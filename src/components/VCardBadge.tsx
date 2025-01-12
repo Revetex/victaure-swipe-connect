@@ -28,10 +28,17 @@ export function VCardBadge({
       style={{
         backgroundColor: variant === 'outline' ? 'transparent' : `${selectedStyle.colors.primary}15`,
         borderColor: `${selectedStyle.colors.primary}30`,
-        color: selectedStyle.colors.text.primary
+        color: selectedStyle.colors.text.primary,
+        boxShadow: `0 1px 2px ${selectedStyle.colors.primary}10`
       }}
     >
-      <span className="text-sm font-medium" style={{ color: selectedStyle.colors.text.primary }}>
+      <span 
+        className="text-sm font-medium" 
+        style={{ 
+          color: selectedStyle.colors.text.primary,
+          textShadow: '0 0.5px 0.5px rgba(0,0,0,0.1)'
+        }}
+      >
         {text}
       </span>
       {isEditing && onRemove && (
