@@ -72,7 +72,7 @@ export function DashboardLayout() {
         </AnimatePresence>
       </motion.div>
       
-      {!isEditing && !showingChat && (
+      {!isEditing && !showingChat && currentPage === 2 && (
         <nav 
           className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
           style={{ 
