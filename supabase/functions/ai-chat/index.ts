@@ -25,6 +25,21 @@ serve(async (req) => {
       throw new Error('Erreur de configuration: Clé API manquante');
     }
 
+    const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle expérimenté au Québec. 
+    Ton rôle est d'aider les utilisateurs dans leur recherche d'emploi et leur développement de carrière.
+    
+    Directives:
+    - Réponds de manière professionnelle et bienveillante
+    - Donne des conseils pratiques et concrets
+    - Adapte tes réponses au contexte québécois
+    - Utilise un français correct et professionnel
+    - Évite le jargon technique sauf si nécessaire
+    - Limite tes réponses à 2-3 paragraphes maximum
+    
+    Question de l'utilisateur: ${message}
+    
+    Ta réponse doit être claire, concise et utile.`;
+
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -34,12 +49,13 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `Tu es M. Victaure, un conseiller en orientation professionnelle expérimenté au Québec. Réponds de manière concise et professionnelle à la question suivante: ${message}`,
+          inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 250,
+            max_new_tokens: 500,
             temperature: 0.7,
             top_p: 0.95,
-            do_sample: true
+            do_sample: true,
+            return_full_text: false
           }
         }),
       }
@@ -59,7 +75,14 @@ serve(async (req) => {
     // Clean up the response
     let aiResponse = data[0].generated_text
       .replace(/^[^:]*:/, '') // Remove any prefix before first colon
+      .replace(/^\s*$[\n\r]{1,}/gm, '') // Remove empty lines
+      .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
       .trim();
+
+    // Validate the response content
+    if (!aiResponse || aiResponse.length < 10 || /^[0-9\s]+$/.test(aiResponse)) {
+      throw new Error('Réponse invalide générée');
+    }
 
     console.log('Réponse nettoyée:', aiResponse);
 
@@ -70,10 +93,14 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Erreur:', error);
+    
+    // Send a user-friendly error message
+    const errorMessage = "Je suis désolé, j'ai du mal à comprendre votre demande pour le moment. Pourriez-vous reformuler votre question différemment ?";
+    
     return new Response(
       JSON.stringify({ 
-        error: 'Une erreur est survenue',
-        details: error.message 
+        response: errorMessage,
+        error: error.message 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
