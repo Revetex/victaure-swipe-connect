@@ -32,7 +32,9 @@ export default defineConfig(({ mode }) => ({
         'https://mfjllillnpleasclqabb.supabase.co',
         'https://mfjllillnpleasclqabb.supabase.co/auth/v1/*',
         'https://mfjllillnpleasclqabb.supabase.co/rest/v1/*',
-        'https://mfjllillnpleasclqabb.supabase.co/storage/v1/*'
+        'https://mfjllillnpleasclqabb.supabase.co/storage/v1/*',
+        'http://localhost:8080',
+        'http://10.0.2.2:8080'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: [
