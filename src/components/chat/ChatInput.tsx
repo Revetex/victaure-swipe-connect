@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Mic, ArrowRight, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 
 interface ChatInputProps {
   value: string;
@@ -17,7 +17,7 @@ interface ChatInputProps {
   maxLength?: number;
 }
 
-export function ChatInput({
+export const ChatInput = memo(function ChatInput({
   value,
   onChange,
   onSend,
@@ -50,14 +50,21 @@ export function ChatInput({
     };
   }, [value]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim() && !isThinking) {
         onSend();
       }
     }
-  };
+  }, [value, isThinking, onSend]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length <= maxLength) {
+      onChange(newValue);
+    }
+  }, [maxLength, onChange]);
 
   return (
     <div className={cn("p-1.5", className)}>
@@ -91,12 +98,7 @@ export function ChatInput({
         <div className="relative flex-1">
           <Textarea
             value={value}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              if (newValue.length <= maxLength) {
-                onChange(newValue);
-              }
-            }}
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             className="min-h-[28px] max-h-[28px] w-full pr-10 py-1 resize-none text-sm focus-visible:ring-1 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
@@ -138,4 +140,4 @@ export function ChatInput({
       </div>
     </div>
   );
-}
+});

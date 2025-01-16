@@ -6,6 +6,7 @@ import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
+import { memo, useMemo } from "react";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -15,7 +16,7 @@ interface DashboardContentProps {
   onRequestChat: () => void;
 }
 
-export function DashboardContent({
+export const DashboardContent = memo(function DashboardContent({
   currentPage,
   isEditing,
   viewportHeight,
@@ -47,16 +48,16 @@ export function DashboardContent({
     deleteNote
   } = useNotes();
 
-  const colors = [
+  const colors = useMemo(() => [
     { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
     { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
     { value: 'green', label: 'Vert', class: 'bg-green-200' },
     { value: 'pink', label: 'Rose', class: 'bg-pink-200' },
     { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
     { value: 'orange', label: 'Orange', class: 'bg-orange-200' },
-  ];
+  ], []);
 
-  const renderContent = () => {
+  const renderContent = useMemo(() => {
     switch (currentPage) {
       case 1:
         return (
@@ -141,7 +142,7 @@ export function DashboardContent({
       default:
         return null;
     }
-  };
+  }, [currentPage, isEditing, viewportHeight, onEditStateChange, onRequestChat, todos, notes, colors, newTodo, selectedDate, selectedTime, allDay, setNewTodo, setSelectedDate, setSelectedTime, setAllDay, addTodo, toggleTodo, deleteTodo, newNote, selectedColor, setNewNote, setSelectedColor, addNote, deleteNote]);
 
-  return renderContent();
-}
+  return renderContent;
+});
