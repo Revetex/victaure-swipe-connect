@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { JobList } from "./jobs/JobList";
 import { JobFilters } from "./jobs/JobFilters";
 import { Job } from "@/types/job";
@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { Filter, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
+import { useQuery } from "@tanstack/react-query";
 
 interface ScrapedJob {
   id: string;
@@ -22,117 +23,94 @@ interface ScrapedJob {
 }
 
 export function Marketplace() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const fetchJobs = async () => {
-    try {
-      setIsLoading(true);
-      console.log("Starting job fetch...");
-      
-      // Fetch regular jobs with detailed error logging
-      const regularJobsResult = await supabase
+  // Optimized data fetching with React Query
+  const { data: regularJobs = [], isLoading: isLoadingRegular } = useQuery({
+    queryKey: ['regular-jobs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from("jobs")
         .select("*")
         .eq('status', 'open')
         .order("created_at", { ascending: false });
 
-      if (regularJobsResult.error) {
-        console.error("Error fetching regular jobs:", regularJobsResult.error);
-        throw regularJobsResult.error;
-      }
+      if (error) throw error;
+      return data || [];
+    }
+  });
 
-      const regularJobs = regularJobsResult.data || [];
-      console.log("Regular jobs fetched:", regularJobs.length);
-
-      // Fetch scraped jobs with detailed error logging
-      const scrapedJobsResult = await supabase
+  const { data: scrapedJobs = [], isLoading: isLoadingScraped } = useQuery({
+    queryKey: ['scraped-jobs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from("scraped_jobs")
         .select("*")
         .order("posted_at", { ascending: false });
 
-      if (scrapedJobsResult.error) {
-        console.error("Error fetching scraped jobs:", scrapedJobsResult.error);
-        throw scrapedJobsResult.error;
-      }
-
-      const scrapedJobs = scrapedJobsResult.data || [];
-      console.log("Scraped jobs fetched:", scrapedJobs.length);
-
-      // Convert regular jobs to the correct type with explicit typing
-      const typedRegularJobs: Job[] = regularJobs.map(job => ({
-        id: job.id,
-        title: job.title,
-        description: job.description,
-        budget: job.budget,
-        location: job.location,
-        employer_id: job.employer_id,
-        status: job.status as 'open' | 'closed' | 'in-progress',
-        company: job.company_name || 'Entreprise',
-        source: 'Victaure' as const,
-        created_at: job.created_at,
-        updated_at: job.updated_at,
-        category: job.category,
-        contract_type: job.contract_type,
-        experience_level: job.experience_level
-      }));
-
-      // Convert scraped jobs to match the Job type with explicit typing
-      const typedScrapedJobs: Job[] = scrapedJobs.map(job => ({
-        id: job.id,
-        title: job.title,
-        description: job.description || '',
-        budget: 0, // Since scraped jobs might not have budget info
-        location: job.location,
-        employer_id: '', // Scraped jobs don't have an employer_id
-        status: 'open' as const,
-        company: job.company,
-        source: 'Externe' as const,
-        created_at: job.created_at,
-        updated_at: job.updated_at,
-        category: 'Externe',
-        contract_type: 'full-time',
-        experience_level: 'mid-level',
-        url: job.url // Add the URL for external jobs
-      }));
-
-      // Combine and sort all jobs
-      const allJobs = [...typedRegularJobs, ...typedScrapedJobs];
-      const sortedJobs = allJobs.sort((a, b) => {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
-
-      console.log("Total jobs to display:", sortedJobs.length);
-      setJobs(sortedJobs);
-
-    } catch (error) {
-      console.error("Error in fetchJobs:", error);
-      toast.error("Erreur lors du chargement des offres");
-    } finally {
-      setIsLoading(false);
+      if (error) throw error;
+      return data || [];
     }
-  };
+  });
 
-  const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  useEffect(() => {
-    console.log("Initial job fetch triggered");
-    fetchJobs();
+  // Memoized job conversion functions
+  const convertRegularJobs = useCallback((jobs: any[]): Job[] => {
+    return jobs.map(job => ({
+      id: job.id,
+      title: job.title,
+      description: job.description,
+      budget: job.budget,
+      location: job.location,
+      employer_id: job.employer_id,
+      status: job.status as 'open' | 'closed' | 'in-progress',
+      company: job.company_name || 'Entreprise',
+      source: 'Victaure' as const,
+      created_at: job.created_at,
+      updated_at: job.updated_at,
+      category: job.category,
+      contract_type: job.contract_type,
+      experience_level: job.experience_level
+    }));
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Chargement des offres...</span>
-      </div>
+  const convertScrapedJobs = useCallback((jobs: ScrapedJob[]): Job[] => {
+    return jobs.map(job => ({
+      id: job.id,
+      title: job.title,
+      description: job.description || '',
+      budget: 0,
+      location: job.location,
+      employer_id: '',
+      status: 'open' as const,
+      company: job.company,
+      source: 'Externe' as const,
+      created_at: job.created_at,
+      updated_at: job.updated_at,
+      category: 'Externe',
+      contract_type: 'full-time',
+      experience_level: 'mid-level',
+      url: job.url
+    }));
+  }, []);
+
+  // Memoized combined and filtered jobs
+  const allJobs = useMemo(() => {
+    const regular = convertRegularJobs(regularJobs);
+    const scraped = convertScrapedJobs(scrapedJobs);
+    const combined = [...regular, ...scraped];
+    
+    return combined.sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
-  }
+  }, [regularJobs, scrapedJobs, convertRegularJobs, convertScrapedJobs]);
+
+  const handleFilterChange = useCallback((key: keyof JobFiltersType, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const isLoading = isLoadingRegular || isLoadingScraped;
 
   return (
     <section className="py-8 min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -143,7 +121,6 @@ export function Marketplace() {
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             onSuccess={() => {
-              fetchJobs();
               toast.success("Mission créée avec succès !");
             }}
           />
@@ -152,7 +129,7 @@ export function Marketplace() {
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">
-              Toutes les offres ({jobs.length})
+              Toutes les offres ({allJobs.length})
             </h2>
             <Button
               variant="outline"
@@ -174,9 +151,8 @@ export function Marketplace() {
               </div>
             )}
             <JobList 
-              jobs={jobs} 
-              isLoading={isLoading} 
-              onJobDeleted={fetchJobs}
+              jobs={allJobs} 
+              isLoading={isLoading}
             />
           </div>
         </div>
