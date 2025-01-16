@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
-import { memo } from "react";
+import { memo, useState } from "react";
 
 const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boolean; signOut: () => void }) {
   return (
@@ -56,6 +56,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
 export function Navigation() {
   const isMobile = useIsMobile();
   const { signOut, isLoading } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
   if (isLoading) {
     return null;
@@ -71,6 +72,10 @@ export function Navigation() {
         damping: 20
       }}
       className="sticky top-0 bg-background/80 backdrop-blur-lg border-b border-border/40 z-50"
+      style={{ 
+        willChange: 'transform',
+        touchAction: 'none'
+      }}
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <motion.a 
@@ -88,7 +93,7 @@ export function Navigation() {
         </motion.a>
         
         {isMobile ? (
-          <Sheet>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button 
                 variant="ghost" 
@@ -98,9 +103,15 @@ export function Navigation() {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[80vw] sm:w-[380px] bg-background/95 border-border">
+            <SheetContent 
+              side="right"
+              className="w-[80vw] sm:w-[380px] bg-background/95 backdrop-blur-lg border-border"
+            >
               <div className="flex flex-col gap-6 mt-8">
-                <NavLinks isMobile={true} signOut={signOut} />
+                <NavLinks isMobile={true} signOut={() => {
+                  setIsOpen(false);
+                  signOut();
+                }} />
               </div>
             </SheetContent>
           </Sheet>
