@@ -19,27 +19,44 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
         return;
       }
 
-      console.log("Submitting job data:", data);
+      console.log("Données du formulaire:", data);
+
+      // S'assurer que le budget est un nombre
+      const budget = typeof data.budget === 'string' ? parseFloat(data.budget) : data.budget;
+
+      // Préparer les données pour l'insertion
+      const jobData = {
+        title: data.title,
+        description: data.description,
+        budget: budget,
+        location: data.location,
+        employer_id: user.id,
+        status: "open",
+        category: data.category,
+        contract_type: data.contract_type,
+        experience_level: data.experience_level,
+        company_name: data.company_name,
+        company_description: data.company_description,
+        mission_type: data.mission_type,
+        required_skills: data.required_skills || [],
+        remote_type: data.remote_type || 'on-site'
+      };
 
       // Insérer la mission
       const { error } = await supabase
         .from("jobs")
-        .insert({
-          ...data,
-          employer_id: user.id,
-          status: "open",
-        });
+        .insert(jobData);
 
       if (error) {
-        console.error("Error creating job:", error);
+        console.error("Erreur lors de la création de la mission:", error);
         throw error;
       }
 
       toast.success("Mission créée avec succès");
       onSuccess?.();
-      navigate("/dashboard");
+      navigate("/marketplace");
     } catch (error) {
-      console.error("Error in job submission:", error);
+      console.error("Erreur lors de la soumission:", error);
       toast.error("Erreur lors de la création de la mission");
     } finally {
       setIsSubmitting(false);

@@ -38,10 +38,10 @@ export function JobCard({
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold">{job.title}</h3>
+            <h3 className="text-lg font-semibold line-clamp-2">{job.title}</h3>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
               <Building2 className="h-4 w-4" />
-              <span>{job.company}</span>
+              <span>{job.company || job.company_name || 'Entreprise'}</span>
             </div>
           </div>
           <Badge variant={job.source === 'Victaure' ? 'default' : 'secondary'}>
@@ -71,15 +71,21 @@ export function JobCard({
               <span>{job.budget} CAD</span>
             </div>
           )}
+
+          {job.description && (
+            <p className="text-sm text-muted-foreground line-clamp-3 mt-2">
+              {job.description}
+            </p>
+          )}
         </div>
 
         {showActions && (
           <div className="flex gap-2 pt-4">
-            {job.url ? (
+            {url ? (
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => window.open(job.url, '_blank')}
+                onClick={() => window.open(url, '_blank')}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Voir l'offre
