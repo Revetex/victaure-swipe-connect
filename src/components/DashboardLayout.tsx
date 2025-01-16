@@ -88,7 +88,7 @@ export function DashboardLayout() {
         ref={contentRef}
         key="dashboard-content"
         variants={itemVariants} 
-        className="transform transition-all duration-300 w-full min-h-screen pb-40 md:pb-24"
+        className="transform transition-all duration-300 w-full min-h-screen pb-safe"
         style={{ 
           maxHeight: isEditing ? viewportHeight : 'none',
           height: isMobile ? 'calc(var(--vh, 1vh) * 100)' : '100vh',
@@ -97,7 +97,8 @@ export function DashboardLayout() {
           WebkitOverflowScrolling: 'touch',
           willChange: 'transform',
           position: 'relative',
-          zIndex: 1
+          zIndex: 1,
+          paddingBottom: isMobile ? 'calc(4rem + env(safe-area-inset-bottom))' : '4rem'
         }}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -113,12 +114,11 @@ export function DashboardLayout() {
       </motion.div>
       
       <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 transition-all duration-300 safe-bottom ${
           !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
         }`}
         style={{ 
           height: 'auto',
-          paddingBottom: 'env(safe-area-inset-bottom)',
           willChange: 'transform, opacity',
           zIndex: 50
         }}
