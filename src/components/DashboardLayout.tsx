@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
@@ -24,8 +24,14 @@ export function DashboardLayout() {
     100
   );
 
-  const updateHeight = useCallback(() => {
-    debouncedSetViewportHeight(window.innerHeight);
+  // Handle viewport height changes
+  useEffect(() => {
+    const handleResize = () => {
+      debouncedSetViewportHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [debouncedSetViewportHeight]);
 
   const handlePageChange = useCallback((page: number) => {
@@ -55,7 +61,8 @@ export function DashboardLayout() {
         style={{ 
           maxHeight: isEditing ? viewportHeight : 'none',
           overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch',
+          willChange: 'transform'
         }}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -70,14 +77,21 @@ export function DashboardLayout() {
         </AnimatePresence>
       </motion.div>
       
-      <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 transition-opacity duration-300 ${
-          !isEditing && !showingChat ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      <motion.nav 
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 transition-all duration-300 ${
+          !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
         }`}
         style={{ 
           height: '4rem',
-          paddingBottom: 'env(safe-area-inset-bottom)'
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          willChange: 'transform, opacity'
         }}
+        initial={false}
+        animate={{ 
+          y: !isEditing && !showingChat ? 0 : '100%',
+          opacity: !isEditing && !showingChat ? 1 : 0
+        }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         <div className="container mx-auto px-4 h-full flex items-center">
           <DashboardNavigation 
@@ -85,7 +99,7 @@ export function DashboardLayout() {
             onPageChange={handlePageChange}
           />
         </div>
-      </nav>
+      </motion.nav>
     </DashboardContainer>
   );
 }
