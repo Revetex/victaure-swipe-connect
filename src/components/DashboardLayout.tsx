@@ -19,13 +19,11 @@ export function DashboardLayout() {
   const [showingChat, setShowingChat] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Debounce viewport height updates
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
     100
   );
 
-  // Handle viewport height changes and keyboard
   useEffect(() => {
     const handleResize = () => {
       const vh = window.innerHeight;
@@ -33,10 +31,9 @@ export function DashboardLayout() {
       document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
     };
 
-    handleResize(); // Initial call
+    handleResize();
     window.addEventListener('resize', handleResize);
     
-    // Handle mobile keyboard
     if (isMobile) {
       window.visualViewport?.addEventListener('resize', handleResize);
     }
@@ -49,7 +46,6 @@ export function DashboardLayout() {
     };
   }, [debouncedSetViewportHeight, isMobile]);
 
-  // Prevent body scroll when editing or showing chat on mobile
   useEffect(() => {
     if (isMobile && (isEditing || showingChat)) {
       document.body.style.overflow = 'hidden';
@@ -66,7 +62,6 @@ export function DashboardLayout() {
       setLastPageChange(now);
       setShowingChat(false);
       
-      // Scroll to top on page change for mobile
       if (isMobile && contentRef.current) {
         contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -88,11 +83,10 @@ export function DashboardLayout() {
         ref={contentRef}
         key="dashboard-content"
         variants={itemVariants} 
-        className="transform transition-all duration-300 w-full min-h-screen pb-safe"
+        className="transform-gpu w-full min-h-screen pb-safe"
         style={{ 
-          maxHeight: isEditing ? viewportHeight : 'none',
           height: isMobile ? 'calc(var(--vh, 1vh) * 100)' : '100vh',
-          overflowY: 'auto',
+          overflowY: isEditing ? 'hidden' : 'auto',
           overflowX: 'hidden',
           WebkitOverflowScrolling: 'touch',
           willChange: 'transform',
@@ -114,13 +108,14 @@ export function DashboardLayout() {
       </motion.div>
       
       <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 transition-all duration-300 safe-bottom ${
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 transition-all duration-300 safe-bottom ${
           !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
         }`}
         style={{ 
           height: 'auto',
           willChange: 'transform, opacity',
-          zIndex: 50
+          zIndex: 50,
+          paddingBottom: 'env(safe-area-inset-bottom)'
         }}
         initial={false}
         animate={{ 
