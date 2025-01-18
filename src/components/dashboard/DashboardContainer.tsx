@@ -8,26 +8,24 @@ interface DashboardContainerProps {
 
 export function DashboardContainer({ children, containerVariants }: DashboardContainerProps) {
   return (
-    <div className="relative min-h-screen">
-      <div className="fixed inset-0 bg-dashboard-pattern bg-cover bg-center bg-fixed" />
+    <div className="min-h-screen w-full overflow-hidden bg-background">
+      <div className="fixed inset-0 bg-dashboard-pattern bg-cover bg-center bg-fixed opacity-50" />
       <motion.div 
         className="fixed inset-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       />
-      <main className="flex-1 relative">
-        <div className="container mx-auto px-4 h-[calc(100vh-4rem)] overflow-y-auto">
-          <motion.div 
-            className="max-w-[1200px] mx-auto h-full"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            style={{ willChange: 'transform, opacity' }}
-          >
-            {children}
-          </motion.div>
-        </div>
+      <main className="relative w-full h-screen overflow-hidden">
+        <motion.div 
+          className="h-full w-full mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          style={{ willChange: 'transform, opacity' }}
+        >
+          {children}
+        </motion.div>
       </main>
     </div>
   );

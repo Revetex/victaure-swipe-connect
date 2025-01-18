@@ -79,58 +79,58 @@ export function DashboardLayout() {
 
   return (
     <DashboardContainer containerVariants={containerVariants}>
-      <motion.div 
-        ref={contentRef}
-        key="dashboard-content"
-        variants={itemVariants} 
-        className={`transform-gpu w-full min-h-screen ${isMobile ? 'pb-safe' : 'pb-4'}`}
-        style={{ 
-          height: isMobile ? 'calc(var(--vh, 1vh) * 100)' : '100vh',
-          overflowY: isEditing ? 'hidden' : 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
-          willChange: 'transform',
-          position: 'relative',
-          zIndex: 1,
-          paddingBottom: isMobile ? 'calc(4rem + env(safe-area-inset-bottom))' : '4rem'
-        }}
-      >
-        <AnimatePresence mode="wait" initial={false}>
-          <DashboardContent
-            key={`page-${currentPage}`}
-            currentPage={currentPage}
-            isEditing={isEditing}
-            viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
-            onRequestChat={handleRequestChat}
-          />
-        </AnimatePresence>
-      </motion.div>
-      
-      <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 transition-all duration-300 ${
-          !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
-        }`}
-        style={{ 
-          height: 'auto',
-          willChange: 'transform, opacity',
-          zIndex: 50,
-          paddingBottom: isMobile ? 'env(safe-area-inset-bottom)' : '0'
-        }}
-        initial={false}
-        animate={{ 
-          y: !isEditing && !showingChat ? 0 : '100%',
-          opacity: !isEditing && !showingChat ? 1 : 0
-        }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-      >
-        <div className={`container mx-auto px-4 ${isMobile ? 'py-2 h-16' : 'py-3 h-[4.5rem]'}`}>
-          <DashboardNavigation 
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </motion.nav>
+      <div className="flex flex-col h-[100vh] w-full overflow-hidden">
+        <motion.div 
+          ref={contentRef}
+          key="dashboard-content"
+          variants={itemVariants} 
+          className="flex-1 overflow-y-auto overflow-x-hidden transform-gpu"
+          style={{ 
+            height: `calc(100vh - ${isMobile ? '4rem' : '5rem'})`,
+            WebkitOverflowScrolling: 'touch',
+            willChange: 'transform',
+            position: 'relative',
+            zIndex: 1,
+            paddingBottom: isMobile ? 'calc(1rem + env(safe-area-inset-bottom))' : '1rem'
+          }}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <DashboardContent
+              key={`page-${currentPage}`}
+              currentPage={currentPage}
+              isEditing={isEditing}
+              viewportHeight={viewportHeight}
+              onEditStateChange={setIsEditing}
+              onRequestChat={handleRequestChat}
+            />
+          </AnimatePresence>
+        </motion.div>
+        
+        <motion.nav 
+          className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 transition-all duration-300 ${
+            !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
+          }`}
+          style={{ 
+            height: isMobile ? '4rem' : '5rem',
+            willChange: 'transform, opacity',
+            zIndex: 50,
+            paddingBottom: isMobile ? 'env(safe-area-inset-bottom)' : '0'
+          }}
+          initial={false}
+          animate={{ 
+            y: !isEditing && !showingChat ? 0 : '100%',
+            opacity: !isEditing && !showingChat ? 1 : 0
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <div className="h-full flex items-center justify-center px-4">
+            <DashboardNavigation 
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </motion.nav>
+      </div>
     </DashboardContainer>
   );
 }
