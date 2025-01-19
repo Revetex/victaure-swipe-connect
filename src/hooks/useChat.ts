@@ -13,9 +13,9 @@ export function useChat(): ChatState & ChatActions {
   const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
   
   const {
-    messages,
+    messages = [],
     setMessages,
-    deletedMessages,
+    deletedMessages = [],
     setDeletedMessages
   } = useMessages();
 
@@ -24,9 +24,9 @@ export function useChat(): ChatState & ChatActions {
     clearChat,
     restoreChat
   } = useChatActions(
-    messages || [],
+    messages,
     setMessages,
-    deletedMessages || [],
+    deletedMessages,
     setDeletedMessages,
     setInputMessage,
     setIsThinking
@@ -63,15 +63,15 @@ export function useChat(): ChatState & ChatActions {
   };
 
   return {
-    messages: messages || [],
-    deletedMessages: deletedMessages || [],
+    messages,
+    deletedMessages,
     inputMessage,
     isListening,
     isThinking,
     selectedModel,
-    setSelectedModel,
     setMessages,
     setInputMessage,
+    setSelectedModel,
     handleSendMessage,
     handleVoiceInput,
     clearChat,

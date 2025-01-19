@@ -18,11 +18,13 @@ export interface ChatState {
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
+  selectedModel: string;
 }
 
 export interface ChatActions {
   setMessages: (messages: Message[]) => void;
   setInputMessage: (message: string) => void;
+  setSelectedModel: (model: string) => void;
   handleSendMessage: (message: string) => Promise<void>;
   handleVoiceInput: () => void;
   clearChat: () => Promise<void>;
