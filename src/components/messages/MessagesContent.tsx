@@ -19,22 +19,27 @@ interface MessagesContentProps {
 }
 
 export function MessagesContent({
-  messages,
-  inputMessage,
-  isListening,
-  isThinking,
+  messages = [], // Add default empty array
+  inputMessage = "", // Add default empty string
+  isListening = false, // Add default false
+  isThinking = false, // Add default false
   onSendMessage,
-  onVoiceInput,
-  setInputMessage,
-  onClearChat,
+  onVoiceInput = () => {}, // Add default noop function
+  setInputMessage = () => {}, // Add default noop function
+  onClearChat = () => {}, // Add default noop function
   onBack,
   showingChat,
 }: MessagesContentProps) {
   const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
 
   const handleSendMessage = () => {
-    onSendMessage(inputMessage, selectedModel);
+    if (onSendMessage) {
+      onSendMessage(inputMessage, selectedModel);
+    }
   };
+
+  // Ensure messages is always an array
+  const safeMessages = Array.isArray(messages) ? messages : [];
 
   return (
     <div className="flex flex-col h-full">
@@ -70,16 +75,16 @@ export function MessagesContent({
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {messages.map((message, index) => (
+          {safeMessages.map((message, index) => (
             <ChatMessage
               key={message.id || index}
-              content={message.content}
-              sender={message.sender}
-              thinking={message.thinking}
+              content={message.content || ""}
+              sender={message.sender || "user"}
+              thinking={!!message.thinking}
               showTimestamp={
                 index === 0 || 
-                messages[index - 1]?.sender !== message.sender ||
-                new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime() > 300000
+                safeMessages[index - 1]?.sender !== message.sender ||
+                new Date(message.timestamp).getTime() - new Date(safeMessages[index - 1]?.timestamp).getTime() > 300000
               }
               timestamp={message.timestamp}
             />
