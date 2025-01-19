@@ -12,7 +12,8 @@ export async function generateAIResponse(message: string): Promise<string> {
         message,
         userId: user.id,
         context: {
-          previousMessages: await loadMessages()
+          previousMessages: await loadMessages(),
+          emotionalContext: analyzeEmotionalContext(message)
         }
       }
     });
@@ -27,6 +28,23 @@ export async function generateAIResponse(message: string): Promise<string> {
     toast.error("Une erreur est survenue lors de la génération de la réponse");
     throw error;
   }
+}
+
+function analyzeEmotionalContext(message: string): string {
+  const lowerMessage = message.toLowerCase();
+  
+  // Analyse simple des émotions basée sur des mots clés
+  if (lowerMessage.includes('merci') || lowerMessage.includes('super')) {
+    return 'positive';
+  }
+  if (lowerMessage.includes('difficile') || lowerMessage.includes('problème')) {
+    return 'concerned';
+  }
+  if (lowerMessage.includes('frustré') || lowerMessage.includes('fâché')) {
+    return 'frustrated';
+  }
+  
+  return 'neutral';
 }
 
 export async function saveMessage(message: Message): Promise<void> {
