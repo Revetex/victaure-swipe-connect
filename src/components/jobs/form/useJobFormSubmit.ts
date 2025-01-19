@@ -32,14 +32,25 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
         location: data.location,
         employer_id: user.id,
         status: "open",
-        category: data.category,
+        category: data.category || 'Technology', // Ensure category is never null
+        subcategory: data.subcategory,
         contract_type: data.contract_type,
         experience_level: data.experience_level,
-        company_name: data.company_name,
-        company_description: data.company_description,
+        company_name: data.company_name || '',
+        company_description: data.company_description || '',
+        company_website: data.company_website || '',
         mission_type: data.mission_type,
         required_skills: data.required_skills || [],
-        remote_type: data.remote_type || 'on-site'
+        remote_type: data.remote_type || 'on-site',
+        salary_min: data.salary_min || 0,
+        salary_max: data.salary_max || 0,
+        salary_currency: data.salary_currency || 'CAD',
+        salary_period: data.salary_period || 'yearly',
+        benefits: data.benefits || [],
+        responsibilities: data.responsibilities || [],
+        qualifications: data.qualifications || [],
+        payment_schedule: data.payment_schedule || 'monthly',
+        is_urgent: data.is_urgent || false
       };
 
       // Insérer la mission

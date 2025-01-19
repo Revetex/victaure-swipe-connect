@@ -37,7 +37,7 @@ export const defaultValues: JobFormValues = {
   description: "",
   budget: 0,
   location: "",
-  category: "",
+  category: "Technology",
   subcategory: "",
   mission_type: "company",
   contract_type: "Full-time",
