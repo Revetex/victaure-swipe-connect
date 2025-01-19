@@ -41,6 +41,11 @@ interface ModelSelectorProps {
 export function ModelSelector({ value, onValueChange }: ModelSelectorProps) {
   const [open, setOpen] = useState(false);
 
+  const handleSelect = (currentValue: string) => {
+    onValueChange(currentValue === value ? value : currentValue);
+    setOpen(false);
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -65,10 +70,7 @@ export function ModelSelector({ value, onValueChange }: ModelSelectorProps) {
               <CommandItem
                 key={model.value}
                 value={model.value}
-                onSelect={(currentValue) => {
-                  onValueChange(currentValue === value ? "" : currentValue);
-                  setOpen(false);
-                }}
+                onSelect={() => handleSelect(model.value)}
               >
                 <Check
                   className={cn(

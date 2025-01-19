@@ -33,7 +33,7 @@ export function MessagesContent({
   const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
 
   const handleSendMessage = () => {
-    if (onSendMessage) {
+    if (onSendMessage && inputMessage.trim()) {
       onSendMessage(inputMessage, selectedModel);
     }
   };
