@@ -15,8 +15,6 @@ interface MessagesContentProps {
   onClearChat: () => void;
   onBack?: () => void;
   showingChat?: boolean;
-  selectedModel: string;
-  onModelChange: (model: string) => void;
 }
 
 export function MessagesContent({
@@ -30,8 +28,6 @@ export function MessagesContent({
   onClearChat = () => {},
   onBack,
   showingChat,
-  selectedModel = "mistralai/Mixtral-8x7B-Instruct-v0.1",
-  onModelChange = () => {},
 }: MessagesContentProps) {
   const handleSendMessage = () => {
     if (onSendMessage && inputMessage.trim()) {
@@ -101,8 +97,6 @@ export function MessagesContent({
           onVoiceInput={onVoiceInput}
           isListening={isListening}
           isThinking={isThinking}
-          selectedModel={selectedModel}
-          onModelChange={onModelChange}
         />
       </div>
     </div>
