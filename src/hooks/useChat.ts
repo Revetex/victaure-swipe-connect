@@ -10,45 +10,42 @@ export function useChat(): ChatState & ChatActions {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
-  const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
   
   const {
-    messages = [],
-    setMessages = () => {},
-    deletedMessages = [],
-    setDeletedMessages = () => {}
-  } = useMessages() || {};
+    messages,
+    setMessages,
+    deletedMessages,
+    setDeletedMessages
+  } = useMessages();
 
   const {
     handleSendMessage: sendMessage,
     clearChat,
     restoreChat
   } = useChatActions(
-    messages,
+    messages || [],
     setMessages,
-    deletedMessages,
+    deletedMessages || [],
     setDeletedMessages,
     setInputMessage,
     setIsThinking
   );
 
   const handleSendMessage = async (message: string) => {
-    if (!message?.trim()) return;
-
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        toast.error("Vous devez être connecté pour utiliser le chat");
-        return;
+        toast.error("Vous devez être connecté pour utiliser le chat")
+        return
       }
       
-      await sendMessage(message, selectedModel);
+      await sendMessage(message)
     } catch (error) {
-      console.error("Error in handleSendMessage:", error);
-      toast.error("Une erreur est survenue lors de l'envoi du message");
-      setIsThinking(false);
+      console.error("Error in handleSendMessage:", error)
+      toast.error("Une erreur est survenue lors de l'envoi du message")
+      setIsThinking(false)
     }
-  };
+  }
 
   const handleVoiceInput = () => {
     try {
@@ -70,10 +67,8 @@ export function useChat(): ChatState & ChatActions {
     inputMessage,
     isListening,
     isThinking,
-    selectedModel,
     setMessages,
     setInputMessage,
-    setSelectedModel,
     handleSendMessage,
     handleVoiceInput,
     clearChat,

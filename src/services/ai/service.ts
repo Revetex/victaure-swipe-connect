@@ -1,110 +1,120 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Message } from "@/types/chat/messageTypes";
-import { v4 as uuidv4 } from 'uuid';
+import { Message } from "@/types/chat/messageTypes";
+import { toast } from "sonner";
 
-export const generateAIResponse = async (message: string, model?: string) => {
+export async function generateAIResponse(message: string): Promise<string> {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      throw new Error("No active session");
-    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
 
-    const response = await fetch(
-      "https://mfjllillnpleasclqabb.supabase.co/functions/v1/ai-chat",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          message,
-          userId: session.user.id,
-          model: model || "mistralai/Mixtral-8x7B-Instruct-v0.1"
-        }),
+    const { data, error } = await supabase.functions.invoke('ai-chat', {
+      body: { 
+        message,
+        userId: user.id,
+        context: {
+          previousMessages: await loadMessages()
+        }
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.response;
-  } catch (error) {
-    console.error("Error generating AI response:", error);
-    throw error;
-  }
-};
-
-export const saveMessage = async (message: Message) => {
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      throw new Error("No active session");
-    }
-
-    const messageId = uuidv4();
-    const { error } = await supabase.from("ai_chat_messages").insert({
-      id: messageId,
-      user_id: session.user.id,
-      content: message.content,
-      sender: message.sender,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
     });
 
     if (error) throw error;
-    return messageId;
+    if (!data?.response) throw new Error('Invalid response format');
+    
+    return data.response;
+
   } catch (error) {
-    console.error("Error saving message:", error);
+    console.error('Error generating AI response:', error);
+    toast.error("Une erreur est survenue lors de la génération de la réponse");
     throw error;
   }
-};
+}
 
-export const loadMessages = async (): Promise<Message[]> => {
+export async function saveMessage(message: Message): Promise<void> {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      throw new Error("No active session");
-    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('ai_chat_messages')
+      .insert({
+        id: message.id,
+        user_id: user.id,
+        content: message.content,
+        sender: message.sender,
+        created_at: message.timestamp.toISOString()
+      });
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error saving message:', error);
+    toast.error("Une erreur est survenue lors de la sauvegarde du message");
+    throw error;
+  }
+}
+
+export async function loadMessages(): Promise<Message[]> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase
-      .from("ai_chat_messages")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .order("created_at", { ascending: true });
+      .from('ai_chat_messages')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true });
 
     if (error) throw error;
 
-    return data.map((msg) => ({
+    return data.map(msg => ({
       id: msg.id,
       content: msg.content,
       sender: msg.sender,
       timestamp: new Date(msg.created_at),
+      created_at: msg.created_at,
+      updated_at: msg.updated_at,
       user_id: msg.user_id
     }));
   } catch (error) {
-    console.error("Error loading messages:", error);
+    console.error('Error loading messages:', error);
+    toast.error("Une erreur est survenue lors du chargement des messages");
     throw error;
   }
-};
+}
 
-export const deleteAllMessages = async () => {
+export async function deleteAllMessages(): Promise<void> {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      throw new Error("No active session");
-    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
 
     const { error } = await supabase
-      .from("ai_chat_messages")
+      .from('ai_chat_messages')
       .delete()
-      .eq("user_id", session.user.id);
+      .eq('user_id', user.id);
 
     if (error) throw error;
   } catch (error) {
-    console.error("Error deleting messages:", error);
+    console.error('Error deleting messages:', error);
+    toast.error("Une erreur est survenue lors de la suppression des messages");
     throw error;
   }
-};
+}
+
+export async function provideFeedback(messageId: string, score: number): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('ai_learning_data')
+      .update({ feedback_score: score })
+      .eq('id', messageId)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    toast.success("Merci pour votre feedback!");
+  } catch (error) {
+    console.error('Error providing feedback:', error);
+    toast.error("Une erreur est survenue lors de l'envoi du feedback");
+    throw error;
+  }
+}

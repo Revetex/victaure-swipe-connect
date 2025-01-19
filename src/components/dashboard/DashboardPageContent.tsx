@@ -2,8 +2,10 @@ import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { Settings } from "@/components/Settings";
-import { CombinedTasksSection } from "@/components/todo/CombinedTasksSection";
+import { TodoSection } from "@/components/todo/TodoSection";
+import { NotesSection } from "@/components/todo/NotesSection";
 import { memo } from "react";
+import { useColorPalette } from "@/hooks/useColorPalette";
 
 interface DashboardPageContentProps {
   currentPage: number;
@@ -24,6 +26,8 @@ export const DashboardPageContent = memo(function DashboardPageContent({
   todoProps,
   noteProps
 }: DashboardPageContentProps) {
+  const colors = useColorPalette();
+
   switch (currentPage) {
     case 1:
       return (
@@ -64,10 +68,14 @@ export const DashboardPageContent = memo(function DashboardPageContent({
       return (
         <div key="todo-notes-container" className="dashboard-card h-full">
           <div className="p-3 sm:p-4 md:p-6 h-full">
-            <CombinedTasksSection 
-              todoProps={todoProps}
-              noteProps={noteProps}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
+              <div className="h-full overflow-hidden">
+                <TodoSection {...todoProps} />
+              </div>
+              <div className="h-full overflow-hidden">
+                <NotesSection {...noteProps} colors={colors} />
+              </div>
+            </div>
           </div>
         </div>
       );

@@ -10,7 +10,7 @@ export function useChatActions(
   setInputMessage: (message: string) => void,
   setIsThinking: (isThinking: boolean) => void
 ) {
-  const handleSendMessage = async (message: string, model?: string) => {
+  const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
 
     try {
@@ -29,14 +29,14 @@ export function useChatActions(
         timestamp: new Date(),
       };
 
-      setMessages([...(messages || []), userMessage, thinkingMessage]);
+      setMessages([...messages, userMessage, thinkingMessage]);
       setIsThinking(true);
       setInputMessage("");
 
       try {
         await saveMessage(userMessage);
-        console.log('Generating AI response with model:', model);
-        const aiResponse = await generateAIResponse(message, model);
+        console.log('Generating AI response...');
+        const aiResponse = await generateAIResponse(message);
         console.log('AI response generated:', aiResponse);
         
         const assistantMessage: Message = {
@@ -47,11 +47,11 @@ export function useChatActions(
         };
 
         await saveMessage(assistantMessage);
-        setMessages([...(messages || []), userMessage, assistantMessage]);
+        setMessages([...messages, userMessage, assistantMessage]);
       } catch (error) {
         console.error("Error generating AI response:", error);
         toast.error("Une erreur est survenue lors de la génération de la réponse");
-        setMessages([...(messages || []), userMessage]);
+        setMessages([...messages, userMessage]);
       } finally {
         setIsThinking(false);
       }
@@ -64,7 +64,7 @@ export function useChatActions(
 
   const clearChat = async () => {
     try {
-      setDeletedMessages(messages || []);
+      setDeletedMessages(messages);
       await deleteAllMessages();
       setMessages([]);
       toast.success("La conversation a été effacée");

@@ -7,21 +7,17 @@ import { toast } from "sonner";
 
 export function Messages() {
   const {
-    messages: chatMessages = [],
-    inputMessage = "",
-    isListening = false,
-    isThinking = false,
-    setInputMessage = () => {},
+    messages: chatMessages,
+    inputMessage,
+    isListening,
+    isThinking,
+    setInputMessage,
     handleSendMessage,
-    handleVoiceInput = () => {},
-    clearChat = () => {}
-  } = useChat() || {};
+    handleVoiceInput,
+    clearChat
+  } = useChat();
 
-  const { 
-    messages = [], 
-    markAsRead 
-  } = useMessages() || {};
-
+  const { messages, markAsRead } = useMessages();
   const [showConversation, setShowConversation] = useState(false);
 
   const handleBack = useCallback(() => {
@@ -38,11 +34,6 @@ export function Messages() {
   }, []);
 
   const handleMarkAsRead = useCallback(async (messageId: string) => {
-    if (!markAsRead?.mutate) {
-      console.error("markAsRead.mutate is not available");
-      return;
-    }
-
     try {
       await markAsRead.mutate(messageId);
     } catch (error) {
@@ -52,13 +43,8 @@ export function Messages() {
   }, [markAsRead]);
 
   const handleSendMessageWithFeedback = useCallback(async (message: string) => {
-    if (!message?.trim()) {
+    if (!message.trim()) {
       toast.error("Veuillez entrer un message");
-      return;
-    }
-
-    if (!handleSendMessage) {
-      console.error("handleSendMessage is not available");
       return;
     }
 
@@ -70,27 +56,25 @@ export function Messages() {
     }
   }, [handleSendMessage]);
 
-  const safeProps = {
-    messages: Array.isArray(chatMessages) ? chatMessages : [],
-    inputMessage: inputMessage || "",
-    isListening: Boolean(isListening),
-    isThinking: Boolean(isThinking),
-    onSendMessage: handleSendMessageWithFeedback,
-    onVoiceInput: handleVoiceInput,
-    setInputMessage: setInputMessage,
-    onClearChat: clearChat,
-    onBack: handleBack,
-    showingChat: showConversation
-  };
-
   return (
     <div className="h-full flex flex-col">
       {showConversation ? (
-        <MessagesContent {...safeProps} />
+        <MessagesContent
+          messages={chatMessages}
+          inputMessage={inputMessage}
+          isListening={isListening}
+          isThinking={isThinking}
+          onSendMessage={handleSendMessageWithFeedback}
+          onVoiceInput={handleVoiceInput}
+          setInputMessage={setInputMessage}
+          onClearChat={clearChat}
+          onBack={handleBack}
+          showingChat={showConversation}
+        />
       ) : (
         <MessagesList
-          messages={Array.isArray(messages) ? messages : []}
-          chatMessages={Array.isArray(chatMessages) ? chatMessages : []}
+          messages={messages}
+          chatMessages={chatMessages}
           onSelectConversation={handleSelectConversation}
           onMarkAsRead={handleMarkAsRead}
         />

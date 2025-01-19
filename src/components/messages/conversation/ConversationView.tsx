@@ -62,9 +62,9 @@ export function ConversationView({
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (message: string) => {
     try {
-      await onSendMessage(inputMessage, profile);
+      await onSendMessage(message, profile);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
@@ -161,7 +161,7 @@ export function ConversationView({
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
-            onSend={handleSendMessage}
+            onSend={() => handleSendMessage(inputMessage)}
             onVoiceInput={onVoiceInput}
             isListening={isListening}
             isThinking={isThinking}

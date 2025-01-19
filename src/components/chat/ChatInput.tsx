@@ -1,78 +1,109 @@
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Mic, Send } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
+import { Mic, ArrowRight, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback, memo } from "react";
 
-export interface ChatInputProps {
+interface ChatInputProps {
   value: string;
-  onChange: (message: string) => void;
+  onChange: (value: string) => void;
   onSend: () => void;
   onVoiceInput?: () => void;
   isListening?: boolean;
   isThinking?: boolean;
   placeholder?: string;
+  className?: string;
+  maxLength?: number;
 }
 
-export function ChatInput({
+export const ChatInput = memo(function ChatInput({
   value,
   onChange,
   onSend,
   onVoiceInput,
   isListening = false,
   isThinking = false,
-  placeholder = "Écrivez votre message..."
+  placeholder = "Écrivez votre message...",
+  className,
+  maxLength = 1000
 }: ChatInputProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [rows, setRows] = useState(1);
 
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "0px";
-      const scrollHeight = textareaRef.current.scrollHeight;
-      textareaRef.current.style.height = scrollHeight + "px";
-    }
+    const lineCount = (value.match(/\n/g) || []).length + 1;
+    setRows(Math.min(lineCount, 5));
   }, [value]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+      if (value.trim() && !isThinking) {
+        onSend();
+      }
+    }
+  }, [value, isThinking, onSend]);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length <= maxLength) {
+      onChange(newValue);
+    }
+  }, [maxLength, onChange]);
+
+  const handleSendClick = useCallback(() => {
+    if (value.trim() && !isThinking) {
       onSend();
     }
-  };
+  }, [value, isThinking, onSend]);
 
   return (
-    <div className="flex items-end gap-2 w-full max-w-[100vw] px-safe">
-      <Textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        className="min-h-[44px] max-h-[120px] resize-none flex-1 py-3 px-4 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400 rounded-xl"
-        disabled={isThinking}
-      />
-      <div className="flex gap-2 shrink-0">
+    <div className={cn("p-1.5", className)}>
+      <div className="relative flex items-center gap-1.5">
         {onVoiceInput && (
-          <Button
-            type="button"
-            size="icon"
-            variant={isListening ? "default" : "outline"}
+          <button
             onClick={onVoiceInput}
-            className={`h-[44px] w-[44px] rounded-xl ${isListening ? "bg-primary" : "border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700/50"}`}
+            className={cn(
+              "shrink-0 p-2 text-muted-foreground/60 hover:text-primary transition-colors",
+              isListening && "text-primary animate-pulse"
+            )}
             disabled={isThinking}
           >
             <Mic className="h-5 w-5" />
-          </Button>
+          </button>
         )}
-        <Button
-          type="submit"
-          size="icon"
-          onClick={onSend}
-          disabled={!value.trim() || isThinking}
-          className="h-[44px] w-[44px] rounded-xl bg-primary hover:bg-primary/90 text-white"
-        >
-          <Send className="h-5 w-5" />
-        </Button>
+        
+        <div className="relative flex-1">
+          <Textarea
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className="min-h-[28px] max-h-[28px] w-full pr-10 py-1 resize-none text-sm focus-visible:ring-1 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
+            style={{
+              height: `${Math.max(28, Math.min(rows * 20, 100))}px`
+            }}
+          />
+          
+          <AnimatePresence>
+            {value.trim() && (
+              <motion.button
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                onClick={handleSendClick}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                disabled={isThinking}
+              >
+                {isThinking ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowRight className="h-4 w-4" />
+                )}
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
-}
+});

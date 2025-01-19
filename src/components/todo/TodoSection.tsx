@@ -37,9 +37,10 @@ export function TodoSection({
   type = 'tasks'
 }: TodoSectionProps) {
   const title = type === 'notes' ? 'Notes' : 'Tâches';
+  const sectionClass = type === 'notes' ? 'notes-section' : 'task-section';
   
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className={`space-y-6 h-[calc(100vh-8rem)] flex flex-col ${sectionClass}`}>
       <div className="flex items-center gap-3 text-primary">
         <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
           <ListTodo className="h-6 w-6" />
@@ -59,9 +60,9 @@ export function TodoSection({
         onAdd={onAdd}
       />
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 pr-4">
         <motion.div 
-          className="space-y-3 p-4 min-h-[300px] bg-background/50 rounded-lg backdrop-blur-sm border shadow-inner"
+          className="space-y-3"
           layout
         >
           <AnimatePresence mode="popLayout">
