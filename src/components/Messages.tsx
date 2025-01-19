@@ -11,10 +11,10 @@ export function Messages() {
     inputMessage = "", // Add default empty string
     isListening = false, // Add default false
     isThinking = false, // Add default false
-    setInputMessage,
+    setInputMessage = () => {}, // Add default noop
     handleSendMessage,
-    handleVoiceInput,
-    clearChat
+    handleVoiceInput = () => {}, // Add default noop
+    clearChat = () => {} // Add default noop
   } = useChat() || {}; // Add fallback empty object
 
   const { 
@@ -23,6 +23,7 @@ export function Messages() {
   } = useMessages() || {}; // Add fallback empty object
 
   const [showConversation, setShowConversation] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
 
   const handleBack = useCallback(() => {
     setShowConversation(false);
@@ -63,12 +64,12 @@ export function Messages() {
     }
 
     try {
-      await handleSendMessage(message);
+      await handleSendMessage(message, selectedModel);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
     }
-  }, [handleSendMessage]);
+  }, [handleSendMessage, selectedModel]);
 
   // Ensure all required props have default values
   const safeProps = {
@@ -81,7 +82,9 @@ export function Messages() {
     setInputMessage: setInputMessage || (() => {}),
     onClearChat: clearChat || (() => {}),
     onBack: handleBack,
-    showingChat: showConversation
+    showingChat: showConversation,
+    selectedModel,
+    onModelChange: setSelectedModel
   };
 
   return (
