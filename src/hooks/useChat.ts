@@ -65,8 +65,8 @@ export function useChat(): ChatState & ChatActions {
   };
 
   return {
-    messages,
-    deletedMessages,
+    messages: messages || [],
+    deletedMessages: deletedMessages || [],
     inputMessage,
     isListening,
     isThinking,
