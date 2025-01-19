@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export function Messages() {
   const {
-    messages: chatMessages,
+    messages: chatMessages = [], // Add default empty array
     inputMessage,
     isListening,
     isThinking,
@@ -17,7 +17,7 @@ export function Messages() {
     clearChat
   } = useChat();
 
-  const { messages, markAsRead } = useMessages();
+  const { messages = [], markAsRead } = useMessages(); // Add default empty array
   const [showConversation, setShowConversation] = useState(false);
 
   const handleBack = useCallback(() => {

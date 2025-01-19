@@ -11,7 +11,9 @@ export function useMessages() {
     const initializeChat = async () => {
       try {
         const savedMessages = await loadMessages();
-        setMessages(savedMessages);
+        if (savedMessages) {
+          setMessages(savedMessages);
+        }
       } catch (error) {
         console.error("Error initializing chat:", error);
         toast.error("Erreur lors du chargement des messages");

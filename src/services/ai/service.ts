@@ -44,14 +44,18 @@ export const saveMessage = async (message: Message) => {
       throw new Error("No active session");
     }
 
+    const messageId = uuidv4();
     const { error } = await supabase.from("ai_chat_messages").insert({
-      id: uuidv4(),
+      id: messageId,
       user_id: session.user.id,
       content: message.content,
       sender: message.sender,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     });
 
     if (error) throw error;
+    return messageId;
   } catch (error) {
     console.error("Error saving message:", error);
     throw error;
