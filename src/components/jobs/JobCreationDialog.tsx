@@ -32,17 +32,16 @@ export function JobCreationDialog({ isOpen, setIsOpen, onSuccess }: JobCreationD
           Ajouter une mission
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[800px] h-[90vh] p-0">
+        <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-2xl font-bold text-foreground">
             Ajouter une mission
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Créez une nouvelle mission en quelques étapes simples.
-            Les professionnels pourront la consulter et y postuler.
+            Créez une nouvelle mission en quelques étapes simples
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-6">
+        <div className="p-6 pt-2">
           <CreateJobForm onSuccess={() => {
             setIsOpen(false);
             onSuccess();

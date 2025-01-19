@@ -2,7 +2,6 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { JobBasicInfoFields } from "./form/JobBasicInfoFields";
 import { JobTypeFields } from "./form/JobTypeFields";
@@ -15,6 +14,7 @@ import { useJobFormSubmit } from "./form/useJobFormSubmit";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CreateJobFormProps {
   onSuccess?: () => void;
@@ -31,19 +31,11 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
   const missionType = form.watch("mission_type");
   const formState = form.formState;
 
-  // Afficher les erreurs de validation
   useEffect(() => {
     if (formState.errors && Object.keys(formState.errors).length > 0) {
       toast.error("Veuillez corriger les erreurs dans le formulaire");
     }
   }, [formState.errors]);
-
-  const tabs = [
-    { id: "basic", label: "Informations de base" },
-    { id: "type", label: "Type de mission" },
-    { id: "category", label: "Catégorie" },
-    ...(missionType === "company" ? [{ id: "company", label: "Entreprise" }] : []),
-  ];
 
   return (
     <Card className="border-none shadow-none">
@@ -51,62 +43,34 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
         <FormProvider {...form}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-              <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2">
-                  {tabs.map((tab) => (
-                    <TabsTrigger 
-                      key={tab.id} 
-                      value={tab.id}
-                      className="relative"
-                    >
-                      {tab.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
+              <ScrollArea className="h-[calc(100vh-300px)] pr-4">
+                <motion.div 
+                  className="space-y-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="rounded-lg border p-4 space-y-6">
+                    <h3 className="text-lg font-semibold">Informations essentielles</h3>
+                    <JobBasicInfoFields />
+                    <JobTypeFields />
+                    <JobCategoryFields />
+                  </div>
 
-                <AnimatePresence mode="wait">
-                  <motion.div 
-                    className="mt-6 space-y-6"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <TabsContent value="basic" className="space-y-6">
-                      <div className="rounded-lg border p-4">
-                        <JobBasicInfoFields />
-                      </div>
-                    </TabsContent>
+                  {missionType === "company" && (
+                    <div className="rounded-lg border p-4 space-y-6">
+                      <h3 className="text-lg font-semibold">Informations entreprise</h3>
+                      <JobCompanyFields />
+                      <JobSalaryFields />
+                    </div>
+                  )}
 
-                    <TabsContent value="type" className="space-y-6">
-                      <div className="rounded-lg border p-4">
-                        <JobTypeFields />
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="category" className="space-y-6">
-                      <div className="rounded-lg border p-4">
-                        <JobCategoryFields />
-                      </div>
-                    </TabsContent>
-
-                    {missionType === "company" && (
-                      <TabsContent value="company" className="space-y-6">
-                        <div className="rounded-lg border p-4">
-                          <JobCompanyFields />
-                          <div className="mt-6">
-                            <JobSalaryFields />
-                          </div>
-                        </div>
-                      </TabsContent>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-6 rounded-lg border p-4">
-                  <JobDetailsFields />
-                </div>
-              </Tabs>
+                  <div className="rounded-lg border p-4 space-y-6">
+                    <h3 className="text-lg font-semibold">Détails supplémentaires</h3>
+                    <JobDetailsFields />
+                  </div>
+                </motion.div>
+              </ScrollArea>
 
               <Button 
                 type="submit" 
