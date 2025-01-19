@@ -294,6 +294,8 @@ export type Database = {
           required_skills: string[] | null
           responsibilities: string[] | null
           salary_currency: string | null
+          salary_max: number | null
+          salary_min: number | null
           status: string
           subcategory: string | null
           title: string
@@ -335,6 +337,8 @@ export type Database = {
           required_skills?: string[] | null
           responsibilities?: string[] | null
           salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
           status?: string
           subcategory?: string | null
           title: string
@@ -376,6 +380,8 @@ export type Database = {
           required_skills?: string[] | null
           responsibilities?: string[] | null
           salary_currency?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
           status?: string
           subcategory?: string | null
           title?: string
