@@ -7,20 +7,20 @@ import { toast } from "sonner";
 
 export function Messages() {
   const {
-    messages: chatMessages = [], // Ensure default empty array
-    inputMessage = "", // Add default empty string
-    isListening = false, // Add default false
-    isThinking = false, // Add default false
-    setInputMessage = () => {}, // Add default noop
-    handleSendMessage = async () => {}, // Add default async noop
-    handleVoiceInput = () => {}, // Add default noop
-    clearChat = () => {} // Add default noop
-  } = useChat() || {}; // Add fallback empty object
+    messages: chatMessages = [],
+    inputMessage = "",
+    isListening = false,
+    isThinking = false,
+    setInputMessage = () => {},
+    handleSendMessage = async () => {},
+    handleVoiceInput = () => {},
+    clearChat = () => {}
+  } = useChat() || {};
 
   const { 
-    messages = [], // Ensure default empty array
+    messages = [],
     markAsRead 
-  } = useMessages() || {}; // Add fallback empty object
+  } = useMessages() || {};
 
   const [showConversation, setShowConversation] = useState(false);
   const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
@@ -64,15 +64,13 @@ export function Messages() {
     }
 
     try {
-      // Only pass the message to handleSendMessage, handle model selection internally
-      await handleSendMessage(message);
+      await handleSendMessage(message, selectedModel);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
     }
-  }, [handleSendMessage]);
+  }, [handleSendMessage, selectedModel]);
 
-  // Ensure all required props have default values
   const safeProps = {
     messages: Array.isArray(chatMessages) ? chatMessages : [],
     inputMessage: inputMessage || "",

@@ -16,22 +16,24 @@ interface MessagesContentProps {
   onClearChat: () => void;
   onBack?: () => void;
   showingChat?: boolean;
+  selectedModel?: string;
+  onModelChange?: (model: string) => void;
 }
 
 export function MessagesContent({
-  messages = [], // Add default empty array
-  inputMessage = "", // Add default empty string
-  isListening = false, // Add default false
-  isThinking = false, // Add default false
+  messages = [],
+  inputMessage = "",
+  isListening = false,
+  isThinking = false,
   onSendMessage,
-  onVoiceInput = () => {}, // Add default noop function
-  setInputMessage = () => {}, // Add default noop function
-  onClearChat = () => {}, // Add default noop function
+  onVoiceInput = () => {},
+  setInputMessage = () => {},
+  onClearChat = () => {},
   onBack,
   showingChat,
+  selectedModel = "mistralai/Mixtral-8x7B-Instruct-v0.1",
+  onModelChange,
 }: MessagesContentProps) {
-  const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
-
   const handleSendMessage = () => {
     if (onSendMessage && inputMessage.trim()) {
       onSendMessage(inputMessage, selectedModel);
@@ -101,7 +103,7 @@ export function MessagesContent({
           isListening={isListening}
           isThinking={isThinking}
           selectedModel={selectedModel}
-          onModelChange={setSelectedModel}
+          onModelChange={onModelChange || (() => {})}
         />
       </div>
     </div>
