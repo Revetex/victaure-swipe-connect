@@ -48,8 +48,7 @@ export function MessagesContent({
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
-    const isNearBottom = 
-      target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
     setShowScrollButton(!isNearBottom);
   };
 
@@ -70,16 +69,16 @@ export function MessagesContent({
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background/95 backdrop-blur-sm">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-3 max-w-5xl mx-auto">
+    <div className="fixed inset-0 flex flex-col bg-[#0f172a] text-white">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-[#0f172a]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0f172a]/60">
+        <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             {onBack && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onBack}
-                className="shrink-0"
+                className="shrink-0 text-white hover:bg-gray-800"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
@@ -91,8 +90,8 @@ export function MessagesContent({
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold truncate">M. Victaure</h2>
-              <p className="text-sm text-muted-foreground truncate">
+              <h2 className="text-lg font-semibold truncate text-white">M. Victaure</h2>
+              <p className="text-sm text-gray-400 truncate">
                 {isThinking ? "En train de réfléchir..." : "Assistant en orientation professionnelle"}
               </p>
             </div>
@@ -101,7 +100,7 @@ export function MessagesContent({
             variant="ghost"
             size="icon"
             onClick={handleClearChat}
-            className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
+            className="shrink-0 text-gray-400 hover:text-red-400 hover:bg-red-400/10"
           >
             <Trash2 className="h-5 w-5" />
           </Button>
@@ -110,10 +109,10 @@ export function MessagesContent({
 
       <div className="flex-1 overflow-hidden">
         <ScrollArea 
-          className="h-full px-4 pb-32 pt-4" 
+          className="h-full px-4 pb-36 pt-4" 
           onScroll={handleScroll}
         >
-          <div className="max-w-5xl mx-auto space-y-4">
+          <div className="space-y-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
                 <ChatMessage
@@ -140,11 +139,11 @@ export function MessagesContent({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="fixed bottom-24 right-4 z-50"
+              className="fixed bottom-32 right-4 z-50"
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg"
+                className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
                 onClick={scrollToBottom}
               >
                 <ArrowDown className="h-5 w-5" />
@@ -154,8 +153,8 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t safe-bottom">
-        <div className="max-w-5xl mx-auto px-4 py-2">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#0f172a]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0f172a]/60 border-t border-gray-800 pb-safe">
+        <div className="px-4 py-2">
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}

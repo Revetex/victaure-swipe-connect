@@ -47,7 +47,7 @@ export function ChatInput({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="min-h-[44px] max-h-[120px] resize-none flex-1 py-3 px-4"
+        className="min-h-[44px] max-h-[120px] resize-none flex-1 py-3 px-4 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
         disabled={isThinking}
       />
       <div className="flex gap-2 shrink-0">
@@ -57,7 +57,7 @@ export function ChatInput({
             size="icon"
             variant={isListening ? "default" : "outline"}
             onClick={onVoiceInput}
-            className={`h-[44px] w-[44px] ${isListening ? "bg-primary" : ""}`}
+            className={`h-[44px] w-[44px] ${isListening ? "bg-primary" : "border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700/50"}`}
             disabled={isThinking}
           >
             <Mic className="h-5 w-5" />
@@ -68,7 +68,7 @@ export function ChatInput({
           size="icon"
           onClick={onSend}
           disabled={!value.trim() || isThinking}
-          className="h-[44px] w-[44px]"
+          className="h-[44px] w-[44px] bg-primary hover:bg-primary/90 text-white"
         >
           <Send className="h-5 w-5" />
         </Button>
