@@ -1,11 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/chat/messageTypes";
 import { toast } from "sonner";
+import { SYSTEM_PROMPT, FALLBACK_MESSAGE } from './prompts';
 
 export async function generateAIResponse(message: string): Promise<string> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
+
+    console.log('Generating AI response...');
 
     const { data, error } = await supabase.functions.invoke('ai-chat', {
       body: { 
@@ -13,35 +16,46 @@ export async function generateAIResponse(message: string): Promise<string> {
         userId: user.id,
         context: {
           previousMessages: await loadMessages(),
-          emotionalContext: analyzeEmotionalContext(message)
+          emotionalContext: analyzeEmotionalContext(message),
+          systemPrompt: SYSTEM_PROMPT
         }
       }
     });
 
     if (error) throw error;
-    if (!data?.response) throw new Error('Invalid response format');
+    if (!data?.response) {
+      console.warn('Invalid response format, using fallback');
+      return FALLBACK_MESSAGE;
+    }
     
+    console.log('AI response generated:', data.response);
     return data.response;
 
   } catch (error) {
     console.error('Error generating AI response:', error);
     toast.error("Une erreur est survenue lors de la génération de la réponse");
-    throw error;
+    return FALLBACK_MESSAGE;
   }
 }
 
 function analyzeEmotionalContext(message: string): string {
   const lowerMessage = message.toLowerCase();
   
-  // Analyse simple des émotions basée sur des mots clés
-  if (lowerMessage.includes('merci') || lowerMessage.includes('super')) {
+  // Analyse plus détaillée des émotions
+  if (lowerMessage.includes('merci') || lowerMessage.includes('super') || lowerMessage.includes('génial')) {
     return 'positive';
   }
-  if (lowerMessage.includes('difficile') || lowerMessage.includes('problème')) {
+  if (lowerMessage.includes('difficile') || lowerMessage.includes('problème') || lowerMessage.includes('aide')) {
     return 'concerned';
   }
-  if (lowerMessage.includes('frustré') || lowerMessage.includes('fâché')) {
+  if (lowerMessage.includes('frustré') || lowerMessage.includes('fâché') || lowerMessage.includes('pas content')) {
     return 'frustrated';
+  }
+  if (lowerMessage.includes('confus') || lowerMessage.includes('comprends pas') || lowerMessage.includes('perdu')) {
+    return 'confused';
+  }
+  if (lowerMessage.includes('urgent') || lowerMessage.includes('vite') || lowerMessage.includes('pressé')) {
+    return 'urgent';
   }
   
   return 'neutral';
