@@ -10,6 +10,7 @@ export function useChat(): ChatState & ChatActions {
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
   
   const {
     messages,
@@ -31,7 +32,7 @@ export function useChat(): ChatState & ChatActions {
     setIsThinking
   );
 
-  const handleSendMessage = async (message: string, model?: string) => {
+  const handleSendMessage = async (message: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
@@ -39,7 +40,7 @@ export function useChat(): ChatState & ChatActions {
         return
       }
       
-      await sendMessage(message, model)
+      await sendMessage(message, selectedModel)
     } catch (error) {
       console.error("Error in handleSendMessage:", error)
       toast.error("Une erreur est survenue lors de l'envoi du message")
@@ -67,6 +68,8 @@ export function useChat(): ChatState & ChatActions {
     inputMessage,
     isListening,
     isThinking,
+    selectedModel,
+    setSelectedModel,
     setMessages,
     setInputMessage,
     handleSendMessage,

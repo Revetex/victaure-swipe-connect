@@ -29,7 +29,7 @@ export function useChatActions(
         timestamp: new Date(),
       };
 
-      setMessages([...messages, userMessage, thinkingMessage]);
+      setMessages([...(messages || []), userMessage, thinkingMessage]);
       setIsThinking(true);
       setInputMessage("");
 
@@ -47,11 +47,11 @@ export function useChatActions(
         };
 
         await saveMessage(assistantMessage);
-        setMessages([...messages, userMessage, assistantMessage]);
+        setMessages([...(messages || []), userMessage, assistantMessage]);
       } catch (error) {
         console.error("Error generating AI response:", error);
         toast.error("Une erreur est survenue lors de la génération de la réponse");
-        setMessages([...messages, userMessage]);
+        setMessages([...(messages || []), userMessage]);
       } finally {
         setIsThinking(false);
       }
@@ -64,7 +64,7 @@ export function useChatActions(
 
   const clearChat = async () => {
     try {
-      setDeletedMessages(messages);
+      setDeletedMessages(messages || []);
       await deleteAllMessages();
       setMessages([]);
       toast.success("La conversation a été effacée");
