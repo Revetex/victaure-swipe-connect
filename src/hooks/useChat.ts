@@ -17,7 +17,7 @@ export function useChat(): ChatState & ChatActions {
     setMessages = () => {},
     deletedMessages = [],
     setDeletedMessages = () => {}
-  } = useMessages();
+  } = useMessages() || {};
 
   const {
     handleSendMessage: sendMessage,
@@ -33,6 +33,8 @@ export function useChat(): ChatState & ChatActions {
   );
 
   const handleSendMessage = async (message: string) => {
+    if (!message?.trim()) return;
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {

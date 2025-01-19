@@ -6,20 +6,25 @@ import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
 
 export function Messages() {
+  // Initialize state and hooks with proper default values
   const {
-    messages: chatMessages,
-    inputMessage,
-    isListening,
-    isThinking,
-    selectedModel,
-    setSelectedModel,
-    setInputMessage,
+    messages: chatMessages = [],
+    inputMessage = "",
+    isListening = false,
+    isThinking = false,
+    selectedModel = "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    setSelectedModel = () => {},
+    setInputMessage = () => {},
     handleSendMessage,
-    handleVoiceInput,
-    clearChat
-  } = useChat();
+    handleVoiceInput = () => {},
+    clearChat = () => {}
+  } = useChat() || {};
 
-  const { messages, markAsRead } = useMessages();
+  const { 
+    messages = [], 
+    markAsRead 
+  } = useMessages() || {};
+
   const [showConversation, setShowConversation] = useState(false);
 
   const handleBack = useCallback(() => {
@@ -75,13 +80,13 @@ export function Messages() {
     isListening: Boolean(isListening),
     isThinking: Boolean(isThinking),
     onSendMessage: handleSendMessageWithFeedback,
-    onVoiceInput: handleVoiceInput || (() => {}),
-    setInputMessage: setInputMessage || (() => {}),
-    onClearChat: clearChat || (() => {}),
+    onVoiceInput: handleVoiceInput,
+    setInputMessage: setInputMessage,
+    onClearChat: clearChat,
     onBack: handleBack,
     showingChat: showConversation,
-    selectedModel: selectedModel || "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    onModelChange: setSelectedModel || (() => {})
+    selectedModel: selectedModel,
+    onModelChange: setSelectedModel
   };
 
   return (
