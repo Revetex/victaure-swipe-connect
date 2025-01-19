@@ -31,13 +31,13 @@ serve(async (req) => {
       .eq('id', userId)
       .single();
 
-    const prompt = `Tu es M. Victaure, un conseiller en orientation professionnel québécois sympathique.
+    const prompt = `Tu es M. Victaure, un conseiller en orientation professionnel québécois sympathique et chaleureux.
     
 Question: ${message}
 
 Réponse:`;
 
-    console.log('Envoi de la requête...');
+    console.log('Envoi de la requête à Mixtral...');
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -50,8 +50,9 @@ Réponse:`;
         body: JSON.stringify({
           inputs: prompt,
           parameters: {
-            max_new_tokens: 250,
-            temperature: 0.8,
+            max_new_tokens: 500,
+            temperature: 0.7,
+            top_p: 0.9,
             return_full_text: false
           }
         }),
@@ -59,11 +60,12 @@ Réponse:`;
     );
 
     if (!response.ok) {
+      console.error('Erreur API:', await response.text());
       throw new Error('Erreur API Hugging Face');
     }
 
     const data = await response.json();
-    let aiResponse = data[0]?.generated_text?.trim() || "Je m'excuse, pouvez-vous reformuler votre question?";
+    let aiResponse = data[0]?.generated_text?.trim() || "Je m'excuse, je suis momentanément indisponible. Pouvez-vous réessayer dans quelques instants?";
 
     // Nettoyer la réponse
     aiResponse = aiResponse
@@ -79,7 +81,11 @@ Réponse:`;
       .insert({
         user_id: userId,
         question: message,
-        response: aiResponse
+        response: aiResponse,
+        context: {
+          model: 'Mixtral-8x7B-Instruct-v0.1',
+          profile: profile
+        }
       });
 
     return new Response(
