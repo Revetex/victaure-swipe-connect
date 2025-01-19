@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NotesSectionProps {
   notes?: StickyNoteType[];
@@ -31,9 +32,10 @@ export function NotesSection({
 }: NotesSectionProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
-    <div className="space-y-6 h-[calc(100vh-8rem)] flex flex-col">
+    <div className="space-y-4 h-full flex flex-col">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-primary">
           <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
@@ -41,17 +43,19 @@ export function NotesSection({
           </div>
           <h2 className="text-xl font-semibold">Notes</h2>
         </div>
-        <button
-          onClick={() => setShowCalendar(!showCalendar)}
-          className={cn(
-            "p-2 rounded-lg transition-colors",
-            "hover:bg-primary/10 active:bg-primary/20",
-            "focus:outline-none focus:ring-2 focus:ring-primary/50"
-          )}
-        >
-          <span className="sr-only">Toggle Calendar</span>
-          <Calendar className="h-6 w-6" />
-        </button>
+        {!isMobile && (
+          <button
+            onClick={() => setShowCalendar(!showCalendar)}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              "hover:bg-primary/10 active:bg-primary/20",
+              "focus:outline-none focus:ring-2 focus:ring-primary/50"
+            )}
+          >
+            <span className="sr-only">Toggle Calendar</span>
+            <Calendar className="h-6 w-6" />
+          </button>
+        )}
       </div>
 
       <NotesInput
@@ -63,11 +67,12 @@ export function NotesSection({
         onAdd={onAdd}
       />
 
-      <div className="flex-1 flex gap-4">
-        <ScrollArea className="flex-1 pr-4">
+      <div className="flex-1 flex gap-4 min-h-0">
+        <ScrollArea className="flex-1">
           <motion.div 
             className={cn(
-              "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4",
+              "grid gap-4 p-4",
+              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
               "min-h-[300px] bg-background/50 rounded-lg backdrop-blur-sm border",
               "shadow-inner"
             )}
@@ -103,7 +108,7 @@ export function NotesSection({
           </motion.div>
         </ScrollArea>
 
-        {showCalendar && (
+        {showCalendar && !isMobile && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
