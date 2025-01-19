@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
 
 interface CombinedTasksSectionProps {
   todoProps: any;
@@ -20,6 +21,8 @@ export function CombinedTasksSection({
   noteProps
 }: CombinedTasksSectionProps) {
   const isMobile = useIsMobile();
+  const [currentTab, setCurrentTab] = useState("tasks");
+  
   const {
     todos,
     newTodo,
@@ -47,7 +50,12 @@ export function CombinedTasksSection({
   } = noteProps;
 
   return (
-    <Tabs defaultValue="tasks" className="h-full flex flex-col">
+    <Tabs 
+      defaultValue="tasks" 
+      className="h-full flex flex-col"
+      onValueChange={setCurrentTab}
+      value={currentTab}
+    >
       <div className="flex items-center justify-between mb-6">
         <TabsList>
           <TabsTrigger value="tasks" className="flex items-center gap-2">
@@ -63,7 +71,7 @@ export function CombinedTasksSection({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => (activeTab === "tasks" ? addTodo() : addNote())}
+          onClick={() => (currentTab === "tasks" ? addTodo() : addNote())}
           className="hidden sm:flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
