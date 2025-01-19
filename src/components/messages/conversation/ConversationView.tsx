@@ -35,6 +35,7 @@ export function ConversationView({
 }: ConversationViewProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -166,6 +167,8 @@ export function ConversationView({
             isListening={isListening}
             isThinking={isThinking}
             placeholder="Écrivez votre message..."
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
           />
         </div>
       </div>

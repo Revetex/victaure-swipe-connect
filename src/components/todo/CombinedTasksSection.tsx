@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
-import { Todo, StickyNote as StickyNoteType } from "@/types/todo";
+import { Todo, StickyNote as StickyNoteType, ColorOption } from "@/types/todo";
 
 interface TodoProps {
   todos: Todo[];
@@ -35,7 +35,7 @@ interface NoteProps {
   onColorChange: (color: string) => void;
   onAdd: () => void;
   onDelete: (id: string) => void;
-  colors?: { value: string; label: string }[];
+  colors?: ColorOption[];
 }
 
 interface CombinedTasksSectionProps {
@@ -73,7 +73,14 @@ export function CombinedTasksSection({
     onColorChange: setSelectedColor,
     onAdd: addNote,
     onDelete: deleteNote,
-    colors
+    colors = [
+      { value: 'yellow', label: 'Jaune', class: 'bg-yellow-100' },
+      { value: 'blue', label: 'Bleu', class: 'bg-blue-100' },
+      { value: 'green', label: 'Vert', class: 'bg-green-100' },
+      { value: 'pink', label: 'Rose', class: 'bg-pink-100' },
+      { value: 'purple', label: 'Violet', class: 'bg-purple-100' },
+      { value: 'orange', label: 'Orange', class: 'bg-orange-100' }
+    ]
   } = noteProps;
 
   return (
