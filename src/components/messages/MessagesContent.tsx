@@ -71,7 +71,7 @@ export function MessagesContent({
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col">
-      <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
             {onBack && (
@@ -81,7 +81,7 @@ export function MessagesContent({
                 onClick={onBack}
                 className="shrink-0"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
             <Avatar className="h-10 w-10 shrink-0">
@@ -91,9 +91,9 @@ export function MessagesContent({
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+              <h2 className="text-lg font-semibold truncate">M. Victaure</h2>
               <p className="text-sm text-muted-foreground truncate">
-                {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
+                {isThinking ? "En train de réfléchir..." : "Assistant en orientation professionnelle"}
               </p>
             </div>
           </div>
@@ -103,12 +103,12 @@ export function MessagesContent({
             onClick={handleClearChat}
             className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-5 w-5" />
           </Button>
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden bg-background/80 mt-[4.5rem] mb-[4.5rem]">
+      <div className="flex-1 overflow-hidden bg-background/80">
         <ScrollArea 
           className="h-full px-4 py-4" 
           onScroll={handleScroll}
@@ -117,7 +117,7 @@ export function MessagesContent({
             <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
                 <ChatMessage
-                  key={message.id}
+                  key={message.id || index}
                   content={message.content}
                   sender={message.sender}
                   thinking={message.thinking}
@@ -144,28 +144,25 @@ export function MessagesContent({
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg"
+                className="rounded-full shadow-lg h-10 w-10"
                 onClick={scrollToBottom}
               >
-                <ArrowDown className="h-4 w-4" />
+                <ArrowDown className="h-5 w-5" />
               </Button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-sm">
-        <div className="max-w-5xl mx-auto">
-          <ChatInput
-            value={inputMessage}
-            onChange={setInputMessage}
-            onSend={handleSendMessage}
-            onVoiceInput={onVoiceInput}
-            isListening={isListening}
-            isThinking={isThinking}
-          />
-        </div>
-      </div>
+      <ChatInput
+        value={inputMessage}
+        onChange={setInputMessage}
+        onSend={handleSendMessage}
+        onVoiceInput={onVoiceInput}
+        isListening={isListening}
+        isThinking={isThinking}
+        placeholder="Écrivez votre message à M. Victaure..."
+      />
     </div>
   );
 }
