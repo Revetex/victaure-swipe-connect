@@ -31,7 +31,7 @@ export function useChat(): ChatState & ChatActions {
     setIsThinking
   );
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string, model?: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
@@ -39,7 +39,7 @@ export function useChat(): ChatState & ChatActions {
         return
       }
       
-      await sendMessage(message)
+      await sendMessage(message, model)
     } catch (error) {
       console.error("Error in handleSendMessage:", error)
       toast.error("Une erreur est survenue lors de l'envoi du message")

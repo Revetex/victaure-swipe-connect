@@ -10,7 +10,7 @@ export function useChatActions(
   setInputMessage: (message: string) => void,
   setIsThinking: (isThinking: boolean) => void
 ) {
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string, model?: string) => {
     if (!message.trim()) return;
 
     try {
@@ -35,8 +35,8 @@ export function useChatActions(
 
       try {
         await saveMessage(userMessage);
-        console.log('Generating AI response...');
-        const aiResponse = await generateAIResponse(message);
+        console.log('Generating AI response with model:', model);
+        const aiResponse = await generateAIResponse(message, model);
         console.log('AI response generated:', aiResponse);
         
         const assistantMessage: Message = {
