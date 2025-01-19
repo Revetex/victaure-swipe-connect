@@ -1,13 +1,13 @@
 export const pdfStyles = {
   colors: {
-    primary: '#2D3748',
-    secondary: '#4A5568',
-    accent: '#E2E8F0',
+    primary: '#1E293B',
+    secondary: '#475569',
+    accent: '#F1F5F9',
     background: '#FFFFFF',
     text: {
-      primary: '#1A202C',
-      secondary: '#4A5568',
-      muted: '#718096'
+      primary: '#0F172A',
+      secondary: '#334155',
+      muted: '#64748B'
     }
   },
   margins: {
@@ -17,11 +17,11 @@ export const pdfStyles = {
   },
   fonts: {
     header: {
-      size: 28,
+      size: 24,
       style: 'bold'
     },
     subheader: {
-      size: 18,
+      size: 16,
       style: 'bold'
     },
     body: {
@@ -30,9 +30,9 @@ export const pdfStyles = {
     }
   },
   spacing: {
-    section: 20,
-    paragraph: 10,
-    line: 6
+    section: 15,
+    paragraph: 8,
+    line: 5
   }
 };
 
