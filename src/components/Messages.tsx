@@ -11,10 +11,10 @@ export function Messages() {
     inputMessage = "",
     isListening = false,
     isThinking = false,
-    selectedModel,
-    setSelectedModel,
+    selectedModel = "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    setSelectedModel = () => {},
     setInputMessage = () => {},
-    handleSendMessage = async (message: string) => {},
+    handleSendMessage = async () => {},
     handleVoiceInput = () => {},
     clearChat = () => {}
   } = useChat() || {};
@@ -83,8 +83,8 @@ export function Messages() {
     onClearChat: clearChat || (() => {}),
     onBack: handleBack,
     showingChat: showConversation,
-    selectedModel: selectedModel || "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    onModelChange: setSelectedModel || (() => {})
+    selectedModel,
+    onModelChange: setSelectedModel
   };
 
   return (
