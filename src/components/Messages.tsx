@@ -12,7 +12,7 @@ export function Messages() {
     isListening = false,
     isThinking = false,
     setInputMessage = () => {},
-    handleSendMessage = async () => {},
+    handleSendMessage = async (message: string) => {},
     handleVoiceInput = () => {},
     clearChat = () => {}
   } = useChat() || {};
@@ -64,12 +64,13 @@ export function Messages() {
     }
 
     try {
-      await handleSendMessage(message, selectedModel);
+      // Only pass the message parameter since that's what the type expects
+      await handleSendMessage(message);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
     }
-  }, [handleSendMessage, selectedModel]);
+  }, [handleSendMessage]);
 
   const safeProps = {
     messages: Array.isArray(chatMessages) ? chatMessages : [],
