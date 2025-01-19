@@ -10,10 +10,37 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
+import { Todo, StickyNote as StickyNoteType } from "@/types/todo";
+
+interface TodoProps {
+  todos: Todo[];
+  newTodo: string;
+  selectedDate?: Date;
+  selectedTime?: string;
+  allDay: boolean;
+  onTodoChange: (value: string) => void;
+  onDateChange: (date?: Date) => void;
+  onTimeChange: (time: string) => void;
+  onAllDayChange: (checked: boolean) => void;
+  onAdd: () => void;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
+interface NoteProps {
+  notes: StickyNoteType[];
+  newNote: string;
+  selectedColor: string;
+  onNoteChange: (value: string) => void;
+  onColorChange: (color: string) => void;
+  onAdd: () => void;
+  onDelete: (id: string) => void;
+  colors?: { value: string; label: string }[];
+}
 
 interface CombinedTasksSectionProps {
-  todoProps: any;
-  noteProps: any;
+  todoProps: TodoProps;
+  noteProps: NoteProps;
 }
 
 export function CombinedTasksSection({
@@ -24,28 +51,28 @@ export function CombinedTasksSection({
   const [currentTab, setCurrentTab] = useState("tasks");
   
   const {
-    todos,
+    todos = [],
     newTodo,
     selectedDate,
     selectedTime,
     allDay,
-    setNewTodo,
-    setSelectedDate,
-    setSelectedTime,
-    setAllDay,
-    addTodo,
-    toggleTodo,
-    deleteTodo
+    onTodoChange: setNewTodo,
+    onDateChange: setSelectedDate,
+    onTimeChange: setSelectedTime,
+    onAllDayChange: setAllDay,
+    onAdd: addTodo,
+    onToggle: toggleTodo,
+    onDelete: deleteTodo
   } = todoProps;
 
   const {
-    notes,
+    notes = [],
     newNote,
     selectedColor,
-    setNewNote,
-    setSelectedColor,
-    addNote,
-    deleteNote,
+    onNoteChange: setNewNote,
+    onColorChange: setSelectedColor,
+    onAdd: addNote,
+    onDelete: deleteNote,
     colors
   } = noteProps;
 
@@ -106,7 +133,7 @@ export function CombinedTasksSection({
               layout
             >
               <AnimatePresence mode="popLayout">
-                {todos.map((todo) => (
+                {Array.isArray(todos) && todos.map((todo) => (
                   <TodoItem
                     key={todo.id}
                     todo={todo}
@@ -114,7 +141,7 @@ export function CombinedTasksSection({
                     onDelete={deleteTodo}
                   />
                 ))}
-                {todos.length === 0 && (
+                {(!Array.isArray(todos) || todos.length === 0) && (
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -158,7 +185,7 @@ export function CombinedTasksSection({
               layout
             >
               <AnimatePresence mode="popLayout">
-                {notes.map((note) => (
+                {Array.isArray(notes) && notes.map((note) => (
                   <StickyNote
                     key={note.id}
                     note={note}
@@ -166,7 +193,7 @@ export function CombinedTasksSection({
                     onDelete={deleteNote}
                   />
                 ))}
-                {notes.length === 0 && (
+                {(!Array.isArray(notes) || notes.length === 0) && (
                   <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
