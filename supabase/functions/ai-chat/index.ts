@@ -20,7 +20,8 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
-      throw new Error('Clé API manquante');
+      console.error('Clé API Hugging Face manquante');
+      throw new Error('Configuration incorrecte: Clé API manquante');
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
@@ -103,12 +104,18 @@ Question actuelle: ${message}`;
     );
 
     if (!response.ok) {
-      console.error('Erreur Hugging Face:', response.status, await response.text());
-      throw new Error(`Erreur API: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Erreur Hugging Face:', response.status, errorText);
+      throw new Error(`Erreur API Hugging Face: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
     console.log('Réponse brute de Hugging Face:', data);
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      console.error('Format de réponse invalide:', data);
+      throw new Error('Format de réponse invalide de Hugging Face');
+    }
 
     let aiResponse = data[0]?.generated_text
       ?.split('Assistant:').pop()
