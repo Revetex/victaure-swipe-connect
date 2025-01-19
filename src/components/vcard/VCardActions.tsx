@@ -33,7 +33,13 @@ export function VCardActions({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="flex flex-wrap gap-3 pt-4 border-t"
-      style={{ borderColor: `${selectedStyle.colors.primary}20` }}
+      style={{ 
+        borderColor: `${selectedStyle.colors.primary}20`,
+        // Reset inherited styles to prevent custom styles from affecting buttons
+        color: 'inherit',
+        fontFamily: 'inherit',
+        background: 'transparent'
+      }}
     >
       {isEditing ? (
         <VCardEditingActions

@@ -21,13 +21,19 @@ export function VCardActionButton({
   isProcessing = false,
   className = "",
 }: VCardActionButtonProps) {
+  // Define fixed styles for buttons that won't be affected by VCard custom styles
   const buttonStyle = variant === "default" ? {
     backgroundColor: '#3B82F6',
     color: 'white',
     borderColor: '#2563EB',
+    // Reset inherited styles
+    fontFamily: 'inherit',
   } : {
     borderColor: '#3B82F6',
     color: '#3B82F6',
+    backgroundColor: 'transparent',
+    // Reset inherited styles
+    fontFamily: 'inherit',
   };
 
   return (
@@ -35,12 +41,18 @@ export function VCardActionButton({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex-1 min-w-[100px]"
+      style={{ 
+        // Reset inherited styles
+        color: 'inherit',
+        fontFamily: 'inherit',
+        background: 'transparent'
+      }}
     >
       <Button
         onClick={onClick}
         variant={variant}
         disabled={disabled || isProcessing}
-        className={`w-full transition-colors ${className}`}
+        className={`w-full transition-colors !font-sans ${className}`}
         style={buttonStyle}
       >
         {Icon && <Icon className="mr-2 h-4 w-4" />}
