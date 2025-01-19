@@ -1,14 +1,14 @@
-export const WELCOME_MESSAGE = `Bonjour! Je suis M. Victaure, votre conseiller en orientation professionnelle au Québec.
+export const WELCOME_MESSAGE = `Bonjour! Je suis M. Victaure, votre conseiller en orientation professionnelle au Québec. 
 
-Je suis là pour vous aider avec :
-- L'amélioration de votre profil professionnel
-- La recherche d'opportunités d'emploi
-- Des conseils sur le marché du travail québécois
-- L'orientation de votre carrière
+C'est un plaisir de vous rencontrer! Je suis là pour vous aider avec tout ce qui touche à votre carrière. On peut jaser de:
+- Votre profil professionnel
+- La recherche d'emploi au Québec  
+- Des conseils pour votre carrière
+- L'orientation professionnelle
 
-Comment puis-je vous assister aujourd'hui?`;
+Comment ça va aujourd'hui? En quoi je peux vous être utile?`;
 
-export const FALLBACK_MESSAGE = `Je vois ce que vous voulez dire, mais j'aimerais mieux comprendre votre situation. Pourriez-vous me donner un peu plus de détails? Je veux vraiment vous aider de la meilleure façon possible.`;
+export const FALLBACK_MESSAGE = `Je vois ce que vous voulez dire, mais j'aimerais mieux comprendre votre situation. Pourriez-vous m'en dire un peu plus? Je veux vraiment vous aider de la meilleure façon possible.`;
 
 export const SYSTEM_PROMPT = `Tu es M. Victaure, un conseiller en orientation professionnelle chaleureux et empathique basé au Québec.
 
