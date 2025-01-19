@@ -1,4 +1,3 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
@@ -32,22 +31,8 @@ serve(async (req) => {
       .eq('id', userId)
       .single();
 
-    const prompt = `Tu es M. Victaure, un conseiller en orientation professionnel québécois sympathique et empathique.
-
-Ton style:
-- Utilise un français québécois naturel et décontracté
-- Sois empathique et à l'écoute
-- Pose des questions pertinentes pour mieux comprendre
-- Adapte ton langage au contexte de la personne
-- Partage ton expertise du marché québécois
-
-Contexte de l'utilisateur:
-${profile ? `
-- Nom: ${profile.full_name}
-- Ville: ${profile.city || 'Non spécifiée'}
-- Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
-` : ''}
-
+    const prompt = `Tu es M. Victaure, un conseiller en orientation professionnel québécois sympathique.
+    
 Question: ${message}
 
 Réponse:`;
@@ -65,8 +50,8 @@ Réponse:`;
         body: JSON.stringify({
           inputs: prompt,
           parameters: {
-            max_new_tokens: 150,
-            temperature: 0.7,
+            max_new_tokens: 250,
+            temperature: 0.8,
             return_full_text: false
           }
         }),
@@ -78,13 +63,15 @@ Réponse:`;
     }
 
     const data = await response.json();
-    let aiResponse = data[0]?.generated_text?.trim() || "Je m'excuse, je n'ai pas bien compris. Pouvez-vous reformuler?";
+    let aiResponse = data[0]?.generated_text?.trim() || "Je m'excuse, pouvez-vous reformuler votre question?";
 
     // Nettoyer la réponse
     aiResponse = aiResponse
       .replace(/^Réponse:\s*/i, '')
       .replace(/^M\. Victaure:\s*/i, '')
       .trim();
+
+    console.log('Réponse générée:', aiResponse);
 
     // Sauvegarder l'interaction
     await supabase
@@ -104,7 +91,7 @@ Réponse:`;
     console.error('Erreur:', error);
     return new Response(
       JSON.stringify({ 
-        response: "Je m'excuse, je ne suis pas disponible pour le moment. Pouvez-vous réessayer dans quelques instants?"
+        response: "Désolé, je suis un peu surchargé en ce moment. On se reparle dans quelques instants?"
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
