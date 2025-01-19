@@ -12,18 +12,24 @@ export const generateBusinessCard = async (
   const doc = extendPdfDocument(new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
-    format: [85.6, 53.98]
+    format: [85.6, 53.98],
+    compress: true
   }));
 
   // Front side
   try {
-    // Set background with style-specific gradient
+    // Set elegant background
     doc.setFillColor(selectedStyle.colors.background.card);
-    doc.setDrawColor(selectedStyle.colors.primary);
-    
-    // Apply gradient background
-    doc.setGlobalAlpha(0.1);
     doc.rect(0, 0, 85.6, 53.98, 'F');
+    
+    // Add subtle pattern
+    doc.setGlobalAlpha(0.03);
+    for (let i = 0; i < 85.6; i += 5) {
+      for (let j = 0; j < 53.98; j += 5) {
+        doc.setFillColor(selectedStyle.colors.primary);
+        doc.circle(i, j, 0.3, 'F');
+      }
+    }
     doc.setGlobalAlpha(1);
 
     // Add decorative accent line
@@ -59,15 +65,21 @@ export const generateBusinessCard = async (
     }
     
     if (profile.city) {
-      const location = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
+      const location = [profile.city, profile.state, profile.country]
+        .filter(Boolean)
+        .join(', ');
       doc.text(location, 10, contactY);
     }
 
-    // Add back side with professional design
+    // Add back side
     doc.addPage([85.6, 53.98], 'landscape');
     
-    // Add subtle pattern background
-    doc.setGlobalAlpha(0.05);
+    // Add elegant background
+    doc.setFillColor(selectedStyle.colors.background.card);
+    doc.rect(0, 0, 85.6, 53.98, 'F');
+    
+    // Add subtle pattern
+    doc.setGlobalAlpha(0.03);
     for (let i = 0; i < 85.6; i += 5) {
       for (let j = 0; j < 53.98; j += 5) {
         doc.setFillColor(selectedStyle.colors.primary);
@@ -83,8 +95,8 @@ export const generateBusinessCard = async (
         "PNG",
         10,
         10,
-        15,
-        15
+        20,
+        20
       );
     } catch (error) {
       console.error('Error adding Victaure logo:', error);
@@ -100,7 +112,7 @@ export const generateBusinessCard = async (
           light: '#FFFFFF'
         }
       });
-      doc.addImage(qrDataUrl, 'PNG', 60, 10, 15, 15);
+      doc.addImage(qrDataUrl, 'PNG', 55, 10, 20, 20);
     } catch (error) {
       console.error('Error generating QR code:', error);
     }
@@ -110,13 +122,13 @@ export const generateBusinessCard = async (
       doc.setTextColor(selectedStyle.colors.text.primary);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
-      doc.text(profile.company_name, 10, 35);
+      doc.text(profile.company_name, 10, 40);
 
       if (profile.company_size) {
         doc.setFont("helvetica", "normal");
         doc.setFontSize(10);
         doc.setTextColor(selectedStyle.colors.text.secondary);
-        doc.text(`Taille: ${profile.company_size}`, 10, 42);
+        doc.text(`Taille: ${profile.company_size}`, 10, 45);
       }
     }
 

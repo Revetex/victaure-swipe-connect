@@ -8,14 +8,14 @@ export const renderHeader = async (
 ): Promise<number> => {
   let currentY = startY;
 
-  // Name
-  doc.setFontSize(24);
+  // Name with larger font and bold style
+  doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
   doc.text(profile.full_name || '', 20, currentY);
-  currentY += 8;
+  currentY += 10;
 
-  // Role
-  doc.setFontSize(16);
+  // Role with medium font and professional color
+  doc.setFontSize(18);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 100, 100);
   doc.text(profile.role || '', 20, currentY);
