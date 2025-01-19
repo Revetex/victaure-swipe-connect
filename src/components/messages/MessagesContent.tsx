@@ -3,21 +3,20 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
 
 interface MessagesContentProps {
   messages: any[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
-  onSendMessage: (message: string, model?: string) => void;
+  onSendMessage: (message: string) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
   onClearChat: () => void;
   onBack?: () => void;
   showingChat?: boolean;
-  selectedModel?: string;
-  onModelChange?: (model: string) => void;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
 export function MessagesContent({
@@ -32,11 +31,11 @@ export function MessagesContent({
   onBack,
   showingChat,
   selectedModel = "mistralai/Mixtral-8x7B-Instruct-v0.1",
-  onModelChange,
+  onModelChange = () => {},
 }: MessagesContentProps) {
   const handleSendMessage = () => {
     if (onSendMessage && inputMessage.trim()) {
-      onSendMessage(inputMessage, selectedModel);
+      onSendMessage(inputMessage);
     }
   };
 
@@ -103,7 +102,7 @@ export function MessagesContent({
           isListening={isListening}
           isThinking={isThinking}
           selectedModel={selectedModel}
-          onModelChange={onModelChange || (() => {})}
+          onModelChange={onModelChange}
         />
       </div>
     </div>

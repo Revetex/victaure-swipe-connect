@@ -11,6 +11,8 @@ export function Messages() {
     inputMessage = "",
     isListening = false,
     isThinking = false,
+    selectedModel,
+    setSelectedModel,
     setInputMessage = () => {},
     handleSendMessage = async (message: string) => {},
     handleVoiceInput = () => {},
@@ -23,7 +25,6 @@ export function Messages() {
   } = useMessages() || {};
 
   const [showConversation, setShowConversation] = useState(false);
-  const [selectedModel, setSelectedModel] = useState("mistralai/Mixtral-8x7B-Instruct-v0.1");
 
   const handleBack = useCallback(() => {
     setShowConversation(false);
@@ -64,7 +65,6 @@ export function Messages() {
     }
 
     try {
-      // Only pass the message parameter since that's what the type expects
       await handleSendMessage(message);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -83,8 +83,8 @@ export function Messages() {
     onClearChat: clearChat || (() => {}),
     onBack: handleBack,
     showingChat: showConversation,
-    selectedModel,
-    onModelChange: setSelectedModel
+    selectedModel: selectedModel || "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    onModelChange: setSelectedModel || (() => {})
   };
 
   return (
