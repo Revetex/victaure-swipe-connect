@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -79,6 +80,8 @@ ${context?.previousMessages?.map((msg: any) => `${msg.sender}: ${msg.content}`).
 
 Question actuelle: ${message}`;
 
+    console.log('Envoi de la requête à Hugging Face avec le prompt:', systemPrompt);
+
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -100,16 +103,20 @@ Question actuelle: ${message}`;
     );
 
     if (!response.ok) {
+      console.error('Erreur Hugging Face:', response.status, await response.text());
       throw new Error(`Erreur API: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('Réponse brute de Hugging Face:', data);
+
     let aiResponse = data[0]?.generated_text
       ?.split('Assistant:').pop()
       ?.split('Human:')[0]
       ?.trim();
 
     if (!aiResponse) {
+      console.warn('Réponse vide ou invalide, utilisation de la réponse par défaut');
       aiResponse = "Je n'ai pas bien compris votre question. Pourriez-vous la reformuler?";
     }
 
@@ -121,8 +128,10 @@ Question actuelle: ${message}`;
       .replace(/([0-9]+\.|•|-)\s/g, '')
       .replace(/(exemple|par exemple|voici|comme suit)/gi, '');
 
+    console.log('Réponse nettoyée:', aiResponse);
+
     // Sauvegarder l'interaction pour l'apprentissage
-    await supabase
+    const { error: insertError } = await supabase
       .from('ai_learning_data')
       .insert({
         user_id: userId,
@@ -134,7 +143,9 @@ Question actuelle: ${message}`;
         }
       });
 
-    console.log('Réponse envoyée:', aiResponse);
+    if (insertError) {
+      console.error('Erreur lors de la sauvegarde des données:', insertError);
+    }
 
     return new Response(
       JSON.stringify({ response: aiResponse }),
@@ -145,7 +156,7 @@ Question actuelle: ${message}`;
     console.error('Erreur:', error);
     return new Response(
       JSON.stringify({ 
-        response: "Je n'ai pas compris votre demande. Pourriez-vous la reformuler?",
+        response: "Je suis désolé, j'ai rencontré une difficulté technique. Pourriez-vous réessayer?",
         error: error.message 
       }),
       { 
