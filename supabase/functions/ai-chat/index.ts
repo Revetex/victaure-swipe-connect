@@ -13,8 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, context } = await req.json();
+    const { message, userId, context, model = "mistralai/Mixtral-8x7B-Instruct-v0.1" } = await req.json();
     console.log('Question reçue:', message);
+    console.log('Modèle utilisé:', model);
     console.log('Contexte:', context);
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
@@ -80,7 +81,7 @@ ${context?.previousMessages?.map((msg: any) => `${msg.sender}: ${msg.content}`).
 Question actuelle: ${message}`;
 
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
+      `https://api-inference.huggingface.co/models/${model}`,
       {
         method: 'POST',
         headers: {
@@ -130,7 +131,8 @@ Question actuelle: ${message}`;
         response: aiResponse,
         context: {
           profile: profile,
-          previousMessages: context?.previousMessages
+          previousMessages: context?.previousMessages,
+          model: model
         }
       });
 

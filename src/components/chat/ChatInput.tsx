@@ -1,8 +1,14 @@
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Mic, ArrowRight, Loader2 } from "lucide-react";
+import { Mic, ArrowRight, Loader2, Settings2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useCallback, memo } from "react";
+import { ModelSelector } from "./ModelSelector";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface ChatInputProps {
   value: string;
@@ -14,6 +20,8 @@ interface ChatInputProps {
   placeholder?: string;
   className?: string;
   maxLength?: number;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
 export const ChatInput = memo(function ChatInput({
@@ -25,9 +33,12 @@ export const ChatInput = memo(function ChatInput({
   isThinking = false,
   placeholder = "Écrivez votre message...",
   className,
-  maxLength = 1000
+  maxLength = 1000,
+  selectedModel,
+  onModelChange,
 }: ChatInputProps) {
   const [rows, setRows] = useState(1);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const lineCount = (value.match(/\n/g) || []).length + 1;
@@ -71,6 +82,28 @@ export const ChatInput = memo(function ChatInput({
             <Mic className="h-5 w-5" />
           </button>
         )}
+
+        <Popover open={showSettings} onOpenChange={setShowSettings}>
+          <PopoverTrigger asChild>
+            <button
+              className="shrink-0 p-2 text-muted-foreground/60 hover:text-primary transition-colors"
+            >
+              <Settings2 className="h-5 w-5" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            <div className="space-y-4">
+              <h4 className="font-medium leading-none">Configuration du modèle</h4>
+              <p className="text-sm text-muted-foreground">
+                Choisissez le modèle d'IA que vous souhaitez utiliser pour la conversation.
+              </p>
+              <ModelSelector
+                value={selectedModel}
+                onValueChange={onModelChange}
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
         
         <div className="relative flex-1">
           <Textarea
