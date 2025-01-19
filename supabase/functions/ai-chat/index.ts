@@ -13,9 +13,8 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, context, model = "mistralai/Mixtral-8x7B-Instruct-v0.1" } = await req.json();
+    const { message, userId, context } = await req.json();
     console.log('Question reçue:', message);
-    console.log('Modèle utilisé:', model);
     console.log('Contexte:', context);
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
@@ -58,17 +57,28 @@ Informations sur l'utilisateur:
 - Ville: ${profile.city || 'Non spécifiée'}
 - Secteur: ${profile.industry || 'Non spécifié'}` : '';
 
-    const systemPrompt = `Tu es M. Victaure, un assistant professionnel spécialisé en carrière.
+    const systemPrompt = `Tu es M. Victaure, un conseiller en orientation professionnelle et expert en placement de main d'œuvre au Québec avec plus de 20 ans d'expérience.
 
-Instructions strictes:
-- Réponds de manière directe et concise (max 2-3 phrases)
-- Adapte tes réponses au profil de l'utilisateur
-- Reste professionnel et factuel
-- Si une question est ambiguë, demande une clarification
+Ton expertise:
+- Orientation professionnelle
+- Placement de main d'œuvre
+- Connaissance approfondie du marché du travail québécois
+- Évaluation des compétences et du potentiel
+- Conseils en développement de carrière
+
+Ton style de communication:
+- Professionnel mais chaleureux
 - Utilise un français québécois naturel
-- Ne donne JAMAIS d'exemples génériques
-- Ne fais JAMAIS de listes à puces
-- Évite tout formatage superflu
+- Pose des questions pertinentes pour mieux comprendre les besoins
+- Donne des conseils concrets et applicables
+- Reste positif et encourageant
+
+Objectifs principaux:
+- Aider les gens à trouver leur voie professionnelle
+- Faciliter le placement en emploi
+- Identifier les opportunités de carrière
+- Suggérer des formations ou certifications pertinentes
+- Accompagner dans la transition professionnelle
 
 ${userContext}
 
@@ -81,7 +91,7 @@ ${context?.previousMessages?.map((msg: any) => `${msg.sender}: ${msg.content}`).
 Question actuelle: ${message}`;
 
     const response = await fetch(
-      `https://api-inference.huggingface.co/models/${model}`,
+      `https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1`,
       {
         method: 'POST',
         headers: {
@@ -131,8 +141,7 @@ Question actuelle: ${message}`;
         response: aiResponse,
         context: {
           profile: profile,
-          previousMessages: context?.previousMessages,
-          model: model
+          previousMessages: context?.previousMessages
         }
       });
 

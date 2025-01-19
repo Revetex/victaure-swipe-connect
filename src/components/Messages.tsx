@@ -6,14 +6,11 @@ import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
 
 export function Messages() {
-  // Initialize state and hooks with proper default values
   const {
     messages: chatMessages = [],
     inputMessage = "",
     isListening = false,
     isThinking = false,
-    selectedModel = "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    setSelectedModel = () => {},
     setInputMessage = () => {},
     handleSendMessage,
     handleVoiceInput = () => {},
@@ -73,7 +70,6 @@ export function Messages() {
     }
   }, [handleSendMessage]);
 
-  // Ensure all props have default values and proper type checking
   const safeProps = {
     messages: Array.isArray(chatMessages) ? chatMessages : [],
     inputMessage: inputMessage || "",
@@ -84,9 +80,7 @@ export function Messages() {
     setInputMessage: setInputMessage,
     onClearChat: clearChat,
     onBack: handleBack,
-    showingChat: showConversation,
-    selectedModel: selectedModel,
-    onModelChange: setSelectedModel
+    showingChat: showConversation
   };
 
   return (
