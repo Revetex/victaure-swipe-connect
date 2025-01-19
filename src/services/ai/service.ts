@@ -23,9 +23,19 @@ export async function generateAIResponse(message: string): Promise<string> {
     });
 
     if (error) throw error;
-    if (!data?.response) {
-      console.warn('Invalid response format, using fallback');
-      return FALLBACK_MESSAGE;
+    
+    // Amélioration de la gestion des réponses
+    if (!data?.response || data.response.trim() === '') {
+      console.warn('Invalid or empty response, providing contextual fallback');
+      if (message.toLowerCase().includes('bonjour') || 
+          message.toLowerCase().includes('salut') || 
+          message.toLowerCase().includes('allo')) {
+        return "Bonjour! C'est un plaisir de vous parler. Comment puis-je vous aider avec votre carrière aujourd'hui?";
+      }
+      if (message.toLowerCase().includes('merci')) {
+        return "Je vous en prie! N'hésitez pas si vous avez d'autres questions.";
+      }
+      return "Je suis là pour vous aider. Pourriez-vous me donner plus de détails sur ce que vous cherchez?";
     }
     
     console.log('AI response generated:', data.response);
@@ -34,7 +44,7 @@ export async function generateAIResponse(message: string): Promise<string> {
   } catch (error) {
     console.error('Error generating AI response:', error);
     toast.error("Une erreur est survenue lors de la génération de la réponse");
-    return FALLBACK_MESSAGE;
+    return "Désolé, j'ai eu un petit problème technique. Comment puis-je vous aider?";
   }
 }
 
