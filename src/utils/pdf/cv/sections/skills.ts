@@ -8,43 +8,46 @@ export const renderSkills = (
   yPos: number
 ): number => {
   let currentY = yPos + 10;
-  const { margins, fonts, colors } = pdfStyles;
 
   if (profile.skills && profile.skills.length > 0) {
-    // Section title
-    doc.setFontSize(fonts.subheader.size);
+    // Section title with styling
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(15, currentY, doc.internal.pageSize.width - 30, 6, 2, 2, 'F');
+    
+    currentY += 5;
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(colors.text.primary);
-    doc.text('Compétences', margins.left, currentY);
+    doc.setTextColor(40, 40, 40);
+    doc.text('Compétences', 20, currentY);
     currentY += 12;
 
-    // Create skill bubbles
-    doc.setFontSize(fonts.body.size);
-    doc.setFont('helvetica', 'normal');
+    // Create modern skill bubbles
+    doc.setFontSize(10);
     
-    let xOffset = margins.left;
-    const maxWidth = doc.internal.pageSize.width - (margins.left + margins.right);
-    const bubblePadding = 10;
-    const bubbleSpacing = 5;
+    let xOffset = 20;
+    const maxWidth = doc.internal.pageSize.width - 40;
+    const bubblePadding = 8;
+    const bubbleSpacing = 6;
+    const bubbleHeight = 8;
+    const cornerRadius = 4;
 
     profile.skills.forEach((skill) => {
-      // Calculate bubble width
       doc.setFont('helvetica', 'normal');
       const textWidth = doc.getTextWidth(skill);
       const bubbleWidth = textWidth + (bubblePadding * 2);
 
       // Check if we need to move to next line
       if (xOffset + bubbleWidth > maxWidth) {
-        xOffset = margins.left;
-        currentY += 15;
+        xOffset = 20;
+        currentY += bubbleHeight + 8;
       }
 
-      // Draw bubble background
-      doc.setFillColor(240, 240, 240);
-      doc.roundedRect(xOffset, currentY - 5, bubbleWidth, 10, 5, 5, 'F');
+      // Draw bubble background with rounded corners
+      doc.setFillColor(230, 230, 230);
+      doc.roundedRect(xOffset, currentY - bubbleHeight + 2, bubbleWidth, bubbleHeight + 2, cornerRadius, cornerRadius, 'F');
 
       // Draw skill text
-      doc.setTextColor(colors.text.primary);
+      doc.setTextColor(60, 60, 60);
       doc.text(skill, xOffset + bubblePadding, currentY);
 
       xOffset += bubbleWidth + bubbleSpacing;
