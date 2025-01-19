@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import { UserProfile } from "@/types/profile";
 import { ExtendedJsPDF } from "@/types/pdf";
 import { StyleOption } from "@/components/vcard/types";
+import { extendPdfDocument } from "./pdfExtensions";
 import { renderHeader } from "./cv/sections/header";
 import { renderBio } from "./cv/sections/bio";
 import { renderContact } from "./cv/sections/contact";
@@ -10,20 +11,20 @@ import { renderExperiences } from "./cv/sections/experiences";
 import { renderEducation } from "./cv/sections/education";
 import { renderCertifications } from "./cv/sections/certifications";
 import { renderFooter } from "./cv/sections/footer";
-import { pdfStyles } from "./cv/styles";
 
 export const generateCV = async (
   profile: UserProfile,
   selectedStyle: StyleOption
 ): Promise<ExtendedJsPDF> => {
-  const doc = new jsPDF({
+  // Create and extend the PDF document
+  const doc = extendPdfDocument(new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4'
-  }) as ExtendedJsPDF;
+  }));
 
   // Set initial styles based on selected theme
-  doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''));
+  doc.setFont("helvetica");
   doc.setTextColor(selectedStyle.colors.text.primary);
 
   let currentY = 20;
@@ -96,8 +97,8 @@ export const generateCV = async (
     currentY = renderCertifications(doc, profile.certifications, currentY);
   }
 
-  // Footer with page numbers
-  renderFooter(doc, selectedStyle);
+  // Footer with page numbers and QR code
+  await renderFooter(doc, selectedStyle);
 
   return doc;
 };

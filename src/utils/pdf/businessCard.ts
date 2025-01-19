@@ -33,12 +33,12 @@ export const generateBusinessCard = async (
 
     // Add name with enhanced styling
     doc.setTextColor(selectedStyle.colors.text.primary);
-    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text(profile.full_name || '', 10, 20);
     
     // Add role with professional styling
-    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
     doc.setTextColor(selectedStyle.colors.text.secondary);
     doc.text(profile.role || '', 10, 27);
@@ -76,18 +76,47 @@ export const generateBusinessCard = async (
     }
     doc.setGlobalAlpha(1);
 
+    // Add Victaure logo
+    try {
+      doc.addImage(
+        "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
+        "PNG",
+        10,
+        10,
+        15,
+        15
+      );
+    } catch (error) {
+      console.error('Error adding Victaure logo:', error);
+    }
+
+    // Generate and add QR code
+    try {
+      const qrDataUrl = await QRCode.toDataURL(window.location.href, {
+        margin: 0,
+        width: 256,
+        color: {
+          dark: selectedStyle.colors.text.primary,
+          light: '#FFFFFF'
+        }
+      });
+      doc.addImage(qrDataUrl, 'PNG', 60, 10, 15, 15);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+    }
+
     // Add company info if available
     if (profile.company_name) {
       doc.setTextColor(selectedStyle.colors.text.primary);
-      doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
-      doc.text(profile.company_name, 10, 20);
+      doc.text(profile.company_name, 10, 35);
 
       if (profile.company_size) {
-        doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
+        doc.setFont("helvetica", "normal");
         doc.setFontSize(10);
         doc.setTextColor(selectedStyle.colors.text.secondary);
-        doc.text(`Taille: ${profile.company_size}`, 10, 27);
+        doc.text(`Taille: ${profile.company_size}`, 10, 42);
       }
     }
 
