@@ -40,14 +40,14 @@ export function ChatInput({
   };
 
   return (
-    <div className="flex items-end gap-2 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
+    <div className="flex items-end gap-2">
       <Textarea
         ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="min-h-[44px] max-h-[200px] resize-none flex-1"
+        className="min-h-[44px] max-h-[120px] resize-none flex-1 py-3 px-4"
         disabled={isThinking}
       />
       <div className="flex gap-2 shrink-0">

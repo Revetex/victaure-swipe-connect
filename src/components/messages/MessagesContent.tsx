@@ -70,9 +70,9 @@ export function MessagesContent({
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col">
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
-        <div className="flex items-center justify-between max-w-5xl mx-auto">
+    <div className="fixed inset-0 flex flex-col bg-background/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center justify-between px-4 py-3 max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
             {onBack && (
               <Button
@@ -85,7 +85,7 @@ export function MessagesContent({
               </Button>
             )}
             <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
+              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
               <AvatarFallback className="bg-primary/20">
                 <Bot className="h-5 w-5 text-primary" />
               </AvatarFallback>
@@ -108,9 +108,9 @@ export function MessagesContent({
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden bg-background/80">
+      <div className="flex-1 overflow-hidden">
         <ScrollArea 
-          className="h-full px-4 py-4" 
+          className="h-full px-4 pb-32 pt-4" 
           onScroll={handleScroll}
         >
           <div className="max-w-5xl mx-auto space-y-4">
@@ -140,11 +140,11 @@ export function MessagesContent({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="fixed bottom-24 right-4"
+              className="fixed bottom-24 right-4 z-50"
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg h-10 w-10"
+                className="rounded-full shadow-lg"
                 onClick={scrollToBottom}
               >
                 <ArrowDown className="h-5 w-5" />
@@ -154,15 +154,19 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <ChatInput
-        value={inputMessage}
-        onChange={setInputMessage}
-        onSend={handleSendMessage}
-        onVoiceInput={onVoiceInput}
-        isListening={isListening}
-        isThinking={isThinking}
-        placeholder="Écrivez votre message à M. Victaure..."
-      />
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t safe-bottom">
+        <div className="max-w-5xl mx-auto px-4 py-2">
+          <ChatInput
+            value={inputMessage}
+            onChange={setInputMessage}
+            onSend={handleSendMessage}
+            onVoiceInput={onVoiceInput}
+            isListening={isListening}
+            isThinking={isThinking}
+            placeholder="Écrivez votre message à M. Victaure..."
+          />
+        </div>
+      </div>
     </div>
   );
 }
