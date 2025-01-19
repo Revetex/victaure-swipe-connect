@@ -12,7 +12,7 @@ export function Messages() {
     isListening = false, // Add default false
     isThinking = false, // Add default false
     setInputMessage = () => {}, // Add default noop
-    handleSendMessage,
+    handleSendMessage = async () => {}, // Add default async noop
     handleVoiceInput = () => {}, // Add default noop
     clearChat = () => {} // Add default noop
   } = useChat() || {}; // Add fallback empty object
@@ -64,12 +64,13 @@ export function Messages() {
     }
 
     try {
-      await handleSendMessage(message, selectedModel);
+      // Only pass the message to handleSendMessage, handle model selection internally
+      await handleSendMessage(message);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
     }
-  }, [handleSendMessage, selectedModel]);
+  }, [handleSendMessage]);
 
   // Ensure all required props have default values
   const safeProps = {
