@@ -14,9 +14,9 @@ export function useChat(): ChatState & ChatActions {
   
   const {
     messages = [],
-    setMessages,
+    setMessages = () => {},
     deletedMessages = [],
-    setDeletedMessages
+    setDeletedMessages = () => {}
   } = useMessages();
 
   const {
@@ -34,19 +34,19 @@ export function useChat(): ChatState & ChatActions {
 
   const handleSendMessage = async (message: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error("Vous devez être connecté pour utiliser le chat")
-        return
+        toast.error("Vous devez être connecté pour utiliser le chat");
+        return;
       }
       
-      await sendMessage(message, selectedModel)
+      await sendMessage(message, selectedModel);
     } catch (error) {
-      console.error("Error in handleSendMessage:", error)
-      toast.error("Une erreur est survenue lors de l'envoi du message")
-      setIsThinking(false)
+      console.error("Error in handleSendMessage:", error);
+      toast.error("Une erreur est survenue lors de l'envoi du message");
+      setIsThinking(false);
     }
-  }
+  };
 
   const handleVoiceInput = () => {
     try {

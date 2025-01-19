@@ -7,23 +7,19 @@ import { toast } from "sonner";
 
 export function Messages() {
   const {
-    messages: chatMessages = [],
-    inputMessage = "",
-    isListening = false,
-    isThinking = false,
-    selectedModel = "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    setSelectedModel = () => {},
-    setInputMessage = () => {},
-    handleSendMessage = async () => {},
-    handleVoiceInput = () => {},
-    clearChat = () => {}
-  } = useChat() || {};
+    messages: chatMessages,
+    inputMessage,
+    isListening,
+    isThinking,
+    selectedModel,
+    setSelectedModel,
+    setInputMessage,
+    handleSendMessage,
+    handleVoiceInput,
+    clearChat
+  } = useChat();
 
-  const { 
-    messages = [],
-    markAsRead 
-  } = useMessages() || {};
-
+  const { messages, markAsRead } = useMessages();
   const [showConversation, setShowConversation] = useState(false);
 
   const handleBack = useCallback(() => {
@@ -72,19 +68,20 @@ export function Messages() {
     }
   }, [handleSendMessage]);
 
+  // Ensure all props have default values and proper type checking
   const safeProps = {
     messages: Array.isArray(chatMessages) ? chatMessages : [],
     inputMessage: inputMessage || "",
-    isListening: !!isListening,
-    isThinking: !!isThinking,
+    isListening: Boolean(isListening),
+    isThinking: Boolean(isThinking),
     onSendMessage: handleSendMessageWithFeedback,
     onVoiceInput: handleVoiceInput || (() => {}),
     setInputMessage: setInputMessage || (() => {}),
     onClearChat: clearChat || (() => {}),
     onBack: handleBack,
     showingChat: showConversation,
-    selectedModel,
-    onModelChange: setSelectedModel
+    selectedModel: selectedModel || "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    onModelChange: setSelectedModel || (() => {})
   };
 
   return (
