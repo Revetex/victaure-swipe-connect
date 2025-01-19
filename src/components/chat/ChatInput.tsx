@@ -40,14 +40,14 @@ export function ChatInput({
   };
 
   return (
-    <div className="flex items-end gap-2">
+    <div className="flex items-end gap-2 w-full max-w-[100vw] px-safe">
       <Textarea
         ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="min-h-[44px] max-h-[120px] resize-none flex-1 py-3 px-4 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400"
+        className="min-h-[44px] max-h-[120px] resize-none flex-1 py-3 px-4 bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400 rounded-xl"
         disabled={isThinking}
       />
       <div className="flex gap-2 shrink-0">
@@ -57,7 +57,7 @@ export function ChatInput({
             size="icon"
             variant={isListening ? "default" : "outline"}
             onClick={onVoiceInput}
-            className={`h-[44px] w-[44px] ${isListening ? "bg-primary" : "border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700/50"}`}
+            className={`h-[44px] w-[44px] rounded-xl ${isListening ? "bg-primary" : "border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700/50"}`}
             disabled={isThinking}
           >
             <Mic className="h-5 w-5" />
@@ -68,7 +68,7 @@ export function ChatInput({
           size="icon"
           onClick={onSend}
           disabled={!value.trim() || isThinking}
-          className="h-[44px] w-[44px] bg-primary hover:bg-primary/90 text-white"
+          className="h-[44px] w-[44px] rounded-xl bg-primary hover:bg-primary/90 text-white"
         >
           <Send className="h-5 w-5" />
         </Button>

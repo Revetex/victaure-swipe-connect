@@ -70,7 +70,7 @@ export function MessagesContent({
 
   return (
     <div className="fixed inset-0 flex flex-col bg-[#0f172a] text-white">
-      <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-[#0f172a]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0f172a]/60">
+      <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-[#0f172a]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0f172a]/60 safe-top">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             {onBack && (
@@ -78,7 +78,7 @@ export function MessagesContent({
                 variant="ghost"
                 size="icon"
                 onClick={onBack}
-                className="shrink-0 text-white hover:bg-gray-800"
+                className="shrink-0 text-white hover:bg-gray-800 h-10 w-10"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
@@ -100,7 +100,7 @@ export function MessagesContent({
             variant="ghost"
             size="icon"
             onClick={handleClearChat}
-            className="shrink-0 text-gray-400 hover:text-red-400 hover:bg-red-400/10"
+            className="shrink-0 text-gray-400 hover:text-red-400 hover:bg-red-400/10 h-10 w-10"
           >
             <Trash2 className="h-5 w-5" />
           </Button>
@@ -109,10 +109,10 @@ export function MessagesContent({
 
       <div className="flex-1 overflow-hidden">
         <ScrollArea 
-          className="h-full px-4 pb-36 pt-4" 
+          className="h-full px-4 pb-32 pt-4" 
           onScroll={handleScroll}
         >
-          <div className="space-y-4">
+          <div className="space-y-4 mb-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
                 <ChatMessage
@@ -139,11 +139,11 @@ export function MessagesContent({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="fixed bottom-32 right-4 z-50"
+              className="fixed bottom-28 right-4 z-50"
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
+                className="rounded-full shadow-lg bg-primary hover:bg-primary/90 h-10 w-10"
                 onClick={scrollToBottom}
               >
                 <ArrowDown className="h-5 w-5" />
@@ -153,8 +153,8 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-[#0f172a]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0f172a]/60 border-t border-gray-800 pb-safe">
-        <div className="px-4 py-2">
+      <div className="fixed bottom-0 left-0 right-0 bg-[#0f172a]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0f172a]/60 border-t border-gray-800 safe-bottom">
+        <div className="px-4 py-3">
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
