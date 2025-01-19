@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Message } from "@/types/chat/messageTypes";
+import { v4 as uuidv4 } from 'uuid';
 
 export const generateAIResponse = async (message: string, model?: string) => {
   try {
@@ -44,6 +45,7 @@ export const saveMessage = async (message: Message) => {
     }
 
     const { error } = await supabase.from("ai_chat_messages").insert({
+      id: uuidv4(),
       user_id: session.user.id,
       content: message.content,
       sender: message.sender,
@@ -52,6 +54,34 @@ export const saveMessage = async (message: Message) => {
     if (error) throw error;
   } catch (error) {
     console.error("Error saving message:", error);
+    throw error;
+  }
+};
+
+export const loadMessages = async (): Promise<Message[]> => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error("No active session");
+    }
+
+    const { data, error } = await supabase
+      .from("ai_chat_messages")
+      .select("*")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    return data.map((msg) => ({
+      id: msg.id,
+      content: msg.content,
+      sender: msg.sender,
+      timestamp: new Date(msg.created_at),
+      user_id: msg.user_id
+    }));
+  } catch (error) {
+    console.error("Error loading messages:", error);
     throw error;
   }
 };
