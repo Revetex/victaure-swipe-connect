@@ -24,8 +24,14 @@ serve(async (req) => {
       throw new Error('Configuration incorrecte: Clé API manquante');
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Configuration Supabase manquante');
+      throw new Error('Configuration incorrecte: Paramètres Supabase manquants');
+    }
+
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Récupérer le profil de l'utilisateur
@@ -37,15 +43,20 @@ serve(async (req) => {
 
     if (profileError) {
       console.error('Erreur lors de la récupération du profil:', profileError);
+      throw new Error('Erreur lors de la récupération du profil utilisateur');
     }
 
     // Récupérer les données d'apprentissage pertinentes
-    const { data: learningData } = await supabase
+    const { data: learningData, error: learningError } = await supabase
       .from('ai_learning_data')
       .select('question, response')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(5);
+
+    if (learningError) {
+      console.error('Erreur lors de la récupération des données d\'apprentissage:', learningError);
+    }
 
     const relevantLearning = learningData?.map(data => 
       `Q: ${data.question}\nR: ${data.response}`
@@ -81,7 +92,8 @@ ${context?.previousMessages?.map((msg: any) => `${msg.sender}: ${msg.content}`).
 
 Question actuelle: ${message}`;
 
-    console.log('Envoi de la requête à Hugging Face avec le prompt:', systemPrompt);
+    console.log('Envoi de la requête à Hugging Face...');
+    console.log('Prompt système:', systemPrompt);
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -161,9 +173,20 @@ Question actuelle: ${message}`;
 
   } catch (error) {
     console.error('Erreur:', error);
+    
+    let errorMessage = "Je suis désolé, j'ai rencontré une difficulté technique. ";
+    
+    if (error.message.includes('API Hugging Face')) {
+      errorMessage += "Le service de traitement du langage est temporairement indisponible. ";
+    } else if (error.message.includes('profil utilisateur')) {
+      errorMessage += "Je n'arrive pas à accéder à votre profil. ";
+    }
+    
+    errorMessage += "Pourriez-vous réessayer dans quelques instants?";
+
     return new Response(
       JSON.stringify({ 
-        response: "Je suis désolé, j'ai rencontré une difficulté technique. Pourriez-vous réessayer?",
+        response: errorMessage,
         error: error.message 
       }),
       { 
