@@ -1,7 +1,7 @@
 import { UserProfile } from "@/types/profile";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { VCardButton } from "@/components/vcard/VCardButton";
 import { Paintbrush } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -87,17 +87,17 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
         </div>
 
         <div className="flex items-end">
-          <Button
+          <VCardButton
             variant="outline"
             onClick={() => handleStyleChange({
               custom_font: undefined,
               custom_background: undefined,
               custom_text_color: undefined
             })}
-            className="w-full bg-background/50 backdrop-blur-sm hover:bg-background/80"
+            className="w-full"
           >
             Réinitialiser le style
-          </Button>
+          </VCardButton>
         </div>
       </div>
     </div>
