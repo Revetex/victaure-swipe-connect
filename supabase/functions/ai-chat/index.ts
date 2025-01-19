@@ -8,92 +8,51 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { message, userId, context } = await req.json();
+    const { message, userId } = await req.json();
     console.log('Question reçue:', message);
-    console.log('Contexte:', context);
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) {
-      console.error('Clé API Hugging Face manquante');
-      throw new Error('Configuration incorrecte: Clé API manquante');
+      throw new Error('Configuration API incorrecte');
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Configuration Supabase manquante');
-      throw new Error('Configuration incorrecte: Paramètres Supabase manquants');
-    }
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Récupérer le profil de l'utilisateur
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
 
-    if (profileError) {
-      console.error('Erreur lors de la récupération du profil:', profileError);
-      throw new Error('Erreur lors de la récupération du profil utilisateur');
-    }
+    const prompt = `Tu es M. Victaure, un conseiller en orientation professionnel québécois sympathique et empathique.
 
-    // Récupérer les données d'apprentissage pertinentes
-    const { data: learningData, error: learningError } = await supabase
-      .from('ai_learning_data')
-      .select('question, response')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(5);
+Ton style:
+- Utilise un français québécois naturel et décontracté
+- Sois empathique et à l'écoute
+- Pose des questions pertinentes pour mieux comprendre
+- Adapte ton langage au contexte de la personne
+- Partage ton expertise du marché québécois
 
-    if (learningError) {
-      console.error('Erreur lors de la récupération des données d\'apprentissage:', learningError);
-    }
-
-    const relevantLearning = learningData?.map(data => 
-      `Q: ${data.question}\nR: ${data.response}`
-    ).join('\n') || '';
-
-    const userContext = profile ? `
-Informations sur l'utilisateur:
-- Nom: ${profile.full_name || 'Non spécifié'}
-- Rôle: ${profile.role || 'Non spécifié'}
-- Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
+Contexte de l'utilisateur:
+${profile ? `
+- Nom: ${profile.full_name}
 - Ville: ${profile.city || 'Non spécifiée'}
-- Secteur: ${profile.industry || 'Non spécifié'}` : '';
+- Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
+` : ''}
 
-    const systemPrompt = `Tu es M. Victaure, un assistant professionnel spécialisé en carrière.
+Question: ${message}
 
-Instructions strictes:
-- Réponds de manière directe et concise (max 2-3 phrases)
-- Adapte tes réponses au profil de l'utilisateur
-- Reste professionnel et factuel
-- Si une question est ambiguë, demande une clarification
-- Utilise un français québécois naturel
-- Ne donne JAMAIS d'exemples génériques
-- Ne fais JAMAIS de listes à puces
-- Évite tout formatage superflu
+Réponse:`;
 
-${userContext}
-
-Apprentissage précédent:
-${relevantLearning}
-
-Conversation précédente:
-${context?.previousMessages?.map((msg: any) => `${msg.sender}: ${msg.content}`).join('\n') || ''}
-
-Question actuelle: ${message}`;
-
-    console.log('Envoi de la requête à Hugging Face...');
-    console.log('Prompt système:', systemPrompt);
+    console.log('Envoi de la requête...');
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
@@ -104,11 +63,10 @@ Question actuelle: ${message}`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: systemPrompt,
+          inputs: prompt,
           parameters: {
             max_new_tokens: 150,
             temperature: 0.7,
-            top_p: 0.9,
             return_full_text: false
           }
         }),
@@ -116,55 +74,26 @@ Question actuelle: ${message}`;
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erreur Hugging Face:', response.status, errorText);
-      throw new Error(`Erreur API Hugging Face: ${response.status} - ${errorText}`);
+      throw new Error('Erreur API Hugging Face');
     }
 
     const data = await response.json();
-    console.log('Réponse brute de Hugging Face:', data);
-
-    if (!data || !Array.isArray(data) || data.length === 0) {
-      console.error('Format de réponse invalide:', data);
-      throw new Error('Format de réponse invalide de Hugging Face');
-    }
-
-    let aiResponse = data[0]?.generated_text
-      ?.split('Assistant:').pop()
-      ?.split('Human:')[0]
-      ?.trim();
-
-    if (!aiResponse) {
-      console.warn('Réponse vide ou invalide, utilisation de la réponse par défaut');
-      aiResponse = "Je n'ai pas bien compris votre question. Pourriez-vous la reformuler?";
-    }
+    let aiResponse = data[0]?.generated_text?.trim() || "Je m'excuse, je n'ai pas bien compris. Pouvez-vous reformuler?";
 
     // Nettoyer la réponse
     aiResponse = aiResponse
-      .replace(/^\s+|\s+$/g, '')
-      .replace(/\n{2,}/g, ' ')
-      .replace(/\s{2,}/g, ' ')
-      .replace(/([0-9]+\.|•|-)\s/g, '')
-      .replace(/(exemple|par exemple|voici|comme suit)/gi, '');
+      .replace(/^Réponse:\s*/i, '')
+      .replace(/^M\. Victaure:\s*/i, '')
+      .trim();
 
-    console.log('Réponse nettoyée:', aiResponse);
-
-    // Sauvegarder l'interaction pour l'apprentissage
-    const { error: insertError } = await supabase
+    // Sauvegarder l'interaction
+    await supabase
       .from('ai_learning_data')
       .insert({
         user_id: userId,
         question: message,
-        response: aiResponse,
-        context: {
-          profile: profile,
-          previousMessages: context?.previousMessages
-        }
+        response: aiResponse
       });
-
-    if (insertError) {
-      console.error('Erreur lors de la sauvegarde des données:', insertError);
-    }
 
     return new Response(
       JSON.stringify({ response: aiResponse }),
@@ -173,21 +102,9 @@ Question actuelle: ${message}`;
 
   } catch (error) {
     console.error('Erreur:', error);
-    
-    let errorMessage = "Je suis désolé, j'ai rencontré une difficulté technique. ";
-    
-    if (error.message.includes('API Hugging Face')) {
-      errorMessage += "Le service de traitement du langage est temporairement indisponible. ";
-    } else if (error.message.includes('profil utilisateur')) {
-      errorMessage += "Je n'arrive pas à accéder à votre profil. ";
-    }
-    
-    errorMessage += "Pourriez-vous réessayer dans quelques instants?";
-
     return new Response(
       JSON.stringify({ 
-        response: errorMessage,
-        error: error.message 
+        response: "Je m'excuse, je ne suis pas disponible pour le moment. Pouvez-vous réessayer dans quelques instants?"
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
