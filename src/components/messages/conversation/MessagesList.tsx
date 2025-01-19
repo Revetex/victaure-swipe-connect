@@ -16,8 +16,8 @@ interface MessagesListProps {
 }
 
 export function MessagesList({
-  messages,
-  chatMessages,
+  messages = [], // Add default empty array
+  chatMessages = [], // Add default empty array
   onSelectConversation,
   onMarkAsRead,
 }: MessagesListProps) {
@@ -33,7 +33,10 @@ export function MessagesList({
     toast.success(`Messages triés par date ${sortOrder === "asc" ? "décroissante" : "croissante"}`);
   };
 
-  const filteredMessages = messages.filter(message => {
+  // Safely handle potentially undefined messages
+  const safeMessages = Array.isArray(messages) ? messages : [];
+  
+  const filteredMessages = safeMessages.filter(message => {
     if (!message) return false;
     
     const content = String(message.content || '').toLowerCase();
@@ -50,7 +53,7 @@ export function MessagesList({
     return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
   });
 
-  const unreadCount = messages.filter(m => !m.read).length;
+  const unreadCount = safeMessages.filter(m => !m.read).length;
 
   return (
     <motion.div
@@ -71,7 +74,7 @@ export function MessagesList({
         <div className="space-y-2 p-4">
           <div className="mb-6">
             <AssistantMessage 
-              chatMessages={chatMessages}
+              chatMessages={Array.isArray(chatMessages) ? chatMessages : []}
               onSelectConversation={onSelectConversation}
             />
           </div>
