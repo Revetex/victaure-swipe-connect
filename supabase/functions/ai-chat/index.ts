@@ -45,7 +45,7 @@ serve(async (req) => {
     ).join('\n') : '';
 
     const prompt = `Tu es M. Victaure, un conseiller en orientation professionnel québécois sympathique et chaleureux.
-    
+
 Contexte de la conversation:
 ${conversationHistory}
 
