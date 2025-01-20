@@ -68,6 +68,12 @@ export function Marketplace() {
           </div>
         </div>
 
+        {/* Google Custom Search */}
+        <div className="mb-8">
+          <div className="gcse-search"></div>
+          <script async src="https://cse.google.com/cse.js?cx=YOUR_CUSTOM_SEARCH_ID"></script>
+        </div>
+
         {showFilters && <JobFilters filters={filters} onFilterChange={handleFilterChange} />}
         <JobList jobs={jobs || []} />
       </div>
