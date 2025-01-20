@@ -85,7 +85,8 @@ Réponse:`;
     );
 
     if (!response.ok) {
-      console.error('Erreur API:', await response.text());
+      const errorText = await response.text();
+      console.error('Erreur API:', errorText);
       throw new Error('Erreur API Hugging Face');
     }
 
@@ -102,10 +103,15 @@ Réponse:`;
 
     // Nettoyer la réponse
     aiResponse = aiResponse
-      .replace(/^Réponse:\s*/i, '')
-      .replace(/^M\. Victaure:\s*/i, '')
-      .replace(/^Assistant:\s*/i, '')
+      .replace(/^Assistant:?\s*/i, '')
+      .replace(/^M\.\s*Victaure:?\s*/i, '')
+      .replace(/^Réponse:?\s*/i, '')
       .trim();
+
+    // Vérifier que la réponse n'est pas vide après nettoyage
+    if (!aiResponse) {
+      throw new Error('Réponse vide après nettoyage');
+    }
 
     console.log('Réponse nettoyée:', aiResponse);
 
@@ -134,20 +140,23 @@ Réponse:`;
     
     // Messages d'erreur plus naturels et variés en français québécois
     const errorMessages = [
-      "Désolé mon ami, j'ai un p'tit bug technique. On réessaye-tu?",
-      "Oups! J'suis un peu mêlé là. Peux-tu répéter s'te plaît?",
-      "Excuse-moi, j'ai eu un blanc. On r'prend?",
-      "Tabarnouche! J'ai eu un p'tit pépin. On continue-tu notre jasette?",
-      "Pardonne-moi, j'ai perdu le fil. Tu peux reformuler?"
+      "Désolé mon ami, j'ai un p'tit problème technique. On réessaye?",
+      "Oups! Y'a eu un pépin. Peux-tu reformuler ta question?",
+      "Mon système a eu un blanc. On reprend?",
+      "Excuse-moi, j'ai perdu le fil. Tu peux répéter?",
+      "Je suis un peu mêlé là. On recommence?"
     ];
     
     const randomMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
     
     return new Response(
-      JSON.stringify({ response: randomMessage }),
+      JSON.stringify({ 
+        error: error.message,
+        response: randomMessage 
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
+        status: 200  // On retourne 200 même en cas d'erreur pour gérer l'erreur côté client
       }
     );
   }
