@@ -1,177 +1,114 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { JobList } from "./jobs/JobList";
-import { JobFilters } from "./jobs/JobFilters";
-import { Job } from "@/types/job";
-import { supabase } from "@/integrations/supabase/client";
-import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
-import { Button } from "./ui/button";
-import { Filter, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { JobCreationDialog } from "./jobs/JobCreationDialog";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-
-interface ScrapedJob {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  description?: string;
-  url?: string;
-  posted_at: string;
-  created_at: string;
-  updated_at: string;
-}
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { JobFilters } from "./jobs/JobFilters";
+import { JobList } from "./jobs/JobList";
+import { Filter, Search } from "lucide-react";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Marketplace() {
-  const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearchLoaded, setIsSearchLoaded] = useState(false);
 
-  // Add Google Custom Search script
+  // Optimized Google Custom Search integration
   useEffect(() => {
     const script = document.createElement('script');
     script.src = "https://cse.google.com/cse.js?cx=d14c30c2cca67452a";
     script.async = true;
+    
+    script.onload = () => {
+      setIsSearchLoaded(true);
+      // Personnalisation du style après chargement
+      const searchStyles = document.createElement('style');
+      searchStyles.textContent = `
+        .gsc-control-cse {
+          background-color: transparent !important;
+          border: none !important;
+        }
+        .gsc-input-box {
+          border-radius: 0.5rem !important;
+          border: 1px solid var(--border) !important;
+          background: var(--background) !important;
+        }
+        .gsc-search-button-v2 {
+          border-radius: 0.5rem !important;
+          padding: 8px 16px !important;
+          margin-left: 8px !important;
+        }
+      `;
+      document.head.appendChild(searchStyles);
+    };
+
     document.head.appendChild(script);
 
     return () => {
       document.head.removeChild(script);
+      const styles = document.head.querySelector('style:last-child');
+      if (styles) document.head.removeChild(styles);
     };
   }, []);
 
-  const { data: regularJobs = [], isLoading: isLoadingRegular } = useQuery({
-    queryKey: ['regular-jobs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq('status', 'open')
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    }
+  const { data: jobs, isLoading, error } = useQuery(['jobs'], async () => {
+    const { data, error } = await supabase.from('jobs').select('*');
+    if (error) throw new Error(error.message);
+    return data;
   });
 
-  const { data: scrapedJobs = [], isLoading: isLoadingScraped } = useQuery({
-    queryKey: ['scraped-jobs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("scraped_jobs")
-        .select("*")
-        .order("posted_at", { ascending: false });
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-      if (error) throw error;
-      return data || [];
-    }
-  });
-
-  // Memoized job conversion functions
-  const convertRegularJobs = useCallback((jobs: any[]): Job[] => {
-    return jobs.map(job => ({
-      id: job.id,
-      title: job.title,
-      description: job.description,
-      budget: job.budget,
-      location: job.location,
-      employer_id: job.employer_id,
-      status: job.status as 'open' | 'closed' | 'in-progress',
-      company: job.company_name || 'Entreprise',
-      source: 'Victaure' as const,
-      created_at: job.created_at,
-      updated_at: job.updated_at,
-      category: job.category,
-      contract_type: job.contract_type,
-      experience_level: job.experience_level
-    }));
-  }, []);
-
-  const convertScrapedJobs = useCallback((jobs: ScrapedJob[]): Job[] => {
-    return jobs.map(job => ({
-      id: job.id,
-      title: job.title,
-      description: job.description || '',
-      budget: 0,
-      location: job.location,
-      employer_id: '',
-      status: 'open' as const,
-      company: job.company,
-      source: 'Externe' as const,
-      created_at: job.created_at,
-      updated_at: job.updated_at,
-      category: 'Externe',
-      contract_type: 'full-time',
-      experience_level: 'mid-level',
-      url: job.url
-    }));
-  }, []);
-
-  // Memoized combined and filtered jobs
-  const allJobs = useMemo(() => {
-    const regular = convertRegularJobs(regularJobs);
-    const scraped = convertScrapedJobs(scrapedJobs);
-    const combined = [...regular, ...scraped];
-    
-    return combined.sort((a, b) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-  }, [regularJobs, scrapedJobs, convertRegularJobs, convertScrapedJobs]);
-
-  const handleFilterChange = useCallback((key: keyof JobFiltersType, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  }, []);
-
-  const isLoading = isLoadingRegular || isLoadingScraped;
+  if (error) {
+    toast.error("Error fetching jobs");
+    return null;
+  }
 
   return (
-    <section className="py-8 min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Marketplace</h1>
-          <JobCreationDialog
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            onSuccess={() => {
-              toast.success("Mission créée avec succès !");
-            }}
-          />
+    <section className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold mb-4 md:mb-0">
+            Trouvez votre prochaine mission
+          </h1>
+          <Button
+            onClick={() => setShowFilters(!showFilters)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            Filtres
+          </Button>
         </div>
 
-        {/* Add Google Custom Search Element */}
-        <div className="mb-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-          <div className="gcse-search"></div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">
-              Toutes les offres ({allJobs.length})
-            </h2>
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="w-auto flex items-center justify-center gap-2"
-            >
-              <Filter className="h-4 w-4" />
-              {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-            </Button>
-          </div>
-          
-          <div className="space-y-4">
-            {showFilters && (
-              <div className="bg-card rounded-lg p-4">
-                <JobFilters
-                  filters={filters}
-                  onFilterChange={handleFilterChange}
-                />
+        {/* Recherche Google améliorée */}
+        <AnimatePresence>
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-8 glass-card dark:bg-gray-800/50 p-6 rounded-lg"
+          >
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Search className="h-5 w-5" />
+                <span className="font-medium">Recherche avancée</span>
               </div>
-            )}
-            <JobList 
-              jobs={allJobs} 
-              isLoading={isLoading}
-            />
-          </div>
-        </div>
+              {!isSearchLoaded ? (
+                <div className="h-[100px] flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <div className="gcse-search"></div>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {showFilters && <JobFilters />}
+        <JobList jobs={jobs} />
       </div>
     </section>
   );
