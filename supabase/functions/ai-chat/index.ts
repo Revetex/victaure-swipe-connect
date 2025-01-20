@@ -7,12 +7,14 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { message, userId, context } = await req.json()
+    console.log('Received request:', { message, userId })
     
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'))
     
@@ -21,37 +23,53 @@ serve(async (req) => {
       System: ${context.systemPrompt}
       
       Previous messages:
-      ${context.previousMessages.map((msg: any) => 
+      ${context.previousMessages?.map((msg: any) => 
         `${msg.sender === 'user' ? 'Human' : 'Assistant'}: ${msg.content}`
-      ).join('\n')}
+      ).join('\n') || ''}
       
       Human: ${message}
       Assistant:`
 
+    console.log('Sending to Hugging Face:', conversation)
+
     const response = await hf.textGeneration({
-      model: context.model || "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
       inputs: conversation,
       parameters: {
         max_new_tokens: 500,
         temperature: 0.7,
         top_p: 0.95,
-        repetition_penalty: 1.15
+        repetition_penalty: 1.15,
+        do_sample: true
       }
     })
+
+    console.log('Received response:', response)
 
     return new Response(
       JSON.stringify({ 
         response: response.generated_text.trim(),
-        model: context.model
+        model: "mistralai/Mixtral-8x7B-Instruct-v0.1"
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     )
 
   } catch (error) {
     console.error('Error:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        }, 
+        status: 500 
+      }
     )
   }
 })
