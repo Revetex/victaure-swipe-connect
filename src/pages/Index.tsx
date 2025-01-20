@@ -6,6 +6,7 @@ import { ArrowRight, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { memo } from "react";
+import { SimpleChat } from "@/components/SimpleChat";
 
 // Optimized components with memo
 const MemoizedHero = memo(Hero);
@@ -68,6 +69,10 @@ export default function Index() {
         </motion.div>
         
         <motion.div variants={itemVariants}>
+          <SimpleChat />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
           <MemoizedFeatures />
         </motion.div>
         
@@ -75,7 +80,6 @@ export default function Index() {
           <MemoizedStats />
         </motion.div>
         
-        {/* Action Button with optimized positioning and animations */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
