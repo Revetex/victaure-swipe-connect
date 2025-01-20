@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { defaultFilters } from "@/types/filters";
 import type { Job } from "@/types/job";
+import type { JobFilters as JobFiltersType } from "./jobs/JobFilterUtils";
 
 export function Marketplace() {
   const [showFilters, setShowFilters] = useState(false);
@@ -64,8 +65,11 @@ export function Marketplace() {
     }
   });
 
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters(newFilters);
+  const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
   if (isLoading) {
