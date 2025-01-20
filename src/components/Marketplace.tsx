@@ -27,7 +27,18 @@ export function Marketplace() {
   const [showFilters, setShowFilters] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Optimized data fetching with React Query
+  // Add Google Custom Search script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://cse.google.com/cse.js?cx=d14c30c2cca67452a";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
   const { data: regularJobs = [], isLoading: isLoadingRegular } = useQuery({
     queryKey: ['regular-jobs'],
     queryFn: async () => {
@@ -124,6 +135,11 @@ export function Marketplace() {
               toast.success("Mission créée avec succès !");
             }}
           />
+        </div>
+
+        {/* Add Google Custom Search Element */}
+        <div className="mb-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div className="gcse-search"></div>
         </div>
 
         <div className="space-y-4">
