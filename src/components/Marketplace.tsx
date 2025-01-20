@@ -7,11 +7,15 @@ import { JobList } from "./jobs/JobList";
 import { Filter, Search } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { JobCreationDialog } from "./jobs/JobCreationDialog";
+import { defaultFilters } from "@/types/filters";
+import type { Job } from "@/types/job";
 
 export function Marketplace() {
   const [showFilters, setShowFilters] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchLoaded, setIsSearchLoaded] = useState(false);
+  const [filters, setFilters] = useState(defaultFilters);
 
   // Optimized Google Custom Search integration
   useEffect(() => {
@@ -51,11 +55,18 @@ export function Marketplace() {
     };
   }, []);
 
-  const { data: jobs, isLoading, error } = useQuery(['jobs'], async () => {
-    const { data, error } = await supabase.from('jobs').select('*');
-    if (error) throw new Error(error.message);
-    return data;
+  const { data: jobs, isLoading, error } = useQuery({
+    queryKey: ['jobs'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('jobs').select('*');
+      if (error) throw new Error(error.message);
+      return data as Job[];
+    }
   });
+
+  const handleFilterChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -73,14 +84,23 @@ export function Marketplace() {
           <h1 className="text-3xl font-bold mb-4 md:mb-0">
             Trouvez votre prochaine mission
           </h1>
-          <Button
-            onClick={() => setShowFilters(!showFilters)}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <Filter className="h-4 w-4" />
-            Filtres
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              onClick={() => setShowFilters(!showFilters)}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              Filtres
+            </Button>
+            <JobCreationDialog 
+              isOpen={isOpen} 
+              setIsOpen={setIsOpen}
+              onSuccess={() => {
+                toast.success("Mission créée avec succès");
+              }}
+            />
+          </div>
         </div>
 
         {/* Recherche Google améliorée */}
@@ -107,8 +127,8 @@ export function Marketplace() {
           </motion.div>
         </AnimatePresence>
 
-        {showFilters && <JobFilters />}
-        <JobList jobs={jobs} />
+        {showFilters && <JobFilters filters={filters} onFilterChange={handleFilterChange} />}
+        <JobList jobs={jobs || []} />
       </div>
     </section>
   );
