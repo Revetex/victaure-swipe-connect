@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, userId, context } = await req.json();
+    const { message, userId } = await req.json();
     console.log('Question reçue:', message);
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
@@ -45,18 +45,19 @@ serve(async (req) => {
     ).join('\n') : '';
 
     const prompt = `Tu es M. Victaure, un conseiller en orientation professionnel québécois sympathique et chaleureux.
-
+    
 Contexte de la conversation:
 ${conversationHistory}
 
 Nouvelle question: ${message}
 
 Instructions:
-- Réponds de manière naturelle et chaleureuse
-- Utilise un français québécois authentique
+- Réponds de manière naturelle et chaleureuse en utilisant un français québécois authentique
 - Sois empathique et à l'écoute
 - Donne des conseils pratiques et personnalisés
 - Si tu ne comprends pas quelque chose, pose des questions pour clarifier
+- Évite les réponses génériques
+- Adapte ton langage au contexte de la conversation
 
 Réponse:`;
 
@@ -76,7 +77,8 @@ Réponse:`;
             max_new_tokens: 500,
             temperature: 0.7,
             top_p: 0.9,
-            return_full_text: false
+            return_full_text: false,
+            do_sample: true
           }
         }),
       }
@@ -88,6 +90,7 @@ Réponse:`;
     }
 
     const data = await response.json();
+    console.log('Réponse brute reçue:', data);
     
     if (!data?.[0]?.generated_text) {
       console.error('Réponse invalide:', data);
@@ -95,14 +98,16 @@ Réponse:`;
     }
 
     let aiResponse = data[0].generated_text.trim();
+    console.log('Réponse avant nettoyage:', aiResponse);
 
     // Nettoyer la réponse
     aiResponse = aiResponse
       .replace(/^Réponse:\s*/i, '')
       .replace(/^M\. Victaure:\s*/i, '')
+      .replace(/^Assistant:\s*/i, '')
       .trim();
 
-    console.log('Réponse générée:', aiResponse);
+    console.log('Réponse nettoyée:', aiResponse);
 
     // Sauvegarder l'interaction
     await supabase
@@ -114,7 +119,8 @@ Réponse:`;
         context: {
           model: 'Mixtral-8x7B-Instruct-v0.1',
           profile: profile,
-          previousMessages: previousMessages
+          previousMessages: previousMessages,
+          prompt: prompt
         }
       });
 
@@ -124,14 +130,14 @@ Réponse:`;
     );
 
   } catch (error) {
-    console.error('Erreur:', error);
+    console.error('Erreur détaillée:', error);
     
-    // Message d'erreur plus naturel et varié
+    // Messages d'erreur plus naturels et variés en français québécois
     const errorMessages = [
-      "Désolé, j'ai un petit pépin technique. On réessaie?",
-      "Oups! Je suis un peu mêlé là. Peux-tu répéter s'il te plaît?",
-      "Excuse-moi, j'ai eu un blanc. On reprend?",
-      "Je m'excuse, j'ai eu un petit bug. On continue notre discussion?",
+      "Désolé mon ami, j'ai un p'tit bug technique. On réessaye-tu?",
+      "Oups! J'suis un peu mêlé là. Peux-tu répéter s'te plaît?",
+      "Excuse-moi, j'ai eu un blanc. On r'prend?",
+      "Tabarnouche! J'ai eu un p'tit pépin. On continue-tu notre jasette?",
       "Pardonne-moi, j'ai perdu le fil. Tu peux reformuler?"
     ];
     
