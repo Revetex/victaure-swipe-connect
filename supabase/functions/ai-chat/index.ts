@@ -25,14 +25,13 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Récupérer le profil de l'utilisateur
+    // Get user profile and previous messages for context
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
 
-    // Récupérer les derniers messages pour le contexte
     const { data: previousMessages } = await supabase
       .from('ai_chat_messages')
       .select('content, sender')
@@ -54,6 +53,7 @@ Voici quelques règles importantes:
 4. Donne des conseils pratiques et personnalisés
 5. Si tu ne comprends pas quelque chose, pose des questions pour clarifier
 6. Évite les réponses trop formelles ou génériques
+7. Garde tes réponses concises et naturelles
 
 Historique de la conversation:
 ${conversationHistory}
@@ -75,11 +75,12 @@ Réponds de manière naturelle et chaleureuse, comme un vrai Québécois:`;
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 500,
-            temperature: 0.8,
-            top_p: 0.95,
+            max_new_tokens: 250,
+            temperature: 0.7,
+            top_p: 0.9,
             repetition_penalty: 1.2,
-            do_sample: true
+            do_sample: true,
+            return_full_text: false
           }
         }),
       }
@@ -113,13 +114,21 @@ Réponds de manière naturelle et chaleureuse, comme un vrai Québécois:`;
 
     // Nettoyer la réponse
     aiResponse = aiResponse
-      .replace(/^Question:.*$/m, '')
-      .replace(/^Assistant:?\s*/i, '')
-      .replace(/^M\.\s*Victaure:?\s*/i, '')
-      .replace(/^Réponse:?\s*/i, '')
+      .split('\n')
+      .filter(line => !line.toLowerCase().includes('système:'))
+      .filter(line => !line.toLowerCase().includes('question:'))
+      .join('\n')
+      .replace(/^(assistant|m\.?\s*victaure)\s*:/i, '')
+      .replace(/^réponse\s*:/i, '')
       .trim();
 
-    // Vérifier que la réponse n'est pas vide après nettoyage
+    // Additional cleanup for common artifacts
+    aiResponse = aiResponse
+      .replace(/```[^`]*```/g, '') // Remove code blocks
+      .replace(/\[.*?\]/g, '')     // Remove square brackets
+      .replace(/\(.*?\)/g, '')     // Remove parentheses
+      .trim();
+
     if (!aiResponse) {
       console.error('Réponse vide après nettoyage');
       throw new Error('Réponse invalide générée');
@@ -127,7 +136,7 @@ Réponds de manière naturelle et chaleureuse, comme un vrai Québécois:`;
 
     console.log('Réponse finale nettoyée:', aiResponse);
 
-    // Sauvegarder l'interaction
+    // Save the interaction
     await supabase
       .from('ai_learning_data')
       .insert({
