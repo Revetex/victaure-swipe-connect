@@ -8,7 +8,7 @@ export async function generateAIResponse(message: string): Promise<string> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    console.log('Generating AI response...');
+    console.log('Generating AI response with Hugging Face...');
 
     const { data, error } = await supabase.functions.invoke('ai-chat', {
       body: { 
@@ -17,25 +17,25 @@ export async function generateAIResponse(message: string): Promise<string> {
         context: {
           previousMessages: await loadMessages(),
           emotionalContext: analyzeEmotionalContext(message),
-          systemPrompt: SYSTEM_PROMPT
+          systemPrompt: SYSTEM_PROMPT,
+          model: "mistralai/Mixtral-8x7B-Instruct-v0.1" // Using Mixtral model for better French responses
         }
       }
     });
 
     if (error) throw error;
     
-    // Amélioration de la gestion des réponses
     if (!data?.response || data.response.trim() === '') {
-      console.warn('Invalid or empty response, providing contextual fallback');
+      console.warn('Invalid or empty response from Hugging Face, providing contextual fallback');
       if (message.toLowerCase().includes('bonjour') || 
           message.toLowerCase().includes('salut') || 
           message.toLowerCase().includes('allo')) {
-        return "Bonjour! C'est un plaisir de vous parler. Comment puis-je vous aider avec votre carrière aujourd'hui?";
+        return "Bonjour! Je suis M. Victaure, votre assistant en orientation professionnelle. Comment puis-je vous aider aujourd'hui?";
       }
       if (message.toLowerCase().includes('merci')) {
         return "Je vous en prie! N'hésitez pas si vous avez d'autres questions.";
       }
-      return "Je suis là pour vous aider. Pourriez-vous me donner plus de détails sur ce que vous cherchez?";
+      return FALLBACK_MESSAGE;
     }
     
     console.log('AI response generated:', data.response);
