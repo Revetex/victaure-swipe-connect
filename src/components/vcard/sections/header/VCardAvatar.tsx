@@ -3,18 +3,29 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserProfile } from "@/types/profile";
 
 interface VCardAvatarProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    if (profile.avatar_url) {
+      // Précharger l'image pour vérifier si elle est valide
+      const img = new Image();
+      img.src = profile.avatar_url;
+      img.onload = () => setImageError(false);
+      img.onerror = () => setImageError(true);
+    }
+  }, [profile.avatar_url]);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -34,10 +45,7 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
       setIsLoading(true);
       setImageError(false);
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
-      // Delete old avatar if it exists
+      // Nettoyer l'ancienne image si elle existe
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
@@ -47,25 +55,21 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
         }
       }
 
-      const { error: uploadError, data } = await supabase.storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
         .from('vcards')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('vcards')
         .getPublicUrl(fileName);
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Aucun utilisateur authentifié");
-
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
-
-      if (updateError) throw updateError;
 
       setProfile({ ...profile, avatar_url: publicUrl });
       toast.success("Photo de profil mise à jour");
@@ -87,12 +91,12 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
         "w-24 h-24 sm:w-32 sm:h-32"
       )}>
         {isLoading ? (
-          <Skeleton className="w-full h-full rounded-full" />
+          <Skeleton className="w-full h-full rounded-full animate-pulse" />
         ) : (
           <Avatar className="w-full h-full">
             <AvatarImage 
-              src={profile.avatar_url} 
-              alt={profile.full_name}
+              src={imageError ? undefined : profile.avatar_url}
+              alt={profile.full_name || "Photo de profil"}
               className="object-cover w-full h-full"
               onError={() => setImageError(true)}
             />
