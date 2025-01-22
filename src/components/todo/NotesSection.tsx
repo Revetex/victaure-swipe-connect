@@ -32,14 +32,14 @@ export function NotesSection({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 text-primary">
+      <div className="flex items-center gap-3 text-primary mb-4">
         <div className="p-2 rounded-full bg-primary/10">
           <StickyNoteIcon className="h-5 w-5" />
         </div>
         <h2 className="text-lg font-semibold">Notes</h2>
       </div>
 
-      <div className="mt-4">
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm rounded-lg shadow-sm p-4 mb-4">
         <NotesInput
           newNote={newNote}
           selectedColor={selectedColor}
@@ -50,12 +50,9 @@ export function NotesSection({
         />
       </div>
 
-      <ScrollArea className="flex-1 mt-4">
+      <ScrollArea className="flex-1">
         <motion.div 
-          className={cn(
-            "grid gap-3",
-            isMobile ? "grid-cols-1" : "grid-cols-2"
-          )}
+          className="grid gap-3 grid-cols-2"
           layout
         >
           <AnimatePresence mode="popLayout">
@@ -71,10 +68,7 @@ export function NotesSection({
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className={cn(
-                  "text-center text-muted-foreground py-6 col-span-full",
-                  "bg-muted/30 rounded-lg"
-                )}
+                className="col-span-2 text-center text-muted-foreground py-6 bg-muted/30 rounded-lg"
               >
                 <StickyNoteIcon className="h-10 w-10 mx-auto mb-3 opacity-50" />
                 <p className="text-sm">Aucune note pour le moment</p>

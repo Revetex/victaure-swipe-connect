@@ -71,15 +71,15 @@ export const DashboardPageContent = memo(function DashboardPageContent({
         <div key="todo-notes-container" className="dashboard-card h-full">
           <div className="p-3 sm:p-4 md:p-6 h-full">
             <div className="bg-background/50 backdrop-blur-sm rounded-lg border shadow-lg h-[calc(100vh-8rem)] overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-2 h-full">
-                <div className="h-full border-r border-border/50 overflow-hidden">
-                  <div className="p-4 h-full">
-                    <TodoSection {...todoProps} />
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 h-full">
                 <div className="h-full overflow-hidden">
-                  <div className="p-4 h-full">
-                    <NotesSection {...noteProps} colors={colors} />
+                  <div className="flex flex-col h-full p-4 space-y-4">
+                    <div className="flex-1 min-h-0 bg-white/50 rounded-lg p-4 shadow-inner">
+                      <TodoSection {...todoProps} />
+                    </div>
+                    <div className="flex-1 min-h-0 bg-white/50 rounded-lg p-4 shadow-inner">
+                      <NotesSection {...noteProps} colors={colors} />
+                    </div>
                   </div>
                 </div>
               </div>

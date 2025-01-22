@@ -41,14 +41,14 @@ export function TodoSection({
   
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 text-primary">
+      <div className="flex items-center gap-3 text-primary mb-4">
         <div className="p-2 rounded-full bg-primary/10">
           <ListTodo className="h-5 w-5" />
         </div>
         <h2 className="text-lg font-semibold">Tâches</h2>
       </div>
 
-      <div className="mt-4">
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm rounded-lg shadow-sm p-4 mb-4">
         <TodoInput
           newTodo={newTodo}
           selectedDate={selectedDate}
@@ -62,7 +62,7 @@ export function TodoSection({
         />
       </div>
 
-      <ScrollArea className="flex-1 pr-4 mt-4">
+      <ScrollArea className="flex-1 pr-4">
         <motion.div 
           className="space-y-2"
           layout
