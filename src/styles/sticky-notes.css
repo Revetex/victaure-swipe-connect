@@ -1,41 +1,43 @@
 .sticky-note {
-  @apply relative p-4 rounded-lg shadow-md transition-transform duration-200 hover:scale-102;
+  @apply relative p-4 rounded-lg shadow-lg transition-transform duration-200;
   min-height: 150px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-width: 2px;
+  transform-origin: center;
 }
 
 .sticky-note-yellow {
-  @apply bg-yellow-200 hover:bg-yellow-300 text-yellow-950 border-2 border-yellow-300;
-  box-shadow: 0 6px 12px -2px rgba(234, 179, 8, 0.25), 0 4px 6px -1px rgba(234, 179, 8, 0.1);
+  @apply bg-yellow-300 hover:bg-yellow-400 text-yellow-950 border-yellow-400;
+  box-shadow: 0 8px 16px -2px rgba(234, 179, 8, 0.3);
 }
 
 .sticky-note-blue {
-  @apply bg-blue-200 hover:bg-blue-300 text-blue-950 border-2 border-blue-300;
-  box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.25), 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+  @apply bg-blue-300 hover:bg-blue-400 text-blue-950 border-blue-400;
+  box-shadow: 0 8px 16px -2px rgba(59, 130, 246, 0.3);
 }
 
 .sticky-note-green {
-  @apply bg-green-200 hover:bg-green-300 text-green-950 border-2 border-green-300;
-  box-shadow: 0 6px 12px -2px rgba(34, 197, 94, 0.25), 0 4px 6px -1px rgba(34, 197, 94, 0.1);
+  @apply bg-green-300 hover:bg-green-400 text-green-950 border-green-400;
+  box-shadow: 0 8px 16px -2px rgba(34, 197, 94, 0.3);
 }
 
 .sticky-note-pink {
-  @apply bg-pink-200 hover:bg-pink-300 text-pink-950 border-2 border-pink-300;
-  box-shadow: 0 6px 12px -2px rgba(236, 72, 153, 0.25), 0 4px 6px -1px rgba(236, 72, 153, 0.1);
+  @apply bg-pink-300 hover:bg-pink-400 text-pink-950 border-pink-400;
+  box-shadow: 0 8px 16px -2px rgba(236, 72, 153, 0.3);
 }
 
 .sticky-note-purple {
-  @apply bg-purple-200 hover:bg-purple-300 text-purple-950 border-2 border-purple-300;
-  box-shadow: 0 6px 12px -2px rgba(147, 51, 234, 0.25), 0 4px 6px -1px rgba(147, 51, 234, 0.1);
+  @apply bg-purple-300 hover:bg-purple-400 text-purple-950 border-purple-400;
+  box-shadow: 0 8px 16px -2px rgba(147, 51, 234, 0.3);
 }
 
 .sticky-note-orange {
-  @apply bg-orange-200 hover:bg-orange-300 text-orange-950 border-2 border-orange-300;
-  box-shadow: 0 6px 12px -2px rgba(249, 115, 22, 0.25), 0 4px 6px -1px rgba(249, 115, 22, 0.1);
+  @apply bg-orange-300 hover:bg-orange-400 text-orange-950 border-orange-400;
+  box-shadow: 0 8px 16px -2px rgba(249, 115, 22, 0.3);
 }
 
 .sticky-note .delete-button {
-  @apply absolute top-2 right-2 p-1 rounded-full opacity-0 transition-opacity duration-200;
+  @apply absolute top-2 right-2 p-1.5 rounded-full opacity-0 transition-opacity duration-200 bg-white/10 hover:bg-white/20;
 }
 
 .sticky-note:hover .delete-button {
@@ -43,5 +45,5 @@
 }
 
 .sticky-note .note-text {
-  @apply mt-2 text-base break-words font-semibold leading-relaxed;
+  @apply mt-2 text-base break-words font-bold leading-relaxed;
 }
