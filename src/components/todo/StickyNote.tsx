@@ -18,12 +18,13 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       exit={{ scale: 0.9, opacity: 0 }}
       whileHover={{ scale: 1.02, rotate: 0 }}
       className={cn(
-        "sticky-note group transform rotate-1",
+        "sticky-note group",
         "min-h-[120px] sm:min-h-[100px]",
         "p-5 sm:p-4",
         "touch-manipulation",
         "shadow-md hover:shadow-lg transition-shadow",
         "relative",
+        "bg-opacity-100",
         colorClass
       )}
     >
