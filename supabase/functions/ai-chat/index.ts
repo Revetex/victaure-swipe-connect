@@ -19,8 +19,20 @@ serve(async (req) => {
     
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'));
     
+    // Format the conversation with previous messages if available
+    let conversationHistory = '';
+    if (context?.previousMessages) {
+      conversationHistory = context.previousMessages
+        .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
+        .join('\n');
+    }
+    
     // Format the conversation for the model
-    const conversation = `<|system|>Tu es M. Victaure, un assistant professionnel spécialisé dans l'orientation professionnelle. Tu es là pour aider les utilisateurs dans leur recherche d'emploi et leur développement de carrière. Sois toujours professionnel, précis et bienveillant.</s>
+    const conversation = `<|system|>Tu es M. Victaure, un assistant professionnel spécialisé dans l'orientation professionnelle au Québec. Tu dois adapter tes réponses en fonction du contexte de la conversation et éviter de répéter les mêmes phrases. Sois naturel et empathique.
+
+Historique de la conversation:
+${conversationHistory}
+
 <|user|>${message}</s>
 <|assistant|>`;
 
@@ -31,9 +43,9 @@ serve(async (req) => {
       inputs: conversation,
       parameters: {
         max_new_tokens: 500,
-        temperature: 0.7,
+        temperature: 0.9,
         top_p: 0.95,
-        repetition_penalty: 1.15,
+        repetition_penalty: 1.2,
         do_sample: true,
         stop: ["</s>", "<|user|>", "<|system|>"]
       }
@@ -42,13 +54,19 @@ serve(async (req) => {
     console.log('Raw response:', response);
 
     // Clean up the response
-    const cleanResponse = response.generated_text
+    let cleanResponse = response.generated_text
       .replace(conversation, '')
       .replace(/<\|assistant\|>/g, '')
       .replace(/<\|user\|>.*$/s, '')
       .replace(/<\|system\|>.*$/s, '')
       .replace(/<\/s>/g, '')
       .trim();
+
+    // Fallback response if empty or same as previous
+    if (!cleanResponse || (context?.previousMessages?.length > 0 && 
+        context.previousMessages[context.previousMessages.length - 1]?.content === cleanResponse)) {
+      cleanResponse = "Je m'excuse, mais je ne suis pas sûr de comprendre. Pourriez-vous reformuler votre question ou me donner plus de détails sur ce que vous cherchez ?";
+    }
 
     console.log('Cleaned response:', cleanResponse);
 
