@@ -71,7 +71,7 @@ export function DashboardLayout({
             <AIAssistant onClose={handleCloseChat} />
           </motion.div>
         )}
-      </motion.nav>
+      </AnimatePresence>
       
       <motion.nav 
         className={`fixed bottom-0 left-0 right-0 bg-background border-t border-border/50 transition-all duration-300 safe-area-bottom ${
