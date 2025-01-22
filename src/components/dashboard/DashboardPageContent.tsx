@@ -73,41 +73,39 @@ export const DashboardPageContent = memo(function DashboardPageContent({
                   </div>
                 </div>
                 <div className="flex-1 overflow-hidden">
-                  <div className="grid grid-cols-1 h-full">
-                    <div className="h-full overflow-hidden">
-                      <div className="flex flex-col h-full">
-                        <div className="sticky top-0 z-10 bg-background/95 dark:bg-background/80 backdrop-blur-sm p-4 space-y-4 border-b border-border/10 shadow-sm">
-                          <div className="space-y-4 transition-all duration-200">
-                            <TodoInput {...todoProps} />
-                            <NotesInput {...noteProps} colors={colors} />
-                          </div>
+                  <div className="h-full overflow-hidden">
+                    <div className="flex flex-col h-full">
+                      <div className="sticky top-0 z-10 bg-background/95 dark:bg-background/80 backdrop-blur-sm p-4 space-y-4 border-b border-border/10 shadow-sm">
+                        <div className="space-y-4 transition-all duration-200">
+                          <TodoInput {...todoProps} />
+                          <NotesInput {...noteProps} colors={colors} />
                         </div>
-                        <div className="flex-1 p-4 overflow-y-auto">
-                          <div className="space-y-6">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {todoProps.todos.map((todo: any) => (
-                                <TodoItem
-                                  key={todo.id}
-                                  todo={todo}
-                                  onToggle={todoProps.onToggle}
-                                  onDelete={todoProps.onDelete}
-                                />
-                              ))}
-                              {noteProps.notes.map((note: any) => (
-                                <StickyNote
-                                  key={note.id}
-                                  note={note}
-                                  colorClass={`sticky-note-${note.color}`}
-                                  onDelete={noteProps.onDelete}
-                                />
-                              ))}
-                            </div>
-                            {todoProps.todos.length === 0 && noteProps.notes.length === 0 && (
-                              <div className="text-center text-muted-foreground py-12">
-                                <p className="text-sm">Aucune tâche ou note pour le moment</p>
-                              </div>
-                            )}
+                      </div>
+                      <div className="flex-1 p-4 overflow-y-auto">
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {todoProps.todos.map((todo: any) => (
+                              <TodoItem
+                                key={todo.id}
+                                todo={todo}
+                                onToggle={todoProps.onToggle}
+                                onDelete={todoProps.onDelete}
+                              />
+                            ))}
+                            {noteProps.notes.map((note: any) => (
+                              <StickyNote
+                                key={note.id}
+                                note={note}
+                                colorClass={`sticky-note-${note.color}`}
+                                onDelete={noteProps.onDelete}
+                              />
+                            ))}
                           </div>
+                          {todoProps.todos.length === 0 && noteProps.notes.length === 0 && (
+                            <div className="text-center text-muted-foreground py-12">
+                              <p className="text-sm">Aucune tâche ou note pour le moment</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
