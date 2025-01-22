@@ -28,7 +28,7 @@ serve(async (req) => {
       ).join('\n') || ''}
       
       Human: ${message}
-      Assistant:`
+      Assistant: Je vous écoute attentivement. `
 
     console.log('Sending to Hugging Face:', conversation)
 
@@ -40,15 +40,24 @@ serve(async (req) => {
         temperature: 0.7,
         top_p: 0.95,
         repetition_penalty: 1.15,
-        do_sample: true
+        do_sample: true,
+        stop: ["Human:", "System:", "\n\n"]
       }
     })
 
-    console.log('Received response:', response)
+    // Clean up the response by removing any system prompts or conversation formatting
+    let cleanResponse = response.generated_text
+      .replace(conversation, '') // Remove the input prompt
+      .replace(/^Assistant:\s*/i, '') // Remove any "Assistant:" prefix
+      .replace(/Human:.*$/s, '') // Remove any "Human:" suffix
+      .replace(/System:.*$/s, '') // Remove any "System:" suffix
+      .trim()
+
+    console.log('Cleaned response:', cleanResponse)
 
     return new Response(
       JSON.stringify({ 
-        response: response.generated_text.trim(),
+        response: cleanResponse,
         model: "mistralai/Mixtral-8x7B-Instruct-v0.1"
       }),
       { 
