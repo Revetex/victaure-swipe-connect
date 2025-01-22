@@ -17,6 +17,7 @@ interface VCardSectionsProps {
   handleRemoveSkill: (skill: string) => void;
   selectedStyle: StyleOption;
   sectionsOrder: string[];
+  isCVView?: boolean;
 }
 
 export function VCardSections({
@@ -29,6 +30,7 @@ export function VCardSections({
   handleRemoveSkill,
   selectedStyle,
   sectionsOrder,
+  isCVView = false,
 }: VCardSectionsProps) {
   // Define a default order that puts contact before bio
   const defaultOrder = ['header', 'contact', 'bio', 'skills', 'education', 'experience'];
@@ -109,7 +111,7 @@ export function VCardSections({
       {finalSectionsOrder.map((sectionId, index) => (
         <div
           key={`section-container-${sectionId}-${index}`}
-          className={`${isEditing ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}
+          className={`${isEditing && !isCVView ? 'hover:bg-accent/50 rounded-lg transition-colors' : ''}`}
         >
           {renderSection(sectionId, index)}
         </div>
