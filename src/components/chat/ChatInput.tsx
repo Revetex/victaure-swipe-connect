@@ -92,7 +92,7 @@ export const ChatInput = memo(function ChatInput({
                   animate={{ scale: 1 }}
                   exit={{ scale: 0 }}
                   onClick={handleSendClick}
-                  className="absolute right-2 p-1 text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                  className="absolute right-3 p-1.5 text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
                   disabled={isThinking}
                 >
                   {isThinking ? (
