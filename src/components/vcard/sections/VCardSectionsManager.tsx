@@ -9,7 +9,8 @@ interface VCardSectionsManagerProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
-  selectedStyle: StyleOption;  // Added this line to fix the type error
+  selectedStyle: StyleOption;
+  isCVView?: boolean;  // Added this prop
 }
 
 export function VCardSectionsManager({
@@ -17,6 +18,7 @@ export function VCardSectionsManager({
   isEditing,
   setProfile,
   selectedStyle,
+  isCVView = false,  // Added with default value
 }: VCardSectionsManagerProps) {
   const [newSkill, setNewSkill] = useState("");
   const [sectionsOrder, setSectionsOrder] = useState<string[]>(
@@ -72,6 +74,7 @@ export function VCardSectionsManager({
       handleRemoveSkill={handleRemoveSkill}
       selectedStyle={selectedStyle}
       sectionsOrder={sectionsOrder}
+      isCVView={isCVView}
     />
   );
 }
