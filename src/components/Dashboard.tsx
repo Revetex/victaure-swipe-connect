@@ -8,7 +8,7 @@ import { Loader } from "./ui/loader";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
-export function Dashboard() {
+export default function Dashboard() {
   const navigate = useNavigate();
   const { profile, isLoading: isProfileLoading } = useProfile();
   const [isAuthChecking, setIsAuthChecking] = useState(true);
@@ -27,7 +27,7 @@ export function Dashboard() {
           console.error('Session error:', sessionError);
           if (retryCount < MAX_RETRIES) {
             setRetryCount(prev => prev + 1);
-            setTimeout(checkAuth, 1000 * (retryCount + 1)); // Exponential backoff
+            setTimeout(checkAuth, 1000 * (retryCount + 1));
             return;
           }
           toast.error("Erreur d'authentification", {
@@ -72,7 +72,7 @@ export function Dashboard() {
 
         if (mounted) {
           setIsAuthChecking(false);
-          setRetryCount(0); // Reset retry count on success
+          setRetryCount(0);
         }
 
       } catch (error) {
