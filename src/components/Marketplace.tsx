@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultFilters } from "@/types/filters";
 import { motion } from "framer-motion";
+import { Job } from "@/types/job";
 
 export function Marketplace() {
   const [filters, setFilters] = useState(defaultFilters);
@@ -34,7 +35,12 @@ export function Marketplace() {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      
+      // Ensure the status is of the correct type
+      return (data as any[]).map(job => ({
+        ...job,
+        status: job.status as "open" | "closed" | "in-progress"
+      })) as Job[];
     },
   });
 

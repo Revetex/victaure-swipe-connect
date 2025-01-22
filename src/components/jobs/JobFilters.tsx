@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { SearchFilter } from "./filters/SearchFilter";
 import { CategoryFilters } from "./filters/CategoryFilters";
 import { BudgetFilter } from "./filters/BudgetFilter";
-import { JobFilters as JobFiltersType } from "@/types/filters";
+import { JobFilters as JobFiltersType, defaultFilters } from "@/types/filters";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
