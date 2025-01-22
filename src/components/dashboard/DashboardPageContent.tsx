@@ -2,12 +2,10 @@ import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { Settings } from "@/components/Settings";
-import { TodoSection } from "@/components/todo/TodoSection";
-import { NotesSection } from "@/components/todo/NotesSection";
-import { TodoInput } from "@/components/todo/TodoInput";
-import { TodoItem } from "@/components/todo/TodoItem";
-import { NotesInput } from "@/components/todo/NotesInput";
-import { StickyNote } from "@/components/todo/StickyNote";
+import { TodoInput } from "../todo/TodoInput";
+import { TodoItem } from "../todo/TodoItem";
+import { NotesInput } from "../todo/NotesInput";
+import { StickyNote } from "../todo/StickyNote";
 import { ListTodo } from "lucide-react";
 import { memo } from "react";
 import { useColorPalette } from "@/hooks/useColorPalette";
@@ -96,7 +94,7 @@ export const DashboardPageContent = memo(function DashboardPageContent({
                         <div className="flex-1 p-4 overflow-y-auto">
                           <div className="space-y-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {todoProps.todos.map((todo) => (
+                              {todoProps.todos.map((todo: any) => (
                                 <TodoItem
                                   key={todo.id}
                                   todo={todo}
@@ -104,7 +102,7 @@ export const DashboardPageContent = memo(function DashboardPageContent({
                                   onDelete={todoProps.onDelete}
                                 />
                               ))}
-                              {noteProps.notes.map((note) => (
+                              {noteProps.notes.map((note: any) => (
                                 <StickyNote
                                   key={note.id}
                                   note={note}
