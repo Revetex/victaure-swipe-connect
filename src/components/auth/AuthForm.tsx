@@ -9,7 +9,7 @@ import { ThemeSelector } from "./ThemeSelector";
 
 export const AuthForm = () => {
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(true); // Default to signup
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -24,6 +24,11 @@ export const AuthForm = () => {
 
     try {
       if (isSignUp) {
+        if (!formData.fullName || !formData.phone) {
+          toast.error("Veuillez remplir tous les champs");
+          return;
+        }
+
         const { error: signUpError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -75,7 +80,15 @@ export const AuthForm = () => {
         return;
       }
       
-      toast.error(error.message);
+      // Improved error messages
+      const errorMessage = error.message.toLowerCase();
+      if (errorMessage.includes('email')) {
+        toast.error("Adresse email invalide ou déjà utilisée");
+      } else if (errorMessage.includes('password')) {
+        toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      } else {
+        toast.error(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -114,6 +127,7 @@ export const AuthForm = () => {
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Votre nom complet"
                 required
+                autoFocus
               />
             </div>
             <div className="space-y-2">
@@ -142,6 +156,7 @@ export const AuthForm = () => {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="Votre adresse email"
             required
+            autoFocus={!isSignUp}
           />
         </div>
         <div className="space-y-2">

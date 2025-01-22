@@ -22,16 +22,25 @@ export const AuthVideo = () => {
   const handleVideoLoad = () => {
     console.log("Vidéo chargée avec succès");
     setIsVideoLoading(false);
+    // Try to preload video data
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
   };
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
       if (videoRef.current.paused) {
+        // Add a loading state while video is preparing to play
+        setIsVideoLoading(true);
         videoRef.current.play().then(() => {
           setIsPlaying(true);
+          setIsVideoLoading(false);
         }).catch(error => {
           console.error("Error playing video:", error);
+          setIsVideoLoading(false);
+          setVideoError(true);
         });
       } else {
         videoRef.current.pause();
@@ -41,7 +50,6 @@ export const AuthVideo = () => {
   };
 
   const handlePause = () => {
-    // Ne mettons pas à jour isPlaying si la pause est due au seeking
     if (videoRef.current && !videoRef.current.seeking) {
       setIsPlaying(false);
     }
@@ -49,12 +57,13 @@ export const AuthVideo = () => {
 
   const handlePlay = () => {
     setIsPlaying(true);
+    setIsVideoLoading(false);
   };
 
   return (
     <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
       {isVideoLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+        <div className="absolute inset-0 flex items-center justify-center bg-muted/80 backdrop-blur-sm z-10">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       )}
@@ -70,7 +79,7 @@ export const AuthVideo = () => {
             loop
             muted
             playsInline
-            preload="metadata"
+            preload="auto"
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
             onPause={handlePause}
@@ -81,7 +90,6 @@ export const AuthVideo = () => {
             Votre navigateur ne supporte pas la lecture de vidéos.
           </video>
           
-          {/* Video Overlay - Now shown when not playing */}
           <div 
             className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
