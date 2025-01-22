@@ -14,7 +14,6 @@ export function VCardViewingActions({
   onShare,
   onEdit,
   onDownloadBusinessPDF,
-  onDownloadCVPDF,
   isPdfGenerating
 }: VCardViewingActionsProps) {
   return (
@@ -34,13 +33,6 @@ export function VCardViewingActions({
         icon={FileText}
         label="Business PDF"
         onClick={onDownloadBusinessPDF}
-        variant="outline"
-        disabled={isPdfGenerating}
-      />
-      <VCardActionButton
-        icon={FileText}
-        label="CV PDF"
-        onClick={onDownloadCVPDF}
         variant="outline"
         disabled={isPdfGenerating}
       />

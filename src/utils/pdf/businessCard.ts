@@ -10,6 +10,7 @@ export async function generateBusinessCard(profile: UserProfile, style: StyleOpt
     format: [85, 55] // Standard business card size
   });
 
+  // Front side
   // Set background color
   doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, 85, 55, 'F');
@@ -33,12 +34,12 @@ export async function generateBusinessCard(profile: UserProfile, style: StyleOpt
   await new Promise((resolve) => {
     logoImg.onload = resolve;
   });
-  doc.addImage(logoImg, 'PNG', 5, 5, 10, 10); // Position and size the logo
+  doc.addImage(logoImg, 'PNG', 5, 5, 10, 10);
 
   // Set text color based on style
   doc.setTextColor(style.colors.text.primary);
 
-  // Add name (moved down to make room for logo)
+  // Add name
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.text(profile.full_name || '', 10, 20);
@@ -74,6 +75,25 @@ export async function generateBusinessCard(profile: UserProfile, style: StyleOpt
   doc.setDrawColor(style.colors.primary);
   doc.setLineWidth(0.3);
   doc.line(5, 45, 80, 45);
+
+  // Add back side
+  doc.addPage();
+  
+  // Set background for back side
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, 85, 55, 'F');
+  
+  // Add gradient to back side
+  doc.context2d.fillStyle = gradient;
+  doc.context2d.fillRect(0, 0, 85, 55);
+  
+  // Add border to back side
+  doc.setDrawColor(200, 200, 200);
+  doc.setLineWidth(0.5);
+  doc.rect(2, 2, 81, 51);
+
+  // Add Victaure logo centered on back
+  doc.addImage(logoImg, 'PNG', 32.5, 17.5, 20, 20);
 
   return doc;
 }
