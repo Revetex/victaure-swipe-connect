@@ -1,46 +1,46 @@
 import { useState } from "react";
+import { JobList } from "./jobs/JobList";
+import { JobFilters } from "./jobs/JobFilters";
+import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { SlidersHorizontal } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { JobFilters } from "./jobs/JobFilters";
-import { JobList } from "./jobs/JobList";
-import { Filter } from "lucide-react";
-import { toast } from "sonner";
-import { motion } from "framer-motion";
-import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { defaultFilters } from "@/types/filters";
-import type { Job } from "@/types/job";
-import type { JobFilters as JobFiltersType } from "./jobs/JobFilterUtils";
+import { motion } from "framer-motion";
 
 export function Marketplace() {
-  const [showFilters, setShowFilters] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState(defaultFilters);
+  const [showFilters, setShowFilters] = useState(false);
 
-  const { data: jobs, isLoading, error } = useQuery({
-    queryKey: ['jobs'],
+  const { data: jobs, isLoading } = useQuery({
+    queryKey: ["jobs", filters],
     queryFn: async () => {
-      const { data, error } = await supabase.from('jobs').select('*');
-      if (error) throw new Error(error.message);
-      return data as Job[];
-    }
+      let query = supabase.from("jobs").select("*");
+
+      // Apply filters
+      if (filters.category !== "all") {
+        query = query.eq("category", filters.category);
+      }
+      if (filters.location) {
+        query = query.ilike("location", `%${filters.location}%`);
+      }
+      if (filters.minBudget) {
+        query = query.gte("budget", filters.minBudget);
+      }
+      if (filters.maxBudget) {
+        query = query.lte("budget", filters.maxBudget);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
   });
 
-  const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
+  const handleFilterChange = (key: keyof typeof filters, value: any) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    toast.error("Error fetching jobs");
-    return null;
-  }
 
   return (
     <section className="container mx-auto px-4 py-8 relative">
@@ -49,40 +49,31 @@ export function Marketplace() {
           <h1 className="text-3xl font-bold mb-4 md:mb-0">
             Trouvez votre prochaine mission
           </h1>
-          <div className="flex gap-4">
-            <Button
-              onClick={() => setShowFilters(!showFilters)}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Filter className="h-4 w-4" />
-              Filtres
+          
+          <div className="flex items-center gap-4">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Filtres
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-full sm:max-w-lg">
+                <JobFilters 
+                  filters={filters} 
+                  onFilterChange={handleFilterChange} 
+                />
+              </SheetContent>
+            </Sheet>
+
+            <Button variant="default">
+              Créer une mission
             </Button>
-            <JobCreationDialog 
-              isOpen={isOpen} 
-              setIsOpen={setIsOpen}
-              onSuccess={() => {
-                toast.success("Mission créée avec succès");
-              }}
-            />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {showFilters && (
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="lg:col-span-1 sticky top-24 h-[calc(100vh-8rem)]"
-            >
-              <JobFilters filters={filters} onFilterChange={handleFilterChange} />
-            </motion.div>
-          )}
-          
-          <div className={showFilters ? "lg:col-span-3" : "lg:col-span-4"}>
-            <JobList jobs={jobs || []} />
-          </div>
+        <div className="w-full">
+          <JobList jobs={jobs || []} />
         </div>
       </div>
     </section>
