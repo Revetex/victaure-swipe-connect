@@ -19,11 +19,11 @@ serve(async (req) => {
     
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'));
     
-    // Format the conversation with previous messages if available
+    // Format the conversation with all previous messages
     let conversationHistory = '';
     if (context?.previousMessages) {
+      // Utiliser tout l'historique au lieu de slice(-3)
       conversationHistory = context.previousMessages
-        .slice(-3) // Only use last 3 messages for context
         .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
         .join('\n');
     }
@@ -46,10 +46,11 @@ serve(async (req) => {
 - Adapte ton niveau de langage au contexte
 - Pose des questions pour mieux comprendre les besoins
 - Évite absolument les réponses génériques
-- Utilise les informations du contexte de la conversation
+- Utilise les informations du contexte de la conversation pour personnaliser tes réponses
+- Fais référence aux éléments pertinents des messages précédents
 ${contextualPrompt}
 
-Historique récent de la conversation:
+Historique complet de la conversation:
 ${conversationHistory}
 
 <|user|>${message}</s>
@@ -92,7 +93,9 @@ ${conversationHistory}
       // Deuxième tentative avec un prompt différent
       const retryConversation = `<|system|>Tu es M. Victaure, un conseiller en orientation professionnelle. 
 Réponds de façon précise et personnalisée à cette question: ${message}
-Utilise ton expertise pour donner des conseils pratiques et concrets.</s>
+Utilise ton expertise pour donner des conseils pratiques et concrets.
+Voici le contexte de la conversation précédente pour t'aider:
+${conversationHistory}</s>
 <|assistant|>`;
 
       const retryResponse = await hf.textGeneration({
