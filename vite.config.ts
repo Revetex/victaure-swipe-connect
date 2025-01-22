@@ -13,6 +13,18 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          dashboard: ['./src/components/Dashboard.tsx'],
+        },
+      },
+    },
+  },
   server: {
     host: '0.0.0.0',
     port: 8080,
@@ -53,16 +65,5 @@ export default defineConfig(({ mode }) => ({
       preflightContinue: false,
       optionsSuccessStatus: 204
     }
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-        },
-      },
-    },
   },
 }));

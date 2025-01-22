@@ -8,7 +8,7 @@ import { Loader } from "./ui/loader";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
-export default function Dashboard() {
+const Dashboard = () => {
   const navigate = useNavigate();
   const { profile, isLoading: isProfileLoading } = useProfile();
   const [isAuthChecking, setIsAuthChecking] = useState(true);
@@ -126,3 +126,5 @@ export default function Dashboard() {
 
   return <DashboardLayout />;
 }
+
+export default Dashboard;
