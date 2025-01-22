@@ -52,9 +52,11 @@ export async function generateBusinessCard(profile: UserProfile, style: StyleOpt
     doc.text(`Web: ${profile.website}`, 10, 40);
   }
 
-  // Generate and add QR Code
+  // Generate QR Code with CV view parameter
   try {
-    const qrCodeUrl = await QRCode.toDataURL(profile.website || profile.email || '');
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('view', 'cv');
+    const qrCodeUrl = await QRCode.toDataURL(currentUrl.toString());
     doc.addImage(qrCodeUrl, 'PNG', 60, 15, 20, 20);
   } catch (error) {
     console.error('Error generating QR code:', error);
@@ -63,7 +65,6 @@ export async function generateBusinessCard(profile: UserProfile, style: StyleOpt
   // Add decorative elements
   doc.setDrawColor(style.colors.primary);
   doc.setLineWidth(0.3);
-  // Use moveTo and lineTo instead of setLineDash
   doc.line(5, 45, 80, 45);
 
   return doc;
