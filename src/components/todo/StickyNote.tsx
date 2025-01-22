@@ -11,6 +11,18 @@ interface StickyNoteProps {
 }
 
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
+  const getColorClasses = (color: string) => {
+    const colorMap: Record<string, string> = {
+      yellow: "bg-yellow-100 text-yellow-950 border-yellow-200",
+      blue: "bg-blue-100 text-blue-950 border-blue-200",
+      green: "bg-green-100 text-green-950 border-green-200",
+      pink: "bg-pink-100 text-pink-950 border-pink-200",
+      purple: "bg-purple-100 text-purple-950 border-purple-200",
+      orange: "bg-orange-100 text-orange-950 border-orange-200"
+    };
+    return colorMap[color] || "bg-white text-gray-950 border-gray-200";
+  };
+
   return (
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
@@ -23,10 +35,8 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         "p-5 sm:p-4",
         "touch-manipulation",
         "shadow-md hover:shadow-lg transition-shadow",
-        "relative",
-        `bg-${note.color}-200`,
-        `text-${note.color}-950`,
-        `border-${note.color}-300`
+        "relative border-2 rounded-lg",
+        getColorClasses(note.color)
       )}
     >
       <div className="absolute top-2 right-2">

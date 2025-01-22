@@ -1,8 +1,4 @@
 .sticky-note {
-  @apply relative p-4 rounded-lg shadow-lg transition-transform duration-200;
-  min-height: 150px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  border-width: 2px;
   transform-origin: center;
 }
 
