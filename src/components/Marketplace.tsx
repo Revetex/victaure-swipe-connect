@@ -43,9 +43,9 @@ export function Marketplace() {
   }
 
   return (
-    <section className="container mx-auto px-4 py-8">
+    <section className="container mx-auto px-4 py-8 relative">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-4">
           <h1 className="text-3xl font-bold mb-4 md:mb-0">
             Trouvez votre prochaine mission
           </h1>
@@ -68,14 +68,22 @@ export function Marketplace() {
           </div>
         </div>
 
-        {/* Google Custom Search */}
-        <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-          <div className="gcse-search"></div>
-          <script async src="https://cse.google.com/cse.js?cx=d9ce0e84e39d24c06"></script>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {showFilters && (
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="lg:col-span-1 sticky top-24 h-[calc(100vh-8rem)]"
+            >
+              <JobFilters filters={filters} onFilterChange={handleFilterChange} />
+            </motion.div>
+          )}
+          
+          <div className={showFilters ? "lg:col-span-3" : "lg:col-span-4"}>
+            <JobList jobs={jobs || []} />
+          </div>
         </div>
-
-        {showFilters && <JobFilters filters={filters} onFilterChange={handleFilterChange} />}
-        <JobList jobs={jobs || []} />
       </div>
     </section>
   );

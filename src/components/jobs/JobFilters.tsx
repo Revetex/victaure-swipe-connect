@@ -27,8 +27,8 @@ export function JobFilters({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-border">
+    <div className="flex flex-col h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-lg shadow-sm mb-16 lg:mb-0">
+      <div className="sticky top-0 z-40 p-4 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-t-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-5 w-5 text-primary" />
@@ -46,20 +46,20 @@ export function JobFilters({
         </div>
       </div>
 
-      <motion.div 
-        className="flex-1 p-4 space-y-6 overflow-y-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="space-y-6">
+      <ScrollArea className="flex-1 p-4 h-[calc(100vh-16rem)]">
+        <motion.div 
+          className="space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <SearchFilter filters={filters} onFilterChange={onFilterChange} />
           <Separator className="my-6" />
           <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
           <Separator className="my-6" />
           <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
-        </div>
-      </motion.div>
+        </motion.div>
+      </ScrollArea>
     </div>
   );
 }
