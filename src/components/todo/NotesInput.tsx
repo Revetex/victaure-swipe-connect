@@ -1,6 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ColorOption } from "@/types/todo";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface NotesInputProps {
   newNote: string;
@@ -33,17 +40,26 @@ export function NotesInput({
             }
           }}
         />
-        <div className="flex gap-1">
-          {colors.map((color) => (
-            <button
-              key={color.value}
-              onClick={() => onColorChange(color.value)}
-              className={`w-8 h-8 rounded-full ${
-                selectedColor === color.value ? 'ring-2 ring-offset-2 ring-primary' : ''
-              } ${color.class}`}
-            />
-          ))}
-        </div>
+        <Select
+          value={selectedColor}
+          onValueChange={onColorChange}
+        >
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="Couleur" />
+          </SelectTrigger>
+          <SelectContent>
+            {colors.map((color) => (
+              <SelectItem
+                key={color.value}
+                value={color.value}
+                className="flex items-center gap-2"
+              >
+                <div className={`w-4 h-4 rounded-full ${color.class}`} />
+                <span>{color.label}</span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Button 
           onClick={onAdd}
           disabled={!newNote.trim()}
