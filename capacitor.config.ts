@@ -42,6 +42,12 @@ const config: CapacitorConfig = {
       keystoreAliasPassword: undefined,
     }
   },
+  ios: {
+    contentInset: 'always',
+    limitsNavigationsToAppBoundDomains: true,
+    scrollEnabled: true,
+    webViewSoftInputMode: 'adjustResize'
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
@@ -49,8 +55,16 @@ const config: CapacitorConfig = {
       androidScaleType: "CENTER_CROP",
       showSpinner: true,
       androidSpinnerStyle: "large",
+      iosSpinnerStyle: "small",
       spinnerColor: "#999999",
+      splashFullScreen: true,
+      splashImmersive: true
     },
+    Keyboard: {
+      resize: "body",
+      style: "dark",
+      resizeOnFullScreen: true
+    }
   }
 };
 
