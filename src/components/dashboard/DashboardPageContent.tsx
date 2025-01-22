@@ -4,6 +4,11 @@ import { SwipeJob } from "@/components/SwipeJob";
 import { Settings } from "@/components/Settings";
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
+import { TodoInput } from "@/components/todo/TodoInput";
+import { TodoItem } from "@/components/todo/TodoItem";
+import { NotesInput } from "@/components/todo/NotesInput";
+import { StickyNote } from "@/components/todo/StickyNote";
+import { ListTodo } from "lucide-react";
 import { memo } from "react";
 import { useColorPalette } from "@/hooks/useColorPalette";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -75,7 +80,7 @@ export const DashboardPageContent = memo(function DashboardPageContent({
                 <div className="flex items-center justify-between gap-3 p-4 border-b">
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-full bg-primary/10">
-                      <TodoSection.Icon className="h-5 w-5" />
+                      <ListTodo className="h-5 w-5" />
                     </div>
                     <h2 className="text-lg font-semibold">Tâches & Notes</h2>
                   </div>

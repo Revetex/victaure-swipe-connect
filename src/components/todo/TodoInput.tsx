@@ -96,7 +96,7 @@ export function TodoInput({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <TimeSelector
-                value={selectedTime}
+                selectedTime={selectedTime}
                 onChange={onTimeChange}
               />
             </PopoverContent>

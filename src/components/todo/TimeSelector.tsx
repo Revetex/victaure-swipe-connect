@@ -3,10 +3,10 @@ import { useState } from "react";
 
 interface TimeSelectorProps {
   selectedTime?: string;
-  onTimeChange: (time: string) => void;
+  onChange: (time: string) => void;
 }
 
-export function TimeSelector({ selectedTime, onTimeChange }: TimeSelectorProps) {
+export function TimeSelector({ selectedTime, onChange }: TimeSelectorProps) {
   const [inputValue, setInputValue] = useState(selectedTime || "");
 
   const formatTimeString = (value: string) => {
@@ -32,7 +32,7 @@ export function TimeSelector({ selectedTime, onTimeChange }: TimeSelectorProps) 
     setInputValue(value);
     const formattedTime = formatTimeString(value);
     if (formattedTime.length === 5) {
-      onTimeChange(formattedTime);
+      onChange(formattedTime);
     }
   };
 
