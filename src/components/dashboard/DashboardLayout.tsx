@@ -43,6 +43,7 @@ export function DashboardLayout({
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    return page; // Return the page number to satisfy TypeScript
   };
 
   useEffect(() => {
