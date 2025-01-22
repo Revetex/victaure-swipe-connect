@@ -9,7 +9,7 @@ import { ListTodo } from "lucide-react";
 import { memo } from "react";
 import { useColorPalette } from "@/hooks/useColorPalette";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { VCard } from "@/components/VCard";
+import { VCard } from "../VCard";
 
 interface DashboardPageContentProps {
   currentPage: number;
