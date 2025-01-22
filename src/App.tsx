@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
@@ -94,7 +94,6 @@ function App() {
     };
   }, []);
 
-  // Gestion optimisée des erreurs
   useEffect(() => {
     if (error) {
       console.error("Auth error:", error);
