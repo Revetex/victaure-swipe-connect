@@ -1,14 +1,15 @@
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { Settings } from "@/components/Settings";
-import { TodoInput } from "../todo/TodoInput";
-import { TodoItem } from "../todo/TodoItem";
-import { NotesInput } from "../todo/NotesInput";
-import { StickyNote } from "../todo/StickyNote";
+import { TodoInput } from "@/components/todo/TodoInput";
+import { TodoItem } from "@/components/todo/TodoItem";
+import { NotesInput } from "@/components/todo/NotesInput";
+import { StickyNote } from "@/components/todo/StickyNote";
 import { ListTodo } from "lucide-react";
 import { memo } from "react";
 import { useColorPalette } from "@/hooks/useColorPalette";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { VCard } from "@/components/VCard";
 
 interface DashboardPageContentProps {
   currentPage: number;
