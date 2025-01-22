@@ -78,9 +78,9 @@ export const ChatInput = memo(function ChatInput({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="min-h-[40px] max-h-[120px] w-full pr-12 py-2.5 resize-none text-sm focus-visible:ring-1 rounded-xl bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
+            className="min-h-[36px] max-h-[120px] w-full pr-12 py-2 resize-none text-sm focus-visible:ring-1 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
             style={{
-              height: `${Math.max(40, Math.min(rows * 24, 120))}px`
+              height: `${Math.max(36, Math.min(rows * 24, 120))}px`
             }}
           />
           
@@ -91,13 +91,13 @@ export const ChatInput = memo(function ChatInput({
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
                 onClick={handleSendClick}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:text-primary/80 transition-colors disabled:opacity-50 bg-background/80 rounded-lg shadow-sm"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:text-primary/80 transition-colors disabled:opacity-50 bg-background/80 rounded-full shadow-sm hover:bg-background"
                 disabled={isThinking}
               >
                 {isThinking ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="h-4 w-4" />
                 )}
               </motion.button>
             )}
