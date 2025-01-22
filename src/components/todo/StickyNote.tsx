@@ -24,7 +24,9 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         "touch-manipulation",
         "shadow-md hover:shadow-lg transition-shadow",
         "relative",
-        `sticky-note-${colorClass}`
+        `bg-${note.color}-200`,
+        `text-${note.color}-950`,
+        `border-${note.color}-300`
       )}
     >
       <div className="absolute top-2 right-2">

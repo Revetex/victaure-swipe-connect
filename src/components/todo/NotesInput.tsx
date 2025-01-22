@@ -54,7 +54,7 @@ export function NotesInput({
                 value={color.value}
                 className="flex items-center gap-2"
               >
-                <div className={`w-4 h-4 rounded-full sticky-note-${color.value}`} />
+                <div className={`w-4 h-4 rounded-full bg-${color.value}-200`} />
                 <span>{color.label}</span>
               </SelectItem>
             ))}
