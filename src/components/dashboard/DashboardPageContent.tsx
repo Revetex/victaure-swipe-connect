@@ -1,4 +1,3 @@
-import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { SwipeJob } from "@/components/SwipeJob";
 import { Settings } from "@/components/Settings";
@@ -36,21 +35,10 @@ export const DashboardPageContent = memo(function DashboardPageContent({
   switch (currentPage) {
     case 1:
       return (
-        <div 
-          key="vcard-container"
-          className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm pb-32' : 'relative min-h-[calc(100vh-4rem)]'}`}
-          style={{ 
-            height: isEditing ? viewportHeight : 'auto',
-            overflowY: isEditing ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch'
-          }}
-        >
+        <div key="vcard-container" className={`${isEditing ? 'fixed inset-0 z-50 bg-background/95 backdrop-blur-sm pb-32' : 'relative min-h-[calc(100vh-4rem)]'}`} style={{ height: isEditing ? viewportHeight : 'auto', overflowY: isEditing ? 'auto' : 'visible', WebkitOverflowScrolling: 'touch' }}>
           <div className="dashboard-card h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
-              <VCard 
-                onEditStateChange={onEditStateChange}
-                onRequestChat={onRequestChat}
-              />
+              <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
             </div>
           </div>
         </div>
@@ -73,23 +61,25 @@ export const DashboardPageContent = memo(function DashboardPageContent({
       return (
         <div key="todo-notes-container" className="dashboard-card h-full">
           <div className="p-3 sm:p-4 md:p-6 h-full">
-            <div className="bg-background/50 backdrop-blur-sm rounded-lg border shadow-lg h-[calc(100vh-8rem)] overflow-hidden">
+            <div className="bg-background/50 dark:bg-background/20 backdrop-blur-sm rounded-lg border border-border/50 shadow-lg h-[calc(100vh-8rem)] overflow-hidden transition-colors duration-200">
               <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between gap-3 p-4 border-b">
+                <div className="flex items-center justify-between gap-3 p-4 border-b border-border/10 bg-background/80 dark:bg-background/40">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-primary/10">
-                      <ListTodo className="h-5 w-5" />
+                    <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
+                      <ListTodo className="h-5 w-5 text-primary dark:text-primary-foreground" />
                     </div>
-                    <h2 className="text-lg font-semibold">Tâches & Notes</h2>
+                    <h2 className="text-lg font-semibold text-foreground dark:text-foreground/90">Tâches & Notes</h2>
                   </div>
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <div className="grid grid-cols-1 h-full">
                     <div className="h-full overflow-hidden">
                       <div className="flex flex-col h-full">
-                        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm p-4 space-y-4 border-b">
-                          <TodoInput {...todoProps} />
-                          <NotesInput {...noteProps} colors={colors} />
+                        <div className="sticky top-0 z-10 bg-background/95 dark:bg-background/80 backdrop-blur-sm p-4 space-y-4 border-b border-border/10 shadow-sm">
+                          <div className="space-y-4 transition-all duration-200">
+                            <TodoInput {...todoProps} />
+                            <NotesInput {...noteProps} colors={colors} />
+                          </div>
                         </div>
                         <div className="flex-1 p-4 overflow-y-auto">
                           <div className="space-y-6">
