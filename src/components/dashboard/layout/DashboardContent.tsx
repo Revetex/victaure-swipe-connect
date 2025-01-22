@@ -27,9 +27,17 @@ export const DashboardContent = memo(function DashboardContent({
       case 1:
         return (
           <div className="space-y-6 p-4">
-            <DashboardHeader />
+            <DashboardHeader 
+              title="Tableau de bord" 
+              description="Bienvenue sur votre espace personnel"
+            />
             <DashboardStats />
-            <QuickActions />
+            <QuickActions stats={{
+              activeJobs: 0,
+              unreadMessages: 0,
+              pendingPayments: "CAD 0",
+              nextJob: "Aucune"
+            }} />
             <RecentActivity />
           </div>
         );
