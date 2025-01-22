@@ -27,29 +27,37 @@ export async function generateBusinessCard(profile: UserProfile, style: StyleOpt
   doc.setLineWidth(0.5);
   doc.rect(2, 2, 81, 51);
 
+  // Add Victaure logo
+  const logoImg = new Image();
+  logoImg.src = '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png';
+  await new Promise((resolve) => {
+    logoImg.onload = resolve;
+  });
+  doc.addImage(logoImg, 'PNG', 5, 5, 10, 10); // Position and size the logo
+
   // Set text color based on style
   doc.setTextColor(style.colors.text.primary);
 
-  // Add name
+  // Add name (moved down to make room for logo)
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text(profile.full_name || '', 10, 15);
+  doc.text(profile.full_name || '', 10, 20);
 
   // Add role/title
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(profile.role || '', 10, 22);
+  doc.text(profile.role || '', 10, 27);
 
   // Add contact information
   doc.setFontSize(8);
   if (profile.email) {
-    doc.text(`Email: ${profile.email}`, 10, 30);
+    doc.text(`Email: ${profile.email}`, 10, 35);
   }
   if (profile.phone) {
-    doc.text(`Tel: ${profile.phone}`, 10, 35);
+    doc.text(`Tel: ${profile.phone}`, 10, 40);
   }
   if (profile.website) {
-    doc.text(`Web: ${profile.website}`, 10, 40);
+    doc.text(`Web: ${profile.website}`, 10, 45);
   }
 
   // Generate QR Code with CV view parameter
