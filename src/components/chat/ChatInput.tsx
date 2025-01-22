@@ -73,35 +73,37 @@ export const ChatInput = memo(function ChatInput({
         )}
         
         <div className="relative flex-1">
-          <Textarea
-            value={value}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            className="min-h-[36px] max-h-[120px] w-full pr-12 py-2 resize-none text-sm focus-visible:ring-1 rounded-full bg-muted/30 border-muted/50 placeholder:text-muted-foreground/50"
-            style={{
-              height: `${Math.max(36, Math.min(rows * 24, 120))}px`
-            }}
-          />
-          
-          <AnimatePresence>
-            {value.trim() && (
-              <motion.button
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                onClick={handleSendClick}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:text-primary/80 transition-colors disabled:opacity-50 bg-background/80 rounded-full shadow-sm hover:bg-background"
-                disabled={isThinking}
-              >
-                {isThinking ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ArrowRight className="h-4 w-4" />
-                )}
-              </motion.button>
-            )}
-          </AnimatePresence>
+          <div className="relative flex w-full items-center bg-muted/30 rounded-full border border-muted/50">
+            <Textarea
+              value={value}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              className="min-h-[40px] max-h-[120px] w-full pr-10 py-2 resize-none text-sm focus-visible:ring-1 rounded-full bg-transparent border-0 placeholder:text-muted-foreground/50"
+              style={{
+                height: `${Math.max(40, Math.min(rows * 24, 120))}px`
+              }}
+            />
+            
+            <AnimatePresence>
+              {value.trim() && (
+                <motion.button
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  onClick={handleSendClick}
+                  className="absolute right-2 p-1 text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                  disabled={isThinking}
+                >
+                  {isThinking ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ArrowRight className="h-4 w-4" />
+                  )}
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
