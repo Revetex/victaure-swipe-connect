@@ -41,6 +41,10 @@ export function DashboardLayout({
     setShowingChat(false);
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   useEffect(() => {
     // Reset editing state when page changes
     setIsEditing(false);
@@ -81,7 +85,7 @@ export function DashboardLayout({
           zIndex: 40
         }}
       >
-        <DashboardNavigation currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <DashboardNavigation currentPage={currentPage} onPageChange={handlePageChange} />
       </motion.nav>
     </div>
   );
