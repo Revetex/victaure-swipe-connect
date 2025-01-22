@@ -35,8 +35,8 @@ export function NotesSection({
   const isMobile = useIsMobile();
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3 text-primary">
           <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
             <StickyNoteIcon className="h-6 w-6" />
@@ -58,21 +58,23 @@ export function NotesSection({
         )}
       </div>
 
-      <NotesInput
-        newNote={newNote}
-        selectedColor={selectedColor}
-        colors={colors}
-        onNoteChange={onNoteChange}
-        onColorChange={onColorChange}
-        onAdd={onAdd}
-      />
+      <div className={`${isMobile ? 'sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4' : ''}`}>
+        <NotesInput
+          newNote={newNote}
+          selectedColor={selectedColor}
+          colors={colors}
+          onNoteChange={onNoteChange}
+          onColorChange={onColorChange}
+          onAdd={onAdd}
+        />
+      </div>
 
-      <div className="flex-1 flex gap-4 min-h-0">
+      <div className="flex-1 flex gap-4 min-h-0 mt-4">
         <ScrollArea className="flex-1">
           <motion.div 
             className={cn(
               "grid gap-4 p-4",
-              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+              isMobile ? "grid-cols-1" : "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
               "min-h-[300px] bg-background/50 rounded-lg backdrop-blur-sm border",
               "shadow-inner"
             )}
@@ -92,7 +94,7 @@ export function NotesSection({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className={cn(
-                    "text-center text-muted-foreground py-12 col-span-full",
+                    "text-center text-muted-foreground py-8 col-span-full",
                     "bg-muted/30 rounded-lg backdrop-blur-sm",
                     "border border-border/50"
                   )}

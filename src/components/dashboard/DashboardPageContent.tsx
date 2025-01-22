@@ -6,6 +6,7 @@ import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
 import { memo } from "react";
 import { useColorPalette } from "@/hooks/useColorPalette";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DashboardPageContentProps {
   currentPage: number;
@@ -27,6 +28,7 @@ export const DashboardPageContent = memo(function DashboardPageContent({
   noteProps
 }: DashboardPageContentProps) {
   const colors = useColorPalette();
+  const isMobile = useIsMobile();
 
   switch (currentPage) {
     case 1:
@@ -68,11 +70,20 @@ export const DashboardPageContent = memo(function DashboardPageContent({
       return (
         <div key="todo-notes-container" className="dashboard-card h-full">
           <div className="p-3 sm:p-4 md:p-6 h-full">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
-              <div className="h-full overflow-hidden">
+            <div className={`
+              grid gap-6 h-[calc(100vh-8rem)] 
+              ${isMobile ? 'grid-cols-1 auto-rows-fr' : 'lg:grid-cols-2'}
+            `}>
+              <div className={`
+                h-full overflow-hidden
+                ${isMobile ? 'min-h-[50vh]' : ''}
+              `}>
                 <TodoSection {...todoProps} />
               </div>
-              <div className="h-full overflow-hidden">
+              <div className={`
+                h-full overflow-hidden
+                ${isMobile ? 'min-h-[50vh]' : ''}
+              `}>
                 <NotesSection {...noteProps} colors={colors} />
               </div>
             </div>
