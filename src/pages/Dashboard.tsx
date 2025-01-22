@@ -1,75 +1,112 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VCardCreationForm } from "@/components/VCardCreationForm";
+import { Loader } from "@/components/ui/loader";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
+  const { profile, isLoading: isProfileLoading } = useProfile();
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
   useEffect(() => {
+    let mounted = true;
+    let authSubscription: { unsubscribe: () => void } | null = null;
+
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      console.log("Session check:", session ? "Active" : "No session");
-      
-      if (!session) {
-        console.log("No session found, redirecting to auth");
-        toast.info("Veuillez vous connecter pour accéder au tableau de bord");
-        navigate("/auth");
-        return;
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          if (retryCount < MAX_RETRIES) {
+            setRetryCount(prev => prev + 1);
+            setTimeout(checkAuth, 1000 * (retryCount + 1));
+            return;
+          }
+          toast.error("Erreur d'authentification", {
+            description: "Veuillez vous reconnecter"
+          });
+          navigate('/auth');
+          return;
+        }
+
+        if (!session) {
+          console.log('No active session found');
+          navigate('/auth');
+          return;
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          console.error('User data error:', userError);
+          toast.error("Impossible d'accéder aux données utilisateur", {
+            description: "Veuillez vous reconnecter"
+          });
+          await supabase.auth.signOut();
+          navigate('/auth');
+          return;
+        }
+
+        if (mounted) {
+          setIsAuthChecking(false);
+          setRetryCount(0);
+        }
+
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        if (retryCount < MAX_RETRIES) {
+          setRetryCount(prev => prev + 1);
+          setTimeout(checkAuth, 1000 * (retryCount + 1));
+          return;
+        }
+        toast.error("Erreur lors de la vérification de l'authentification", {
+          description: "Veuillez réessayer"
+        });
+        navigate('/auth');
       }
-
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error checking profile:", error);
-        return;
-      }
-
-      console.log("Profile check:", profile);
-      setHasProfile(!!profile && !!profile.full_name);
     };
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event);
-      if (!session) {
-        navigate("/auth");
-      } else {
-        checkAuth();
-      }
-    });
-
     return () => {
-      subscription.unsubscribe();
+      mounted = false;
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
     };
-  }, [navigate]);
+  }, [navigate, retryCount]);
 
-  if (hasProfile === null) {
+  if (isAuthChecking || isProfileLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2">Chargement...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-[100dvh]">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.5,
+            ease: [0.4, 0, 0.2, 1]
+          }}
+          className="flex flex-col items-center gap-4"
+        >
+          <Loader className="w-8 h-8 text-primary" />
+          <p className="text-sm text-muted-foreground animate-pulse">
+            Vérification de vos accès...
+          </p>
+        </motion.div>
       </div>
     );
   }
 
-  if (!hasProfile) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <VCardCreationForm />
-      </div>
-    );
+  if (!profile) {
+    return <VCardCreationForm />;
   }
 
   return <DashboardLayout />;

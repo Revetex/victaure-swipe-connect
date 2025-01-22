@@ -1,21 +1,14 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Optimisation du chargement paresseux
-const Auth = lazy(() => import("./pages/Auth").then(module => {
-  return { default: module.default };
-}));
+const Auth = lazy(() => import("./pages/Auth"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
-const Dashboard = lazy(() => import("./pages/Dashboard").then(module => {
-  return { default: module.default };
-}));
-
-// Animations optimisées
 const pageTransitionVariants = {
   initial: {
     opacity: 0,
@@ -85,7 +78,6 @@ function App() {
   const { isAuthenticated, isLoading, error } = useAuth();
   const location = useLocation();
   
-  // Optimisation de la hauteur sur mobile
   useEffect(() => {
     const setVH = () => {
       const vh = window.innerHeight * 0.01;
