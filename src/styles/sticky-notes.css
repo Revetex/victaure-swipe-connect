@@ -7,32 +7,32 @@
 }
 
 .sticky-note-yellow {
-  @apply bg-yellow-300 text-yellow-950 border-yellow-300;
+  @apply bg-yellow-200 text-yellow-950 border-yellow-300;
   box-shadow: 0 8px 16px -2px rgba(234, 179, 8, 0.3);
 }
 
 .sticky-note-blue {
-  @apply bg-blue-300 text-blue-950 border-blue-300;
+  @apply bg-blue-200 text-blue-950 border-blue-300;
   box-shadow: 0 8px 16px -2px rgba(59, 130, 246, 0.3);
 }
 
 .sticky-note-green {
-  @apply bg-green-300 text-green-950 border-green-300;
+  @apply bg-green-200 text-green-950 border-green-300;
   box-shadow: 0 8px 16px -2px rgba(34, 197, 94, 0.3);
 }
 
 .sticky-note-pink {
-  @apply bg-pink-300 text-pink-950 border-pink-300;
+  @apply bg-pink-200 text-pink-950 border-pink-300;
   box-shadow: 0 8px 16px -2px rgba(236, 72, 153, 0.3);
 }
 
 .sticky-note-purple {
-  @apply bg-purple-300 text-purple-950 border-purple-300;
+  @apply bg-purple-200 text-purple-950 border-purple-300;
   box-shadow: 0 8px 16px -2px rgba(147, 51, 234, 0.3);
 }
 
 .sticky-note-orange {
-  @apply bg-orange-300 text-orange-950 border-orange-300;
+  @apply bg-orange-200 text-orange-950 border-orange-300;
   box-shadow: 0 8px 16px -2px rgba(249, 115, 22, 0.3);
 }
 

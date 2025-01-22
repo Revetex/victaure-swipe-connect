@@ -96,7 +96,7 @@ export const DashboardPageContent = memo(function DashboardPageContent({
                               <StickyNote
                                 key={note.id}
                                 note={note}
-                                colorClass={`sticky-note-${note.color}`}
+                                colorClass={note.color}
                                 onDelete={noteProps.onDelete}
                               />
                             ))}

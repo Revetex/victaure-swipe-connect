@@ -11,9 +11,6 @@ interface StickyNoteProps {
 }
 
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
-  // Construire la classe de couleur complète
-  const fullColorClass = `sticky-note-${colorClass}`;
-
   return (
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
@@ -27,7 +24,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         "touch-manipulation",
         "shadow-md hover:shadow-lg transition-shadow",
         "relative",
-        fullColorClass
+        `sticky-note-${note.color}`
       )}
     >
       <div className="absolute top-2 right-2">
