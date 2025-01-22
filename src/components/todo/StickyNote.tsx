@@ -24,7 +24,6 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         "touch-manipulation",
         "shadow-md hover:shadow-lg transition-shadow",
         "relative",
-        "bg-opacity-100",
         colorClass
       )}
     >
