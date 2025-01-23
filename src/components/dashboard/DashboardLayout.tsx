@@ -41,9 +41,9 @@ export function DashboardLayout({
     setShowingChat(false);
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number): number => {
     setCurrentPage(page);
-    return page; // Return the page number to satisfy TypeScript
+    return page;
   };
 
   useEffect(() => {
