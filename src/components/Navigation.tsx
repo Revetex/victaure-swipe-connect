@@ -13,7 +13,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
       <motion.a 
         href="#" 
-        className="text-foreground hover:text-primary transition-colors relative group bg-background/95 px-3 py-2 rounded-md shadow-sm border border-border/50"
+        className="text-foreground hover:text-primary transition-colors relative group bg-card px-3 py-2 rounded-md shadow-sm border border-border"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -22,7 +22,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
       </motion.a>
       <motion.a 
         href="#" 
-        className="text-foreground hover:text-primary transition-colors relative group bg-background/95 px-3 py-2 rounded-md shadow-sm border border-border/50"
+        className="text-foreground hover:text-primary transition-colors relative group bg-card px-3 py-2 rounded-md shadow-sm border border-border"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -31,7 +31,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
       </motion.a>
       <motion.a 
         href="#" 
-        className="text-foreground hover:text-primary transition-colors relative group bg-background/95 px-3 py-2 rounded-md shadow-sm border border-border/50"
+        className="text-foreground hover:text-primary transition-colors relative group bg-card px-3 py-2 rounded-md shadow-sm border border-border"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -44,7 +44,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
           variant="secondary"
           size="icon"
           onClick={signOut}
-          className="bg-background hover:bg-background/90 text-foreground shadow-sm border border-border/50"
+          className="bg-card hover:bg-card/90 text-foreground shadow-sm border border-border"
         >
           <User className="h-5 w-5" />
         </Button>
@@ -71,7 +71,7 @@ export function Navigation() {
         stiffness: 260,
         damping: 20
       }}
-      className="sticky top-0 bg-background shadow-md border-b border-border/40 z-50"
+      className="sticky top-0 bg-card/95 backdrop-blur-sm shadow-md border-b border-border z-50"
       style={{ 
         willChange: 'transform',
         touchAction: 'none'
@@ -98,14 +98,14 @@ export function Navigation() {
               <Button 
                 variant="secondary"
                 size="icon" 
-                className="bg-background hover:bg-background/90 text-foreground shadow-sm border border-border/50"
+                className="bg-card hover:bg-card/90 text-foreground shadow-sm border border-border"
               >
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent 
               side="right"
-              className="w-[80vw] sm:w-[380px] bg-background border-border shadow-lg"
+              className="w-[80vw] sm:w-[380px] bg-card border-border shadow-lg"
             >
               <div className="flex flex-col gap-6 mt-8">
                 <NavLinks isMobile={true} signOut={() => {
