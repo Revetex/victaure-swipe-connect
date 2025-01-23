@@ -13,7 +13,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
       <motion.a 
         href="#" 
-        className="text-foreground/80 hover:text-primary transition-colors relative group"
+        className="text-foreground hover:text-primary transition-colors relative group bg-background/95 px-3 py-2 rounded-md shadow-sm border border-border/50"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -22,7 +22,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
       </motion.a>
       <motion.a 
         href="#" 
-        className="text-foreground/80 hover:text-primary transition-colors relative group"
+        className="text-foreground hover:text-primary transition-colors relative group bg-background/95 px-3 py-2 rounded-md shadow-sm border border-border/50"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -31,7 +31,7 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
       </motion.a>
       <motion.a 
         href="#" 
-        className="text-foreground/80 hover:text-primary transition-colors relative group"
+        className="text-foreground hover:text-primary transition-colors relative group bg-background/95 px-3 py-2 rounded-md shadow-sm border border-border/50"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -41,10 +41,10 @@ const NavLinks = memo(function NavLinks({ isMobile, signOut }: { isMobile: boole
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
         <ThemeToggle />
         <Button 
-          variant="ghost" 
+          variant="secondary"
           size="icon"
           onClick={signOut}
-          className="text-primary hover:text-primary/80 hover:bg-primary/5 transition-colors"
+          className="bg-background hover:bg-background/90 text-foreground shadow-sm border border-border/50"
         >
           <User className="h-5 w-5" />
         </Button>
@@ -71,7 +71,7 @@ export function Navigation() {
         stiffness: 260,
         damping: 20
       }}
-      className="sticky top-0 bg-background shadow-sm border-b border-border/40 z-50"
+      className="sticky top-0 bg-background shadow-md border-b border-border/40 z-50"
       style={{ 
         willChange: 'transform',
         touchAction: 'none'
@@ -96,9 +96,9 @@ export function Navigation() {
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button 
-                variant="ghost" 
+                variant="secondary"
                 size="icon" 
-                className="text-primary hover:bg-primary/5"
+                className="bg-background hover:bg-background/90 text-foreground shadow-sm border border-border/50"
               >
                 <Menu className="h-6 w-6" />
               </Button>
