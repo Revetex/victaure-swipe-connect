@@ -21,13 +21,16 @@ export function VCardContainer({
 }: VCardContainerProps) {
   const { selectedStyle } = useVCardStyle();
 
-  // Ensure we only use the string value for backgroundColor
+  const getBackgroundColor = () => {
+    if (customStyles?.background) return customStyles.background;
+    return typeof selectedStyle.colors.background === 'string' 
+      ? selectedStyle.colors.background 
+      : selectedStyle.colors.background.card;
+  };
+
   const containerStyle = {
     fontFamily: customStyles?.font || selectedStyle.font,
-    backgroundColor: customStyles?.background || 
-      (typeof selectedStyle.colors.background === 'string' 
-        ? selectedStyle.colors.background 
-        : selectedStyle.colors.background.card),
+    backgroundColor: getBackgroundColor(),
     color: customStyles?.textColor || selectedStyle.colors.text.primary,
   };
 

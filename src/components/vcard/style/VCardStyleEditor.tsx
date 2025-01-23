@@ -33,7 +33,6 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
     toast.success("Style mis à jour");
   };
 
-  // Get the correct background color string
   const getCurrentBackground = () => {
     if (profile.custom_background) return profile.custom_background;
     return typeof selectedStyle.colors.background === 'string' 
@@ -42,7 +41,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
   };
 
   return (
-    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-background">
+    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-background/95 backdrop-blur-sm">
       <div className="flex items-center gap-2 border-b pb-4">
         <Paintbrush className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-medium text-foreground">
@@ -60,7 +59,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             value={profile.custom_font || selectedStyle.font}
             onValueChange={(value) => handleStyleChange({ custom_font: value })}
           >
-            <SelectTrigger className="h-12 bg-background border-2">
+            <SelectTrigger className="h-12 bg-background/80 backdrop-blur-sm border-2">
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
