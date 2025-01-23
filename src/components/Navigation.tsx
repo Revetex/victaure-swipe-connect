@@ -86,13 +86,10 @@ export function Navigation() {
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
           <Logo size={isMobile ? "sm" : "md"} />
-          <div className="flex flex-col">
-            <span className="font-bold text-xl md:text-2xl text-primary relative">
-              Victaure
-              <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
-            </span>
-            <span className="text-xs text-muted-foreground">victaure.com</span>
-          </div>
+          <span className="font-bold text-xl md:text-2xl text-primary relative">
+            Victaure
+            <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
+          </span>
         </motion.a>
         
         {isMobile ? (
