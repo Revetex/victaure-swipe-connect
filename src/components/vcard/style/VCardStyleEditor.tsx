@@ -1,12 +1,11 @@
 import { UserProfile } from "@/types/profile";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { VCardButton } from "@/components/vcard/VCardButton";
 import { Paintbrush, Type, Palette, TextCursor } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ColorPicker } from "../ColorPicker";
+import { useVCardStyle } from "../VCardStyleContext";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -27,13 +26,15 @@ const fontOptions = [
 ];
 
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
+  const { selectedStyle } = useVCardStyle();
+
   const handleStyleChange = (updates: Partial<UserProfile>) => {
     onStyleChange(updates);
     toast.success("Style mis à jour");
   };
 
   return (
-    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-white dark:bg-gray-900">
+    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-background">
       <div className="flex items-center gap-2 border-b pb-4">
         <Paintbrush className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-medium text-foreground">
@@ -48,10 +49,10 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             Police de caractères
           </Label>
           <Select
-            value={profile.custom_font || ""}
+            value={profile.custom_font || selectedStyle.font}
             onValueChange={(value) => handleStyleChange({ custom_font: value })}
           >
-            <SelectTrigger className="h-12 bg-white dark:bg-gray-800 border-2">
+            <SelectTrigger className="h-12 bg-background border-2">
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
@@ -59,7 +60,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
                 <SelectItem 
                   key={font.value} 
                   value={font.value}
-                  className="h-12 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="h-12 hover:bg-muted"
                 >
                   <span style={{ fontFamily: font.value }}>{font.label}</span>
                 </SelectItem>
@@ -74,7 +75,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             Couleur de fond
           </Label>
           <ColorPicker
-            color={profile.custom_background || "#ffffff"}
+            color={profile.custom_background || selectedStyle.colors.background}
             onChange={(color) => handleStyleChange({ custom_background: color })}
             className="w-full"
           />
@@ -86,7 +87,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             Couleur du texte
           </Label>
           <ColorPicker
-            color={profile.custom_text_color || "#000000"}
+            color={profile.custom_text_color || selectedStyle.colors.text.primary}
             onChange={(color) => handleStyleChange({ custom_text_color: color })}
             className="w-full"
           />
