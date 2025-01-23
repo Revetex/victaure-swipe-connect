@@ -1,10 +1,13 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export function useViewportHeight() {
+  const [height, setHeight] = useState(window.innerHeight);
+
   useEffect(() => {
     const setVH = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
+      const vh = window.innerHeight;
+      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+      setHeight(vh);
     };
 
     setVH();
@@ -16,4 +19,6 @@ export function useViewportHeight() {
       window.removeEventListener('orientationchange', setVH);
     };
   }, []);
+
+  return height;
 }
