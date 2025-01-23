@@ -33,6 +33,14 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
     toast.success("Style mis à jour");
   };
 
+  // Get the correct background color string
+  const getCurrentBackground = () => {
+    if (profile.custom_background) return profile.custom_background;
+    return typeof selectedStyle.colors.background === 'string' 
+      ? selectedStyle.colors.background 
+      : selectedStyle.colors.background.card;
+  };
+
   return (
     <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-background">
       <div className="flex items-center gap-2 border-b pb-4">
@@ -75,7 +83,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             Couleur de fond
           </Label>
           <ColorPicker
-            color={profile.custom_background || selectedStyle.colors.background}
+            color={getCurrentBackground()}
             onChange={(color) => handleStyleChange({ custom_background: color })}
             className="w-full"
           />
