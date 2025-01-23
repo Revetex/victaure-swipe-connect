@@ -41,7 +41,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
   };
 
   return (
-    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-background/95 backdrop-blur-sm">
+    <div className="space-y-6 p-6 rounded-xl shadow-lg border bg-card">
       <div className="flex items-center gap-2 border-b pb-4">
         <Paintbrush className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-medium text-foreground">
@@ -67,7 +67,7 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
                 <SelectItem 
                   key={font.value} 
                   value={font.value}
-                  className="h-12 hover:bg-muted"
+                  className="h-12 hover:bg-muted flex items-center px-4"
                 >
                   <span style={{ fontFamily: font.value }}>{font.label}</span>
                 </SelectItem>
@@ -81,11 +81,17 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             <Palette className="h-4 w-4" />
             Couleur de fond
           </Label>
-          <ColorPicker
-            color={getCurrentBackground()}
-            onChange={(color) => handleStyleChange({ custom_background: color })}
-            className="w-full"
-          />
+          <div className="flex items-center gap-4">
+            <ColorPicker
+              color={getCurrentBackground()}
+              onChange={(color) => handleStyleChange({ custom_background: color })}
+              className="w-full"
+            />
+            <div 
+              className="w-12 h-12 rounded-lg border-2"
+              style={{ backgroundColor: getCurrentBackground() }}
+            />
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -93,11 +99,17 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             <TextCursor className="h-4 w-4" />
             Couleur du texte
           </Label>
-          <ColorPicker
-            color={profile.custom_text_color || selectedStyle.colors.text.primary}
-            onChange={(color) => handleStyleChange({ custom_text_color: color })}
-            className="w-full"
-          />
+          <div className="flex items-center gap-4">
+            <ColorPicker
+              color={profile.custom_text_color || selectedStyle.colors.text.primary}
+              onChange={(color) => handleStyleChange({ custom_text_color: color })}
+              className="w-full"
+            />
+            <div 
+              className="w-12 h-12 rounded-lg border-2"
+              style={{ backgroundColor: profile.custom_text_color || selectedStyle.colors.text.primary }}
+            />
+          </div>
         </div>
 
         <VCardButton
