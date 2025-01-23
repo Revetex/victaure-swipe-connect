@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ColorPicker } from "../ColorPicker";
 import { useVCardStyle } from "../VCardStyleContext";
 import { debounce } from "lodash";
+import { useCallback } from "react";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -17,26 +18,25 @@ const fontOptions = [
   { value: "'Poppins', sans-serif", label: "Poppins" },
   { value: "'Montserrat', sans-serif", label: "Montserrat" },
   { value: "'Playfair Display', serif", label: "Playfair Display" },
-  { value: "'DM Sans', sans-serif", label: "DM Sans" },
-  { value: "'Inter', sans-serif", label: "Inter" },
   { value: "'Roboto', sans-serif", label: "Roboto" },
   { value: "'Open Sans', sans-serif", label: "Open Sans" },
-  { value: "'Lora', serif", label: "Lora" },
-  { value: "'Source Sans Pro', sans-serif", label: "Source Sans Pro" },
-  { value: "'Work Sans', sans-serif", label: "Work Sans" },
 ];
 
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
   const { selectedStyle } = useVCardStyle();
 
-  const debouncedStyleChange = debounce((updates: Partial<UserProfile>) => {
-    onStyleChange(updates);
-    toast.success("Style mis à jour");
-  }, 500);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedStyleChange = useCallback(
+    debounce((updates: Partial<UserProfile>) => {
+      onStyleChange(updates);
+      toast.success("Style mis à jour");
+    }, 1000),
+    []
+  );
 
-  const handleStyleChange = (updates: Partial<UserProfile>) => {
+  const handleStyleChange = useCallback((updates: Partial<UserProfile>) => {
     debouncedStyleChange(updates);
-  };
+  }, [debouncedStyleChange]);
 
   const getCurrentBackground = () => {
     if (profile.custom_background) return profile.custom_background;
@@ -64,10 +64,10 @@ export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorPro
             value={profile.custom_font || selectedStyle.font}
             onValueChange={(value) => handleStyleChange({ custom_font: value })}
           >
-            <SelectTrigger className="h-12 bg-background/80 backdrop-blur-sm border-2">
+            <SelectTrigger className="h-12 bg-background border-2">
               <SelectValue placeholder="Choisir une police" />
             </SelectTrigger>
-            <SelectContent className="max-h-[300px]">
+            <SelectContent className="max-h-[300px] bg-background border-2">
               {fontOptions.map((font) => (
                 <SelectItem 
                   key={font.value} 

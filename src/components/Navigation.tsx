@@ -71,7 +71,7 @@ export function Navigation() {
         stiffness: 260,
         damping: 20
       }}
-      className="sticky top-0 bg-background border-b border-border/40 z-50"
+      className="sticky top-0 bg-background shadow-sm border-b border-border/40 z-50"
       style={{ 
         willChange: 'transform',
         touchAction: 'none'
@@ -105,7 +105,7 @@ export function Navigation() {
             </SheetTrigger>
             <SheetContent 
               side="right"
-              className="w-[80vw] sm:w-[380px] bg-background border-border"
+              className="w-[80vw] sm:w-[380px] bg-background border-border shadow-lg"
             >
               <div className="flex flex-col gap-6 mt-8">
                 <NavLinks isMobile={true} signOut={() => {
