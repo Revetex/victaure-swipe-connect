@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { ColorPicker } from "../ColorPicker";
 import { useVCardStyle } from "../VCardStyleContext";
+import { debounce } from "lodash";
 
 interface VCardStyleEditorProps {
   profile: UserProfile;
@@ -28,9 +29,13 @@ const fontOptions = [
 export function VCardStyleEditor({ profile, onStyleChange }: VCardStyleEditorProps) {
   const { selectedStyle } = useVCardStyle();
 
-  const handleStyleChange = (updates: Partial<UserProfile>) => {
+  const debouncedStyleChange = debounce((updates: Partial<UserProfile>) => {
     onStyleChange(updates);
     toast.success("Style mis à jour");
+  }, 500);
+
+  const handleStyleChange = (updates: Partial<UserProfile>) => {
+    debouncedStyleChange(updates);
   };
 
   const getCurrentBackground = () => {
