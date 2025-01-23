@@ -78,39 +78,13 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         style_id: selectedStyle.id
       };
 
-      const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
-        body: { profile: profileWithStyle }
-      });
-
-      if (aiError) {
-        console.error('AI review error:', aiError);
-      }
-
-      if (aiCorrections?.suggestions) {
-        const shouldApply = window.confirm(
-          "L'IA a détecté quelques améliorations possibles pour votre profil. Voulez-vous les appliquer ?\n\n" +
-          "Suggestions :\n" + aiCorrections.suggestions.join("\n")
-        );
-
-        if (shouldApply && aiCorrections.correctedProfile) {
-          await updateProfile(aiCorrections.correctedProfile);
-          setProfile(aiCorrections.correctedProfile);
-          toast.success("Profil mis à jour avec les suggestions de l'IA");
-        } else {
-          await updateProfile(profileWithStyle);
-          setProfile(profileWithStyle);
-          toast.success("Profil mis à jour sans les suggestions de l'IA");
-        }
-      } else {
-        await updateProfile(profileWithStyle);
-        setProfile(profileWithStyle);
-        toast.success("Profil mis à jour avec succès");
-      }
-
+      await updateProfile(profileWithStyle);
+      setProfile(profileWithStyle);
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
       }
+      toast.success("Profil mis à jour avec succès");
     } catch (error: any) {
       console.error('Error saving profile:', error);
       toast.error(error.message || "Erreur lors de la sauvegarde du profil");

@@ -24,7 +24,6 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    // Reset loading state when profile.avatar_url changes
     if (profile.avatar_url) {
       setIsImageLoading(true);
       setImageError(false);

@@ -23,14 +23,10 @@ export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
   const noteProps = useNotes();
 
   useEffect(() => {
-    if (isMobile) {
-      const page = currentPage;
-      if (contentRef.current && Math.abs(Date.now() - lastPageChange) < 1000) {
-        contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-      return page;
+    if (isMobile && Math.abs(Date.now() - lastPageChange) < 1000) {
+      contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [lastPageChange, isMobile, currentPage]);
+  }, [lastPageChange, isMobile]);
 
   const handleRequestChat = useCallback(() => {
     setShowingChat(true);
@@ -69,15 +65,14 @@ export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
       </motion.div>
       
       <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 border-t border-border/50 transition-all duration-300 safe-area-bottom ${
-          !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
-        }`}
+        className="fixed bottom-0 left-0 right-0 border-t border-border/50 bg-background/95 shadow-lg"
         style={{ 
           height: 'auto',
           willChange: 'transform, opacity',
           zIndex: 50,
-          backgroundColor: 'hsl(var(--background))',
-          boxShadow: '0 -1px 3px rgba(0,0,0,0.1)',
+          transform: !isEditing && !showingChat ? 'translateY(0)' : 'translateY(100%)',
+          opacity: !isEditing && !showingChat ? 1 : 0,
+          pointerEvents: !isEditing && !showingChat ? 'auto' : 'none',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
         initial={false}
