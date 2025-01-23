@@ -70,6 +70,7 @@ export function DashboardLayout() {
         contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
+    return page;
   }, [lastPageChange, isMobile]);
 
   const handleRequestChat = useCallback(() => {
@@ -112,15 +113,16 @@ export function DashboardLayout() {
       </motion.div>
       
       <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/80 border-t border-border/50 transition-all duration-300 safe-area-bottom ${
+        className={`fixed bottom-0 left-0 right-0 bg-background border-t border-border/50 transition-all duration-300 safe-area-bottom ${
           !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
         }`}
         style={{ 
           height: 'auto',
           willChange: 'transform, opacity',
           zIndex: 50,
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          backdropFilter: 'none',
+          WebkitBackdropFilter: 'none',
+          backgroundColor: 'hsl(var(--background))',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
         initial={false}
