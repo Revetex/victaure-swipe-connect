@@ -9,7 +9,7 @@ import { ThemeSelector } from "./ThemeSelector";
 
 export const AuthForm = () => {
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(true); // Default to signup
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -41,14 +41,6 @@ export const AuthForm = () => {
         });
         
         if (signUpError) throw signUpError;
-
-        // Update the profile with phone number
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ phone: formData.phone })
-          .eq('id', (await supabase.auth.getUser()).data.user?.id);
-
-        if (profileError) throw profileError;
         
         toast.success("Inscription réussie ! Vérifiez vos emails.");
       } else {
@@ -56,9 +48,9 @@ export const AuthForm = () => {
           email: formData.email,
           password: formData.password,
         });
+        
         if (error) throw error;
 
-        // Ensure we have a fresh session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw sessionError;
         
@@ -67,28 +59,27 @@ export const AuthForm = () => {
         }
 
         navigate("/dashboard");
+        toast.success("Connexion réussie !");
       }
     } catch (error: any) {
       console.error('Auth error:', error);
       
-      // Handle specific error cases
-      if (error.message.includes('refresh_token_not_found') || 
-          error.message.includes('Invalid Refresh Token')) {
-        localStorage.clear();
-        sessionStorage.clear();
-        toast.error("Session invalide. Veuillez vous reconnecter.");
+      if (error.message.includes('Email not confirmed')) {
+        toast.error("Veuillez confirmer votre email avant de vous connecter");
         return;
       }
       
-      // Improved error messages
-      const errorMessage = error.message.toLowerCase();
-      if (errorMessage.includes('email')) {
-        toast.error("Adresse email invalide ou déjà utilisée");
-      } else if (errorMessage.includes('password')) {
-        toast.error("Le mot de passe doit contenir au moins 6 caractères");
-      } else {
-        toast.error(error.message);
+      if (error.message.includes('Invalid login credentials')) {
+        toast.error("Email ou mot de passe incorrect");
+        return;
       }
+      
+      if (error.message.includes('Email already registered')) {
+        toast.error("Cette adresse email est déjà utilisée");
+        return;
+      }
+      
+      toast.error("Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
@@ -105,7 +96,7 @@ export const AuthForm = () => {
       if (error) throw error;
       toast.success("Instructions envoyées par email");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error("Impossible d'envoyer l'email de réinitialisation");
     }
   };
 

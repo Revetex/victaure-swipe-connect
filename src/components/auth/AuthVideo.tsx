@@ -8,40 +8,30 @@ export const AuthVideo = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.error("Erreur de chargement vidéo:", e);
-    const video = e.target as HTMLVideoElement;
-    console.log("Video source:", video.currentSrc);
-    console.log("Video ready state:", video.readyState);
-    console.log("Video network state:", video.networkState);
-    console.log("Video error:", video.error?.message);
+  const handleVideoError = () => {
+    console.error("Erreur de chargement vidéo");
     setVideoError(true);
     setIsVideoLoading(false);
   };
 
   const handleVideoLoad = () => {
-    console.log("Vidéo chargée avec succès");
     setIsVideoLoading(false);
-    // Try to preload video data
-    if (videoRef.current) {
-      videoRef.current.load();
-    }
   };
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (videoRef.current) {
       if (videoRef.current.paused) {
-        // Add a loading state while video is preparing to play
-        setIsVideoLoading(true);
-        videoRef.current.play().then(() => {
-          setIsPlaying(true);
-          setIsVideoLoading(false);
-        }).catch(error => {
-          console.error("Error playing video:", error);
-          setIsVideoLoading(false);
-          setVideoError(true);
-        });
+        videoRef.current.play()
+          .then(() => {
+            setIsPlaying(true);
+            setIsVideoLoading(false);
+          })
+          .catch(error => {
+            console.error("Error playing video:", error);
+            setIsVideoLoading(false);
+            setVideoError(true);
+          });
       } else {
         videoRef.current.pause();
         setIsPlaying(false);
@@ -49,24 +39,14 @@ export const AuthVideo = () => {
     }
   };
 
-  const handlePause = () => {
-    if (videoRef.current && !videoRef.current.seeking) {
-      setIsPlaying(false);
-    }
-  };
-
-  const handlePlay = () => {
-    setIsPlaying(true);
-    setIsVideoLoading(false);
-  };
-
   return (
-    <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
-      {isVideoLoading && (
+    <div className="relative w-full rounded-xl overflow-hidden shadow-lg bg-muted">
+      {isVideoLoading && !videoError && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/80 backdrop-blur-sm z-10">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       )}
+      
       {videoError ? (
         <div className="aspect-video bg-muted flex items-center justify-center text-muted-foreground">
           <p>La vidéo n'a pas pu être chargée</p>
@@ -79,28 +59,26 @@ export const AuthVideo = () => {
             loop
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             onError={handleVideoError}
             onLoadedData={handleVideoLoad}
-            onPause={handlePause}
-            onPlay={handlePlay}
-            controls={isPlaying}
+            poster="/lovable-uploads/poster.jpg"
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
             Votre navigateur ne supporte pas la lecture de vidéos.
           </video>
           
-          <div 
-            className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-          >
-            <Logo size="lg" className="mb-4" />
-            <button
-              className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-              onClick={togglePlay}
-            >
-              <Play className="w-8 h-8 text-white" />
-            </button>
-          </div>
+          {!isPlaying && (
+            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center">
+              <Logo size="lg" className="mb-4" />
+              <button
+                className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                onClick={togglePlay}
+              >
+                <Play className="w-8 h-8 text-white" />
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
