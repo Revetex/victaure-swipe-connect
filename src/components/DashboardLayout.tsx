@@ -44,7 +44,7 @@ export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
   return (
     <div 
       className="relative min-h-screen bg-background text-foreground overflow-hidden"
-      style={{ height: viewportHeight }}
+      style={{ height: `${viewportHeight}px` }}
     >
       <motion.div 
         ref={contentRef}
