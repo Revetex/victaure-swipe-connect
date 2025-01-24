@@ -113,7 +113,7 @@ export function DashboardLayout() {
       </motion.div>
       
       <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur-sm transition-all duration-300 safe-area-bottom shadow-lg ${
+        className={`fixed bottom-0 left-0 right-0 border-t border-border bg-card transition-all duration-300 safe-area-bottom shadow-lg ${
           !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
         }`}
         style={{ 

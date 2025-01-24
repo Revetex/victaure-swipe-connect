@@ -71,7 +71,7 @@ export function Navigation() {
         stiffness: 260,
         damping: 20
       }}
-      className="sticky top-0 bg-card/95 backdrop-blur-sm shadow-md border-b border-border z-50"
+      className="sticky top-0 bg-card shadow-md border-b border-border z-50"
       style={{ 
         willChange: 'transform',
         touchAction: 'none'
