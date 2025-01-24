@@ -7,20 +7,20 @@
   z-index: 0;
 }
 
-/* Optimisation des styles du logo */
+/* Modern logo styling */
 .logo {
   width: 150px;
   height: auto;
   margin: 20px 0;
   will-change: transform;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logo:hover {
   transform: scale(1.05);
 }
 
-/* Container optimisé */
+/* Enhanced container */
 .container {
   width: 100%;
   margin-left: auto;
@@ -45,13 +45,13 @@
   }
 }
 
-/* Optimisation du mode clair/sombre */
+/* Enhanced light/dark mode */
 :root {
   color-scheme: light dark;
 }
 
 body {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   background-image: 
     radial-gradient(at 47% 33%, hsla(214.74, 95.56%, 87.96%, 0.4) 0, transparent 59%), 
     radial-gradient(at 82% 65%, hsla(218.00, 39.29%, 11.96%, 0.1) 0, transparent 55%);
@@ -60,7 +60,6 @@ body {
   height: 100%;
   overflow-y: auto;
   color: #1a1a1a;
-  -webkit-tap-highlight-color: transparent;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -75,7 +74,33 @@ body {
   color: #ffffff;
 }
 
-/* Optimisation mobile */
+/* Enhanced glass card styling */
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #1a1a1a;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  will-change: transform, opacity;
+}
+
+.dark .glass-card {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.2), 
+    0 2px 4px -1px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Enhanced mobile optimization */
 @media (max-width: 640px) {
   .vcard-root {
     padding: 0.5rem;
@@ -109,74 +134,9 @@ body {
   .interactive:active {
     transform: scale(0.98);
   }
-
-  /* Amélioration de la navigation */
-  .bottom-navigation {
-    height: auto;
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-  }
-
-  /* Amélioration des formulaires */
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-    padding: 0.75rem !important;
-  }
-
-  /* Amélioration des cartes */
-  .card {
-    margin: 0.5rem 0;
-    padding: 1rem;
-    border-radius: 0.75rem;
-  }
-
-  /* Amélioration des listes */
-  .list-item {
-    padding: 1rem;
-    margin: 0.5rem 0;
-  }
-
-  /* Amélioration des grilles */
-  .grid {
-    gap: 0.75rem;
-  }
-
-  /* Amélioration des modales */
-  .modal-content {
-    margin: 0.5rem;
-    max-height: calc(100vh - 2rem);
-    border-radius: 1rem;
-  }
 }
 
-/* Optimisation des cartes en verre */
-.glass-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #1a1a1a;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  will-change: transform, opacity;
-}
-
-.dark .glass-card {
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.2), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-/* Support des zones sécurisées iOS */
+/* iOS safe area support */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -185,7 +145,7 @@ body {
   padding-top: env(safe-area-inset-top);
 }
 
-/* États de chargement optimisés */
+/* Enhanced loading states */
 .loading-skeleton {
   @apply animate-pulse bg-gray-200 dark:bg-gray-700
          rounded overflow-hidden;
@@ -204,7 +164,7 @@ body {
   will-change: transform;
 }
 
-/* Container d'image responsive optimisé */
+/* Enhanced responsive image container */
 .responsive-image {
   @apply relative w-full pb-[100%];
   will-change: transform;
@@ -215,7 +175,7 @@ body {
   will-change: transform;
 }
 
-/* Retour tactile optimisé */
+/* Enhanced touch feedback */
 .touch-feedback {
   @apply transition-transform active:scale-[0.98]
          hover:brightness-105;

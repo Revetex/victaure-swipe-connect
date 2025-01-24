@@ -7,7 +7,7 @@ import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useDebounce } from "use-debounce";
 
-const THROTTLE_DELAY = 300; // ms
+const THROTTLE_DELAY = 300;
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -88,7 +88,7 @@ export function DashboardLayout() {
         ref={contentRef}
         key="dashboard-content"
         variants={itemVariants} 
-        className="transform-gpu w-full min-h-screen pb-safe safe-area-top"
+        className="transform-gpu w-full min-h-screen pb-safe safe-area-top bg-gradient-to-br from-background via-background/95 to-background/90"
         style={{ 
           height: isMobile ? 'calc(var(--vh, 1vh) * 100)' : '100vh',
           overflowY: isEditing ? 'hidden' : 'auto',
@@ -113,14 +113,13 @@ export function DashboardLayout() {
       </motion.div>
       
       <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 border-t border-border/50 transition-all duration-300 safe-area-bottom ${
+        className={`fixed bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur-sm transition-all duration-300 safe-area-bottom shadow-lg ${
           !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
         }`}
         style={{ 
           height: 'auto',
           willChange: 'transform, opacity',
           zIndex: 50,
-          backgroundColor: '#1A1F2C',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
         initial={false}

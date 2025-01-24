@@ -34,9 +34,9 @@ export const DashboardNavigation = memo(function DashboardNavigation({
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className={`flex flex-col items-center p-2 rounded-lg transition-colors duration-200 ${
+          className={`flex flex-col items-center p-3 rounded-xl transition-all duration-200 ${
             currentPage === id
-              ? "text-primary bg-primary/10"
+              ? "text-primary bg-primary/10 shadow-lg shadow-primary/10"
               : "text-muted-foreground hover:text-primary hover:bg-primary/5"
           }`}
           style={{ willChange: 'transform' }}
