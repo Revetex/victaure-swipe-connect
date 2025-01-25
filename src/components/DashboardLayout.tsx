@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DashboardNavigation } from "./DashboardNavigation";
-import { DashboardPageContent } from "./DashboardPageContent";
+import { DashboardNavigation } from "./dashboard/DashboardNavigation";
+import { DashboardPageContent } from "./dashboard/DashboardPageContent";
 import { useViewportHeight } from "@/hooks/useViewportHeight";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
