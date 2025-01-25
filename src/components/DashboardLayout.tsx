@@ -73,11 +73,13 @@ export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
           transform: !isEditing && !showingChat ? 'translateY(0)' : 'translateY(100%)',
           opacity: !isEditing && !showingChat ? 1 : 0,
           pointerEvents: !isEditing && !showingChat ? 'auto' : 'none',
-          paddingBottom: 'env(safe-area-inset-bottom)'
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          backgroundColor: 'var(--background)',
+          backdropFilter: 'none'
         }}
         initial={false}
       >
-        <div className="container max-w-md mx-auto px-4 py-2">
+        <div className="container max-w-md mx-auto px-4 py-2 bg-background">
           <DashboardNavigation
             currentPage={currentPage}
             onPageChange={handlePageChange}
