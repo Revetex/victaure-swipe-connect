@@ -19,20 +19,45 @@ export function Marketplace() {
   const hasActiveFilters = Object.values(filters).some(value => value !== "" && value !== "all");
 
   useEffect(() => {
-    // Cleanup any existing Google Search elements
-    const existingElements = document.querySelectorAll('.gsc-control-cse');
+    // Remove any existing search elements
+    const existingElements = document.querySelectorAll('.gcse-search, .gcse-searchbox-only, .gcse-searchresults-only');
     existingElements.forEach(el => el.remove());
 
-    // Load the Google Custom Search script
+    // Remove any existing Google Search scripts
+    const existingScripts = document.querySelectorAll('script[src*="cse.google.com"]');
+    existingScripts.forEach(script => script.remove());
+
+    // Create and append the search container
+    const searchContainer = document.createElement('div');
+    searchContainer.className = 'gcse-search';
+    
+    // Add the script
     const script = document.createElement('script');
     script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
-    document.head.appendChild(script);
+
+    // Only add elements if we're showing the search
+    if (!hasActiveFilters || activeTab === "external") {
+      document.head.appendChild(script);
+      
+      // Wait for script to load before adding search element
+      script.onload = () => {
+        const containers = document.querySelectorAll('.google-search-container');
+        containers.forEach(container => {
+          if (container instanceof HTMLElement) {
+            container.innerHTML = '';
+            const searchDiv = document.createElement('div');
+            searchDiv.className = 'gcse-search';
+            container.appendChild(searchDiv);
+          }
+        });
+      };
+    }
 
     return () => {
-      // Cleanup script on unmount
-      const scripts = document.querySelectorAll('script[src*="cse.google.com"]');
-      scripts.forEach(script => script.remove());
+      // Cleanup
+      existingScripts.forEach(script => script.remove());
+      existingElements.forEach(el => el.remove());
     };
   }, [activeTab, hasActiveFilters]);
 
@@ -91,8 +116,7 @@ export function Marketplace() {
           <div className="grid grid-cols-1 gap-6">
             {!hasActiveFilters ? (
               <div className="w-full min-h-[600px] bg-background rounded-lg p-4 border">
-                <div className="gcse-searchbox-only" data-resultsUrl="#" data-newWindow="true"></div>
-                <div className="gcse-searchresults-only"></div>
+                <div className="google-search-container"></div>
               </div>
             ) : (
               <JobList 
@@ -105,8 +129,7 @@ export function Marketplace() {
 
         <TabsContent value="external" className="min-h-[600px]">
           <div className="bg-background rounded-lg p-4 border">
-            <div className="gcse-searchbox-only" data-resultsUrl="#" data-newWindow="true"></div>
-            <div className="gcse-searchresults-only"></div>
+            <div className="google-search-container"></div>
           </div>
         </TabsContent>
       </Tabs>
