@@ -65,7 +65,7 @@ export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
       </motion.div>
       
       <motion.nav 
-        className="fixed bottom-0 left-0 right-0 border-t border-border/50 bg-background/95 shadow-lg"
+        className="fixed bottom-0 left-0 right-0 border-t border-border bg-background shadow-lg"
         style={{ 
           height: 'auto',
           willChange: 'transform, opacity',
