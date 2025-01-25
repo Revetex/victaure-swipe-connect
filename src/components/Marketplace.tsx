@@ -5,10 +5,48 @@ import { SlidersHorizontal } from "lucide-react";
 import { JobList } from "./jobs/JobList";
 import { JobFilters } from "./jobs/JobFilters";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Marketplace() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const isMobile = useIsMobile();
+
+  const { data: jobs = [], isLoading } = useQuery({
+    queryKey: ['jobs', filters],
+    queryFn: async () => {
+      let query = supabase
+        .from('jobs')
+        .select('*')
+        .eq('status', 'open');
+
+      if (filters.searchTerm) {
+        query = query.ilike('title', `%${filters.searchTerm}%`);
+      }
+
+      if (filters.minBudget) {
+        query = query.gte('budget', filters.minBudget);
+      }
+
+      if (filters.maxBudget) {
+        query = query.lte('budget', filters.maxBudget);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -23,14 +61,20 @@ export function Marketplace() {
           </SheetTrigger>
           <SheetContent side={isMobile ? "left" : "right"} className="w-full sm:w-[540px]">
             <div className="h-full py-6 overflow-y-auto">
-              <JobFilters />
+              <JobFilters 
+                filters={filters}
+                onFilterChange={handleFilterChange}
+              />
             </div>
           </SheetContent>
         </Sheet>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
-        <JobList />
+        <JobList 
+          jobs={jobs}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );
