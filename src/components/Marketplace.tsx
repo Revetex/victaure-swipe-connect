@@ -8,6 +8,9 @@ import { Button } from "./ui/button";
 import { Filter, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface ScrapedJob {
   id: string;
@@ -25,8 +28,8 @@ export function Marketplace() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
-  const [showFilters, setShowFilters] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const fetchJobs = async () => {
     try {
@@ -85,9 +88,9 @@ export function Marketplace() {
         id: job.id,
         title: job.title,
         description: job.description || '',
-        budget: 0, // Since scraped jobs might not have budget info
+        budget: 0,
         location: job.location,
-        employer_id: '', // Scraped jobs don't have an employer_id
+        employer_id: '',
         status: 'open' as const,
         company: job.company,
         source: 'Externe' as const,
@@ -96,7 +99,7 @@ export function Marketplace() {
         category: 'Externe',
         contract_type: 'full-time',
         experience_level: 'mid-level',
-        url: job.url // Add the URL for external jobs
+        url: job.url
       }));
 
       // Combine and sort all jobs
@@ -134,6 +137,15 @@ export function Marketplace() {
     );
   }
 
+  const FiltersContent = () => (
+    <div className="space-y-4">
+      <JobFilters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+      />
+    </div>
+  );
+
   return (
     <section className="py-8 min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4">
@@ -154,25 +166,50 @@ export function Marketplace() {
             <h2 className="text-xl font-semibold">
               Toutes les offres ({jobs.length})
             </h2>
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="w-auto flex items-center justify-center gap-2"
-            >
-              <Filter className="h-4 w-4" />
-              {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-            </Button>
+            {isMobile ? (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filtres
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-full sm:max-w-lg">
+                  <SheetHeader>
+                    <SheetTitle>Filtres</SheetTitle>
+                    <SheetDescription>
+                      Affinez votre recherche avec les filtres ci-dessous
+                    </SheetDescription>
+                  </SheetHeader>
+                  <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
+                    <FiltersContent />
+                  </ScrollArea>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filtres
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[400px]">
+                  <SheetHeader>
+                    <SheetTitle>Filtres</SheetTitle>
+                    <SheetDescription>
+                      Affinez votre recherche avec les filtres ci-dessous
+                    </SheetDescription>
+                  </SheetHeader>
+                  <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
+                    <FiltersContent />
+                  </ScrollArea>
+                </SheetContent>
+              </Sheet>
+            )}
           </div>
           
           <div className="space-y-4">
-            {showFilters && (
-              <div className="bg-card rounded-lg p-4">
-                <JobFilters
-                  filters={filters}
-                  onFilterChange={handleFilterChange}
-                />
-              </div>
-            )}
             <JobList 
               jobs={jobs} 
               isLoading={isLoading} 
