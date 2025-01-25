@@ -19,47 +19,44 @@ export function Marketplace() {
   const hasActiveFilters = Object.values(filters).some(value => value !== "" && value !== "all");
 
   useEffect(() => {
-    // Remove any existing search elements
-    const existingElements = document.querySelectorAll('.gcse-search, .gcse-searchbox-only, .gcse-searchresults-only');
-    existingElements.forEach(el => el.remove());
+    // Cleanup any existing elements
+    const cleanup = () => {
+      const existingElements = document.querySelectorAll('.gcse-search, .gcse-searchbox, .gcse-searchresults');
+      existingElements.forEach(el => el.remove());
+      
+      const existingScripts = document.querySelectorAll('script[src*="cse.google.com"]');
+      existingScripts.forEach(script => script.remove());
+    };
 
-    // Remove any existing Google Search scripts
-    const existingScripts = document.querySelectorAll('script[src*="cse.google.com"]');
-    existingScripts.forEach(script => script.remove());
+    cleanup();
 
-    // Create and append the search container
-    const searchContainer = document.createElement('div');
-    searchContainer.className = 'gcse-search';
-    
-    // Add the script
+    // Add the Google Custom Search script
     const script = document.createElement('script');
     script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
+    document.head.appendChild(script);
 
-    // Only add elements if we're showing the search
-    if (!hasActiveFilters || activeTab === "external") {
-      document.head.appendChild(script);
+    // Create search elements after script loads
+    script.onload = () => {
+      const searchBox = document.createElement('div');
+      searchBox.className = 'gcse-searchbox';
       
-      // Wait for script to load before adding search element
-      script.onload = () => {
-        const containers = document.querySelectorAll('.google-search-container');
-        containers.forEach(container => {
-          if (container instanceof HTMLElement) {
-            container.innerHTML = '';
-            const searchDiv = document.createElement('div');
-            searchDiv.className = 'gcse-search';
-            container.appendChild(searchDiv);
-          }
-        });
-      };
-    }
+      const searchResults = document.createElement('div');
+      searchResults.className = 'gcse-searchresults';
 
-    return () => {
-      // Cleanup
-      existingScripts.forEach(script => script.remove());
-      existingElements.forEach(el => el.remove());
+      // Add search elements to containers
+      const containers = document.querySelectorAll('.google-search-container');
+      containers.forEach(container => {
+        if (container instanceof HTMLElement) {
+          container.innerHTML = '';
+          container.appendChild(searchBox.cloneNode(true));
+          container.appendChild(searchResults.cloneNode(true));
+        }
+      });
     };
-  }, [activeTab, hasActiveFilters]);
+
+    return cleanup;
+  }, [activeTab]);
 
   const { data: jobs = [], isLoading } = useQuery<Job[]>({
     queryKey: ['jobs', filters],
@@ -116,7 +113,7 @@ export function Marketplace() {
           <div className="grid grid-cols-1 gap-6">
             {!hasActiveFilters ? (
               <div className="w-full min-h-[600px] bg-background rounded-lg p-4 border">
-                <div className="google-search-container"></div>
+                <div className="google-search-container min-h-[500px]"></div>
               </div>
             ) : (
               <JobList 
@@ -129,7 +126,7 @@ export function Marketplace() {
 
         <TabsContent value="external" className="min-h-[600px]">
           <div className="bg-background rounded-lg p-4 border">
-            <div className="google-search-container"></div>
+            <div className="google-search-container min-h-[500px]"></div>
           </div>
         </TabsContent>
       </Tabs>
