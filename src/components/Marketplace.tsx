@@ -166,47 +166,25 @@ export function Marketplace() {
             <h2 className="text-xl font-semibold">
               Toutes les offres ({jobs.length})
             </h2>
-            {isMobile ? (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Filter className="h-4 w-4" />
-                    Filtres
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-full sm:max-w-lg">
-                  <SheetHeader>
-                    <SheetTitle>Filtres</SheetTitle>
-                    <SheetDescription>
-                      Affinez votre recherche avec les filtres ci-dessous
-                    </SheetDescription>
-                  </SheetHeader>
-                  <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
-                    <FiltersContent />
-                  </ScrollArea>
-                </SheetContent>
-              </Sheet>
-            ) : (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Filter className="h-4 w-4" />
-                    Filtres
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[400px]">
-                  <SheetHeader>
-                    <SheetTitle>Filtres</SheetTitle>
-                    <SheetDescription>
-                      Affinez votre recherche avec les filtres ci-dessous
-                    </SheetDescription>
-                  </SheetHeader>
-                  <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
-                    <FiltersContent />
-                  </ScrollArea>
-                </SheetContent>
-              </Sheet>
-            )}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filtres
+                </Button>
+              </SheetTrigger>
+              <SheetContent side={isMobile ? "left" : "right"} className={isMobile ? "w-full sm:max-w-lg" : "w-[400px]"}>
+                <SheetHeader>
+                  <SheetTitle>Filtres</SheetTitle>
+                  <SheetDescription>
+                    Affinez votre recherche avec les filtres ci-dessous
+                  </SheetDescription>
+                </SheetHeader>
+                <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
+                  <FiltersContent />
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
           </div>
           
           <div className="space-y-4">
