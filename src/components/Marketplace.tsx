@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal } from "lucide-react";
@@ -11,22 +11,68 @@ import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+declare global {
+  interface Window {
+    google: {
+      search: {
+        cse: {
+          element: {
+            render: (options: { div: string }) => void;
+          };
+        };
+      };
+    };
+  }
+}
+
 export function Marketplace() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const isMobile = useIsMobile();
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState("platform");
 
-  // Load Google Custom Search script
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
-    script.async = true;
-    document.head.appendChild(script);
+    // Only load the script if we're on the external tab
+    if (activeTab === "external") {
+      // Remove any existing script to avoid duplicates
+      const existingScript = document.getElementById("google-search-script");
+      if (existingScript) {
+        existingScript.remove();
+      }
 
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
+      const script = document.createElement('script');
+      script.id = "google-search-script";
+      script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
+      script.async = true;
+      
+      script.onload = () => {
+        if (searchContainerRef.current) {
+          // Clear the container first
+          searchContainerRef.current.innerHTML = '';
+          // Create a new element for the search
+          const searchElement = document.createElement('div');
+          searchElement.className = 'gcse-search';
+          searchContainerRef.current.appendChild(searchElement);
+          
+          // Initialize the search
+          if (window.google && window.google.search) {
+            window.google.search.cse.element.render({
+              div: searchContainerRef.current.id
+            });
+          }
+        }
+      };
+
+      document.head.appendChild(script);
+
+      return () => {
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      };
+    }
+  }, [activeTab]);
 
   const { data: jobs = [], isLoading } = useQuery<Job[]>({
     queryKey: ['jobs', filters],
@@ -73,7 +119,7 @@ export function Marketplace() {
         </Sheet>
       </div>
 
-      <Tabs defaultValue="platform" className="w-full">
+      <Tabs defaultValue="platform" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="platform">Offres Victaure</TabsTrigger>
           <TabsTrigger value="external">Recherche externe</TabsTrigger>
@@ -90,7 +136,11 @@ export function Marketplace() {
 
         <TabsContent value="external" className="min-h-[600px]">
           <div className="bg-background rounded-lg p-4 border">
-            <div className="gcse-search"></div>
+            <div 
+              id="google-search-container"
+              ref={searchContainerRef}
+              className="w-full min-h-[400px]"
+            />
           </div>
         </TabsContent>
       </Tabs>
