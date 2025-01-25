@@ -31,10 +31,11 @@ export function Marketplace() {
   const isMobile = useIsMobile();
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState("platform");
+  const hasActiveFilters = Object.values(filters).some(value => value !== "" && value !== "all");
 
   useEffect(() => {
-    // Only load the script if we're on the external tab
-    if (activeTab === "external") {
+    // Load the script when no filters are applied or when on external tab
+    if (!hasActiveFilters || activeTab === "external") {
       // Remove any existing script to avoid duplicates
       const existingScript = document.getElementById("google-search-script");
       if (existingScript) {
@@ -43,6 +44,7 @@ export function Marketplace() {
 
       const script = document.createElement('script');
       script.id = "google-search-script";
+      // Updated search engine ID to focus on job sites
       script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
       script.async = true;
       
@@ -53,6 +55,9 @@ export function Marketplace() {
           // Create a new element for the search
           const searchElement = document.createElement('div');
           searchElement.className = 'gcse-search';
+          // Add attributes to focus on job sites
+          searchElement.setAttribute('data-as_sitesearch', 'indeed.ca linkedin.com jobs.ca workopolis.com monster.ca');
+          searchElement.setAttribute('data-defaultToRefinement', 'Jobs');
           searchContainerRef.current.appendChild(searchElement);
           
           // Initialize the search
@@ -72,7 +77,7 @@ export function Marketplace() {
         }
       };
     }
-  }, [activeTab]);
+  }, [activeTab, hasActiveFilters]);
 
   const { data: jobs = [], isLoading } = useQuery<Job[]>({
     queryKey: ['jobs', filters],
@@ -127,10 +132,18 @@ export function Marketplace() {
 
         <TabsContent value="platform">
           <div className="grid grid-cols-1 gap-6">
-            <JobList 
-              jobs={jobs}
-              isLoading={isLoading}
-            />
+            {!hasActiveFilters ? (
+              <div 
+                id="default-search-container"
+                ref={searchContainerRef}
+                className="w-full min-h-[600px] bg-background rounded-lg p-4 border"
+              />
+            ) : (
+              <JobList 
+                jobs={jobs}
+                isLoading={isLoading}
+              />
+            )}
           </div>
         </TabsContent>
 
