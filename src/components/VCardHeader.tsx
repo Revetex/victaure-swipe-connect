@@ -101,13 +101,15 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
               value={profile.full_name || ""}
               onChange={(e) => handleInputChange("full_name", e.target.value)}
               placeholder="Votre nom"
-              className="text-xl font-semibold bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="text-xl font-semibold bg-white/10 border-white/20 placeholder:text-white/50"
+              style={{ color: profile.custom_text_color || 'inherit' }}
             />
             <Input
               value={profile.role || ""}
               onChange={(e) => handleInputChange("role", e.target.value)}
               placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 text-white/90 placeholder:text-white/50"
+              className="text-sm bg-white/10 border-white/20 placeholder:text-white/50"
+              style={{ color: profile.custom_text_color || 'inherit' }}
             />
           </div>
         ) : (
@@ -115,7 +117,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <h2 
               className="text-xl sm:text-2xl font-semibold truncate transition-colors"
               style={{ 
-                color: selectedStyle.colors.text.primary,
+                color: profile.custom_text_color || selectedStyle.colors.text.primary,
                 textShadow: '0 1px 2px rgba(0,0,0,0.1)'
               }}
             >
@@ -124,7 +126,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             <p 
               className="text-sm sm:text-base transition-colors"
               style={{ 
-                color: selectedStyle.colors.text.secondary,
+                color: profile.custom_text_color || selectedStyle.colors.text.secondary,
                 textShadow: '0 1px 1px rgba(0,0,0,0.05)'
               }}
             >
