@@ -1,141 +1,89 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { DashboardNavigation } from "./DashboardNavigation";
+import { DashboardPageContent } from "./DashboardPageContent";
+import { useViewportHeight } from "@/hooks/useViewportHeight";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion, AnimatePresence } from "framer-motion";
-import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useCallback, useEffect, useRef } from "react";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
-import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { useDebounce } from "use-debounce";
+import { motion } from "framer-motion";
+import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
 
-const THROTTLE_DELAY = 300;
+interface DashboardLayoutProps {
+  initialPage?: number;
+}
 
-export function DashboardLayout() {
-  const isMobile = useIsMobile();
-  const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(2);
-  const [isEditing, setIsEditing] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [lastPageChange, setLastPageChange] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
   const [showingChat, setShowingChat] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  const [debouncedSetViewportHeight] = useDebounce(
-    (height: number) => setViewportHeight(height),
-    100
-  );
-
-  useEffect(() => {
-    const handleResize = () => {
-      const vh = window.innerHeight;
-      debouncedSetViewportHeight(vh);
-      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    
-    if (isMobile) {
-      window.visualViewport?.addEventListener('resize', handleResize);
-    }
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (isMobile) {
-        window.visualViewport?.removeEventListener('resize', handleResize);
-      }
-    };
-  }, [debouncedSetViewportHeight, isMobile]);
+  const viewportHeight = useViewportHeight();
+  const isMobile = useIsMobile();
+  const todoProps = useTodoList();
+  const noteProps = useNotes();
 
   useEffect(() => {
-    if (isMobile && (isEditing || showingChat)) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      return () => {
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-      };
+    if (isMobile && Math.abs(Date.now() - lastPageChange) < 1000) {
+      contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [isMobile, isEditing, showingChat]);
-
-  const handlePageChange = useCallback((page: number): number => {
-    const now = Date.now();
-    if (now - lastPageChange >= THROTTLE_DELAY) {
-      setCurrentPage(page);
-      setLastPageChange(now);
-      setShowingChat(false);
-      
-      if (isMobile && contentRef.current) {
-        contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-    return page;
   }, [lastPageChange, isMobile]);
 
   const handleRequestChat = useCallback(() => {
-    const now = Date.now();
-    if (now - lastPageChange >= THROTTLE_DELAY) {
-      setCurrentPage(2);
-      setLastPageChange(now);
-      setShowingChat(true);
-    }
-  }, [lastPageChange]);
+    setShowingChat(true);
+  }, []);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    setLastPageChange(Date.now());
+  }, []);
+
+  const handleEditStateChange = useCallback((state: boolean) => {
+    setIsEditing(state);
+  }, []);
 
   return (
-    <DashboardContainer containerVariants={containerVariants}>
+    <div 
+      className="relative min-h-screen bg-background text-foreground overflow-hidden"
+      style={{ height: `${viewportHeight}px` }}
+    >
       <motion.div 
         ref={contentRef}
-        key="dashboard-content"
-        variants={itemVariants} 
-        className="transform-gpu w-full min-h-screen pb-safe safe-area-top bg-gradient-to-br from-background via-background/95 to-background/90"
-        style={{ 
-          height: isMobile ? 'calc(var(--vh, 1vh) * 100)' : '100vh',
-          overflowY: isEditing ? 'hidden' : 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
-          willChange: 'transform',
-          position: 'relative',
-          zIndex: 1,
-          paddingBottom: isMobile ? 'calc(4rem + env(safe-area-inset-bottom))' : '4rem'
-        }}
+        className="h-full overflow-y-auto pb-24 overscroll-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
       >
-        <AnimatePresence mode="wait" initial={false}>
-          <DashboardContent
-            key={`page-${currentPage}`}
-            currentPage={currentPage}
-            isEditing={isEditing}
-            viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
-            onRequestChat={handleRequestChat}
-          />
-        </AnimatePresence>
+        <DashboardPageContent
+          currentPage={currentPage}
+          isEditing={isEditing}
+          viewportHeight={viewportHeight}
+          onEditStateChange={handleEditStateChange}
+          onRequestChat={handleRequestChat}
+          todoProps={todoProps}
+          noteProps={noteProps}
+        />
       </motion.div>
       
       <motion.nav 
-        className={`fixed bottom-0 left-0 right-0 border-t border-border bg-card transition-all duration-300 safe-area-bottom shadow-lg ${
-          !isEditing && !showingChat ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
-        }`}
+        className="fixed bottom-0 left-0 right-0 border-t border-border bg-background shadow-lg"
         style={{ 
           height: 'auto',
           willChange: 'transform, opacity',
           zIndex: 50,
+          transform: !isEditing && !showingChat ? 'translateY(0)' : 'translateY(100%)',
+          opacity: !isEditing && !showingChat ? 1 : 0,
+          pointerEvents: !isEditing && !showingChat ? 'auto' : 'none',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
         initial={false}
-        animate={{ 
-          y: !isEditing && !showingChat ? 0 : '100%',
-          opacity: !isEditing && !showingChat ? 1 : 0
-        }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
-        <div className="container mx-auto px-4 py-2 h-16">
-          <DashboardNavigation 
+        <div className="container max-w-md mx-auto px-4 py-2 bg-background">
+          <DashboardNavigation
             currentPage={currentPage}
             onPageChange={handlePageChange}
           />
         </div>
       </motion.nav>
-    </DashboardContainer>
+    </div>
   );
 }
