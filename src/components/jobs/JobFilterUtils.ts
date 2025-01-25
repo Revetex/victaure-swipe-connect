@@ -45,8 +45,6 @@ export const applyFilters = async (
   query: PostgrestFilterBuilder<any, any, any>,
   filters: JobFilters
 ): Promise<PostgrestFilterBuilder<any, any, any>> => {
-  let filteredQuery = query;
-
   // If a category is selected, first get its name from the database
   if (filters.category !== "all") {
     const { data: categoryData } = await supabase
@@ -56,7 +54,7 @@ export const applyFilters = async (
       .single();
     
     if (categoryData) {
-      filteredQuery = filteredQuery.eq("category", categoryData.name);
+      query = query.eq("category", categoryData.name);
     }
   }
 
@@ -69,61 +67,61 @@ export const applyFilters = async (
       .single();
     
     if (subcategoryData) {
-      filteredQuery = filteredQuery.eq("subcategory", subcategoryData.name);
+      query = query.eq("subcategory", subcategoryData.name);
     }
   }
 
   if (filters.experienceLevel !== "all") {
-    filteredQuery = filteredQuery.eq("experience_level", filters.experienceLevel);
+    query = query.eq("experience_level", filters.experienceLevel);
   }
 
   if (filters.remoteType !== "all") {
-    filteredQuery = filteredQuery.eq("remote_type", filters.remoteType);
+    query = query.eq("remote_type", filters.remoteType);
   }
 
   if (filters.missionType !== "all") {
-    filteredQuery = filteredQuery.eq("mission_type", filters.missionType);
+    query = query.eq("mission_type", filters.missionType);
   }
 
   if (filters.contractType !== "all") {
-    filteredQuery = filteredQuery.eq("contract_type", filters.contractType);
+    query = query.eq("contract_type", filters.contractType);
   }
 
   if (filters.paymentSchedule !== "all") {
-    filteredQuery = filteredQuery.eq("payment_schedule", filters.paymentSchedule);
+    query = query.eq("payment_schedule", filters.paymentSchedule);
   }
 
   if (filters.location) {
-    filteredQuery = filteredQuery.ilike("location", `%${filters.location}%`);
+    query = query.ilike("location", `%${filters.location}%`);
   }
 
   if (filters.minBudget) {
-    filteredQuery = filteredQuery.gte("budget", filters.minBudget);
+    query = query.gte("budget", filters.minBudget);
   }
 
   if (filters.maxBudget) {
-    filteredQuery = filteredQuery.lte("budget", filters.maxBudget);
+    query = query.lte("budget", filters.maxBudget);
   }
 
   if (filters.searchTerm) {
-    filteredQuery = filteredQuery.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
+    query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
   }
 
   if (filters.createdAfter) {
-    filteredQuery = filteredQuery.gte("created_at", filters.createdAfter);
+    query = query.gte("created_at", filters.createdAfter);
   }
 
   if (filters.createdBefore) {
-    filteredQuery = filteredQuery.lte("created_at", filters.createdBefore);
+    query = query.lte("created_at", filters.createdBefore);
   }
 
   if (filters.deadlineBefore) {
-    filteredQuery = filteredQuery.lte("application_deadline", filters.deadlineBefore);
+    query = query.lte("application_deadline", filters.deadlineBefore);
   }
 
   if (filters.skills && filters.skills.length > 0) {
-    filteredQuery = filteredQuery.contains("required_skills", filters.skills);
+    query = query.contains("required_skills", filters.skills);
   }
 
-  return filteredQuery;
+  return query;
 };
