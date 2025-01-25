@@ -1,34 +1,30 @@
-interface CustomStyles {
-  font?: string | null;
-  background?: string | null;
-  textColor?: string | null;
-}
+import { ReactNode } from "react";
 
 interface VCardContainerProps {
-  children: React.ReactNode;
+  children: ReactNode;
   isEditing: boolean;
-  customStyles?: CustomStyles;
+  customStyles?: {
+    font?: string | null;
+    background?: string | null;
+    textColor?: string | null;
+  };
 }
 
 export function VCardContainer({ children, isEditing, customStyles }: VCardContainerProps) {
-  const containerStyle: React.CSSProperties = {
-    fontFamily: customStyles?.font || undefined,
-    backgroundColor: customStyles?.background || undefined,
-    color: customStyles?.textColor || undefined,
-  };
-
   return (
     <div 
-      className={`
-        relative p-4 sm:p-6 rounded-xl shadow-lg bg-card dark:bg-card 
-        ${isEditing ? 'ring-2 ring-primary' : ''} 
-        transition-all duration-300 ease-in-out
-        w-full max-w-7xl mx-auto
-        min-h-[calc(100vh-4rem)] sm:min-h-0
-      `}
-      style={containerStyle}
+      className={`relative w-full min-h-screen bg-background text-foreground transition-colors ${
+        isEditing ? 'pb-32' : ''
+      }`}
+      style={{
+        fontFamily: customStyles?.font || 'inherit',
+        backgroundColor: customStyles?.background || 'var(--background)',
+        color: customStyles?.textColor || 'var(--foreground)'
+      }}
     >
-      {children}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </div>
     </div>
   );
 }

@@ -21,7 +21,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
-  const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { selectedStyle } = useVCardStyle();
 
   const handleEditToggle = () => {
@@ -38,7 +38,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
 
     try {
-      setIsAIProcessing(true);
+      setIsProcessing(true);
       
       // Get current user to ensure we're authenticated
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -49,44 +49,18 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      // Call the AI assistant to review and correct the profile
-      const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
-        body: { profile }
-      });
-
-      if (aiError) {
-        console.error('AI review error:', aiError);
-        // Continue with save even if AI review fails
-      }
-
-      if (aiCorrections?.suggestions) {
-        const shouldApply = window.confirm(
-          "L'IA a détecté quelques améliorations possibles pour votre profil. Voulez-vous les appliquer ?\n\n" +
-          "Suggestions :\n" + aiCorrections.suggestions.join("\n")
-        );
-
-        if (shouldApply && aiCorrections.correctedProfile) {
-          await updateProfile(aiCorrections.correctedProfile);
-          setProfile(aiCorrections.correctedProfile);
-          toast.success("Profil mis à jour avec les suggestions de l'IA");
-        } else {
-          await updateProfile(profile);
-          toast.success("Profil mis à jour sans les suggestions de l'IA");
-        }
-      } else {
-        await updateProfile(profile);
-        toast.success("Profil mis à jour avec succès");
-      }
-
+      await updateProfile(profile);
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
       }
+      toast.success("Profil mis à jour avec succès");
+      
     } catch (error: any) {
       console.error('Error saving profile:', error);
       toast.error(error.message || "Erreur lors de la sauvegarde du profil");
     } finally {
-      setIsAIProcessing(false);
+      setIsProcessing(false);
     }
   };
 
@@ -122,7 +96,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         <VCardFooter
           isEditing={isEditing}
           isPdfGenerating={isPdfGenerating}
-          isProcessing={isAIProcessing}
+          isProcessing={isProcessing}
           selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
           onSave={handleSave}
