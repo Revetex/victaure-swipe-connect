@@ -2,8 +2,7 @@ import { z } from "zod";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 import { Database } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
-
-type JobRow = Database['public']['Tables']['jobs']['Row'];
+import { Job } from "@/types/job";
 
 export const filterSchema = z.object({
   category: z.string().default("all"),
@@ -13,7 +12,7 @@ export const filterSchema = z.object({
   skills: z.array(z.string()).default([]),
   experienceLevel: z.string().default("all"),
   province: z.string().default("all"),
-  remoteType: z.string().default("all"),
+  remoteType: z.enum(["all", "on-site", "remote", "hybrid"]).default("all"),
   minBudget: z.number().optional(),
   maxBudget: z.number().optional(),
   searchTerm: z.string().default(""),
@@ -21,8 +20,8 @@ export const filterSchema = z.object({
   createdBefore: z.string().optional(),
   deadlineBefore: z.string().optional(),
   missionType: z.enum(["all", "company", "individual"]).default("all"),
-  contractType: z.string().default("all"),
-  paymentSchedule: z.string().default("all"),
+  contractType: z.enum(["all", "full-time", "part-time", "contract", "internship", "one-time", "fixed-duration", "project-based"]).default("all"),
+  paymentSchedule: z.enum(["all", "weekly", "biweekly", "monthly", "quarterly", "completion"]).default("all"),
 });
 
 export type JobFilters = z.infer<typeof filterSchema>;

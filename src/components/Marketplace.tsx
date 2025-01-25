@@ -5,16 +5,17 @@ import { SlidersHorizontal } from "lucide-react";
 import { JobList } from "./jobs/JobList";
 import { JobFilters } from "./jobs/JobFilters";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { JobFilters as JobFiltersType, defaultFilters } from "./jobs/JobFilterUtils";
+import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jobs/JobFilterUtils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Job } from "@/types/job";
 
 export function Marketplace() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const isMobile = useIsMobile();
 
-  const { data: jobs = [], isLoading } = useQuery({
+  const { data: jobs = [], isLoading } = useQuery<Job[]>({
     queryKey: ['jobs', filters],
     queryFn: async () => {
       let query = supabase
@@ -22,22 +23,11 @@ export function Marketplace() {
         .select('*')
         .eq('status', 'open');
 
-      if (filters.searchTerm) {
-        query = query.ilike('title', `%${filters.searchTerm}%`);
-      }
-
-      if (filters.minBudget) {
-        query = query.gte('budget', filters.minBudget);
-      }
-
-      if (filters.maxBudget) {
-        query = query.lte('budget', filters.maxBudget);
-      }
-
+      query = await applyFilters(query, filters);
       const { data, error } = await query;
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as Job[];
     },
   });
 
