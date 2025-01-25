@@ -34,47 +34,14 @@ export function Marketplace() {
   const hasActiveFilters = Object.values(filters).some(value => value !== "" && value !== "all");
 
   useEffect(() => {
-    // Load the script when no filters are applied or when on external tab
     if (!hasActiveFilters || activeTab === "external") {
-      // Remove any existing script to avoid duplicates
-      const existingScript = document.getElementById("google-search-script");
-      if (existingScript) {
-        existingScript.remove();
-      }
-
       const script = document.createElement('script');
-      script.id = "google-search-script";
-      // Updated search engine ID to focus on job sites
       script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
       script.async = true;
-      
-      script.onload = () => {
-        if (searchContainerRef.current) {
-          // Clear the container first
-          searchContainerRef.current.innerHTML = '';
-          // Create a new element for the search
-          const searchElement = document.createElement('div');
-          searchElement.className = 'gcse-search';
-          // Add attributes to focus on job sites
-          searchElement.setAttribute('data-as_sitesearch', 'indeed.ca linkedin.com jobs.ca workopolis.com monster.ca');
-          searchElement.setAttribute('data-defaultToRefinement', 'Jobs');
-          searchContainerRef.current.appendChild(searchElement);
-          
-          // Initialize the search
-          if (window.google && window.google.search) {
-            window.google.search.cse.element.render({
-              div: searchContainerRef.current.id
-            });
-          }
-        }
-      };
-
       document.head.appendChild(script);
 
       return () => {
-        if (script.parentNode) {
-          script.parentNode.removeChild(script);
-        }
+        document.head.removeChild(script);
       };
     }
   }, [activeTab, hasActiveFilters]);
@@ -133,11 +100,9 @@ export function Marketplace() {
         <TabsContent value="platform">
           <div className="grid grid-cols-1 gap-6">
             {!hasActiveFilters ? (
-              <div 
-                id="default-search-container"
-                ref={searchContainerRef}
-                className="w-full min-h-[600px] bg-background rounded-lg p-4 border"
-              />
+              <div className="w-full min-h-[600px] bg-background rounded-lg p-4 border">
+                <div className="gcse-search"></div>
+              </div>
             ) : (
               <JobList 
                 jobs={jobs}
@@ -149,11 +114,7 @@ export function Marketplace() {
 
         <TabsContent value="external" className="min-h-[600px]">
           <div className="bg-background rounded-lg p-4 border">
-            <div 
-              id="google-search-container"
-              ref={searchContainerRef}
-              className="w-full min-h-[400px]"
-            />
+            <div className="gcse-search"></div>
           </div>
         </TabsContent>
       </Tabs>
