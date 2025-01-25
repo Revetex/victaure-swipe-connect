@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal } from "lucide-react";
@@ -11,39 +11,29 @@ import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-declare global {
-  interface Window {
-    google: {
-      search: {
-        cse: {
-          element: {
-            render: (options: { div: string }) => void;
-          };
-        };
-      };
-    };
-  }
-}
-
 export function Marketplace() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const isMobile = useIsMobile();
-  const searchContainerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState("platform");
   const hasActiveFilters = Object.values(filters).some(value => value !== "" && value !== "all");
 
   useEffect(() => {
-    if (!hasActiveFilters || activeTab === "external") {
-      const script = document.createElement('script');
-      script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
-      script.async = true;
-      document.head.appendChild(script);
+    // Cleanup any existing Google Search elements
+    const existingElements = document.querySelectorAll('.gsc-control-cse');
+    existingElements.forEach(el => el.remove());
 
-      return () => {
-        document.head.removeChild(script);
-      };
-    }
+    // Load the Google Custom Search script
+    const script = document.createElement('script');
+    script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      const scripts = document.querySelectorAll('script[src*="cse.google.com"]');
+      scripts.forEach(script => script.remove());
+    };
   }, [activeTab, hasActiveFilters]);
 
   const { data: jobs = [], isLoading } = useQuery<Job[]>({
@@ -101,7 +91,8 @@ export function Marketplace() {
           <div className="grid grid-cols-1 gap-6">
             {!hasActiveFilters ? (
               <div className="w-full min-h-[600px] bg-background rounded-lg p-4 border">
-                <div className="gcse-search"></div>
+                <div className="gcse-searchbox-only" data-resultsUrl="#" data-newWindow="true"></div>
+                <div className="gcse-searchresults-only"></div>
               </div>
             ) : (
               <JobList 
@@ -114,7 +105,8 @@ export function Marketplace() {
 
         <TabsContent value="external" className="min-h-[600px]">
           <div className="bg-background rounded-lg p-4 border">
-            <div className="gcse-search"></div>
+            <div className="gcse-searchbox-only" data-resultsUrl="#" data-newWindow="true"></div>
+            <div className="gcse-searchresults-only"></div>
           </div>
         </TabsContent>
       </Tabs>
