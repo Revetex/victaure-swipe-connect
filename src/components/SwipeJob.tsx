@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { BrowseJobsTab } from "./jobs/BrowseJobsTab";
 import { Separator } from "./ui/separator";
+import { SwipeMatch } from "./SwipeMatch";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,6 +53,11 @@ export function SwipeJob() {
           onFilterChange={handleFilterChange}
           openLocation={openLocation}
           setOpenLocation={setOpenLocation}
+        />
+
+        <SwipeMatch 
+          filters={filters}
+          onMatchSuccess={async () => {}}
         />
       </motion.div>
     </motion.div>

@@ -26,7 +26,7 @@ export function useSwipeJobs(filters: JobFilters) {
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
-      // Apply filters
+      // Apply filters only if they are set to non-default values
       if (filters.category && filters.category !== "all") {
         query = query.eq("category", filters.category);
       }
@@ -39,12 +39,15 @@ export function useSwipeJobs(filters: JobFilters) {
       if (filters.experienceLevel && filters.experienceLevel !== "all") {
         query = query.eq("experience_level", filters.experienceLevel);
       }
-      if (filters.location && filters.location !== "all") {
+      if (filters.location && filters.location !== "") {
         query = query.eq("location", filters.location);
       }
       if (filters.searchTerm) {
         query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
+
+      // Limit to 50 most recent jobs for better performance
+      query = query.limit(50);
 
       const { data, error } = await query;
 
