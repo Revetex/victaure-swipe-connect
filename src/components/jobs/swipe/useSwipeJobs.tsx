@@ -12,6 +12,7 @@ export function useSwipeJobs(filters: JobFilters) {
   const fetchJobs = async () => {
     try {
       setLoading(true);
+      console.log("Fetching jobs with filters:", filters);
       
       let query = supabase
         .from('jobs')
@@ -25,6 +26,8 @@ export function useSwipeJobs(filters: JobFilters) {
         `)
         .eq('status', 'open')
         .order('created_at', { ascending: false });
+
+      console.log("Initial query built");
 
       // Apply filters only if they are set to non-default values
       if (filters.category && filters.category !== "all") {
@@ -46,15 +49,24 @@ export function useSwipeJobs(filters: JobFilters) {
         query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
+      console.log("Filters applied to query");
+
       // Always fetch at least 50 most recent jobs
       query = query.limit(50);
 
       const { data: jobsData, error: jobsError } = await query;
 
-      if (jobsError) throw jobsError;
+      console.log("Query executed, results:", { jobsData, jobsError });
+
+      if (jobsError) {
+        console.error("Error fetching jobs:", jobsError);
+        throw jobsError;
+      }
 
       // If no jobs found with filters, fetch recent jobs
       if (!jobsData || jobsData.length === 0) {
+        console.log("No jobs found with filters, fetching recent jobs");
+        
         const { data: recentJobs, error: recentError } = await supabase
           .from('jobs')
           .select(`
@@ -69,9 +81,15 @@ export function useSwipeJobs(filters: JobFilters) {
           .order('created_at', { ascending: false })
           .limit(50);
 
-        if (recentError) throw recentError;
+        console.log("Recent jobs query executed, results:", { recentJobs, recentError });
+
+        if (recentError) {
+          console.error("Error fetching recent jobs:", recentError);
+          throw recentError;
+        }
         
         if (recentJobs && recentJobs.length > 0) {
+          console.log("Found recent jobs, formatting data");
           const formattedJobs = recentJobs.map(job => ({
             ...job,
             company: job.employer?.company_name || "Entreprise",
@@ -79,9 +97,14 @@ export function useSwipeJobs(filters: JobFilters) {
             skills: job.required_skills || [],
             status: job.status as Job['status'],
           }));
+          console.log("Formatted recent jobs:", formattedJobs);
           setJobs(formattedJobs);
+        } else {
+          console.log("No recent jobs found either");
+          setJobs([]);
         }
       } else {
+        console.log("Found jobs with filters, formatting data");
         // Format jobs with virtual fields
         const formattedJobs = jobsData.map(job => ({
           ...job,
@@ -90,12 +113,13 @@ export function useSwipeJobs(filters: JobFilters) {
           skills: job.required_skills || [],
           status: job.status as Job['status'],
         }));
+        console.log("Formatted jobs:", formattedJobs);
         setJobs(formattedJobs);
       }
 
       setCurrentIndex(0);
     } catch (error) {
-      console.error('Error fetching jobs:', error);
+      console.error('Error in fetchJobs:', error);
       toast.error("Impossible de charger les offres");
     } finally {
       setLoading(false);
@@ -103,6 +127,7 @@ export function useSwipeJobs(filters: JobFilters) {
   };
 
   useEffect(() => {
+    console.log("useEffect triggered, calling fetchJobs");
     fetchJobs();
   }, [filters]);
 
