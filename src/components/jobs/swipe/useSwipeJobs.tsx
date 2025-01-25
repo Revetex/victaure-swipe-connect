@@ -46,25 +46,53 @@ export function useSwipeJobs(filters: JobFilters) {
         query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
-      // Limit to 50 most recent jobs for better performance
+      // Always fetch at least 50 most recent jobs
       query = query.limit(50);
 
-      const { data, error } = await query;
+      const { data: jobsData, error: jobsError } = await query;
 
-      if (error) {
-        throw error;
+      if (jobsError) throw jobsError;
+
+      // If no jobs found with filters, fetch recent jobs
+      if (!jobsData || jobsData.length === 0) {
+        const { data: recentJobs, error: recentError } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            employer:profiles(
+              full_name,
+              company_name,
+              avatar_url
+            )
+          `)
+          .eq('status', 'open')
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (recentError) throw recentError;
+        
+        if (recentJobs && recentJobs.length > 0) {
+          const formattedJobs = recentJobs.map(job => ({
+            ...job,
+            company: job.employer?.company_name || "Entreprise",
+            salary: `${job.budget} CAD`,
+            skills: job.required_skills || [],
+            status: job.status as Job['status'],
+          }));
+          setJobs(formattedJobs);
+        }
+      } else {
+        // Format jobs with virtual fields
+        const formattedJobs = jobsData.map(job => ({
+          ...job,
+          company: job.employer?.company_name || "Entreprise",
+          salary: `${job.budget} CAD`,
+          skills: job.required_skills || [],
+          status: job.status as Job['status'],
+        }));
+        setJobs(formattedJobs);
       }
 
-      // Format jobs with virtual fields
-      const formattedJobs = data.map(job => ({
-        ...job,
-        company: job.employer?.company_name || "Entreprise",
-        salary: `${job.budget} CAD`,
-        skills: job.required_skills || [],
-        status: job.status as Job['status'],
-      }));
-
-      setJobs(formattedJobs);
       setCurrentIndex(0);
     } catch (error) {
       console.error('Error fetching jobs:', error);
