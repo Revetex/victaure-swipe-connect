@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal } from "lucide-react";
@@ -9,11 +9,24 @@ import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jo
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function Marketplace() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const isMobile = useIsMobile();
+
+  // Load Google Custom Search script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
 
   const { data: jobs = [], isLoading } = useQuery<Job[]>({
     queryKey: ['jobs', filters],
@@ -23,8 +36,8 @@ export function Marketplace() {
         .select('*')
         .eq('status', 'open');
 
-      query = await applyFilters(query, filters);
-      const { data, error } = await query;
+      const filteredQuery = await applyFilters(query, filters);
+      const { data, error } = await filteredQuery;
 
       if (error) throw error;
       return (data || []) as Job[];
@@ -60,12 +73,27 @@ export function Marketplace() {
         </Sheet>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <JobList 
-          jobs={jobs}
-          isLoading={isLoading}
-        />
-      </div>
+      <Tabs defaultValue="platform" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="platform">Offres Victaure</TabsTrigger>
+          <TabsTrigger value="external">Recherche externe</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="platform">
+          <div className="grid grid-cols-1 gap-6">
+            <JobList 
+              jobs={jobs}
+              isLoading={isLoading}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="external" className="min-h-[600px]">
+          <div className="bg-background rounded-lg p-4 border">
+            <div className="gcse-search"></div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

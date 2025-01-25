@@ -45,7 +45,6 @@ export const applyFilters = async (
   query: PostgrestFilterBuilder<any, any, any>,
   filters: JobFilters
 ): Promise<PostgrestFilterBuilder<any, any, any>> => {
-  // If a category is selected, first get its name from the database
   if (filters.category !== "all") {
     const { data: categoryData } = await supabase
       .from('job_categories')
