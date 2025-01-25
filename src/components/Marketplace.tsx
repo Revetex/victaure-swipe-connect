@@ -16,7 +16,6 @@ export function Marketplace() {
   const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("platform");
-  const hasActiveFilters = Object.values(filters).some(value => value !== "" && value !== "all");
 
   useEffect(() => {
     // Cleanup any existing elements
@@ -111,11 +110,12 @@ export function Marketplace() {
 
         <TabsContent value="platform">
           <div className="grid grid-cols-1 gap-6">
-            {!hasActiveFilters ? (
+            {activeTab === "platform" && (
               <div className="w-full min-h-[600px] bg-background rounded-lg p-4 border">
                 <div className="google-search-container min-h-[500px]"></div>
               </div>
-            ) : (
+            )}
+            {filters.category !== "all" && (
               <JobList 
                 jobs={jobs}
                 isLoading={isLoading}
