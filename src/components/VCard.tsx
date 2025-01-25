@@ -49,7 +49,15 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      await updateProfile(profile);
+      // Include custom styling properties in the profile update
+      const updatedProfile = {
+        ...profile,
+        custom_font: profile.custom_font || null,
+        custom_background: profile.custom_background || null,
+        custom_text_color: profile.custom_text_color || null,
+      };
+
+      await updateProfile(updatedProfile);
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
