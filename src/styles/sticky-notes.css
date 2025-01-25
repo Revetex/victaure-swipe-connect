@@ -1,15 +1,40 @@
-.sticky-note {
-  transform-origin: center;
-}
+@layer components {
+  .sticky-note {
+    @apply p-4 rounded-lg shadow-sm transition-all duration-200 
+           hover:shadow-md hover:-translate-y-0.5
+           backdrop-blur-sm
+           sm:touch-none
+           active:shadow-lg
+           active:scale-[0.98];
+  }
 
-.sticky-note .delete-button {
-  @apply absolute top-2 right-2 p-1.5 rounded-full opacity-0 transition-opacity duration-200 bg-white/10 hover:bg-white/20;
-}
+  .sticky-note-yellow {
+    @apply bg-[#FEF7CD]/90 hover:bg-[#FEF7CD];
+    box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.1), 0 2px 4px -1px rgba(251, 191, 36, 0.06);
+  }
 
-.sticky-note:hover .delete-button {
-  @apply opacity-100;
-}
+  .sticky-note-blue {
+    @apply bg-[#D3E4FD]/90 hover:bg-[#D3E4FD];
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+  }
 
-.sticky-note .note-text {
-  @apply mt-2 text-base break-words font-bold leading-relaxed;
+  .sticky-note-green {
+    @apply bg-[#F2FCE2]/90 hover:bg-[#F2FCE2];
+    box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.1), 0 2px 4px -1px rgba(34, 197, 94, 0.06);
+  }
+
+  .sticky-note-pink {
+    @apply bg-[#FFDEE2]/90 hover:bg-[#FFDEE2];
+    box-shadow: 0 4px 6px -1px rgba(244, 114, 182, 0.1), 0 2px 4px -1px rgba(244, 114, 182, 0.06);
+  }
+
+  .sticky-note-purple {
+    @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF];
+    box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.1), 0 2px 4px -1px rgba(168, 85, 247, 0.06);
+  }
+
+  .sticky-note-orange {
+    @apply bg-[#FEC6A1]/90 hover:bg-[#FEC6A1];
+    box-shadow: 0 4px 6px -1px rgba(251, 146, 60, 0.1), 0 2px 4px -1px rgba(251, 146, 60, 0.06);
+  }
 }

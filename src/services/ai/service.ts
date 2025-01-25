@@ -1,74 +1,24 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/chat/messageTypes";
 import { toast } from "sonner";
-import { SYSTEM_PROMPT, FALLBACK_MESSAGE } from './prompts';
 
 export async function generateAIResponse(message: string): Promise<string> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
-    console.log('Generating AI response with Hugging Face...');
-
     const { data, error } = await supabase.functions.invoke('ai-chat', {
-      body: { 
-        message,
-        userId: user.id,
-        context: {
-          previousMessages: await loadMessages(),
-          emotionalContext: analyzeEmotionalContext(message),
-          systemPrompt: SYSTEM_PROMPT,
-          model: "mistralai/Mixtral-8x7B-Instruct-v0.1" // Using Mixtral model for better French responses
-        }
-      }
+      body: { message, userId: user.id }
     });
 
     if (error) throw error;
-    
-    if (!data?.response || data.response.trim() === '') {
-      console.warn('Invalid or empty response from Hugging Face, providing contextual fallback');
-      if (message.toLowerCase().includes('bonjour') || 
-          message.toLowerCase().includes('salut') || 
-          message.toLowerCase().includes('allo')) {
-        return "Bonjour! Je suis M. Victaure, votre assistant en orientation professionnelle. Comment puis-je vous aider aujourd'hui?";
-      }
-      if (message.toLowerCase().includes('merci')) {
-        return "Je vous en prie! N'hésitez pas si vous avez d'autres questions.";
-      }
-      return FALLBACK_MESSAGE;
-    }
-    
-    console.log('AI response generated:', data.response);
     return data.response;
 
   } catch (error) {
     console.error('Error generating AI response:', error);
     toast.error("Une erreur est survenue lors de la génération de la réponse");
-    return "Désolé, j'ai eu un petit problème technique. Comment puis-je vous aider?";
+    throw error;
   }
-}
-
-function analyzeEmotionalContext(message: string): string {
-  const lowerMessage = message.toLowerCase();
-  
-  // Analyse plus détaillée des émotions
-  if (lowerMessage.includes('merci') || lowerMessage.includes('super') || lowerMessage.includes('génial')) {
-    return 'positive';
-  }
-  if (lowerMessage.includes('difficile') || lowerMessage.includes('problème') || lowerMessage.includes('aide')) {
-    return 'concerned';
-  }
-  if (lowerMessage.includes('frustré') || lowerMessage.includes('fâché') || lowerMessage.includes('pas content')) {
-    return 'frustrated';
-  }
-  if (lowerMessage.includes('confus') || lowerMessage.includes('comprends pas') || lowerMessage.includes('perdu')) {
-    return 'confused';
-  }
-  if (lowerMessage.includes('urgent') || lowerMessage.includes('vite') || lowerMessage.includes('pressé')) {
-    return 'urgent';
-  }
-  
-  return 'neutral';
 }
 
 export async function saveMessage(message: Message): Promise<void> {
@@ -137,26 +87,6 @@ export async function deleteAllMessages(): Promise<void> {
   } catch (error) {
     console.error('Error deleting messages:', error);
     toast.error("Une erreur est survenue lors de la suppression des messages");
-    throw error;
-  }
-}
-
-export async function provideFeedback(messageId: string, score: number): Promise<void> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
-
-    const { error } = await supabase
-      .from('ai_learning_data')
-      .update({ feedback_score: score })
-      .eq('id', messageId)
-      .eq('user_id', user.id);
-
-    if (error) throw error;
-    toast.success("Merci pour votre feedback!");
-  } catch (error) {
-    console.error('Error providing feedback:', error);
-    toast.error("Une erreur est survenue lors de l'envoi du feedback");
     throw error;
   }
 }

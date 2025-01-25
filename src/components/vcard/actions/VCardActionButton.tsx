@@ -1,14 +1,13 @@
-import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
-import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useVCardStyle } from "../VCardStyleContext";
 
 interface VCardActionButtonProps {
-  icon?: LucideIcon;
-  label?: string;
+  icon: LucideIcon;
+  label: string;
   onClick: () => void;
-  variant?: "default" | "outline";
+  variant?: "primary" | "secondary" | "outline";
   disabled?: boolean;
-  isProcessing?: boolean;
   className?: string;
 }
 
@@ -16,48 +15,54 @@ export function VCardActionButton({
   icon: Icon,
   label,
   onClick,
-  variant = "default",
-  disabled = false,
-  isProcessing = false,
-  className = "",
+  variant = "primary",
+  disabled,
+  className
 }: VCardActionButtonProps) {
-  // Define fixed styles for buttons that won't be affected by VCard custom styles
-  const buttonStyle = variant === "default" ? {
-    backgroundColor: '#3B82F6',
-    color: 'white',
-    borderColor: '#2563EB',
-    // Reset inherited styles
-    fontFamily: 'inherit',
-  } : {
-    borderColor: '#3B82F6',
-    color: '#3B82F6',
-    backgroundColor: 'transparent',
-    // Reset inherited styles
-    fontFamily: 'inherit',
+  const { selectedStyle } = useVCardStyle();
+
+  const getButtonStyles = () => {
+    const baseStyles = {
+      transition: "all 0.2s ease",
+      color: variant === "primary" ? "white" : selectedStyle.colors.text.primary,
+    };
+
+    switch (variant) {
+      case "primary":
+        return {
+          ...baseStyles,
+          backgroundColor: selectedStyle.colors.primary,
+          border: `1px solid ${selectedStyle.colors.primary}`,
+          "&:hover": {
+            backgroundColor: selectedStyle.colors.secondary,
+          }
+        };
+      case "secondary":
+      case "outline":
+        return {
+          ...baseStyles,
+          backgroundColor: "transparent",
+          border: `1px solid ${selectedStyle.colors.primary}40`,
+          "&:hover": {
+            backgroundColor: `${selectedStyle.colors.primary}10`,
+          }
+        };
+      default:
+        return baseStyles;
+    }
   };
 
+  const styles = getButtonStyles();
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex-1 min-w-[100px]"
-      style={{ 
-        // Reset inherited styles
-        color: 'inherit',
-        fontFamily: 'inherit',
-        background: 'transparent'
-      }}
+    <Button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${className} transition-all duration-200`}
+      style={styles}
     >
-      <Button
-        onClick={onClick}
-        variant={variant}
-        disabled={disabled || isProcessing}
-        className={`w-full transition-colors !font-sans ${className}`}
-        style={buttonStyle}
-      >
-        {Icon && <Icon className="mr-2 h-4 w-4" />}
-        {label}
-      </Button>
-    </motion.div>
+      <Icon className="mr-2 h-4 w-4" />
+      {label}
+    </Button>
   );
 }

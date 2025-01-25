@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { RefreshCw, SlidersHorizontal } from "lucide-react";
-import { motion } from "framer-motion";
+import { SlidersHorizontal, RefreshCw } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { JobFilters as JobFiltersType, defaultFilters } from "./JobFilterUtils";
 import { SearchFilter } from "./filters/SearchFilter";
 import { CategoryFilters } from "./filters/CategoryFilters";
 import { BudgetFilter } from "./filters/BudgetFilter";
-import { JobFilters as JobFiltersType, defaultFilters } from "@/types/filters";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { motion } from "framer-motion";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -17,6 +18,8 @@ export function JobFilters({
   filters,
   onFilterChange,
 }: JobFiltersProps) {
+  const isMobile = useIsMobile();
+
   const resetFilters = () => {
     Object.keys(defaultFilters).forEach((key) => {
       onFilterChange(key as keyof JobFiltersType, defaultFilters[key as keyof JobFiltersType]);
@@ -24,8 +27,14 @@ export function JobFilters({
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="sticky top-0 z-40 p-4 border-b border-border/50 bg-background">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`bg-card rounded-lg shadow-sm border sticky ${
+        isMobile ? "top-0 z-10 bg-opacity-95 backdrop-blur-sm" : "top-4"
+      }`}
+    >
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-5 w-5 text-primary" />
@@ -43,20 +52,20 @@ export function JobFilters({
         </div>
       </div>
 
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="h-[calc(100vh-200px)] lg:h-auto">
         <motion.div 
-          className="space-y-6"
+          className="p-4 space-y-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
           <SearchFilter filters={filters} onFilterChange={onFilterChange} />
-          <Separator className="my-6" />
+          <Separator />
           <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
-          <Separator className="my-6" />
+          <Separator />
           <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
         </motion.div>
       </ScrollArea>
-    </div>
+    </motion.div>
   );
 }

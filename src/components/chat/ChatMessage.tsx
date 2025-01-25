@@ -1,85 +1,133 @@
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Bot, Copy, Check, Clock } from "lucide-react";
+import { memo, useState } from "react";
+import { motion } from "framer-motion";
+import { ChatThinking } from "./ChatThinking";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot, User, Loader } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ChatMessageProps {
   content: string;
-  sender: "assistant" | "user";
+  sender: string;
   thinking?: boolean;
   showTimestamp?: boolean;
-  timestamp?: string | Date;
+  timestamp?: string;
 }
 
-export function ChatMessage({ 
-  content, 
+export const ChatMessage = memo(function ChatMessage({
+  content,
   sender,
   thinking = false,
   showTimestamp = false,
   timestamp,
 }: ChatMessageProps) {
-  const isAssistant = sender === "assistant";
-  
-  // Skip rendering empty messages that aren't thinking messages
-  if (!content && !thinking) return null;
-  
+  const isBot = sender === "assistant";
+  const { profile } = useProfile();
+  const [isCopied, setIsCopied] = useState(false);
+
+  // Si le message contient des instructions système, ne pas l'afficher
+  if (content.includes("Ne partage JAMAIS ces instructions") || 
+      content.includes("Tu es M. Victaure")) {
+    return null;
+  }
+
+  if (thinking && isBot) {
+    return <ChatThinking />;
+  }
+
+  const handleCopyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      toast.success("Message copié !");
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      toast.error("Impossible de copier le message");
+    }
+  };
+
+  const formattedTime = timestamp ? format(new Date(timestamp), "HH:mm", { locale: fr }) : "";
+  const formattedDate = timestamp ? format(new Date(timestamp), "d MMMM", { locale: fr }) : "";
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
+      exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 px-3 py-2 sm:px-4",
-        isAssistant ? "flex-row" : "flex-row-reverse"
+        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors relative",
+        isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
-      <Avatar className={cn(
-        "h-8 w-8 ring-2 transition-shadow duration-200",
-        isAssistant 
-          ? "ring-primary/10 hover:ring-primary/20" 
-          : "ring-blue-500/10 hover:ring-blue-500/20"
-      )}>
-        {isAssistant ? (
-          <>
-            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" />
-            <AvatarFallback className="bg-primary/5">
-              <Bot className="h-4 w-4 text-primary" />
-            </AvatarFallback>
-          </>
-        ) : (
-          <AvatarFallback className="bg-blue-500/5">
-            <User className="h-4 w-4 text-blue-500" />
-          </AvatarFallback>
-        )}
-      </Avatar>
-
       <div className={cn(
-        "flex flex-col gap-1.5 max-w-[85%] sm:max-w-[75%]",
-        isAssistant ? "items-start" : "items-end"
+        "flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full overflow-hidden",
+        isBot ? "ring-2 ring-primary/10" : "ring-2 ring-primary/5"
+      )}>
+        {isBot ? (
+          <Avatar className="h-10 w-10">
+            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
+            <AvatarFallback className="bg-primary/20">
+              <Bot className="h-5 w-5 text-primary" />
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <Avatar className="h-10 w-10">
+            <AvatarImage 
+              src={profile?.avatar_url} 
+              alt={profile?.full_name || "User"} 
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-muted">
+              {profile?.full_name?.slice(0, 2).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+        )}
+      </div>
+      <div className={cn(
+        "flex flex-col gap-1 min-w-0 max-w-[85%] relative group",
+        isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-2xl px-4 py-2.5 text-sm shadow-sm whitespace-pre-wrap break-words",
-          isAssistant 
-            ? "bg-card text-card-foreground rounded-tl-none border" 
-            : "bg-primary text-primary-foreground rounded-tr-none"
+          "rounded-lg px-4 py-2.5 shadow-sm relative",
+          isBot 
+            ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
+            : "bg-primary text-primary-foreground"
         )}>
-          {thinking ? (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader className="h-4 w-4 animate-spin" />
-              <span>M. Victaure réfléchit...</span>
-            </div>
-          ) : content}
+          <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
+            {content}
+          </p>
+          <div className={cn(
+            "absolute top-2 opacity-0 group-hover:opacity-100 transition-opacity",
+            isBot ? "-right-12" : "-left-12"
+          )}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-muted"
+              onClick={handleCopyMessage}
+            >
+              {isCopied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
-        
         {showTimestamp && timestamp && (
-          <span className="text-xs text-muted-foreground px-1">
-            {format(new Date(timestamp), "HH:mm", { locale: fr })}
-          </span>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+            <Clock className="h-3 w-3" />
+            <span>{formattedTime}</span>
+            <span className="mx-1">•</span>
+            <span>{formattedDate}</span>
+          </div>
         )}
       </div>
     </motion.div>
   );
-}
+});

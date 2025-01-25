@@ -1,8 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Mic, ArrowRight, Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useCallback, memo } from "react";
+import { Mic, Send, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { useState, useEffect } from "react";
 
 interface ChatInputProps {
   value: string;
@@ -11,101 +13,146 @@ interface ChatInputProps {
   onVoiceInput?: () => void;
   isListening?: boolean;
   isThinking?: boolean;
-  placeholder?: string;
   className?: string;
+  placeholder?: string;
   maxLength?: number;
 }
 
-export const ChatInput = memo(function ChatInput({
+export function ChatInput({
   value,
   onChange,
   onSend,
   onVoiceInput,
   isListening = false,
   isThinking = false,
-  placeholder = "Écrivez votre message...",
   className,
-  maxLength = 1000
+  placeholder = "Comment puis-je vous aider aujourd'hui ?",
+  maxLength = 1000,
 }: ChatInputProps) {
-  const [rows, setRows] = useState(1);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout>();
 
   useEffect(() => {
-    const lineCount = (value.match(/\n/g) || []).length + 1;
-    setRows(Math.min(lineCount, 5));
+    if (value) {
+      setIsTyping(true);
+      if (typingTimeout) clearTimeout(typingTimeout);
+      
+      const timeout = setTimeout(() => {
+        setIsTyping(false);
+      }, 1000);
+      
+      setTypingTimeout(timeout);
+    } else {
+      setIsTyping(false);
+    }
+
+    return () => {
+      if (typingTimeout) clearTimeout(typingTimeout);
+    };
   }, [value]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim() && !isThinking) {
-        onSend();
+        try {
+          onSend();
+        } catch (error) {
+          console.error("Error sending message:", error);
+          toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
+        }
       }
     }
-  }, [value, isThinking, onSend]);
+  };
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    if (newValue.length <= maxLength) {
-      onChange(newValue);
-    }
-  }, [maxLength, onChange]);
-
-  const handleSendClick = useCallback(() => {
+  const handleSendClick = () => {
     if (value.trim() && !isThinking) {
-      onSend();
+      try {
+        onSend();
+      } catch (error) {
+        console.error("Error sending message:", error);
+        toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
+      }
     }
-  }, [value, isThinking, onSend]);
+  };
+
+  const characterCount = value.length;
+  const isNearLimit = characterCount > maxLength * 0.8;
+  const isAtLimit = characterCount >= maxLength;
 
   return (
-    <div className={cn("p-1.5", className)}>
-      <div className="relative flex items-center gap-1.5">
-        {onVoiceInput && (
-          <button
-            onClick={onVoiceInput}
+    <div className={cn("flex flex-col gap-2", className)}>
+      <div className="relative w-full">
+        <Textarea
+          value={value}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            if (newValue.length <= maxLength) {
+              onChange(newValue);
+            }
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full"
+          disabled={isThinking}
+        />
+        <div className="absolute bottom-2 right-2 flex items-center gap-2">
+          {onVoiceInput && (
+            <Button
+              type="button"
+              size="icon"
+              variant={isListening ? "default" : "ghost"}
+              onClick={onVoiceInput}
+              className="h-8 w-8"
+              disabled={isThinking}
+            >
+              <motion.div
+                animate={isListening ? { scale: [1, 1.2, 1] } : {}}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                <Mic className="h-4 w-4" />
+              </motion.div>
+            </Button>
+          )}
+          <Button
+            type="button"
+            size="icon"
+            onClick={handleSendClick}
             className={cn(
-              "shrink-0 p-2 text-muted-foreground/60 hover:text-primary transition-colors",
-              isListening && "text-primary animate-pulse"
+              "h-8 w-8 transition-transform",
+              value.trim() && !isThinking && "hover:scale-105"
             )}
-            disabled={isThinking}
+            disabled={!value.trim() || isThinking}
           >
-            <Mic className="h-5 w-5" />
-          </button>
-        )}
-        
-        <div className="relative flex-1">
-          <div className="relative flex w-full items-center bg-muted/30 rounded-full border border-muted/50">
-            <Textarea
-              value={value}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              className="min-h-[40px] max-h-[120px] w-full pr-10 py-2 resize-none text-sm focus-visible:ring-1 rounded-full bg-transparent border-0 placeholder:text-muted-foreground/50"
-              style={{
-                height: `${Math.max(40, Math.min(rows * 24, 120))}px`
-              }}
-            />
-            
-            <AnimatePresence>
-              {value.trim() && (
-                <motion.button
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
-                  onClick={handleSendClick}
-                  className="absolute right-3 p-1.5 text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
-                  disabled={isThinking}
-                >
-                  {isThinking ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <ArrowRight className="h-4 w-4" />
-                  )}
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </div>
+            {isThinking ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </Button>
         </div>
+      </div>
+      <div className="flex justify-between items-center px-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2">
+          {isTyping && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-primary"
+            >
+              En train d'écrire...
+            </motion.span>
+          )}
+        </div>
+        <span className={cn(
+          "transition-colors",
+          isNearLimit && "text-warning",
+          isAtLimit && "text-destructive"
+        )}>
+          {characterCount}/{maxLength}
+        </span>
       </div>
     </div>
   );
-});
+}

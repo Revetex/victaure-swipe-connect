@@ -11,62 +11,95 @@ export const useJobFormSubmit = (onSuccess?: () => void) => {
   const handleSubmit = async (data: JobFormValues) => {
     try {
       setIsSubmitting(true);
-      
-      // Vérifier l'authentification
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Vous devez être connecté pour créer une mission");
         return;
       }
 
-      console.log("Données du formulaire:", data);
+      // Get the category name from the job_categories table
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('job_categories')
+        .select('name')
+        .eq('id', data.category)
+        .single();
 
-      // S'assurer que le budget est un nombre
-      const budget = typeof data.budget === 'string' ? parseFloat(data.budget) : data.budget;
+      if (categoryError) {
+        console.error("Error fetching category:", categoryError);
+        toast.error("Erreur lors de la récupération de la catégorie");
+        return;
+      }
 
-      // Préparer les données pour l'insertion
+      if (!categoryData) {
+        console.error("Category not found");
+        toast.error("Catégorie non trouvée");
+        return;
+      }
+
+      // Get the subcategory name if one was selected
+      let subcategoryName = "";
+      if (data.subcategory) {
+        const { data: subcategoryData, error: subcategoryError } = await supabase
+          .from('job_subcategories')
+          .select('name')
+          .eq('id', data.subcategory)
+          .single();
+
+        if (subcategoryError) {
+          console.error("Error fetching subcategory:", subcategoryError);
+        } else if (subcategoryData) {
+          subcategoryName = subcategoryData.name;
+        }
+      }
+
       const jobData = {
         title: data.title,
         description: data.description,
-        budget: budget,
+        budget: Number(data.budget),
         location: data.location,
         employer_id: user.id,
         status: "open",
-        category: data.category || 'Technology',
-        contract_type: data.contract_type || 'full-time',
-        experience_level: data.experience_level || 'mid-level',
-        company_name: data.company_name || '',
-        company_description: data.company_description || '',
-        company_website: data.company_website || '',
-        mission_type: data.mission_type || 'company',
+        category: categoryData.name,
+        subcategory: subcategoryName,
+        mission_type: data.mission_type,
+        contract_type: data.contract_type,
+        experience_level: data.experience_level,
+        remote_type: data.remote_type,
+        payment_schedule: data.payment_schedule,
+        is_urgent: data.is_urgent,
         required_skills: data.required_skills || [],
-        remote_type: data.remote_type || 'on-site',
-        salary_min: data.salary_min || 0,
-        salary_max: data.salary_max || 0,
-        salary_currency: data.salary_currency || 'CAD',
-        salary_period: data.salary_period || 'yearly',
+        preferred_skills: data.preferred_skills || [],
+        latitude: data.latitude,
+        longitude: data.longitude,
+        company_name: data.company_name || "",
+        company_logo: data.company_logo || "",
+        company_website: data.company_website || "",
+        company_description: data.company_description || "",
+        salary_min: Number(data.salary_min || 0),
+        salary_max: Number(data.salary_max || 0),
+        salary_currency: data.salary_currency || "CAD",
+        salary_period: data.salary_period || "yearly",
         benefits: data.benefits || [],
         responsibilities: data.responsibilities || [],
-        qualifications: data.qualifications || [],
-        payment_schedule: data.payment_schedule || 'monthly',
-        is_urgent: data.is_urgent || false
+        qualifications: data.qualifications || []
       };
 
-      // Insérer la mission
+      console.log("Inserting job with data:", jobData);
+
       const { error } = await supabase
         .from("jobs")
         .insert(jobData);
 
       if (error) {
-        console.error("Erreur lors de la création de la mission:", error);
+        console.error("Error creating job:", error);
         throw error;
       }
 
       toast.success("Mission créée avec succès");
       onSuccess?.();
-      navigate("/marketplace");
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Erreur lors de la soumission:", error);
+      console.error("Error creating job:", error);
       toast.error("Erreur lors de la création de la mission");
     } finally {
       setIsSubmitting(false);

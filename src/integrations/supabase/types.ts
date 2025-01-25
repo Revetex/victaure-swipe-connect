@@ -36,39 +36,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ai_learning_data: {
-        Row: {
-          context: Json | null
-          created_at: string | null
-          feedback_score: number | null
-          id: string
-          question: string
-          response: string
-          tags: string[] | null
-          user_id: string
-        }
-        Insert: {
-          context?: Json | null
-          created_at?: string | null
-          feedback_score?: number | null
-          id?: string
-          question: string
-          response: string
-          tags?: string[] | null
-          user_id: string
-        }
-        Update: {
-          context?: Json | null
-          created_at?: string | null
-          feedback_score?: number | null
-          id?: string
-          question?: string
-          response?: string
-          tags?: string[] | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       certifications: {
         Row: {
           created_at: string | null
@@ -294,9 +261,6 @@ export type Database = {
           required_skills: string[] | null
           responsibilities: string[] | null
           salary_currency: string | null
-          salary_max: number | null
-          salary_min: number | null
-          salary_period: string | null
           status: string
           subcategory: string | null
           title: string
@@ -338,9 +302,6 @@ export type Database = {
           required_skills?: string[] | null
           responsibilities?: string[] | null
           salary_currency?: string | null
-          salary_max?: number | null
-          salary_min?: number | null
-          salary_period?: string | null
           status?: string
           subcategory?: string | null
           title: string
@@ -382,9 +343,6 @@ export type Database = {
           required_skills?: string[] | null
           responsibilities?: string[] | null
           salary_currency?: string | null
-          salary_max?: number | null
-          salary_min?: number | null
-          salary_period?: string | null
           status?: string
           subcategory?: string | null
           title?: string

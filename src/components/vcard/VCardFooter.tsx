@@ -7,7 +7,6 @@ interface VCardFooterProps {
   isProcessing: boolean;
   selectedStyle: StyleOption;
   onEditToggle: () => void;
-  onCancel: () => void;
   onSave: () => void;
   onDownloadBusinessCard: () => Promise<void>;
   onDownloadCV: () => Promise<void>;
@@ -19,7 +18,6 @@ export function VCardFooter({
   isProcessing,
   selectedStyle,
   onEditToggle,
-  onCancel,
   onSave,
   onDownloadBusinessCard,
   onDownloadCV,
@@ -31,7 +29,6 @@ export function VCardFooter({
         isPdfGenerating={isPdfGenerating}
         isProcessing={isProcessing}
         setIsEditing={() => onEditToggle()}
-        onCancel={onCancel}
         onSave={onSave}
         onDownloadBusinessPDF={onDownloadBusinessCard}
         onDownloadCVPDF={onDownloadCV}

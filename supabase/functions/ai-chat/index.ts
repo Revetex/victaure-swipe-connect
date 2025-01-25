@@ -1,151 +1,99 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { message, userId, context } = await req.json();
-    console.log('Received request:', { message, userId });
-    
-    const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'));
-    
-    // Format the conversation with all previous messages
-    let conversationHistory = '';
-    if (context?.previousMessages) {
-      // Utiliser tout l'historique au lieu de slice(-3)
-      conversationHistory = context.previousMessages
-        .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
-        .join('\n');
-    }
-    
-    // Analyze message intent to provide better context
-    const messageIntent = message.toLowerCase();
-    let contextualPrompt = '';
-    
-    if (messageIntent.includes('travail') || messageIntent.includes('emploi') || messageIntent.includes('job')) {
-      contextualPrompt = 'Focus sur les conseils en recherche d\'emploi.';
-    } else if (messageIntent.includes('cv') || messageIntent.includes('curriculum') || messageIntent.includes('résumé')) {
-      contextualPrompt = 'Focus sur les conseils pour améliorer le CV.';
-    } else if (messageIntent.includes('entrevue') || messageIntent.includes('entretien')) {
-      contextualPrompt = 'Focus sur la préparation aux entretiens d\'embauche.';
+    const { message, userId } = await req.json()
+    console.log('Received message:', message)
+    console.log('User ID:', userId)
+
+    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
+    if (!apiKey) {
+      console.error('Missing HUGGING_FACE_API_KEY')
+      throw new Error('Configuration error: Missing API key')
     }
 
-    // Format the conversation for the model with improved prompting
-    const conversation = `<|system|>Tu es M. Victaure, un assistant professionnel spécialisé dans l'orientation professionnelle au Québec. Instructions importantes:
-- Réponds de manière naturelle et personnalisée à chaque message
-- Adapte ton niveau de langage au contexte
-- Pose des questions pour mieux comprendre les besoins
-- Évite absolument les réponses génériques
-- Utilise les informations du contexte de la conversation pour personnaliser tes réponses
-- Fais référence aux éléments pertinents des messages précédents
-${contextualPrompt}
+    console.log('Attempting to call Hugging Face API')
 
-Historique complet de la conversation:
-${conversationHistory}
-
-<|user|>${message}</s>
-<|assistant|>`;
-
-    console.log('Sending to Hugging Face:', conversation);
-
-    const response = await hf.textGeneration({
-      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-      inputs: conversation,
-      parameters: {
-        max_new_tokens: 500,
-        temperature: 0.9,
-        top_p: 0.95,
-        repetition_penalty: 1.2,
-        do_sample: true,
-        stop: ["</s>", "<|user|>", "<|system|>"]
+    const response = await fetch(
+      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec. 
+                  Sois concis et direct dans tes réponses.
+                  
+                  User: ${message}
+                  
+                  Assistant:`,
+          parameters: {
+            max_new_tokens: 256,
+            temperature: 0.7,
+            top_p: 0.9,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+            return_full_text: false
+          }
+        }),
       }
-    });
+    )
 
-    console.log('Raw response:', response);
+    console.log('Hugging Face API Response Status:', response.status)
 
-    // Clean up the response
-    let cleanResponse = response.generated_text
-      .replace(conversation, '')
-      .replace(/<\|assistant\|>/g, '')
-      .replace(/<\|user\|>.*$/s, '')
-      .replace(/<\|system\|>.*$/s, '')
-      .replace(/<\/s>/g, '')
-      .trim();
-
-    // Vérification de la qualité de la réponse
-    if (!cleanResponse || 
-        cleanResponse.length < 20 || 
-        (context?.previousMessages?.length > 0 && 
-         context.previousMessages[context.previousMessages.length - 1]?.content === cleanResponse)) {
-      
-      console.log('Response quality check failed, generating alternative response');
-      
-      // Deuxième tentative avec un prompt différent
-      const retryConversation = `<|system|>Tu es M. Victaure, un conseiller en orientation professionnelle. 
-Réponds de façon précise et personnalisée à cette question: ${message}
-Utilise ton expertise pour donner des conseils pratiques et concrets.
-Voici le contexte de la conversation précédente pour t'aider:
-${conversationHistory}</s>
-<|assistant|>`;
-
-      const retryResponse = await hf.textGeneration({
-        model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-        inputs: retryConversation,
-        parameters: {
-          max_new_tokens: 500,
-          temperature: 0.95,
-          top_p: 0.98,
-          repetition_penalty: 1.3,
-          do_sample: true,
-          stop: ["</s>", "<|user|>", "<|system|>"]
-        }
-      });
-
-      cleanResponse = retryResponse.generated_text
-        .replace(retryConversation, '')
-        .replace(/<\|assistant\|>/g, '')
-        .replace(/<\|user\|>.*$/s, '')
-        .replace(/<\|system\|>.*$/s, '')
-        .replace(/<\/s>/g, '')
-        .trim();
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Hugging Face API Error Details:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      })
+      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`)
     }
 
-    console.log('Final cleaned response:', cleanResponse);
+    const data = await response.json()
+    console.log('AI response received:', data)
+
+    if (!data || !Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data)
+      throw new Error('Invalid response format from Hugging Face API')
+    }
+
+    const assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
+
+    return new Response(
+      JSON.stringify({ response: assistantResponse || data[0].generated_text }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  } catch (error) {
+    console.error('Detailed error in AI chat function:', {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    })
 
     return new Response(
       JSON.stringify({ 
-        response: cleanResponse,
-        model: "mistralai/Mixtral-8x7B-Instruct-v0.1"
+        error: 'Une erreur est survenue lors de la communication avec l\'API',
+        details: error.message 
       }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
-      }
-    );
-
-  } catch (error) {
-    console.error('Error:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        }, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
       }
-    );
+    )
   }
-});
+})

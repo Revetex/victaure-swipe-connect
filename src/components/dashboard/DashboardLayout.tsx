@@ -1,89 +1,101 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { DashboardNavigation } from "./DashboardNavigation";
-import { DashboardPageContent } from "./DashboardPageContent";
-import { useViewportHeight } from "@/hooks/useViewportHeight";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion } from "framer-motion";
-import { useTodoList } from "@/hooks/useTodoList";
-import { useNotes } from "@/hooks/useNotes";
+import { motion, AnimatePresence } from "framer-motion";
+import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
+import { useState, useEffect, useCallback } from "react";
+import { DashboardNavigation } from "./DashboardNavigation";
+import { DashboardContainer } from "./DashboardContainer";
+import { DashboardContent } from "./DashboardContent";
+import { useDebounce } from "use-debounce";
 
-interface DashboardLayoutProps {
-  initialPage?: number;
-}
-
-export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
-  const [currentPage, setCurrentPage] = useState(initialPage);
-  const [lastPageChange, setLastPageChange] = useState(0);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showingChat, setShowingChat] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const viewportHeight = useViewportHeight();
+export function DashboardLayout() {
   const isMobile = useIsMobile();
-  const todoProps = useTodoList();
-  const noteProps = useNotes();
+  const { containerVariants, itemVariants } = useDashboardAnimations();
+  const [currentPage, setCurrentPage] = useState(2);
+  const [isEditing, setIsEditing] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  
+  // Debounce viewport height updates
+  const [debouncedSetViewportHeight] = useDebounce(
+    (height: number) => setViewportHeight(height),
+    100
+  );
+
+  // Throttle page changes
+  const [lastPageChange, setLastPageChange] = useState(Date.now());
+  const THROTTLE_DELAY = 300; // milliseconds
+
+  const updateHeight = useCallback(() => {
+    debouncedSetViewportHeight(window.innerHeight);
+  }, [debouncedSetViewportHeight]);
 
   useEffect(() => {
-    if (isMobile && Math.abs(Date.now() - lastPageChange) < 1000) {
-      contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [lastPageChange, isMobile]);
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('orientationchange', updateHeight);
 
-  const handleRequestChat = useCallback(() => {
-    setShowingChat(true);
-  }, []);
+    const timeoutId = setTimeout(updateHeight, 100);
+
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('orientationchange', updateHeight);
+      clearTimeout(timeoutId);
+    };
+  }, [updateHeight]);
 
   const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-    setLastPageChange(Date.now());
-  }, []);
+    const now = Date.now();
+    if (now - lastPageChange >= THROTTLE_DELAY) {
+      setCurrentPage(page);
+      setLastPageChange(now);
+    }
+  }, [lastPageChange]);
 
-  const handleEditStateChange = useCallback((state: boolean) => {
-    setIsEditing(state);
-  }, []);
+  const handleRequestChat = useCallback(() => {
+    const now = Date.now();
+    if (now - lastPageChange >= THROTTLE_DELAY) {
+      setCurrentPage(2);
+      setLastPageChange(now);
+    }
+  }, [lastPageChange]);
 
   return (
-    <div 
-      className="relative min-h-screen bg-background text-foreground overflow-hidden"
-      style={{ height: `${viewportHeight}px` }}
-    >
-      <motion.div 
-        ref={contentRef}
-        className="h-full overflow-y-auto pb-24 overscroll-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <DashboardPageContent
-          currentPage={currentPage}
-          isEditing={isEditing}
-          viewportHeight={viewportHeight}
-          onEditStateChange={handleEditStateChange}
-          onRequestChat={handleRequestChat}
-          todoProps={todoProps}
-          noteProps={noteProps}
-        />
-      </motion.div>
-      
-      <motion.nav 
-        className="fixed bottom-0 left-0 right-0 border-t border-border bg-background shadow-lg"
-        style={{ 
-          height: 'auto',
-          willChange: 'transform, opacity',
-          zIndex: 50,
-          transform: !isEditing && !showingChat ? 'translateY(0)' : 'translateY(100%)',
-          opacity: !isEditing && !showingChat ? 1 : 0,
-          pointerEvents: !isEditing && !showingChat ? 'auto' : 'none',
-          paddingBottom: 'env(safe-area-inset-bottom)'
-        }}
-        initial={false}
-      >
-        <div className="container max-w-md mx-auto px-4 py-2 bg-background">
-          <DashboardNavigation
+    <DashboardContainer containerVariants={containerVariants}>
+      <AnimatePresence mode="sync">
+        <motion.div 
+          variants={itemVariants} 
+          className="transform transition-all duration-300 w-full min-h-screen pb-40"
+          style={{ 
+            maxHeight: isEditing ? viewportHeight : 'none',
+            overflowY: isEditing ? 'auto' : 'visible',
+            WebkitOverflowScrolling: 'touch',
+            paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
+          }}
+        >
+          <DashboardContent
             currentPage={currentPage}
-            onPageChange={handlePageChange}
+            isEditing={isEditing}
+            viewportHeight={viewportHeight}
+            onEditStateChange={setIsEditing}
+            onRequestChat={handleRequestChat}
           />
-        </div>
-      </motion.nav>
-    </div>
+        </motion.div>
+      </AnimatePresence>
+      
+      {!isEditing && (
+        <nav 
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
+          style={{ 
+            height: '4rem',
+            paddingBottom: 'env(safe-area-inset-bottom)'
+          }}
+        >
+          <div className="container mx-auto px-4 h-full flex items-center">
+            <DashboardNavigation 
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </nav>
+      )}
+    </DashboardContainer>
   );
 }

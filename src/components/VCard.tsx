@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardSkeleton } from "./vcard/VCardSkeleton";
 import { VCardEmpty } from "./vcard/VCardEmpty";
@@ -6,13 +6,11 @@ import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
-import { VCardStyleEditor } from "./vcard/style/VCardStyleEditor";
+import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
-import { useSearchParams } from "react-router-dom";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -25,38 +23,16 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isAIProcessing, setIsAIProcessing] = useState(false);
   const { selectedStyle } = useVCardStyle();
-  const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
-  const [searchParams] = useSearchParams();
-  const isCVView = searchParams.get('view') === 'cv';
 
   const handleEditToggle = () => {
-    if (isEditing) {
-      setTempProfile(null);
-    } else if (profile) {
-      setTempProfile({ ...profile });
-    }
     setIsEditing(!isEditing);
     if (onEditStateChange) {
       onEditStateChange(!isEditing);
     }
   };
 
-  const handleCancel = () => {
-    setTempProfile(null);
-    setIsEditing(false);
-    if (onEditStateChange) {
-      onEditStateChange(false);
-    }
-  };
-
-  const handleProfileChange = (updates: Partial<UserProfile>) => {
-    if (tempProfile) {
-      setTempProfile({ ...tempProfile, ...updates });
-    }
-  };
-
   const handleSave = async () => {
-    if (!tempProfile) {
+    if (!profile) {
       toast.error("Aucun profil à sauvegarder");
       return;
     }
@@ -64,6 +40,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     try {
       setIsAIProcessing(true);
       
+      // Get current user to ensure we're authenticated
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       
@@ -72,19 +49,39 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      // Include the selected style in the profile data
-      const profileWithStyle = {
-        ...tempProfile,
-        style_id: selectedStyle.id
-      };
+      // Call the AI assistant to review and correct the profile
+      const { data: aiCorrections, error: aiError } = await supabase.functions.invoke('ai-profile-review', {
+        body: { profile }
+      });
 
-      await updateProfile(profileWithStyle);
-      setProfile(profileWithStyle);
+      if (aiError) {
+        console.error('AI review error:', aiError);
+        // Continue with save even if AI review fails
+      }
+
+      if (aiCorrections?.suggestions) {
+        const shouldApply = window.confirm(
+          "L'IA a détecté quelques améliorations possibles pour votre profil. Voulez-vous les appliquer ?\n\n" +
+          "Suggestions :\n" + aiCorrections.suggestions.join("\n")
+        );
+
+        if (shouldApply && aiCorrections.correctedProfile) {
+          await updateProfile(aiCorrections.correctedProfile);
+          setProfile(aiCorrections.correctedProfile);
+          toast.success("Profil mis à jour avec les suggestions de l'IA");
+        } else {
+          await updateProfile(profile);
+          toast.success("Profil mis à jour sans les suggestions de l'IA");
+        }
+      } else {
+        await updateProfile(profile);
+        toast.success("Profil mis à jour avec succès");
+      }
+
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
       }
-      toast.success("Profil mis à jour avec succès");
     } catch (error: any) {
       console.error('Error saving profile:', error);
       toast.error(error.message || "Erreur lors de la sauvegarde du profil");
@@ -101,73 +98,63 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     return <VCardEmpty />;
   }
 
-  const activeProfile = tempProfile || profile;
-
   return (
     <VCardContainer 
       isEditing={isEditing} 
       customStyles={{
-        font: activeProfile.custom_font,
-        background: activeProfile.custom_background,
-        textColor: activeProfile.custom_text_color
+        font: profile.custom_font,
+        background: profile.custom_background,
+        textColor: profile.custom_text_color
       }}
-      isCVView={isCVView}
     >
-      <div className="space-y-8 max-w-4xl mx-auto">
-        {isEditing && !isCVView && (
-          <VCardStyleEditor 
-            profile={activeProfile}
-            onStyleChange={handleProfileChange}
-          />
+      <div className="space-y-8 max-w-4xl mx-auto text-gray-900 dark:text-gray-100">
+        {isEditing && (
+          <VCardCustomization profile={profile} setProfile={setProfile} />
         )}
 
         <VCardSectionsManager
-          profile={activeProfile}
-          isEditing={isEditing && !isCVView}
-          setProfile={isEditing ? handleProfileChange : setProfile}
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
           selectedStyle={selectedStyle}
-          isCVView={isCVView}
         />
 
-        {!isCVView && (
-          <VCardFooter
-            isEditing={isEditing}
-            isPdfGenerating={isPdfGenerating}
-            isProcessing={isAIProcessing}
-            selectedStyle={selectedStyle}
-            onEditToggle={handleEditToggle}
-            onCancel={handleCancel}
-            onSave={handleSave}
-            onDownloadBusinessCard={async () => {
-              if (!profile) return;
-              setIsPdfGenerating(true);
-              try {
-                const doc = await generateBusinessCard(profile, selectedStyle);
-                doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-                toast.success("Business PDF généré avec succès");
-              } catch (error) {
-                console.error('Error generating business PDF:', error);
-                toast.error("Erreur lors de la génération du Business PDF");
-              } finally {
-                setIsPdfGenerating(false);
-              }
-            }}
-            onDownloadCV={async () => {
-              if (!profile) return;
-              setIsPdfGenerating(true);
-              try {
-                const doc = await generateCV(profile, selectedStyle);
-                doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-                toast.success("CV PDF généré avec succès");
-              } catch (error) {
-                console.error('Error generating CV PDF:', error);
-                toast.error("Erreur lors de la génération du CV PDF");
-              } finally {
-                setIsPdfGenerating(false);
-              }
-            }}
-          />
-        )}
+        <VCardFooter
+          isEditing={isEditing}
+          isPdfGenerating={isPdfGenerating}
+          isProcessing={isAIProcessing}
+          selectedStyle={selectedStyle}
+          onEditToggle={handleEditToggle}
+          onSave={handleSave}
+          onDownloadBusinessCard={async () => {
+            if (!profile) return;
+            setIsPdfGenerating(true);
+            try {
+              const doc = await generateBusinessCard(profile, selectedStyle);
+              doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+              toast.success("Business PDF généré avec succès");
+            } catch (error) {
+              console.error('Error generating business PDF:', error);
+              toast.error("Erreur lors de la génération du Business PDF");
+            } finally {
+              setIsPdfGenerating(false);
+            }
+          }}
+          onDownloadCV={async () => {
+            if (!profile) return;
+            setIsPdfGenerating(true);
+            try {
+              const doc = await generateCV(profile, selectedStyle);
+              doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
+              toast.success("CV PDF généré avec succès");
+            } catch (error) {
+              console.error('Error generating CV PDF:', error);
+              toast.error("Erreur lors de la génération du CV PDF");
+            } finally {
+              setIsPdfGenerating(false);
+            }
+          }}
+        />
       </div>
     </VCardContainer>
   );

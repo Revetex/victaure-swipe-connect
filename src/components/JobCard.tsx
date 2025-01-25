@@ -1,89 +1,113 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Building2, ExternalLink, MapPin, DollarSign } from "lucide-react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { Job } from "@/types/job";
+import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { 
+  Building2, 
+  MapPin, 
+  Calendar, 
+  Briefcase,
+  ExternalLink,
+  Clock
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface JobCardProps {
-  job: any;
+  job: Job;
+  onApply?: () => void;
+  onDelete?: () => void;
   showActions?: boolean;
-  className?: string;
   url?: string;
 }
 
-export function JobCard({ job, showActions = true, className, url }: JobCardProps) {
-  if (!job) return null;
+export function JobCard({ 
+  job, 
+  onApply, 
+  onDelete, 
+  showActions = true,
+  url 
+}: JobCardProps) {
+  const formattedDate = formatDistanceToNow(new Date(job.created_at), {
+    addSuffix: true,
+    locale: fr
+  });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className={cn("w-full", className)}
-    >
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-        <div className="p-4 sm:p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-            <div className="space-y-1 flex-1 min-w-0">
-              <h3 className="text-lg font-semibold line-clamp-2">{job.title}</h3>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Building2 className="h-4 w-4 flex-shrink-0" />
-                <span className="truncate">{job.company || job.company_name || 'Entreprise'}</span>
-              </div>
+    <Card className="p-6 hover:shadow-lg transition-shadow">
+      <div className="space-y-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">{job.title}</h3>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+              <Building2 className="h-4 w-4" />
+              <span>{job.company}</span>
             </div>
-            <Badge 
-              variant={job.source === 'Victaure' ? 'default' : 'secondary'}
-              className="self-start flex-shrink-0"
-            >
-              {job.source || 'Victaure'}
-            </Badge>
+          </div>
+          <Badge variant={job.source === 'Victaure' ? 'default' : 'secondary'}>
+            {job.source || 'Victaure'}
+          </Badge>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4" />
+            <span>{job.location}</span>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-4 text-sm">
-              {job.location && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span className="truncate max-w-[200px]">{job.location}</span>
-                </div>
-              )}
-              
-              {job.budget && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <DollarSign className="h-4 w-4" />
-                  <span>{job.budget} CAD</span>
-                </div>
-              )}
-            </div>
-
-            {job.description && (
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {job.description}
-              </p>
-            )}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            <span>{job.contract_type}</span>
           </div>
 
-          {showActions && (
-            <div className="flex flex-col sm:flex-row gap-2 pt-4">
-              {url ? (
-                <Button 
-                  variant="outline" 
-                  className="w-full sm:w-auto"
-                  onClick={() => window.open(url, '_blank')}
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Voir l'offre
-                </Button>
-              ) : null}
-              
-              <Button className="w-full sm:w-auto">
-                Postuler
-              </Button>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            <span>{formattedDate}</span>
+          </div>
+
+          {job.budget > 0 && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Briefcase className="h-4 w-4" />
+              <span>{job.budget} CAD</span>
             </div>
           )}
         </div>
-      </Card>
-    </motion.div>
+
+        {showActions && (
+          <div className="flex gap-2 pt-4">
+            {job.url ? (
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => window.open(job.url, '_blank')}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Voir l'offre
+              </Button>
+            ) : (
+              <>
+                {onApply && (
+                  <Button 
+                    variant="default" 
+                    className="w-full"
+                    onClick={onApply}
+                  >
+                    Postuler
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button 
+                    variant="destructive"
+                    onClick={onDelete}
+                  >
+                    Supprimer
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </Card>
   );
 }

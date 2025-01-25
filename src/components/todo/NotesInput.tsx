@@ -1,13 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ColorOption } from "@/types/todo";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface NotesInputProps {
   newNote: string;
@@ -24,48 +19,48 @@ export function NotesInput({
   colors,
   onNoteChange,
   onColorChange,
-  onAdd
+  onAdd,
 }: NotesInputProps) {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onAdd();
+    }
+  };
+
   return (
-    <div className="flex flex-col space-y-2">
-      <div className="flex gap-2">
-        <Input
-          placeholder="Ajouter une note..."
-          value={newNote}
-          onChange={(e) => onNoteChange(e.target.value)}
-          className="flex-1"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && newNote.trim()) {
-              onAdd();
-            }
-          }}
-        />
-        <Select
-          value={selectedColor}
-          onValueChange={onColorChange}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Couleur" />
+    <div className="flex flex-col sm:flex-row gap-2 w-full">
+      <Input
+        value={newNote}
+        onChange={(e) => onNoteChange(e.target.value)}
+        placeholder="Nouvelle note..."
+        className="flex-1 min-w-0 bg-background/50 text-foreground"
+        onKeyPress={handleKeyPress}
+      />
+      <div className="flex gap-2 sm:w-auto w-full">
+        <Select onValueChange={onColorChange} defaultValue={selectedColor}>
+          <SelectTrigger className="w-[120px] bg-background/50">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {colors.map((color) => (
-              <SelectItem
-                key={color.value}
+              <SelectItem 
+                key={color.value} 
                 value={color.value}
-                className="flex items-center gap-2"
+                className={`sticky-note-${color.value}`}
               >
-                <div className={`w-4 h-4 rounded-full bg-${color.value}-100 border border-${color.value}-300`} />
-                <span>{color.label}</span>
+                {color.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Button 
-          onClick={onAdd}
-          disabled={!newNote.trim()}
+          onClick={onAdd} 
           size="icon"
+          variant="outline"
+          className="hover:bg-primary hover:text-primary-foreground transition-colors"
         >
-          +
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
     </div>

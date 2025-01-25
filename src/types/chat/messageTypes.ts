@@ -3,13 +3,10 @@ export interface Message {
   content: string;
   sender: string;
   thinking?: boolean;
-  timestamp?: Date;
+  timestamp: Date;
   created_at?: string;
   updated_at?: string;
   user_id?: string;
-  read?: boolean;
-  sender_id?: string;
-  receiver_id?: string;
 }
 
 export interface ChatState {

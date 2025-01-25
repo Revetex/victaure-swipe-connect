@@ -33,20 +33,14 @@ export function MessagesList({
     toast.success(`Messages triés par date ${sortOrder === "asc" ? "décroissante" : "croissante"}`);
   };
 
-  const filteredMessages = messages.filter(message => {
-    if (!message) return false;
-    
-    const content = String(message.content || '').toLowerCase();
-    const senderName = typeof message.sender === 'object' && message.sender !== null
-      ? String(message.sender.full_name || '').toLowerCase()
-      : String(message.sender || '').toLowerCase();
-    
-    return content.includes(searchQuery) || senderName.includes(searchQuery);
-  });
+  const filteredMessages = messages.filter(message => 
+    message.content.toLowerCase().includes(searchQuery) ||
+    message.sender.full_name.toLowerCase().includes(searchQuery)
+  );
 
   const sortedMessages = [...filteredMessages].sort((a, b) => {
-    const dateA = new Date(a.created_at || '').getTime();
-    const dateB = new Date(b.created_at || '').getTime();
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
     return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
   });
 
@@ -69,6 +63,7 @@ export function MessagesList({
 
       <ScrollArea className="flex-1">
         <div className="space-y-2 p-4">
+          {/* Pinned Assistant Message */}
           <div className="mb-6">
             <AssistantMessage 
               chatMessages={chatMessages}
@@ -76,6 +71,7 @@ export function MessagesList({
             />
           </div>
 
+          {/* User Messages Section */}
           {sortedMessages.length > 0 ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between px-4">
@@ -91,13 +87,7 @@ export function MessagesList({
                 {sortedMessages.map((message) => (
                   <UserMessage
                     key={message.id}
-                    message={{
-                      ...message,
-                      sender: typeof message.sender === 'object' && message.sender !== null
-                        ? message.sender.full_name || ''
-                        : String(message.sender || ''),
-                      timestamp: new Date(message.created_at || '')
-                    }}
+                    message={message}
                     onMarkAsRead={onMarkAsRead}
                   />
                 ))}

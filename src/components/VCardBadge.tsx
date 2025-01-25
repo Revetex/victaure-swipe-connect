@@ -16,6 +16,16 @@ export function VCardBadge({
   variant = "default" 
 }: VCardBadgeProps) {
   const { selectedStyle } = useVCardStyle();
+  
+  const getVariantStyles = () => {
+    const baseStyles = {
+      default: `bg-${selectedStyle.colors.primary}/10 text-${selectedStyle.colors.primary} hover:bg-${selectedStyle.colors.primary}/20 border-${selectedStyle.colors.primary}/20`,
+      outline: `bg-transparent border-${selectedStyle.colors.primary}/50 text-${selectedStyle.colors.primary} hover:bg-${selectedStyle.colors.primary}/10`,
+      secondary: `bg-${selectedStyle.colors.secondary}/10 text-${selectedStyle.colors.secondary} hover:bg-${selectedStyle.colors.secondary}/20 border-${selectedStyle.colors.secondary}/20`
+    };
+
+    return baseStyles[variant];
+  };
 
   return (
     <motion.div
@@ -24,46 +34,24 @@ export function VCardBadge({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ scale: 1.05 }}
-      className="relative inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all group"
+      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors border shadow-sm"
       style={{
-        backgroundColor: `${selectedStyle.colors.primary}15`,
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: `1px solid ${selectedStyle.colors.primary}30`,
-        boxShadow: `0 4px 15px ${selectedStyle.colors.primary}20`,
-        color: selectedStyle.colors.text.primary,
-        fontFamily: selectedStyle.font,
+        backgroundColor: variant === 'outline' ? 'transparent' : `${selectedStyle.color}15`,
+        borderColor: `${selectedStyle.color}30`,
+        color: selectedStyle.colors.text.primary
       }}
     >
-      <div 
-        className="absolute inset-0 rounded-full opacity-20"
-        style={{
-          background: `linear-gradient(135deg, ${selectedStyle.colors.primary}30, ${selectedStyle.colors.secondary}20)`,
-          filter: 'blur(6px)',
-        }}
-      />
-      
-      <span 
-        className="relative text-sm font-medium z-10" 
-        style={{ 
-          color: selectedStyle.colors.text.primary,
-          opacity: 0.95,
-          textShadow: '0 1px 2px rgba(0,0,0,0.1)',
-          fontFamily: selectedStyle.font
-        }}
-      >
-        {text}
-      </span>
-      
+      {text}
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className="relative z-10 p-0.5 rounded-full hover:bg-black/10 transition-colors"
+          className={`p-0.5 rounded-full transition-colors hover:bg-opacity-20`}
           style={{
+            backgroundColor: 'transparent',
             color: selectedStyle.colors.text.primary
           }}
         >
-          <X className="h-3 w-3 opacity-50 hover:opacity-100" />
+          <X className="h-3 w-3" />
         </button>
       )}
     </motion.div>

@@ -29,62 +29,24 @@ serve(async (req) => {
       throw new Error('Hugging Face API key not configured');
     }
 
-    // Fetch additional user data
-    const { data: userEducation } = await supabase
-      .from('education')
-      .select('*')
-      .eq('profile_id', userId);
+    // Prepare conversation context
+    const conversationContext = `Tu es M. Victaure, un assistant de carrière spécialisé dans les emplois de construction au Québec.
+    Ton rôle est d'aider les utilisateurs à identifier leurs compétences et leurs aspirations professionnelles.
+    Tu dois poser des questions pertinentes sur leur expérience et leurs préférences.
+    Basé sur leurs réponses, suggère des catégories d'emploi et aide à mettre à jour leur profil.
+    Communique toujours en français et maintiens un ton professionnel mais amical.
+    
+    Profil de l'utilisateur:
+    ${JSON.stringify(userProfile, null, 2)}
+    
+    Messages précédents:
+    ${previousMessages.map((msg: any) => `${msg.sender}: ${msg.content}`).join('\n')}
+    
+    Message actuel: ${message}`;
 
-    const { data: userExperiences } = await supabase
-      .from('experiences')
-      .select('*')
-      .eq('profile_id', userId);
+    console.log("Sending request to Hugging Face API");
 
-    const { data: userCertifications } = await supabase
-      .from('certifications')
-      .select('*')
-      .eq('profile_id', userId);
-
-    // Prepare conversation context with rich user data
-    const conversationContext = `Tu es M. Victaure, un conseiller en orientation professionnelle québécois chaleureux et empathique.
-
-Ton style de communication:
-- Parle de façon naturelle et décontractée, comme un vrai Québécois
-- Utilise des expressions québécoises appropriées (mais pas trop!)
-- Montre de l'empathie et de la compréhension
-- Évite le langage trop formel ou robotique
-- Adapte ton langage au contexte de la personne
-- N'hésite pas à poser des questions pour mieux comprendre
-- Réagis aux émotions et au contexte de la conversation
-- Utilise l'humour quand c'est approprié
-- Partage des anecdotes pertinentes
-- Sois encourageant et positif
-
-Profil de l'utilisateur:
-${JSON.stringify(userProfile, null, 2)}
-
-Formation:
-${JSON.stringify(userEducation, null, 2)}
-
-Expérience:
-${JSON.stringify(userExperiences, null, 2)}
-
-Certifications:
-${JSON.stringify(userCertifications, null, 2)}
-
-Messages précédents:
-${previousMessages.map((msg: any) => `${msg.sender}: ${msg.content}`).join('\n')}
-
-Message actuel: ${message}
-
-Important:
-- Base tes conseils sur ta connaissance du marché du travail québécois
-- Sois précis et concret dans tes recommandations
-- Montre que tu comprends vraiment la situation unique de la personne
-- Réagis de façon appropriée aux émotions exprimées
-- Garde un ton positif et encourageant`;
-
-    // Call Hugging Face API with enhanced context
+    // Call Hugging Face API
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
       {
@@ -97,10 +59,9 @@ Important:
           inputs: conversationContext,
           parameters: {
             max_new_tokens: 500,
-            temperature: 0.85,
+            temperature: 0.7,
             top_p: 0.95,
-            repetition_penalty: 1.15,
-            do_sample: true
+            return_full_text: false,
           }
         }),
       }
@@ -112,9 +73,55 @@ Important:
     }
 
     const result = await response.json();
+    console.log("Received response from Hugging Face:", result);
+
     const assistantMessage = result[0]?.generated_text || "Je m'excuse, je n'ai pas pu générer une réponse appropriée.";
 
-    // Search for relevant jobs based on user profile and conversation
+    // Update user profile if needed
+    if (userProfile && message.toLowerCase().includes('oui') && previousMessages.length > 0) {
+      try {
+        // Extract skills from the conversation
+        const skillsResponse = await fetch(
+          "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
+          {
+            headers: {
+              "Authorization": `Bearer ${huggingFaceApiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              inputs: `Extrais les compétences professionnelles mentionnées dans ce texte et retourne-les sous forme de liste: ${message}`,
+              parameters: {
+                max_new_tokens: 100,
+                temperature: 0.3,
+              }
+            }),
+          }
+        );
+
+        if (skillsResponse.ok) {
+          const skillsResult = await skillsResponse.json();
+          const skills = skillsResult[0]?.generated_text
+            .split('\n')
+            .filter((skill: string) => skill.trim().length > 0)
+            .map((skill: string) => skill.trim().replace(/^[-*]\s*/, ''));
+
+          if (skills.length > 0) {
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update({ skills })
+              .eq('id', userId);
+
+            if (updateError) {
+              console.error("Error updating profile:", updateError);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error processing skills:", error);
+      }
+    }
+
+    // Search for relevant jobs
     const { data: jobs, error: jobsError } = await supabase
       .from('jobs')
       .select('*')

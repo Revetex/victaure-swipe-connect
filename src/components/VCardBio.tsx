@@ -1,106 +1,114 @@
-import { Textarea } from "@/components/ui/textarea";
-import { VCardSection } from "./VCardSection";
-import { FileText } from "lucide-react";
-import { useVCardStyle } from "./vcard/VCardStyleContext";
-import { VCardButton } from "./vcard/VCardButton";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader } from "@/components/ui/loader";
 
 interface VCardBioProps {
   profile: any;
   isEditing: boolean;
   setProfile: (profile: any) => void;
-  onGenerateBio?: () => void;
 }
 
-export function VCardBio({
-  profile,
-  isEditing,
-  setProfile,
-  onGenerateBio
-}: VCardBioProps) {
-  const { selectedStyle } = useVCardStyle();
+export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerateBio = async () => {
+    if (!profile) {
+      toast.error("Profil non disponible");
+      return;
+    }
+    
+    setIsGenerating(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      // First check if we have an authenticated session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+        return;
+      }
 
-      // Get user's skills, experiences and education
-      const { data: experiences } = await supabase
-        .from('experiences')
-        .select('*')
-        .eq('profile_id', user.id);
+      if (!session) {
+        toast.error("Veuillez vous connecter pour générer une bio");
+        return;
+      }
 
-      const { data: education } = await supabase
-        .from('education')
-        .select('*')
-        .eq('profile_id', user.id);
+      // Verify user data is accessible
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error("User verification error:", userError);
+        toast.error("Erreur de vérification utilisateur. Veuillez vous reconnecter.");
+        return;
+      }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('skills')
-        .eq('id', user.id)
-        .single();
+      console.log("Generating bio with profile data:", {
+        skills: profile.skills,
+        experiences: profile.experiences,
+        education: profile.education,
+      });
 
       const { data, error } = await supabase.functions.invoke('generate-bio', {
         body: {
-          skills: profile?.skills || [],
-          experiences: experiences || [],
-          education: education || []
+          skills: profile.skills || [],
+          experiences: profile.experiences || [],
+          education: profile.education || [],
         }
       });
 
-      if (error) throw error;
-
-      if (data?.bio) {
-        setProfile((prev: any) => ({ ...prev, bio: data.bio }));
-        toast.success("Bio générée avec succès!");
+      if (error) {
+        console.error("Error from generate-bio function:", error);
+        throw new Error(error.message || "Erreur lors de la génération de la bio");
       }
-    } catch (error) {
-      console.error('Error generating bio:', error);
-      toast.error("Erreur lors de la génération de la bio");
+
+      if (!data?.bio) {
+        throw new Error("Aucune bio générée");
+      }
+      
+      setProfile({ ...profile, bio: data.bio });
+      toast.success("Bio générée avec succès");
+    } catch (error: any) {
+      console.error("Error generating bio:", error);
+      toast.error(error.message || "Erreur lors de la génération de la bio");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
   return (
-    <VCardSection
-      title="Bio"
-      icon={<FileText className="h-5 w-5" style={{ color: selectedStyle.colors.primary }} />}
-    >
-      <div className="space-y-4">
-        {isEditing ? (
-          <div className="space-y-4">
-            <Textarea
-              value={profile.bio || ""}
-              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-              placeholder="Écrivez votre bio ici..."
-              className="min-h-[150px] resize-none"
-              style={{
-                backgroundColor: `${selectedStyle.colors.primary}05`,
-                borderColor: `${selectedStyle.colors.primary}30`,
-                color: selectedStyle.colors.text.primary
-              }}
-            />
-            <div className="flex gap-2 justify-end">
-              <VCardButton
-                onClick={handleGenerateBio}
-                variant="outline"
-                className="w-auto"
-              >
-                Générer avec M. Victaure
-              </VCardButton>
-            </div>
-          </div>
-        ) : (
-          <p 
-            className="whitespace-pre-wrap"
-            style={{ color: selectedStyle.colors.text.primary }}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Présentation</h3>
+        {isEditing && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleGenerateBio}
+            disabled={isGenerating}
           >
-            {profile.bio || "Aucune bio définie"}
-          </p>
+            {isGenerating ? (
+              <Loader className="mr-2 h-4 w-4" />
+            ) : (
+              <Wand2 className="mr-2 h-4 w-4" />
+            )}
+            Générer
+          </Button>
         )}
       </div>
-    </VCardSection>
+
+      {isEditing ? (
+        <textarea
+          value={profile?.bio || ""}
+          onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+          placeholder="Écrivez une courte présentation..."
+          className="w-full min-h-[100px] p-2 border rounded-md bg-background"
+        />
+      ) : profile?.bio ? (
+        <p className="text-muted-foreground">{profile.bio}</p>
+      ) : null}
+    </div>
   );
 }

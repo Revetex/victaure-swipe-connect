@@ -10,26 +10,21 @@ export const renderBio = (
   let currentY = yPos;
 
   if (profile.bio) {
-    // Add section title with styling
-    doc.setFillColor(245, 245, 245);
-    doc.roundedRect(15, currentY, doc.internal.pageSize.width - 30, 6, 2, 2, 'F');
-    
-    currentY += 5;
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(40, 40, 40);
-    doc.text('Présentation', 20, currentY);
     currentY += 10;
+    doc.setFontSize(pdfStyles.fonts.subheader.size);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(pdfStyles.colors.text.primary);
+    doc.text('Présentation', pdfStyles.margins.left, currentY);
+    currentY += 8;
 
-    // Bio content with improved readability
-    doc.setFontSize(11);
+    doc.setFontSize(pdfStyles.fonts.body.size);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
+    doc.setTextColor(pdfStyles.colors.text.secondary);
     
-    const bioLines = doc.splitTextToSize(profile.bio, doc.internal.pageSize.width - 40);
-    doc.text(bioLines, 20, currentY);
-    currentY += (bioLines.length * 6) + 10;
+    const bioLines = doc.splitTextToSize(profile.bio, 165);
+    doc.text(bioLines, pdfStyles.margins.left, currentY);
+    currentY += (bioLines.length * 5) + 10;
   }
 
   return currentY;
-};
+}

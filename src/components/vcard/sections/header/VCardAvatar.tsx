@@ -1,31 +1,17 @@
 import { Upload, UserRound } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { UserProfile } from "@/types/profile";
 
 interface VCardAvatarProps {
-  profile: UserProfile;
+  profile: any;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
+  setProfile: (profile: any) => void;
 }
 
 export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [imageError, setImageError] = useState(false);
-
-  useEffect(() => {
-    if (profile.avatar_url) {
-      // Précharger l'image pour vérifier si elle est valide
-      const img = new Image();
-      img.src = profile.avatar_url;
-      img.onload = () => setImageError(false);
-      img.onerror = () => setImageError(true);
-    }
-  }, [profile.avatar_url]);
+  const { toast } = useToast();
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -33,19 +19,27 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
 
     try {
       if (!file.type.startsWith('image/')) {
-        toast.error("Veuillez sélectionner une image");
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Veuillez sélectionner une image",
+        });
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("L'image ne doit pas dépasser 5MB");
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "L'image ne doit pas dépasser 5MB",
+        });
         return;
       }
 
-      setIsLoading(true);
-      setImageError(false);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
-      // Nettoyer l'ancienne image si elle existe
+      // Delete old avatar if it exists
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
@@ -55,15 +49,9 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
         }
       }
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
       const { error: uploadError } = await supabase.storage
         .from('vcards')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
@@ -71,14 +59,29 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
         .from('vcards')
         .getPublicUrl(fileName);
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Aucun utilisateur authentifié");
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
       setProfile({ ...profile, avatar_url: publicUrl });
-      toast.success("Photo de profil mise à jour");
+      
+      toast({
+        title: "Succès",
+        description: "Photo de profil mise à jour",
+      });
     } catch (error) {
       console.error('Error uploading avatar:', error);
-      setImageError(true);
-      toast.error("Impossible de mettre à jour la photo de profil");
-    } finally {
-      setIsLoading(false);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de mettre à jour la photo de profil",
+      });
     }
   };
 
@@ -90,21 +93,16 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
         "shadow-xl hover:shadow-2xl transition-shadow duration-200",
         "w-24 h-24 sm:w-32 sm:h-32"
       )}>
-        {isLoading ? (
-          <Skeleton className="w-full h-full rounded-full animate-pulse" />
-        ) : (
-          <Avatar className="w-full h-full">
-            <AvatarImage 
-              src={imageError ? undefined : profile.avatar_url}
-              alt={profile.full_name || "Photo de profil"}
-              className="object-cover w-full h-full"
-              onError={() => setImageError(true)}
-            />
-            <AvatarFallback className="bg-muted">
-              <UserRound className="w-12 h-12 text-muted-foreground/50" />
-            </AvatarFallback>
-          </Avatar>
-        )}
+        <Avatar className="w-full h-full">
+          <AvatarImage 
+            src={profile.avatar_url} 
+            alt={profile.full_name}
+            className="object-cover w-full h-full"
+          />
+          <AvatarFallback className="bg-muted">
+            <UserRound className="w-12 h-12 text-muted-foreground/50" />
+          </AvatarFallback>
+        </Avatar>
         {isEditing && (
           <label 
             className={cn(

@@ -8,12 +8,10 @@ import { Loader } from "./ui/loader";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
-const Dashboard = () => {
+export function Dashboard() {
   const navigate = useNavigate();
   const { profile, isLoading: isProfileLoading } = useProfile();
   const [isAuthChecking, setIsAuthChecking] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
 
   useEffect(() => {
     let mounted = true;
@@ -25,14 +23,7 @@ const Dashboard = () => {
         
         if (sessionError) {
           console.error('Session error:', sessionError);
-          if (retryCount < MAX_RETRIES) {
-            setRetryCount(prev => prev + 1);
-            setTimeout(checkAuth, 1000 * (retryCount + 1));
-            return;
-          }
-          toast.error("Erreur d'authentification", {
-            description: "Veuillez vous reconnecter"
-          });
+          toast.error("Erreur d'authentification");
           navigate('/auth');
           return;
         }
@@ -43,18 +34,18 @@ const Dashboard = () => {
           return;
         }
 
+        // Verify user data can be accessed
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError || !user) {
           console.error('User data error:', userError);
-          toast.error("Impossible d'accéder aux données utilisateur", {
-            description: "Veuillez vous reconnecter"
-          });
+          toast.error("Impossible d'accéder aux données utilisateur");
           await supabase.auth.signOut();
           navigate('/auth');
           return;
         }
 
+        // Set up auth state change listener
         const { data: authData } = supabase.auth.onAuthStateChange((event, session) => {
           console.log('Auth state changed:', event);
           if (event === 'SIGNED_OUT' || !session) {
@@ -62,6 +53,7 @@ const Dashboard = () => {
           }
         });
 
+        // Store the subscription to clean it up later
         authSubscription = {
           unsubscribe: () => {
             if (authData?.subscription) {
@@ -72,19 +64,11 @@ const Dashboard = () => {
 
         if (mounted) {
           setIsAuthChecking(false);
-          setRetryCount(0);
         }
 
       } catch (error) {
         console.error('Error checking auth status:', error);
-        if (retryCount < MAX_RETRIES) {
-          setRetryCount(prev => prev + 1);
-          setTimeout(checkAuth, 1000 * (retryCount + 1));
-          return;
-        }
-        toast.error("Erreur lors de la vérification de l'authentification", {
-          description: "Veuillez réessayer"
-        });
+        toast.error("Erreur lors de la vérification de l'authentification");
         navigate('/auth');
       }
     };
@@ -97,18 +81,14 @@ const Dashboard = () => {
         authSubscription.unsubscribe();
       }
     };
-  }, [navigate, retryCount]);
+  }, [navigate]);
 
   if (isAuthChecking || isProfileLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[100dvh]">
+      <div className="flex items-center justify-center min-h-screen">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            duration: 0.5,
-            ease: [0.4, 0, 0.2, 1]
-          }}
           className="flex flex-col items-center gap-4"
         >
           <Loader className="w-8 h-8 text-primary" />
@@ -126,5 +106,3 @@ const Dashboard = () => {
 
   return <DashboardLayout />;
 }
-
-export default Dashboard;

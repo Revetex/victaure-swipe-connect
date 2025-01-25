@@ -1,34 +1,30 @@
+import { Save } from "lucide-react";
 import { VCardActionButton } from "./VCardActionButton";
-import { Save, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface VCardEditingActionsProps {
   onSave: () => void;
-  onCancel: () => void;
-  isProcessing: boolean;
 }
 
-export function VCardEditingActions({
-  onSave,
-  onCancel,
-  isProcessing
-}: VCardEditingActionsProps) {
+export function VCardEditingActions({ onSave }: VCardEditingActionsProps) {
+  const handleSave = async () => {
+    try {
+      await onSave();
+      toast.success("Profil sauvegardé avec succès");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast.error("Erreur lors de la sauvegarde du profil");
+    }
+  };
+
   return (
-    <motion.div className="flex flex-wrap gap-3">
+    <div className="flex-1 min-w-[120px]">
       <VCardActionButton
         icon={Save}
         label="Sauvegarder"
-        onClick={onSave}
-        disabled={isProcessing}
-        isProcessing={isProcessing}
+        onClick={handleSave}
+        className="w-full"
       />
-      <VCardActionButton
-        icon={X}
-        label="Annuler"
-        onClick={onCancel}
-        variant="outline"
-        disabled={isProcessing}
-      />
-    </motion.div>
+    </div>
   );
 }

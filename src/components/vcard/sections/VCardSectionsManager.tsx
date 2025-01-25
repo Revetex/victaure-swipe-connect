@@ -1,16 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
-import { VCardSections } from "../VCardSections";
-import { useVCardStyle } from "../VCardStyleContext";
-import { toast } from "sonner";
 import { StyleOption } from "../types";
+import { VCardSections } from "../VCardSections";
 
 interface VCardSectionsManagerProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
   selectedStyle: StyleOption;
-  isCVView?: boolean;  // Added this prop
 }
 
 export function VCardSectionsManager({
@@ -18,50 +15,47 @@ export function VCardSectionsManager({
   isEditing,
   setProfile,
   selectedStyle,
-  isCVView = false,  // Added with default value
 }: VCardSectionsManagerProps) {
   const [newSkill, setNewSkill] = useState("");
-  const [sectionsOrder, setSectionsOrder] = useState<string[]>(
-    profile.sections_order || ['header', 'bio', 'contact', 'skills', 'education', 'experience']
-  );
+  const [sectionsOrder, setSectionsOrder] = useState<string[]>([]);
 
-  // Memoize handlers to prevent unnecessary re-renders
-  const handleAddSkill = useCallback(() => {
-    if (!newSkill.trim()) {
-      toast.error("Veuillez entrer une compétence");
-      return;
-    }
-
-    if (profile.skills?.includes(newSkill)) {
-      toast.error("Cette compétence existe déjà");
-      return;
-    }
-
-    const updatedSkills = [...(profile.skills || []), newSkill];
-    setProfile({ ...profile, skills: updatedSkills });
-    setNewSkill("");
-    toast.success("Compétence ajoutée");
-  }, [newSkill, profile, setProfile]);
-
-  const handleRemoveSkill = useCallback((skill: string) => {
-    const updatedSkills = (profile.skills || []).filter(s => s !== skill);
-    setProfile({ ...profile, skills: updatedSkills });
-    toast.success("Compétence supprimée");
-  }, [profile, setProfile]);
-
-  // Update sections order when profile changes
   useEffect(() => {
-    if (profile.sections_order && 
-        JSON.stringify(profile.sections_order) !== JSON.stringify(sectionsOrder)) {
-      setSectionsOrder(profile.sections_order);
+    if (profile?.sections_order) {
+      // Ensure sections are unique
+      const uniqueSections = Array.from(new Set(profile.sections_order));
+      if (uniqueSections.length !== profile.sections_order.length) {
+        setProfile({
+          ...profile,
+          sections_order: uniqueSections
+        });
+      }
+      setSectionsOrder(uniqueSections);
+    } else {
+      setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
     }
-  }, [profile.sections_order]);
-
-  // Save sections order when it changes
-  const handleSectionsOrderChange = useCallback((newOrder: string[]) => {
-    setSectionsOrder(newOrder);
-    setProfile({ ...profile, sections_order: newOrder });
   }, [profile, setProfile]);
+
+  const handleAddSkill = () => {
+    if (!profile || !newSkill.trim()) return;
+    
+    // Ensure skills array exists and is unique
+    const currentSkills = profile.skills || [];
+    const newSkillTrimmed = newSkill.trim();
+    
+    if (!currentSkills.includes(newSkillTrimmed)) {
+      const updatedSkills = [...currentSkills, newSkillTrimmed];
+      setProfile({ ...profile, skills: updatedSkills });
+    }
+    setNewSkill("");
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    if (!profile) return;
+    const updatedSkills = (profile.skills || []).filter(
+      (skill) => skill !== skillToRemove
+    );
+    setProfile({ ...profile, skills: updatedSkills });
+  };
 
   return (
     <VCardSections
@@ -74,7 +68,6 @@ export function VCardSectionsManager({
       handleRemoveSkill={handleRemoveSkill}
       selectedStyle={selectedStyle}
       sectionsOrder={sectionsOrder}
-      isCVView={isCVView}
     />
   );
 }

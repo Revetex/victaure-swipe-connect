@@ -59,7 +59,7 @@ export function JobFiltersPanel({
     <motion.div 
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="w-full max-w-xs flex-shrink-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border shadow-sm"
+      className="sticky top-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border shadow-sm"
     >
       <ScrollArea className="h-[calc(100vh-8rem)]">
         <div className="p-4">

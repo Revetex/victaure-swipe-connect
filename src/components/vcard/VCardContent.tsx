@@ -1,6 +1,7 @@
 import { VCardSkills } from "../VCardSkills";
 import { UserProfile } from "@/types/profile";
 import { StyleOption } from "./types";
+import { TouchFriendlySkillSelector } from "../skills/TouchFriendlySkillSelector";
 
 interface VCardContentProps {
   profile: UserProfile;
@@ -28,6 +29,17 @@ export function VCardContent({
         setProfile={setProfile}
         handleRemoveSkill={handleRemoveSkill}
       />
+      
+      {isEditing && (
+        <TouchFriendlySkillSelector
+          onSkillSelect={(skill) => {
+            if (!profile || profile.skills?.includes(skill)) return;
+            const updatedSkills = [...(profile.skills || []), skill];
+            setProfile({ ...profile, skills: updatedSkills });
+          }}
+          existingSkills={profile.skills || []}
+        />
+      )}
     </div>
   );
 }

@@ -17,9 +17,6 @@ export const filterSchema = z.object({
   deadlineBefore: z.string().nullable().default(null),
   search: z.string().default(""),
   categories: z.array(z.string()).default([]),
-  missionType: z.enum(["company", "individual", "all"]).default("all"),
-  contractType: z.string().default("all"),
-  paymentSchedule: z.string().default("all")
 });
 
 export type JobFilters = z.infer<typeof filterSchema>;
@@ -41,7 +38,4 @@ export const defaultFilters: JobFilters = {
   deadlineBefore: null,
   search: "",
   categories: [],
-  missionType: "all",
-  contractType: "all",
-  paymentSchedule: "all"
 };

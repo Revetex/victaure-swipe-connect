@@ -1,51 +1,51 @@
-import { ExtendedJsPDF } from '../../types';
-import { UserProfile } from '@/types/profile';
+import type { ExtendedJsPDF } from '../../types';
+import type { UserProfile } from '@/types/profile';
 import { pdfStyles } from '../styles';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export const renderContact = (
   doc: ExtendedJsPDF,
   profile: UserProfile,
   startY: number
 ): number => {
-  let currentY = startY;
+  const { margins, fonts, colors } = pdfStyles;
+  let currentY = startY + 10;
 
-  // Add a subtle container for contact info
-  doc.setFillColor(250, 250, 250);
-  doc.roundedRect(15, currentY - 5, doc.internal.pageSize.width - 30, 30, 3, 3, 'F');
+  // Section title
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(fonts.subheader.size);
+  doc.setTextColor(colors.text.primary);
+  doc.text('Contact', margins.left, currentY);
+  currentY += 12;
 
-  // Contact details in a clean, organized layout
-  doc.setFontSize(10);
-  doc.setTextColor(60, 60, 60);
+  // Contact details with better spacing and icons
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(fonts.body.size);
+  doc.setTextColor(colors.text.secondary);
 
   const contactInfo = [
-    { icon: '📧', label: 'Email:', value: profile.email },
-    { icon: '📱', label: 'Téléphone:', value: profile.phone },
-    { icon: '📍', label: 'Localisation:', value: `${profile.city || ''}, ${profile.state || ''}, ${profile.country || ''}` },
-    { icon: '🌐', label: 'Site web:', value: profile.website }
-  ].filter(item => item.value);
+    { label: 'Email:', value: profile.email, icon: '✉' },
+    { label: 'Téléphone:', value: profile.phone, icon: '📱' },
+    { label: 'Localisation:', value: `${profile.city || ''}, ${profile.state || ''}, ${profile.country || ''}`, icon: '📍' }
+  ];
 
-  // Calculate positions for a balanced layout
-  const columnWidth = (doc.internal.pageSize.width - 40) / Math.min(contactInfo.length, 3);
-  
-  contactInfo.forEach(({ icon, label, value }, index) => {
+  contactInfo.forEach(({ label, value, icon }) => {
     if (value && value.trim()) {
-      const x = 20 + (index % 3 * columnWidth);
-      const y = currentY + Math.floor(index / 3) * 12;
-      
-      // Icon with some styling
+      // Icon
       doc.setFont('helvetica', 'normal');
-      doc.text(icon, x, y);
+      doc.text(icon, margins.left, currentY);
       
-      // Label in bold
+      // Label and value
       doc.setFont('helvetica', 'bold');
-      doc.text(label, x + 8, y);
+      doc.text(label, margins.left + 10, currentY);
       
-      // Value in normal weight
-      doc.setFont('helvetica', 'normal');
       const labelWidth = doc.getTextWidth(label);
-      doc.text(value.trim(), x + labelWidth + 10, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(value.trim(), margins.left + labelWidth + 15, currentY);
+      
+      currentY += 8;
     }
   });
 
-  return currentY + (Math.ceil(contactInfo.length / 3) * 12) + 8;
+  return currentY + 5;
 };

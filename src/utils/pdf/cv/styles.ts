@@ -1,13 +1,13 @@
 export const pdfStyles = {
   colors: {
-    primary: '#1E293B',
-    secondary: '#475569',
-    accent: '#F1F5F9',
+    primary: '#1A1F2C',
+    secondary: '#4B5563',
+    accent: '#E5DEFF',
     background: '#FFFFFF',
     text: {
-      primary: '#0F172A',
-      secondary: '#334155',
-      muted: '#64748B'
+      primary: '#1A1F2C',
+      secondary: '#4B5563',
+      muted: '#8E9196'
     }
   },
   margins: {
@@ -17,22 +17,17 @@ export const pdfStyles = {
   },
   fonts: {
     header: {
-      size: 24,
+      size: 28,
       style: 'bold'
     },
     subheader: {
-      size: 16,
+      size: 18,
       style: 'bold'
     },
     body: {
-      size: 11,
+      size: 12,
       style: 'normal'
     }
-  },
-  spacing: {
-    section: 15,
-    paragraph: 8,
-    line: 5
   }
 };
 
@@ -50,7 +45,6 @@ export const convertStyleOptionToPdfStyle = (styleOption: any) => {
       accent: styleOption.accentGradient || pdfStyles.colors.accent
     },
     margins: pdfStyles.margins,
-    fonts: pdfStyles.fonts,
-    spacing: pdfStyles.spacing
+    fonts: pdfStyles.fonts
   };
 };
