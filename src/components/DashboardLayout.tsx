@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DashboardNavigation } from "./dashboard/DashboardNavigation";
-import { DashboardPageContent } from "./dashboard/DashboardPageContent";
+import { DashboardNavigation } from "./DashboardNavigation";
+import { DashboardPageContent } from "./DashboardPageContent";
 import { useViewportHeight } from "@/hooks/useViewportHeight";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
@@ -65,7 +65,7 @@ export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
       </motion.div>
       
       <motion.nav 
-        className="fixed bottom-0 left-0 right-0 border-t border-border bg-background shadow-lg"
+        className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 shadow-lg"
         style={{ 
           height: 'auto',
           willChange: 'transform, opacity',
@@ -73,13 +73,12 @@ export function DashboardLayout({ initialPage = 1 }: DashboardLayoutProps) {
           transform: !isEditing && !showingChat ? 'translateY(0)' : 'translateY(100%)',
           opacity: !isEditing && !showingChat ? 1 : 0,
           pointerEvents: !isEditing && !showingChat ? 'auto' : 'none',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-          backgroundColor: 'var(--background)',
-          backdropFilter: 'none'
+          paddingBottom: 'env(safe-area-inset-bottom)'
         }}
         initial={false}
       >
-        <div className="container max-w-md mx-auto px-4 py-2 bg-background">
+        <div className="absolute inset-0 bg-background" style={{ zIndex: -1 }} />
+        <div className="relative container max-w-md mx-auto px-4 py-2">
           <DashboardNavigation
             currentPage={currentPage}
             onPageChange={handlePageChange}
