@@ -62,9 +62,9 @@ export function SwipeJob() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="h-full w-full bg-background/95 backdrop-blur-sm"
+      className="min-h-screen w-full bg-gradient-to-br from-background via-background/95 to-background/90 backdrop-blur-sm"
     >
-      <div className="flex items-center justify-between p-6 border-b bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="flex items-center justify-between p-6 border-b bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <Briefcase className="h-6 w-6 text-primary" />
           <motion.h2 
@@ -101,7 +101,7 @@ export function SwipeJob() {
           </div>
 
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="glass-card p-6">
               <div className="google-search-container min-h-[800px]">
                 {/* Google Custom Search elements will be injected here */}
               </div>
