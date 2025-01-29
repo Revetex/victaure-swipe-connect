@@ -230,6 +230,10 @@ body {
 }
 
 /* Google Custom Search Styling */
+.google-search-container {
+  @apply w-full rounded-lg overflow-hidden;
+}
+
 .google-search-container .gsc-control-cse {
   @apply bg-transparent border-none p-0;
 }
@@ -239,7 +243,7 @@ body {
 }
 
 .google-search-container .gsc-search-button-v2 {
-  @apply rounded-lg px-4 py-2 ml-2;
+  @apply rounded-lg px-4 py-2 ml-2 bg-primary hover:bg-primary/90 border-primary;
 }
 
 .google-search-container .gsc-result {
@@ -263,5 +267,5 @@ body {
 }
 
 .google-search-container .gsc-cursor-current-page {
-  @apply bg-primary text-white border-primary;
+  @apply bg-primary text-primary-foreground border-primary;
 }
