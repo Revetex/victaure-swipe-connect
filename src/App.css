@@ -110,8 +110,6 @@ body {
 }
 
 /* Enhanced sticky note styles */
-
-/* Enhanced sticky note styles */
 .sticky-note {
   @apply p-4 rounded-xl shadow-lg transition-all duration-300 
          hover:shadow-xl hover:-translate-y-1
@@ -232,62 +230,38 @@ body {
 }
 
 /* Google Custom Search Styling */
-
-/* Google Custom Search Styling */
 .google-search-container .gsc-control-cse {
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
+  @apply bg-transparent border-none p-0;
 }
 
 .google-search-container .gsc-input-box {
-  border-radius: 0.5rem !important;
-  border: 1px solid var(--border) !important;
-  background: var(--background) !important;
+  @apply rounded-lg border border-border bg-background/50;
 }
 
 .google-search-container .gsc-search-button-v2 {
-  border-radius: 0.5rem !important;
-  padding: 8px 16px !important;
-  margin-left: 8px !important;
+  @apply rounded-lg px-4 py-2 ml-2;
 }
 
 .google-search-container .gsc-result {
-  border-radius: 0.5rem !important;
-  margin-bottom: 1rem !important;
-  padding: 1rem !important;
-  border: 1px solid var(--border) !important;
-  background: var(--background) !important;
+  @apply rounded-lg mb-4 p-4 border border-border bg-background/50;
 }
 
 .google-search-container .gs-title {
-  color: var(--primary) !important;
-  text-decoration: none !important;
-  font-size: 1.1rem !important;
+  @apply text-primary no-underline text-lg;
 }
 
 .google-search-container .gs-snippet {
-  color: var(--muted-foreground) !important;
-  font-size: 0.9rem !important;
-  line-height: 1.5 !important;
+  @apply text-muted-foreground text-sm leading-relaxed;
 }
 
 .google-search-container .gsc-url-top {
-  color: var(--muted-foreground) !important;
-  font-size: 0.8rem !important;
+  @apply text-muted-foreground text-xs;
 }
 
 .google-search-container .gsc-cursor-page {
-  color: var(--foreground) !important;
-  background: var(--background) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 0.25rem !important;
-  padding: 4px 8px !important;
-  margin: 0 2px !important;
+  @apply text-foreground bg-background border border-border rounded px-2 py-1 mx-1;
 }
 
 .google-search-container .gsc-cursor-current-page {
-  background: var(--primary) !important;
-  color: white !important;
-  border-color: var(--primary) !important;
+  @apply bg-primary text-white border-primary;
 }
