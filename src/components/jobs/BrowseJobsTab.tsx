@@ -10,15 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 interface BrowseJobsTabProps {
   filters: JobFilters;
   onFilterChange: (key: keyof JobFilters, value: any) => void;
-  openLocation: boolean;
-  setOpenLocation: (open: boolean) => void;
 }
 
 export function BrowseJobsTab({ 
   filters, 
   onFilterChange, 
-  openLocation, 
-  setOpenLocation 
 }: BrowseJobsTabProps) {
   const [showFilters, setShowFilters] = useState(true);
   const [activeTab, setActiveTab] = useState("victaure");
@@ -34,10 +30,6 @@ export function BrowseJobsTab({
         <JobFiltersPanel 
           filters={filters}
           onFilterChange={onFilterChange}
-          openLocation={openLocation}
-          setOpenLocation={setOpenLocation}
-          showFilters={showFilters}
-          setShowFilters={setShowFilters}
         />
       </motion.div>
     </AnimatePresence>
