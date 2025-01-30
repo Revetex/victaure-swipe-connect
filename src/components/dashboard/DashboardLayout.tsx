@@ -62,7 +62,7 @@ export function DashboardLayout() {
       <AnimatePresence mode="sync">
         <motion.div 
           variants={itemVariants} 
-          className="transform transition-all duration-300 w-full min-h-screen pb-40"
+          className="transform transition-all duration-300 w-full min-h-screen pb-40 lg:pb-24"
           style={{ 
             maxHeight: isEditing ? viewportHeight : 'none',
             overflowY: isEditing ? 'auto' : 'visible',
@@ -70,25 +70,27 @@ export function DashboardLayout() {
             paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
           }}
         >
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
-            onRequestChat={handleRequestChat}
-          />
+          <div className="container mx-auto px-4 lg:px-8 xl:px-12 max-w-7xl">
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              viewportHeight={viewportHeight}
+              onEditStateChange={setIsEditing}
+              onRequestChat={handleRequestChat}
+            />
+          </div>
         </motion.div>
       </AnimatePresence>
       
       {!isEditing && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50"
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent"
           style={{ 
             height: '4rem',
             paddingBottom: 'env(safe-area-inset-bottom)'
           }}
         >
-          <div className="container mx-auto px-4 h-full flex items-center">
+          <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
             <DashboardNavigation 
               currentPage={currentPage}
               onPageChange={handlePageChange}
