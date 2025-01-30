@@ -10,7 +10,7 @@ import { useDebounce } from "use-debounce";
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(1); // Set initial page to Profile (1)
+  const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   
@@ -31,7 +31,10 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      setIsEditing(false); // Reset editing state when changing pages
+      // Only reset editing state when not on the Notes/Tasks page
+      if (page !== 4) {
+        setIsEditing(false);
+      }
     }
   }, [lastPageChange]);
 
@@ -66,22 +69,20 @@ export function DashboardLayout() {
         </div>
       </div>
       
-      {!isEditing && (
-        <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent"
-          style={{ 
-            height: '4rem',
-            paddingBottom: 'env(safe-area-inset-bottom)'
-          }}
-        >
-          <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
-            <DashboardNavigation 
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        </nav>
-      )}
+      <nav 
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-opacity duration-300 ${isEditing && currentPage === 4 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        style={{ 
+          height: '4rem',
+          paddingBottom: 'env(safe-area-inset-bottom)'
+        }}
+      >
+        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+          <DashboardNavigation 
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </nav>
     </div>
   );
 }
