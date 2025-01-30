@@ -64,101 +64,103 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4"
+      className={`relative p-6 rounded-xl ${isEditing ? 'bg-white/5 backdrop-blur-sm' : ''}`}
     >
-      <div className="relative group">
-        <Avatar className="h-24 w-24 ring-2 ring-white/20 shrink-0">
-          <AvatarImage 
-            src={profile.avatar_url || ''} 
-            alt={profile.full_name || ''}
-            className="object-cover w-full h-full"
-          />
-          <AvatarFallback className="bg-[#1A1F2C]">
-            <UserCircle2 className="h-14 w-14 text-white" />
-          </AvatarFallback>
-        </Avatar>
-        {isEditing && (
-          <label 
-            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
-            htmlFor="avatar-upload"
+      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <div className="relative group">
+          <Avatar className="h-32 w-32 ring-4 ring-purple-500/20 shadow-xl">
+            <AvatarImage 
+              src={profile.avatar_url || ''} 
+              alt={profile.full_name || ''}
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-purple-900/20">
+              <UserCircle2 className="h-16 w-16 text-purple-500" />
+            </AvatarFallback>
+          </Avatar>
+          {isEditing && (
+            <label 
+              className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
+              htmlFor="avatar-upload"
+            >
+              <Upload className="h-8 w-8 text-white" />
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+            </label>
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0 space-y-4 text-center sm:text-left">
+          {isEditing ? (
+            <>
+              <Input
+                value={profile.full_name || ""}
+                onChange={(e) => handleInputChange("full_name", e.target.value)}
+                placeholder="Votre nom"
+                className="text-2xl font-semibold bg-white/10 border-white/20 placeholder:text-white/50"
+                style={{ color: profile.custom_text_color || 'inherit' }}
+              />
+              <Input
+                value={profile.role || ""}
+                onChange={(e) => handleInputChange("role", e.target.value)}
+                placeholder="Votre rôle"
+                className="text-base bg-white/10 border-white/20 placeholder:text-white/50"
+                style={{ color: profile.custom_text_color || 'inherit' }}
+              />
+            </>
+          ) : (
+            <>
+              <h2 
+                className="text-3xl sm:text-4xl font-bold truncate transition-colors"
+                style={{ 
+                  color: profile.custom_text_color || selectedStyle.colors.text.primary,
+                  textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                {profile.full_name || "Nom non défini"}
+              </h2>
+              <p 
+                className="text-lg sm:text-xl transition-colors"
+                style={{ 
+                  color: profile.custom_text_color || selectedStyle.colors.text.secondary,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                }}
+              >
+                {profile.role || "Rôle non défini"}
+              </p>
+            </>
+          )}
+        </div>
+
+        {!isEditing && (
+          <motion.div 
+            className="shrink-0 cursor-pointer"
+            onClick={() => setIsQRDialogOpen(true)}
+            whileHover={{ scale: 1.05 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
           >
-            <Upload className="h-6 w-6 text-white" />
-            <input
-              id="avatar-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarUpload}
-            />
-          </label>
+            <div className="p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-lg">
+              <QRCodeSVG
+                value={window.location.href}
+                size={80}
+                level="H"
+                includeMargin={false}
+                className="rounded-lg opacity-80 hover:opacity-100 transition-opacity duration-300"
+              />
+            </div>
+          </motion.div>
         )}
       </div>
-
-      <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
-        {isEditing ? (
-          <div className="space-y-4">
-            <Input
-              value={profile.full_name || ""}
-              onChange={(e) => handleInputChange("full_name", e.target.value)}
-              placeholder="Votre nom"
-              className="text-xl font-semibold bg-white/10 border-white/20 placeholder:text-white/50"
-              style={{ color: profile.custom_text_color || 'inherit' }}
-            />
-            <Input
-              value={profile.role || ""}
-              onChange={(e) => handleInputChange("role", e.target.value)}
-              placeholder="Votre rôle"
-              className="text-sm bg-white/10 border-white/20 placeholder:text-white/50"
-              style={{ color: profile.custom_text_color || 'inherit' }}
-            />
-          </div>
-        ) : (
-          <>
-            <h2 
-              className="text-xl sm:text-2xl font-semibold truncate transition-colors"
-              style={{ 
-                color: profile.custom_text_color || selectedStyle.colors.text.primary,
-                textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-              }}
-            >
-              {profile.full_name || "Nom non défini"}
-            </h2>
-            <p 
-              className="text-sm sm:text-base transition-colors"
-              style={{ 
-                color: profile.custom_text_color || selectedStyle.colors.text.secondary,
-                textShadow: '0 1px 1px rgba(0,0,0,0.05)'
-              }}
-            >
-              {profile.role || "Rôle non défini"}
-            </p>
-          </>
-        )}
-      </div>
-
-      {!isEditing && (
-        <motion.div 
-          className="shrink-0 cursor-pointer"
-          onClick={() => setIsQRDialogOpen(true)}
-          whileHover={{ scale: 1.05 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="p-2 glass-card">
-            <QRCodeSVG
-              value={window.location.href}
-              size={80}
-              level="H"
-              includeMargin={false}
-              className="rounded-lg opacity-80 hover:opacity-100 transition-opacity duration-300"
-            />
-          </div>
-        </motion.div>
-      )}
 
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
-        <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-sm border-none">
+        <DialogContent className="sm:max-w-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-none">
           <div className="flex flex-col items-center space-y-4 p-6">
             <QRCodeSVG
               value={window.location.href}

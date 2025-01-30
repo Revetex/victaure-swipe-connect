@@ -4,6 +4,7 @@ import { Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/ui/loader";
+import { motion } from "framer-motion";
 
 interface VCardBioProps {
   profile: any;
@@ -22,7 +23,6 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
     
     setIsGenerating(true);
     try {
-      // First check if we have an authenticated session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -36,7 +36,6 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
         return;
       }
 
-      // Verify user data is accessible
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
       if (userError || !user) {
@@ -79,15 +78,20 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4 p-6 rounded-xl bg-white/5 backdrop-blur-sm"
+    >
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Présentation</h3>
+        <h3 className="text-xl font-semibold text-purple-100">Présentation</h3>
         {isEditing && (
           <Button 
             variant="outline" 
             size="sm"
             onClick={handleGenerateBio}
             disabled={isGenerating}
+            className="bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20 text-purple-100"
           >
             {isGenerating ? (
               <Loader className="mr-2 h-4 w-4" />
@@ -104,11 +108,11 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           value={profile?.bio || ""}
           onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
           placeholder="Écrivez une courte présentation..."
-          className="w-full min-h-[100px] p-2 border rounded-md bg-background"
+          className="w-full min-h-[150px] p-4 rounded-lg bg-white/10 border border-white/20 text-purple-50 placeholder:text-purple-200/50 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
         />
       ) : profile?.bio ? (
-        <p className="text-muted-foreground">{profile.bio}</p>
+        <p className="text-purple-100/80 leading-relaxed">{profile.bio}</p>
       ) : null}
-    </div>
+    </motion.div>
   );
 }
