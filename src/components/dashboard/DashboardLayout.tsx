@@ -44,16 +44,13 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
+      setIsEditing(false); // Reset editing state when changing pages
     }
   }, [lastPageChange]);
 
   const handleRequestChat = useCallback(() => {
-    const now = Date.now();
-    if (now - lastPageChange >= THROTTLE_DELAY) {
-      setCurrentPage(2);
-      setLastPageChange(now);
-    }
-  }, [lastPageChange]);
+    handlePageChange(2);
+  }, [handlePageChange]);
 
   return (
     <div className="relative min-h-screen bg-background">
