@@ -29,25 +29,32 @@ export function DashboardContent({
     selectedDate,
     selectedTime,
     allDay,
-    onTodoChange,
-    onDateChange,
-    onTimeChange,
-    onAllDayChange,
-    onAddTodo,
-    onToggleTodo,
-    onDeleteTodo,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo,
   } = useTodoList();
 
   const {
     notes,
     newNote,
     selectedColor,
-    colors,
-    onNoteChange,
-    onColorChange,
-    onAddNote,
-    onDeleteNote,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote,
   } = useNotes();
+
+  const colors: ColorOption[] = [
+    { value: 'yellow', label: 'Jaune', class: 'bg-yellow-200' },
+    { value: 'blue', label: 'Bleu', class: 'bg-blue-200' },
+    { value: 'green', label: 'Vert', class: 'bg-green-200' },
+    { value: 'red', label: 'Rouge', class: 'bg-red-200' },
+    { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
+  ];
 
   const renderContent = () => {
     switch (currentPage) {
@@ -62,7 +69,7 @@ export function DashboardContent({
       case 3:
         return (
           <div className="p-4 sm:p-6 space-y-6">
-            <JobList />
+            <JobList jobs={[]} />
           </div>
         );
       case 4:
@@ -77,18 +84,18 @@ export function DashboardContent({
               selectedTime={selectedTime}
               allDay={allDay}
               selectedColor={selectedColor}
-              colors={colors as ColorOption[]}
-              onTodoChange={onTodoChange}
-              onNoteChange={onNoteChange}
-              onDateChange={onDateChange}
-              onTimeChange={onTimeChange}
-              onAllDayChange={onAllDayChange}
-              onColorChange={onColorChange}
-              onAddTodo={onAddTodo}
-              onAddNote={onAddNote}
-              onToggleTodo={onToggleTodo}
-              onDeleteTodo={onDeleteTodo}
-              onDeleteNote={onDeleteNote}
+              colors={colors}
+              onTodoChange={setNewTodo}
+              onNoteChange={setNewNote}
+              onDateChange={setSelectedDate}
+              onTimeChange={setSelectedTime}
+              onAllDayChange={setAllDay}
+              onColorChange={setSelectedColor}
+              onAddTodo={addTodo}
+              onAddNote={addNote}
+              onToggleTodo={toggleTodo}
+              onDeleteTodo={deleteTodo}
+              onDeleteNote={deleteNote}
             />
           </div>
         );
