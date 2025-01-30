@@ -56,7 +56,6 @@ export function SwipeJob() {
         throw error;
       }
 
-      // Ensure the status is correctly typed
       return (data || []).map(job => ({
         ...job,
         status: job.status as 'open' | 'closed' | 'in-progress'
@@ -69,14 +68,12 @@ export function SwipeJob() {
       setIsGoogleLoading(true);
       setHasGoogleError(false);
 
-      // Cleanup existing elements
       const existingElements = document.querySelectorAll(".gcse-search, .gcse-searchbox, .gcse-searchresults");
       existingElements.forEach(el => el.remove());
       
       const existingScripts = document.querySelectorAll("script[src*='cse.google.com']");
       existingScripts.forEach(script => script.remove());
 
-      // Add Google Custom Search script
       const script = document.createElement("script");
       script.src = "https://cse.google.com/cse.js?cx=85fd4a0d6d6a44d0a";
       script.async = true;
@@ -175,8 +172,8 @@ export function SwipeJob() {
         className="container mx-auto p-6 space-y-6"
       >
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
-            <div className="sticky top-24">
+          <div className="lg:col-span-1 lg:block">
+            <div className="sticky top-24 bg-background rounded-lg border p-4">
               <BrowseJobsTab 
                 filters={filters}
                 onFilterChange={handleFilterChange}
