@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { JobFilters, defaultFilters } from "./jobs/JobFilterUtils";
-import { Search, Briefcase, Loader2 } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { BrowseJobsTab } from "./jobs/BrowseJobsTab";
-import { Separator } from "./ui/separator";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { VictaureJobsSection } from "./jobs/sections/VictaureJobsSection";
+import { ExternalSearchSection } from "./jobs/sections/ExternalSearchSection";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,7 +75,6 @@ export function SwipeJob() {
       document.head.appendChild(script);
 
       script.onload = () => {
-        console.log("Google Search script loaded successfully");
         setIsGoogleLoading(false);
         setHasGoogleError(false);
         
@@ -123,12 +122,6 @@ export function SwipeJob() {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleRetry = () => {
-    setIsGoogleLoading(true);
-    setHasGoogleError(false);
-    initializeGoogleSearch();
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -173,53 +166,16 @@ export function SwipeJob() {
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {/* Victaure Jobs Section */}
-            <div className="glass-card p-6">
-              <h3 className="text-lg font-semibold mb-4">Offres Victaure</h3>
-              {isJobsLoading ? (
-                <div className="flex flex-col items-center justify-center gap-4 min-h-[200px]">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                  <p className="text-muted-foreground">Chargement des offres Victaure...</p>
-                </div>
-              ) : jobs.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-4 min-h-[200px]">
-                  <Search className="h-12 w-12 text-muted-foreground" />
-                  <p className="text-muted-foreground">Aucune offre Victaure disponible</p>
-                </div>
-              ) : (
-                <div className="grid gap-4">
-                  {jobs.map((job) => (
-                    <div key={job.id} className="p-4 rounded-lg border bg-card">
-                      <h4 className="font-semibold">{job.title}</h4>
-                      <p className="text-sm text-muted-foreground">{job.company_name}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <VictaureJobsSection 
+              jobs={jobs}
+              isLoading={isJobsLoading}
+            />
 
-            {/* External Search Section */}
-            <div className="glass-card p-6">
-              <h3 className="text-lg font-semibold mb-4">Recherche externe</h3>
-              {isGoogleLoading ? (
-                <div className="flex flex-col items-center justify-center gap-4 min-h-[200px]">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                  <p className="text-muted-foreground">Chargement de la recherche externe...</p>
-                </div>
-              ) : hasGoogleError ? (
-                <div className="flex flex-col items-center justify-center gap-4 min-h-[200px]">
-                  <Search className="h-12 w-12 text-destructive" />
-                  <p className="text-muted-foreground">Une erreur est survenue lors du chargement de la recherche</p>
-                  <Button onClick={handleRetry} variant="outline">
-                    Réessayer
-                  </Button>
-                </div>
-              ) : (
-                <div className="google-search-container min-h-[400px]">
-                  {/* Google Custom Search elements will be injected here */}
-                </div>
-              )}
-            </div>
+            <ExternalSearchSection 
+              isLoading={isGoogleLoading}
+              hasError={hasGoogleError}
+              onRetry={initializeGoogleSearch}
+            />
           </div>
         </div>
       </motion.div>
