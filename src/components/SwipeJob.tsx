@@ -56,7 +56,11 @@ export function SwipeJob() {
         throw error;
       }
 
-      return (data || []) as Job[];
+      // Ensure the status is correctly typed
+      return (data || []).map(job => ({
+        ...job,
+        status: job.status as 'open' | 'closed' | 'in-progress'
+      })) as Job[];
     },
   });
 
