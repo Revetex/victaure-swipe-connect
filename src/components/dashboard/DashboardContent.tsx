@@ -6,6 +6,7 @@ import { useVCardStyle } from "@/components/vcard/VCardStyleContext";
 interface DashboardContentProps {
   currentPage: number;
   viewportHeight: number;
+  isEditing?: boolean; // Added this prop
   onEditStateChange: (isEditing: boolean) => void;
   onRequestChat: () => void;
 }
@@ -13,6 +14,7 @@ interface DashboardContentProps {
 export function DashboardContent({
   currentPage,
   viewportHeight,
+  isEditing,
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {

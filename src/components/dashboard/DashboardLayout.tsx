@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { DashboardNavigation } from "./DashboardNavigation";
 import { DashboardContainer } from "./DashboardContainer";
 import { DashboardContent } from "./DashboardContent";
@@ -25,19 +25,6 @@ export function DashboardLayout() {
   const updateHeight = useCallback(() => {
     debouncedSetViewportHeight(window.innerHeight);
   }, [debouncedSetViewportHeight]);
-
-  useEffect(() => {
-    window.addEventListener('resize', updateHeight);
-    window.addEventListener('orientationchange', updateHeight);
-
-    const timeoutId = setTimeout(updateHeight, 100);
-
-    return () => {
-      window.removeEventListener('resize', updateHeight);
-      window.removeEventListener('orientationchange', updateHeight);
-      clearTimeout(timeoutId);
-    };
-  }, [updateHeight]);
 
   const handlePageChange = useCallback((page: number) => {
     const now = Date.now();
