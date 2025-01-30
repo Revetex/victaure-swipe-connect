@@ -24,7 +24,6 @@ export function SwipeJob() {
     createdAfter: null,
     createdBefore: null,
     deadlineBefore: null,
-    categories: [],
   });
 
   const handleMatchSuccess = async (jobId: string) => {
@@ -67,16 +66,15 @@ export function SwipeJob() {
   } = useSwipeMatch(filters, handleMatchSuccess);
 
   return (
-    <div className="relative h-full flex flex-col lg:flex-row gap-6 p-4">
-      <div className="w-full lg:w-80 shrink-0">
+    <div className="relative min-h-screen flex flex-col lg:flex-row gap-6 p-4">
+      <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
         <JobFiltersPanel 
           filters={filters} 
           onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
-          className="sticky top-4 space-y-6 bg-card p-6 rounded-lg border shadow-sm"
         />
-      </div>
+      </aside>
 
-      <div className="flex-1 flex flex-col items-center justify-start min-h-[600px] pt-4">
+      <main className="flex-1 flex flex-col items-center justify-start min-h-[600px] pt-4">
         {loading ? (
           <div className="flex items-center justify-center h-96">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -115,7 +113,7 @@ export function SwipeJob() {
             />
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }
