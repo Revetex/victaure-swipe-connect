@@ -21,14 +21,12 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className={cn(
-        "todo-item group",
-        "p-4 rounded-xl",
-        "bg-white/50 dark:bg-gray-800/50",
-        "border border-gray-200/50 dark:border-gray-700/50",
+        "group p-4 rounded-lg",
+        "bg-background/50 dark:bg-gray-800/50",
+        "border border-border/50",
         "shadow-sm hover:shadow-md transition-all duration-300",
-        "dark:text-gray-100",
         "flex items-center gap-3",
-        todo.completed && "completed opacity-75"
+        todo.completed && "opacity-75"
       )}
     >
       <Checkbox
@@ -73,10 +71,11 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
         size="icon"
         onClick={() => onDelete(todo.id)}
         className={cn(
-          "opacity-100 sm:opacity-0 group-hover:opacity-100",
+          "opacity-0 group-hover:opacity-100",
           "transition-opacity",
           "hover:text-destructive",
-          "h-8 w-8"
+          "h-8 w-8",
+          "sm:flex"
         )}
       >
         <Trash2 className="h-4 w-4" />

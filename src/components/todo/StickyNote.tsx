@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { StickyNote as StickyNoteType } from "@/types/todo";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface StickyNoteProps {
   note: StickyNoteType;
@@ -13,44 +13,38 @@ interface StickyNoteProps {
 export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
   return (
     <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.9, opacity: 0 }}
-      whileHover={{ scale: 1.02, rotate: 0 }}
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
       className={cn(
-        "sticky-note group",
-        "min-h-[120px] sm:min-h-[100px]",
-        "p-5 sm:p-4",
-        "touch-manipulation",
-        "shadow-md hover:shadow-lg transition-shadow",
+        "group relative p-4 rounded-lg",
+        "bg-background/50 dark:bg-gray-800/50",
+        "border border-border/50",
+        "shadow-sm hover:shadow-md transition-all duration-300",
         colorClass
       )}
     >
-      <div className="flex justify-between items-start gap-3">
-        <p className={cn(
-          "flex-1 whitespace-pre-wrap",
-          "text-base sm:text-sm",
-          "font-medium text-black/80",
-          "leading-relaxed"
-        )}>
+      <div className="min-h-[100px]">
+        <p className="text-sm whitespace-pre-wrap break-words">
           {note.text}
         </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDelete(note.id)}
-          className={cn(
-            "opacity-100 sm:opacity-0 group-hover:opacity-100",
-            "transition-all duration-200",
-            "hover:bg-black/10 hover:text-black",
-            "-mt-2 -mr-2",
-            "h-8 w-8",
-            "active:opacity-100"
-          )}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
       </div>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => onDelete(note.id)}
+        className={cn(
+          "absolute top-2 right-2",
+          "opacity-0 group-hover:opacity-100",
+          "transition-opacity",
+          "hover:text-destructive",
+          "h-8 w-8"
+        )}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
     </motion.div>
   );
 }
