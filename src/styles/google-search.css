@@ -50,11 +50,69 @@
   color: var(--muted-foreground) !important;
 }
 
-/* Styles pour le mode sombre */
-[data-theme="dark"] .gsc-control-cse {
+/* Styles spécifiques pour le mode sombre */
+.dark .gsc-control-cse {
   background: transparent !important;
 }
 
-[data-theme="dark"] .gsc-result {
-  background: var(--card) !important;
+.dark .gsc-result {
+  background: hsl(var(--card)) !important;
+}
+
+.dark .gs-title {
+  color: #1EAEDB !important; /* Bright blue for better visibility */
+}
+
+.dark .gs-snippet {
+  color: #C8C8C9 !important; /* Light gray for better readability */
+}
+
+.dark .gsc-input-box {
+  background: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .gsc-input {
+  color: #FFFFFF !important; /* Pure white for text input */
+}
+
+/* Amélioration des contrastes en mode sombre */
+.dark .gsc-webResult.gsc-result:hover {
+  background-color: hsl(var(--accent)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .gsc-webResult.gsc-result:hover .gs-title,
+.dark .gsc-webResult.gsc-result:hover .gs-snippet {
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* Styles pour les boutons de pagination */
+.dark .gsc-cursor-page {
+  color: #1EAEDB !important;
+  background: transparent !important;
+}
+
+.dark .gsc-cursor-page:hover,
+.dark .gsc-cursor-page.gsc-cursor-current-page {
+  color: #FFFFFF !important;
+  background: #1EAEDB !important;
+}
+
+/* Styles pour les images */
+.dark .gs-image-box {
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .gs-promotion-image-box {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Styles pour les liens */
+.dark .gs-visibleUrl {
+  color: #8B5CF6 !important; /* Vivid purple for URLs */
+}
+
+.dark .gs-visibleUrl:hover {
+  color: #1EAEDB !important;
 }
