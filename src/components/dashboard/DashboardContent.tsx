@@ -6,6 +6,8 @@ import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Settings } from "@/components/Settings";
 import { UnifiedBoard } from "@/components/board/UnifiedBoard";
+import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -24,6 +26,40 @@ export function DashboardContent({
 }: DashboardContentProps) {
   const { profile, setProfile } = useProfile();
   const { selectedStyle } = useVCardStyle();
+  
+  // Add hooks for todos and notes
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
+
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
+  const colors = [
+    { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
+    { value: "blue", label: "Bleu", class: "bg-blue-200" },
+    { value: "green", label: "Vert", class: "bg-green-200" },
+    { value: "red", label: "Rouge", class: "bg-red-200" },
+    { value: "purple", label: "Violet", class: "bg-purple-200" }
+  ];
 
   const renderContent = () => {
     switch (currentPage) {
@@ -41,7 +77,30 @@ export function DashboardContent({
       case 3: // Jobs
         return <Marketplace />;
       case 4: // Tasks/Notes
-        return <UnifiedBoard />;
+        return (
+          <UnifiedBoard
+            todos={todos}
+            notes={notes}
+            newTodo={newTodo}
+            newNote={newNote}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
+            selectedColor={selectedColor}
+            colors={colors}
+            onTodoChange={setNewTodo}
+            onNoteChange={setNewNote}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
+            onAllDayChange={setAllDay}
+            onColorChange={setSelectedColor}
+            onAddTodo={addTodo}
+            onAddNote={addNote}
+            onToggleTodo={toggleTodo}
+            onDeleteTodo={deleteTodo}
+            onDeleteNote={deleteNote}
+          />
+        );
       case 5: // Settings
         return <Settings />;
       default:

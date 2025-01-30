@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
-// Create a client with default options
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -16,13 +15,13 @@ const queryClient = new QueryClient({
 
 export default function AppWrapper() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <QueryClientProvider client={queryClient}>
         <Router>
           <App />
           <Toaster position="top-right" expand={false} richColors />
         </Router>
-      </ThemeProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
