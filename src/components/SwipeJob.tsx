@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { VictaureJobsSection } from "./jobs/sections/VictaureJobsSection";
 import { ExternalSearchSection } from "./jobs/sections/ExternalSearchSection";
 import { Button } from "./ui/button";
+import { Job } from "@/types/job";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +33,7 @@ export function SwipeJob() {
             avatar_url
           )
         `)
-        .eq("status", "open")
+        .eq("status", "open" as const)
         .order("created_at", { ascending: false });
 
       if (filters.category && filters.category !== "all") {
@@ -55,7 +56,7 @@ export function SwipeJob() {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Job[];
     },
   });
 
