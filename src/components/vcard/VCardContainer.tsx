@@ -17,15 +17,23 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={`relative w-full min-h-screen transition-all duration-300 ${
-        isEditing ? 'bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900' : 'bg-gradient-to-br from-purple-100 via-white to-purple-50'
+        isEditing 
+          ? 'bg-gradient-to-br from-purple-900/90 via-purple-800/90 to-purple-900/90 text-white'
+          : 'bg-gradient-to-br from-purple-100 via-white to-purple-50 text-gray-900'
       }`}
       style={{
         fontFamily: customStyles?.font || 'inherit',
+        background: customStyles?.background || undefined,
+        color: customStyles?.textColor || undefined,
       }}
     >
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className={`space-y-6 ${isEditing ? 'pb-32' : ''}`}>
+        <div className={`space-y-6 backdrop-blur-sm rounded-xl ${
+          isEditing 
+            ? 'bg-black/20 p-6 shadow-xl border border-white/10' 
+            : ''
+        }`}>
           {children}
         </div>
       </div>
