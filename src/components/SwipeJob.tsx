@@ -24,7 +24,6 @@ export function SwipeJob() {
     createdAfter: null,
     createdBefore: null,
     deadlineBefore: null,
-    search: "",
     categories: [],
   });
 
@@ -72,7 +71,7 @@ export function SwipeJob() {
       <div className="w-full lg:w-80 shrink-0">
         <JobFiltersPanel 
           filters={filters} 
-          onFiltersChange={setFilters}
+          onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
           className="sticky top-4 space-y-6 bg-card p-6 rounded-lg border shadow-sm"
         />
       </div>
@@ -83,7 +82,7 @@ export function SwipeJob() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : jobs.length === 0 ? (
-          <SwipeEmptyState onFiltersChange={setFilters} />
+          <SwipeEmptyState onRefresh={() => setFilters(prev => ({ ...prev }))} />
         ) : (
           <>
             <div className="relative w-full max-w-lg aspect-[3/4] mx-auto">
@@ -92,23 +91,18 @@ export function SwipeJob() {
                 
                 const isTop = index === currentIndex;
                 const isDraggable = isTop && !isAnimating;
-                const hasTransform = isTop && isDragging;
                 
                 return (
                   <AnimatedJobCard
                     key={job.id}
                     job={job}
-                    isTop={isTop}
-                    isDraggable={isDraggable}
-                    hasTransform={hasTransform}
-                    swipeDirection={swipeDirection}
                     x={x}
                     rotate={rotate}
                     opacity={opacity}
                     scale={scale}
-                    background={background}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
+                    isDragging={isDragging}
                   />
                 );
               })}
@@ -116,7 +110,7 @@ export function SwipeJob() {
 
             <SwipeControls
               onSwipe={handleButtonSwipe}
-              disabled={isAnimating || currentIndex >= jobs.length}
+              isAnimating={isAnimating}
               className="mt-8"
             />
           </>

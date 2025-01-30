@@ -5,12 +5,13 @@ import { motion } from "framer-motion";
 interface SwipeControlsProps {
   onSwipe: (direction: "left" | "right") => void;
   isAnimating: boolean;
+  className?: string;
 }
 
-export function SwipeControls({ onSwipe, isAnimating }: SwipeControlsProps) {
+export function SwipeControls({ onSwipe, isAnimating, className = "" }: SwipeControlsProps) {
   return (
     <motion.div 
-      className="flex justify-center gap-4 mt-4"
+      className={`flex justify-center gap-4 ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}

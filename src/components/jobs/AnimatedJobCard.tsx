@@ -1,7 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, MotionValue } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Job } from "@/types/job";
-import { MotionValue } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Clock, Award, Building2, ThumbsUp, ThumbsDown } from "lucide-react";
 
