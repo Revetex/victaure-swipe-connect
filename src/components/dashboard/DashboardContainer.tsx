@@ -1,28 +1,42 @@
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface DashboardContainerProps {
-  children: ReactNode;
-  containerVariants: any;
+  children: React.ReactNode;
+  containerVariants: {
+    hidden: { opacity: number };
+    visible: {
+      opacity: number;
+      transition: {
+        staggerChildren: number;
+      };
+    };
+  };
+  className?: string;
 }
 
-export function DashboardContainer({ children, containerVariants }: DashboardContainerProps) {
+export function DashboardContainer({
+  children,
+  containerVariants,
+  className
+}: DashboardContainerProps) {
   return (
-    <div className="relative min-h-screen">
-      <div className="fixed inset-0 bg-dashboard-pattern bg-cover bg-center bg-fixed" />
-      <div className="fixed inset-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" />
-      <main className="flex-1 relative">
-        <div className="container mx-auto px-4 lg:px-8 xl:px-12 h-[calc(100vh-4rem)] overflow-y-auto">
-          <motion.div 
-            className="max-w-7xl mx-auto h-full lg:py-8"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {children}
-          </motion.div>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className={cn(
+        "min-h-screen bg-background text-foreground",
+        "bg-gradient-to-br from-background via-background/95 to-background/90",
+        "dark:from-background dark:via-background/95 dark:to-background/90",
+        className
+      )}
+    >
+      <div className="container mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto">
+          {children}
         </div>
-      </main>
-    </div>
+      </div>
+    </motion.div>
   );
 }

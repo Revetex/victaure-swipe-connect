@@ -1,20 +1,35 @@
 import { motion } from "framer-motion";
+import { useProfile } from "@/hooks/useProfile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserCircle } from "lucide-react";
 
-interface DashboardHeaderProps {
-  title: string;
-  description: string;
-}
+export function DashboardHeader() {
+  const { profile } = useProfile();
 
-export function DashboardHeader({ title, description }: DashboardHeaderProps) {
+  if (!profile) return null;
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="mb-8"
+      className="mb-8 p-6 rounded-2xl bg-card shadow-lg border border-border/50"
     >
-      <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h2>
-      <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg">{description}</p>
+      <div className="flex items-center gap-4">
+        <Avatar className="h-16 w-16 ring-2 ring-primary/10">
+          <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || 'Profile'} />
+          <AvatarFallback>
+            <UserCircle className="h-8 w-8" />
+          </AvatarFallback>
+        </Avatar>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">
+            {profile.full_name || 'Bienvenue'}
+          </h1>
+          <p className="text-muted-foreground">
+            {profile.bio ? profile.bio.substring(0, 100) + '...' : 'Complétez votre profil pour commencer'}
+          </p>
+        </div>
+      </div>
     </motion.div>
   );
 }
