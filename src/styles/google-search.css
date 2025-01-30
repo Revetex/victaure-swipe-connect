@@ -3,6 +3,7 @@
   background: var(--background);
   border-radius: 0.5rem;
   overflow: hidden;
+  min-height: 400px;
 }
 
 /* Styles pour la barre de recherche */

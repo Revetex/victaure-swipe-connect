@@ -25,10 +25,14 @@ export interface Job {
   company_description?: string;
   education_level?: string;
   years_of_experience?: number;
-  // Virtual fields for display
   company?: string;
   salary?: string;
   skills?: string[];
-  source?: 'Victaure' | 'Externe'; // Added source field
-  url?: string; // Added url field for external jobs
+  source?: 'Victaure' | 'Externe';
+  url?: string;
+  employer?: {
+    full_name?: string;
+    company_name?: string;
+    avatar_url?: string;
+  };
 }

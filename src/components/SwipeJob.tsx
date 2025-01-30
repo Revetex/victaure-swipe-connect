@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { JobFilters, defaultFilters } from "./jobs/JobFilterUtils";
-import { Briefcase } from "lucide-react";
+import { Briefcase, AlertCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { JobCreationDialog } from "./jobs/JobCreationDialog";
 import { BrowseJobsTab } from "./jobs/BrowseJobsTab";
@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VictaureJobsSection } from "./jobs/sections/VictaureJobsSection";
 import { ExternalSearchSection } from "./jobs/sections/ExternalSearchSection";
+import { Button } from "./ui/button";
 
 export function SwipeJob() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ export function SwipeJob() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(true);
   const [hasGoogleError, setHasGoogleError] = useState(false);
 
-  const { data: jobs = [], isLoading: isJobsLoading } = useQuery({
+  const { data: jobs = [], isLoading: isJobsLoading, error: jobsError, refetch } = useQuery({
     queryKey: ["jobs", filters],
     queryFn: async () => {
       console.log("Fetching jobs with filters:", filters);
@@ -51,7 +52,6 @@ export function SwipeJob() {
       
       if (error) {
         console.error("Error fetching jobs:", error);
-        toast.error("Erreur lors du chargement des offres");
         throw error;
       }
 
@@ -61,6 +61,9 @@ export function SwipeJob() {
 
   const initializeGoogleSearch = () => {
     try {
+      setIsGoogleLoading(true);
+      setHasGoogleError(false);
+
       // Cleanup existing elements
       const existingElements = document.querySelectorAll(".gcse-search, .gcse-searchbox, .gcse-searchresults");
       existingElements.forEach(el => el.remove());
@@ -72,11 +75,9 @@ export function SwipeJob() {
       const script = document.createElement("script");
       script.src = "https://cse.google.com/cse.js?cx=85fd4a0d6d6a44d0a";
       script.async = true;
-      document.head.appendChild(script);
-
+      
       script.onload = () => {
         setIsGoogleLoading(false);
-        setHasGoogleError(false);
         
         const container = document.querySelector(".google-search-container");
         if (container) {
@@ -98,6 +99,8 @@ export function SwipeJob() {
         setHasGoogleError(true);
         toast.error("Erreur lors du chargement de la recherche Google");
       };
+
+      document.head.appendChild(script);
 
     } catch (error) {
       console.error("Error initializing Google Search:", error);
@@ -122,6 +125,19 @@ export function SwipeJob() {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  if (jobsError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-6">
+        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+        <h3 className="text-lg font-semibold mb-2">Erreur de chargement</h3>
+        <p className="text-muted-foreground mb-4">Une erreur est survenue lors du chargement des offres</p>
+        <Button onClick={() => refetch()} variant="outline">
+          Réessayer
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -144,7 +160,7 @@ export function SwipeJob() {
         <JobCreationDialog 
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          onSuccess={() => {}}
+          onSuccess={() => refetch()}
         />
       </div>
 
@@ -169,6 +185,7 @@ export function SwipeJob() {
             <VictaureJobsSection 
               jobs={jobs}
               isLoading={isJobsLoading}
+              onRetry={() => refetch()}
             />
 
             <ExternalSearchSection 
