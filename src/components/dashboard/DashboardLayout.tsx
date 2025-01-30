@@ -31,7 +31,7 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      // Only reset editing state when not on the Notes/Tasks page
+      // Reset editing state for all pages except Notes/Tasks
       if (page !== 4) {
         setIsEditing(false);
       }
@@ -70,7 +70,9 @@ export function DashboardLayout() {
       </div>
       
       <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-opacity duration-300 ${isEditing && currentPage === 4 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
+          isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+        }`}
         style={{ 
           height: '4rem',
           paddingBottom: 'env(safe-area-inset-bottom)'
