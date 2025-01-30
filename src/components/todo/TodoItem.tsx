@@ -22,13 +22,22 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
       exit={{ opacity: 0, x: -20 }}
       className={cn(
         "todo-item group",
-        todo.completed && "completed"
+        "p-4 rounded-xl",
+        "bg-white/50 dark:bg-gray-800/50",
+        "border border-gray-200/50 dark:border-gray-700/50",
+        "shadow-sm hover:shadow-md transition-all duration-300",
+        "dark:text-gray-100",
+        "flex items-center gap-3",
+        todo.completed && "completed opacity-75"
       )}
     >
       <Checkbox
         checked={todo.completed}
         onCheckedChange={() => onToggle(todo.id)}
-        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+        className={cn(
+          "data-[state=checked]:bg-primary data-[state=checked]:border-primary",
+          "h-5 w-5"
+        )}
       />
       
       <div className="flex-1 min-w-0">
@@ -40,7 +49,7 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
         </p>
         
         {(todo.dueDate || todo.dueTime) && (
-          <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
             {todo.dueDate && (
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
@@ -63,7 +72,12 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
         variant="ghost"
         size="icon"
         onClick={() => onDelete(todo.id)}
-        className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive"
+        className={cn(
+          "opacity-100 sm:opacity-0 group-hover:opacity-100",
+          "transition-opacity",
+          "hover:text-destructive",
+          "h-8 w-8"
+        )}
       >
         <Trash2 className="h-4 w-4" />
       </Button>

@@ -18,7 +18,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       exit={{ scale: 0.9, opacity: 0 }}
       whileHover={{ scale: 1.02, rotate: 0 }}
       className={cn(
-        "sticky-note group transform rotate-1",
+        "sticky-note group",
         "min-h-[120px] sm:min-h-[100px]",
         "p-5 sm:p-4",
         "touch-manipulation",
@@ -40,7 +40,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
           size="icon"
           onClick={() => onDelete(note.id)}
           className={cn(
-            "opacity-0 group-hover:opacity-100 sm:opacity-100",
+            "opacity-100 sm:opacity-0 group-hover:opacity-100",
             "transition-all duration-200",
             "hover:bg-black/10 hover:text-black",
             "-mt-2 -mr-2",

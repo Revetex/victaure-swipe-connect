@@ -40,27 +40,29 @@ export function TodoSection({
   const sectionClass = type === 'notes' ? 'notes-section' : 'task-section';
   
   return (
-    <div className={`space-y-6 h-[calc(100vh-8rem)] flex flex-col ${sectionClass}`}>
-      <div className="flex items-center gap-3 text-primary">
+    <div className="flex flex-col h-full max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)]">
+      <div className="flex items-center gap-3 text-primary p-4 sm:p-6 bg-background/50 backdrop-blur-sm sticky top-0 z-10 border-b">
         <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
           <ListTodo className="h-6 w-6" />
         </div>
         <h2 className="text-xl font-semibold">{title}</h2>
       </div>
 
-      <TodoInput
-        newTodo={newTodo}
-        selectedDate={selectedDate}
-        selectedTime={selectedTime}
-        allDay={allDay}
-        onTodoChange={onTodoChange}
-        onDateChange={onDateChange}
-        onTimeChange={onTimeChange}
-        onAllDayChange={onAllDayChange}
-        onAdd={onAdd}
-      />
+      <div className="p-4 sm:p-6 bg-background/50 backdrop-blur-sm sticky top-[72px] z-10 border-b">
+        <TodoInput
+          newTodo={newTodo}
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+          allDay={allDay}
+          onTodoChange={onTodoChange}
+          onDateChange={onDateChange}
+          onTimeChange={onTimeChange}
+          onAllDayChange={onAllDayChange}
+          onAdd={onAdd}
+        />
+      </div>
 
-      <ScrollArea className="flex-1 pr-4">
+      <ScrollArea className="flex-1 p-4 sm:p-6">
         <motion.div 
           className="space-y-3"
           layout
