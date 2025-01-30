@@ -3,7 +3,6 @@ import { SwipeJob } from "@/components/SwipeJob";
 import { VCard } from "@/components/VCard";
 import { Settings } from "@/components/Settings";
 import { TodoSection } from "@/components/todo/TodoSection";
-import { NotesSection } from "@/components/todo/NotesSection";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
 
@@ -97,36 +96,28 @@ export function DashboardContent({
         return (
           <div key="todo-notes-container" className="h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
-                <div className="h-full overflow-hidden">
-                  <TodoSection
-                    todos={todos}
-                    newTodo={newTodo}
-                    selectedDate={selectedDate}
-                    selectedTime={selectedTime}
-                    allDay={allDay}
-                    onTodoChange={setNewTodo}
-                    onDateChange={setSelectedDate}
-                    onTimeChange={setSelectedTime}
-                    onAllDayChange={setAllDay}
-                    onAdd={addTodo}
-                    onToggle={toggleTodo}
-                    onDelete={deleteTodo}
-                  />
-                </div>
-                <div className="h-full overflow-hidden">
-                  <NotesSection
-                    notes={notes}
-                    newNote={newNote}
-                    selectedColor={selectedColor}
-                    colors={colors}
-                    onNoteChange={setNewNote}
-                    onColorChange={setSelectedColor}
-                    onAdd={addNote}
-                    onDelete={deleteNote}
-                  />
-                </div>
-              </div>
+              <TodoSection
+                todos={todos}
+                notes={notes}
+                newTodo={newTodo}
+                newNote={newNote}
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                allDay={allDay}
+                selectedColor={selectedColor}
+                colors={colors}
+                onTodoChange={setNewTodo}
+                onNoteChange={setNewNote}
+                onDateChange={setSelectedDate}
+                onTimeChange={setSelectedTime}
+                onAllDayChange={setAllDay}
+                onColorChange={setSelectedColor}
+                onAddTodo={addTodo}
+                onAddNote={addNote}
+                onToggleTodo={toggleTodo}
+                onDeleteTodo={deleteTodo}
+                onDeleteNote={deleteNote}
+              />
             </div>
           </div>
         );
