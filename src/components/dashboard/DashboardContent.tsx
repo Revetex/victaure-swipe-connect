@@ -69,7 +69,7 @@ export function DashboardContent({
               WebkitOverflowScrolling: 'touch'
             }}
           >
-            <div className="dashboard-card h-full">
+            <div className="h-full">
               <div className="p-3 sm:p-4 md:p-6 h-full">
                 <VCard 
                   onEditStateChange={onEditStateChange}
@@ -81,7 +81,7 @@ export function DashboardContent({
         );
       case 2:
         return (
-          <div key="messages-container" className="dashboard-card h-full">
+          <div key="messages-container" className="h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
               <Messages />
             </div>
@@ -89,13 +89,13 @@ export function DashboardContent({
         );
       case 3:
         return (
-          <div key="swipe-container" className="dashboard-card h-full">
+          <div key="swipe-container" className="h-full">
             <SwipeJob />
           </div>
         );
       case 4:
         return (
-          <div key="todo-notes-container" className="dashboard-card h-full">
+          <div key="todo-notes-container" className="h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
                 <div className="h-full overflow-hidden">
@@ -132,7 +132,7 @@ export function DashboardContent({
         );
       case 5:
         return (
-          <div key="settings-container" className="dashboard-card h-full">
+          <div key="settings-container" className="h-full">
             <div className="p-3 sm:p-4 md:p-6 h-full">
               <Settings />
             </div>
