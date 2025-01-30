@@ -1,28 +1,23 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Messages } from "../Messages";
-import { VCard } from "../VCard";
-import { JobList } from "../jobs/JobList";
-import { TodoSection } from "../todo/TodoSection";
-import { Settings } from "../Settings";
+import { useState } from "react";
+import { useProfile } from "@/hooks/useProfile";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
+import { JobList } from "@/components/jobs/JobList";
+import { UnifiedBoard } from "@/components/board/UnifiedBoard";
 import { ColorOption } from "@/types/todo";
+import { VCard } from "@/components/VCard";
+import { JobFiltersPanel } from "@/components/jobs/JobFiltersPanel";
+import { defaultFilters } from "@/components/jobs/JobFilterUtils";
+import { motion } from "framer-motion";
 
 interface DashboardContentProps {
   currentPage: number;
-  isEditing: boolean;
-  viewportHeight: number;
-  onEditStateChange: (isEditing: boolean) => void;
-  onRequestChat: () => void;
 }
 
-export function DashboardContent({
-  currentPage,
-  isEditing,
-  viewportHeight,
-  onEditStateChange,
-  onRequestChat,
-}: DashboardContentProps) {
+export function DashboardContent({ currentPage }: DashboardContentProps) {
+  const { profile } = useProfile();
+  const [filters, setFilters] = useState(defaultFilters);
+
   const {
     todos,
     newTodo,
@@ -56,26 +51,56 @@ export function DashboardContent({
     { value: 'purple', label: 'Violet', class: 'bg-purple-200' },
   ];
 
+  const handleFilterChange = (key: string, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
   const renderContent = () => {
     switch (currentPage) {
       case 1:
         return (
-          <div className="p-4 sm:p-6 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 sm:p-6"
+          >
             <VCard />
-          </div>
+          </motion.div>
         );
       case 2:
-        return <Messages />;
+        return (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 lg:grid-cols-[300px,1fr] gap-6 p-4 sm:p-6"
+          >
+            <div className="lg:sticky lg:top-6 space-y-6">
+              <JobFiltersPanel
+                filters={filters}
+                onFilterChange={handleFilterChange}
+              />
+            </div>
+            <JobList jobs={[]} />
+          </motion.div>
+        );
       case 3:
         return (
-          <div className="p-4 sm:p-6 space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 sm:p-6 space-y-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10"
+          >
             <JobList jobs={[]} />
-          </div>
+          </motion.div>
         );
       case 4:
         return (
-          <div className="p-4 sm:p-6">
-            <TodoSection
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 sm:p-6"
+          >
+            <UnifiedBoard
               todos={todos}
               notes={notes}
               newTodo={newTodo}
@@ -97,27 +122,16 @@ export function DashboardContent({
               onDeleteTodo={deleteTodo}
               onDeleteNote={deleteNote}
             />
-          </div>
+          </motion.div>
         );
-      case 5:
-        return <Settings />;
       default:
         return null;
     }
   };
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={currentPage}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.2 }}
-        className="min-h-screen pb-20"
-      >
-        {renderContent()}
-      </motion.div>
-    </AnimatePresence>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {renderContent()}
+    </div>
   );
 }

@@ -20,18 +20,18 @@ export function JobFiltersPanel({
 
   if (isMobile) {
     return (
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <div className="sticky top-0 z-50 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="w-full">
+            <Button variant="outline" size="lg" className="w-full bg-white/5 hover:bg-white/10 text-white border-white/10">
               <Filter className="w-4 h-4 mr-2" />
               Filtres
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-full sm:max-w-lg">
+          <SheetContent side="left" className="w-full sm:max-w-lg bg-gray-900/95 border-white/10">
             <SheetHeader>
-              <SheetTitle>Filtres</SheetTitle>
-              <SheetDescription>
+              <SheetTitle className="text-white">Filtres</SheetTitle>
+              <SheetDescription className="text-gray-400">
                 Affinez votre recherche avec les filtres ci-dessous
               </SheetDescription>
             </SheetHeader>
@@ -51,7 +51,7 @@ export function JobFiltersPanel({
     <motion.div 
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-card rounded-lg border shadow-sm overflow-hidden"
+      className="bg-gray-900/95 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-hidden"
     >
       <ScrollArea className="h-[calc(100vh-8rem)]">
         <div className="p-4">
