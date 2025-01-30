@@ -10,7 +10,7 @@ import { useDebounce } from "use-debounce";
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(2);
+  const [currentPage, setCurrentPage] = useState(1); // Set initial page to Profile (1)
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   
