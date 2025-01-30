@@ -4,7 +4,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { JobFilters as JobFiltersType, defaultFilters } from "./JobFilterUtils";
 import { SearchFilter } from "./filters/SearchFilter";
 import { CategoryFilters } from "./filters/CategoryFilters";
-import { BudgetFilter } from "./filters/BudgetFilter";
+import { LocationFilter } from "./filters/LocationFilter";
+import { WorkTypeFilters } from "./filters/WorkTypeFilters";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
@@ -63,7 +64,9 @@ export function JobFilters({
           <Separator />
           <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
           <Separator />
-          <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
+          <LocationFilter filters={filters} onFilterChange={onFilterChange} />
+          <Separator />
+          <WorkTypeFilters filters={filters} onFilterChange={onFilterChange} />
         </motion.div>
       </ScrollArea>
     </motion.div>
