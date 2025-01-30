@@ -113,8 +113,12 @@ export function SwipeJob() {
   };
 
   useEffect(() => {
-    initializeGoogleSearch();
+    const timer = setTimeout(() => {
+      initializeGoogleSearch();
+    }, 1000);
+
     return () => {
+      clearTimeout(timer);
       const existingElements = document.querySelectorAll(".gcse-search, .gcse-searchbox, .gcse-searchresults");
       existingElements.forEach(el => el.remove());
       
@@ -171,9 +175,9 @@ export function SwipeJob() {
         animate={{ opacity: 1 }}
         className="container mx-auto p-6 space-y-6"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1 lg:block">
-            <div className="sticky top-24 bg-background rounded-lg border p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-3 lg:block">
+            <div className="sticky top-24 bg-background rounded-lg border p-4 shadow-sm">
               <BrowseJobsTab 
                 filters={filters}
                 onFilterChange={handleFilterChange}
@@ -183,7 +187,7 @@ export function SwipeJob() {
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-9 space-y-6">
             <VictaureJobsSection 
               jobs={jobs}
               isLoading={isJobsLoading}
