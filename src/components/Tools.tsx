@@ -7,7 +7,8 @@ import { HoursForm } from "@/components/salary/HoursForm";
 import { AllowancesForm } from "@/components/salary/AllowancesForm";
 import { SalaryResults } from "@/components/salary/SalaryResults";
 import { calculateSalary } from "@/utils/salaryCalculator";
-import { rates } from "@/constants/rates";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calculator } from "lucide-react";
 
 interface ExpenseEntry {
   store: string;
@@ -120,39 +121,57 @@ export function Tools() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="p-6">
-        <div className="grid gap-8">
-          <JobInfoForm
-            jobInfo={jobInfo}
-            onJobInfoChange={handleJobInfoChange}
-            employeeName={employeeName}
-            setEmployeeName={setEmployeeName}
-            setWeekDates={setWeekDates}
-          />
+      <Tabs defaultValue="salary" className="w-full">
+        <TabsList className="grid w-full max-w-[400px] grid-cols-2 mb-8">
+          <TabsTrigger value="salary" className="flex items-center gap-2">
+            <Calculator className="h-4 w-4" />
+            Calculateur de paie
+          </TabsTrigger>
+          <TabsTrigger value="other">Autres outils</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="salary">
+          <Card className="p-6">
+            <div className="grid gap-8">
+              <JobInfoForm
+                jobInfo={jobInfo}
+                onJobInfoChange={handleJobInfoChange}
+                employeeName={employeeName}
+                setEmployeeName={setEmployeeName}
+                setWeekDates={setWeekDates}
+              />
 
-          <HoursForm
-            hours={hours}
-            premiums={premiums}
-            onHoursChange={handleHoursChange}
-            onPremiumChange={handlePremiumChange}
-            weekDates={weekDates}
-          />
+              <HoursForm
+                hours={hours}
+                premiums={premiums}
+                onHoursChange={handleHoursChange}
+                onPremiumChange={handlePremiumChange}
+                weekDates={weekDates}
+              />
 
-          <AllowancesForm
-            allowances={allowances}
-            onAllowanceChange={handleAllowanceChange}
-            expenses={expenses}
-            onExpensesChange={setExpenses}
-          />
+              <AllowancesForm
+                allowances={allowances}
+                onAllowanceChange={handleAllowanceChange}
+                expenses={expenses}
+                onExpensesChange={setExpenses}
+              />
 
-          <SalaryResults
-            salary={salary}
-            jobInfo={jobInfo}
-            employeeName={employeeName}
-            expenses={expenses}
-          />
-        </div>
-      </Card>
+              <SalaryResults
+                salary={salary}
+                jobInfo={jobInfo}
+                employeeName={employeeName}
+                expenses={expenses}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="other">
+          <Card className="p-6">
+            <p className="text-muted-foreground">D'autres outils seront bientôt disponibles...</p>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
