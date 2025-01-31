@@ -27,7 +27,6 @@ export function DashboardContent({
   const { profile, setProfile } = useProfile();
   const { selectedStyle } = useVCardStyle();
   
-  // Add hooks for todos and notes
   const {
     todos,
     newTodo,
@@ -101,7 +100,22 @@ export function DashboardContent({
             onDeleteNote={deleteNote}
           />
         );
-      case 5: // Settings
+      case 5: // Tools
+        return (
+          <div className="container mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold mb-6">Outils</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Placeholder for tools content */}
+              <div className="p-6 rounded-lg border border-border bg-card">
+                <h3 className="text-lg font-semibold mb-2">Bientôt disponible</h3>
+                <p className="text-muted-foreground">
+                  De nouveaux outils seront ajoutés prochainement.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      case 6: // Settings
         return <Settings />;
       default:
         return null;

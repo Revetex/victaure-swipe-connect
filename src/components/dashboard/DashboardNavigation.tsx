@@ -1,4 +1,4 @@
-import { UserCircle, MessageSquare, BriefcaseIcon, Settings, ClipboardList } from "lucide-react";
+import { UserCircle, MessageSquare, BriefcaseIcon, Settings, ClipboardList, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,8 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
     { id: 2, icon: MessageSquare, name: "Messages" },
     { id: 3, icon: BriefcaseIcon, name: "Emplois" },
     { id: 4, icon: ClipboardList, name: "Tâches/Notes" },
-    { id: 5, icon: Settings, name: "Paramètres" }
+    { id: 5, icon: Wrench, name: "Outils" },
+    { id: 6, icon: Settings, name: "Paramètres" }
   ];
 
   return (
