@@ -8,30 +8,50 @@ import { PremiumsForm } from "./salary/PremiumsForm";
 import { ExpensesForm } from "./salary/ExpensesForm";
 import { SalaryResults } from "./salary/SalaryResults";
 import { toast } from "sonner";
+import { Hours, JobInfo, Allowances, Premiums } from "@/types/salary";
 
 export function Tools() {
   const [activeTab, setActiveTab] = useState("hours");
-  const [formData, setFormData] = useState({
-    hours: {},
-    jobInfo: {},
-    allowances: {},
-    premiums: {},
-    expenses: {}
+  const [employeeName, setEmployeeName] = useState("");
+  const [weekDates, setWeekDates] = useState<Date[]>([]);
+  const [hours, setHours] = useState<Hours>({
+    regular: { sunday: 0, monday: 0, tuesday: 0, wednesday: 0, thursday: 0, friday: 0, saturday: 0 },
+    doubleTime: { sunday: 0, monday: 0, tuesday: 0, wednesday: 0, thursday: 0, friday: 0, saturday: 0 },
+    travelTime: { sunday: 0, monday: 0, tuesday: 0, wednesday: 0, thursday: 0, friday: 0, saturday: 0 }
   });
+  const [jobInfo, setJobInfo] = useState<JobInfo>({
+    weekEnding: "",
+    companyName: "",
+    jobSiteAddress: "",
+    jobNumber: ""
+  });
+  const [allowances, setAllowances] = useState<Allowances>({
+    pensionDaysApplied: {},
+    mealDaysApplied: {},
+    truckDaysApplied: {},
+    overtimeMealDaysApplied: {},
+    regularKm: 0,
+    loadedKm: 0,
+    trailerKm: 0,
+    expenses: 0,
+    pension: 0,
+    meal: 0,
+    truck: 0,
+    km: 0,
+    total: 0
+  });
+  const [premiums, setPremiums] = useState<Premiums>({
+    refractory: false,
+    superintendent: false,
+    nightShift: false,
+    flyingPlatform: false,
+    airAssisted: false,
+    heavyIndustrial: false
+  });
+  const [expenses, setExpenses] = useState([{ store: "", description: "", amount: 0 }]);
 
-  const handleFormSubmit = (type: string, data: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [type]: data
-    }));
-    
-    // Move to next tab automatically
-    const tabOrder = ["hours", "jobInfo", "allowances", "premiums", "expenses", "results"];
-    const currentIndex = tabOrder.indexOf(activeTab);
-    if (currentIndex < tabOrder.length - 1) {
-      setActiveTab(tabOrder[currentIndex + 1]);
-      toast.success("Informations sauvegardées");
-    }
+  const handleJobInfoChange = (field: keyof JobInfo, value: string) => {
+    setJobInfo(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -51,27 +71,51 @@ export function Tools() {
 
           <div className="mt-6">
             <TabsContent value="hours">
-              <HoursForm onSubmit={(data) => handleFormSubmit('hours', data)} />
+              <HoursForm 
+                hours={hours}
+                onHoursChange={setHours}
+              />
             </TabsContent>
             
             <TabsContent value="jobInfo">
-              <JobInfoForm onSubmit={(data) => handleFormSubmit('jobInfo', data)} />
+              <JobInfoForm 
+                jobInfo={jobInfo}
+                onJobInfoChange={handleJobInfoChange}
+                employeeName={employeeName}
+                setEmployeeName={setEmployeeName}
+                setWeekDates={setWeekDates}
+              />
             </TabsContent>
             
             <TabsContent value="allowances">
-              <AllowancesForm onSubmit={(data) => handleFormSubmit('allowances', data)} />
+              <AllowancesForm 
+                allowances={allowances}
+                weekDates={weekDates}
+                onAllowancesChange={setAllowances}
+              />
             </TabsContent>
             
             <TabsContent value="premiums">
-              <PremiumsForm onSubmit={(data) => handleFormSubmit('premiums', data)} />
+              <PremiumsForm 
+                premiums={premiums}
+                onPremiumsChange={setPremiums}
+              />
             </TabsContent>
             
             <TabsContent value="expenses">
-              <ExpensesForm onSubmit={(data) => handleFormSubmit('expenses', data)} />
+              <ExpensesForm 
+                expenses={expenses}
+                onExpensesChange={setExpenses}
+              />
             </TabsContent>
             
             <TabsContent value="results">
-              <SalaryResults formData={formData} />
+              <SalaryResults 
+                salary={calculateSalary(hours, allowances, premiums)}
+                jobInfo={jobInfo}
+                employeeName={employeeName}
+                expenses={expenses}
+              />
             </TabsContent>
           </div>
         </Tabs>
