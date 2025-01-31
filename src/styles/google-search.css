@@ -4,7 +4,7 @@
   border: none !important;
   background: transparent !important;
   position: relative !important;
-  z-index: 50 !important;
+  z-index: 1 !important;
 }
 
 .gsc-search-box {
@@ -49,21 +49,18 @@
 /* Styles pour les résultats de recherche */
 .gsc-results-wrapper-visible {
   margin-top: 1rem !important;
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
+  position: relative !important;
   width: 100% !important;
-  max-height: 70vh !important;
-  overflow-y: auto !important;
   background: hsl(var(--background)) !important;
   border-radius: 0.5rem !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-  z-index: 40 !important;
+  z-index: 1 !important;
 }
 
 .gs-result {
   padding: 1rem !important;
   border-bottom: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--background)) !important;
 }
 
 .gs-result:last-child {
@@ -125,15 +122,25 @@
 .gcse-search {
   position: relative !important;
   width: 100% !important;
+  background: transparent !important;
 }
 
 /* Ensure results don't overflow the viewport */
 .gsc-results-wrapper-overlay {
-  position: fixed !important;
-  top: auto !important;
-  left: 0 !important;
+  position: relative !important;
   width: 100% !important;
   height: auto !important;
-  max-height: 80vh !important;
   margin-top: 1rem !important;
+  background: transparent !important;
+}
+
+/* Fix for white overlay */
+.gsc-results-wrapper-visible,
+.gsc-results-wrapper-overlay,
+.gsc-overlay-results {
+  background: transparent !important;
+}
+
+.gsc-results {
+  background: transparent !important;
 }

@@ -36,7 +36,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <div className="flex flex-col gap-4">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center gap-4 min-h-[100px]">
@@ -53,11 +53,11 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           </div>
         ) : (
           <motion.div 
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 w-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div ref={searchContainerRef} className="gcse-search"></div>
+            <div ref={searchContainerRef} className="w-full gcse-search"></div>
           </motion.div>
         )}
       </div>
