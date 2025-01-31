@@ -1,17 +1,5 @@
-export interface JobInfo {
-  weekEnding: string;
-  companyName: string;
-  jobSiteAddress: string;
-  jobNumber: string;
-}
-
-export interface Hours {
-  regular: DailyHours;
-  doubleTime: DailyHours;
-  travelTime: DailyHours;
-}
-
 export interface DailyHours {
+  [key: string]: number;
   sunday: number;
   monday: number;
   tuesday: number;
@@ -19,6 +7,12 @@ export interface DailyHours {
   thursday: number;
   friday: number;
   saturday: number;
+}
+
+export interface Hours {
+  regular: DailyHours;
+  doubleTime: DailyHours;
+  travelTime: DailyHours;
 }
 
 export interface Allowances {
@@ -46,26 +40,34 @@ export interface Premiums {
   heavyIndustrial: boolean;
 }
 
+export interface JobInfo {
+  weekEnding: string;
+  companyName: string;
+  jobSiteAddress: string;
+  jobNumber: string;
+}
+
 export interface SalaryResult {
-  regularHours: number;
-  doubleTimeHours: number;
-  travelTimeHours: number;
-  regularPay: number;
-  doubleTimePay: number;
+  hours: Hours;
+  baseSalary: number;
   travelTimePay: number;
-  allowances: number;
-  grossPay: number;
+  premiumTotal: number;
+  subtotal: number;
+  vacationPay: number;
   deductions: {
     rrq: number;
     ei: number;
     rqap: number;
     unionDues: number;
-    vacation: number;
+    provincialTax: number;
+    federalTax: number;
     socialBenefits: number;
     ccqLevy: number;
     sectoralContribution: number;
-    ccqInsurance: number;
+    vacationPayDeduction: number;
     total: number;
   };
+  allowances: Allowances;
   netPay: number;
+  totalPayment: number;
 }

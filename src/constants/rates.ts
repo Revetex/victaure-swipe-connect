@@ -17,7 +17,8 @@ export const rates = {
     socialBenefitsRate: 0.1735,
     ccqLevyRate: 0.00575,
     sectoralContribution: 0.02,
-    unionDues: 35.00
+    unionDues: 35.00,
+    ccqInsuranceRate: 2.704
   },
   premiums: {
     refractory: 1.50,
