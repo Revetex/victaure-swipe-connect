@@ -1,4 +1,4 @@
-import { VCardActions } from "./VCardActions";
+import { VCardActions } from "../VCardActions";
 import { StyleOption } from "./types";
 
 interface VCardFooterProps {
@@ -28,11 +28,10 @@ export function VCardFooter({
         isEditing={isEditing}
         isPdfGenerating={isPdfGenerating}
         isProcessing={isProcessing}
-        setIsEditing={() => onEditToggle()}
+        setIsEditing={onEditToggle}
         onSave={onSave}
         onDownloadBusinessPDF={onDownloadBusinessCard}
         onDownloadCVPDF={onDownloadCV}
-        selectedStyle={selectedStyle}
       />
     </div>
   );
