@@ -15,13 +15,13 @@ const queryClient = new QueryClient({
 
 export default function AppWrapper() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <Router>
           <App />
           <Toaster position="top-right" expand={false} richColors />
         </Router>
-      </QueryClientProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
