@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { UserProfile, Experience } from "@/types/profile";
 import { useVCardStyle } from "./VCardStyleContext";
+import { toast } from "sonner";
 
 interface VCardExperiencesProps {
   profile: UserProfile;
@@ -25,7 +26,10 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
   });
 
   const handleAddExperience = () => {
-    if (!newExperience.company || !newExperience.position) return;
+    if (!newExperience.company || !newExperience.position) {
+      toast.error("Veuillez remplir au moins l'entreprise et le poste");
+      return;
+    }
 
     const experience: Experience = {
       id: crypto.randomUUID(),
@@ -48,6 +52,8 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
       end_date: "",
       description: ""
     });
+    
+    toast.success("Expérience ajoutée avec succès");
   };
 
   const handleRemoveExperience = (id: string) => {
@@ -55,6 +61,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
       ...profile,
       experiences: profile.experiences?.filter(exp => exp.id !== id) || []
     });
+    toast.success("Expérience supprimée");
   };
 
   const formatDate = (dateString: string | null) => {
@@ -70,7 +77,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
       title="Expériences professionnelles"
       icon={<Briefcase className="h-5 w-5" style={{ color: selectedStyle.colors.primary }} />}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-3xl mx-auto">
         <AnimatePresence>
           {profile.experiences?.map((experience) => (
             <motion.div
@@ -78,7 +85,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="relative p-4 rounded-lg bg-card/50 space-y-2 border border-border/50"
+              className="relative p-6 rounded-lg bg-white/5 backdrop-blur-sm space-y-2 border border-indigo-500/20"
             >
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 min-w-0">
@@ -89,14 +96,14 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                     {experience.position}
                   </h4>
                   <p 
-                    className="text-sm font-medium" 
+                    className="text-sm font-medium mt-1" 
                     style={{ color: selectedStyle.colors.text.secondary }}
                   >
                     {experience.company}
                   </p>
                   {(experience.start_date || experience.end_date) && (
                     <p 
-                      className="text-sm mt-1" 
+                      className="text-sm mt-2" 
                       style={{ color: selectedStyle.colors.text.muted }}
                     >
                       {formatDate(experience.start_date)}
@@ -105,7 +112,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   )}
                   {experience.description && (
                     <p 
-                      className="text-sm mt-2 whitespace-pre-wrap" 
+                      className="text-sm mt-3 whitespace-pre-wrap" 
                       style={{ color: selectedStyle.colors.text.muted }}
                     >
                       {experience.description}
@@ -117,7 +124,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveExperience(experience.id)}
-                    className="shrink-0 hover:text-destructive"
+                    className="shrink-0 hover:text-destructive transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -131,19 +138,19 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-4 p-4 rounded-lg bg-card/50 border border-border/50"
+            className="space-y-4 p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-indigo-500/20"
           >
             <Input
               placeholder="Entreprise"
               value={newExperience.company}
               onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
-              className="bg-background/50 border-input"
+              className="bg-white/10 border-indigo-500/20"
             />
             <Input
               placeholder="Poste"
               value={newExperience.position}
               onChange={(e) => setNewExperience({ ...newExperience, position: e.target.value })}
-              className="bg-background/50 border-input"
+              className="bg-white/10 border-indigo-500/20"
             />
             <div className="grid grid-cols-2 gap-4">
               <Input
@@ -151,25 +158,25 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                 placeholder="Date de début"
                 value={newExperience.start_date}
                 onChange={(e) => setNewExperience({ ...newExperience, start_date: e.target.value })}
-                className="bg-background/50 border-input"
+                className="bg-white/10 border-indigo-500/20"
               />
               <Input
                 type="date"
                 placeholder="Date de fin"
                 value={newExperience.end_date}
                 onChange={(e) => setNewExperience({ ...newExperience, end_date: e.target.value })}
-                className="bg-background/50 border-input"
+                className="bg-white/10 border-indigo-500/20"
               />
             </div>
             <Textarea
               placeholder="Description"
               value={newExperience.description}
               onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
-              className="bg-background/50 border-input"
+              className="bg-white/10 border-indigo-500/20 min-h-[100px]"
             />
             <Button
               onClick={handleAddExperience}
-              className="w-full"
+              className="w-full transition-colors"
               style={{ 
                 backgroundColor: selectedStyle.colors.primary,
                 color: '#fff'
