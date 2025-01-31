@@ -68,14 +68,14 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="relative p-4 rounded-lg bg-white/5 space-y-2"
+              className="relative p-4 rounded-lg bg-card/50 space-y-2 border border-border/50"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-medium text-white">{experience.position}</h4>
-                  <p className="text-sm text-white/80">{experience.company}</p>
+                  <h4 className="font-medium text-foreground">{experience.position}</h4>
+                  <p className="text-sm text-muted-foreground">{experience.company}</p>
                   {experience.start_date && (
-                    <p className="text-sm text-white/60">
+                    <p className="text-sm text-muted-foreground/80">
                       {new Date(experience.start_date).toLocaleDateString()} - 
                       {experience.end_date 
                         ? new Date(experience.end_date).toLocaleDateString()
@@ -88,14 +88,14 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveExperience(experience.id)}
-                    className="text-white/60 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
               </div>
               {experience.description && (
-                <p className="text-sm text-white/70">{experience.description}</p>
+                <p className="text-sm text-muted-foreground">{experience.description}</p>
               )}
             </motion.div>
           ))}
@@ -105,19 +105,19 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-4 p-4 rounded-lg bg-white/5"
+            className="space-y-4 p-4 rounded-lg bg-card/50 border border-border/50"
           >
             <Input
               placeholder="Entreprise"
               value={newExperience.company}
               onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="bg-background/50 border-input"
             />
             <Input
               placeholder="Poste"
               value={newExperience.position}
               onChange={(e) => setNewExperience({ ...newExperience, position: e.target.value })}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="bg-background/50 border-input"
             />
             <div className="grid grid-cols-2 gap-4">
               <Input
@@ -125,25 +125,25 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                 placeholder="Date de début"
                 value={newExperience.start_date}
                 onChange={(e) => setNewExperience({ ...newExperience, start_date: e.target.value })}
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="bg-background/50 border-input"
               />
               <Input
                 type="date"
                 placeholder="Date de fin"
                 value={newExperience.end_date}
                 onChange={(e) => setNewExperience({ ...newExperience, end_date: e.target.value })}
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="bg-background/50 border-input"
               />
             </div>
             <Textarea
               placeholder="Description"
               value={newExperience.description}
               onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="bg-background/50 border-input"
             />
             <Button
               onClick={handleAddExperience}
-              className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors duration-200"
               disabled={!newExperience.company || !newExperience.position}
             >
               <Plus className="h-4 w-4 mr-2" />
