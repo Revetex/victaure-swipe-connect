@@ -35,43 +35,44 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        // Fetch profile data with maybeSingle() instead of single()
+        // Convert Supabase queries to Promises by executing them
         const { data: profileData, error: profileError } = await fetchWithRetry(() =>
           supabase
             .from('profiles')
             .select('*')
             .eq('id', user.id)
             .maybeSingle()
+            .then(result => result)
         );
 
         if (profileError) throw profileError;
 
-        // Fetch certifications with retry
         const { data: certifications, error: certError } = await fetchWithRetry(() =>
           supabase
             .from('certifications')
             .select('*')
             .eq('profile_id', user.id)
+            .then(result => result)
         );
 
         if (certError) throw certError;
 
-        // Fetch education with retry
         const { data: education, error: eduError } = await fetchWithRetry(() =>
           supabase
             .from('education')
             .select('*')
             .eq('profile_id', user.id)
+            .then(result => result)
         );
 
         if (eduError) throw eduError;
 
-        // Fetch experiences with retry
         const { data: experiences, error: expError } = await fetchWithRetry(() =>
           supabase
             .from('experiences')
             .select('*')
             .eq('profile_id', user.id)
+            .then(result => result)
         );
 
         if (expError) throw expError;
