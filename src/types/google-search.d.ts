@@ -16,6 +16,8 @@ interface Window {
               newWindow?: string;
               queryParameterName?: string;
               overlayResults?: string;
+              resultsUrl?: string;
+              linkTarget?: string;
             };
           }) => void;
         };

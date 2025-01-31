@@ -127,16 +127,6 @@
   background: transparent !important;
 }
 
-/* Ensure results don't overflow */
-.gsc-results-wrapper-overlay {
-  position: relative !important;
-  width: 100% !important;
-  height: auto !important;
-  margin-top: 1rem !important;
-  background: transparent !important;
-  overflow: visible !important;
-}
-
 /* Fix for white overlay */
 .gsc-results-wrapper-visible,
 .gsc-results-wrapper-overlay,
@@ -167,4 +157,20 @@
 /* Ensure body can scroll */
 body.gsc-overflow-hidden {
   overflow: auto !important;
+}
+
+/* Additional fixes for overlay and modal issues */
+.gsc-modal-background-image,
+.gsc-overflow-hidden:not(body) {
+  display: none !important;
+}
+
+.gsc-wrapper {
+  position: relative !important;
+  background: transparent !important;
+}
+
+.gsc-above-wrapper-area,
+.gsc-webResult.gsc-result {
+  background-color: transparent !important;
 }

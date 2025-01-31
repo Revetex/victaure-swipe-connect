@@ -14,14 +14,27 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const [scriptError, setScriptError] = useState(false);
 
   useEffect(() => {
-    // Disable all Google CSE logging and analytics before loading the script
+    // Disable all Google CSE logging and analytics
     window.___gcfg = {
       parsetags: 'explicit',
       suppressAnalytics: true,
       suppressLogging: true
     };
 
-    // Create and configure script element with error handling
+    // Remove any existing search elements and scripts
+    const cleanup = () => {
+      const existingElements = document.querySelectorAll('.gcse-search, script[src*="cse.google.com"]');
+      existingElements.forEach(element => element.remove());
+      document.body.classList.remove('gsc-overflow-hidden');
+      if (window.google?.search?.cse?.element) {
+        delete window.google.search.cse.element;
+      }
+      delete window.___gcfg;
+    };
+
+    cleanup();
+
+    // Create and configure script element
     const script = document.createElement("script");
     script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
@@ -30,6 +43,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
     const handleError = () => {
       setScriptError(true);
       console.error("Failed to load Google CSE script");
+      cleanup();
     };
 
     script.onerror = handleError;
@@ -38,13 +52,9 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       try {
         if (window.google && searchContainerRef.current) {
           // Force remove any existing search elements
-          const existingElements = document.querySelectorAll('.gcse-search');
-          existingElements.forEach(element => element.remove());
+          cleanup();
 
-          // Remove overflow hidden from body if it was added
-          document.body.classList.remove('gsc-overflow-hidden');
-
-          // Render new search element
+          // Render new search element with all necessary configurations
           window.google.search.cse.element.render({
             div: searchContainerRef.current,
             tag: 'search',
@@ -57,7 +67,9 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
               noResultsString: 'Aucun résultat trouvé',
               newWindow: 'true',
               queryParameterName: 'q',
-              overlayResults: 'false'
+              overlayResults: 'false',
+              resultsUrl: window.location.origin + window.location.pathname,
+              linkTarget: '_blank'
             }
           });
 
@@ -74,6 +86,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       } catch (error) {
         console.error("Error rendering Google CSE:", error);
         setScriptError(true);
+        cleanup();
       }
     };
 
@@ -81,18 +94,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
     document.head.appendChild(script);
 
     // Cleanup function
-    return () => {
-      if (document.head.contains(script)) {
-        script.remove();
-      }
-      // Clean up the global configuration
-      delete window.___gcfg;
-      // Clean up any existing CSE elements
-      const existingElements = document.querySelectorAll('.gcse-search');
-      existingElements.forEach(element => element.remove());
-      // Ensure body can scroll on unmount
-      document.body.classList.remove('gsc-overflow-hidden');
-    };
+    return cleanup;
   }, []);
 
   if (scriptError) {
