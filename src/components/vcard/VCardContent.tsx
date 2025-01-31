@@ -22,7 +22,7 @@ export function VCardContent({
   handleRemoveSkill,
 }: VCardContentProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 w-full px-4 sm:px-6 lg:px-8">
       <VCardSkills
         profile={profile}
         isEditing={isEditing}
