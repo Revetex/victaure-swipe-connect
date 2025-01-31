@@ -16,108 +16,102 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const [isSearchLoaded, setIsSearchLoaded] = useState(false);
   const { toast } = useToast();
   const scriptLoadedRef = useRef(false);
+  const initializationAttempted = useRef(false);
+
+  const initializeSearch = () => {
+    if (!window.google?.search?.cse?.element || !searchContainerRef.current) {
+      console.error("Google CSE not found or container not ready");
+      return false;
+    }
+
+    try {
+      // Clear previous content
+      searchContainerRef.current.innerHTML = '';
+      
+      // Create search element
+      const searchDiv = document.createElement('div');
+      searchDiv.className = 'gcse-searchbox-only';
+      searchDiv.setAttribute('data-resultsUrl', '/search-results');
+      searchDiv.setAttribute('enableAutoComplete', 'true');
+      searchDiv.setAttribute('autoCompleteMaxCompletions', '5');
+      
+      // Append to container
+      searchContainerRef.current.appendChild(searchDiv);
+
+      // Initialize search
+      window.google.search.cse.element.render({
+        div: searchDiv,
+        tag: 'searchbox-only',
+        gname: 'gsearch'
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Error initializing search:", error);
+      return false;
+    }
+  };
 
   useEffect(() => {
-    const loadSearch = () => {
-      if (!window.google?.search?.cse?.element) {
-        console.error("Google CSE not found");
+    if (scriptLoadedRef.current && !initializationAttempted.current) {
+      const success = initializeSearch();
+      if (success) {
+        setIsSearchLoaded(true);
+        setScriptError(false);
+      } else {
         setScriptError(true);
-        return;
       }
+      initializationAttempted.current = true;
+    }
+  }, []);
 
-      try {
-        if (searchContainerRef.current) {
-          // Clear previous content
-          searchContainerRef.current.innerHTML = '';
-          
-          // Create search element
-          const searchDiv = document.createElement('div');
-          searchDiv.className = 'gcse-searchbox-only';
-          searchDiv.setAttribute('data-resultsUrl', '/search-results');
-          searchDiv.setAttribute('enableAutoComplete', 'true');
-          searchDiv.setAttribute('autoCompleteMaxCompletions', '5');
-          
-          // Append to container
-          searchContainerRef.current.appendChild(searchDiv);
+  useEffect(() => {
+    if (scriptLoadedRef.current) return;
 
-          // Initialize search
-          window.google.search.cse.element.render({
-            div: searchDiv,
-            tag: 'searchbox-only',
-            gname: 'gsearch'
-          });
-
+    const script = document.createElement('script');
+    script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
+    script.async = true;
+    script.defer = true;
+    
+    let timeoutId: NodeJS.Timeout;
+    
+    script.onload = () => {
+      scriptLoadedRef.current = true;
+      
+      // Wait a bit for the Google CSE to initialize
+      timeoutId = setTimeout(() => {
+        const success = initializeSearch();
+        if (success) {
           setIsSearchLoaded(true);
           setScriptError(false);
-        }
-      } catch (error) {
-        console.error("Error rendering search:", error);
-        setScriptError(true);
-        toast({
-          variant: "destructive",
-          title: "Erreur de chargement",
-          description: "Impossible de charger la recherche. Veuillez réessayer."
-        });
-      }
-    };
-
-    // Load Google CSE script only if not already loaded
-    const loadScript = () => {
-      if (scriptLoadedRef.current) {
-        loadSearch();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
-      script.async = true;
-      script.defer = true;
-      
-      script.onload = () => {
-        scriptLoadedRef.current = true;
-        if (window.google?.search?.cse?.element) {
-          loadSearch();
         } else {
-          const checkGoogleCSE = setInterval(() => {
-            if (window.google?.search?.cse?.element) {
-              loadSearch();
-              clearInterval(checkGoogleCSE);
-            }
-          }, 100);
-
-          // Clear interval and show error if Google CSE doesn't load after timeout
-          setTimeout(() => {
-            clearInterval(checkGoogleCSE);
-            if (!isSearchLoaded) {
-              setScriptError(true);
-              toast({
-                variant: "destructive",
-                title: "Erreur de chargement",
-                description: "Le service de recherche n'a pas pu être chargé. Veuillez réessayer plus tard."
-              });
-            }
-          }, 30000); // Extended timeout to 30s
+          setScriptError(true);
+          toast({
+            variant: "destructive",
+            title: "Erreur de chargement",
+            description: "Le service de recherche n'a pas pu être chargé. Veuillez réessayer plus tard."
+          });
         }
-      };
-      
-      script.onerror = () => {
-        console.error("Failed to load Google CSE script");
-        setScriptError(true);
-        toast({
-          variant: "destructive",
-          title: "Erreur de chargement",
-          description: "Impossible de charger le script de recherche. Veuillez vérifier votre connexion."
-        });
-      };
-      
-      document.head.appendChild(script);
+        initializationAttempted.current = true;
+      }, 1000);
     };
+    
+    script.onerror = () => {
+      console.error("Failed to load Google CSE script");
+      setScriptError(true);
+      toast({
+        variant: "destructive",
+        title: "Erreur de chargement",
+        description: "Impossible de charger le script de recherche. Veuillez vérifier votre connexion."
+      });
+    };
+    
+    document.head.appendChild(script);
 
-    loadScript();
-
-    // Cleanup function
     return () => {
+      clearTimeout(timeoutId);
       scriptLoadedRef.current = false;
+      initializationAttempted.current = false;
       setIsSearchLoaded(false);
     };
   }, [toast]);
@@ -134,6 +128,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             setScriptError(false);
             setIsSearchLoaded(false);
             scriptLoadedRef.current = false;
+            initializationAttempted.current = false;
             window.location.reload();
           }} 
           variant="outline"
