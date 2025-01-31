@@ -108,4 +108,21 @@
   .touch-target {
     @apply p-2 my-1;
   }
+
+  /* Optimisations mobiles */
+  @media (max-width: 640px) {
+    input, 
+    select, 
+    textarea {
+      @apply text-base;
+    }
+
+    button {
+      @apply px-4 py-2;
+    }
+
+    .container {
+      @apply px-4;
+    }
+  }
 }
