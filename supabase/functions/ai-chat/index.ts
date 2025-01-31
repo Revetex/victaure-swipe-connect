@@ -63,8 +63,8 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 200,
-            temperature: 0.8,
+            max_new_tokens: 500,
+            temperature: 0.7,
             top_p: 0.95,
             frequency_penalty: 0.3,
             presence_penalty: 0.3,
@@ -100,6 +100,15 @@ serve(async (req) => {
         assistantResponse = sentences.join(' ').trim()
       }
     }
+
+    // Store learning data
+    const { data: client } = await supabase.from('ai_learning_data').insert({
+      user_id: userId,
+      question: message,
+      response: assistantResponse || data[0].generated_text,
+      context: context || {},
+      tags: ['chat', 'career-advice']
+    })
 
     return new Response(
       JSON.stringify({ response: assistantResponse || data[0].generated_text }),

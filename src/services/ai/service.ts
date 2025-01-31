@@ -8,7 +8,15 @@ export async function generateAIResponse(message: string): Promise<string> {
     if (!user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase.functions.invoke('ai-chat', {
-      body: { message, userId: user.id }
+      body: { 
+        message, 
+        userId: user.id,
+        context: {
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          language: navigator.language
+        }
+      }
     });
 
     if (error) throw error;
@@ -87,6 +95,27 @@ export async function deleteAllMessages(): Promise<void> {
   } catch (error) {
     console.error('Error deleting messages:', error);
     toast.error("Une erreur est survenue lors de la suppression des messages");
+    throw error;
+  }
+}
+
+export async function provideFeedback(messageId: string, score: number): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('ai_learning_data')
+      .update({ feedback_score: score })
+      .eq('id', messageId)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    
+    toast.success("Merci pour votre retour !");
+  } catch (error) {
+    console.error('Error providing feedback:', error);
+    toast.error("Une erreur est survenue lors de l'envoi du retour");
     throw error;
   }
 }
