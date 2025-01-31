@@ -1,32 +1,34 @@
-import { useIsMobile } from "@/hooks/use-mobile";
-import { motion, AnimatePresence } from "framer-motion";
-import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useCallback } from "react";
-import { DashboardNavigation } from "./DashboardNavigation";
-import { DashboardContainer } from "./DashboardContainer";
+import { useState, useEffect } from "react";
 import { DashboardContent } from "./DashboardContent";
-import { useDebounce } from "use-debounce";
+import { DashboardNavigation } from "./DashboardNavigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
+const THROTTLE_DELAY = 300; // ms
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 }
+};
 
 export function DashboardLayout() {
-  const isMobile = useIsMobile();
-  const { containerVariants, itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(1);
+  const [lastPageChange, setLastPageChange] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  
-  const [debouncedSetViewportHeight] = useDebounce(
-    (height: number) => setViewportHeight(height),
-    100
-  );
+  const navigate = useNavigate();
 
-  const [lastPageChange, setLastPageChange] = useState(Date.now());
-  const THROTTLE_DELAY = 300;
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+    };
 
-  const updateHeight = useCallback(() => {
-    debouncedSetViewportHeight(window.innerHeight);
-  }, [debouncedSetViewportHeight]);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  const handlePageChange = useCallback((page: number) => {
+  const handlePageChange = (page: number) => {
     const now = Date.now();
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
@@ -35,11 +37,11 @@ export function DashboardLayout() {
         setIsEditing(false);
       }
     }
-  }, [lastPageChange]);
+  };
 
-  const handleRequestChat = useCallback(() => {
-    handlePageChange(2);
-  }, [handlePageChange]);
+  const handleEditStateChange = (editing: boolean) => {
+    setIsEditing(editing);
+  };
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -58,10 +60,10 @@ export function DashboardLayout() {
             >
               <DashboardContent
                 currentPage={currentPage}
-                isEditing={isEditing}
                 viewportHeight={viewportHeight}
-                onEditStateChange={setIsEditing}
-                onRequestChat={handleRequestChat}
+                isEditing={isEditing}
+                onEditStateChange={handleEditStateChange}
+                onRequestChat={() => {}}
               />
             </motion.div>
           </AnimatePresence>
@@ -72,14 +74,13 @@ export function DashboardLayout() {
         className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 transition-all duration-300 ${
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
-        style={{ 
-          height: '4rem',
+        style={{
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
       >
-        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+        <div className="container mx-auto px-4 py-2">
           <DashboardNavigation 
-            currentPage={currentPage}
+            currentPage={currentPage} 
             onPageChange={handlePageChange}
           />
         </div>
