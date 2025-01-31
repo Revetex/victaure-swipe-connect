@@ -127,23 +127,25 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       }}
     >
       <div className="w-full mx-auto text-gray-900 dark:text-gray-100">
-        <VCardHeader 
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
-          isPdfGenerating={isPdfGenerating}
-          isProcessing={isProcessing}
-          onEditToggle={handleEditToggle}
-          onSave={handleSave}
-          onDownloadBusinessCard={handleDownloadBusinessCard}
-          onDownloadCV={handleDownloadCV}
-        />
+        <div className="sticky top-[3.5rem] z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <VCardHeader 
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+            isPdfGenerating={isPdfGenerating}
+            isProcessing={isProcessing}
+            onEditToggle={handleEditToggle}
+            onSave={handleSave}
+            onDownloadBusinessCard={handleDownloadBusinessCard}
+            onDownloadCV={handleDownloadCV}
+          />
+        </div>
 
         {isEditing && (
           <VCardCustomization profile={profile} setProfile={setProfile} />
         )}
 
-        <div className="mt-8">
+        <div className="mt-4 px-4">
           <VCardSectionsManager
             profile={profile}
             isEditing={isEditing}
