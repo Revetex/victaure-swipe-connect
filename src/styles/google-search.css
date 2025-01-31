@@ -41,6 +41,35 @@
   height: 16px !important;
 }
 
+/* Styles pour les résultats de recherche */
+.gsc-results-wrapper-visible {
+  margin-top: 1rem !important;
+}
+
+.gs-result {
+  padding: 1rem !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+.gs-title {
+  color: hsl(var(--primary)) !important;
+  text-decoration: none !important;
+  font-size: 1.1rem !important;
+  line-height: 1.5 !important;
+}
+
+.gs-snippet {
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+  margin: 0.5rem 0 !important;
+}
+
+.gsc-url-top {
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.8rem !important;
+}
+
 /* Styles pour le mode sombre */
 .dark .gsc-control-cse {
   background: transparent !important;
@@ -67,7 +96,6 @@
 
 .google-search-container {
   width: 100%;
-  max-width: 600px;
   margin: 0 auto;
 }
 
