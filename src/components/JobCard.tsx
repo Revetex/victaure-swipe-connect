@@ -10,7 +10,7 @@ interface JobCardProps {
 }
 
 export function JobCard({ job }: JobCardProps) {
-  const formattedDate = formatDistanceToNow(new Date(job.posted_at), {
+  const formattedDate = formatDistanceToNow(new Date(job.created_at || new Date()), {
     addSuffix: true,
     locale: fr,
   });

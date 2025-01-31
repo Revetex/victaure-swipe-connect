@@ -61,10 +61,7 @@ export function JobList({ jobs, isLoading = false, onJobDeleted }: JobListProps)
               exit={{ opacity: 0, y: -20 }}
               layout
             >
-              <JobCard 
-                job={job}
-                url={job.url}
-              />
+              <JobCard job={job} />
               <JobActions 
                 jobId={job.id} 
                 employerId={job.employer_id}
