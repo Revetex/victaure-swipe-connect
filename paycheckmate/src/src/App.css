@@ -1,0 +1,115 @@
+#root {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0.25rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  #root {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  #root {
+    padding: 1.5rem;
+  }
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: 1.25rem;
+  }
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Improved Typography */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-semibold tracking-tight leading-tight mb-1 sm:mb-2 dark:text-white;
+}
+
+h1 {
+  @apply text-lg sm:text-xl md:text-2xl lg:text-3xl;
+}
+
+h2 {
+  @apply text-base sm:text-lg md:text-xl lg:text-2xl;
+}
+
+h3 {
+  @apply text-sm sm:text-base md:text-lg lg:text-xl;
+}
+
+/* Form Elements */
+input, select, textarea {
+  @apply transition-colors duration-200 text-xs sm:text-sm lg:text-base dark:text-white;
+}
+
+/* Buttons */
+button {
+  @apply font-medium text-xs sm:text-sm lg:text-base dark:text-white;
+}
+
+/* Links */
+a {
+  @apply text-primary hover:text-primary/80 transition-colors duration-200 dark:text-primary-foreground;
+}
+
+/* Tables */
+table {
+  @apply w-full text-xs sm:text-sm lg:text-base dark:text-white;
+}
+
+/* Cards */
+.glass {
+  @apply backdrop-blur-md bg-opacity-90 dark:text-white;
+}
+
+/* Improved spacing */
+.section-padding {
+  @apply py-2 px-2 sm:py-4 sm:px-3 lg:py-6 lg:px-4;
+}
