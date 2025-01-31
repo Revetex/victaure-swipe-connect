@@ -27,7 +27,7 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
       <div className="relative z-10 w-full mx-auto py-4 sm:py-6 lg:py-8">
         <div className={`space-y-4 sm:space-y-6 ${
           isEditing 
-            ? 'bg-card/10 p-4 sm:p-6 shadow-lg border border-border/10 rounded-xl backdrop-blur-sm' 
+            ? 'bg-card/80 backdrop-blur-sm p-4 sm:p-6 shadow-lg border border-border/10 rounded-xl' 
             : ''
         }`}>
           {children}
