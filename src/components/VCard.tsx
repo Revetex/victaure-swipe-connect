@@ -6,10 +6,11 @@ import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
+import { VCardCustomization } from "./vcard/VCardCustomization";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
-import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -39,6 +40,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     try {
       setIsProcessing(true);
       
+      // Get current user to ensure we're authenticated
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       
@@ -47,7 +49,15 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      await updateProfile(profile);
+      // Include custom styling properties in the profile update
+      const updatedProfile = {
+        ...profile,
+        custom_font: profile.custom_font || null,
+        custom_background: profile.custom_background || null,
+        custom_text_color: profile.custom_text_color || null,
+      };
+
+      await updateProfile(updatedProfile);
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -71,8 +81,19 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   }
 
   return (
-    <VCardContainer isEditing={isEditing}>
-      <div className="space-y-8 max-w-4xl mx-auto">
+    <VCardContainer 
+      isEditing={isEditing} 
+      customStyles={{
+        font: profile.custom_font,
+        background: profile.custom_background,
+        textColor: profile.custom_text_color
+      }}
+    >
+      <div className="space-y-8 max-w-4xl mx-auto text-gray-900 dark:text-gray-100">
+        {isEditing && (
+          <VCardCustomization profile={profile} setProfile={setProfile} />
+        )}
+
         <VCardSectionsManager
           profile={profile}
           isEditing={isEditing}
