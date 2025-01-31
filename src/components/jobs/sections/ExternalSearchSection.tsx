@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Search, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface ExternalSearchSectionProps {
   isLoading: boolean;
@@ -10,12 +10,41 @@ interface ExternalSearchSectionProps {
 }
 
 export function ExternalSearchSection({ isLoading, hasError, onRetry }: ExternalSearchSectionProps) {
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     // Load Google Custom Search script
     const script = document.createElement("script");
     script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
     document.head.appendChild(script);
+
+    // Configure search behavior once script is loaded
+    script.onload = () => {
+      if (window.google) {
+        window.google.search.cse.element.render({
+          div: searchContainerRef.current,
+          tag: 'search',
+          gname: 'gsearch',
+        });
+
+        // Prevent form submission and page reload
+        const observer = new MutationObserver((mutations) => {
+          const searchForm = document.querySelector('.gsc-search-box form');
+          if (searchForm) {
+            searchForm.addEventListener('submit', (e) => {
+              e.preventDefault();
+            });
+            observer.disconnect();
+          }
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      }
+    };
 
     return () => {
       // Cleanup
@@ -47,8 +76,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="gcse-searchbox-only" data-resultsUrl="#gsc-results"></div>
-            <div id="gsc-results" className="gsc-results-wrapper"></div>
+            <div ref={searchContainerRef} className="gcse-search"></div>
           </motion.div>
         )}
       </div>
