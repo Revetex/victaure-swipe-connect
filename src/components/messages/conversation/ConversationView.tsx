@@ -14,7 +14,7 @@ interface ConversationViewProps {
   isListening: boolean;
   isThinking: boolean;
   profile: any;
-  onBack?: () => void;  // Made optional with ?
+  onBack?: () => void;
   onSendMessage: (message: string, profile: any) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
@@ -143,7 +143,7 @@ export function ConversationView({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="fixed bottom-24 right-4"
+              className="fixed bottom-24 right-4 z-10"
             >
               <Button
                 size="icon"
@@ -157,7 +157,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 relative z-20">
         <div className="max-w-5xl mx-auto">
           <ChatInput
             value={inputMessage}
