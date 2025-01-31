@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { X, GraduationCap, Building2, Calendar, GripVertical } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { toast } from "sonner";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface Education {
   id: string;
@@ -26,6 +27,8 @@ export function VCardEducation({
   isEditing,
   setProfile,
 }: VCardEducationProps) {
+  const { selectedStyle } = useVCardStyle();
+
   const handleAddEducation = () => {
     setProfile({
       ...profile,
@@ -50,7 +53,7 @@ export function VCardEducation({
   return (
     <VCardSection 
       title="Formation"
-      icon={<GraduationCap className="h-4 w-4 text-indigo-400" />}
+      icon={<GraduationCap className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />}
     >
       <AnimatePresence mode="popLayout">
         <div className="space-y-6">
@@ -62,11 +65,11 @@ export function VCardEducation({
                     className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20 hover:border-indigo-500/30 transition-colors"
                   >
                     <div className="absolute top-4 left-2 cursor-move">
-                      <GripVertical className="h-4 w-4 text-indigo-400" />
+                      <GripVertical className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />
                     </div>
                     <div className="ml-6">
                       <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
+                        <Building2 className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
                         <Input
                           value={edu.school_name}
                           onChange={(e) => {
@@ -141,7 +144,8 @@ export function VCardEducation({
                           variant="ghost"
                           size="icon"
                           onClick={() => handleRemoveEducation(edu.id)}
-                          className="text-indigo-400 hover:text-red-400 transition-colors"
+                          style={{ color: selectedStyle.colors.primary }}
+                          className="hover:text-red-400 transition-colors"
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -161,19 +165,25 @@ export function VCardEducation({
                 className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20"
               >
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-indigo-400 shrink-0" />
-                  <p className="font-medium text-white">{edu.school_name || "École non définie"}</p>
+                  <Building2 className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
+                  <p className="font-medium" style={{ color: selectedStyle.colors.text.primary }}>
+                    {edu.school_name || "École non définie"}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4 text-indigo-400 shrink-0" />
-                  <p className="text-white/80">{edu.degree || "Diplôme non défini"}</p>
+                  <GraduationCap className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
+                  <p style={{ color: selectedStyle.colors.text.secondary }}>
+                    {edu.degree || "Diplôme non défini"}
+                  </p>
                 </div>
                 {edu.field_of_study && (
-                  <p className="text-white/70 pl-6">{edu.field_of_study}</p>
+                  <p className="pl-6" style={{ color: selectedStyle.colors.text.muted }}>
+                    {edu.field_of_study}
+                  </p>
                 )}
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <Calendar className="h-4 w-4" />
-                  <span>
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />
+                  <span style={{ color: selectedStyle.colors.text.muted }}>
                     {edu.start_date ? new Date(edu.start_date).getFullYear() : "?"} 
                     {" - "}
                     {edu.end_date ? new Date(edu.end_date).getFullYear() : "Présent"}
@@ -190,7 +200,11 @@ export function VCardEducation({
             >
               <Button 
                 onClick={handleAddEducation} 
-                className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200"
+                className="w-full transition-colors duration-200"
+                style={{ 
+                  backgroundColor: selectedStyle.colors.primary,
+                  color: '#fff'
+                }}
               >
                 Ajouter une formation
               </Button>

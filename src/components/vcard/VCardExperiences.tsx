@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { UserProfile, Experience } from "@/types/profile";
+import { useVCardStyle } from "./VCardStyleContext";
 
 interface VCardExperiencesProps {
   profile: UserProfile;
@@ -14,6 +15,7 @@ interface VCardExperiencesProps {
 }
 
 export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperiencesProps) {
+  const { selectedStyle } = useVCardStyle();
   const [newExperience, setNewExperience] = useState<Partial<Experience>>({
     company: "",
     position: "",
@@ -58,7 +60,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
   return (
     <VCardSection
       title="Expériences professionnelles"
-      icon={<Briefcase className="h-5 w-5 text-muted-foreground" />}
+      icon={<Briefcase className="h-5 w-5" style={{ color: selectedStyle.colors.primary }} />}
     >
       <div className="space-y-6">
         <AnimatePresence>
@@ -72,10 +74,14 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-medium text-foreground">{experience.position}</h4>
-                  <p className="text-sm text-muted-foreground">{experience.company}</p>
+                  <h4 className="font-medium" style={{ color: selectedStyle.colors.text.primary }}>
+                    {experience.position}
+                  </h4>
+                  <p className="text-sm" style={{ color: selectedStyle.colors.text.secondary }}>
+                    {experience.company}
+                  </p>
                   {experience.start_date && (
-                    <p className="text-sm text-muted-foreground/80">
+                    <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
                       {new Date(experience.start_date).toLocaleDateString()} - 
                       {experience.end_date 
                         ? new Date(experience.end_date).toLocaleDateString()
@@ -88,14 +94,17 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveExperience(experience.id)}
-                    className="text-muted-foreground hover:text-foreground"
+                    style={{ color: selectedStyle.colors.primary }}
+                    className="hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
               </div>
               {experience.description && (
-                <p className="text-sm text-muted-foreground">{experience.description}</p>
+                <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
+                  {experience.description}
+                </p>
               )}
             </motion.div>
           ))}
@@ -143,7 +152,11 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             />
             <Button
               onClick={handleAddExperience}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors duration-200"
+              className="w-full"
+              style={{ 
+                backgroundColor: selectedStyle.colors.primary,
+                color: '#fff'
+              }}
               disabled={!newExperience.company || !newExperience.position}
             >
               <Plus className="h-4 w-4 mr-2" />
