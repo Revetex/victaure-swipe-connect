@@ -6,11 +6,8 @@ import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
-import { QRCodeSVG } from "qrcode.react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState } from "react";
-import { VCardActions } from "./VCardActions";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { VCardActions } from "./VCardActions";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -36,7 +33,6 @@ export function VCardHeader({
   onDownloadCV
 }: VCardHeaderProps) {
   const { selectedStyle } = useVCardStyle();
-  const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const handleInputChange = (key: string, value: string) => {
@@ -85,44 +81,21 @@ export function VCardHeader({
       animate={{ opacity: 1, y: 0 }}
       className="relative p-4 sm:p-6 rounded-xl"
     >
-      {/* Actions and QR Code Row */}
-      <div className={`flex ${isMobile ? 'flex-col gap-4' : 'justify-end items-center gap-4'} mb-6`}>
-        {!isEditing && (
-          <motion.div 
-            className={`${isMobile ? 'w-full' : 'shrink-0'} cursor-pointer`}
-            onClick={() => setIsQRDialogOpen(true)}
-            whileHover={{ scale: 1.05 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className={`${isMobile ? 'flex justify-center' : ''} p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm`}>
-              <QRCodeSVG
-                value={window.location.href}
-                size={isMobile ? 100 : 60}
-                level="H"
-                includeMargin={false}
-                className="rounded-lg opacity-70 hover:opacity-100 transition-opacity duration-300"
-              />
-            </div>
-          </motion.div>
-        )}
-        
-        <div className={`${isMobile ? 'w-full' : 'shrink-0'}`}>
-          <VCardActions
-            isEditing={isEditing}
-            isPdfGenerating={isPdfGenerating}
-            isProcessing={isProcessing}
-            setIsEditing={onEditToggle}
-            onSave={onSave}
-            onDownloadBusinessPDF={onDownloadBusinessCard}
-            onDownloadCVPDF={onDownloadCV}
-          />
-        </div>
+      {/* Actions Row */}
+      <div className={`${isMobile ? 'w-full' : 'shrink-0'} mb-6`}>
+        <VCardActions
+          isEditing={isEditing}
+          isPdfGenerating={isPdfGenerating}
+          isProcessing={isProcessing}
+          setIsEditing={onEditToggle}
+          onSave={onSave}
+          onDownloadBusinessPDF={onDownloadBusinessCard}
+          onDownloadCVPDF={onDownloadCV}
+        />
       </div>
 
       {/* Profile Info Row */}
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+      <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
         <div className="relative group shrink-0">
           <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg">
             <AvatarImage 
@@ -151,7 +124,7 @@ export function VCardHeader({
           )}
         </div>
 
-        <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
+        <div className="flex-1 min-w-0 space-y-2">
           {isEditing ? (
             <>
               <Input
@@ -179,23 +152,6 @@ export function VCardHeader({
           )}
         </div>
       </div>
-
-      <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
-        <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-sm border-none">
-          <div className="flex flex-col items-center space-y-4 p-6">
-            <QRCodeSVG
-              value={window.location.href}
-              size={200}
-              level="H"
-              includeMargin={true}
-              className="rounded-lg"
-            />
-            <p className="text-xs sm:text-sm text-muted-foreground text-center">
-              Scannez ce code QR pour accéder à mon profil professionnel
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
     </motion.div>
   );
 }
