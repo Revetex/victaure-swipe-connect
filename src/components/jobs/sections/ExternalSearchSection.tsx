@@ -13,9 +13,19 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Create and configure script element
     const script = document.createElement("script");
     script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
+    
+    // Add a global configuration to disable logging
+    // This prevents the CORS errors from Google's analytics
+    window.___gcfg = {
+      parsetags: 'explicit',
+      suppressAnalytics: true,
+      suppressLogging: true
+    };
+
     document.head.appendChild(script);
 
     script.onload = () => {
@@ -24,6 +34,10 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           div: searchContainerRef.current,
           tag: 'search',
           gname: 'gsearch',
+          attributes: {
+            enableLogging: 'false',
+            enableAnalytics: 'false'
+          }
         });
       }
     };
@@ -32,6 +46,8 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       if (document.head.contains(script)) {
         document.head.removeChild(script);
       }
+      // Clean up the global configuration
+      delete window.___gcfg;
     };
   }, []);
 

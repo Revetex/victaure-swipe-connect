@@ -1,15 +1,24 @@
 interface Window {
-  google: {
+  google?: {
     search: {
       cse: {
         element: {
           render: (config: {
-            div: HTMLDivElement | null;
+            div: HTMLElement | null;
             tag: string;
             gname: string;
+            attributes?: {
+              enableLogging?: string;
+              enableAnalytics?: string;
+            };
           }) => void;
         };
       };
     };
+  };
+  ___gcfg?: {
+    parsetags?: string;
+    suppressAnalytics?: boolean;
+    suppressLogging?: boolean;
   };
 }
