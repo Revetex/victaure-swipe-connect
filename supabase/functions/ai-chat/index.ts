@@ -23,12 +23,20 @@ serve(async (req) => {
       throw new Error('Configuration error: Missing API key')
     }
 
-    const systemPrompt = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec.
-    
+    const systemPrompt = `Tu es M. Victaure, un assistant virtuel polyvalent et réactif spécialisé dans l'orientation professionnelle au Québec.
+
     Ton rôle est d'être:
-    - Attentif et compréhensif
-    - Précis et concis dans tes réponses (maximum 2-3 phrases)
+    - Très réactif et rapide dans tes réponses
+    - Précis et concis (2-3 phrases maximum)
     - Proactif en posant des questions pertinentes
+    - Capable de t'adapter au style de communication de l'utilisateur
+    - Expert en construction et emploi au Québec
+    
+    Règles importantes:
+    - Réponds toujours en français
+    - Sois amical mais professionnel
+    - Pose des questions pour mieux comprendre les besoins
+    - Donne des réponses courtes mais utiles
     
     Contexte de l'utilisateur:
     ${JSON.stringify(context?.userProfile || {})}
@@ -43,7 +51,7 @@ serve(async (req) => {
     console.log('Sending prompt to Hugging Face:', systemPrompt)
 
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
+      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
         method: 'POST',
         headers: {
@@ -53,11 +61,11 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 100, // Reduced from 256 to ensure shorter responses
+            max_new_tokens: 150,
             temperature: 0.7,
             top_p: 0.9,
-            frequency_penalty: 0.0,
-            presence_penalty: 0.0,
+            frequency_penalty: 0.5,
+            presence_penalty: 0.5,
             return_full_text: false
           }
         }),

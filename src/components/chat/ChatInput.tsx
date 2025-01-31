@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import { Mic, Send, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useState } from "react";
 
 interface ChatInputProps {
   value: string;
@@ -53,14 +52,14 @@ export function ChatInput({
   };
 
   return (
-    <div className={cn("flex flex-col gap-0.5", className)}>
+    <div className={cn("flex flex-col gap-0.5 relative", className)}>
       <div className="relative w-full">
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pr-16 min-h-[36px] max-h-[100px] resize-none text-foreground focus-visible:ring-primary bg-background w-full text-xs"
+          className="pr-16 min-h-[36px] max-h-[120px] resize-none text-foreground focus-visible:ring-primary bg-background w-full text-sm rounded-lg"
           disabled={isThinking}
         />
         <div className="absolute bottom-1 right-1 flex items-center gap-0.5">
@@ -70,14 +69,14 @@ export function ChatInput({
               size="icon"
               variant={isListening ? "default" : "ghost"}
               onClick={onVoiceInput}
-              className="h-6 w-6"
+              className="h-7 w-7 hover:bg-muted/80"
               disabled={isThinking}
             >
               <motion.div
                 animate={isListening ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               >
-                <Mic className="h-3 w-3" />
+                <Mic className="h-4 w-4" />
               </motion.div>
             </Button>
           )}
@@ -86,15 +85,15 @@ export function ChatInput({
             size="icon"
             onClick={handleSendClick}
             className={cn(
-              "h-6 w-6 transition-transform",
+              "h-7 w-7 transition-transform bg-primary hover:bg-primary/90",
               value.trim() && !isThinking && "hover:scale-105"
             )}
             disabled={!value.trim() || isThinking}
           >
             {isThinking ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
             ) : (
-              <Send className="h-3 w-3" />
+              <Send className="h-4 w-4 text-white" />
             )}
           </Button>
         </div>
