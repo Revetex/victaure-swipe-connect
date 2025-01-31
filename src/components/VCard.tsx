@@ -25,6 +25,17 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const { selectedStyle } = useVCardStyle();
 
   const handleEditToggle = () => {
+    if (!profile) {
+      toast.error("Aucun profil à éditer");
+      return;
+    }
+
+    // Only allow editing for professional and employer roles
+    if (!['professional', 'employer'].includes(profile.role)) {
+      toast.error("Vous n'avez pas les permissions nécessaires pour éditer ce profil");
+      return;
+    }
+
     setIsEditing(!isEditing);
     if (onEditStateChange) {
       onEditStateChange(!isEditing);
@@ -52,12 +63,18 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
+      // Ensure role is one of the allowed values
+      if (!['professional', 'employer', 'admin'].includes(profile.role)) {
+        toast.error("Le rôle spécifié n'est pas valide");
+        return;
+      }
+
       console.log('Saving profile:', profile);
 
       // Include custom styling properties in the profile update
       const updatedProfile = {
         ...profile,
-        id: user.id, // Make sure we include the user ID
+        id: user.id,
         custom_font: profile.custom_font || null,
         custom_background: profile.custom_background || null,
         custom_text_color: profile.custom_text_color || null,
