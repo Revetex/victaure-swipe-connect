@@ -42,16 +42,22 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       
       // Get current user to ensure we're authenticated
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+      if (userError) {
+        console.error('Auth error:', userError);
+        throw userError;
+      }
       
       if (!user) {
         toast.error("Vous devez être connecté pour sauvegarder votre profil");
         return;
       }
 
+      console.log('Saving profile:', profile);
+
       // Include custom styling properties in the profile update
       const updatedProfile = {
         ...profile,
+        id: user.id, // Make sure we include the user ID
         custom_font: profile.custom_font || null,
         custom_background: profile.custom_background || null,
         custom_text_color: profile.custom_text_color || null,
