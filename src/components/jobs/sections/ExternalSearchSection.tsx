@@ -75,7 +75,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   }
 
   return (
-    <div className="relative w-full min-h-[100px] bg-background rounded-lg p-4">
+    <div className="relative w-full min-h-[100px] bg-background rounded-lg p-4 sm:p-0">
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
