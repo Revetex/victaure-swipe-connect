@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { JobCard } from "./jobs/JobCard";
+import { JobCard } from "@/components/JobCard"; // Fixed import path
 
 export function Marketplace() {
   const [selectedType, setSelectedType] = useState("all");
@@ -23,7 +23,7 @@ export function Marketplace() {
           <h1 className="text-2xl font-bold">Emplois disponibles</h1>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1 h-8 px-2">
+              <Button variant="outline" size="sm" className="gap-1 h-6 px-2">
                 <SlidersHorizontal className="h-3 w-3" />
                 Filtres
               </Button>
@@ -108,28 +108,40 @@ export function Marketplace() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <JobCard
-            title="Développeur Frontend"
-            company="TechCorp"
-            location="Paris"
-            type="CDI"
-            salary="45-55k"
-            remote={true}
+            job={{
+              id: "1",
+              title: "Développeur Frontend",
+              company: "TechCorp",
+              location: "Paris",
+              contract_type: "CDI",
+              budget: 50000,
+              created_at: new Date().toISOString(),
+              source: "Victaure"
+            }}
           />
           <JobCard
-            title="UX Designer"
-            company="DesignStudio"
-            location="Lyon"
-            type="CDI"
-            salary="40-50k"
-            remote={false}
+            job={{
+              id: "2",
+              title: "UX Designer",
+              company: "DesignStudio",
+              location: "Lyon",
+              contract_type: "CDI",
+              budget: 45000,
+              created_at: new Date().toISOString(),
+              source: "Victaure"
+            }}
           />
           <JobCard
-            title="Product Manager"
-            company="StartupXYZ"
-            location="Bordeaux"
-            type="CDD"
-            salary="50-60k"
-            remote={true}
+            job={{
+              id: "3",
+              title: "Product Manager",
+              company: "StartupXYZ",
+              location: "Bordeaux",
+              contract_type: "CDD",
+              budget: 55000,
+              created_at: new Date().toISOString(),
+              source: "Victaure"
+            }}
           />
         </div>
       </div>
