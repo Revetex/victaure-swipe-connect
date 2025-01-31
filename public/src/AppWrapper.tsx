@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function AppWrapper() {
+const AppWrapper = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
@@ -25,3 +25,5 @@ export default function AppWrapper() {
     </ThemeProvider>
   );
 }
+
+export default AppWrapper;
