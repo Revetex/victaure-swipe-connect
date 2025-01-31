@@ -44,8 +44,11 @@
 /* Styles pour les résultats de recherche */
 .gsc-results-wrapper-visible {
   margin-top: 1rem !important;
-  position: static !important;
+  position: relative !important;
   width: 100% !important;
+  z-index: 10 !important;
+  max-height: calc(100vh - 300px) !important;
+  overflow-y: auto !important;
 }
 
 .gs-result {
