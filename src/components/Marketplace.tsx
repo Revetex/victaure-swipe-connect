@@ -8,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ExternalSearchSection } from "@/components/jobs/sections/ExternalSearchSection";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function Marketplace() {
   const [selectedType, setSelectedType] = useState("all");
@@ -112,19 +111,13 @@ export function Marketplace() {
           </Sheet>
         </div>
 
-        <Tabs defaultValue="external" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-1">
-            <TabsTrigger value="external">Recherche d'emplois</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="external">
-            <ExternalSearchSection
-              isLoading={isExternalSearchLoading}
-              hasError={hasExternalSearchError}
-              onRetry={handleRetryExternalSearch}
-            />
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-4">
+          <ExternalSearchSection
+            isLoading={isExternalSearchLoading}
+            hasError={hasExternalSearchError}
+            onRetry={handleRetryExternalSearch}
+          />
+        </div>
       </div>
     </div>
   );
