@@ -5,6 +5,7 @@ import { useState, useCallback } from "react";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { DashboardContainer } from "./dashboard/DashboardContainer";
 import { DashboardContent } from "./dashboard/DashboardContent";
+import { useDebounce } from "use-debounce";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -13,12 +14,17 @@ export function DashboardLayout() {
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   
+  const [debouncedSetViewportHeight] = useDebounce(
+    (height: number) => setViewportHeight(height),
+    100
+  );
+
   const [lastPageChange, setLastPageChange] = useState(Date.now());
   const THROTTLE_DELAY = 300;
 
   const updateHeight = useCallback(() => {
-    setViewportHeight(window.innerHeight);
-  }, []);
+    debouncedSetViewportHeight(window.innerHeight);
+  }, [debouncedSetViewportHeight]);
 
   const handlePageChange = useCallback((page: number) => {
     const now = Date.now();
@@ -64,8 +70,10 @@ export function DashboardLayout() {
       </div>
       
       <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-10 lg:border-none lg:bg-transparent transition-all duration-300 ${
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+        } ${
+          currentPage === 2 ? 'z-10' : 'z-50'
         }`}
         style={{ 
           height: '4rem',
