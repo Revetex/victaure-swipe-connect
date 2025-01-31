@@ -10,6 +10,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
 import { VCardActions } from "./VCardActions";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -36,6 +37,7 @@ export function VCardHeader({
 }: VCardHeaderProps) {
   const { selectedStyle } = useVCardStyle();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
@@ -84,20 +86,20 @@ export function VCardHeader({
       className="relative p-4 sm:p-6 rounded-xl"
     >
       {/* Actions and QR Code Row */}
-      <div className="flex justify-end items-center gap-4 mb-6">
+      <div className={`flex ${isMobile ? 'flex-col gap-4' : 'justify-end items-center gap-4'} mb-6`}>
         {!isEditing && (
           <motion.div 
-            className="shrink-0 cursor-pointer"
+            className={`${isMobile ? 'w-full' : 'shrink-0'} cursor-pointer`}
             onClick={() => setIsQRDialogOpen(true)}
             whileHover={{ scale: 1.05 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm">
+            <div className={`${isMobile ? 'flex justify-center' : ''} p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm`}>
               <QRCodeSVG
                 value={window.location.href}
-                size={60}
+                size={isMobile ? 100 : 60}
                 level="H"
                 includeMargin={false}
                 className="rounded-lg opacity-70 hover:opacity-100 transition-opacity duration-300"
@@ -106,7 +108,7 @@ export function VCardHeader({
           </motion.div>
         )}
         
-        <div className="shrink-0">
+        <div className={`${isMobile ? 'w-full' : 'shrink-0'}`}>
           <VCardActions
             isEditing={isEditing}
             isPdfGenerating={isPdfGenerating}
