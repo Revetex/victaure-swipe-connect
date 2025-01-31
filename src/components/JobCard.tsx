@@ -1,40 +1,22 @@
+import { Building2, MapPin, Calendar, Clock, Briefcase } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
-import { Card } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { 
-  Building2, 
-  MapPin, 
-  Calendar, 
-  Briefcase,
-  ExternalLink,
-  Clock
-} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
 interface JobCardProps {
   job: Job;
-  onApply?: () => void;
-  onDelete?: () => void;
-  showActions?: boolean;
-  url?: string;
 }
 
-export function JobCard({ 
-  job, 
-  onApply, 
-  onDelete, 
-  showActions = true,
-  url 
-}: JobCardProps) {
-  const formattedDate = formatDistanceToNow(new Date(job.created_at), {
+export function JobCard({ job }: JobCardProps) {
+  const formattedDate = formatDistanceToNow(new Date(job.posted_at), {
     addSuffix: true,
-    locale: fr
+    locale: fr,
   });
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow">
+    <Card className="relative p-6 hover:shadow-lg transition-shadow bg-card">
       <div className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
@@ -72,41 +54,6 @@ export function JobCard({
             </div>
           )}
         </div>
-
-        {showActions && (
-          <div className="flex gap-2 pt-4">
-            {job.url ? (
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => window.open(job.url, '_blank')}
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Voir l'offre
-              </Button>
-            ) : (
-              <>
-                {onApply && (
-                  <Button 
-                    variant="default" 
-                    className="w-full"
-                    onClick={onApply}
-                  >
-                    Postuler
-                  </Button>
-                )}
-                {onDelete && (
-                  <Button 
-                    variant="destructive"
-                    onClick={onDelete}
-                  >
-                    Supprimer
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        )}
       </div>
     </Card>
   );
