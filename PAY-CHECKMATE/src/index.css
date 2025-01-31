@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 24 33% 97%;
+    --foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 24.6 95% 53.1%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 60 4.8% 95.9%;
+    --secondary-foreground: 24 9.8% 10%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+    --accent: 60 4.8% 95.9%;
+    --accent-foreground: 24 9.8% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 24.6 95% 53.1%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 20.5 90.2% 48.2%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 20.5 90.2% 48.2%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  input[type="number"] {
+    @apply p-1.5 sm:p-2 border rounded-md w-full bg-background text-foreground text-xs sm:text-sm;
+  }
+}
+
+.glass {
+  @apply bg-white/40 dark:bg-gray-900/40 backdrop-blur-sm border border-orange-500/20 shadow-lg shadow-orange-500/5 hover:shadow-orange-500/10 transition-all duration-300;
+}
+
+.hover-effect {
+  @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-orange-500/20;
+}
+
+.section-padding {
+  @apply py-2 px-2 sm:py-4 sm:px-3;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-500 dark:from-orange-400 dark:to-amber-400;
+}
+
+.card-gradient {
+  @apply bg-gradient-to-br from-white via-orange-50 to-amber-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight leading-tight mb-1 sm:mb-2 text-foreground;
+  }
+
+  h1 {
+    @apply text-lg sm:text-xl md:text-2xl lg:text-3xl;
+  }
+
+  h2 {
+    @apply text-base sm:text-lg md:text-xl lg:text-2xl;
+  }
+
+  h3 {
+    @apply text-sm sm:text-base md:text-lg lg:text-xl;
+  }
+
+  /* Form Elements */
+  input, select, textarea {
+    @apply transition-colors duration-200 text-xs sm:text-sm lg:text-base bg-background text-foreground;
+  }
+
+  /* Buttons */
+  button {
+    @apply font-medium text-xs sm:text-sm lg:text-base text-foreground;
+  }
+
+  /* Links */
+  a {
+    @apply text-primary hover:text-primary/80 transition-colors duration-200;
+  }
+
+  /* Tables */
+  table {
+    @apply w-full text-xs sm:text-sm lg:text-base text-foreground;
+  }
+
+  /* Cards */
+  .glass {
+    @apply backdrop-blur-md bg-opacity-90;
+  }
+
+  /* Improved spacing */
+  .section-padding {
+    @apply py-2 px-2 sm:py-4 sm:px-3 lg:py-6 lg:px-4;
+  }
+}
