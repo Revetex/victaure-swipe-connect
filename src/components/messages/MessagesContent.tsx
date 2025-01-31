@@ -33,14 +33,21 @@ export function MessagesContent({
 }: MessagesContentProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
   };
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
-    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    const isNearBottom = 
+      Math.abs((target.scrollHeight - target.scrollTop) - target.clientHeight) < 100;
     setShowScrollButton(!isNearBottom);
   };
 
@@ -90,8 +97,9 @@ export function MessagesContent({
       </header>
 
       <div className="flex-1 overflow-hidden bg-background/80">
-        <ScrollArea 
-          className="h-[calc(100vh-8rem)] px-4 py-6" 
+        <div 
+          ref={scrollAreaRef}
+          className="h-[calc(100vh-8rem)] overflow-y-auto px-4 py-6 scroll-smooth" 
           onScroll={handleScroll}
         >
           <div className="max-w-3xl mx-auto space-y-6">
@@ -109,7 +117,7 @@ export function MessagesContent({
             </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
-        </ScrollArea>
+        </div>
 
         <AnimatePresence>
           {showScrollButton && (
