@@ -5,14 +5,12 @@
   text-align: center;
 }
 
-/* Logo styles */
 .logo {
   width: 150px;
   height: auto;
   margin: 20px 0;
 }
 
-/* Enhanced container styles */
 .container {
   width: 100%;
   margin-left: auto;
@@ -44,21 +42,13 @@
   }
 }
 
-/* Enhanced light/dark mode styles */
 :root {
   color-scheme: light dark;
 }
 
 body {
-  background-color: #f8fafc;
-  background-image: 
-    radial-gradient(at 47% 33%, hsla(214.74, 95.56%, 87.96%, 0.4) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsla(218.00, 39.29%, 11.96%, 0.1) 0, transparent 55%);
-  background-attachment: fixed;
-  min-height: 100vh;
-  height: 100%;
-  overflow-y: auto;
-  color: #1a1a1a;
+  background-color: #ffffff;
+  color: #000000;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -66,28 +56,15 @@ body {
 }
 
 .dark body {
-  background-color: #0f172a;
-  background-image: 
-    radial-gradient(at 47% 33%, hsla(222, 47%, 11%, 0.8) 0, transparent 59%), 
-    radial-gradient(at 82% 65%, hsla(225, 39%, 30%, 0.3) 0, transparent 55%);
+  background-color: #000000;
   color: #ffffff;
 }
 
-/* Enhanced mobile styles */
 @media (max-width: 640px) {
   body {
     font-size: 14px;
   }
 
-  .vcard-root {
-    padding: 0.5rem;
-  }
-
-  .glass-card {
-    margin: 0.5rem;
-    padding: 1rem;
-  }
-  
   button, 
   a,
   [role="button"] {
@@ -97,10 +74,6 @@ body {
     touch-action: manipulation;
   }
   
-  .touch-target {
-    margin: 0.75rem 0;
-  }
-
   input,
   select,
   textarea {
@@ -110,52 +83,27 @@ body {
   }
 }
 
-/* Enhanced laptop styles */
-@media (min-width: 1024px) {
-  .glass-card {
-    margin: 1rem;
-    padding: 1.5rem;
-  }
-
-  .dashboard-card {
-    border-radius: 1.5rem;
-    box-shadow: 
-      0 8px 16px -4px rgba(0, 0, 0, 0.1), 
-      0 4px 8px -2px rgba(0, 0, 0, 0.06);
-  }
-
-  .content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-}
-
-/* Enhanced glass card styles */
 .glass-card {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   border-radius: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  color: #1a1a1a;
+  color: #000000;
   box-shadow: 
     0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .dark .glass-card {
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(0, 0, 0, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #ffffff;
   box-shadow: 
     0 4px 6px -1px rgba(0, 0, 0, 0.2), 
-    0 2px 4px -1px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    0 2px 4px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Enhanced button styles */
 .enhanced-button {
   @apply px-4 py-3 rounded-xl
          bg-primary text-primary-foreground
@@ -167,19 +115,16 @@ body {
          disabled:opacity-50 disabled:pointer-events-none;
 }
 
-/* Enhanced input styles */
 .enhanced-input {
-  @apply bg-background/70 dark:bg-gray-800/70
+  @apply bg-background/70
          border border-border
          rounded-xl px-4 py-3
          text-foreground placeholder:text-muted-foreground
          focus:ring-2 focus:ring-primary/50 focus:border-primary
-         dark:focus:ring-primary/30 dark:focus:border-primary/70
          transition-all duration-300
          disabled:opacity-50;
 }
 
-/* Enhanced typography */
 h1, h2, h3, h4, h5, h6 {
   @apply font-bold tracking-tight text-foreground;
 }
@@ -193,18 +138,6 @@ h6 { @apply text-base mb-2; }
 
 p { @apply mb-4 text-base leading-relaxed text-foreground/90; }
 
-/* Enhanced navigation */
-.bottom-navigation {
-  @apply fixed bottom-0 left-0 right-0
-         bg-background/95 dark:bg-gray-900/95
-         backdrop-blur-md
-         border-t border-border
-         shadow-lg
-         py-2 px-4
-         z-50;
-}
-
-/* Enhanced scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -222,19 +155,16 @@ p { @apply mb-4 text-base leading-relaxed text-foreground/90; }
   @apply bg-muted-foreground/20;
 }
 
-/* Enhanced focus styles */
 :focus-visible {
   @apply outline-none ring-2 ring-primary/50;
 }
 
-/* Enhanced transitions */
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
 
-/* Enhanced animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
