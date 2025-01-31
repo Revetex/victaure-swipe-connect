@@ -44,34 +44,17 @@ export function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen bg-background">
-      <nav 
-        className={`fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
-          isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-        }`}
-        style={{ 
-          height: '4rem',
-          paddingTop: 'env(safe-area-inset-top)'
-        }}
-      >
-        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
-          <DashboardNavigation 
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </nav>
-
-      <div className="container mx-auto px-4 pt-20">
+      <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen"
+              className="transform transition-all duration-300 w-full min-h-screen pb-40 lg:pb-24"
               style={{ 
                 maxHeight: isEditing ? viewportHeight : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '2rem'
+                paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
               }}
             >
               <DashboardContent
@@ -85,6 +68,25 @@ export function DashboardLayout() {
           </AnimatePresence>
         </div>
       </div>
+      
+      <nav 
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-10 lg:border-none lg:bg-transparent transition-all duration-300 ${
+          isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+        } ${
+          currentPage === 2 ? 'z-10' : 'z-50'
+        }`}
+        style={{ 
+          height: '4rem',
+          paddingBottom: 'env(safe-area-inset-bottom)'
+        }}
+      >
+        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+          <DashboardNavigation 
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </nav>
     </div>
   );
 }
