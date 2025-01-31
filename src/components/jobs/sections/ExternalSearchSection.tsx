@@ -18,19 +18,16 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   useEffect(() => {
     if (!searchContainerRef.current) return;
 
-    // Créer et ajouter le script
     const script = document.createElement('script');
     script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
     script.async = true;
     scriptRef.current = script;
 
-    // Créer le div de recherche
     const searchDiv = document.createElement('div');
     searchDiv.className = 'gcse-search';
-    searchContainerRef.current.innerHTML = ''; // Nettoyer le contenu précédent
+    searchContainerRef.current.innerHTML = '';
     searchContainerRef.current.appendChild(searchDiv);
 
-    // Ajouter le script au document
     document.head.appendChild(script);
 
     script.onerror = () => {
