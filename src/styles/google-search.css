@@ -6,12 +6,16 @@
   background: transparent !important;
   border: none !important;
   font-family: inherit !important;
+  width: 100% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Style the search box */
 .gsc-search-box {
   margin-bottom: 1rem !important;
   max-width: 100% !important;
+  width: 100% !important;
 }
 
 .gsc-input-box {
@@ -52,6 +56,8 @@
 /* Style the results */
 .gsc-results-wrapper-visible {
   margin-top: 1rem !important;
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
 }
 
 .gsc-webResult.gsc-result {
@@ -110,6 +116,7 @@
 .gstl_50 {
   margin: 0 !important;
   padding: 0 !important;
+  width: 100% !important;
 }
 
 /* Ensure body can scroll */
@@ -173,4 +180,17 @@ table.gsc-search-box {
 .gsc-input-box,
 .gsc-input {
   width: 100% !important;
+}
+
+/* Dark mode specific styles */
+.dark .gsc-input-box input {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .gsc-results-wrapper-visible {
+  background: hsl(var(--background)) !important;
+}
+
+.dark .gsc-webResult.gsc-result {
+  background-color: hsl(var(--background)) !important;
 }

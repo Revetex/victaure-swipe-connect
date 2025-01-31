@@ -13,29 +13,22 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [scriptError, setScriptError] = useState(false);
   const [isSearchLoaded, setIsSearchLoaded] = useState(false);
-  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useEffect(() => {
     const loadSearch = () => {
       if (window.google?.search?.cse?.element) {
         try {
+          const searchDiv = document.createElement('div');
+          searchDiv.className = 'gcse-search';
+          if (searchContainerRef.current) {
+            searchContainerRef.current.innerHTML = '';
+            searchContainerRef.current.appendChild(searchDiv);
+          }
           window.google.search.cse.element.render({
-            div: searchContainerRef.current,
+            div: searchDiv,
             tag: 'search',
-            gname: 'gsearch',
-            attributes: {
-              enableHistory: 'false',
-              enableOrderBy: 'false',
-              enableLogging: 'false',
-              enableAnalytics: 'false',
-              noResultsString: 'Aucun résultat trouvé',
-              newWindow: 'true',
-              queryParameterName: 'q',
-              resultsUrl: window.location.origin + window.location.pathname,
-              linkTarget: '_blank'
-            }
+            gname: 'gsearch'
           });
-          
           setIsSearchLoaded(true);
           setScriptError(false);
         } catch (error) {
@@ -45,28 +38,21 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       }
     };
 
-    // Cleanup function to remove existing elements
-    const cleanup = () => {
-      const existingElements = document.querySelectorAll('.gcse-search, script[src*="cse.google.com"]');
-      existingElements.forEach(element => element.remove());
-      document.body.classList.remove('gsc-overflow-hidden');
-    };
-
-    // Load Google CSE script
     const loadScript = () => {
-      cleanup();
-      
+      const existingScript = document.querySelector('script[src*="cse.google.com"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+
       const script = document.createElement('script');
       script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
       script.async = true;
       script.defer = true;
       
       script.onload = () => {
-        setScriptLoaded(true);
         if (window.google?.search?.cse?.element) {
           loadSearch();
         } else {
-          // Wait for Google CSE to initialize
           const checkGoogleCSE = setInterval(() => {
             if (window.google?.search?.cse?.element) {
               loadSearch();
@@ -74,13 +60,12 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             }
           }, 100);
 
-          // Clear interval after 10 seconds to prevent infinite checking
           setTimeout(() => {
             clearInterval(checkGoogleCSE);
             if (!isSearchLoaded) {
               setScriptError(true);
             }
-          }, 10000);
+          }, 5000);
         }
       };
       
@@ -94,7 +79,12 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
 
     loadScript();
 
-    return cleanup;
+    return () => {
+      const existingScript = document.querySelector('script[src*="cse.google.com"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
   }, []);
 
   if (scriptError) {
@@ -108,7 +98,6 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           onClick={() => {
             setScriptError(false);
             setIsSearchLoaded(false);
-            setScriptLoaded(false);
             window.location.reload();
           }} 
           variant="outline"
@@ -129,16 +118,14 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   }
 
   return (
-    <div className="relative w-full min-h-[400px]">
-      <div className="flex flex-col gap-4">
-        <motion.div 
-          className="flex flex-col gap-4 w-full"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <div ref={searchContainerRef} className="w-full gcse-search"></div>
-        </motion.div>
-      </div>
+    <div className="relative w-full min-h-[400px] bg-background rounded-lg p-4">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="w-full h-full"
+      >
+        <div ref={searchContainerRef} className="w-full h-full" />
+      </motion.div>
     </div>
   );
 }
