@@ -203,7 +203,7 @@ export function VCardEducation({
                 </p>
               </div>
               {edu.field_of_study && (
-                <p className="pl-6" style={{ color: selectedStyle.colors.text.muted }}>
+                <p style={{ color: selectedStyle.colors.text.muted }}>
                   {edu.field_of_study}
                 </p>
               )}
