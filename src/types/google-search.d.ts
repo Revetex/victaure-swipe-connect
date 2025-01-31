@@ -10,6 +10,11 @@ interface Window {
             attributes?: {
               enableLogging?: string;
               enableAnalytics?: string;
+              enableHistory?: string;
+              enableOrderBy?: string;
+              noResultsString?: string;
+              newWindow?: string;
+              queryParameterName?: string;
             };
           }) => void;
         };
