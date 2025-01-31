@@ -15,6 +15,7 @@ interface Window {
               noResultsString?: string;
               newWindow?: string;
               queryParameterName?: string;
+              overlayResults?: string;
             };
           }) => void;
         };

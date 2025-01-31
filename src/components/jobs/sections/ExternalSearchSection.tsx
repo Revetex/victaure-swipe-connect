@@ -25,6 +25,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
     const script = document.createElement("script");
     script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
+    script.crossOrigin = "anonymous";
     
     const handleError = () => {
       setScriptError(true);
