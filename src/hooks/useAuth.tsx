@@ -4,14 +4,23 @@ import { supabase } from "@/integrations/supabase/client";
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          throw sessionError;
+        }
+        
         setIsAuthenticated(!!session);
-      } catch (error) {
-        console.error("Auth error:", error);
+        setError(null);
+      } catch (err) {
+        console.error("Auth error:", err);
+        setError(err instanceof Error ? err : new Error('Authentication failed'));
+        setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
@@ -21,6 +30,9 @@ export function useAuth() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
+      if (!session) {
+        setError(null);
+      }
     });
 
     return () => {
@@ -28,5 +40,5 @@ export function useAuth() {
     };
   }, []);
 
-  return { isAuthenticated, isLoading };
+  return { isAuthenticated, isLoading, error };
 }

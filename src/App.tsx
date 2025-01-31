@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { useAuth } from "./hooks/useAuth";
-import { Loader } from "./components/ui/loader";
+import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader } from "@/components/ui/loader";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
