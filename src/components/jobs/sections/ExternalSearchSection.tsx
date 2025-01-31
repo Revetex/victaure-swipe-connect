@@ -47,7 +47,8 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="gcse-search" data-linktarget="_self"></div>
+            <div className="gcse-searchbox-only" data-resultsUrl="#gsc-results"></div>
+            <div id="gsc-results" className="gsc-results-wrapper"></div>
           </motion.div>
         )}
       </div>

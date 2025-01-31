@@ -44,6 +44,8 @@
 /* Styles pour les résultats de recherche */
 .gsc-results-wrapper-visible {
   margin-top: 1rem !important;
+  position: static !important;
+  width: 100% !important;
 }
 
 .gs-result {
@@ -94,11 +96,27 @@
   background: transparent !important;
 }
 
-.google-search-container {
-  width: 100%;
-  margin: 0 auto;
+/* Hide unnecessary elements */
+.gsc-above-wrapper-area,
+.gcsc-find-more-on-google,
+.gsc-orderby-container,
+.gsc-results-close-btn {
+  display: none !important;
 }
 
+/* Container styles */
+.gsc-wrapper {
+  width: 100% !important;
+}
+
+.gsc-results-wrapper {
+  margin-top: 1rem !important;
+  border-radius: 0.5rem !important;
+  background: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* Table styles reset */
 .gsc-input-box table,
 .gsc-input-box tbody,
 .gsc-input-box tr,
@@ -118,20 +136,4 @@
 
 .gsc-input {
   margin: 0 !important;
-}
-
-/* Hide unnecessary elements */
-.gsc-above-wrapper-area,
-.gcsc-find-more-on-google {
-  display: none !important;
-}
-
-/* Ensure results appear inline */
-.gsc-wrapper {
-  width: 100% !important;
-}
-
-.gsc-results-wrapper-visible {
-  position: static !important;
-  margin-top: 1rem !important;
 }
