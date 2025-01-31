@@ -9,6 +9,7 @@ import { VCardFooter } from "./vcard/VCardFooter";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -20,6 +21,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const { selectedStyle } = useVCardStyle();
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -75,19 +77,21 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           profile={profile}
           isEditing={isEditing}
           setProfile={setProfile}
+          selectedStyle={selectedStyle}
         />
 
         <VCardFooter
           isEditing={isEditing}
           isPdfGenerating={isPdfGenerating}
           isProcessing={isProcessing}
+          selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
           onSave={handleSave}
           onDownloadBusinessCard={async () => {
             if (!profile) return;
             setIsPdfGenerating(true);
             try {
-              const doc = await generateBusinessCard(profile);
+              const doc = await generateBusinessCard(profile, selectedStyle);
               doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
               toast.success("Business PDF généré avec succès");
             } catch (error) {
@@ -101,7 +105,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             if (!profile) return;
             setIsPdfGenerating(true);
             try {
-              const doc = await generateCV(profile);
+              const doc = await generateCV(profile, selectedStyle);
               doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
               toast.success("CV PDF généré avec succès");
             } catch (error) {
