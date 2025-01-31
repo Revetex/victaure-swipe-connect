@@ -31,6 +31,7 @@ export function VCardSectionsManager({
       }
       setSectionsOrder(uniqueSections);
     } else {
+      // Make sure we include education and experience sections
       setSectionsOrder(['header', 'bio', 'contact', 'skills', 'education', 'experience']);
     }
   }, [profile, setProfile]);
@@ -57,9 +58,16 @@ export function VCardSectionsManager({
     setProfile({ ...profile, skills: updatedSkills });
   };
 
+  // Ensure education and experiences arrays exist
+  const profileWithArrays = {
+    ...profile,
+    education: profile.education || [],
+    experiences: profile.experiences || [],
+  };
+
   return (
     <VCardSections
-      profile={profile}
+      profile={profileWithArrays}
       isEditing={isEditing}
       setProfile={setProfile}
       newSkill={newSkill}
