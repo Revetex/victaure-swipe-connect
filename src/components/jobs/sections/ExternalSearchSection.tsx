@@ -35,14 +35,14 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
         if (searchContainerRef.current) {
           searchContainerRef.current.innerHTML = '';
           searchContainerRef.current.appendChild(searchDiv);
-        }
 
-        // Initialize search
-        window.google.search.cse.element.render({
-          div: searchDiv,
-          tag: 'searchbox-only',
-          gname: 'gsearch'
-        });
+          // Initialize search
+          window.google.search.cse.element.render({
+            div: searchDiv,
+            tag: 'searchbox-only',
+            gname: 'gsearch'
+          });
+        }
 
         setIsSearchLoaded(true);
         setScriptError(false);
@@ -59,11 +59,6 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
 
     // Load Google CSE script
     const loadScript = () => {
-      const existingScript = document.querySelector('script[src*="cse.google.com"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
-
       const script = document.createElement('script');
       script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
       script.async = true;
@@ -90,7 +85,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
                 description: "Le service de recherche n'a pas pu être chargé. Veuillez réessayer plus tard."
               });
             }
-          }, 15000); // Increased timeout to 15s
+          }, 15000);
         }
       };
       
