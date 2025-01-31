@@ -3,6 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { UserProfile, Certification, Experience, Education } from "@/types/profile";
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export function useProfile() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -10,6 +15,19 @@ export function useProfile() {
   const [tempProfile, setTempProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
+    async function fetchWithRetry(fn: () => Promise<any>, retries = MAX_RETRIES): Promise<any> {
+      try {
+        return await fn();
+      } catch (error) {
+        if (retries > 0) {
+          console.log(`Retrying... ${retries} attempts left`);
+          await wait(RETRY_DELAY);
+          return fetchWithRetry(fn, retries - 1);
+        }
+        throw error;
+      }
+    }
+
     async function fetchProfile() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -18,35 +36,43 @@ export function useProfile() {
         }
 
         // Fetch profile data with maybeSingle() instead of single()
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
+        const { data: profileData, error: profileError } = await fetchWithRetry(() =>
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle()
+        );
 
         if (profileError) throw profileError;
 
-        // Fetch certifications
-        const { data: certifications, error: certError } = await supabase
-          .from('certifications')
-          .select('*')
-          .eq('profile_id', user.id);
+        // Fetch certifications with retry
+        const { data: certifications, error: certError } = await fetchWithRetry(() =>
+          supabase
+            .from('certifications')
+            .select('*')
+            .eq('profile_id', user.id)
+        );
 
         if (certError) throw certError;
 
-        // Fetch education
-        const { data: education, error: eduError } = await supabase
-          .from('education')
-          .select('*')
-          .eq('profile_id', user.id);
+        // Fetch education with retry
+        const { data: education, error: eduError } = await fetchWithRetry(() =>
+          supabase
+            .from('education')
+            .select('*')
+            .eq('profile_id', user.id)
+        );
 
         if (eduError) throw eduError;
 
-        // Fetch experiences
-        const { data: experiences, error: expError } = await supabase
-          .from('experiences')
-          .select('*')
-          .eq('profile_id', user.id);
+        // Fetch experiences with retry
+        const { data: experiences, error: expError } = await fetchWithRetry(() =>
+          supabase
+            .from('experiences')
+            .select('*')
+            .eq('profile_id', user.id)
+        );
 
         if (expError) throw expError;
 
@@ -126,7 +152,7 @@ export function useProfile() {
         toast({
           variant: "destructive",
           title: "Erreur",
-          description: "Impossible de charger votre profil",
+          description: "Impossible de charger votre profil. Réessayez dans quelques instants.",
         });
       } finally {
         setIsLoading(false);
