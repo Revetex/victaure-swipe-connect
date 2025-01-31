@@ -13,13 +13,11 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load Google Custom Search script
     const script = document.createElement("script");
     script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
     document.head.appendChild(script);
 
-    // Configure search behavior once script is loaded
     script.onload = () => {
       if (window.google) {
         window.google.search.cse.element.render({
@@ -27,27 +25,10 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           tag: 'search',
           gname: 'gsearch',
         });
-
-        // Prevent form submission and page reload
-        const observer = new MutationObserver((mutations) => {
-          const searchForm = document.querySelector('.gsc-search-box form');
-          if (searchForm) {
-            searchForm.addEventListener('submit', (e) => {
-              e.preventDefault();
-            });
-            observer.disconnect();
-          }
-        });
-
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true
-        });
       }
     };
 
     return () => {
-      // Cleanup
       if (document.head.contains(script)) {
         document.head.removeChild(script);
       }
@@ -55,7 +36,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   }, []);
 
   return (
-    <div className="glass-card p-6">
+    <div className="relative">
       <div className="flex flex-col gap-4">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center gap-4 min-h-[100px]">
