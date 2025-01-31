@@ -4,7 +4,7 @@ import { ExternalLink } from "lucide-react";
 
 export function Tools() {
   const handleOpenProject = () => {
-    window.open('https://lovable.dev/project/YOUR_PROJECT_ID', '_blank');
+    window.open('https://lovable.dev/project/57f45340-669a-4f20-abfa-730168322fa5', '_blank');
   };
 
   return (
