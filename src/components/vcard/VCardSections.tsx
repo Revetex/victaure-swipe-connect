@@ -1,5 +1,4 @@
 import { UserProfile } from "@/types/profile";
-import { VCardHeader } from "../VCardHeader";
 import { VCardBio } from "../VCardBio";
 import { VCardContact } from "../VCardContact";
 import { VCardContent } from "./VCardContent";
@@ -34,15 +33,6 @@ export function VCardSections({
     const uniqueKey = `${sectionId}-${index}`;
     
     switch (sectionId) {
-      case 'header':
-        return (
-          <VCardHeader
-            key={uniqueKey}
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
       case 'bio':
         return (
           <VCardBio
