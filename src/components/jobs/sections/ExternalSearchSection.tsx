@@ -12,50 +12,13 @@ interface ExternalSearchSectionProps {
 export function ExternalSearchSection({ isLoading, hasError, onRetry }: ExternalSearchSectionProps) {
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [scriptError, setScriptError] = useState(false);
+  const [isSearchLoaded, setIsSearchLoaded] = useState(false);
 
   useEffect(() => {
-    // Disable all Google CSE logging and analytics
-    window.___gcfg = {
-      parsetags: 'explicit',
-      suppressAnalytics: true,
-      suppressLogging: true
-    };
-
-    // Remove any existing search elements and scripts
-    const cleanup = () => {
-      const existingElements = document.querySelectorAll('.gcse-search, script[src*="cse.google.com"]');
-      existingElements.forEach(element => element.remove());
-      document.body.classList.remove('gsc-overflow-hidden');
+    const loadSearch = () => {
       if (window.google?.search?.cse?.element) {
-        delete window.google.search.cse.element;
-      }
-      delete window.___gcfg;
-    };
-
-    cleanup();
-
-    // Create and configure script element
-    const script = document.createElement("script");
-    script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    
-    const handleError = () => {
-      setScriptError(true);
-      console.error("Failed to load Google CSE script");
-      cleanup();
-    };
-
-    script.onerror = handleError;
-
-    script.onload = () => {
-      try {
-        if (window.google && searchContainerRef.current) {
-          // Force remove any existing search elements
-          cleanup();
-
-          // Render new search element with all necessary configurations
-          window.google.search.cse.element.render({
+        try {
+          const searchElement = window.google.search.cse.element.render({
             div: searchContainerRef.current,
             tag: 'search',
             gname: 'gsearch',
@@ -67,73 +30,97 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
               noResultsString: 'Aucun résultat trouvé',
               newWindow: 'true',
               queryParameterName: 'q',
-              overlayResults: 'false',
               resultsUrl: window.location.origin + window.location.pathname,
               linkTarget: '_blank'
             }
           });
-
-          // Observer to remove overflow hidden
-          const observer = new MutationObserver(() => {
-            document.body.classList.remove('gsc-overflow-hidden');
-          });
-
-          observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['class']
-          });
+          
+          if (searchElement) {
+            setIsSearchLoaded(true);
+            setScriptError(false);
+          }
+        } catch (error) {
+          console.error("Error rendering search:", error);
+          setScriptError(true);
         }
-      } catch (error) {
-        console.error("Error rendering Google CSE:", error);
-        setScriptError(true);
-        cleanup();
       }
     };
 
-    // Add the script to the document
-    document.head.appendChild(script);
+    // Cleanup function to remove existing elements
+    const cleanup = () => {
+      const existingElements = document.querySelectorAll('.gcse-search, script[src*="cse.google.com"]');
+      existingElements.forEach(element => element.remove());
+      document.body.classList.remove('gsc-overflow-hidden');
+    };
 
-    // Cleanup function
+    // Load Google CSE script
+    const loadScript = () => {
+      cleanup();
+      
+      const script = document.createElement('script');
+      script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
+      script.async = true;
+      script.defer = true;
+      
+      script.onload = () => {
+        if (window.google?.search?.cse?.element) {
+          loadSearch();
+        }
+      };
+      
+      script.onerror = () => {
+        console.error("Failed to load Google CSE script");
+        setScriptError(true);
+      };
+      
+      document.head.appendChild(script);
+    };
+
+    loadScript();
+
     return cleanup;
   }, []);
 
   if (scriptError) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[100px]">
+      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4">
         <Search className="h-12 w-12 text-destructive" />
-        <p className="text-muted-foreground">Une erreur est survenue lors du chargement de la recherche</p>
-        <Button onClick={() => window.location.reload()} variant="outline">
+        <p className="text-muted-foreground text-center">
+          Une erreur est survenue lors du chargement de la recherche
+        </p>
+        <Button 
+          onClick={() => {
+            setScriptError(false);
+            setIsSearchLoaded(false);
+            window.location.reload();
+          }} 
+          variant="outline"
+        >
           Réessayer
         </Button>
       </div>
     );
   }
 
+  if (!isSearchLoaded) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-muted-foreground">Chargement de la recherche...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative w-full">
+    <div className="relative w-full min-h-[400px]">
       <div className="flex flex-col gap-4">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center gap-4 min-h-[100px]">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Chargement de la recherche externe...</p>
-          </div>
-        ) : hasError ? (
-          <div className="flex flex-col items-center justify-center gap-4 min-h-[100px]">
-            <Search className="h-12 w-12 text-destructive" />
-            <p className="text-muted-foreground">Une erreur est survenue lors du chargement de la recherche</p>
-            <Button onClick={onRetry} variant="outline">
-              Réessayer
-            </Button>
-          </div>
-        ) : (
-          <motion.div 
-            className="flex flex-col gap-4 w-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <div ref={searchContainerRef} className="w-full gcse-search"></div>
-          </motion.div>
-        )}
+        <motion.div 
+          className="flex flex-col gap-4 w-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div ref={searchContainerRef} className="w-full gcse-search"></div>
+        </motion.div>
       </div>
     </div>
   );
