@@ -1,8 +1,7 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { JobInfo } from "@/types/salary";
 import { Hours, Allowances, Premiums, SalaryResult } from "@/types/salary";
-import { useState } from "react";
 import { JobInfoForm } from "@/components/salary/JobInfoForm";
 import { HoursForm } from "@/components/salary/HoursForm";
 import { AllowancesForm } from "@/components/salary/AllowancesForm";
@@ -121,68 +120,39 @@ export function Tools() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Tabs defaultValue="calculator" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="calculator">Calculateur de paie CCQ</TabsTrigger>
-          <TabsTrigger value="rates">Taux horaires</TabsTrigger>
-        </TabsList>
-        <TabsContent value="calculator">
-          <Card className="p-6">
-            <div className="grid gap-8">
-              <JobInfoForm
-                jobInfo={jobInfo}
-                onJobInfoChange={handleJobInfoChange}
-                employeeName={employeeName}
-                setEmployeeName={setEmployeeName}
-                setWeekDates={setWeekDates}
-              />
+      <Card className="p-6">
+        <div className="grid gap-8">
+          <JobInfoForm
+            jobInfo={jobInfo}
+            onJobInfoChange={handleJobInfoChange}
+            employeeName={employeeName}
+            setEmployeeName={setEmployeeName}
+            setWeekDates={setWeekDates}
+          />
 
-              <HoursForm
-                hours={hours}
-                premiums={premiums}
-                onHoursChange={handleHoursChange}
-                onPremiumChange={handlePremiumChange}
-                weekDates={weekDates}
-              />
+          <HoursForm
+            hours={hours}
+            premiums={premiums}
+            onHoursChange={handleHoursChange}
+            onPremiumChange={handlePremiumChange}
+            weekDates={weekDates}
+          />
 
-              <AllowancesForm
-                allowances={allowances}
-                onAllowanceChange={handleAllowanceChange}
-                expenses={expenses}
-                onExpensesChange={setExpenses}
-              />
+          <AllowancesForm
+            allowances={allowances}
+            onAllowanceChange={handleAllowanceChange}
+            expenses={expenses}
+            onExpensesChange={setExpenses}
+          />
 
-              <SalaryResults
-                salary={salary}
-                jobInfo={jobInfo}
-                employeeName={employeeName}
-                expenses={expenses}
-              />
-            </div>
-          </Card>
-        </TabsContent>
-        <TabsContent value="rates">
-          <Card className="p-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Taux horaires en vigueur</h3>
-              <div className="grid gap-4">
-                <div>
-                  <p className="text-sm font-medium">Taux régulier</p>
-                  <p className="text-2xl font-bold">${rates.regular}/h</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Temps double</p>
-                  <p className="text-2xl font-bold">${rates.doubleTime}/h</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Temps de voyage</p>
-                  <p className="text-2xl font-bold">${rates.travelTime}/h</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          <SalaryResults
+            salary={salary}
+            jobInfo={jobInfo}
+            employeeName={employeeName}
+            expenses={expenses}
+          />
+        </div>
+      </Card>
     </div>
   );
 }
