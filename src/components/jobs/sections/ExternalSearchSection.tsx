@@ -1,8 +1,7 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
-import { useToast } from "@/components/ui/use-toast";
 
 interface ExternalSearchSectionProps {
   isLoading: boolean;
@@ -10,76 +9,141 @@ interface ExternalSearchSectionProps {
   onRetry: () => void;
 }
 
-export function ExternalSearchSection({ isLoading, hasError, onRetry }: ExternalSearchSectionProps) {
-  const { toast } = useToast();
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
+export function ExternalSearchSection({
+  isLoading,
+  hasError,
+  onRetry,
+}: ExternalSearchSectionProps) {
+  const [defaultResults, setDefaultResults] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!searchContainerRef.current) return;
-
-    const script = document.createElement('script');
-    script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
-    script.async = true;
-    scriptRef.current = script;
-
-    const searchDiv = document.createElement('div');
-    searchDiv.className = 'gcse-search';
-    searchContainerRef.current.innerHTML = '';
-    searchContainerRef.current.appendChild(searchDiv);
-
-    document.head.appendChild(script);
-
-    script.onerror = () => {
-      toast({
-        variant: "destructive",
-        title: "Erreur de chargement",
-        description: "Impossible de charger le moteur de recherche. Veuillez réessayer."
-      });
-    };
-
-    return () => {
-      if (scriptRef.current && document.head.contains(scriptRef.current)) {
-        document.head.removeChild(scriptRef.current);
-      }
-      if (searchContainerRef.current) {
-        searchContainerRef.current.innerHTML = '';
+    // Initialize Google Custom Search
+    const loadGoogleSearch = () => {
+      if (typeof window.google !== 'undefined') {
+        // @ts-ignore
+        const searchElement = google.search.cse.element.getElement('searchresults-only0');
+        if (searchElement) {
+          searchElement.execute('');  // Clear any existing search
+          if (defaultResults) {
+            // Effectuer une recherche par défaut pour les emplois à proximité
+            searchElement.execute('emplois à proximité site:linkedin.com OR site:indeed.fr OR site:welcometothejungle.com');
+          }
+        }
       }
     };
-  }, [toast]);
+
+    // Wait for Google Search to be ready
+    if (typeof window.google !== 'undefined') {
+      loadGoogleSearch();
+    } else {
+      const interval = setInterval(() => {
+        if (typeof window.google !== 'undefined') {
+          loadGoogleSearch();
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return () => clearInterval(interval);
+    }
+  }, [defaultResults]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex items-center gap-2"
+        >
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="text-sm text-muted-foreground">
+            Chargement des résultats...
+          </span>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (hasError) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4 border border-destructive/50 rounded-lg">
-        <Search className="h-12 w-12 text-destructive" />
-        <p className="text-muted-foreground text-center">
-          Une erreur est survenue lors du chargement de la recherche
+      <div className="flex flex-col items-center justify-center gap-4 py-8">
+        <p className="text-sm text-muted-foreground">
+          Une erreur est survenue lors du chargement des résultats.
         </p>
-        <Button onClick={onRetry} variant="outline">
+        <Button onClick={onRetry} variant="outline" size="sm">
           Réessayer
         </Button>
       </div>
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="text-muted-foreground">Chargement de la recherche...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative w-full min-h-[100px] bg-background rounded-lg p-4 sm:p-0">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="w-full h-full"
-      >
-        <div ref={searchContainerRef} className="w-full h-full" />
-      </motion.div>
+    <div className="w-full space-y-4">
+      <div className="gcse-searchbox-only" data-resultsUrl="/search"></div>
+      <div 
+        className="gcse-searchresults-only" 
+        data-maxResults="5"
+        data-refinementStyle="link"
+      ></div>
+
+      <style jsx global>{`
+        .gsc-control-cse {
+          font-family: inherit !important;
+          border: none !important;
+          background-color: transparent !important;
+          padding: 0 !important;
+          width: 100% !important;
+        }
+        
+        .gsc-input-box {
+          border-radius: 0.375rem !important;
+          border: 1px solid hsl(var(--input)) !important;
+          background-color: hsl(var(--background)) !important;
+          width: 100% !important;
+        }
+
+        .gsc-input-box input {
+          background-color: transparent !important;
+          color: hsl(var(--foreground)) !important;
+        }
+
+        .gsc-search-button {
+          display: none !important;
+        }
+
+        .gsc-results-wrapper-overlay {
+          background-color: hsl(var(--background)) !important;
+          color: hsl(var(--foreground)) !important;
+        }
+
+        .gs-result {
+          border-color: hsl(var(--border)) !important;
+        }
+
+        .gs-result a {
+          color: hsl(var(--foreground)) !important;
+        }
+
+        .gs-result .gs-snippet {
+          color: hsl(var(--muted-foreground)) !important;
+        }
+
+        .gsc-above-wrapper-area,
+        .gsc-table-result,
+        .gsc-thumbnail-inside,
+        .gsc-url-top {
+          border: none !important;
+          background-color: transparent !important;
+        }
+
+        .gcsc-find-more-on-google {
+          display: none !important;
+        }
+
+        .gcsc-more-maybe-branding-root {
+          display: none !important;
+        }
+      `}</style>
     </div>
   );
 }
