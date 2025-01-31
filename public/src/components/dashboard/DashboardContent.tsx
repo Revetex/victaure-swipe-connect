@@ -110,7 +110,7 @@ export function DashboardContent({
 
         {currentPage === 4 && (
           <div className="pb-20">
-            <AIAssistant />
+            <AIAssistant onClose={() => onEditStateChange(false)} />
           </div>
         )}
 
