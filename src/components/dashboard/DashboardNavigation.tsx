@@ -27,18 +27,18 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: id * 0.1 }}
           className={cn(
-            "flex flex-col items-center gap-1 p-3 rounded-xl transition-all duration-300",
+            "flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all duration-300",
             "hover:bg-primary/10 active:scale-95",
             "focus:outline-none focus:ring-2 focus:ring-primary/20",
-            "touch-manipulation min-h-[64px] min-w-[64px]",
+            "touch-manipulation min-h-[48px] min-w-[48px]",
             currentPage === id
               ? "bg-primary text-primary-foreground shadow-lg"
               : "text-muted-foreground hover:text-primary"
           )}
           title={name}
         >
-          <Icon className="h-6 w-6" />
-          <span className="text-xs font-medium">{name}</span>
+          <Icon className="h-5 w-5" />
+          <span className="text-[10px] font-medium">{name}</span>
         </motion.button>
       ))}
     </div>
