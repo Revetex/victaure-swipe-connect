@@ -23,26 +23,18 @@ serve(async (req) => {
       throw new Error('Configuration error: Missing API key')
     }
 
-    // Build a comprehensive system prompt that includes context
     const systemPrompt = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec.
     
     Ton rôle est d'être:
-    - Attentif et compréhensif, en écoutant activement les besoins de l'utilisateur
-    - Polyvalent, capable d'adapter ton approche selon le contexte
-    - Précis dans tes réponses, en te basant sur le contexte de la conversation
-    - Proactif en posant des questions pertinentes pour mieux comprendre la situation
+    - Attentif et compréhensif
+    - Précis et concis dans tes réponses (maximum 2-3 phrases)
+    - Proactif en posant des questions pertinentes
     
     Contexte de l'utilisateur:
     ${JSON.stringify(context?.userProfile || {})}
     
     Messages précédents:
     ${context?.previousMessages?.map(m => `${m.sender}: ${m.content}`).join('\n') || 'Aucun message précédent'}
-    
-    Assure-toi de:
-    1. Toujours tenir compte du contexte complet de la conversation
-    2. Poser des questions si tu as besoin de plus d'informations
-    3. Donner des réponses concises mais complètes
-    4. Adapter ton langage au niveau professionnel de l'utilisateur
     
     User: ${message}
     
@@ -61,7 +53,7 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 256,
+            max_new_tokens: 100, // Reduced from 256 to ensure shorter responses
             temperature: 0.7,
             top_p: 0.9,
             frequency_penalty: 0.0,
@@ -90,7 +82,15 @@ serve(async (req) => {
       throw new Error('Invalid response format from Hugging Face API')
     }
 
-    const assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
+    let assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
+    
+    // Ensure response ends with a complete sentence
+    if (assistantResponse) {
+      const sentences = assistantResponse.match(/[^.!?]+[.!?]+/g) || []
+      if (sentences.length > 0) {
+        assistantResponse = sentences.slice(0, 2).join(' ').trim()
+      }
+    }
 
     return new Response(
       JSON.stringify({ response: assistantResponse || data[0].generated_text }),
