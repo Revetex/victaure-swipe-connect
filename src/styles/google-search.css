@@ -119,3 +119,19 @@
 .gsc-input {
   margin: 0 !important;
 }
+
+/* Hide unnecessary elements */
+.gsc-above-wrapper-area,
+.gcsc-find-more-on-google {
+  display: none !important;
+}
+
+/* Ensure results appear inline */
+.gsc-wrapper {
+  width: 100% !important;
+}
+
+.gsc-results-wrapper-visible {
+  position: static !important;
+  margin-top: 1rem !important;
+}
