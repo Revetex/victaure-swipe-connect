@@ -1,70 +1,64 @@
-import { Hours, Allowances, Premiums, SalaryResult } from "@/types/salary";
-import { rates } from "@/constants/rates";
+import { Hours, Allowances, Premiums, SalaryResult } from "../types/salary";
+import { rates } from "../constants/rates";
+
+const calculateTotalHours = (hoursObj: { [key: string]: number }) => {
+  return Object.values(hoursObj).reduce((acc, curr) => acc + curr, 0);
+};
 
 export const calculateSalary = (
   hours: Hours,
   allowances: Allowances,
   premiums: Premiums
 ): SalaryResult => {
-  // Calculate regular hours total
-  const regularHoursTotal = Object.values(hours.regular).reduce((sum, hours) => sum + hours, 0);
-  const doubleTimeHoursTotal = Object.values(hours.doubleTime).reduce((sum, hours) => sum + hours, 0);
-  const travelTimeHoursTotal = Object.values(hours.travelTime).reduce((sum, hours) => sum + hours, 0);
+  // Calculate total hours
+  const regularHours = calculateTotalHours(hours.regular);
+  const doubleTimeHours = calculateTotalHours(hours.doubleTime);
+  const travelTimeHours = calculateTotalHours(hours.travelTime);
 
-  // Calculate base salary
-  let subtotal = (regularHoursTotal * rates.regular) +
-                 (doubleTimeHoursTotal * rates.doubleTime) +
-                 (travelTimeHoursTotal * rates.travelTime);
+  // Calculate base pay rates with premiums
+  let baseRate = rates.regular;
+  if (premiums.refractory) baseRate += rates.premiums.refractory;
+  if (premiums.superintendent) baseRate *= (1 + rates.premiums.superintendent);
+  if (premiums.nightShift) baseRate += rates.premiums.nightShift;
+  if (premiums.flyingPlatform) baseRate += rates.premiums.flyingPlatform;
+  if (premiums.airAssisted) baseRate += rates.premiums.airAssisted;
+  if (premiums.heavyIndustrial) baseRate += rates.premiums.heavyIndustrial;
 
-  // Apply premiums
-  if (premiums.refractory) subtotal += (regularHoursTotal + doubleTimeHoursTotal) * rates.premiums.refractory;
-  if (premiums.superintendent) subtotal *= (1 + rates.premiums.superintendent);
-  if (premiums.nightShift) subtotal += (regularHoursTotal + doubleTimeHoursTotal) * rates.premiums.nightShift;
-  if (premiums.flyingPlatform) subtotal += (regularHoursTotal + doubleTimeHoursTotal) * rates.premiums.flyingPlatform;
-  if (premiums.airAssisted) subtotal += (regularHoursTotal + doubleTimeHoursTotal) * rates.premiums.airAssisted;
-  if (premiums.heavyIndustrial) subtotal += (regularHoursTotal + doubleTimeHoursTotal) * rates.premiums.heavyIndustrial;
+  // Calculate pay
+  const regularPay = regularHours * baseRate;
+  const doubleTimePay = doubleTimeHours * (baseRate * 2);
+  const travelTimePay = travelTimeHours * rates.travelTime;
 
-  // Calculate allowances
-  const pensionDays = Object.values(allowances.pensionDaysApplied).filter(Boolean).length;
-  const mealDays = Object.values(allowances.mealDaysApplied).filter(Boolean).length;
-  const overtimeMealDays = Object.values(allowances.overtimeMealDaysApplied).filter(Boolean).length;
-  const truckDays = Object.values(allowances.truckDaysApplied).filter(Boolean).length;
-
-  const allowancesTotal = {
-    pension: pensionDays * rates.pension,
-    meal: (mealDays * rates.meal) + (overtimeMealDays * rates.overtimeMeal),
-    truck: truckDays * rates.truck,
-    km: (allowances.regularKm * rates.kmRegular) +
-        (allowances.loadedKm * rates.kmLoaded) +
-        (allowances.trailerKm * rates.kmTrailer),
-    total: 0
-  };
-
-  allowancesTotal.total = allowancesTotal.pension + allowancesTotal.meal + 
-                         allowancesTotal.truck + allowancesTotal.km;
+  // Calculate gross pay
+  const grossPay = regularPay + doubleTimePay + travelTimePay + allowances.total;
 
   // Calculate deductions
   const deductions = {
-    rrq: subtotal * rates.deductions.rrqRate,
-    ei: subtotal * rates.deductions.eiRate,
-    rqap: subtotal * rates.deductions.rqapRate,
-    vacation: subtotal * rates.deductions.vacationRate,
-    socialBenefits: subtotal * rates.deductions.socialBenefitsRate,
-    ccqLevy: subtotal * rates.deductions.ccqLevyRate,
-    sectoralContribution: rates.deductions.sectoralContribution,
+    rrq: grossPay * rates.deductions.rrqRate,
+    ei: grossPay * rates.deductions.eiRate,
+    rqap: grossPay * rates.deductions.rqapRate,
     unionDues: rates.deductions.unionDues,
+    vacation: grossPay * rates.deductions.vacationRate,
+    socialBenefits: grossPay * rates.deductions.socialBenefitsRate,
+    ccqLevy: grossPay * rates.deductions.ccqLevyRate,
+    sectoralContribution: rates.deductions.sectoralContribution,
+    ccqInsurance: rates.deductions.ccqInsuranceRate,
     total: 0
   };
 
-  deductions.total = deductions.rrq + deductions.ei + deductions.rqap +
-                    deductions.vacation + deductions.socialBenefits +
-                    deductions.ccqLevy + deductions.sectoralContribution +
-                    deductions.unionDues;
+  // Calculate total deductions
+  deductions.total = Object.values(deductions).reduce((acc, curr) => acc + curr, 0);
 
   return {
-    hours,
-    allowances: { ...allowances, ...allowancesTotal },
+    regularHours,
+    doubleTimeHours,
+    travelTimeHours,
+    regularPay,
+    doubleTimePay,
+    travelTimePay,
+    allowances: allowances.total,
+    grossPay,
     deductions,
-    subtotal
+    netPay: grossPay - deductions.total
   };
 };
