@@ -44,7 +44,7 @@ export function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen bg-background">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 pt-20 sm:pt-24"> {/* Added padding top */}
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div 
