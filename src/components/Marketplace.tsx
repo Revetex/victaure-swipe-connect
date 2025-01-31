@@ -1,192 +1,138 @@
-import { useState, useEffect } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal, MapPin, Loader2 } from "lucide-react";
-import { JobList } from "./jobs/JobList";
-import { JobFilters } from "./jobs/JobFilters";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { JobFilters as JobFiltersType, defaultFilters, applyFilters } from "./jobs/JobFilterUtils";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Job } from "@/types/job";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import { ScrapedJobs } from "./dashboard/ScrapedJobs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { SlidersHorizontal } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { JobCard } from "./jobs/JobCard";
 
 export function Marketplace() {
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [filters, setFilters] = useState<JobFiltersType>(defaultFilters);
-  const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState("platform");
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-
-  useEffect(() => {
-    // Get user location
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          toast.error("Impossible d'obtenir votre localisation");
-        }
-      );
-    }
-
-    // Cleanup Google Search elements
-    const cleanup = () => {
-      const existingElements = document.querySelectorAll('.gcse-search, .gcse-searchbox, .gcse-searchresults');
-      existingElements.forEach(el => el.remove());
-      
-      const existingScripts = document.querySelectorAll('script[src*="cse.google.com"]');
-      existingScripts.forEach(script => script.remove());
-    };
-
-    cleanup();
-
-    // Add Google Custom Search script
-    const script = document.createElement('script');
-    script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
-    script.async = true;
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      const searchBox = document.createElement('div');
-      searchBox.className = 'gcse-searchbox';
-      
-      const searchResults = document.createElement('div');
-      searchResults.className = 'gcse-searchresults';
-
-      const containers = document.querySelectorAll('.google-search-container');
-      containers.forEach(container => {
-        if (container instanceof HTMLElement) {
-          container.innerHTML = '';
-          container.appendChild(searchBox.cloneNode(true));
-          container.appendChild(searchResults.cloneNode(true));
-        }
-      });
-    };
-
-    return cleanup;
-  }, [activeTab]);
-
-  // Query for nearby jobs
-  const { data: nearbyJobs = [], isLoading: isLoadingNearby } = useQuery({
-    queryKey: ['nearby-jobs', userLocation],
-    queryFn: async () => {
-      if (!userLocation) return [];
-
-      const { data, error } = await supabase
-        .from('scraped_jobs')
-        .select('*')
-        .order('posted_at', { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!userLocation,
-  });
-
-  const { data: jobs = [], isLoading } = useQuery({
-    queryKey: ['jobs', filters],
-    queryFn: async () => {
-      let query = supabase
-        .from('jobs')
-        .select('*')
-        .eq('status', 'open');
-
-      const filteredQuery = await applyFilters(query, filters);
-      const { data, error } = await filteredQuery;
-
-      if (error) throw error;
-      return (data || []) as Job[];
-    },
-  });
-
-  const handleFilterChange = (key: keyof JobFiltersType, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedSalary, setSelectedSalary] = useState("");
+  const [remoteOnly, setRemoteOnly] = useState(false);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Emplois disponibles</h1>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <SlidersHorizontal className="h-4 w-4" />
-              Filtres
-            </Button>
-          </SheetTrigger>
-          <SheetContent side={isMobile ? "left" : "right"} className="w-full sm:w-[540px]">
-            <div className="h-full py-6 overflow-y-auto">
-              <JobFilters 
-                filters={filters}
-                onFilterChange={handleFilterChange}
-              />
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      <Tabs defaultValue="platform" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="mb-4">
-          <TabsTrigger value="platform">Offres Victaure</TabsTrigger>
-          <TabsTrigger value="external">Recherche externe</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="platform">
-          <div className="grid grid-cols-1 gap-6">
-            {activeTab === "platform" && (
-              <div className="w-full min-h-[600px] bg-background rounded-lg p-4 border">
-                <div className="google-search-container min-h-[500px]"></div>
-                
-                {/* Nearby Jobs Section */}
-                <div className="mt-8 border-t pt-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    <h2 className="text-xl font-semibold">Emplois près de vous</h2>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">Emplois disponibles</h1>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1 h-8 px-2">
+                <SlidersHorizontal className="h-3 w-3" />
+                Filtres
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Filtres</SheetTitle>
+              </SheetHeader>
+              <ScrollArea className="h-[calc(100vh-8rem)] pr-4">
+                <div className="space-y-6 py-4">
+                  <div className="space-y-4">
+                    <Label>Type de contrat</Label>
+                    <RadioGroup value={selectedType} onValueChange={setSelectedType}>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="all" id="all" />
+                        <Label htmlFor="all">Tous</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="cdi" id="cdi" />
+                        <Label htmlFor="cdi">CDI</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="cdd" id="cdd" />
+                        <Label htmlFor="cdd">CDD</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="internship" id="internship" />
+                        <Label htmlFor="internship">Stage</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="freelance" id="freelance" />
+                        <Label htmlFor="freelance">Freelance</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                  
-                  {isLoadingNearby ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  ) : nearbyJobs.length > 0 ? (
-                    <div className="grid gap-4">
-                      <ScrapedJobs />
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-center py-4">
-                      Aucun emploi trouvé près de votre localisation
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-            {filters.category !== "all" && (
-              <JobList 
-                jobs={jobs}
-                isLoading={isLoading}
-              />
-            )}
-          </div>
-        </TabsContent>
 
-        <TabsContent value="external" className="min-h-[600px]">
-          <div className="bg-background rounded-lg p-4 border">
-            <div className="google-search-container min-h-[500px]"></div>
-          </div>
-        </TabsContent>
-      </Tabs>
+                  <div className="space-y-4">
+                    <Label>Localisation</Label>
+                    <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner une ville" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="paris">Paris</SelectItem>
+                        <SelectItem value="lyon">Lyon</SelectItem>
+                        <SelectItem value="marseille">Marseille</SelectItem>
+                        <SelectItem value="bordeaux">Bordeaux</SelectItem>
+                        <SelectItem value="toulouse">Toulouse</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Salaire minimum</Label>
+                    <Select value={selectedSalary} onValueChange={setSelectedSalary}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner un salaire" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="20k">20 000 €</SelectItem>
+                        <SelectItem value="30k">30 000 €</SelectItem>
+                        <SelectItem value="40k">40 000 €</SelectItem>
+                        <SelectItem value="50k">50 000 €</SelectItem>
+                        <SelectItem value="60k">60 000 €</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="remote"
+                      checked={remoteOnly}
+                      onCheckedChange={(checked) => setRemoteOnly(checked as boolean)}
+                    />
+                    <Label htmlFor="remote">Télétravail uniquement</Label>
+                  </div>
+                </div>
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <JobCard
+            title="Développeur Frontend"
+            company="TechCorp"
+            location="Paris"
+            type="CDI"
+            salary="45-55k"
+            remote={true}
+          />
+          <JobCard
+            title="UX Designer"
+            company="DesignStudio"
+            location="Lyon"
+            type="CDI"
+            salary="40-50k"
+            remote={false}
+          />
+          <JobCard
+            title="Product Manager"
+            company="StartupXYZ"
+            location="Bordeaux"
+            type="CDD"
+            salary="50-60k"
+            remote={true}
+          />
+        </div>
+      </div>
     </div>
   );
 }
