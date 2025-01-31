@@ -1,7 +1,7 @@
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { Checkbox } from "../../components/ui/checkbox";
-import { Hours, Premiums } from "../../types/salary";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Hours, Premiums } from "@/types/salary";
 
 interface HoursFormProps {
   hours: Hours;

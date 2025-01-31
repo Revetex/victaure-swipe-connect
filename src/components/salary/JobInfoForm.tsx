@@ -1,6 +1,6 @@
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { JobInfo } from "../../types/salary";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { JobInfo } from "@/types/salary";
 import { useState } from "react";
 
 interface JobInfoFormProps {
@@ -79,3 +79,4 @@ export function JobInfoForm({
     </div>
   );
 }
+
