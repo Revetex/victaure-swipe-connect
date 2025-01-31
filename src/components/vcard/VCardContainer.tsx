@@ -16,7 +16,7 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative w-full min-h-screen transition-all duration-300 bg-background text-foreground text-sm sm:text-base"
+      className="relative w-full min-h-screen transition-all duration-300 bg-background text-foreground dark:text-black text-sm sm:text-base"
       style={{
         fontFamily: customStyles?.font || 'inherit',
         backgroundColor: customStyles?.background || 'inherit',
