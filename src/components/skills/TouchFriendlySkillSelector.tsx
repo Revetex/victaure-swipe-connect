@@ -13,12 +13,14 @@ interface TouchFriendlySkillSelectorProps {
 export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: TouchFriendlySkillSelectorProps) {
   return (
     <Dialog>
+
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full gap-2">
+        <Button variant="outline" className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 gap-2">
           <Plus className="h-4 w-4" />
           Ajouter une compétence
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Sélectionner une compétence</DialogTitle>
