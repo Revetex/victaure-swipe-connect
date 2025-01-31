@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Share2, Download, Copy, Save, FileText, Edit } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useVCardStyle } from "./VCardStyleContext";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
 
 interface VCardActionsProps {
   isEditing: boolean;
