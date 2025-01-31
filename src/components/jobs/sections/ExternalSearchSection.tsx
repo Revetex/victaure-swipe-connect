@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Search, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ExternalSearchSectionProps {
@@ -11,135 +11,61 @@ interface ExternalSearchSectionProps {
 }
 
 export function ExternalSearchSection({ isLoading, hasError, onRetry }: ExternalSearchSectionProps) {
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-  const [scriptError, setScriptError] = useState(false);
-  const [isSearchLoaded, setIsSearchLoaded] = useState(false);
   const { toast } = useToast();
-  const scriptLoadedRef = useRef(false);
-  const initializationAttempted = useRef(false);
-
-  const initializeSearch = () => {
-    if (!window.google?.search?.cse?.element || !searchContainerRef.current) {
-      console.error("Google CSE not found or container not ready");
-      return false;
-    }
-
-    try {
-      // Clear previous content
-      searchContainerRef.current.innerHTML = '';
-      
-      // Create search element
-      const searchDiv = document.createElement('div');
-      searchDiv.className = 'gcse-searchbox-only';
-      searchDiv.setAttribute('data-resultsUrl', '/search-results');
-      searchDiv.setAttribute('enableAutoComplete', 'true');
-      searchDiv.setAttribute('autoCompleteMaxCompletions', '5');
-      
-      // Append to container
-      searchContainerRef.current.appendChild(searchDiv);
-
-      // Initialize search
-      window.google.search.cse.element.render({
-        div: searchDiv,
-        tag: 'searchbox-only',
-        gname: 'gsearch'
-      });
-
-      return true;
-    } catch (error) {
-      console.error("Error initializing search:", error);
-      return false;
-    }
-  };
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   useEffect(() => {
-    if (scriptLoadedRef.current && !initializationAttempted.current) {
-      const success = initializeSearch();
-      if (success) {
-        setIsSearchLoaded(true);
-        setScriptError(false);
-      } else {
-        setScriptError(true);
-      }
-      initializationAttempted.current = true;
-    }
-  }, []);
+    if (!searchContainerRef.current) return;
 
-  useEffect(() => {
-    if (scriptLoadedRef.current) return;
-
+    // Create and append the script
     const script = document.createElement('script');
     script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
     script.async = true;
-    script.defer = true;
-    
-    let timeoutId: NodeJS.Timeout;
-    
-    script.onload = () => {
-      scriptLoadedRef.current = true;
-      
-      // Wait a bit for the Google CSE to initialize
-      timeoutId = setTimeout(() => {
-        const success = initializeSearch();
-        if (success) {
-          setIsSearchLoaded(true);
-          setScriptError(false);
-        } else {
-          setScriptError(true);
-          toast({
-            variant: "destructive",
-            title: "Erreur de chargement",
-            description: "Le service de recherche n'a pas pu être chargé. Veuillez réessayer plus tard."
-          });
-        }
-        initializationAttempted.current = true;
-      }, 1000);
-    };
-    
+    scriptRef.current = script;
+
+    // Create the search div
+    const searchDiv = document.createElement('div');
+    searchDiv.className = 'gcse-search';
+    searchContainerRef.current.innerHTML = ''; // Clear previous content
+    searchContainerRef.current.appendChild(searchDiv);
+
+    // Add script to document
+    document.head.appendChild(script);
+
     script.onerror = () => {
-      console.error("Failed to load Google CSE script");
-      setScriptError(true);
       toast({
         variant: "destructive",
         title: "Erreur de chargement",
-        description: "Impossible de charger le script de recherche. Veuillez vérifier votre connexion."
+        description: "Impossible de charger le moteur de recherche. Veuillez réessayer."
       });
     };
-    
-    document.head.appendChild(script);
 
     return () => {
-      clearTimeout(timeoutId);
-      scriptLoadedRef.current = false;
-      initializationAttempted.current = false;
-      setIsSearchLoaded(false);
+      if (scriptRef.current && document.head.contains(scriptRef.current)) {
+        document.head.removeChild(scriptRef.current);
+      }
+      if (searchContainerRef.current) {
+        searchContainerRef.current.innerHTML = '';
+      }
     };
   }, [toast]);
 
-  if (scriptError) {
+  if (hasError) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4 border border-destructive/50 rounded-lg">
         <Search className="h-12 w-12 text-destructive" />
         <p className="text-muted-foreground text-center">
           Une erreur est survenue lors du chargement de la recherche
         </p>
-        <Button 
-          onClick={() => {
-            setScriptError(false);
-            setIsSearchLoaded(false);
-            scriptLoadedRef.current = false;
-            initializationAttempted.current = false;
-            window.location.reload();
-          }} 
-          variant="outline"
-        >
+        <Button onClick={onRetry} variant="outline">
           Réessayer
         </Button>
       </div>
     );
   }
 
-  if (!isSearchLoaded) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
