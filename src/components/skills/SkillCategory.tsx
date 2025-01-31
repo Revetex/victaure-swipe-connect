@@ -28,7 +28,6 @@ export function SkillCategory({
     <div className="space-y-2 mb-4">
       <div className="flex items-center gap-2">
         <CategoryIcon category={category} />
-        <h3 className="font-medium">{category}</h3>
       </div>
       <div className="flex flex-wrap gap-2">
         {filteredSkills.map((skill, index) => (
