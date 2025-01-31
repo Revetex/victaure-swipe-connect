@@ -11,15 +11,15 @@ interface VCardContainerProps {
   };
 }
 
-export function VCardContainer({ children, isEditing }: VCardContainerProps) {
+export function VCardContainer({ children, isEditing, customStyles }: VCardContainerProps) {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={`relative w-full min-h-screen transition-all duration-300 ${
         isEditing 
-          ? 'bg-background text-foreground'
-          : 'bg-background text-foreground'
+          ? 'bg-background text-foreground text-sm sm:text-base'
+          : 'bg-background text-foreground text-sm sm:text-base'
       }`}
     >
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
