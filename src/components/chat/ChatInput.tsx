@@ -15,7 +15,6 @@ interface ChatInputProps {
   isThinking?: boolean;
   className?: string;
   placeholder?: string;
-  maxLength?: number;
 }
 
 export function ChatInput({
@@ -27,7 +26,6 @@ export function ChatInput({
   isThinking = false,
   className,
   placeholder = "Comment puis-je vous aider aujourd'hui ?",
-  maxLength = 1000,
 }: ChatInputProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -54,21 +52,12 @@ export function ChatInput({
     }
   };
 
-  const characterCount = value.length;
-  const isNearLimit = characterCount > maxLength * 0.8;
-  const isAtLimit = characterCount >= maxLength;
-
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="relative w-full">
         <Textarea
           value={value}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            if (newValue.length <= maxLength) {
-              onChange(newValue);
-            }
-          }}
+          onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className="pr-24 min-h-[60px] max-h-[200px] resize-none text-foreground focus-visible:ring-primary bg-background w-full"
@@ -109,15 +98,6 @@ export function ChatInput({
             )}
           </Button>
         </div>
-      </div>
-      <div className="flex justify-end items-center px-1 text-xs text-muted-foreground">
-        <span className={cn(
-          "transition-colors",
-          isNearLimit && "text-warning",
-          isAtLimit && "text-destructive"
-        )}>
-          {characterCount}/{maxLength}
-        </span>
       </div>
     </div>
   );
