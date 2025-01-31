@@ -30,12 +30,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       return;
     }
 
-    // Only allow editing for professional and employer roles
-    if (!['professional', 'employer'].includes(profile.role)) {
-      toast.error("Vous n'avez pas les permissions nécessaires pour éditer ce profil");
-      return;
-    }
-
     setIsEditing(!isEditing);
     if (onEditStateChange) {
       onEditStateChange(!isEditing);
@@ -60,12 +54,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       
       if (!user) {
         toast.error("Vous devez être connecté pour sauvegarder votre profil");
-        return;
-      }
-
-      // Ensure role is one of the allowed values
-      if (!['professional', 'employer', 'admin'].includes(profile.role)) {
-        toast.error("Le rôle spécifié n'est pas valide");
         return;
       }
 
