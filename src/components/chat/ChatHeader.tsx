@@ -19,16 +19,16 @@ export function ChatHeader({
   isThinking = false,
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center justify-between p-1.5 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex items-center gap-1.5">
         {onBack && (
           <Button
             variant="ghost"
             size="icon"
             onClick={onBack}
-            className="h-8 w-8"
+            className="h-6 w-6"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-3 w-3" />
           </Button>
         )}
         <motion.div
@@ -36,19 +36,19 @@ export function ChatHeader({
           transition={{ repeat: Infinity, duration: 2 }}
           className="relative"
         >
-          <Avatar className="h-8 w-8 ring-1 ring-primary/10">
+          <Avatar className="h-6 w-6 ring-1 ring-primary/10">
             <AvatarImage src={avatarUrl} alt={title} className="object-cover" />
             <AvatarFallback className="bg-primary/20">
-              <Bot className="h-4 w-4 text-primary" />
+              <Bot className="h-3 w-3 text-primary" />
             </AvatarFallback>
           </Avatar>
           {isThinking && (
-            <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 ring-1 ring-white" />
+            <span className="absolute bottom-0 right-0 h-1.5 w-1.5 rounded-full bg-green-500 ring-1 ring-white" />
           )}
         </motion.div>
         <div>
-          <h2 className="text-base font-semibold leading-none">{title}</h2>
-          <p className="text-xs text-muted-foreground">
+          <h2 className="text-sm font-semibold leading-none">{title}</h2>
+          <p className="text-[10px] text-muted-foreground">
             {isThinking ? "En train de réfléchir..." : subtitle}
           </p>
         </div>

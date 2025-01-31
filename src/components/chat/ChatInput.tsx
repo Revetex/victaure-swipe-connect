@@ -53,31 +53,31 @@ export function ChatInput({
   };
 
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
+    <div className={cn("flex flex-col gap-0.5", className)}>
       <div className="relative w-full">
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pr-20 min-h-[44px] max-h-[120px] resize-none text-foreground focus-visible:ring-primary bg-background w-full text-sm"
+          className="pr-16 min-h-[36px] max-h-[100px] resize-none text-foreground focus-visible:ring-primary bg-background w-full text-xs"
           disabled={isThinking}
         />
-        <div className="absolute bottom-1.5 right-1.5 flex items-center gap-1">
+        <div className="absolute bottom-1 right-1 flex items-center gap-0.5">
           {onVoiceInput && (
             <Button
               type="button"
               size="icon"
               variant={isListening ? "default" : "ghost"}
               onClick={onVoiceInput}
-              className="h-7 w-7"
+              className="h-6 w-6"
               disabled={isThinking}
             >
               <motion.div
                 animate={isListening ? { scale: [1, 1.2, 1] } : {}}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               >
-                <Mic className="h-3.5 w-3.5" />
+                <Mic className="h-3 w-3" />
               </motion.div>
             </Button>
           )}
@@ -86,15 +86,15 @@ export function ChatInput({
             size="icon"
             onClick={handleSendClick}
             className={cn(
-              "h-7 w-7 transition-transform",
+              "h-6 w-6 transition-transform",
               value.trim() && !isThinking && "hover:scale-105"
             )}
             disabled={!value.trim() || isThinking}
           >
             {isThinking ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-              <Send className="h-3.5 w-3.5" />
+              <Send className="h-3 w-3" />
             )}
           </Button>
         </div>
