@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { VCardSection } from "../VCardSection";
+import { VCardSection } from "@/components/VCardSection";
 import { Briefcase, Plus, Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { UserProfile, Experience } from "@/types/profile";
 
 interface VCardExperiencesProps {
@@ -143,7 +143,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             />
             <Button
               onClick={handleAddExperience}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200"
               disabled={!newExperience.company || !newExperience.position}
             >
               <Plus className="h-4 w-4 mr-2" />
