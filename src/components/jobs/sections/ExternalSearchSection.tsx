@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ExternalSearchSectionProps {
   isLoading: boolean;
@@ -13,28 +14,43 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [scriptError, setScriptError] = useState(false);
   const [isSearchLoaded, setIsSearchLoaded] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const loadSearch = () => {
-      if (window.google?.search?.cse?.element) {
-        try {
-          const searchDiv = document.createElement('div');
-          searchDiv.className = 'gcse-search';
-          if (searchContainerRef.current) {
-            searchContainerRef.current.innerHTML = '';
-            searchContainerRef.current.appendChild(searchDiv);
-          }
-          window.google.search.cse.element.render({
-            div: searchDiv,
-            tag: 'search',
-            gname: 'gsearch'
-          });
-          setIsSearchLoaded(true);
-          setScriptError(false);
-        } catch (error) {
-          console.error("Error rendering search:", error);
-          setScriptError(true);
+      if (!window.google?.search?.cse?.element) {
+        console.error("Google CSE not found");
+        setScriptError(true);
+        return;
+      }
+
+      try {
+        const searchDiv = document.createElement('div');
+        searchDiv.className = 'gcse-search';
+        searchDiv.setAttribute('data-gname', 'gsearch');
+        searchDiv.setAttribute('enableAutoComplete', 'true');
+        
+        if (searchContainerRef.current) {
+          searchContainerRef.current.innerHTML = '';
+          searchContainerRef.current.appendChild(searchDiv);
         }
+
+        window.google.search.cse.element.render({
+          div: searchDiv,
+          tag: 'search',
+          gname: 'gsearch'
+        });
+
+        setIsSearchLoaded(true);
+        setScriptError(false);
+      } catch (error) {
+        console.error("Error rendering search:", error);
+        setScriptError(true);
+        toast({
+          variant: "destructive",
+          title: "Erreur de chargement",
+          description: "Impossible de charger la recherche. Veuillez réessayer."
+        });
       }
     };
 
@@ -64,14 +80,24 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             clearInterval(checkGoogleCSE);
             if (!isSearchLoaded) {
               setScriptError(true);
+              toast({
+                variant: "destructive",
+                title: "Erreur de chargement",
+                description: "Le service de recherche n'a pas pu être chargé. Veuillez réessayer plus tard."
+              });
             }
-          }, 5000);
+          }, 10000); // Increased timeout to 10s
         }
       };
       
       script.onerror = () => {
         console.error("Failed to load Google CSE script");
         setScriptError(true);
+        toast({
+          variant: "destructive",
+          title: "Erreur de chargement",
+          description: "Impossible de charger le script de recherche. Veuillez vérifier votre connexion."
+        });
       };
       
       document.head.appendChild(script);
@@ -85,11 +111,11 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
         existingScript.remove();
       }
     };
-  }, []);
+  }, [toast]);
 
   if (scriptError) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4">
+      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4 border border-destructive/50 rounded-lg">
         <Search className="h-12 w-12 text-destructive" />
         <p className="text-muted-foreground text-center">
           Une erreur est survenue lors du chargement de la recherche
