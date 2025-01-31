@@ -23,12 +23,11 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
         color: customStyles?.textColor || 'inherit'
       }}
     >
-      <div className="absolute inset-0 bg-grid-white/[0.02] dark:bg-grid-white/[0.02] bg-[size:20px_20px]" />
       <div className="relative z-10 w-full mx-auto py-4 sm:py-6 lg:py-8">
         <div className={`space-y-4 sm:space-y-6 ${
           isEditing 
             ? 'bg-background/80 dark:bg-background/80 backdrop-blur-sm p-4 sm:p-6 shadow-lg border border-border/20 rounded-xl' 
-            : 'bg-background/60 dark:bg-background/60 backdrop-blur-sm rounded-xl'
+            : ''
         }`}>
           {children}
         </div>
