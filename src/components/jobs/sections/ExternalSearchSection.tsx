@@ -36,6 +36,14 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
     script.onload = () => {
       try {
         if (window.google && searchContainerRef.current) {
+          // Force remove any existing search elements
+          const existingElements = document.querySelectorAll('.gcse-search');
+          existingElements.forEach(element => element.remove());
+
+          // Remove overflow hidden from body if it was added
+          document.body.classList.remove('gsc-overflow-hidden');
+
+          // Render new search element
           window.google.search.cse.element.render({
             div: searchContainerRef.current,
             tag: 'search',
@@ -47,8 +55,19 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
               enableAnalytics: 'false',
               noResultsString: 'Aucun résultat trouvé',
               newWindow: 'true',
-              queryParameterName: 'q'
+              queryParameterName: 'q',
+              overlayResults: 'false'
             }
+          });
+
+          // Observer to remove overflow hidden
+          const observer = new MutationObserver(() => {
+            document.body.classList.remove('gsc-overflow-hidden');
+          });
+
+          observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['class']
           });
         }
       } catch (error) {
@@ -70,6 +89,8 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       // Clean up any existing CSE elements
       const existingElements = document.querySelectorAll('.gcse-search');
       existingElements.forEach(element => element.remove());
+      // Ensure body can scroll on unmount
+      document.body.classList.remove('gsc-overflow-hidden');
     };
   }, []);
 
