@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { VCardSection } from "@/components/VCardSection";
+import { VCardSection } from "@/components/vcard/VCardSection";
 import { Briefcase, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
