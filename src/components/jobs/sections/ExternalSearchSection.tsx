@@ -15,6 +15,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const [scriptError, setScriptError] = useState(false);
   const [isSearchLoaded, setIsSearchLoaded] = useState(false);
   const { toast } = useToast();
+  const scriptLoadedRef = useRef(false);
 
   useEffect(() => {
     const loadSearch = () => {
@@ -25,15 +26,18 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       }
 
       try {
-        // Create and configure search element
-        const searchDiv = document.createElement('div');
-        searchDiv.className = 'gcse-searchbox-only';
-        searchDiv.setAttribute('data-resultsUrl', '/search-results');
-        searchDiv.setAttribute('enableAutoComplete', 'true');
-        searchDiv.setAttribute('autoCompleteMaxCompletions', '5');
-        
         if (searchContainerRef.current) {
+          // Clear previous content
           searchContainerRef.current.innerHTML = '';
+          
+          // Create search element
+          const searchDiv = document.createElement('div');
+          searchDiv.className = 'gcse-searchbox-only';
+          searchDiv.setAttribute('data-resultsUrl', '/search-results');
+          searchDiv.setAttribute('enableAutoComplete', 'true');
+          searchDiv.setAttribute('autoCompleteMaxCompletions', '5');
+          
+          // Append to container
           searchContainerRef.current.appendChild(searchDiv);
 
           // Initialize search
@@ -42,10 +46,10 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             tag: 'searchbox-only',
             gname: 'gsearch'
           });
-        }
 
-        setIsSearchLoaded(true);
-        setScriptError(false);
+          setIsSearchLoaded(true);
+          setScriptError(false);
+        }
       } catch (error) {
         console.error("Error rendering search:", error);
         setScriptError(true);
@@ -57,14 +61,20 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       }
     };
 
-    // Load Google CSE script
+    // Load Google CSE script only if not already loaded
     const loadScript = () => {
+      if (scriptLoadedRef.current) {
+        loadSearch();
+        return;
+      }
+
       const script = document.createElement('script');
       script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
       script.async = true;
       script.defer = true;
       
       script.onload = () => {
+        scriptLoadedRef.current = true;
         if (window.google?.search?.cse?.element) {
           loadSearch();
         } else {
@@ -75,6 +85,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             }
           }, 100);
 
+          // Clear interval and show error if Google CSE doesn't load after timeout
           setTimeout(() => {
             clearInterval(checkGoogleCSE);
             if (!isSearchLoaded) {
@@ -85,7 +96,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
                 description: "Le service de recherche n'a pas pu être chargé. Veuillez réessayer plus tard."
               });
             }
-          }, 15000);
+          }, 30000); // Extended timeout to 30s
         }
       };
       
@@ -104,11 +115,10 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
 
     loadScript();
 
+    // Cleanup function
     return () => {
-      const existingScript = document.querySelector('script[src*="cse.google.com"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
+      scriptLoadedRef.current = false;
+      setIsSearchLoaded(false);
     };
   }, [toast]);
 
@@ -123,6 +133,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           onClick={() => {
             setScriptError(false);
             setIsSearchLoaded(false);
+            scriptLoadedRef.current = false;
             window.location.reload();
           }} 
           variant="outline"
