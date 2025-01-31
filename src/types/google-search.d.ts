@@ -1,10 +1,15 @@
 interface Window {
+  ___gcfg?: {
+    parsetags?: string;
+    suppressAnalytics?: boolean;
+    suppressLogging?: boolean;
+  };
   google?: {
-    search: {
-      cse: {
-        element: {
+    search?: {
+      cse?: {
+        element?: {
           render: (config: {
-            div: HTMLElement | null;
+            div: HTMLElement;
             tag: string;
             gname: string;
             attributes?: {
@@ -23,10 +28,5 @@ interface Window {
         };
       };
     };
-  };
-  ___gcfg?: {
-    parsetags?: string;
-    suppressAnalytics?: boolean;
-    suppressLogging?: boolean;
   };
 }
