@@ -99,10 +99,10 @@ export function MessagesContent({
       <div className="flex-1 overflow-hidden bg-background/80">
         <div 
           ref={scrollAreaRef}
-          className="h-[calc(100vh-12rem)] overflow-y-auto px-4 py-6 scroll-smooth" 
+          className="h-[calc(100vh-16rem)] overflow-y-auto px-4 py-6 scroll-smooth" 
           onScroll={handleScroll}
         >
-          <div className="max-w-3xl mx-auto space-y-6 pb-4">
+          <div className="max-w-3xl mx-auto space-y-6 pb-20">
             <AnimatePresence mode="popLayout">
               {messages.map((message) => (
                 <ChatMessage
@@ -139,7 +139,7 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 mb-16">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
