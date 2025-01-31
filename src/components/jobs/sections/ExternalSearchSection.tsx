@@ -13,13 +13,15 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   useEffect(() => {
     // Load Google Custom Search script
     const script = document.createElement("script");
-    script.src = "https://cse.google.com/cse.js?cx=YOUR_SEARCH_ENGINE_ID";
+    script.src = "https://cse.google.com/cse.js?cx=e5a4e0a3d0c0f4c1f";
     script.async = true;
     document.head.appendChild(script);
 
     return () => {
       // Cleanup
-      document.head.removeChild(script);
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
   }, []);
 
@@ -45,7 +47,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <div className="gcse-search"></div>
+          <div className="gcse-searchbox-only" data-resultsUrl="/search"></div>
         </motion.div>
       )}
     </div>
