@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Search, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 interface ExternalSearchSectionProps {
   isLoading: boolean;
@@ -9,6 +10,19 @@ interface ExternalSearchSectionProps {
 }
 
 export function ExternalSearchSection({ isLoading, hasError, onRetry }: ExternalSearchSectionProps) {
+  useEffect(() => {
+    // Load Google Custom Search script
+    const script = document.createElement("script");
+    script.src = "https://cse.google.com/cse.js?cx=YOUR_SEARCH_ENGINE_ID";
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup
+      document.head.removeChild(script);
+    };
+  }, []);
+
   return (
     <div className="glass-card p-6">
       <h3 className="text-lg font-semibold mb-4">Recherche externe</h3>
@@ -31,7 +45,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {/* Google Custom Search elements will be injected here */}
+          <div className="gcse-search"></div>
         </motion.div>
       )}
     </div>
