@@ -10,10 +10,18 @@ interface JobCardProps {
 }
 
 export function JobCard({ job }: JobCardProps) {
-  const formattedDate = formatDistanceToNow(new Date(job.created_at || new Date()), {
-    addSuffix: true,
-    locale: fr,
-  });
+  const getFormattedDate = () => {
+    try {
+      const date = job.created_at ? new Date(job.created_at) : new Date();
+      return formatDistanceToNow(date, {
+        addSuffix: true,
+        locale: fr,
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Date non disponible';
+    }
+  };
 
   return (
     <Card className="relative p-6 hover:shadow-lg transition-shadow bg-card">
@@ -44,7 +52,7 @@ export function JobCard({ job }: JobCardProps) {
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4 shrink-0" />
-            <span>{formattedDate}</span>
+            <span>{getFormattedDate()}</span>
           </div>
 
           {job.budget > 0 && (
