@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import "https://deno.land/x/xhr@0.1.0/mod.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,16 @@ serve(async (req) => {
       console.error('Missing HUGGING_FACE_API_KEY')
       throw new Error('Configuration error: Missing API key')
     }
+
+    // Initialize Supabase client with service role key
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      throw new Error('Missing Supabase configuration')
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
 
     const systemPrompt = `Tu es M. Victaure, un assistant virtuel chaleureux et naturel spécialisé dans l'orientation professionnelle au Québec.
 
@@ -101,14 +112,20 @@ serve(async (req) => {
       }
     }
 
-    // Store learning data
-    const { data: client } = await supabase.from('ai_learning_data').insert({
-      user_id: userId,
-      question: message,
-      response: assistantResponse || data[0].generated_text,
-      context: context || {},
-      tags: ['chat', 'career-advice']
-    })
+    // Store learning data using the initialized Supabase client
+    const { error: learningError } = await supabase
+      .from('ai_learning_data')
+      .insert({
+        user_id: userId,
+        question: message,
+        response: assistantResponse || data[0].generated_text,
+        context: context || {},
+        tags: ['chat', 'career-advice']
+      })
+
+    if (learningError) {
+      console.error('Error storing learning data:', learningError)
+    }
 
     return new Response(
       JSON.stringify({ response: assistantResponse || data[0].generated_text }),
