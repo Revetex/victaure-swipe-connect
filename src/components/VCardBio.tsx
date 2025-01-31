@@ -81,17 +81,17 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 p-4 sm:p-6 rounded-xl bg-card/10 backdrop-blur-sm border border-border/5"
+      className="space-y-4 p-4 sm:p-6 rounded-xl bg-white/5 dark:bg-black/20 backdrop-blur-sm border border-gray-200/10 dark:border-white/5"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-base sm:text-lg font-semibold text-primary/90">Présentation</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white/90">Présentation</h3>
         {isEditing && (
           <Button 
             variant="outline" 
             size="sm"
             onClick={handleGenerateBio}
             disabled={isGenerating}
-            className="bg-primary/5 hover:bg-primary/10 border-primary/10"
+            className="bg-white/5 dark:bg-white/5 hover:bg-white/10 dark:hover:bg-white/10 border-gray-200/20 dark:border-white/10 text-gray-700 dark:text-white/90"
           >
             {isGenerating ? (
               <Loader className="mr-2 h-3 w-3" />
@@ -108,10 +108,10 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           value={profile?.bio || ""}
           onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
           placeholder="Écrivez une courte présentation..."
-          className="w-full min-h-[120px] p-3 rounded-lg bg-card/5 border border-border/10 text-sm sm:text-base text-foreground placeholder:text-muted-foreground/50 focus:ring-1 focus:ring-ring focus:border-ring"
+          className="w-full min-h-[120px] p-3 rounded-lg bg-white/5 dark:bg-black/20 border border-gray-200/20 dark:border-white/10 text-sm sm:text-base text-gray-900 dark:text-white/90 placeholder:text-gray-500/50 dark:placeholder:text-white/30 focus:ring-1 focus:ring-primary/20 dark:focus:ring-white/20 focus:border-primary/30 dark:focus:border-white/30"
         />
       ) : profile?.bio ? (
-        <p className="text-sm sm:text-base text-muted-foreground/90 leading-relaxed">{profile.bio}</p>
+        <p className="text-sm sm:text-base text-gray-700 dark:text-white/80 leading-relaxed">{profile.bio}</p>
       ) : null}
     </motion.div>
   );
