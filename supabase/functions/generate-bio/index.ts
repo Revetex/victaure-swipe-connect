@@ -42,7 +42,8 @@ La bio doit:
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
-    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-v0.1-8x7B', {
+    // Using a more reliable model for text generation
+    const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingFaceApiKey}`,
@@ -55,23 +56,22 @@ La bio doit:
           temperature: 0.7,
           top_p: 0.95,
           return_full_text: false,
-          repetition_penalty: 1.2,
           do_sample: true,
-          top_k: 50
         }
       }),
     })
 
     if (!response.ok) {
-      const error = await response.text()
-      console.error('Hugging Face API error:', error)
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`)
+      const errorText = await response.text()
+      console.error('Hugging Face API error response:', errorText)
+      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}\n${errorText}`)
     }
 
     const data = await response.json()
     console.log('Hugging Face API Response:', data)
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
+      console.error('Invalid response format:', data)
       throw new Error('Format de réponse invalide de l\'API')
     }
 
