@@ -121,8 +121,8 @@ export function Marketplace() {
         <h1 className="text-2xl font-bold">Emplois disponibles</h1>
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <SlidersHorizontal className="h-4 w-4" />
+            <Button variant="outline" size="lg" className="gap-2 h-12 px-6">
+              <SlidersHorizontal className="h-5 w-5" />
               Filtres
             </Button>
           </SheetTrigger>

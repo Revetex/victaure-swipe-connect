@@ -62,7 +62,7 @@ export function MessagesContent({
                 onClick={onBack}
                 className="shrink-0"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-5 w-5" />
               </Button>
             )}
             <Avatar className="h-12 w-12 ring-2 ring-primary/10">
@@ -84,7 +84,7 @@ export function MessagesContent({
             onClick={onClearChat}
             className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-5 w-5" />
           </Button>
         </div>
       </header>
@@ -131,7 +131,7 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-safe-bottom">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-20">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
