@@ -13,7 +13,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   useEffect(() => {
     // Load Google Custom Search script
     const script = document.createElement("script");
-    script.src = "https://cse.google.com/cse.js?cx=e5a4e0a3d0c0f4c1f";
+    script.src = "https://cse.google.com/cse.js?cx=1262c5460a0314a80";
     script.async = true;
     document.head.appendChild(script);
 
