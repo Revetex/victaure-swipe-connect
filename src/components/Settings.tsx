@@ -14,12 +14,10 @@ import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const containerVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    y: 0,
     transition: {
-      duration: 0.3,
       staggerChildren: 0.1
     }
   }
@@ -163,9 +161,14 @@ export function Settings() {
             disabled={isLoggingOut}
             className={cn(
               "w-full flex items-center justify-center gap-2",
-              "transition-all duration-200",
-              "hover:bg-destructive/90",
-              "focus:ring-2 focus:ring-destructive focus:ring-offset-2",
+              "bg-gradient-to-r from-[#9b87f5] to-[#6E59A5]",
+              "hover:from-[#8B5CF6] hover:to-[#7E69AB]",
+              "text-white font-medium",
+              "transition-all duration-300",
+              "shadow-lg hover:shadow-xl",
+              "rounded-lg py-2.5",
+              "border border-[#9b87f5]/20",
+              "focus:ring-2 focus:ring-[#9b87f5]/50 focus:ring-offset-2",
               isLoggingOut && "opacity-70 cursor-not-allowed"
             )}
           >
