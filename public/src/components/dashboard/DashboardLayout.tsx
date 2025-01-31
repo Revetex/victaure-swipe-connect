@@ -61,7 +61,6 @@ export function DashboardLayout() {
               <DashboardContent
                 currentPage={currentPage}
                 viewportHeight={viewportHeight}
-                isEditing={isEditing}
                 onEditStateChange={handleEditStateChange}
                 onRequestChat={() => {}}
               />

@@ -33,6 +33,10 @@ export function DashboardLayout() {
     setCurrentPage(2);
   };
 
+  const handleEditStateChange = (editing: boolean) => {
+    setIsEditing(editing);
+  };
+
   return (
     <DashboardContainer containerVariants={containerVariants}>
       <motion.div 
@@ -50,7 +54,7 @@ export function DashboardLayout() {
             key={`page-${currentPage}`}
             currentPage={currentPage}
             viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
+            onEditStateChange={handleEditStateChange}
             onRequestChat={handleRequestChat}
           />
         </AnimatePresence>
