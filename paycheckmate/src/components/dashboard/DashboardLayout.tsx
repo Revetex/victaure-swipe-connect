@@ -31,7 +31,6 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      // Reset editing state for all pages except Notes/Tasks
       if (page !== 4) {
         setIsEditing(false);
       }
@@ -44,17 +43,17 @@ export function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen bg-background">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 pb-24">
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen pb-40 lg:pb-24"
+              className="transform transition-all duration-300 w-full"
               style={{ 
                 maxHeight: isEditing ? viewportHeight : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
+                paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '1rem'
               }}
             >
               <DashboardContent
@@ -70,7 +69,7 @@ export function DashboardLayout() {
       </div>
       
       <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 transition-all duration-300 ${
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
