@@ -8,6 +8,9 @@ import { DashboardStats } from "./DashboardStats";
 import { QuickActions } from "./QuickActions";
 import { RecentActivity } from "./RecentActivity";
 import { ScrapedJobs } from "./ScrapedJobs";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -22,6 +25,32 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat,
 }: DashboardContentProps) {
+  const { data: stats } = useDashboardStats();
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
+
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
   const contentVariants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -41,7 +70,7 @@ export function DashboardContent({
         {currentPage === 1 && (
           <div className="space-y-8 pb-20">
             <DashboardStats />
-            <QuickActions />
+            <QuickActions stats={stats} />
             <RecentActivity />
           </div>
         )}
@@ -54,14 +83,34 @@ export function DashboardContent({
 
         {currentPage === 3 && (
           <div className="pb-20">
-            <UnifiedBoard />
+            <UnifiedBoard
+              todos={todos}
+              notes={notes}
+              newTodo={newTodo}
+              newNote={newNote}
+              selectedDate={selectedDate}
+              selectedTime={selectedTime}
+              allDay={allDay}
+              selectedColor={selectedColor}
+              onTodoChange={setNewTodo}
+              onNoteChange={setNewNote}
+              onDateChange={setSelectedDate}
+              onTimeChange={setSelectedTime}
+              onAllDayChange={setAllDay}
+              onColorChange={setSelectedColor}
+              onAddTodo={addTodo}
+              onAddNote={addNote}
+              onToggleTodo={toggleTodo}
+              onDeleteTodo={deleteTodo}
+              onDeleteNote={deleteNote}
+            />
             <ScrapedJobs />
           </div>
         )}
 
         {currentPage === 4 && (
           <div className="pb-20">
-            <AIAssistant onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+            <AIAssistant />
           </div>
         )}
 
