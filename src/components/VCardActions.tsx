@@ -38,7 +38,7 @@ export function VCardActions({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-wrap gap-3 pt-4 border-t border-gray-200 dark:border-white/10"
+      className="flex flex-wrap gap-2 pt-2 border-t border-gray-200 dark:border-white/10"
     >
       {isEditing ? (
         <>
