@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Allowances } from "@/types/salary";
+
 interface AllowancesFormProps {
   allowances: Allowances;
   onAllowanceChange: (type: keyof Allowances, value: number | { [key: string]: boolean }) => void;
@@ -17,7 +18,9 @@ export function AllowancesForm({
 }: AllowancesFormProps) {
   const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 
-  const handleDayToggle = (type: keyof Pick<Allowances, "pensionDaysApplied" | "mealDaysApplied" | "truckDaysApplied" | "overtimeMealDaysApplied">, day: string) => {
+  type AllowanceDayTypes = "pensionDaysApplied" | "mealDaysApplied" | "truckDaysApplied" | "overtimeMealDaysApplied";
+
+  const handleDayToggle = (type: AllowanceDayTypes, day: string) => {
     const currentDays = allowances[type];
     onAllowanceChange(type, {
       ...currentDays,
