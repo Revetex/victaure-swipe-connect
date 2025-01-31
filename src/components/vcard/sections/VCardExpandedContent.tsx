@@ -8,6 +8,7 @@ import { VCardExpandedEducation } from "./expanded/VCardExpandedEducation";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { UserProfile } from "@/types/profile";
+import { StyleOption } from "@/components/vcard/types";
 
 interface VCardExpandedContentProps {
   isExpanded: boolean;
@@ -16,14 +17,14 @@ interface VCardExpandedContentProps {
   setProfile: (profile: UserProfile) => void;
   setIsExpanded: (isExpanded: boolean) => void;
   setIsEditing: (isEditing: boolean) => void;
-  onShare: () => void;
-  onDownload: () => void;
-  onDownloadPDF: () => void;
-  onDownloadBusinessPDF: () => void;
-  onDownloadCVPDF: () => void;
-  onCopyLink: () => void;
-  onSave: () => void;
-  onApplyChanges: () => void;
+  onShare: () => Promise<void>;
+  onDownload: () => Promise<void>;
+  onDownloadPDF: () => Promise<void>;
+  onDownloadBusinessPDF: () => Promise<void>;
+  onDownloadCVPDF: () => Promise<void>;
+  onCopyLink: () => Promise<void>;
+  onSave: () => Promise<void>;
+  onApplyChanges: () => Promise<void>;
 }
 
 export function VCardExpandedContent({
