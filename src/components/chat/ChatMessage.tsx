@@ -38,12 +38,42 @@ export const ChatMessage = memo(function ChatMessage({
   const formattedDate = timestamp ? format(new Date(timestamp), "d MMMM", { locale: fr }) : "";
   const firstName = isBot ? "M. Victaure" : profile?.full_name?.split(' ')[0] || "Vous";
 
+  const messageVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 50,
+        damping: 15,
+        mass: 0.5,
+        duration: 0.5
+      }
+    }
+  };
+
+  const contentVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
+      initial="hidden"
+      animate="visible"
+      variants={messageVariants}
       className={cn(
         "flex flex-col gap-2 group hover:bg-muted/50 rounded-lg p-2 transition-colors relative w-full",
         isBot ? "" : ""
@@ -57,16 +87,19 @@ export const ChatMessage = memo(function ChatMessage({
           )}>
             {firstName}
           </span>
-          <div className={cn(
-            "rounded-lg px-4 py-3 shadow-sm relative w-full max-w-[85%]",
-            isBot 
-              ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
-              : "bg-[#F1F0FB] dark:bg-gray-800/50 text-foreground"
-          )}>
+          <motion.div 
+            variants={contentVariants}
+            className={cn(
+              "rounded-lg px-4 py-3 shadow-sm relative w-full max-w-[85%]",
+              isBot 
+                ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
+                : "bg-[#F1F0FB] dark:bg-gray-800/50 text-foreground"
+            )}
+          >
             <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
               {content}
             </p>
-          </div>
+          </motion.div>
           {showTimestamp && timestamp && (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <Clock className="h-3 w-3" />
