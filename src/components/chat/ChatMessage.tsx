@@ -59,23 +59,23 @@ export const ChatMessage = memo(function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors relative",
+        "flex gap-2 items-start group hover:bg-muted/50 rounded-lg p-2 transition-colors relative",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
       <div className={cn(
-        "flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full overflow-hidden",
+        "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full overflow-hidden",
         isBot ? "ring-2 ring-primary/10" : "ring-2 ring-primary/5"
       )}>
         {isBot ? (
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-8 w-8">
             <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
             <AvatarFallback className="bg-primary/20">
-              <Bot className="h-5 w-5 text-primary" />
+              <Bot className="h-4 w-4 text-primary" />
             </AvatarFallback>
           </Avatar>
         ) : (
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-8 w-8">
             <AvatarImage 
               src={profile?.avatar_url} 
               alt={profile?.full_name || "User"} 
@@ -88,11 +88,11 @@ export const ChatMessage = memo(function ChatMessage({
         )}
       </div>
       <div className={cn(
-        "flex flex-col gap-2 min-w-0 w-full relative group",
+        "flex flex-col gap-1 min-w-0 w-full relative group",
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-4 py-3 shadow-sm relative w-full sm:w-auto",
+          "rounded-lg px-3 py-2 shadow-sm relative w-full max-w-[85%]",
           isBot 
             ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
             : "bg-primary text-primary-foreground"

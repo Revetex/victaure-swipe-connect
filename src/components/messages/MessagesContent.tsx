@@ -99,10 +99,10 @@ export function MessagesContent({
       <div className="flex-1 overflow-hidden bg-background/80">
         <div 
           ref={scrollAreaRef}
-          className="h-[calc(100vh-12rem)] overflow-y-auto px-2 sm:px-4 py-6 scroll-smooth" 
+          className="h-[calc(100vh-12rem)] overflow-y-auto px-1 sm:px-2 py-4 scroll-smooth" 
           onScroll={handleScroll}
         >
-          <div className="w-full space-y-4 pb-4">
+          <div className="w-full space-y-2">
             <AnimatePresence mode="popLayout">
               {messages.map((message) => (
                 <ChatMessage
