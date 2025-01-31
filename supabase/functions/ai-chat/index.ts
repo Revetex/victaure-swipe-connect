@@ -38,12 +38,13 @@ serve(async (req) => {
     - Pose des questions de suivi pertinentes
     - Montre que tu comprends le contexte de la conversation
     - Évite les réponses trop formelles ou robotiques
+    - Utilise le contexte des messages précédents pour personnaliser tes réponses
     
     Contexte de l'utilisateur:
     ${JSON.stringify(context?.userProfile || {})}
     
     Messages précédents:
-    ${context?.previousMessages?.map(m => `${m.sender}: ${m.content}`).join('\n') || 'Aucun message précédent'}
+    ${context?.previousMessages?.slice(-10).map(m => `${m.sender}: ${m.content}`).join('\n') || 'Aucun message précédent'}
     
     User: ${message}
     
