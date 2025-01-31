@@ -5,6 +5,7 @@
   margin: 0 !important;
   background: transparent !important;
   border: none !important;
+  font-family: inherit !important;
 }
 
 /* Style the search box */
@@ -24,6 +25,12 @@
 .gsc-input {
   padding: 0.5rem !important;
   font-size: 1rem !important;
+  background: transparent !important;
+}
+
+.gsc-input-box input {
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
 }
 
 /* Style the search button */
@@ -148,4 +155,22 @@ table.gsc-search-box {
 .gsc-result-info-container,
 .gsc-orderby-container {
   display: none !important;
+}
+
+/* Fix search box visibility */
+.gsc-control-wrapper-cse {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix search box width */
+.gsc-search-box {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Fix input container */
+.gsc-input-box,
+.gsc-input {
+  width: 100% !important;
 }

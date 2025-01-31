@@ -13,6 +13,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const [scriptError, setScriptError] = useState(false);
   const [isSearchLoaded, setIsSearchLoaded] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useEffect(() => {
     const loadSearch = () => {
@@ -35,7 +36,6 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             }
           });
           
-          // Set search as loaded after rendering
           setIsSearchLoaded(true);
           setScriptError(false);
         } catch (error) {
@@ -62,8 +62,25 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       script.defer = true;
       
       script.onload = () => {
+        setScriptLoaded(true);
         if (window.google?.search?.cse?.element) {
           loadSearch();
+        } else {
+          // Wait for Google CSE to initialize
+          const checkGoogleCSE = setInterval(() => {
+            if (window.google?.search?.cse?.element) {
+              loadSearch();
+              clearInterval(checkGoogleCSE);
+            }
+          }, 100);
+
+          // Clear interval after 10 seconds to prevent infinite checking
+          setTimeout(() => {
+            clearInterval(checkGoogleCSE);
+            if (!isSearchLoaded) {
+              setScriptError(true);
+            }
+          }, 10000);
         }
       };
       
@@ -91,6 +108,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
           onClick={() => {
             setScriptError(false);
             setIsSearchLoaded(false);
+            setScriptLoaded(false);
             window.location.reload();
           }} 
           variant="outline"
