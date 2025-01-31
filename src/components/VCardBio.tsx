@@ -81,17 +81,17 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 p-6 rounded-xl bg-white/5 backdrop-blur-sm"
+      className="space-y-4 p-6 rounded-xl bg-card/20 backdrop-blur-sm"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-purple-100">Présentation</h3>
+        <h3 className="text-xl font-semibold text-foreground">Présentation</h3>
         {isEditing && (
           <Button 
             variant="outline" 
             size="sm"
             onClick={handleGenerateBio}
             disabled={isGenerating}
-            className="bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20 text-purple-100"
+            className="bg-primary/10 hover:bg-primary/20 border-primary/20"
           >
             {isGenerating ? (
               <Loader className="mr-2 h-4 w-4" />
@@ -108,10 +108,10 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
           value={profile?.bio || ""}
           onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
           placeholder="Écrivez une courte présentation..."
-          className="w-full min-h-[150px] p-4 rounded-lg bg-white/10 border border-white/20 text-purple-50 placeholder:text-purple-200/50 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
+          className="w-full min-h-[150px] p-4 rounded-lg bg-card/10 border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-ring"
         />
       ) : profile?.bio ? (
-        <p className="text-purple-100/80 leading-relaxed">{profile.bio}</p>
+        <p className="text-muted-foreground leading-relaxed">{profile.bio}</p>
       ) : null}
     </motion.div>
   );
