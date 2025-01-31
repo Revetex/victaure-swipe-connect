@@ -87,25 +87,25 @@ export function Settings() {
                   setTheme(value);
                   toast.success(`Thème ${value === 'light' ? 'clair' : value === 'dark' ? 'sombre' : 'système'} activé`);
                 }}
-                className="grid gap-4 mt-3"
+                className="grid gap-3 mt-2"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="light" id="light" />
-                  <Label htmlFor="light" className="flex items-center gap-2">
+                  <Label htmlFor="light" className="flex items-center gap-2 text-sm cursor-pointer">
                     <Sun className="h-4 w-4" />
                     Clair
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="dark" id="dark" />
-                  <Label htmlFor="dark" className="flex items-center gap-2">
+                  <Label htmlFor="dark" className="flex items-center gap-2 text-sm cursor-pointer">
                     <Moon className="h-4 w-4" />
                     Sombre
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="system" id="system" />
-                  <Label htmlFor="system" className="flex items-center gap-2">
+                  <Label htmlFor="system" className="flex items-center gap-2 text-sm cursor-pointer">
                     <Monitor className="h-4 w-4" />
                     Système
                   </Label>
@@ -115,12 +115,12 @@ export function Settings() {
           </SettingsSection>
         </motion.div>
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
 
         <motion.div variants={itemVariants}>
           <SettingsSection title="Notifications">
             <div className={cn(
-              "flex items-center justify-between space-x-4 p-4 rounded-lg bg-muted/30",
+              "flex items-center justify-between p-3 rounded-lg bg-muted/30",
               "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
               "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
             )}>
@@ -138,11 +138,11 @@ export function Settings() {
           </SettingsSection>
         </motion.div>
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
 
         <motion.div variants={itemVariants}>
           <SettingsSection title="Sécurité">
-            <div className="space-y-4 p-4 rounded-lg bg-muted/30">
+            <div className="space-y-3 p-3 rounded-lg bg-muted/30">
               <div className="flex items-center gap-2 text-foreground/80">
                 <Lock className="h-4 w-4" />
                 <h3 className="text-sm font-medium">Mot de passe</h3>
@@ -152,7 +152,7 @@ export function Settings() {
           </SettingsSection>
         </motion.div>
 
-        <Separator className="my-6" />
+        <Separator className="my-4" />
 
         <motion.div variants={itemVariants}>
           <Button 
@@ -160,20 +160,19 @@ export function Settings() {
             onClick={handleLogout}
             disabled={isLoggingOut}
             className={cn(
-              "w-full flex items-center justify-center gap-2",
-              "bg-gradient-to-r from-[#9b87f5] to-[#6E59A5]",
-              "hover:from-[#8B5CF6] hover:to-[#7E69AB]",
-              "text-white font-medium",
-              "transition-all duration-300",
-              "shadow-lg hover:shadow-xl",
-              "rounded-lg py-2.5",
-              "border border-[#9b87f5]/20",
-              "focus:ring-2 focus:ring-[#9b87f5]/50 focus:ring-offset-2",
+              "w-full flex items-center justify-center gap-2 h-9",
+              "bg-destructive/80 hover:bg-destructive",
+              "text-destructive-foreground font-medium text-sm",
+              "transition-all duration-200",
+              "shadow-sm hover:shadow",
+              "rounded-lg",
+              "border border-destructive/20",
+              "focus:ring-2 focus:ring-destructive/30 focus:ring-offset-1",
               isLoggingOut && "opacity-70 cursor-not-allowed"
             )}
           >
             <span>{isLoggingOut ? "Déconnexion en cours..." : "Déconnexion"}</span>
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-4 w-4" />
           </Button>
         </motion.div>
       </div>
