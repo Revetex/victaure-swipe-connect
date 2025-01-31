@@ -57,6 +57,14 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
     });
   };
 
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long'
+    });
+  };
+
   return (
     <VCardSection
       title="Expériences professionnelles"
@@ -72,20 +80,35 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
               exit={{ opacity: 0, y: -20 }}
               className="relative p-4 rounded-lg bg-card/50 space-y-2 border border-border/50"
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-medium" style={{ color: selectedStyle.colors.text.primary }}>
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex-1 min-w-0">
+                  <h4 
+                    className="font-medium text-base truncate" 
+                    style={{ color: selectedStyle.colors.text.primary }}
+                  >
                     {experience.position}
                   </h4>
-                  <p className="text-sm" style={{ color: selectedStyle.colors.text.secondary }}>
+                  <p 
+                    className="text-sm font-medium" 
+                    style={{ color: selectedStyle.colors.text.secondary }}
+                  >
                     {experience.company}
                   </p>
-                  {experience.start_date && (
-                    <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
-                      {new Date(experience.start_date).toLocaleDateString()} - 
-                      {experience.end_date 
-                        ? new Date(experience.end_date).toLocaleDateString()
-                        : "Présent"}
+                  {(experience.start_date || experience.end_date) && (
+                    <p 
+                      className="text-sm mt-1" 
+                      style={{ color: selectedStyle.colors.text.muted }}
+                    >
+                      {formatDate(experience.start_date)}
+                      {experience.end_date ? ` - ${formatDate(experience.end_date)}` : " - Présent"}
+                    </p>
+                  )}
+                  {experience.description && (
+                    <p 
+                      className="text-sm mt-2 whitespace-pre-wrap" 
+                      style={{ color: selectedStyle.colors.text.muted }}
+                    >
+                      {experience.description}
                     </p>
                   )}
                 </div>
@@ -94,18 +117,12 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveExperience(experience.id)}
-                    style={{ color: selectedStyle.colors.primary }}
-                    className="hover:text-destructive"
+                    className="shrink-0 hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
               </div>
-              {experience.description && (
-                <p className="text-sm" style={{ color: selectedStyle.colors.text.muted }}>
-                  {experience.description}
-                </p>
-              )}
             </motion.div>
           ))}
         </AnimatePresence>
