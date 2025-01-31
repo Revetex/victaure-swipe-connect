@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
@@ -19,7 +18,7 @@ function App() {
   }, [location.pathname, navigate]);
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <>
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard/jobs" replace />} />
         <Route path="/landing" element={<Index />} />
@@ -34,7 +33,7 @@ function App() {
         />
       </Routes>
       <Toaster />
-    </ThemeProvider>
+    </>
   );
 }
 
