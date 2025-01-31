@@ -1,10 +1,20 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Github, Code } from "lucide-react";
 
 export function Tools() {
   const handleOpenProject = () => {
     window.open('https://lovable.dev/project/57f45340-669a-4f20-abfa-730168322fa5', '_blank');
+  };
+
+  const handleOpenGithub = () => {
+    // Remplacez cette URL par l'URL de votre dépôt GitHub
+    window.open('https://github.com/yourusername/yourproject', '_blank');
+  };
+
+  const handleOpenVSCode = () => {
+    // Le protocole vscode:// permet d'ouvrir directement VS Code
+    window.open('vscode://vscode.git/clone?url=https://github.com/yourusername/yourproject', '_blank');
   };
 
   return (
@@ -17,12 +27,28 @@ export function Tools() {
           <p className="text-muted-foreground mb-4">
             Accédez à mon autre projet Lovable directement depuis ici.
           </p>
-          <Button 
-            onClick={handleOpenProject}
-            className="w-full flex items-center justify-center gap-2"
-          >
-            Ouvrir le projet <ExternalLink className="h-4 w-4" />
-          </Button>
+          <div className="space-y-2">
+            <Button 
+              onClick={handleOpenProject}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              Ouvrir dans Lovable <ExternalLink className="h-4 w-4" />
+            </Button>
+            <Button 
+              onClick={handleOpenGithub}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              Ouvrir dans GitHub <Github className="h-4 w-4" />
+            </Button>
+            <Button 
+              onClick={handleOpenVSCode}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              Ouvrir dans VS Code <Code className="h-4 w-4" />
+            </Button>
+          </div>
         </Card>
 
         {/* Espace pour d'autres outils à venir */}
