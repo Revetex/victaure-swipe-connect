@@ -86,7 +86,8 @@ export function ExternalSearchSection({
         data-refinementStyle="link"
       ></div>
 
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .gsc-control-cse {
           font-family: inherit !important;
           border: none !important;
@@ -143,7 +144,8 @@ export function ExternalSearchSection({
         .gcsc-more-maybe-branding-root {
           display: none !important;
         }
-      `}</style>
+        `
+      }} />
     </div>
   );
 }
