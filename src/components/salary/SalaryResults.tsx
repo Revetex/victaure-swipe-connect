@@ -1,5 +1,5 @@
 import { SalaryResult, JobInfo } from "../../types/salary";
-import { Card } from "../ui/card";
+import { Card } from "../../components/ui/card";
 
 interface SalaryResultsProps {
   salary: SalaryResult;
@@ -21,6 +21,10 @@ export function SalaryResults({
     }).format(amount);
   };
 
+  const totalRegularHours = Object.values(salary.hours.regular).reduce((a, b) => a + b, 0);
+  const totalDoubleTimeHours = Object.values(salary.hours.doubleTime).reduce((a, b) => a + b, 0);
+  const totalTravelTimeHours = Object.values(salary.hours.travelTime).reduce((a, b) => a + b, 0);
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Salary Results</h2>
@@ -32,15 +36,15 @@ export function SalaryResults({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span>Regular Hours:</span>
-                <span>{salary.regularHours}</span>
+                <span>{totalRegularHours}</span>
               </div>
               <div className="flex justify-between">
                 <span>Double Time Hours:</span>
-                <span>{salary.doubleTimeHours}</span>
+                <span>{totalDoubleTimeHours}</span>
               </div>
               <div className="flex justify-between">
                 <span>Travel Time Hours:</span>
-                <span>{salary.travelTimeHours}</span>
+                <span>{totalTravelTimeHours}</span>
               </div>
             </div>
           </div>
@@ -49,12 +53,12 @@ export function SalaryResults({
             <h3 className="text-xl font-semibold mb-4">Pay Summary</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span>Regular Pay:</span>
-                <span>{formatCurrency(salary.regularPay)}</span>
+                <span>Base Salary:</span>
+                <span>{formatCurrency(salary.baseSalary)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Double Time Pay:</span>
-                <span>{formatCurrency(salary.doubleTimePay)}</span>
+                <span>Premium Total:</span>
+                <span>{formatCurrency(salary.premiumTotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Travel Time Pay:</span>
@@ -62,7 +66,7 @@ export function SalaryResults({
               </div>
               <div className="flex justify-between">
                 <span>Allowances:</span>
-                <span>{formatCurrency(salary.allowances)}</span>
+                <span>{formatCurrency(salary.allowances.total)}</span>
               </div>
             </div>
           </div>
@@ -85,8 +89,8 @@ export function SalaryResults({
         <div className="border-t pt-4">
           <div className="space-y-2">
             <div className="flex justify-between text-lg font-semibold">
-              <span>Gross Pay:</span>
-              <span>{formatCurrency(salary.grossPay)}</span>
+              <span>Subtotal:</span>
+              <span>{formatCurrency(salary.subtotal)}</span>
             </div>
             <div className="flex justify-between text-lg font-semibold">
               <span>Total Deductions:</span>
@@ -95,6 +99,10 @@ export function SalaryResults({
             <div className="flex justify-between text-xl font-bold">
               <span>Net Pay:</span>
               <span>{formatCurrency(salary.netPay)}</span>
+            </div>
+            <div className="flex justify-between text-xl font-bold text-green-600">
+              <span>Total Payment:</span>
+              <span>{formatCurrency(salary.totalPayment)}</span>
             </div>
           </div>
         </div>
