@@ -96,7 +96,7 @@ export function UnifiedBoard({
             </div>
 
             <ScrollArea className="flex-1 p-4">
-              <motion.div layout className="space-y-3">
+              <motion.div layout className="space-y-3 max-w-3xl mx-auto">
                 <AnimatePresence mode="popLayout">
                   {todos.map((todo) => (
                     <TodoItem
@@ -162,7 +162,7 @@ export function UnifiedBoard({
               <motion.div 
                 layout 
                 className={cn(
-                  "grid gap-4",
+                  "grid gap-4 max-w-5xl mx-auto",
                   "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
                   "auto-rows-max"
                 )}
@@ -185,7 +185,7 @@ export function UnifiedBoard({
                       <StickyNote className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p className="text-lg">Aucune note</p>
                       <p className="text-sm mt-2">
-                        Ajoutez votre première note
+                        Créez votre première note en utilisant le formulaire ci-dessus
                       </p>
                     </motion.div>
                   )}
