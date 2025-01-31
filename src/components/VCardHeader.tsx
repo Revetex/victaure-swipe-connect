@@ -9,14 +9,31 @@ import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
+import { VCardActions } from "./VCardActions";
 
 interface VCardHeaderProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
+  isPdfGenerating?: boolean;
+  isProcessing?: boolean;
+  onEditToggle?: () => void;
+  onSave?: () => void;
+  onDownloadBusinessCard?: () => Promise<void>;
+  onDownloadCV?: () => Promise<void>;
 }
 
-export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps) {
+export function VCardHeader({ 
+  profile, 
+  isEditing, 
+  setProfile,
+  isPdfGenerating,
+  isProcessing,
+  onEditToggle,
+  onSave,
+  onDownloadBusinessCard,
+  onDownloadCV
+}: VCardHeaderProps) {
   const { selectedStyle } = useVCardStyle();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
 
@@ -123,26 +140,40 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
           )}
         </div>
 
-        {!isEditing && (
-          <motion.div 
-            className="shrink-0 cursor-pointer"
-            onClick={() => setIsQRDialogOpen(true)}
-            whileHover={{ scale: 1.05 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm">
-              <QRCodeSVG
-                value={window.location.href}
-                size={60}
-                level="H"
-                includeMargin={false}
-                className="rounded-lg opacity-70 hover:opacity-100 transition-opacity duration-300"
-              />
-            </div>
-          </motion.div>
-        )}
+        <div className="flex items-center gap-4">
+          {!isEditing && (
+            <motion.div 
+              className="shrink-0 cursor-pointer"
+              onClick={() => setIsQRDialogOpen(true)}
+              whileHover={{ scale: 1.05 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm">
+                <QRCodeSVG
+                  value={window.location.href}
+                  size={60}
+                  level="H"
+                  includeMargin={false}
+                  className="rounded-lg opacity-70 hover:opacity-100 transition-opacity duration-300"
+                />
+              </div>
+            </motion.div>
+          )}
+          
+          <div className="shrink-0">
+            <VCardActions
+              isEditing={isEditing}
+              isPdfGenerating={isPdfGenerating}
+              isProcessing={isProcessing}
+              setIsEditing={onEditToggle}
+              onSave={onSave}
+              onDownloadBusinessPDF={onDownloadBusinessCard}
+              onDownloadCVPDF={onDownloadCV}
+            />
+          </div>
+        </div>
       </div>
 
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
