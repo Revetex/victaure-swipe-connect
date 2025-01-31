@@ -34,7 +34,6 @@ export function Dashboard() {
           return;
         }
 
-        // Verify user data can be accessed
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError || !user) {
@@ -45,7 +44,6 @@ export function Dashboard() {
           return;
         }
 
-        // Set up auth state change listener
         const { data: authData } = supabase.auth.onAuthStateChange((event, session) => {
           console.log('Auth state changed:', event);
           if (event === 'SIGNED_OUT' || !session) {
@@ -53,7 +51,6 @@ export function Dashboard() {
           }
         });
 
-        // Store the subscription to clean it up later
         authSubscription = {
           unsubscribe: () => {
             if (authData?.subscription) {
