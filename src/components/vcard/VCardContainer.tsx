@@ -19,7 +19,7 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
       className="relative w-full min-h-screen transition-all duration-300 text-foreground dark:text-black text-sm sm:text-base"
       style={{
         fontFamily: customStyles?.font || 'inherit',
-        backgroundColor: customStyles?.background || 'inherit',
+        backgroundColor: customStyles?.background || 'transparent',
         color: customStyles?.textColor || 'inherit'
       }}
     >
