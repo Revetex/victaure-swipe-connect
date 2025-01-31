@@ -19,7 +19,7 @@ function App() {
   }, [location.pathname, navigate]);
 
   return (
-    <ThemeProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard/jobs" replace />} />
         <Route path="/landing" element={<Index />} />
