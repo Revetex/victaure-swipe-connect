@@ -58,7 +58,7 @@ export function MessagesContent({
   }, [messages, showScrollButton]);
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-safe-top pb-safe-bottom">
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-safe-top">
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
         <div className="flex items-center justify-between max-w-5xl mx-auto">
           <div className="flex items-center gap-3">
@@ -99,10 +99,10 @@ export function MessagesContent({
       <div className="flex-1 overflow-hidden bg-background/80">
         <div 
           ref={scrollAreaRef}
-          className="h-[calc(100vh-8rem)] overflow-y-auto px-4 py-6 scroll-smooth" 
+          className="h-[calc(100vh-12rem)] overflow-y-auto px-4 py-6 scroll-smooth" 
           onScroll={handleScroll}
         >
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-6 pb-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message) => (
                 <ChatMessage
@@ -139,7 +139,7 @@ export function MessagesContent({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-20">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
