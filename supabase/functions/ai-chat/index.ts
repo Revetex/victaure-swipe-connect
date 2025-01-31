@@ -7,15 +7,15 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { message, userId } = await req.json()
+    const { message, userId, context } = await req.json()
     console.log('Received message:', message)
     console.log('User ID:', userId)
+    console.log('Context:', context)
 
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY')
     if (!apiKey) {
@@ -23,7 +23,32 @@ serve(async (req) => {
       throw new Error('Configuration error: Missing API key')
     }
 
-    console.log('Attempting to call Hugging Face API')
+    // Build a comprehensive system prompt that includes context
+    const systemPrompt = `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec.
+    
+    Ton rôle est d'être:
+    - Attentif et compréhensif, en écoutant activement les besoins de l'utilisateur
+    - Polyvalent, capable d'adapter ton approche selon le contexte
+    - Précis dans tes réponses, en te basant sur le contexte de la conversation
+    - Proactif en posant des questions pertinentes pour mieux comprendre la situation
+    
+    Contexte de l'utilisateur:
+    ${JSON.stringify(context?.userProfile || {})}
+    
+    Messages précédents:
+    ${context?.previousMessages?.map(m => `${m.sender}: ${m.content}`).join('\n') || 'Aucun message précédent'}
+    
+    Assure-toi de:
+    1. Toujours tenir compte du contexte complet de la conversation
+    2. Poser des questions si tu as besoin de plus d'informations
+    3. Donner des réponses concises mais complètes
+    4. Adapter ton langage au niveau professionnel de l'utilisateur
+    
+    User: ${message}
+    
+    Assistant:`
+
+    console.log('Sending prompt to Hugging Face:', systemPrompt)
 
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
@@ -34,12 +59,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          inputs: `Tu es M. Victaure, un conseiller expert en placement et orientation professionnelle au Québec. 
-                  Sois concis et direct dans tes réponses.
-                  
-                  User: ${message}
-                  
-                  Assistant:`,
+          inputs: systemPrompt,
           parameters: {
             max_new_tokens: 256,
             temperature: 0.7,
@@ -51,8 +71,6 @@ serve(async (req) => {
         }),
       }
     )
-
-    console.log('Hugging Face API Response Status:', response.status)
 
     if (!response.ok) {
       const errorText = await response.text()
