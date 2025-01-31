@@ -64,18 +64,18 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`relative p-6 rounded-xl ${isEditing ? 'bg-white/5 backdrop-blur-sm' : ''}`}
+      className="relative p-6 rounded-xl"
     >
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
         <div className="relative group">
-          <Avatar className="h-32 w-32 ring-4 ring-purple-500/20 shadow-xl">
+          <Avatar className="h-32 w-32 ring-4 ring-[#9b87f5]/20 shadow-xl">
             <AvatarImage 
               src={profile.avatar_url || ''} 
               alt={profile.full_name || ''}
               className="object-cover"
             />
-            <AvatarFallback className="bg-purple-900/20">
-              <UserCircle2 className="h-16 w-16 text-purple-500" />
+            <AvatarFallback className="bg-[#9b87f5]/20">
+              <UserCircle2 className="h-16 w-16 text-[#9b87f5]" />
             </AvatarFallback>
           </Avatar>
           {isEditing && (
@@ -102,34 +102,24 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
                 value={profile.full_name || ""}
                 onChange={(e) => handleInputChange("full_name", e.target.value)}
                 placeholder="Votre nom"
-                className="text-2xl font-semibold bg-white/10 border-white/20 placeholder:text-white/50"
-                style={{ color: profile.custom_text_color || 'inherit' }}
+                className="text-2xl font-semibold bg-background/10 border-border/20 placeholder:text-muted-foreground/50"
               />
               <Input
                 value={profile.role || ""}
                 onChange={(e) => handleInputChange("role", e.target.value)}
                 placeholder="Votre rôle"
-                className="text-base bg-white/10 border-white/20 placeholder:text-white/50"
-                style={{ color: profile.custom_text_color || 'inherit' }}
+                className="text-base bg-background/10 border-border/20 placeholder:text-muted-foreground/50"
               />
             </>
           ) : (
             <>
               <h2 
-                className="text-3xl sm:text-4xl font-bold truncate transition-colors"
-                style={{ 
-                  color: profile.custom_text_color || selectedStyle.colors.text.primary,
-                  textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
+                className="text-3xl sm:text-4xl font-bold truncate transition-colors text-[#9b87f5] dark:text-[#b4a4f7]"
               >
                 {profile.full_name || "Nom non défini"}
               </h2>
               <p 
-                className="text-lg sm:text-xl transition-colors"
-                style={{ 
-                  color: profile.custom_text_color || selectedStyle.colors.text.secondary,
-                  textShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                }}
+                className="text-lg sm:text-xl transition-colors text-[#7E69AB] dark:text-[#9b87f5]"
               >
                 {profile.role || "Rôle non défini"}
               </p>
@@ -146,7 +136,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-lg">
+            <div className="p-3 bg-background/10 backdrop-blur-md rounded-xl border border-border/20 shadow-lg">
               <QRCodeSVG
                 value={window.location.href}
                 size={80}
@@ -160,7 +150,7 @@ export function VCardHeader({ profile, isEditing, setProfile }: VCardHeaderProps
       </div>
 
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
-        <DialogContent className="sm:max-w-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-none">
+        <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-sm border-none">
           <div className="flex flex-col items-center space-y-4 p-6">
             <QRCodeSVG
               value={window.location.href}
