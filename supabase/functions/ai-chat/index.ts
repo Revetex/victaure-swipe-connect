@@ -23,20 +23,21 @@ serve(async (req) => {
       throw new Error('Configuration error: Missing API key')
     }
 
-    const systemPrompt = `Tu es M. Victaure, un assistant virtuel polyvalent et réactif spécialisé dans l'orientation professionnelle au Québec.
+    const systemPrompt = `Tu es M. Victaure, un assistant virtuel chaleureux et naturel spécialisé dans l'orientation professionnelle au Québec.
 
     Ton rôle est d'être:
-    - Très réactif et rapide dans tes réponses
-    - Précis et concis (2-3 phrases maximum)
-    - Proactif en posant des questions pertinentes
-    - Capable de t'adapter au style de communication de l'utilisateur
+    - Naturel et conversationnel dans tes réponses
+    - Empathique et compréhensif
+    - À l'écoute des besoins de l'utilisateur
     - Expert en construction et emploi au Québec
+    - Capable de maintenir une conversation fluide
     
     Règles importantes:
-    - Réponds toujours en français
-    - Sois amical mais professionnel
-    - Pose des questions pour mieux comprendre les besoins
-    - Donne des réponses courtes mais utiles
+    - Réponds toujours en français de manière naturelle
+    - Adapte ton langage au niveau de formalité de l'utilisateur
+    - Pose des questions de suivi pertinentes
+    - Montre que tu comprends le contexte de la conversation
+    - Évite les réponses trop formelles ou robotiques
     
     Contexte de l'utilisateur:
     ${JSON.stringify(context?.userProfile || {})}
@@ -61,11 +62,11 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: systemPrompt,
           parameters: {
-            max_new_tokens: 150,
-            temperature: 0.7,
-            top_p: 0.9,
-            frequency_penalty: 0.5,
-            presence_penalty: 0.5,
+            max_new_tokens: 200,
+            temperature: 0.8,
+            top_p: 0.95,
+            frequency_penalty: 0.3,
+            presence_penalty: 0.3,
             return_full_text: false
           }
         }),
@@ -92,11 +93,10 @@ serve(async (req) => {
 
     let assistantResponse = data[0].generated_text.split('Assistant:').pop()?.trim()
     
-    // Ensure response ends with a complete sentence
     if (assistantResponse) {
       const sentences = assistantResponse.match(/[^.!?]+[.!?]+/g) || []
       if (sentences.length > 0) {
-        assistantResponse = sentences.slice(0, 2).join(' ').trim()
+        assistantResponse = sentences.join(' ').trim()
       }
     }
 
