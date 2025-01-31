@@ -8,13 +8,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { JobCard } from "@/components/JobCard"; // Fixed import path
+import { JobCard } from "@/components/JobCard";
+import { ExternalSearchSection } from "@/components/jobs/sections/ExternalSearchSection";
 
 export function Marketplace() {
   const [selectedType, setSelectedType] = useState("all");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedSalary, setSelectedSalary] = useState("");
   const [remoteOnly, setRemoteOnly] = useState(false);
+  const [isExternalSearchLoading, setIsExternalSearchLoading] = useState(false);
+  const [hasExternalSearchError, setHasExternalSearchError] = useState(false);
+
+  const handleRetryExternalSearch = () => {
+    setHasExternalSearchError(false);
+    // Add retry logic here if needed
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -116,7 +124,12 @@ export function Marketplace() {
               contract_type: "CDI",
               budget: 50000,
               created_at: new Date().toISOString(),
-              source: "Victaure"
+              source: "Victaure",
+              description: "Développement d'applications web modernes",
+              employer_id: "emp1",
+              status: "open",
+              category: "tech",
+              experience_level: "intermediate"
             }}
           />
           <JobCard
@@ -128,7 +141,12 @@ export function Marketplace() {
               contract_type: "CDI",
               budget: 45000,
               created_at: new Date().toISOString(),
-              source: "Victaure"
+              source: "Victaure",
+              description: "Conception d'interfaces utilisateur",
+              employer_id: "emp2",
+              status: "open",
+              category: "design",
+              experience_level: "senior"
             }}
           />
           <JobCard
@@ -140,8 +158,21 @@ export function Marketplace() {
               contract_type: "CDD",
               budget: 55000,
               created_at: new Date().toISOString(),
-              source: "Victaure"
+              source: "Victaure",
+              description: "Gestion de produits digitaux",
+              employer_id: "emp3",
+              status: "open",
+              category: "management",
+              experience_level: "senior"
             }}
+          />
+        </div>
+
+        <div className="mt-8">
+          <ExternalSearchSection
+            isLoading={isExternalSearchLoading}
+            hasError={hasExternalSearchError}
+            onRetry={handleRetryExternalSearch}
           />
         </div>
       </div>
