@@ -119,17 +119,37 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                        <Input
-                          type="date"
-                          value={exp.end_date || ''}
-                          onChange={(e) => {
-                            const newExperiences = [...(profile.experiences || [])];
-                            const expIndex = newExperiences.findIndex(e => e.id === exp.id);
-                            newExperiences[expIndex] = { ...exp, end_date: e.target.value };
-                            setProfile({ ...profile, experiences: newExperiences });
-                          }}
-                          className="flex-1 bg-white/10 border-indigo-500/20 min-h-[40px]"
-                        />
+                        <div className="flex-1 flex items-center gap-2">
+                          <Input
+                            type="date"
+                            value={exp.end_date || ''}
+                            onChange={(e) => {
+                              const newExperiences = [...(profile.experiences || [])];
+                              const expIndex = newExperiences.findIndex(e => e.id === exp.id);
+                              newExperiences[expIndex] = { ...exp, end_date: e.target.value };
+                              setProfile({ ...profile, experiences: newExperiences });
+                            }}
+                            disabled={!exp.end_date}
+                            className="flex-1 bg-white/10 border-indigo-500/20 min-h-[40px]"
+                          />
+                          <label className="flex items-center gap-2 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={!exp.end_date}
+                              onChange={(e) => {
+                                const newExperiences = [...(profile.experiences || [])];
+                                const expIndex = newExperiences.findIndex(e => e.id === exp.id);
+                                newExperiences[expIndex] = { 
+                                  ...exp, 
+                                  end_date: e.target.checked ? null : new Date().toISOString().split('T')[0]
+                                };
+                                setProfile({ ...profile, experiences: newExperiences });
+                              }}
+                              className="rounded border-gray-300"
+                            />
+                            <span style={{ color: selectedStyle.colors.text.muted }}>Actuel</span>
+                          </label>
+                        </div>
                       </div>
                     </div>
                     <Textarea
