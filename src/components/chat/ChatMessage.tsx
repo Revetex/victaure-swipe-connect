@@ -60,7 +60,7 @@ export const ChatMessage = memo(function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors relative",
+        "flex gap-3 items-start group hover:bg-muted/50 rounded-lg p-4 transition-colors relative mb-4",
         isBot ? "flex-row" : "flex-row-reverse"
       )}
     >
@@ -89,11 +89,11 @@ export const ChatMessage = memo(function ChatMessage({
         )}
       </div>
       <div className={cn(
-        "flex flex-col gap-1 min-w-0 max-w-[85%] relative group",
+        "flex flex-col gap-2 min-w-0 max-w-[85%] relative group",
         isBot ? "items-start" : "items-end"
       )}>
         <div className={cn(
-          "rounded-lg px-4 py-2.5 shadow-sm relative",
+          "rounded-lg px-4 py-3 shadow-sm relative",
           isBot 
             ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
             : "bg-primary text-primary-foreground"
