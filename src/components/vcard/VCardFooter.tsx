@@ -23,7 +23,7 @@ export function VCardFooter({
   onDownloadCV,
 }: VCardFooterProps) {
   return (
-    <div className="flex justify-end items-center">
+    <div className="flex justify-start items-center w-full">
       <VCardActions
         isEditing={isEditing}
         isPdfGenerating={isPdfGenerating}
