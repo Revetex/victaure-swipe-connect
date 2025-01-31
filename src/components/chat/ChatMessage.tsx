@@ -59,73 +59,70 @@ export const ChatMessage = memo(function ChatMessage({
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "flex gap-2 items-start group hover:bg-muted/50 rounded-lg p-2 transition-colors relative",
-        isBot ? "flex-row" : "flex-row-reverse"
+        "flex flex-col gap-2 group hover:bg-muted/50 rounded-lg p-2 transition-colors relative w-full",
+        isBot ? "" : ""
       )}
     >
-      <div className={cn(
-        "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full overflow-hidden",
-        isBot ? "ring-2 ring-primary/10" : "ring-2 ring-primary/5"
-      )}>
-        {isBot ? (
-          <Avatar className="h-8 w-8">
-            <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
-            <AvatarFallback className="bg-primary/20">
-              <Bot className="h-4 w-4 text-primary" />
-            </AvatarFallback>
-          </Avatar>
-        ) : (
-          <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={profile?.avatar_url} 
-              alt={profile?.full_name || "User"} 
-              className="object-cover"
-            />
-            <AvatarFallback className="bg-muted">
-              {profile?.full_name?.slice(0, 2).toUpperCase() || "U"}
-            </AvatarFallback>
-          </Avatar>
-        )}
-      </div>
-      <div className={cn(
-        "flex flex-col gap-1 min-w-0 w-full relative group",
-        isBot ? "items-start" : "items-end"
-      )}>
+      <div className="flex items-start gap-2">
         <div className={cn(
-          "rounded-lg px-3 py-2 shadow-sm relative w-full max-w-[85%]",
-          isBot 
-            ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
-            : "bg-primary text-primary-foreground"
+          "flex shrink-0 select-none items-center justify-center rounded-full overflow-hidden",
+          "h-8 w-8 sm:h-10 sm:w-10",
+          isBot ? "ring-2 ring-primary/10" : "ring-2 ring-primary/5"
         )}>
-          <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
-            {content}
-          </p>
-          <div className={cn(
-            "absolute top-2 opacity-0 group-hover:opacity-100 transition-opacity",
-            isBot ? "-right-12" : "-left-12"
-          )}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-muted"
-              onClick={handleCopyMessage}
-            >
-              {isCopied ? (
-                <Check className="h-4 w-4 text-green-500" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+          {isBot ? (
+            <Avatar className="h-full w-full">
+              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
+              <AvatarFallback className="bg-primary/20">
+                <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <Avatar className="h-full w-full">
+              <AvatarImage 
+                src={profile?.avatar_url} 
+                alt={profile?.full_name || "User"} 
+                className="object-cover"
+              />
+              <AvatarFallback className="bg-muted">
+                {profile?.full_name?.slice(0, 2).toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+          )}
         </div>
-        {showTimestamp && timestamp && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-            <Clock className="h-3 w-3" />
-            <span>{formattedTime}</span>
-            <span className="mx-1">•</span>
-            <span>{formattedDate}</span>
+        <div className="flex-1 min-w-0">
+          <div className={cn(
+            "rounded-lg px-3 py-2 shadow-sm relative w-full",
+            isBot 
+              ? "bg-card text-card-foreground dark:bg-card/95 dark:text-card-foreground backdrop-blur-sm border" 
+              : "bg-primary text-primary-foreground"
+          )}>
+            <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
+              {content}
+            </p>
           </div>
-        )}
+          {showTimestamp && timestamp && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Clock className="h-3 w-3" />
+              <span>{formattedTime}</span>
+              <span className="mx-1">•</span>
+              <span>{formattedDate}</span>
+            </div>
+          )}
+        </div>
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-muted"
+            onClick={handleCopyMessage}
+          >
+            {isCopied ? (
+              <Check className="h-4 w-4 text-green-500" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
     </motion.div>
   );
