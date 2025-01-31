@@ -2,9 +2,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback } from "react";
-import { DashboardNavigation } from "./DashboardNavigation";
-import { DashboardContainer } from "./DashboardContainer";
-import { DashboardContent } from "./DashboardContent";
+import { DashboardNavigation } from "./dashboard/DashboardNavigation";
+import { DashboardContainer } from "./dashboard/DashboardContainer";
+import { DashboardContent } from "./dashboard/DashboardContent";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
