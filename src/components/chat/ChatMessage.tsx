@@ -41,19 +41,23 @@ export const ChatMessage = memo(function ChatMessage({
   const messageVariants = {
     hidden: { 
       opacity: 0,
-      y: 20,
-      scale: 0.95
+      y: 10,
     },
     visible: { 
       opacity: 1,
       y: 0,
-      scale: 1,
       transition: {
-        type: "spring",
-        stiffness: 50,
-        damping: 15,
-        mass: 0.5,
-        duration: 0.5
+        duration: 0.4,
+        ease: [0.16, 1, 0.3, 1],
+        when: "beforeChildren",
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: 10,
+      transition: {
+        duration: 0.2,
+        ease: "easeOut"
       }
     }
   };
@@ -64,7 +68,8 @@ export const ChatMessage = memo(function ChatMessage({
       opacity: 1,
       transition: {
         duration: 0.3,
-        ease: "easeOut"
+        ease: [0.16, 1, 0.3, 1],
+        delay: 0.1
       }
     }
   };
@@ -73,6 +78,7 @@ export const ChatMessage = memo(function ChatMessage({
     <motion.div
       initial="hidden"
       animate="visible"
+      exit="exit"
       variants={messageVariants}
       className={cn(
         "flex flex-col gap-2 group hover:bg-muted/50 rounded-lg p-2 transition-colors relative w-full",
@@ -81,12 +87,15 @@ export const ChatMessage = memo(function ChatMessage({
     >
       <div className="flex items-start gap-2">
         <div className="flex-1 min-w-0">
-          <span className={cn(
-            "text-sm font-medium mb-1 block",
-            isBot ? "text-primary" : "text-muted-foreground"
-          )}>
+          <motion.span 
+            variants={contentVariants}
+            className={cn(
+              "text-sm font-medium mb-1 block",
+              isBot ? "text-primary" : "text-muted-foreground"
+            )}
+          >
             {firstName}
-          </span>
+          </motion.span>
           <motion.div 
             variants={contentVariants}
             className={cn(
@@ -101,12 +110,15 @@ export const ChatMessage = memo(function ChatMessage({
             </p>
           </motion.div>
           {showTimestamp && timestamp && (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <motion.div 
+              variants={contentVariants}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
               <Clock className="h-3 w-3" />
               <span>{formattedTime}</span>
               <span className="mx-1">•</span>
               <span>{formattedDate}</span>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
