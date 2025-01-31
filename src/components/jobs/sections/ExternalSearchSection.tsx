@@ -25,19 +25,22 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       }
 
       try {
+        // Create and configure search element
         const searchDiv = document.createElement('div');
-        searchDiv.className = 'gcse-search';
-        searchDiv.setAttribute('data-gname', 'gsearch');
+        searchDiv.className = 'gcse-searchbox-only';
+        searchDiv.setAttribute('data-resultsUrl', '/search-results');
         searchDiv.setAttribute('enableAutoComplete', 'true');
+        searchDiv.setAttribute('autoCompleteMaxCompletions', '5');
         
         if (searchContainerRef.current) {
           searchContainerRef.current.innerHTML = '';
           searchContainerRef.current.appendChild(searchDiv);
         }
 
+        // Initialize search
         window.google.search.cse.element.render({
           div: searchDiv,
-          tag: 'search',
+          tag: 'searchbox-only',
           gname: 'gsearch'
         });
 
@@ -54,6 +57,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
       }
     };
 
+    // Load Google CSE script
     const loadScript = () => {
       const existingScript = document.querySelector('script[src*="cse.google.com"]');
       if (existingScript) {
@@ -86,7 +90,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
                 description: "Le service de recherche n'a pas pu être chargé. Veuillez réessayer plus tard."
               });
             }
-          }, 10000); // Increased timeout to 10s
+          }, 15000); // Increased timeout to 15s
         }
       };
       
@@ -144,7 +148,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   }
 
   return (
-    <div className="relative w-full min-h-[400px] bg-background rounded-lg p-4">
+    <div className="relative w-full min-h-[100px] bg-background rounded-lg p-4">
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
