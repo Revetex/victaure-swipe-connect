@@ -30,7 +30,6 @@ export interface Experience {
   start_date: string | null;
   end_date?: string | null;
   description?: string | null;
-  profile_id: string;
 }
 
 export interface UserProfile {

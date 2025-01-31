@@ -29,8 +29,7 @@ export default defineConfig(({ mode }) => ({
     cors: {
       origin: [
         'https://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com',
-        'https://mfjllillnpleasclqabb.supabase.co',
-        'wss://052296aa-8ca7-44bf-8824-632071249d15.lovableproject.com'
+        'https://mfjllillnpleasclqabb.supabase.co'
       ],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: [
@@ -38,18 +37,11 @@ export default defineConfig(({ mode }) => ({
         'Authorization', 
         'X-Client-Info', 
         'apikey', 
-        'X-Supabase-Auth',
-        'Range',
-        'Accept',
-        'Origin',
-        'Access-Control-Request-Method',
-        'Access-Control-Request-Headers'
+        'X-Supabase-Auth'
       ],
-      exposedHeaders: ['Content-Range'],
       credentials: true,
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
-      maxAge: 3600
+      preflightContinue: true,
+      optionsSuccessStatus: 204
     }
   },
   build: {

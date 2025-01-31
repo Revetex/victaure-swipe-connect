@@ -67,6 +67,13 @@ export function SwipeJob() {
 
   return (
     <div className="relative min-h-screen flex flex-col lg:flex-row gap-6 p-4">
+      <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
+        <JobFiltersPanel 
+          filters={filters} 
+          onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
+        />
+      </aside>
+
       <main className="flex-1 flex flex-col items-center justify-start min-h-[600px] pt-4">
         {loading ? (
           <div className="flex items-center justify-center h-96">
@@ -107,13 +114,6 @@ export function SwipeJob() {
           </>
         )}
       </main>
-
-      <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
-        <JobFiltersPanel 
-          filters={filters} 
-          onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
-        />
-      </aside>
     </div>
   );
 }

@@ -133,37 +133,17 @@ export function VCardEducation({
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                        <div className="flex-1 flex items-center gap-2">
-                          <Input
-                            type="date"
-                            value={edu.end_date || ''}
-                            onChange={(e) => {
-                              const newEducation = [...(profile.education || [])];
-                              const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                              newEducation[eduIndex] = { ...edu, end_date: e.target.value };
-                              setProfile({ ...profile, education: newEducation });
-                            }}
-                            disabled={!edu.end_date}
-                            className="flex-1 bg-white/10 border-indigo-500/20"
-                          />
-                          <label className="flex items-center gap-2 text-sm">
-                            <input
-                              type="checkbox"
-                              checked={!edu.end_date}
-                              onChange={(e) => {
-                                const newEducation = [...(profile.education || [])];
-                                const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                                newEducation[eduIndex] = { 
-                                  ...edu, 
-                                  end_date: e.target.checked ? null : new Date().toISOString().split('T')[0]
-                                };
-                                setProfile({ ...profile, education: newEducation });
-                              }}
-                              className="rounded border-gray-300"
-                            />
-                            <span style={{ color: selectedStyle.colors.text.muted }}>Actuel</span>
-                          </label>
-                        </div>
+                        <Input
+                          type="date"
+                          value={edu.end_date}
+                          onChange={(e) => {
+                            const newEducation = [...(profile.education || [])];
+                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
+                            newEducation[eduIndex] = { ...edu, end_date: e.target.value };
+                            setProfile({ ...profile, education: newEducation });
+                          }}
+                          className="flex-1 bg-white/10 border-indigo-500/20"
+                        />
                       </div>
                     </div>
                     <div className="absolute top-2 right-2">
@@ -203,7 +183,7 @@ export function VCardEducation({
                 </p>
               </div>
               {edu.field_of_study && (
-                <p style={{ color: selectedStyle.colors.text.muted }}>
+                <p className="pl-6" style={{ color: selectedStyle.colors.text.muted }}>
                   {edu.field_of_study}
                 </p>
               )}
