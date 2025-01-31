@@ -35,44 +35,48 @@ export function useProfile() {
           throw new Error("No authenticated user");
         }
 
-        // Convert Supabase queries to Promises by executing them
+        // Convert Supabase queries to proper Promises
         const { data: profileData, error: profileError } = await fetchWithRetry(() =>
-          supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .maybeSingle()
-            .then(result => result)
+          Promise.resolve(
+            supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', user.id)
+              .maybeSingle()
+          ).then(result => result)
         );
 
         if (profileError) throw profileError;
 
         const { data: certifications, error: certError } = await fetchWithRetry(() =>
-          supabase
-            .from('certifications')
-            .select('*')
-            .eq('profile_id', user.id)
-            .then(result => result)
+          Promise.resolve(
+            supabase
+              .from('certifications')
+              .select('*')
+              .eq('profile_id', user.id)
+          ).then(result => result)
         );
 
         if (certError) throw certError;
 
         const { data: education, error: eduError } = await fetchWithRetry(() =>
-          supabase
-            .from('education')
-            .select('*')
-            .eq('profile_id', user.id)
-            .then(result => result)
+          Promise.resolve(
+            supabase
+              .from('education')
+              .select('*')
+              .eq('profile_id', user.id)
+          ).then(result => result)
         );
 
         if (eduError) throw eduError;
 
         const { data: experiences, error: expError } = await fetchWithRetry(() =>
-          supabase
-            .from('experiences')
-            .select('*')
-            .eq('profile_id', user.id)
-            .then(result => result)
+          Promise.resolve(
+            supabase
+              .from('experiences')
+              .select('*')
+              .eq('profile_id', user.id)
+          ).then(result => result)
         );
 
         if (expError) throw expError;
