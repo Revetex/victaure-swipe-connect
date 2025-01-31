@@ -6,8 +6,6 @@ import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardFooter } from "./vcard/VCardFooter";
-import { VCardCustomization } from "./vcard/VCardCustomization";
-import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,7 +20,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { selectedStyle } = useVCardStyle();
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -40,7 +37,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     try {
       setIsProcessing(true);
       
-      // Get current user to ensure we're authenticated
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       
@@ -49,15 +45,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
         return;
       }
 
-      // Include custom styling properties in the profile update
-      const updatedProfile = {
-        ...profile,
-        custom_font: profile.custom_font || null,
-        custom_background: profile.custom_background || null,
-        custom_text_color: profile.custom_text_color || null,
-      };
-
-      await updateProfile(updatedProfile);
+      await updateProfile(profile);
       setIsEditing(false);
       if (onEditStateChange) {
         onEditStateChange(false);
@@ -81,38 +69,25 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   }
 
   return (
-    <VCardContainer 
-      isEditing={isEditing} 
-      customStyles={{
-        font: profile.custom_font,
-        background: profile.custom_background,
-        textColor: profile.custom_text_color
-      }}
-    >
-      <div className="space-y-8 max-w-4xl mx-auto text-gray-900 dark:text-gray-100">
-        {isEditing && (
-          <VCardCustomization profile={profile} setProfile={setProfile} />
-        )}
-
+    <VCardContainer isEditing={isEditing}>
+      <div className="space-y-8 max-w-4xl mx-auto">
         <VCardSectionsManager
           profile={profile}
           isEditing={isEditing}
           setProfile={setProfile}
-          selectedStyle={selectedStyle}
         />
 
         <VCardFooter
           isEditing={isEditing}
           isPdfGenerating={isPdfGenerating}
           isProcessing={isProcessing}
-          selectedStyle={selectedStyle}
           onEditToggle={handleEditToggle}
           onSave={handleSave}
           onDownloadBusinessCard={async () => {
             if (!profile) return;
             setIsPdfGenerating(true);
             try {
-              const doc = await generateBusinessCard(profile, selectedStyle);
+              const doc = await generateBusinessCard(profile);
               doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
               toast.success("Business PDF généré avec succès");
             } catch (error) {
@@ -126,7 +101,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
             if (!profile) return;
             setIsPdfGenerating(true);
             try {
-              const doc = await generateCV(profile, selectedStyle);
+              const doc = await generateCV(profile);
               doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
               toast.success("CV PDF généré avec succès");
             } catch (error) {
