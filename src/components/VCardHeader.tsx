@@ -83,6 +83,43 @@ export function VCardHeader({
       animate={{ opacity: 1, y: 0 }}
       className="relative p-4 sm:p-6 rounded-xl"
     >
+      {/* Actions and QR Code Row */}
+      <div className="flex justify-end items-center gap-4 mb-6">
+        {!isEditing && (
+          <motion.div 
+            className="shrink-0 cursor-pointer"
+            onClick={() => setIsQRDialogOpen(true)}
+            whileHover={{ scale: 1.05 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm">
+              <QRCodeSVG
+                value={window.location.href}
+                size={60}
+                level="H"
+                includeMargin={false}
+                className="rounded-lg opacity-70 hover:opacity-100 transition-opacity duration-300"
+              />
+            </div>
+          </motion.div>
+        )}
+        
+        <div className="shrink-0">
+          <VCardActions
+            isEditing={isEditing}
+            isPdfGenerating={isPdfGenerating}
+            isProcessing={isProcessing}
+            setIsEditing={onEditToggle}
+            onSave={onSave}
+            onDownloadBusinessPDF={onDownloadBusinessCard}
+            onDownloadCVPDF={onDownloadCV}
+          />
+        </div>
+      </div>
+
+      {/* Profile Info Row */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
         <div className="relative group shrink-0">
           <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg">
@@ -138,41 +175,6 @@ export function VCardHeader({
               </p>
             </>
           )}
-        </div>
-
-        <div className="flex items-center gap-4">
-          {!isEditing && (
-            <motion.div 
-              className="shrink-0 cursor-pointer"
-              onClick={() => setIsQRDialogOpen(true)}
-              whileHover={{ scale: 1.05 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm">
-                <QRCodeSVG
-                  value={window.location.href}
-                  size={60}
-                  level="H"
-                  includeMargin={false}
-                  className="rounded-lg opacity-70 hover:opacity-100 transition-opacity duration-300"
-                />
-              </div>
-            </motion.div>
-          )}
-          
-          <div className="shrink-0">
-            <VCardActions
-              isEditing={isEditing}
-              isPdfGenerating={isPdfGenerating}
-              isProcessing={isProcessing}
-              setIsEditing={onEditToggle}
-              onSave={onSave}
-              onDownloadBusinessPDF={onDownloadBusinessCard}
-              onDownloadCVPDF={onDownloadCV}
-            />
-          </div>
         </div>
       </div>
 
