@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Mic, Send, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface ChatInputProps {
   value: string;
@@ -29,28 +29,6 @@ export function ChatInput({
   placeholder = "Comment puis-je vous aider aujourd'hui ?",
   maxLength = 1000,
 }: ChatInputProps) {
-  const [isTyping, setIsTyping] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout>();
-
-  useEffect(() => {
-    if (value) {
-      setIsTyping(true);
-      if (typingTimeout) clearTimeout(typingTimeout);
-      
-      const timeout = setTimeout(() => {
-        setIsTyping(false);
-      }, 1000);
-      
-      setTypingTimeout(timeout);
-    } else {
-      setIsTyping(false);
-    }
-
-    return () => {
-      if (typingTimeout) clearTimeout(typingTimeout);
-    };
-  }, [value]);
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -132,19 +110,7 @@ export function ChatInput({
           </Button>
         </div>
       </div>
-      <div className="flex justify-between items-center px-1 text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          {isTyping && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-primary"
-            >
-              En train d'écrire...
-            </motion.span>
-          )}
-        </div>
+      <div className="flex justify-end items-center px-1 text-xs text-muted-foreground">
         <span className={cn(
           "transition-colors",
           isNearLimit && "text-warning",
