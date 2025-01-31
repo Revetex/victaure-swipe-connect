@@ -16,7 +16,7 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative w-full min-h-screen transition-all duration-300 bg-black/90 text-foreground text-sm sm:text-base"
+      className="relative w-full min-h-screen transition-all duration-300 bg-black text-foreground text-sm sm:text-base"
       style={{
         fontFamily: customStyles?.font || 'inherit',
         backgroundColor: customStyles?.background || 'inherit',
@@ -24,11 +24,11 @@ export function VCardContainer({ children, isEditing, customStyles }: VCardConta
       }}
     >
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-      <div className="relative z-10 w-full mx-auto py-4 sm:py-6 lg:py-8">
+      <div className="relative z-10 w-full mx-auto py-4 sm:py-6 lg:py-8 bg-black">
         <div className={`space-y-4 sm:space-y-6 ${
           isEditing 
-            ? 'bg-black/90 backdrop-blur-sm p-4 sm:p-6 shadow-lg border border-border/20 rounded-xl dark:bg-black/95' 
-            : 'bg-black/80 backdrop-blur-sm rounded-xl'
+            ? 'bg-black backdrop-blur-sm p-4 sm:p-6 shadow-lg border border-border/20 rounded-xl' 
+            : 'bg-black backdrop-blur-sm rounded-xl'
         }`}>
           {children}
         </div>
