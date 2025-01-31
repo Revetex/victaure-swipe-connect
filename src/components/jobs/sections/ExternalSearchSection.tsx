@@ -18,7 +18,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
     const loadSearch = () => {
       if (window.google?.search?.cse?.element) {
         try {
-          const searchElement = window.google.search.cse.element.render({
+          window.google.search.cse.element.render({
             div: searchContainerRef.current,
             tag: 'search',
             gname: 'gsearch',
@@ -35,10 +35,9 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
             }
           });
           
-          if (searchElement) {
-            setIsSearchLoaded(true);
-            setScriptError(false);
-          }
+          // Set search as loaded after rendering
+          setIsSearchLoaded(true);
+          setScriptError(false);
         } catch (error) {
           console.error("Error rendering search:", error);
           setScriptError(true);
