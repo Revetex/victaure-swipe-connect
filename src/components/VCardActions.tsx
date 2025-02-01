@@ -38,21 +38,21 @@ export function VCardActions({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-wrap gap-3 pt-4 border-t border-gray-200 dark:border-white/10"
+      className="flex flex-wrap gap-2 pt-3 border-t border-gray-200 dark:border-white/10"
     >
       {isEditing ? (
         <>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[120px]"
+            className="flex-1 min-w-[100px]"
           >
             <Button
               onClick={onSave}
               disabled={isProcessing}
-              className="w-full transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full text-xs sm:text-sm transition-colors bg-primary hover:bg-primary/90 text-primary-foreground h-8 sm:h-10"
             >
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               {isProcessing ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
           </motion.div>
@@ -61,12 +61,12 @@ export function VCardActions({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-1 min-w-[120px]"
+              className="flex-1 min-w-[100px]"
             >
               <Button
                 onClick={onApplyChanges}
                 variant="outline"
-                className="w-full transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+                className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
               >
                 Appliquer
               </Button>
@@ -79,13 +79,13 @@ export function VCardActions({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-1 min-w-[100px]"
+              className="flex-1 min-w-[80px] sm:min-w-[100px]"
             >
               <Button
                 onClick={onShare}
-                className="w-full transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
               >
-                <Share2 className="mr-2 h-4 w-4" />
+                <Share2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                 Partager
               </Button>
             </motion.div>
@@ -94,14 +94,14 @@ export function VCardActions({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+            className="flex-1 min-w-[80px] sm:min-w-[100px]"
           >
             <Button
               onClick={() => setIsEditing(true)}
               variant="outline"
-              className="w-full transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
             >
-              <Edit className="mr-2 h-4 w-4" />
+              <Edit className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
               Mode édition
             </Button>
           </motion.div>
@@ -109,32 +109,32 @@ export function VCardActions({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+            className="flex-1 min-w-[80px] sm:min-w-[100px]"
           >
             <Button
               onClick={onDownloadBusinessPDF}
               disabled={isPdfGenerating}
               variant="outline"
-              className="w-full transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
             >
-              <FileText className="mr-2 h-4 w-4" />
-              {isPdfGenerating ? "Génération..." : "Business PDF"}
+              <FileText className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              {isPdfGenerating ? "..." : "Business PDF"}
             </Button>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+            className="flex-1 min-w-[80px] sm:min-w-[100px]"
           >
             <Button
               onClick={onDownloadCVPDF}
               disabled={isPdfGenerating}
               variant="outline"
-              className="w-full transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
             >
-              <FileText className="mr-2 h-4 w-4" />
-              {isPdfGenerating ? "Génération..." : "CV PDF"}
+              <FileText className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              {isPdfGenerating ? "..." : "CV PDF"}
             </Button>
           </motion.div>
 
@@ -146,9 +146,9 @@ export function VCardActions({
               <Button
                 onClick={onCopyLink}
                 variant="outline"
-                className="transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+                className="h-8 sm:h-10 text-xs sm:text-sm transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
               >
-                <Copy className="h-4 w-4" />
+                <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </motion.div>
           )}
