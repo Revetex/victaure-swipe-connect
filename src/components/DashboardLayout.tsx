@@ -2,9 +2,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback } from "react";
-import { DashboardNavigation } from "./DashboardNavigation";
-import { DashboardContainer } from "./DashboardContainer";
-import { DashboardContent } from "./DashboardContent";
+import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
+import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
+import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useDebounce } from "use-debounce";
 
 export function DashboardLayout() {
