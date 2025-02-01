@@ -2,7 +2,7 @@ import { UserProfile } from "@/types/profile";
 import { VCardExpandedHeader } from "./VCardExpandedHeader";
 import { VCardExpandedBio } from "./VCardExpandedBio";
 import { VCardExpandedEducation } from "./VCardExpandedEducation";
-import { VCardSkills } from "@/components/VCardSkills"; // Fixed import path
+import { VCardSkills } from "@/components/VCardSkills";
 import { VCardExpandedQR } from "./VCardExpandedQR";
 
 interface VCardExpandedGridProps {
@@ -25,6 +25,14 @@ export function VCardExpandedGrid({
           setProfile={setProfile}
         />
         
+        <VCardExpandedEducation
+          profile={profile}
+          isEditing={isEditing}
+          setProfile={setProfile}
+        />
+      </div>
+      
+      <div className="space-y-6">
         <VCardExpandedBio
           profile={profile}
           isEditing={isEditing}
@@ -39,14 +47,6 @@ export function VCardExpandedGrid({
             const updatedSkills = profile.skills?.filter(s => s !== skill) || [];
             setProfile({ ...profile, skills: updatedSkills });
           }}
-        />
-      </div>
-      
-      <div className="space-y-6">
-        <VCardExpandedEducation
-          profile={profile}
-          isEditing={isEditing}
-          setProfile={setProfile}
         />
         
         <VCardExpandedQR />
