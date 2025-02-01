@@ -21,8 +21,7 @@ export function VCardStyleSelector({
 
   const handleStyleSelect = async (style: StyleOption) => {
     try {
-      // Appliquer immédiatement le style localement
-      onStyleSelect(style);
+      await onStyleSelect(style);
       toast.success(`Style ${style.name} appliqué`);
     } catch (error) {
       console.error('Error updating style:', error);
@@ -33,7 +32,7 @@ export function VCardStyleSelector({
   return (
     <div className="space-y-4 fade-in">
       <h3 className="text-lg font-semibold text-white/90">Style</h3>
-      <div className="responsive-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {styleOptions.map((style) => (
           <motion.div
             key={style.id}
