@@ -31,7 +31,6 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      // Reset editing state for all pages except Notes/Tasks
       if (page !== 4) {
         setIsEditing(false);
       }
@@ -43,9 +42,9 @@ export function DashboardLayout() {
   }, [handlePageChange]);
 
   return (
-    <div className="relative min-h-screen bg-background">
-      <div className="container mx-auto px-4">
-        <div className="max-w-7xl mx-auto">
+    <div className="relative min-h-screen bg-background w-full overflow-x-hidden">
+      <div className="w-full px-0 sm:px-4">
+        <div className="max-w-7xl mx-auto w-full">
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
@@ -80,7 +79,7 @@ export function DashboardLayout() {
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
       >
-        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+        <div className="w-full px-4 h-full flex items-center max-w-7xl mx-auto">
           <DashboardNavigation 
             currentPage={currentPage}
             onPageChange={handlePageChange}

@@ -30,7 +30,8 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
           start_date: null, 
           end_date: null, 
           description: null,
-          profile_id: profile.id 
+          created_at: new Date(),
+          updated_at: new Date()
         }
       ],
     });
@@ -60,19 +61,19 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
       title="Expériences professionnelles"
       icon={<Briefcase className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />}
     >
-      <div className="space-y-6 max-w-3xl mx-auto">
+      <div className="space-y-6 w-full">
         {isEditing ? (
           <Reorder.Group axis="y" values={profile.experiences || []} onReorder={handleReorder}>
             {(profile.experiences || []).map((exp: Experience) => (
               <Reorder.Item key={exp.id} value={exp}>
                 <motion.div 
-                  className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-500/20"
+                  className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-500/20 w-full"
                 >
                   <div className="absolute top-4 left-2 cursor-move">
                     <GripVertical className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />
                   </div>
-                  <div className="ml-6">
-                    <div className="flex items-center gap-2">
+                  <div className="ml-6 w-full">
+                    <div className="flex items-center gap-2 w-full">
                       <Building2 className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
                       <Input
                         value={exp.company}
@@ -83,7 +84,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                           setProfile({ ...profile, experiences: newExperiences });
                         }}
                         placeholder="Nom de l'entreprise"
-                        className="flex-1 bg-white/10 border-indigo-500/20 min-h-[44px]"
+                        className="flex-1 bg-white/10 border-indigo-500/20 min-h-[44px] w-full"
                       />
                     </div>
                     <div className="flex items-center gap-2 mt-2">
@@ -200,6 +201,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
+            className="w-full"
           >
             <Button 
               onClick={handleAddExperience} 
