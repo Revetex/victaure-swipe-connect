@@ -45,15 +45,15 @@ export function VCardActions({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[100px]"
+            className="flex-1"
           >
             <Button
               onClick={onSave}
               disabled={isProcessing}
-              className="w-full text-xs sm:text-sm transition-colors bg-primary hover:bg-primary/90 text-primary-foreground h-8 sm:h-10"
+              className="w-full h-8 sm:h-10 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
+              title="Sauvegarder"
             >
-              <Save className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              {isProcessing ? "Sauvegarde..." : "Sauvegarder"}
+              <Save className="h-4 w-4" />
             </Button>
           </motion.div>
 
@@ -61,14 +61,15 @@ export function VCardActions({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-1 min-w-[100px]"
+              className="flex-1"
             >
               <Button
                 onClick={onApplyChanges}
                 variant="outline"
-                className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+                className="w-full h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+                title="Appliquer"
               >
-                Appliquer
+                <FileText className="h-4 w-4" />
               </Button>
             </motion.div>
           )}
@@ -79,14 +80,14 @@ export function VCardActions({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-1 min-w-[80px] sm:min-w-[100px]"
+              className="flex-1"
             >
               <Button
                 onClick={onShare}
-                className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="w-full h-8 sm:h-10 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
+                title="Partager"
               >
-                <Share2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                Partager
+                <Share2 className="h-4 w-4" />
               </Button>
             </motion.div>
           )}
@@ -94,47 +95,47 @@ export function VCardActions({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[80px] sm:min-w-[100px]"
+            className="flex-1"
           >
             <Button
               onClick={() => setIsEditing(true)}
               variant="outline"
-              className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              className="w-full h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              title="Mode édition"
             >
-              <Edit className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              Mode édition
+              <Edit className="h-4 w-4" />
             </Button>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[80px] sm:min-w-[100px]"
+            className="flex-1"
           >
             <Button
               onClick={onDownloadBusinessPDF}
               disabled={isPdfGenerating}
               variant="outline"
-              className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              className="w-full h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              title="Business PDF"
             >
-              <FileText className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              {isPdfGenerating ? "..." : "Business PDF"}
+              <FileText className="h-4 w-4" />
             </Button>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-1 min-w-[80px] sm:min-w-[100px]"
+            className="flex-1"
           >
             <Button
               onClick={onDownloadCVPDF}
               disabled={isPdfGenerating}
               variant="outline"
-              className="w-full text-xs sm:text-sm h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              className="w-full h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+              title="CV PDF"
             >
-              <FileText className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              {isPdfGenerating ? "..." : "CV PDF"}
+              <FileText className="h-4 w-4" />
             </Button>
           </motion.div>
 
@@ -146,9 +147,10 @@ export function VCardActions({
               <Button
                 onClick={onCopyLink}
                 variant="outline"
-                className="h-8 sm:h-10 text-xs sm:text-sm transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+                className="h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
+                title="Copier le lien"
               >
-                <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Copy className="h-4 w-4" />
               </Button>
             </motion.div>
           )}
