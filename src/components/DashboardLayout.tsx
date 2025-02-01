@@ -2,15 +2,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback } from "react";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
-import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { DashboardNavigation } from "./DashboardNavigation";
+import { DashboardContainer } from "./DashboardContainer";
+import { DashboardContent } from "./DashboardContent";
 import { useDebounce } from "use-debounce";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(3); // Changed initial state to 3 (jobs page)
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   
@@ -42,9 +42,9 @@ export function DashboardLayout() {
   }, [handlePageChange]);
 
   return (
-    <div className="relative min-h-screen bg-background w-full overflow-x-hidden">
-      <div className="w-full px-0 sm:px-4">
-        <div className="max-w-7xl mx-auto w-full">
+    <div className="relative min-h-screen bg-background">
+      <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
@@ -69,17 +69,15 @@ export function DashboardLayout() {
       </div>
       
       <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-10 lg:border-none lg:bg-transparent transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-        } ${
-          currentPage === 2 ? 'z-10' : 'z-50'
         }`}
         style={{ 
           height: '4rem',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
       >
-        <div className="w-full px-4 h-full flex items-center max-w-7xl mx-auto">
+        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
           <DashboardNavigation 
             currentPage={currentPage}
             onPageChange={handlePageChange}
