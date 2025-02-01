@@ -18,25 +18,22 @@ export const generateBusinessCard = async (
   try {
     // Set background with style-specific gradient
     doc.setFillColor(selectedStyle.colors.background.card);
-    doc.setDrawColor(selectedStyle.colors.primary);
     
-    // Apply gradient background
+    // Apply gradient background based on style
     doc.setGlobalAlpha(0.1);
     doc.rect(0, 0, 85.6, 53.98, 'F');
     doc.setGlobalAlpha(1);
 
-    // Add Victaure logo watermark
-    doc.setGlobalAlpha(0.1);
-    doc.setTextColor(selectedStyle.colors.primary);
-    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'italic');
-    doc.setFontSize(24);
-    doc.text('Victaure', 42.8, 45, { align: 'center' });
-    doc.setGlobalAlpha(1);
-
-    // Add decorative accent line
-    doc.setLineWidth(0.5);
-    doc.setDrawColor(selectedStyle.colors.secondary);
-    doc.line(10, 12, 75.6, 12);
+    // Add app logo as watermark
+    const logoUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png";
+    doc.addImage(
+      logoUrl,
+      'PNG',
+      35.6, // Centered horizontally (85.6/2 - 7)
+      38,   // Near bottom
+      14,   // Width
+      14    // Height
+    );
 
     // Add name with enhanced styling
     doc.setTextColor(selectedStyle.colors.text.primary);
@@ -70,31 +67,25 @@ export const generateBusinessCard = async (
       doc.text(location, 10, contactY);
     }
 
-    // Generate QR code for the profile URL with reduced size and better positioning
+    // Generate QR code for the profile URL with reduced size
     const qrCodeDataUrl = await QRCode.toDataURL(window.location.href, {
       margin: 0,
-      width: 35, // Reduced size
+      width: 30,
       color: {
         dark: selectedStyle.colors.text.primary,
         light: '#FFFFFF',
       },
     });
 
-    // Add QR code to the bottom right corner with better positioning
+    // Add QR code to the bottom right corner
     doc.addImage(
       qrCodeDataUrl,
       'PNG',
-      65, // Moved more to the right
-      30, // Moved lower
-      15, // Smaller width
-      15  // Smaller height
+      68,
+      35,
+      12,
+      12
     );
-
-    // Add elegant border
-    doc.setDrawColor(selectedStyle.colors.primary);
-    doc.setLineWidth(0.5);
-    const margin = 5;
-    doc.roundedRect(margin, margin, 85.6 - 2 * margin, 53.98 - 2 * margin, 3, 3, 'S');
 
   } catch (error) {
     console.error('Error generating business card:', error);

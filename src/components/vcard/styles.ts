@@ -3,7 +3,7 @@ import { StyleOption } from "./types";
 export const styleOptions: StyleOption[] = [
   {
     id: "1",
-    name: "Classique",
+    name: "Professionnel",
     color: "#1E40AF",
     font: "'Playfair Display', serif",
     displayStyle: "default",
@@ -28,26 +28,26 @@ export const styleOptions: StyleOption[] = [
   },
   {
     id: "2",
-    name: "Chaleureux",
-    color: "#B45309",
-    font: "'Cormorant Garamond', serif",
-    displayStyle: "warm",
-    bgGradient: "bg-gradient-to-br from-amber-50 via-orange-100 to-amber-200 dark:from-amber-900/80 dark:via-orange-800/80 dark:to-amber-700/80",
-    secondaryColor: "#F97316",
-    accentGradient: "bg-gradient-to-br from-amber-500/10 to-orange-500/10",
-    borderStyle: "border-l-4 border-amber-500/30",
+    name: "Créatif",
+    color: "#7C3AED",
+    font: "'Montserrat', serif",
+    displayStyle: "elegant",
+    bgGradient: "bg-gradient-to-br from-violet-50 via-purple-100 to-violet-200 dark:from-violet-900/80 dark:via-purple-800/80 dark:to-violet-700/80",
+    secondaryColor: "#8B5CF6",
+    accentGradient: "bg-gradient-to-br from-violet-500/10 to-purple-500/10",
+    borderStyle: "rounded-xl shadow-xl border-violet-500/30",
     colors: {
-      primary: "#92400E",
-      secondary: "#F59E0B",
+      primary: "#6D28D9",
+      secondary: "#8B5CF6",
       text: {
-        primary: "#78350F",
-        secondary: "#92400E",
-        muted: "#B45309"
+        primary: "#4C1D95",
+        secondary: "#5B21B6",
+        muted: "#6D28D9"
       },
       background: {
         card: "bg-white dark:bg-gray-900",
-        section: "bg-amber-100/50 dark:bg-amber-800/30",
-        button: "bg-amber-600 hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+        section: "bg-violet-100/50 dark:bg-violet-800/30",
+        button: "bg-violet-600 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600"
       }
     }
   },
@@ -73,56 +73,6 @@ export const styleOptions: StyleOption[] = [
         card: "bg-white dark:bg-gray-900",
         section: "bg-emerald-100/50 dark:bg-emerald-800/30",
         button: "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600"
-      }
-    }
-  },
-  {
-    id: "4",
-    name: "Élégant",
-    color: "#7C3AED",
-    font: "'Montserrat', serif",
-    displayStyle: "elegant",
-    bgGradient: "bg-gradient-to-br from-violet-50 via-purple-100 to-violet-200 dark:from-violet-900/80 dark:via-purple-800/80 dark:to-violet-700/80",
-    secondaryColor: "#8B5CF6",
-    accentGradient: "bg-gradient-to-br from-violet-500/10 to-purple-500/10",
-    borderStyle: "rounded-xl shadow-xl border-violet-500/30",
-    colors: {
-      primary: "#6D28D9",
-      secondary: "#8B5CF6",
-      text: {
-        primary: "#4C1D95",
-        secondary: "#5B21B6",
-        muted: "#6D28D9"
-      },
-      background: {
-        card: "bg-white dark:bg-gray-900",
-        section: "bg-violet-100/50 dark:bg-violet-800/30",
-        button: "bg-violet-600 hover:bg-violet-700 dark:bg-violet-500 dark:hover:bg-violet-600"
-      }
-    }
-  },
-  {
-    id: "5",
-    name: "Audacieux",
-    color: "#BE185D",
-    font: "'Oswald', sans-serif",
-    displayStyle: "bold",
-    bgGradient: "bg-gradient-to-br from-pink-50 via-rose-100 to-pink-200 dark:from-pink-900/80 dark:via-rose-800/80 dark:to-pink-700/80",
-    secondaryColor: "#EC4899",
-    accentGradient: "bg-gradient-to-br from-pink-500/10 to-rose-500/10",
-    borderStyle: "border-x-4 border-pink-500/30",
-    colors: {
-      primary: "#BE185D",
-      secondary: "#EC4899",
-      text: {
-        primary: "#831843",
-        secondary: "#9D174D",
-        muted: "#BE185D"
-      },
-      background: {
-        card: "bg-white dark:bg-gray-900",
-        section: "bg-pink-100/50 dark:bg-pink-800/30",
-        button: "bg-pink-600 hover:bg-pink-700 dark:bg-pink-500 dark:hover:bg-pink-600"
       }
     }
   }
