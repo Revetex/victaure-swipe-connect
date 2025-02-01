@@ -1,97 +1,66 @@
 import { Button } from "@/components/ui/button";
-import { Share2, Copy, Save, Edit } from "lucide-react";
-import { motion } from "framer-motion";
+import { FileText, Pencil, Save, Share2, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface VCardActionsProps {
   isEditing: boolean;
   isProcessing?: boolean;
-  onShare?: () => void;
-  onCopyLink?: () => void;
+  setIsEditing?: () => void;
   onSave?: () => void;
-  onApplyChanges?: () => void;
-  setIsEditing: (isEditing: boolean) => void;
+  onDownloadBusinessCard?: () => Promise<void>;
 }
 
 export function VCardActions({
   isEditing,
-  isProcessing = false,
-  onShare,
-  onCopyLink,
+  isProcessing,
+  setIsEditing,
   onSave,
-  onApplyChanges,
-  setIsEditing
+  onDownloadBusinessCard,
 }: VCardActionsProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex flex-wrap gap-2 pt-3 border-t border-gray-200 dark:border-white/10"
-    >
-      {isEditing ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex-1"
+  if (isEditing) {
+    return (
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={setIsEditing}
+          className="shrink-0"
+          title="Annuler"
         >
-          <Button
-            onClick={onSave}
-            disabled={isProcessing}
-            className="w-full h-8 sm:h-10 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
-            title="Sauvegarder"
-          >
-            <Save className="h-4 w-4" />
-          </Button>
-        </motion.div>
-      ) : (
-        <>
-          {onShare && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex-1"
-            >
-              <Button
-                onClick={onShare}
-                className="w-full h-8 sm:h-10 transition-colors bg-primary hover:bg-primary/90 text-primary-foreground"
-                title="Partager"
-              >
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          )}
+          <X className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={onSave}
+          size="icon"
+          className={cn("shrink-0", isProcessing && "opacity-50 pointer-events-none")}
+          title="Sauvegarder"
+        >
+          <Save className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex-1"
-          >
-            <Button
-              onClick={() => setIsEditing(true)}
-              variant="outline"
-              className="w-full h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
-              title="Mode édition"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-          </motion.div>
-
-          {onCopyLink && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <Button
-                onClick={onCopyLink}
-                variant="outline"
-                className="h-8 sm:h-10 transition-colors border-primary/20 hover:border-primary/30 text-primary hover:text-primary/90"
-                title="Copier le lien"
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          )}
-        </>
-      )}
-    </motion.div>
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={setIsEditing}
+        className="shrink-0"
+        title="Éditer"
+      >
+        <Pencil className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onDownloadBusinessCard}
+        className="shrink-0"
+        title="Télécharger la carte de visite"
+      >
+        <FileText className="h-4 w-4" />
+      </Button>
+    </div>
   );
 }

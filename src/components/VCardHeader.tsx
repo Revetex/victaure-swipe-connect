@@ -10,7 +10,6 @@ import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
 import { VCardActions } from "./VCardActions";
-import { Logo } from "./Logo";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -20,6 +19,7 @@ interface VCardHeaderProps {
   isProcessing?: boolean;
   onEditToggle?: () => void;
   onSave?: () => void;
+  onDownloadBusinessCard?: () => Promise<void>;
 }
 
 export function VCardHeader({ 
@@ -29,6 +29,7 @@ export function VCardHeader({
   isProcessing,
   onEditToggle,
   onSave,
+  onDownloadBusinessCard,
 }: VCardHeaderProps) {
   const { selectedStyle } = useVCardStyle();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
@@ -80,35 +81,32 @@ export function VCardHeader({
       className="relative p-4 sm:p-6 rounded-xl"
     >
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
-        <div className="flex items-center gap-4">
-          <Logo size="sm" />
-          <div className="relative group shrink-0">
-            <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg">
-              <AvatarImage 
-                src={profile.avatar_url || ''} 
-                alt={profile.full_name || ''}
-                className="object-cover"
+        <div className="relative group shrink-0">
+          <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-2 ring-primary/20 shadow-lg">
+            <AvatarImage 
+              src={profile.avatar_url || ''} 
+              alt={profile.full_name || ''}
+              className="object-cover"
+            />
+            <AvatarFallback className="bg-primary/10">
+              <UserCircle2 className="h-12 w-12 text-primary/60" />
+            </AvatarFallback>
+          </Avatar>
+          {isEditing && (
+            <label 
+              className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
+              htmlFor="avatar-upload"
+            >
+              <Upload className="h-6 w-6 text-white/90" />
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
               />
-              <AvatarFallback className="bg-primary/10">
-                <UserCircle2 className="h-12 w-12 text-primary/60" />
-              </AvatarFallback>
-            </Avatar>
-            {isEditing && (
-              <label 
-                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
-                htmlFor="avatar-upload"
-              >
-                <Upload className="h-6 w-6 text-white/90" />
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                />
-              </label>
-            )}
-          </div>
+            </label>
+          )}
         </div>
 
         <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
@@ -178,6 +176,7 @@ export function VCardHeader({
               isProcessing={isProcessing}
               setIsEditing={onEditToggle}
               onSave={onSave}
+              onDownloadBusinessCard={onDownloadBusinessCard}
             />
           </div>
         </div>

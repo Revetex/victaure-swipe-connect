@@ -15,7 +15,6 @@ export const generateBusinessCard = async (
     format: [85.6, 53.98]
   }));
 
-  // Front side
   try {
     // Set background with style-specific gradient
     doc.setFillColor(selectedStyle.colors.background.card);
@@ -59,37 +58,29 @@ export const generateBusinessCard = async (
     }
     
     if (profile.city) {
-      const location = [profile.city, profile.state, profile.country].filter(Boolean).join(', ');
+      const location = [profile.city, profile.state].filter(Boolean).join(', ');
       doc.text(location, 10, contactY);
     }
 
-    // Add back side with professional design
-    doc.addPage([85.6, 53.98], 'landscape');
-    
-    // Add subtle pattern background
-    doc.setGlobalAlpha(0.05);
-    for (let i = 0; i < 85.6; i += 5) {
-      for (let j = 0; j < 53.98; j += 5) {
-        doc.setFillColor(selectedStyle.colors.primary);
-        doc.circle(i, j, 0.3, 'F');
-      }
-    }
-    doc.setGlobalAlpha(1);
+    // Generate QR code for the profile URL
+    const qrCodeDataUrl = await QRCode.toDataURL(window.location.href, {
+      margin: 0,
+      width: 50,
+      color: {
+        dark: selectedStyle.colors.text.primary,
+        light: '#FFFFFF',
+      },
+    });
 
-    // Add company info if available
-    if (profile.company_name) {
-      doc.setTextColor(selectedStyle.colors.text.primary);
-      doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'bold');
-      doc.setFontSize(14);
-      doc.text(profile.company_name, 10, 20);
-
-      if (profile.company_size) {
-        doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(selectedStyle.colors.text.secondary);
-        doc.text(`Taille: ${profile.company_size}`, 10, 27);
-      }
-    }
+    // Add QR code to the right side
+    doc.addImage(
+      qrCodeDataUrl,
+      'PNG',
+      60,
+      20,
+      20,
+      20
+    );
 
     // Add elegant border
     doc.setDrawColor(selectedStyle.colors.primary);

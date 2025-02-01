@@ -9,7 +9,7 @@ import { VCardHeader } from "./VCardHeader";
 import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
-import { generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
+import { generateBusinessCard } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
 
 interface VCardProps {
@@ -85,25 +85,10 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     try {
       const doc = await generateBusinessCard(profile, selectedStyle);
       doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-      toast.success("Business PDF généré avec succès");
+      toast.success("Carte de visite générée avec succès");
     } catch (error) {
-      console.error('Error generating business PDF:', error);
-      toast.error("Erreur lors de la génération du Business PDF");
-    } finally {
-      setIsPdfGenerating(false);
-    }
-  };
-
-  const handleDownloadCV = async () => {
-    if (!profile) return;
-    setIsPdfGenerating(true);
-    try {
-      const doc = await generateCV(profile, selectedStyle);
-      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-      toast.success("CV PDF généré avec succès");
-    } catch (error) {
-      console.error('Error generating CV PDF:', error);
-      toast.error("Erreur lors de la génération du CV PDF");
+      console.error('Error generating business card:', error);
+      toast.error("Erreur lors de la génération de la carte de visite");
     } finally {
       setIsPdfGenerating(false);
     }
@@ -136,7 +121,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           onEditToggle={handleEditToggle}
           onSave={handleSave}
           onDownloadBusinessCard={handleDownloadBusinessCard}
-          onDownloadCV={handleDownloadCV}
         />
 
         {isEditing && (
