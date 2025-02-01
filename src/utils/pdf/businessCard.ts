@@ -25,6 +25,14 @@ export const generateBusinessCard = async (
     doc.rect(0, 0, 85.6, 53.98, 'F');
     doc.setGlobalAlpha(1);
 
+    // Add Victaure logo watermark
+    doc.setGlobalAlpha(0.1);
+    doc.setTextColor(selectedStyle.colors.primary);
+    doc.setFont(selectedStyle.font.split(",")[0].replace(/['"]+/g, ''), 'italic');
+    doc.setFontSize(24);
+    doc.text('Victaure', 42.8, 45, { align: 'center' });
+    doc.setGlobalAlpha(1);
+
     // Add decorative accent line
     doc.setLineWidth(0.5);
     doc.setDrawColor(selectedStyle.colors.secondary);
@@ -62,24 +70,24 @@ export const generateBusinessCard = async (
       doc.text(location, 10, contactY);
     }
 
-    // Generate QR code for the profile URL
+    // Generate QR code for the profile URL with reduced size and better positioning
     const qrCodeDataUrl = await QRCode.toDataURL(window.location.href, {
       margin: 0,
-      width: 50,
+      width: 35, // Reduced size
       color: {
         dark: selectedStyle.colors.text.primary,
         light: '#FFFFFF',
       },
     });
 
-    // Add QR code to the right side
+    // Add QR code to the bottom right corner with better positioning
     doc.addImage(
       qrCodeDataUrl,
       'PNG',
-      60,
-      20,
-      20,
-      20
+      65, // Moved more to the right
+      30, // Moved lower
+      15, // Smaller width
+      15  // Smaller height
     );
 
     // Add elegant border
