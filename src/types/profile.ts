@@ -30,6 +30,8 @@ export interface Experience {
   start_date: string | null;
   end_date?: string | null;
   description?: string | null;
+  created_at?: Date | null;
+  updated_at?: Date | null;
 }
 
 export interface UserProfile {
