@@ -63,7 +63,7 @@ export function VCardEducation({
       title="Formation"
       icon={<GraduationCap className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />}
     >
-      <div className="space-y-6 max-w-3xl mx-auto">
+      <div className="space-y-6 w-full">
         {isEditing ? (
           <Reorder.Group axis="y" values={profile.education || []} onReorder={handleReorder}>
             {(profile.education || []).map((edu: Education) => (
