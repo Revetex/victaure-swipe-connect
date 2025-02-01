@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 interface VCardActionsProps {
   isEditing: boolean;
   isProcessing?: boolean;
-  setIsEditing?: () => void;
+  isPdfGenerating?: boolean;
+  setIsEditing: (isEditing: boolean) => void;
   onSave?: () => void;
   onDownloadBusinessCard?: () => Promise<void>;
 }
@@ -13,6 +14,7 @@ interface VCardActionsProps {
 export function VCardActions({
   isEditing,
   isProcessing,
+  isPdfGenerating,
   setIsEditing,
   onSave,
   onDownloadBusinessCard,
@@ -23,7 +25,7 @@ export function VCardActions({
         <Button
           variant="ghost"
           size="icon"
-          onClick={setIsEditing}
+          onClick={() => setIsEditing(false)}
           className="shrink-0"
           title="Annuler"
         >
@@ -46,7 +48,7 @@ export function VCardActions({
       <Button
         variant="ghost"
         size="icon"
-        onClick={setIsEditing}
+        onClick={() => setIsEditing(true)}
         className="shrink-0"
         title="Éditer"
       >
@@ -56,7 +58,7 @@ export function VCardActions({
         variant="ghost"
         size="icon"
         onClick={onDownloadBusinessCard}
-        className="shrink-0"
+        className={cn("shrink-0", isPdfGenerating && "opacity-50 pointer-events-none")}
         title="Télécharger la carte de visite"
       >
         <FileText className="h-4 w-4" />

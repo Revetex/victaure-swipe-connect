@@ -8,7 +8,6 @@ import { VCardExpandedEducation } from "./expanded/VCardExpandedEducation";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { UserProfile } from "@/types/profile";
-import { StyleOption } from "@/components/vcard/types";
 
 interface VCardExpandedContentProps {
   isExpanded: boolean;
@@ -101,29 +100,11 @@ export function VCardExpandedContent({
             setProfile={setProfile}
           />
 
-          <VCardExpandedBio
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-
-          <VCardExpandedEducation
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-
           <VCardActions
             isEditing={isEditing}
             setIsEditing={setIsEditing}
-            onShare={onShare}
-            onDownload={onDownload}
-            onDownloadPDF={onDownloadPDF}
-            onDownloadBusinessPDF={onDownloadBusinessPDF}
-            onDownloadCVPDF={onDownloadCVPDF}
-            onCopyLink={onCopyLink}
             onSave={onSave}
-            onApplyChanges={onApplyChanges}
+            onDownloadBusinessCard={onDownloadBusinessPDF}
           />
         </div>
       </div>

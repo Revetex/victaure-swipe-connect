@@ -16,7 +16,6 @@ export function VCardFooter({
   isEditing,
   isPdfGenerating,
   isProcessing,
-  selectedStyle,
   onEditToggle,
   onSave,
   onDownloadBusinessCard,
@@ -28,10 +27,11 @@ export function VCardFooter({
         isEditing={isEditing}
         isPdfGenerating={isPdfGenerating}
         isProcessing={isProcessing}
-        setIsEditing={onEditToggle}
+        setIsEditing={(value) => {
+          onEditToggle();
+        }}
         onSave={onSave}
-        onDownloadBusinessPDF={onDownloadBusinessCard}
-        onDownloadCVPDF={onDownloadCV}
+        onDownloadBusinessCard={onDownloadBusinessCard}
       />
     </div>
   );
