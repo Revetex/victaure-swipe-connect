@@ -4,6 +4,8 @@ import { Check, CheckCheck, Clock, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import type { Message } from "@/hooks/useMessages";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface UserMessageProps {
   message: Message;
@@ -11,8 +13,25 @@ interface UserMessageProps {
 }
 
 export function UserMessage({ message, onMarkAsRead }: UserMessageProps) {
+  const navigate = useNavigate();
+  
   const formatMessageDate = (date: string) => {
     return format(new Date(date), "d MMMM à HH:mm", { locale: fr });
+  };
+
+  const handleAcceptMessage = async () => {
+    try {
+      // Mark as read first
+      await onMarkAsRead(message.id);
+      
+      // Then navigate to the conversation
+      navigate(`/dashboard/messages/${message.sender_id}`);
+      
+      toast.success("Message accepté");
+    } catch (error) {
+      console.error("Erreur lors de l'acceptation du message:", error);
+      toast.error("Erreur lors de l'acceptation du message");
+    }
   };
 
   console.log("Message reçu:", message); // Pour le débogage
@@ -23,7 +42,7 @@ export function UserMessage({ message, onMarkAsRead }: UserMessageProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="group relative p-4 rounded-lg cursor-pointer bg-card hover:bg-card/80 border shadow-sm hover:shadow-md transition-all duration-200"
-      onClick={() => onMarkAsRead(message.id)}
+      onClick={handleAcceptMessage}
     >
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
       <div className="relative space-y-2">
