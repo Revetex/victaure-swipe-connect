@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Combobox } from "@/components/ui/combobox";
 import { provinces } from "@/hooks/data/provinces";
 import { getCitiesForProvince } from "@/hooks/data/cities";
 import { provinceData } from "@/hooks/data/provinces";
@@ -24,14 +23,6 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
       setAvailableCities([]);
     }
   }, [profile.state]);
-
-  const handleProvinceChange = (value: string) => {
-    setProfile(prev => ({ ...prev, state: value, city: "" }));
-  };
-
-  const handleCityChange = (value: string) => {
-    setProfile(prev => ({ ...prev, city: value }));
-  };
 
   if (!isEditing) {
     return (
@@ -73,21 +64,21 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
 
         <div className="space-y-2">
           <Label htmlFor="province">Province</Label>
-          <Combobox
-            items={provinces.map(p => ({ label: p.name, value: p.name }))}
+          <Input
+            id="province"
             value={profile.state || ""}
-            onChange={handleProvinceChange}
-            placeholder="Sélectionnez une province"
+            onChange={(e) => setProfile(prev => ({ ...prev, state: e.target.value }))}
+            placeholder="Votre province"
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="city">Ville</Label>
-          <Combobox
-            items={availableCities.map(city => ({ label: city, value: city }))}
+          <Input
+            id="city"
             value={profile.city || ""}
-            onChange={handleCityChange}
-            placeholder="Sélectionnez une ville"
+            onChange={(e) => setProfile(prev => ({ ...prev, city: e.target.value }))}
+            placeholder="Votre ville"
           />
         </div>
 
