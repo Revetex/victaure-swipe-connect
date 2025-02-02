@@ -20,26 +20,16 @@ export function ConversationList({
   onSelectConversation,
   onClearChat
 }: ConversationListProps) {
-  const handleClearChat = async (messageId?: string, senderId?: string, receiverId?: string) => {
+  const handleClearChat = async (messageId?: string) => {
     try {
       if (messageId) {
-        if (senderId && receiverId && senderId === receiverId) {
-          // Delete all messages between user and themselves
-          const { error } = await supabase
-            .from('messages')
-            .delete()
-            .or(`sender_id.eq.${senderId},receiver_id.eq.${senderId}`);
+        // Delete specific conversation
+        const { error } = await supabase
+          .from('messages')
+          .delete()
+          .eq('id', messageId);
 
-          if (error) throw error;
-        } else {
-          // Delete specific conversation
-          const { error } = await supabase
-            .from('messages')
-            .delete()
-            .eq('id', messageId);
-
-          if (error) throw error;
-        }
+        if (error) throw error;
         toast.success("Conversation effacée avec succès");
       } else if (onClearChat) {
         // Clear AI chat
@@ -51,7 +41,7 @@ export function ConversationList({
     }
   };
 
-  // Filter out self-conversations after deletion
+  // Filter out self-conversations
   const filteredMessages = messages.filter(message => 
     message.sender_id !== message.receiver_id
   );
@@ -98,7 +88,7 @@ export function ConversationList({
               size="icon"
               onClick={(e) => {
                 e.stopPropagation();
-                handleClearChat(message.id, message.sender_id, message.receiver_id);
+                handleClearChat(message.id);
               }}
               className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
             >
