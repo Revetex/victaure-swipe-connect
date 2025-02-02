@@ -5,11 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserCircle2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 export function ProfileSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [profiles, setProfiles] = useState<any[]>([]);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const searchProfiles = async (term: string) => {
     if (!term.trim()) {
@@ -29,7 +31,14 @@ export function ProfileSearch() {
         return;
       }
 
-      setProfiles(data || []);
+      // Filtrer les informations en fonction des paramètres de confidentialité
+      const filteredProfiles = data?.map(profile => ({
+        ...profile,
+        email: profile.privacy_enabled && profile.id !== user?.id ? null : profile.email,
+        phone: profile.privacy_enabled && profile.id !== user?.id ? null : profile.phone,
+      })) || [];
+
+      setProfiles(filteredProfiles);
     } catch (error) {
       console.error('Error:', error);
       setProfiles([]);
