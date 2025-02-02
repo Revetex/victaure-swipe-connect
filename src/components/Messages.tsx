@@ -71,8 +71,20 @@ function MessagesWithQuery({
     }
   };
 
+  // Convert chat messages to the Message type format
+  const formattedChatMessages: Message[] = chatMessages.map(msg => ({
+    id: msg.id,
+    content: msg.content,
+    sender_id: msg.sender === 'user' ? 'user' : 'assistant',
+    receiver_id: msg.sender === 'user' ? 'assistant' : 'user',
+    read: true,
+    created_at: msg.created_at || new Date().toISOString(),
+    thinking: msg.thinking,
+    timestamp: msg.timestamp
+  }));
+
   // Determine which messages to show based on conversation type
-  const displayMessages = selectedReceiver ? messages : chatMessages;
+  const displayMessages = selectedReceiver ? messages : formattedChatMessages;
 
   return showConversation ? (
     <MessagesContent
@@ -90,7 +102,7 @@ function MessagesWithQuery({
   ) : (
     <MessagesList
       messages={messages}
-      chatMessages={chatMessages}
+      chatMessages={formattedChatMessages}
       onSelectConversation={handleSelectConversation}
     />
   );

@@ -12,6 +12,8 @@ export interface Message {
   read: boolean;
   created_at: string;
   sender?: MessageSender;
+  timestamp?: Date; // Added for compatibility with chat messages
+  thinking?: boolean; // Added for compatibility with chat messages
 }
 
 export interface Receiver {
