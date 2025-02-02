@@ -52,7 +52,7 @@ function MessagesWithQuery({
       if (type === "assistant") {
         setSelectedReceiver(null);
         setShowConversation(true);
-      } else if (type === "user" && receiver) {
+      } else if (type === "user" && receiver && receiver.id) {
         const unreadMessages = messages.filter(
           m => m.sender?.id === receiver.id && !m.read
         );
@@ -80,15 +80,17 @@ function MessagesWithQuery({
     read: true,
     created_at: msg.created_at || new Date().toISOString(),
     thinking: msg.thinking,
-    timestamp: msg.timestamp?.toISOString()
+    timestamp: msg.timestamp?.toISOString(),
+    sender: msg.sender === 'user' ? undefined : {
+      id: 'assistant',
+      full_name: 'M. Victaure',
+      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+    }
   }));
-
-  // Determine which messages to show based on conversation type
-  const displayMessages = selectedReceiver ? messages : formattedChatMessages;
 
   return showConversation ? (
     <MessagesContent
-      messages={displayMessages}
+      messages={selectedReceiver ? messages : formattedChatMessages}
       inputMessage={inputMessage}
       isListening={isListening}
       isThinking={isThinking}
