@@ -9,10 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-// Create a client
 const queryClient = new QueryClient();
 
-// Separate component for messages content
 function MessagesWithQuery({
   chatMessages,
   inputMessage,
@@ -40,7 +38,7 @@ function MessagesWithQuery({
   selectedReceiver: any;
   setSelectedReceiver: (receiver: any) => void;
 }) {
-  const { messages, markAsRead } = useMessages();
+  const { messages } = useMessages();
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -65,29 +63,6 @@ function MessagesWithQuery({
     }
   };
 
-  const handleMarkAsRead = async (messageId: string) => {
-    try {
-      await markAsRead.mutate(messageId);
-    } catch (error) {
-      console.error("Error marking message as read:", error);
-      toast.error("Erreur lors du marquage du message comme lu");
-    }
-  };
-
-  const handleSendMessageWithFeedback = async (message: string) => {
-    if (!message.trim()) {
-      toast.error("Veuillez entrer un message");
-      return;
-    }
-
-    try {
-      await handleSendMessage(message);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
-    }
-  };
-
   // Determine which messages to show based on conversation type
   const displayMessages = selectedReceiver ? messages : chatMessages;
 
@@ -97,7 +72,7 @@ function MessagesWithQuery({
       inputMessage={inputMessage}
       isListening={isListening}
       isThinking={isThinking}
-      onSendMessage={handleSendMessageWithFeedback}
+      onSendMessage={handleSendMessage}
       onVoiceInput={handleVoiceInput}
       setInputMessage={setInputMessage}
       onClearChat={clearChat}
@@ -109,7 +84,6 @@ function MessagesWithQuery({
       messages={messages}
       chatMessages={chatMessages}
       onSelectConversation={handleSelectConversation}
-      onMarkAsRead={handleMarkAsRead}
     />
   );
 }
@@ -130,7 +104,7 @@ export function Messages() {
   const [selectedReceiver, setSelectedReceiver] = useState<any>(null);
   const location = useLocation();
 
-  // Fetch receiver profile when conversation is opened from URL
+  // Only open conversation if accessing a specific message URL
   useEffect(() => {
     const fetchReceiverFromUrl = async () => {
       const path = location.pathname;

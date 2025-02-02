@@ -11,15 +11,13 @@ import { AssistantMessage } from "./AssistantMessage";
 interface MessagesListProps {
   messages: any[];
   chatMessages: Message[];
-  onSelectConversation: (type: "assistant") => void;
-  onMarkAsRead: (messageId: string) => void;
+  onSelectConversation: (type: "assistant" | "user", receiver?: any) => void;
 }
 
 export function MessagesList({
   messages,
   chatMessages,
   onSelectConversation,
-  onMarkAsRead,
 }: MessagesListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -48,16 +46,14 @@ export function MessagesList({
 
       if (!existingMessages || existingMessages.length === 0) {
         // Create initial message to start conversation
-        const { data: message, error: insertError } = await supabase
+        const { error: insertError } = await supabase
           .from('messages')
           .insert({
             sender_id: user.id,
             receiver_id: friendId,
             content: "👋 Bonjour!",
             read: false
-          })
-          .select()
-          .single();
+          });
 
         if (insertError) throw insertError;
       }
@@ -75,23 +71,7 @@ export function MessagesList({
     message?.sender?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-  console.log("Messages disponibles:", messages); // For debugging
   const unreadCount = messages?.filter((message) => !message.read).length || 0;
-
-  const handleAcceptMessage = async (message: any) => {
-    try {
-      // Mark message as read
-      await onMarkAsRead(message.id);
-      
-      // Navigate to the conversation with the sender
-      navigate(`/dashboard/messages/${message.sender_id}`);
-      
-      toast.success("Message accepté");
-    } catch (error) {
-      console.error("Error accepting message:", error);
-      toast.error("Erreur lors de l'acceptation du message");
-    }
-  };
 
   return (
     <div className="h-full flex flex-col">
@@ -115,7 +95,6 @@ export function MessagesList({
             <UserMessage
               key={message.id}
               message={message}
-              onMarkAsRead={() => handleAcceptMessage(message)}
             />
           ))}
 
