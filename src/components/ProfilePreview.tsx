@@ -21,15 +21,16 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: existingRequest } = await supabase
+      // Check for existing friend request in both directions
+      const { data: existingRequests } = await supabase
         .from('friend_requests')
         .select('*')
-        .eq('sender_id', user.id)
-        .eq('receiver_id', profile.id)
-        .single();
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`);
 
-      if (existingRequest) {
-        setIsFriendRequestSent(true);
+      if (existingRequests && existingRequests.length > 0) {
+        const request = existingRequests[0];
+        setIsFriendRequestSent(request.sender_id === user.id);
       }
     };
 
@@ -50,41 +51,66 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
         return;
       }
 
-      if (isFriendRequestSent) {
-        // Delete the friend request
-        const { error: deleteError } = await supabase
-          .from('friend_requests')
-          .delete()
-          .eq('sender_id', user.id)
-          .eq('receiver_id', profile.id);
+      // Check for existing friend request in both directions
+      const { data: existingRequests } = await supabase
+        .from('friend_requests')
+        .select('*')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`);
 
-        if (deleteError) throw deleteError;
+      if (existingRequests && existingRequests.length > 0) {
+        const request = existingRequests[0];
+        
+        // If the current user sent the request, they can cancel it
+        if (request.sender_id === user.id) {
+          const { error: deleteError } = await supabase
+            .from('friend_requests')
+            .delete()
+            .eq('id', request.id);
 
-        toast.success("Demande d'ami annulée");
-        setIsFriendRequestSent(false);
+          if (deleteError) throw deleteError;
+
+          toast.success("Demande d'ami annulée");
+          setIsFriendRequestSent(false);
+        } else {
+          // If they received the request, inform them
+          toast.info("Cette personne vous a déjà envoyé une demande d'ami");
+        }
+        return;
+      }
+
+      // Create the friend request
+      const { error: requestError } = await supabase
+        .from('friend_requests')
+        .insert({
+          sender_id: user.id,
+          receiver_id: profile.id,
+          status: 'pending'
+        });
+
+      if (requestError) {
+        console.error('Error creating friend request:', requestError);
+        if (requestError.code === '23505') {
+          toast.error("Une demande d'ami existe déjà");
+          return;
+        }
+        throw requestError;
+      }
+
+      // Create a notification for the receiver
+      const { error: notifError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: profile.id,
+          title: "Nouvelle demande d'ami",
+          message: `${user.email} souhaite vous ajouter comme ami`,
+        });
+
+      if (notifError) {
+        console.error('Error creating notification:', notifError);
+        // Don't throw here, as the friend request was successful
+        toast.error("Impossible d'envoyer la notification");
       } else {
-        // Create the friend request
-        const { error: requestError } = await supabase
-          .from('friend_requests')
-          .insert({
-            sender_id: user.id,
-            receiver_id: profile.id,
-            status: 'pending'
-          });
-
-        if (requestError) throw requestError;
-
-        // Create a notification for the receiver
-        const { error: notifError } = await supabase
-          .from('notifications')
-          .insert({
-            user_id: profile.id,
-            title: "Nouvelle demande d'ami",
-            message: `${user.email} souhaite vous ajouter comme ami`,
-          });
-
-        if (notifError) throw notifError;
-
         toast.success("Demande d'ami envoyée");
         setIsFriendRequestSent(true);
       }
