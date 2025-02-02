@@ -46,6 +46,8 @@ export function ProfileSearch() {
     setSelectedProfile(profile);
   };
 
+  const shouldShowResults = isInputFocused && search.length > 0;
+
   return (
     <>
       <div className="w-full max-w-2xl mx-auto">
@@ -61,7 +63,7 @@ export function ProfileSearch() {
               onBlur={() => setIsInputFocused(false)}
             />
           </div>
-          {isInputFocused && search && (
+          {shouldShowResults && (
             <CommandList className="max-h-[300px] overflow-y-auto p-2">
               {isLoading ? (
                 <div className="flex justify-center p-4">
