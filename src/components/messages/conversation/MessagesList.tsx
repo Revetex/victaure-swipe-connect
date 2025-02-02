@@ -13,7 +13,6 @@ interface MessagesListProps {
   chatMessages: any[];
   onSelectConversation: (type: "assistant") => void;
   onMarkAsRead: (messageId: string) => void;
-  onNewConversation: () => void;
 }
 
 export function MessagesList({
@@ -21,7 +20,6 @@ export function MessagesList({
   chatMessages,
   onSelectConversation,
   onMarkAsRead,
-  onNewConversation
 }: MessagesListProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -30,7 +28,8 @@ export function MessagesList({
   };
 
   const handleNewConversation = () => {
-    onNewConversation();
+    onSelectConversation("assistant");
+    toast.success("Nouvelle conversation démarrée");
   };
 
   const filteredMessages = messages.filter(message => 
