@@ -24,7 +24,7 @@ function MessagesWithQuery({
   selectedReceiver,
   setSelectedReceiver
 }: {
-  chatMessages: Message[];
+  chatMessages: any[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
@@ -80,7 +80,7 @@ function MessagesWithQuery({
     read: true,
     created_at: msg.created_at || new Date().toISOString(),
     thinking: msg.thinking,
-    timestamp: msg.timestamp
+    timestamp: msg.timestamp?.toISOString()
   }));
 
   // Determine which messages to show based on conversation type
