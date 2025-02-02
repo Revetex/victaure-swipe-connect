@@ -91,7 +91,7 @@ export function Messages() {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
       {showConversation ? (
         <MessagesContent
           messages={chatMessages}
@@ -113,10 +113,12 @@ export function Messages() {
             onMarkAsRead={handleMarkAsRead}
           />
           {selectedProfile && (
-            <ProfilePreview 
-              profile={selectedProfile} 
-              onClose={handleCloseProfile}
-            />
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50">
+              <ProfilePreview 
+                profile={selectedProfile} 
+                onClose={handleCloseProfile}
+              />
+            </div>
           )}
         </>
       )}
