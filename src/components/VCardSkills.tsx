@@ -21,14 +21,6 @@ export function VCardSkills({
 }: VCardSkillsProps) {
   // Remove duplicates from skills array
   const uniqueSkills = profile.skills ? Array.from(new Set(profile.skills)) : [];
-  
-  // Update profile if we found and removed duplicates
-  if (profile.skills && profile.skills.length !== uniqueSkills.length) {
-    setProfile({
-      ...profile,
-      skills: uniqueSkills
-    });
-  }
 
   return (
     <VCardSection
@@ -74,7 +66,7 @@ export function VCardSkills({
       {isEditing && (
         <div className="mt-4">
           <CategorizedSkills
-            profile={{ ...profile, skills: uniqueSkills }}
+            profile={profile}
             isEditing={isEditing}
             onRemoveSkill={handleRemoveSkill}
           />
