@@ -62,7 +62,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
       icon={<Briefcase className="h-4 w-4" />}
       variant="education"
     >
-      <div className="space-y-6 w-full">
+      <div className="space-y-6 w-full px-4">
         {isEditing ? (
           <Reorder.Group axis="y" values={profile.experiences || []} onReorder={handleReorder}>
             {(profile.experiences || []).map((exp: Experience) => (
@@ -76,8 +76,8 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                   <div className="absolute top-4 left-2 cursor-move touch-none">
                     <GripVertical className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                   </div>
-                  <div className="ml-6 w-full space-y-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full">
+                  <div className="ml-6 space-y-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                       <Building2 className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
                       <Input
                         value={exp.company}
