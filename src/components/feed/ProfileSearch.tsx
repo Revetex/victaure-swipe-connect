@@ -73,6 +73,15 @@ export function ProfileSearch() {
                 {profile.full_name}
               </Command.Item>
             ))}
+            {profiles.length === 0 && (
+              <Command.Item
+                value="no-results"
+                className="px-4 py-2 text-muted-foreground"
+                disabled
+              >
+                Aucun résultat
+              </Command.Item>
+            )}
           </Command.List>
         )}
       </Command>
