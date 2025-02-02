@@ -31,6 +31,11 @@ export function Messages() {
     setShowConversation
   } = useReceiver();
 
+  // Filter out self-conversations before passing to MessageList
+  const filteredMessages = messages?.filter(message => 
+    message.sender_id !== message.receiver_id
+  ) || [];
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="h-full flex flex-col">
@@ -47,7 +52,7 @@ export function Messages() {
           clearChat={clearChat}
           selectedReceiver={selectedReceiver}
           setSelectedReceiver={setSelectedReceiver}
-          messages={messages as Message[]}
+          messages={filteredMessages}
           markAsRead={markAsRead}
           navigate={navigate}
         />

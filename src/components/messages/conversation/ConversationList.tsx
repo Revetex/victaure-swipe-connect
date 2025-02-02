@@ -23,7 +23,6 @@ export function ConversationList({
   const handleClearChat = async (messageId?: string) => {
     try {
       if (messageId) {
-        // Delete specific conversation
         const { error } = await supabase
           .from('messages')
           .delete()
@@ -32,7 +31,6 @@ export function ConversationList({
         if (error) throw error;
         toast.success("Conversation effacée avec succès");
       } else if (onClearChat) {
-        // Clear AI chat
         onClearChat();
       }
     } catch (error) {
@@ -40,11 +38,6 @@ export function ConversationList({
       toast.error("Erreur lors de l'effacement de la conversation");
     }
   };
-
-  // Filter out self-conversations
-  const filteredMessages = messages.filter(message => 
-    message.sender_id !== message.receiver_id
-  );
 
   return (
     <ScrollArea className="flex-1">
@@ -72,7 +65,7 @@ export function ConversationList({
           </Button>
         </div>
         
-        {filteredMessages.map((message) => (
+        {messages.map((message) => (
           <div 
             key={message.id}
             className="group relative"
@@ -97,7 +90,7 @@ export function ConversationList({
           </div>
         ))}
 
-        {filteredMessages.length === 0 && (
+        {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <p>Aucune conversation pour le moment</p>
             <p className="text-sm">Commencez une nouvelle conversation!</p>
