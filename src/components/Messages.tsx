@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Message } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
+import { Message as ChatMessage } from "@/types/chat/messageTypes";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,7 @@ function MessagesWithQuery({
   selectedReceiver,
   setSelectedReceiver
 }: {
-  chatMessages: any[];
+  chatMessages: ChatMessage[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
@@ -34,8 +35,8 @@ function MessagesWithQuery({
   handleVoiceInput: () => void;
   setInputMessage: (message: string) => void;
   clearChat: () => void;
-  selectedReceiver: any;
-  setSelectedReceiver: (receiver: any) => void;
+  selectedReceiver: Receiver | null;
+  setSelectedReceiver: (receiver: Receiver | null) => void;
 }) {
   const { messages, markAsRead } = useMessages();
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ function MessagesWithQuery({
     navigate('/dashboard/messages');
   };
 
-  const handleSelectConversation = async (type: "assistant" | "user", receiver?: any) => {
+  const handleSelectConversation = async (type: "assistant" | "user", receiver?: Receiver) => {
     try {
       if (type === "assistant") {
         setSelectedReceiver(null);
