@@ -69,7 +69,7 @@ export function DashboardContent({
     switch (currentPage) {
       case 1: // Profile
         return (
-          <div className="max-w-7xl mx-auto">
+          <div className="w-full">
             <VCard 
               onEditStateChange={onEditStateChange}
               onRequestChat={onRequestChat}
@@ -162,7 +162,7 @@ export function DashboardContent({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="container mx-auto px-4 py-8"
+      className="w-full"
     >
       {renderContent()}
     </motion.div>
