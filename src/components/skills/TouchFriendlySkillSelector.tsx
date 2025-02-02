@@ -1,7 +1,6 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus } from "lucide-react";
 import { skillCategories } from "@/data/skills";
 import { CategoryIcon } from "./CategoryIcon";
 import { Input } from "@/components/ui/input";
@@ -14,6 +13,7 @@ interface TouchFriendlySkillSelectorProps {
 
 export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: TouchFriendlySkillSelectorProps) {
   const [customSkill, setCustomSkill] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleCustomSkillSubmit = () => {
     if (customSkill.trim() && !existingSkills.includes(customSkill.trim())) {
@@ -23,14 +23,7 @@ export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: To
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 gap-2">
-          <Plus className="h-4 w-4" />
-          Ajouter une compétence
-        </Button>
-      </DialogTrigger>
-
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Sélectionner une compétence</DialogTitle>
