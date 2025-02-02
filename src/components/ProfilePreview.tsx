@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { UserRound, MessageCircle, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -13,11 +14,38 @@ interface ProfilePreviewProps {
 export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   const navigate = useNavigate();
 
-  const handleSendMessage = () => {
-    // TODO: Implement messaging functionality
-    navigate(`/dashboard/messages/${profile.id}`);
-    toast.success("Redirection vers la messagerie");
-    onClose();
+  const handleSendMessage = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Vous devez être connecté pour envoyer un message");
+        return;
+      }
+
+      const { data: message, error } = await supabase
+        .from('messages')
+        .insert({
+          sender_id: session.user.id,
+          receiver_id: profile.id,
+          content: "Nouvelle conversation",
+          read: false
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating message:", error);
+        toast.error("Erreur lors de la création de la conversation");
+        return;
+      }
+
+      navigate(`/dashboard/messages/${message.id}`);
+      toast.success("Conversation créée avec succès");
+      onClose();
+    } catch (error) {
+      console.error("Error in handleMessage:", error);
+      toast.error("Une erreur est survenue");
+    }
   };
 
   const handleFriendRequest = () => {

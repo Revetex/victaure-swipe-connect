@@ -42,7 +42,8 @@ export function MessagesList({
         return acc;
       }, {});
     },
-    enabled: messages.length > 0 && !!currentProfile
+    enabled: messages.length > 0 && !!currentProfile,
+    initialData: {}
   });
 
   const handleSelectMessage = async (message: any) => {
