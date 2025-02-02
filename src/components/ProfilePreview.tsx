@@ -1,9 +1,10 @@
 import { UserProfile } from "@/types/profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserRound, MessageCircle, UserPlus, Briefcase, MapPin, Mail } from "lucide-react";
+import { UserRound, MessageCircle, UserPlus, Briefcase, MapPin, Mail, UserMinus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useState } from "react";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -12,6 +13,7 @@ interface ProfilePreviewProps {
 
 export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   const navigate = useNavigate();
+  const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
 
   const handleSendMessage = () => {
     navigate(`/dashboard/messages/${profile.id}`);
@@ -20,8 +22,13 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   };
 
   const handleFriendRequest = () => {
-    toast.success("Demande d'ami envoyée");
-    onClose();
+    if (isFriendRequestSent) {
+      toast.success("Demande d'ami annulée");
+      setIsFriendRequestSent(false);
+    } else {
+      toast.success("Demande d'ami envoyée");
+      setIsFriendRequestSent(true);
+    }
   };
 
   return (
@@ -86,11 +93,20 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
 
           <div className="flex gap-3 w-full">
             <Button 
-              className="flex-1 bg-primary hover:bg-primary/90"
+              className={`flex-1 ${isFriendRequestSent ? 'bg-destructive hover:bg-destructive/90' : 'bg-primary hover:bg-primary/90'}`}
               onClick={handleFriendRequest}
             >
-              <UserPlus className="h-4 w-4 mr-2" />
-              Ajouter
+              {isFriendRequestSent ? (
+                <>
+                  <UserMinus className="h-4 w-4 mr-2" />
+                  Annuler
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Ajouter
+                </>
+              )}
             </Button>
             <Button 
               className="flex-1"
