@@ -85,8 +85,8 @@ function MessagesWithQuery({
     }
   };
 
-  const formattedChatMessages = formatChatMessages(chatMessages);
-  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
+  const formattedMessages = formatChatMessages(chatMessages);
+  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedMessages : messages;
   const filteredMessages = filterMessages(currentMessages, selectedReceiver);
 
   return showConversation ? (
@@ -105,7 +105,7 @@ function MessagesWithQuery({
   ) : (
     <ConversationList
       messages={messages}
-      chatMessages={formattedChatMessages}
+      chatMessages={formattedMessages}
       onSelectConversation={handleSelectConversation}
     />
   );
