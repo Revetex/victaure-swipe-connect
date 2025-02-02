@@ -50,7 +50,11 @@ function MessagesWithQuery({
   const handleSelectConversation = async (type: "assistant" | "user", receiver?: Receiver) => {
     try {
       if (type === "assistant") {
-        setSelectedReceiver(null);
+        setSelectedReceiver({
+          id: 'assistant',
+          full_name: 'M. Victaure',
+          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+        });
         setShowConversation(true);
       } else if (type === "user" && receiver && receiver.id) {
         const unreadMessages = messages.filter(
