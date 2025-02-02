@@ -1,5 +1,4 @@
 import { Message } from "@/types/messages";
-import { UserMessage } from "./UserMessage";
 import { AssistantMessage } from "./AssistantMessage";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -24,16 +23,6 @@ export function ConversationList({
           />
         </div>
         
-        {messages.map((message) => (
-          <div 
-            key={message.id}
-            onClick={() => onSelectConversation("user", message.sender)}
-            className="cursor-pointer"
-          >
-            <UserMessage message={message} />
-          </div>
-        ))}
-
         {messages?.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <p>Aucune conversation pour le moment</p>
