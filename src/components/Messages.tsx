@@ -5,6 +5,8 @@ import { MessagesList } from "./messages/conversation/MessagesList";
 import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -20,7 +22,9 @@ function MessagesWithQuery({
   handleSendMessage,
   handleVoiceInput,
   setInputMessage,
-  clearChat
+  clearChat,
+  selectedReceiver,
+  setSelectedReceiver
 }: {
   chatMessages: any[];
   inputMessage: string;
@@ -32,15 +36,21 @@ function MessagesWithQuery({
   handleVoiceInput: () => void;
   setInputMessage: (message: string) => void;
   clearChat: () => void;
+  selectedReceiver: any;
+  setSelectedReceiver: (receiver: any) => void;
 }) {
   const { messages, markAsRead } = useMessages();
 
   const handleBack = () => {
     setShowConversation(false);
+    setSelectedReceiver(null);
   };
 
-  const handleSelectConversation = async (type: "assistant") => {
+  const handleSelectConversation = async (type: "assistant" | "user", receiver?: any) => {
     try {
+      if (type === "user" && receiver) {
+        setSelectedReceiver(receiver);
+      }
       setShowConversation(true);
     } catch (error) {
       console.error("Error selecting conversation:", error);
@@ -82,6 +92,7 @@ function MessagesWithQuery({
       setInputMessage={setInputMessage}
       onClearChat={clearChat}
       onBack={handleBack}
+      receiver={selectedReceiver}
     />
   ) : (
     <MessagesList
@@ -106,6 +117,31 @@ export function Messages() {
   } = useChat();
 
   const [showConversation, setShowConversation] = useState(false);
+  const [selectedReceiver, setSelectedReceiver] = useState<any>(null);
+
+  // Fetch receiver profile when conversation is opened from URL
+  useEffect(() => {
+    const fetchReceiverFromUrl = async () => {
+      const path = window.location.pathname;
+      const match = path.match(/\/messages\/([^\/]+)/);
+      
+      if (match) {
+        const receiverId = match[1];
+        const { data: receiver } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', receiverId)
+          .single();
+
+        if (receiver) {
+          setSelectedReceiver(receiver);
+          setShowConversation(true);
+        }
+      }
+    };
+
+    fetchReceiverFromUrl();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -121,6 +157,8 @@ export function Messages() {
           handleVoiceInput={handleVoiceInput}
           setInputMessage={setInputMessage}
           clearChat={clearChat}
+          selectedReceiver={selectedReceiver}
+          setSelectedReceiver={setSelectedReceiver}
         />
       </div>
     </QueryClientProvider>
