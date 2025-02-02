@@ -1,20 +1,14 @@
 import { useChat } from "@/hooks/useChat";
 import { MessagesContent } from "./messages/MessagesContent";
-import { useState } from "react";
 import { MessagesList } from "./messages/conversation/MessagesList";
 import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useReceiver } from "@/hooks/useReceiver";
+import { Message } from "@/types/messages";
 
 const queryClient = new QueryClient();
-
-const isValidUUID = (uuid: string) => {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(uuid);
-};
 
 function MessagesWithQuery({
   chatMessages,
@@ -30,7 +24,7 @@ function MessagesWithQuery({
   selectedReceiver,
   setSelectedReceiver
 }: {
-  chatMessages: any[];
+  chatMessages: Message[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
@@ -114,59 +108,12 @@ export function Messages() {
     clearChat
   } = useChat();
 
-  const [showConversation, setShowConversation] = useState(false);
-  const [selectedReceiver, setSelectedReceiver] = useState<any>(null);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchReceiverFromUrl = async () => {
-      const path = location.pathname;
-      const match = path.match(/\/messages\/([^\/]+)/);
-      
-      if (match && match[1]) {
-        const receiverId = match[1];
-        
-        // Validate UUID before making the query
-        if (!isValidUUID(receiverId)) {
-          console.error("Invalid UUID format:", receiverId);
-          setShowConversation(false);
-          setSelectedReceiver(null);
-          navigate('/dashboard/messages');
-          return;
-        }
-
-        try {
-          const { data: receiver, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', receiverId)
-            .maybeSingle();
-
-          if (error) throw error;
-
-          if (receiver) {
-            setSelectedReceiver(receiver);
-            setShowConversation(true);
-          } else {
-            // Handle case where receiver is not found
-            toast.error("Utilisateur non trouvé");
-            navigate('/dashboard/messages');
-          }
-        } catch (error) {
-          console.error("Error fetching receiver:", error);
-          toast.error("Erreur lors de la récupération du profil");
-          navigate('/dashboard/messages');
-        }
-      } else {
-        // If no receiver ID in URL, show the messages list
-        setShowConversation(false);
-        setSelectedReceiver(null);
-      }
-    };
-
-    fetchReceiverFromUrl();
-  }, [location.pathname, navigate]);
+  const { 
+    receiver: selectedReceiver, 
+    setReceiver: setSelectedReceiver,
+    showConversation,
+    setShowConversation
+  } = useReceiver();
 
   return (
     <QueryClientProvider client={queryClient}>
