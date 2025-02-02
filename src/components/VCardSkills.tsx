@@ -23,7 +23,7 @@ export function VCardSkills({
   return (
     <VCardSection
       title="Compétences"
-      icon={<Code className="h-4 w-4 text-muted-foreground" />}
+      icon={<Code className="h-3 w-3 text-muted-foreground" />}
     >
       <div className="w-full space-y-4">
         <motion.div 
@@ -37,18 +37,17 @@ export function VCardSkills({
                 key={skill}
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                whileHover={{ scale: 1.05 }}
-                className="relative group"
+                className="relative"
               >
                 <Badge 
                   variant="secondary"
-                  className="px-3 py-1.5 text-sm bg-secondary/40 hover:bg-secondary/60 text-secondary-foreground transition-colors duration-200"
+                  className="px-2 py-1 text-xs bg-secondary/40 text-secondary-foreground"
                 >
                   {skill}
                   {isEditing && (
                     <button
                       onClick={() => handleRemoveSkill(skill)}
-                      className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      className="ml-1.5"
                       aria-label="Supprimer la compétence"
                     >
                       <X className="h-3 w-3" />

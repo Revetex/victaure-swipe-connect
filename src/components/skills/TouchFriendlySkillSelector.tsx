@@ -30,7 +30,7 @@ export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: To
         className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 gap-2"
         onClick={() => setIsOpen(true)}
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-3 w-3" />
         Ajouter une compétence
       </Button>
 
@@ -72,9 +72,7 @@ export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: To
                       <Button
                         key={skill}
                         variant="outline"
-                        className={`text-sm justify-start ${
-                          existingSkills.includes(skill) ? 'opacity-50' : ''
-                        }`}
+                        className="text-xs justify-start"
                         onClick={() => onSkillSelect(skill)}
                         disabled={existingSkills.includes(skill)}
                       >
