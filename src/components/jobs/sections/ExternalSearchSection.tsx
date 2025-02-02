@@ -1,72 +1,41 @@
-import { Button } from "@/components/ui/button";
-import { Search, Loader2 } from "lucide-react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { GoogleSearchBox } from "../../../components/google-search/GoogleSearchBox";
 
 interface ExternalSearchSectionProps {
-  isLoading: boolean;
-  hasError: boolean;
-  onRetry: () => void;
+  isLoading?: boolean;
+  hasError?: boolean;
+  errorMessage?: string;
 }
 
-export function ExternalSearchSection({ isLoading, hasError, onRetry }: ExternalSearchSectionProps) {
-  const { toast } = useToast();
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
-
+export function ExternalSearchSection({
+  isLoading,
+  hasError,
+  errorMessage,
+}: ExternalSearchSectionProps) {
   useEffect(() => {
-    if (!searchContainerRef.current) return;
-
-    const script = document.createElement('script');
-    script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
-    script.async = true;
-    scriptRef.current = script;
-
-    const searchDiv = document.createElement('div');
-    searchDiv.className = 'gcse-search';
-    searchContainerRef.current.innerHTML = '';
-    searchContainerRef.current.appendChild(searchDiv);
-
-    document.head.appendChild(script);
-
-    script.onerror = () => {
-      toast({
-        variant: "destructive",
-        title: "Erreur de chargement",
-        description: "Impossible de charger le moteur de recherche. Veuillez réessayer."
-      });
-    };
-
+    // Clear search results when component unmounts
     return () => {
-      if (scriptRef.current && document.head.contains(scriptRef.current)) {
-        document.head.removeChild(scriptRef.current);
-      }
-      if (searchContainerRef.current) {
-        searchContainerRef.current.innerHTML = '';
+      const searchElement = document.querySelector('.gcse-search') as HTMLElement;
+      if (searchElement) {
+        // Clear the search input
+        const inputElement = searchElement.querySelector('input[type="text"]') as HTMLInputElement;
+        if (inputElement) {
+          inputElement.value = '';
+        }
+        // Clear the results
+        const resultsElement = document.querySelector('.gsc-results-wrapper-visible');
+        if (resultsElement) {
+          resultsElement.innerHTML = '';
+        }
       }
     };
-  }, [toast]);
+  }, []);
 
   if (hasError) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4 border border-destructive/50 rounded-lg">
-        <Search className="h-12 w-12 text-destructive" />
-        <p className="text-muted-foreground text-center">
-          Une erreur est survenue lors du chargement de la recherche
-        </p>
-        <Button onClick={onRetry} variant="outline">
-          Réessayer
-        </Button>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 min-h-[200px] p-4">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="text-muted-foreground">Chargement de la recherche...</p>
+      <div className="text-center p-4 text-red-500">
+        {errorMessage || "Une erreur s'est produite lors de la recherche"}
       </div>
     );
   }
@@ -77,9 +46,9 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full h-full"
+          className="w-full"
         >
-          <div ref={searchContainerRef} className="w-full h-full" />
+          <GoogleSearchBox />
         </motion.div>
       </div>
       

@@ -1,6 +1,5 @@
 import { UserProfile } from "@/types/profile";
 import { VCardBio } from "../VCardBio";
-import { VCardContact } from "../VCardContact";
 import { VCardContent } from "./VCardContent";
 import { VCardEducation } from "../VCardEducation";
 import { VCardExperiences } from "./VCardExperiences";
@@ -36,15 +35,6 @@ export function VCardSections({
       case 'bio':
         return (
           <VCardBio
-            key={uniqueKey}
-            profile={profile}
-            isEditing={isEditing}
-            setProfile={setProfile}
-          />
-        );
-      case 'contact':
-        return (
-          <VCardContact
             key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
