@@ -5,7 +5,8 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { AnimatePresence } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface MessagesContentProps {
   messages: any[];
@@ -37,6 +38,16 @@ export function MessagesContent({
 }: MessagesContentProps) {
   const { profile } = useProfile();
   const isAIChat = !receiver?.full_name;
+
+  const handleClearChat = () => {
+    try {
+      onClearChat();
+      toast.success("Conversation effacée avec succès");
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      toast.error("Erreur lors de l'effacement de la conversation");
+    }
+  };
 
   if (isAIChat) {
     return (
@@ -72,6 +83,16 @@ export function MessagesContent({
 
         <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-24">
           <div className="max-w-5xl mx-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleClearChat}
+                className="hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
             <ChatInput
               value={inputMessage}
               onChange={setInputMessage}
@@ -108,6 +129,14 @@ export function MessagesContent({
                 </h2>
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleClearChat}
+              className="shrink-0 hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
