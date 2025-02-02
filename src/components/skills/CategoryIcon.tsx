@@ -1,4 +1,4 @@
-import { Code, Palette, Briefcase, Hammer, Users, Wrench, Folder } from "lucide-react";
+import { Code, Palette, Briefcase, Wrench, Users, Folder } from "lucide-react";
 
 interface CategoryIconProps {
   category: string;
@@ -15,8 +15,6 @@ export function CategoryIcon({ category, className }: CategoryIconProps) {
       return <Palette className={`${defaultClass} text-pink-600 dark:text-pink-400`} />;
     case "gestion":
       return <Briefcase className={`${defaultClass} text-blue-600 dark:text-blue-400`} />;
-    case "construction":
-      return <Hammer className={`${defaultClass} text-orange-600 dark:text-orange-400`} />;
     case "manuel":
       return <Wrench className={`${defaultClass} text-green-600 dark:text-green-400`} />;
     case "soft skills":

@@ -40,7 +40,10 @@ export function SkillEditor({
         onValueChange={setSelectedCategory}
       >
         <SelectTrigger className="w-full sm:w-[200px] bg-card">
-          <SelectValue placeholder="Catégorie" />
+          <div className="flex items-center gap-2">
+            <CategoryIcon category={selectedCategory} />
+            <SelectValue placeholder="Catégorie" />
+          </div>
         </SelectTrigger>
         <SelectContent>
           {Object.keys(skillCategories).map((category) => (

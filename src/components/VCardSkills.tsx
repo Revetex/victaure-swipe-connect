@@ -1,10 +1,9 @@
 import { VCardSection } from "./VCardSection";
-import { Code } from "lucide-react";
+import { Code, X } from "lucide-react";
 import { TouchFriendlySkillSelector } from "./skills/TouchFriendlySkillSelector";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
-import { X } from "lucide-react";
 
 interface VCardSkillsProps {
   profile: UserProfile;
@@ -24,7 +23,7 @@ export function VCardSkills({
   return (
     <VCardSection
       title="Compétences"
-      icon={<Code className="h-5 w-5 text-muted-foreground" />}
+      icon={<Code className="h-4 w-4 text-muted-foreground" />}
     >
       <div className="w-full space-y-4">
         <motion.div 
@@ -50,6 +49,7 @@ export function VCardSkills({
                     <button
                       onClick={() => handleRemoveSkill(skill)}
                       className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      aria-label="Supprimer la compétence"
                     >
                       <X className="h-3 w-3" />
                     </button>
