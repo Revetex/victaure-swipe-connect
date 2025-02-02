@@ -32,8 +32,8 @@ export function SearchHeader({ unreadCount, onSearch }: SearchHeaderProps) {
       const { data: friendRequests } = await supabase
         .from('friend_requests')
         .select(`
-          sender:sender_id(id, full_name, avatar_url, email),
-          receiver:receiver_id(id, full_name, avatar_url, email)
+          sender:profiles!friend_requests_sender_id_fkey(id, full_name, avatar_url, email),
+          receiver:profiles!friend_requests_receiver_id_fkey(id, full_name, avatar_url, email)
         `)
         .eq('status', 'accepted')
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
