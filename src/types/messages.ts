@@ -21,3 +21,7 @@ export interface Receiver {
   full_name?: string;
   avatar_url?: string;
 }
+
+export interface FormattedMessage extends Message {
+  sender: string | MessageSender;
+}

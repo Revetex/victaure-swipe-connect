@@ -7,7 +7,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { Message, Receiver } from "@/types/messages";
-import { Message as ChatMessage } from "@/types/chat/messageTypes";
+import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +25,7 @@ function MessagesWithQuery({
   selectedReceiver,
   setSelectedReceiver
 }: {
-  chatMessages: ChatMessage[];
+  chatMessages: Message[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
@@ -75,23 +75,6 @@ function MessagesWithQuery({
     }
   };
 
-  // Convert chat messages to the Message type format
-  const formattedChatMessages: Message[] = chatMessages.map(msg => ({
-    id: msg.id,
-    content: msg.content,
-    sender_id: msg.sender === 'user' ? 'user' : 'assistant',
-    receiver_id: msg.sender === 'user' ? 'assistant' : 'user',
-    read: true,
-    created_at: msg.created_at || new Date().toISOString(),
-    thinking: msg.thinking,
-    timestamp: msg.timestamp?.toISOString(),
-    sender: msg.sender === 'user' ? undefined : {
-      id: 'assistant',
-      full_name: 'M. Victaure',
-      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
-    }
-  }));
-
   const handleClearConversation = () => {
     try {
       clearChat();
@@ -102,11 +85,9 @@ function MessagesWithQuery({
     }
   };
 
+  const formattedChatMessages = formatChatMessages(chatMessages);
   const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
-  const filteredMessages = currentMessages.filter(msg => 
-    (msg.sender_id === selectedReceiver?.id && msg.receiver_id === 'user') ||
-    (msg.sender_id === 'user' && msg.receiver_id === selectedReceiver?.id)
-  );
+  const filteredMessages = filterMessages(currentMessages, selectedReceiver);
 
   return showConversation ? (
     <MessagesContent
