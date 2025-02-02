@@ -11,10 +11,10 @@ export function VCardSection({ title, icon, children, variant = "default" }: VCa
   return (
     <div className="w-full">
       <div className="flex items-center gap-2 px-4 mb-4">
-        {icon}
+        {icon && <span className="text-muted-foreground">{icon}</span>}
         <h2 className="text-lg font-semibold">{title}</h2>
       </div>
-      <div className="w-full">
+      <div className="w-full px-4 sm:px-0">
         {children}
       </div>
     </div>

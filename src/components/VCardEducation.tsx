@@ -60,7 +60,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
   return (
     <VCardSection
       title="Formation"
-      icon={<GraduationCap className="h-5 w-5" />}
+      icon={<GraduationCap className="h-4 w-4" />}
       variant="education"
     >
       <div className="w-full space-y-6 px-0">
@@ -70,54 +70,54 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="relative w-full bg-white/5 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-indigo-500/20"
+            className="relative w-full bg-background/50 backdrop-blur-sm rounded-lg p-4 space-y-4 border border-border/20"
           >
             {isEditing ? (
               <>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                    <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
                     <Input
                       value={edu.school_name}
                       onChange={(e) =>
                         handleEducationChange(edu.id, "school_name", e.target.value)
                       }
                       placeholder="Nom de l'école"
-                      className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                      className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                    <GraduationCap className="h-4 w-4 shrink-0 text-muted-foreground" />
                     <Input
                       value={edu.degree}
                       onChange={(e) =>
                         handleEducationChange(edu.id, "degree", e.target.value)
                       }
                       placeholder="Diplôme"
-                      className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                      className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
                       <Input
                         type="date"
                         value={edu.start_date || ""}
                         onChange={(e) =>
                           handleEducationChange(edu.id, "start_date", e.target.value)
                         }
-                        className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                        className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
                       />
                     </div>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
                       <Input
                         type="date"
                         value={edu.end_date || ""}
                         onChange={(e) =>
                           handleEducationChange(edu.id, "end_date", e.target.value)
                         }
-                        className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                        className="flex-1 bg-background/50 border-border/20 min-h-[44px]"
                       />
                     </div>
                   </div>
@@ -127,13 +127,14 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                       handleEducationChange(edu.id, "description", e.target.value)
                     }
                     placeholder="Description de la formation"
-                    className="w-full bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[100px]"
+                    className="w-full bg-background/50 border-border/20 min-h-[100px]"
                   />
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemoveEducation(edu.id)}
-                    className="absolute top-2 right-2 hover:bg-red-500/20 hover:text-red-500 transition-colors"
+                    className="absolute top-2 right-2 text-muted-foreground"
+                    aria-label="Supprimer la formation"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -142,18 +143,18 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             ) : (
               <>
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-foreground" />
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
                   <h3 className="font-medium">{edu.school_name}</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4 text-foreground" />
+                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
                   <p>{edu.degree}</p>
                 </div>
                 {edu.description && (
                   <p className="text-muted-foreground pl-6">{edu.description}</p>
                 )}
-                <div className="flex items-center gap-2 text-sm text-foreground">
-                  <Calendar className="h-4 w-4 text-foreground" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
                   <span>
                     {formatDate(edu.start_date)} - {formatDate(edu.end_date) || "Présent"}
                   </span>
@@ -171,7 +172,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
           >
             <Button
               onClick={handleAddEducation}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 text-white transition-colors duration-200 min-h-[44px]"
+              className="w-full bg-background hover:bg-background/90 text-foreground transition-colors duration-200 min-h-[44px]"
             >
               Ajouter une formation
             </Button>
