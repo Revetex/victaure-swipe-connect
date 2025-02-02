@@ -58,7 +58,7 @@ function MessagesWithQuery({
         setShowConversation(true);
       } else if (type === "user" && receiver) {
         const unreadMessages = messages.filter(
-          m => m.sender?.id === receiver.id && !m.read
+          m => m.sender_id === receiver.id && !m.read
         );
         
         for (const message of unreadMessages) {
