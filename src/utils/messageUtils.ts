@@ -5,8 +5,8 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
   return messages.map(msg => ({
     id: msg.id,
     content: msg.content,
-    sender_id: msg.sender === 'user' ? msg.sender_id || 'user' : 'assistant',
-    receiver_id: msg.sender === 'user' ? 'assistant' : msg.sender_id || 'user',
+    sender_id: msg.sender === 'user' ? msg.sender_id : 'assistant',
+    receiver_id: msg.sender === 'user' ? 'assistant' : msg.sender_id,
     read: false,
     created_at: msg.created_at || new Date().toISOString(),
     thinking: msg.thinking,
