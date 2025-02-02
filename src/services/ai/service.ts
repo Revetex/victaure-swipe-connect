@@ -70,9 +70,9 @@ export async function loadMessages(): Promise<Message[]> {
       content: msg.content,
       sender: msg.sender,
       timestamp: new Date(msg.created_at),
-      created_at: msg.created_at,
-      updated_at: msg.updated_at,
-      user_id: msg.user_id
+      sender_id: msg.sender === 'user' ? user.id : 'assistant',
+      receiver_id: msg.sender === 'user' ? 'assistant' : user.id,
+      read: true
     }));
   } catch (error) {
     console.error('Error loading messages:', error);

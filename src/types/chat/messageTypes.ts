@@ -8,7 +8,7 @@ export interface Message {
   updated_at?: string;
   sender_id: string;
   receiver_id: string;
-  read?: boolean;
+  read: boolean;
 }
 
 export interface ChatState {
