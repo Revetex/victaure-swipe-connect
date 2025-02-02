@@ -2,12 +2,12 @@ export interface Message {
   id: string;
   content: string;
   sender: string;
-  sender_id?: string;
-  receiver_id?: string;
   thinking?: boolean;
   timestamp: Date;
   created_at?: string;
   updated_at?: string;
+  sender_id?: string;
+  receiver_id?: string;
   read?: boolean;
 }
 

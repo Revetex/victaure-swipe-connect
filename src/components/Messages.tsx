@@ -6,25 +6,10 @@ import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Message, Receiver, MessageSender } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
 import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
 
 const queryClient = new QueryClient();
-
-interface MessagesWithQueryProps {
-  chatMessages: Message[];
-  inputMessage: string;
-  isListening: boolean;
-  isThinking: boolean;
-  showConversation: boolean;
-  setShowConversation: (show: boolean) => void;
-  handleSendMessage: (message: string) => Promise<void>;
-  handleVoiceInput: () => void;
-  setInputMessage: (message: string) => void;
-  clearChat: () => void;
-  selectedReceiver: Receiver | null;
-  setSelectedReceiver: (receiver: Receiver | null) => void;
-}
 
 function MessagesWithQuery({
   chatMessages,
@@ -39,7 +24,20 @@ function MessagesWithQuery({
   clearChat,
   selectedReceiver,
   setSelectedReceiver
-}: MessagesWithQueryProps) {
+}: {
+  chatMessages: Message[];
+  inputMessage: string;
+  isListening: boolean;
+  isThinking: boolean;
+  showConversation: boolean;
+  setShowConversation: (show: boolean) => void;
+  handleSendMessage: (message: string) => Promise<void>;
+  handleVoiceInput: () => void;
+  setInputMessage: (message: string) => void;
+  clearChat: () => void;
+  selectedReceiver: Receiver | null;
+  setSelectedReceiver: (receiver: Receiver | null) => void;
+}) {
   const { messages, markAsRead } = useMessages();
   const navigate = useNavigate();
 
@@ -52,16 +50,13 @@ function MessagesWithQuery({
   const handleSelectConversation = async (type: "assistant" | "user", receiver?: Receiver) => {
     try {
       if (type === "assistant") {
-        const assistantReceiver: Receiver = {
+        setSelectedReceiver({
           id: 'assistant',
           full_name: 'M. Victaure',
-          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-          online_status: true,
-          last_seen: new Date().toISOString()
-        };
-        setSelectedReceiver(assistantReceiver);
+          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+        });
         setShowConversation(true);
-      } else if (type === "user" && receiver && receiver.id) {
+      } else if (type === "user" && receiver) {
         const unreadMessages = messages.filter(
           m => m.sender?.id === receiver.id && !m.read
         );
@@ -90,36 +85,9 @@ function MessagesWithQuery({
     }
   };
 
-  const formattedMessages = messages?.map(msg => ({
-    ...msg,
-    sender: msg.sender || {
-      id: msg.sender_id,
-      full_name: "Unknown",
-      avatar_url: "",
-      online_status: false,
-      last_seen: new Date().toISOString()
-    } as MessageSender,
-    sender_id: msg.sender_id || (msg.sender ? msg.sender.id : ''),
-    receiver_id: msg.receiver_id || selectedReceiver?.id || ''
-  })) as Message[];
-
-  const formattedChatMessages = formatChatMessages(chatMessages).map(msg => ({
-    ...msg,
-    sender: typeof msg.sender === 'string' ? {
-      id: msg.sender,
-      full_name: msg.sender === 'assistant' ? 'M. Victaure' : 'You',
-      avatar_url: msg.sender === 'assistant' ? '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png' : '',
-      online_status: msg.sender === 'assistant',
-      last_seen: new Date().toISOString()
-    } as MessageSender : msg.sender,
-    sender_id: msg.sender_id || (typeof msg.sender === 'string' ? msg.sender : (msg.sender as MessageSender).id),
-    receiver_id: selectedReceiver?.id || 'assistant',
-    thinking: msg.thinking || false,
-    read: true
-  })) as Message[];
-
-  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : formattedMessages;
-  const filteredMessages = filterMessages(currentMessages || [], selectedReceiver);
+  const formattedChatMessages = formatChatMessages(chatMessages);
+  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
+  const filteredMessages = filterMessages(currentMessages, selectedReceiver);
 
   return showConversation ? (
     <MessagesContent
@@ -132,11 +100,11 @@ function MessagesWithQuery({
       setInputMessage={setInputMessage}
       onClearChat={handleClearConversation}
       onBack={handleBack}
-      profile={selectedReceiver}
+      receiver={selectedReceiver}
     />
   ) : (
     <ConversationList
-      messages={formattedMessages || []}
+      messages={messages}
       chatMessages={formattedChatMessages}
       onSelectConversation={handleSelectConversation}
     />
