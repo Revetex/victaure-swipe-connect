@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ConversationListProps {
   messages: Message[];
@@ -19,12 +20,21 @@ export function ConversationList({
   onSelectConversation,
   onClearChat
 }: ConversationListProps) {
-  const handleClearChat = () => {
+  const handleClearChat = async (messageId?: string) => {
     try {
-      if (onClearChat) {
+      if (messageId) {
+        // Delete specific conversation
+        const { error } = await supabase
+          .from('messages')
+          .delete()
+          .eq('id', messageId);
+
+        if (error) throw error;
+      } else if (onClearChat) {
+        // Clear AI chat
         onClearChat();
-        toast.success("Conversation effacée avec succès");
       }
+      toast.success("Conversation effacée avec succès");
     } catch (error) {
       console.error("Error clearing chat:", error);
       toast.error("Erreur lors de l'effacement de la conversation");
@@ -73,7 +83,7 @@ export function ConversationList({
               size="icon"
               onClick={(e) => {
                 e.stopPropagation();
-                handleClearChat();
+                handleClearChat(message.id);
               }}
               className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
             >
