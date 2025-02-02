@@ -24,8 +24,8 @@ export function Marketplace() {
   return (
     <div className="w-full">
       <div className="px-4 py-8">
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-6 w-full">
+          <div className="flex items-center justify-between w-full">
             <h1 className="text-2xl font-bold">Emplois disponibles</h1>
             <Sheet>
               <SheetTrigger asChild>
@@ -112,7 +112,7 @@ export function Marketplace() {
             </Sheet>
           </div>
 
-          <div className="w-full">
+          <div className="w-full -mx-4 px-4 md:mx-0 md:px-0">
             <ExternalSearchSection
               isLoading={isExternalSearchLoading}
               hasError={hasExternalSearchError}
