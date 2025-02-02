@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { GoogleSearchBox } from "../../../components/google-search/GoogleSearchBox";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface ExternalSearchSectionProps {
@@ -20,34 +20,35 @@ export function ExternalSearchSection({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      try {
-        setLoadingSuggestions(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          console.log('No authenticated user');
-          return;
-        }
-
-        const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
-          body: { user_id: user.id }
-        });
-
-        if (error) throw error;
-        
-        if (data?.suggestions) {
-          setSuggestions(data.suggestions);
-        }
-      } catch (error) {
-        console.error('Error fetching suggestions:', error);
-        toast.error("Erreur lors du chargement des suggestions");
-      } finally {
-        setLoadingSuggestions(false);
+  const fetchSuggestions = async () => {
+    try {
+      setLoadingSuggestions(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log('No authenticated user');
+        return;
       }
-    };
 
+      const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
+        body: { user_id: user.id }
+      });
+
+      if (error) throw error;
+      
+      if (data?.suggestions) {
+        setSuggestions(data.suggestions);
+        toast.success("Suggestions régénérées");
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      toast.error("Erreur lors du chargement des suggestions");
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  useEffect(() => {
     fetchSuggestions();
   }, []);
 
@@ -102,26 +103,39 @@ export function ExternalSearchSection({
         </motion.div>
       </div>
       
-      {loadingSuggestions ? (
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Chargement des suggestions...</span>
-        </div>
-      ) : suggestions.length > 0 && (
-        <div className="flex flex-wrap gap-2 justify-center px-4">
-          {suggestions.map((suggestion, index) => (
+      <div className="flex items-center justify-center gap-2">
+        {loadingSuggestions ? (
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Chargement des suggestions...</span>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-wrap gap-2 justify-center px-4">
+              {suggestions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="secondary"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => applySuggestion(suggestion)}
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
             <Button
-              key={index}
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              className="text-xs"
-              onClick={() => applySuggestion(suggestion)}
+              onClick={fetchSuggestions}
+              className="ml-2"
+              disabled={loadingSuggestions}
             >
-              {suggestion}
+              <RefreshCw className="h-4 w-4" />
             </Button>
-          ))}
-        </div>
-      )}
+          </>
+        )}
+      </div>
       
       <p className="text-sm text-muted-foreground text-center italic px-4">
         Conseil : Cliquez sur les suggestions ou utilisez vos propres mots-clés pour trouver des offres pertinentes
