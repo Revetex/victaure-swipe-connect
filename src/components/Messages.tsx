@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Message, Receiver } from "@/types/messages";
+import { Message, Receiver, MessageSender } from "@/types/messages";
 import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
 
 const queryClient = new QueryClient();
@@ -60,7 +60,10 @@ function MessagesWithQuery({
         setShowConversation(true);
       } else if (type === "user" && receiver) {
         const unreadMessages = messages.filter(
-          m => m.sender?.id === receiver.id && !m.read
+          m => {
+            const senderId = typeof m.sender === 'string' ? m.sender : m.sender.id;
+            return senderId === receiver.id && !m.read;
+          }
         );
         
         for (const message of unreadMessages) {
@@ -82,7 +85,7 @@ function MessagesWithQuery({
       clearChat();
       toast.success("Conversation effacée avec succès");
     } catch (error) {
-      console.error("Error clearing conversation:", error);
+      console.error("Error clearing chat:", error);
       toast.error("Erreur lors de l'effacement de la conversation");
     }
   };
