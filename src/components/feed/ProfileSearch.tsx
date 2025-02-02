@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { ProfilePreview } from "@/components/ProfilePreview";
-import { UserRound } from "lucide-react";
+import { UserRound, Briefcase, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function ProfileSearch() {
@@ -44,38 +44,53 @@ export function ProfileSearch() {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full max-w-2xl mx-auto">
       <Command className="rounded-lg border shadow-md">
         <CommandInput
           value={search}
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            // Add a small delay to allow click events to complete
-            setTimeout(() => setIsInputFocused(false), 200);
+            setTimeout(() => setIsInputFocused(false), 100);
           }}
           placeholder="Rechercher un profil..."
+          className="h-12"
         />
         {search.length > 0 && (
           <CommandList>
-            <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
+              Aucun résultat trouvé.
+            </CommandEmpty>
             <CommandGroup>
               {profiles.map((profile) => (
                 <CommandItem
                   key={profile.id}
                   value={profile.full_name || ""}
                   onSelect={() => handleSelectProfile(profile)}
-                  className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent"
+                  className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-accent"
                 >
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-10 w-10 ring-2 ring-primary/10">
                     <AvatarImage src={profile.avatar_url || ""} alt={profile.full_name || ""} />
                     <AvatarFallback>
-                      <UserRound className="h-4 w-4" />
+                      <UserRound className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{profile.full_name}</span>
-                    <span className="text-sm text-muted-foreground">{profile.role}</span>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="font-medium truncate">{profile.full_name}</span>
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      {profile.role && (
+                        <div className="flex items-center gap-1">
+                          <Briefcase className="h-3 w-3" />
+                          <span className="truncate">{profile.role}</span>
+                        </div>
+                      )}
+                      {profile.city && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          <span className="truncate">{profile.city}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CommandItem>
               ))}
