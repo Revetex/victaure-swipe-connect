@@ -60,7 +60,7 @@ function MessagesWithQuery({
       } else if (type === "user" && receiver) {
         // Mark all unread messages from this sender as read
         const unreadMessages = messages.filter(
-          m => m.sender.id === receiver.id && !m.read
+          m => m.sender?.id === receiver.id && !m.read
         );
         
         for (const message of unreadMessages) {
@@ -166,7 +166,7 @@ export function Messages() {
     };
 
     fetchReceiverFromUrl();
-  }, [location.pathname]);
+  }, [location.pathname, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
