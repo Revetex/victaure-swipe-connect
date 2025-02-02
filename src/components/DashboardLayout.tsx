@@ -55,17 +55,17 @@ export function DashboardLayout() {
         </div>
       )}
       
-      <div className={`container mx-auto px-4 ${isEditing ? 'pt-12' : ''}`}>
+      <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
               className="transform transition-all duration-300 w-full min-h-screen"
               style={{ 
-                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '120px' : '80px'})` : 'none',
+                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? (isMobile ? '8rem' : '4rem') : '10rem'
+                paddingBottom: isEditing ? (isMobile ? '10rem' : '4rem') : '10rem'
               }}
             >
               <DashboardContent
