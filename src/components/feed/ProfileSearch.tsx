@@ -8,14 +8,17 @@ export function ProfileSearch() {
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (value: string) => {
     if (!value) {
       setSearchResults([]);
+      setHasSearched(false);
       return;
     }
 
     setIsLoading(true);
+    setHasSearched(true);
     try {
       const { data: profiles, error } = await supabase
         .from('profiles')
@@ -42,7 +45,9 @@ export function ProfileSearch() {
           className="h-12"
         />
         <CommandList>
-          <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+          {hasSearched && searchResults.length === 0 && (
+            <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+          )}
           <CommandGroup>
             {searchResults.map((profile) => (
               <CommandItem
