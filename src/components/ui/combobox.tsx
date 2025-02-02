@@ -16,20 +16,20 @@ import {
 } from "@/components/ui/popover";
 
 interface ComboboxProps {
-  items: string[];
-  value: string;
+  items: { value: string; label: string }[];
+  value?: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  className?: string;
+  disabled?: boolean;
   allowCustomValue?: boolean;
 }
 
 export function Combobox({
-  items,
-  value,
+  items = [],
+  value = "",
   onChange,
-  placeholder = "Sélectionnez une option",
-  className,
+  placeholder = "Sélectionner une option",
+  disabled = false,
   allowCustomValue = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
@@ -40,60 +40,59 @@ export function Combobox({
     setOpen(false);
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (!newOpen) {
-      // If we allow custom values and there's a search query, use it
-      if (allowCustomValue && searchQuery && !items.includes(searchQuery)) {
-        onChange(searchQuery);
-      }
-      setSearchQuery("");
+  const displayItems = React.useMemo(() => {
+    if (!allowCustomValue || !searchQuery) return items;
+
+    const existingItem = items.find(
+      item => item.value.toLowerCase() === searchQuery.toLowerCase()
+    );
+
+    if (!existingItem) {
+      return [...items, { value: searchQuery, label: searchQuery }];
     }
-  };
+
+    return items;
+  }, [items, searchQuery, allowCustomValue]);
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn(
-            "w-full justify-between",
-            className
-          )}
+          className="w-full justify-between"
+          disabled={disabled}
         >
-          {value || placeholder}
+          <span className="truncate">
+            {value
+              ? items.find((item) => item.value === value)?.label || value
+              : placeholder}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput 
-            placeholder={placeholder}
-            value={searchQuery}
+            placeholder={`Rechercher...`} 
             onValueChange={setSearchQuery}
           />
-          <CommandEmpty>
-            {allowCustomValue ? 
-              "Appuyez sur Entrée pour utiliser cette valeur" : 
-              "Aucun résultat trouvé"
-            }
-          </CommandEmpty>
-          <CommandGroup>
-            {items.map((item) => (
+          <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+          <CommandGroup className="max-h-64 overflow-auto">
+            {displayItems.map((item) => (
               <CommandItem
-                key={item}
-                value={item}
+                key={item.value}
+                value={item.value}
                 onSelect={handleSelect}
               >
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    value === item ? "opacity-100" : "opacity-0"
+                    value === item.value ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {item}
+                {item.label}
               </CommandItem>
             ))}
           </CommandGroup>

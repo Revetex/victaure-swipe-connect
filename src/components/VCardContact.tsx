@@ -1,136 +1,119 @@
-import { Mail, Phone, MapPin } from "lucide-react";
-import { UserProfile } from "@/types/profile";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Phone, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { provinceData } from "@/hooks/data/provinces";
-import { useState } from "react";
+import { Label } from "@/components/ui/label";
 import { Combobox } from "@/components/ui/combobox";
+import { provinces } from "@/hooks/data/provinces";
+import { cities } from "@/hooks/data/cities";
 
 interface VCardContactProps {
-  profile: UserProfile;
-  isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
+  phone: string | null;
+  city: string | null;
+  province: string | null;
+  isEditing?: boolean;
+  onPhoneChange: (phone: string) => void;
+  onCityChange: (city: string) => void;
+  onProvinceChange: (province: string) => void;
 }
 
-export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
-  const [selectedProvince, setSelectedProvince] = useState(profile.state || "");
-  const provinces = Object.keys(provinceData);
-  const cities = selectedProvince ? provinceData[selectedProvince as keyof typeof provinceData] || [] : [];
+export function VCardContact({
+  phone,
+  city,
+  province,
+  isEditing,
+  onPhoneChange,
+  onCityChange,
+  onProvinceChange,
+}: VCardContactProps) {
+  const [selectedProvince, setSelectedProvince] = useState<string>(province || "");
+  const [selectedCity, setSelectedCity] = useState<string>(city || "");
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [customCity, setCustomCity] = useState<string>("");
 
-  const handleInputChange = (key: string, value: string) => {
-    setProfile({ ...profile, [key]: value });
+  useEffect(() => {
+    if (selectedProvince) {
+      const provinceCities = cities[selectedProvince] || [];
+      setAvailableCities(provinceCities);
+    } else {
+      setAvailableCities([]);
+    }
+  }, [selectedProvince]);
+
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvince(value);
+    onProvinceChange(value);
+    // Reset city when province changes
+    setSelectedCity("");
+    onCityChange("");
   };
 
-  const handleProvinceChange = (province: string) => {
-    setSelectedProvince(province);
-    handleInputChange("state", province);
-    // Reset city when province changes
-    handleInputChange("city", "");
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    setCustomCity(value);
+    onCityChange(value);
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-3 p-4 sm:p-6 rounded-xl bg-card/50 dark:bg-card/20 backdrop-blur-sm border border-border/10"
+      className="space-y-4"
     >
-      <h3 className="text-base sm:text-lg font-semibold text-foreground/90">Contact</h3>
-      <div className="space-y-2">
-        {isEditing ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
-              <Input
-                value={profile.email || ""}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="Email"
-                className="flex-1 bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-              <Input
-                value={profile.phone || ""}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-                placeholder="Téléphone"
-                type="tel"
-                className="flex-1 bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-              <div className="flex-1 space-y-2">
-                <Select
-                  value={selectedProvince}
-                  onValueChange={handleProvinceChange}
-                >
-                  <SelectTrigger className="w-full bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]">
-                    <SelectValue placeholder="Sélectionnez une province" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {provinces.map((province) => (
-                      <SelectItem key={province} value={province}>
-                        {province}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                <Combobox
-                  items={cities}
-                  value={profile.city || ""}
-                  onChange={(value) => handleInputChange("city", value)}
-                  placeholder="Entrez ou sélectionnez une ville"
-                  className="w-full bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]"
-                  allowCustomValue
-                />
-              </div>
-            </div>
+      <div className="flex flex-col space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="phone">Téléphone</Label>
+          <div className="relative">
+            <Phone className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="phone"
+              placeholder="Votre numéro de téléphone"
+              value={phone || ""}
+              onChange={(e) => onPhoneChange(e.target.value)}
+              className="pl-8"
+              disabled={!isEditing}
+            />
           </div>
-        ) : (
-          <div>
-            {profile.email && (
-              <motion.div 
-                className="flex items-center gap-3 p-2 rounded-lg"
-                whileHover={{ scale: 1.01 }}
-              >
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <a 
-                  href={`mailto:${profile.email}`} 
-                  className="text-sm text-foreground/80 hover:text-primary transition-colors"
-                >
-                  {profile.email}
-                </a>
-              </motion.div>
-            )}
-            {profile.phone && (
-              <motion.div 
-                className="flex items-center gap-3 p-2 rounded-lg"
-                whileHover={{ scale: 1.01 }}
-              >
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <a 
-                  href={`tel:${profile.phone}`} 
-                  className="text-sm text-foreground/80 hover:text-primary transition-colors"
-                >
-                  {profile.phone}
-                </a>
-              </motion.div>
-            )}
-            {(profile.city || profile.state) && (
-              <motion.div 
-                className="flex items-center gap-3 p-2 rounded-lg"
-                whileHover={{ scale: 1.01 }}
-              >
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-foreground/80">
-                  {[profile.city, profile.state].filter(Boolean).join(", ")}
-                </span>
-              </motion.div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="province">Province</Label>
+          <Combobox
+            items={provinces.map(p => ({ label: p.name, value: p.name }))}
+            value={selectedProvince}
+            onChange={handleProvinceChange}
+            placeholder="Sélectionnez une province"
+            disabled={!isEditing}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="city">Ville</Label>
+          <div className="relative">
+            <MapPin className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            {isEditing ? (
+              <Combobox
+                items={[
+                  ...availableCities.map(city => ({ label: city, value: city })),
+                  ...(customCity && !availableCities.includes(customCity) 
+                    ? [{ label: customCity, value: customCity }] 
+                    : [])
+                ]}
+                value={selectedCity}
+                onChange={handleCityChange}
+                placeholder="Entrez ou sélectionnez une ville"
+                allowCustomValue
+                disabled={!selectedProvince}
+              />
+            ) : (
+              <Input
+                value={city || ""}
+                className="pl-8"
+                disabled
+              />
             )}
           </div>
-        )}
+        </div>
       </div>
     </motion.div>
   );
