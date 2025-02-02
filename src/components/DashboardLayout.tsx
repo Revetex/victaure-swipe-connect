@@ -130,18 +130,6 @@ export function DashboardLayout() {
               <NotificationsBox />
             </div>
           </div>
-
-          {currentPage === 4 && !isEditing && (
-            <div className="p-4 border-b">
-              <Button 
-                variant="outline" 
-                className="w-full text-left justify-start text-muted-foreground h-auto py-3"
-                onClick={() => setIsEditing(true)}
-              >
-                Partager quelque chose...
-              </Button>
-            </div>
-          )}
           
           <AnimatePresence mode="wait">
             <motion.div 
