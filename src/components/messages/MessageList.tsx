@@ -83,8 +83,7 @@ export function MessageList({
     }
   };
 
-  const formattedChatMessages = formatChatMessages(chatMessages);
-  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
+  const currentMessages = selectedReceiver?.id === 'assistant' ? chatMessages : messages;
   const filteredMessages = filterMessages(currentMessages, selectedReceiver);
 
   return showConversation ? (
@@ -103,7 +102,7 @@ export function MessageList({
   ) : (
     <ConversationList
       messages={messages}
-      chatMessages={formattedChatMessages}
+      chatMessages={chatMessages}
       onSelectConversation={handleSelectConversation}
     />
   );

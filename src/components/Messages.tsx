@@ -34,7 +34,7 @@ export function Messages() {
     <QueryClientProvider client={queryClient}>
       <div className="h-full flex flex-col">
         <MessageList
-          chatMessages={chatMessages as Message[]}
+          chatMessages={formatChatMessages(chatMessages)}
           inputMessage={inputMessage}
           isListening={isListening}
           isThinking={isThinking}
