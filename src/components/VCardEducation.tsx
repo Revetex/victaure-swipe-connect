@@ -75,7 +75,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             {isEditing ? (
               <>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                  <Building2 className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                  <Building2 className="h-4 w-4 shrink-0 text-foreground mt-3 sm:mt-0" />
                   <Input
                     value={edu.school_name}
                     onChange={(e) =>
@@ -86,7 +86,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                   />
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                  <GraduationCap className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                  <GraduationCap className="h-4 w-4 shrink-0 text-foreground mt-3 sm:mt-0" />
                   <Input
                     value={edu.degree}
                     onChange={(e) =>
@@ -98,7 +98,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    <Calendar className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                    <Calendar className="h-4 w-4 shrink-0 text-foreground mt-3 sm:mt-0" />
                     <Input
                       type="date"
                       value={edu.start_date || ""}
@@ -109,7 +109,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
                     />
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    <Calendar className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                    <Calendar className="h-4 w-4 shrink-0 text-foreground mt-3 sm:mt-0" />
                     <Input
                       type="date"
                       value={edu.end_date || ""}
@@ -140,18 +140,18 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             ) : (
               <>
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <Building2 className="h-4 w-4 text-foreground" />
                   <h3 className="font-medium">{edu.school_name}</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <GraduationCap className="h-4 w-4 text-foreground" />
                   <p>{edu.degree}</p>
                 </div>
                 {edu.description && (
                   <p className="text-muted-foreground pl-6">{edu.description}</p>
                 )}
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <Calendar className="h-4 w-4 text-foreground" />
                   <span>
                     {formatDate(edu.start_date)} - {formatDate(edu.end_date) || "Présent"}
                   </span>
