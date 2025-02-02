@@ -1,13 +1,9 @@
 import { useChat } from "@/hooks/useChat";
+import { MessagesContent } from "./messages/MessagesContent";
+import { useState } from "react";
+import { MessagesList } from "./messages/conversation/MessagesList";
 import { useMessages } from "@/hooks/useMessages";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { useReceiver } from "@/hooks/useReceiver";
-import { MessageList } from "./messages/MessageList";
-import { Message } from "@/types/messages";
-import { formatChatMessages } from "@/utils/messageUtils";
-
-const queryClient = new QueryClient();
+import { toast } from "sonner";
 
 export function Messages() {
   const {
@@ -22,41 +18,66 @@ export function Messages() {
   } = useChat();
 
   const { messages, markAsRead } = useMessages();
-  const navigate = useNavigate();
+  const [showConversation, setShowConversation] = useState(false);
 
-  const { 
-    receiver: selectedReceiver, 
-    setReceiver: setSelectedReceiver,
-    showConversation,
-    setShowConversation
-  } = useReceiver();
+  const handleBack = () => {
+    setShowConversation(false);
+  };
 
-  // Filter out self-conversations before passing to MessageList
-  const filteredMessages = messages?.filter(message => 
-    message.sender?.id !== message.receiver_id
-  ) || [];
+  const handleSelectConversation = async (type: "assistant") => {
+    try {
+      setShowConversation(true);
+    } catch (error) {
+      console.error("Error selecting conversation:", error);
+      toast.error("Erreur lors de la sélection de la conversation");
+    }
+  };
+
+  const handleMarkAsRead = async (messageId: string) => {
+    try {
+      await markAsRead.mutate(messageId);
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      toast.error("Erreur lors du marquage du message comme lu");
+    }
+  };
+
+  const handleSendMessageWithFeedback = async (message: string) => {
+    if (!message.trim()) {
+      toast.error("Veuillez entrer un message");
+      return;
+    }
+
+    try {
+      await handleSendMessage(message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message. Veuillez réessayer.");
+    }
+  };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="h-full flex flex-col">
-        <MessageList
-          chatMessages={formatChatMessages(chatMessages)}
+    <div className="h-full flex flex-col">
+      {showConversation ? (
+        <MessagesContent
+          messages={chatMessages}
           inputMessage={inputMessage}
           isListening={isListening}
           isThinking={isThinking}
-          showConversation={showConversation}
-          setShowConversation={setShowConversation}
-          handleSendMessage={handleSendMessage}
-          handleVoiceInput={handleVoiceInput}
+          onSendMessage={handleSendMessageWithFeedback}
+          onVoiceInput={handleVoiceInput}
           setInputMessage={setInputMessage}
-          clearChat={clearChat}
-          selectedReceiver={selectedReceiver}
-          setSelectedReceiver={setSelectedReceiver}
-          messages={filteredMessages}
-          markAsRead={markAsRead}
-          navigate={navigate}
+          onClearChat={clearChat}
+          onBack={handleBack}
         />
-      </div>
-    </QueryClientProvider>
+      ) : (
+        <MessagesList
+          messages={messages}
+          chatMessages={chatMessages}
+          onSelectConversation={handleSelectConversation}
+          onMarkAsRead={handleMarkAsRead}
+        />
+      )}
+    </div>
   );
 }

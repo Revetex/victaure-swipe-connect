@@ -10,6 +10,10 @@ export function Marketplace() {
     <div className="w-full">
       <div className="py-8">
         <div className="flex flex-col gap-6 w-full">
+          <div className="flex items-center justify-between w-full px-4 sm:px-0">
+            <h1 className="text-2xl font-bold">Emplois disponibles</h1>
+          </div>
+
           <div className="w-full">
             <ExternalSearchSection
               isLoading={isExternalSearchLoading}

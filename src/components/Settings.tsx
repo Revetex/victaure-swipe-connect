@@ -104,6 +104,13 @@ export function Settings() {
       animate="visible"
       className="space-y-6 p-4 sm:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border border-border/50 shadow-lg h-full overflow-y-auto"
     >
+      <motion.h2 
+        variants={itemVariants}
+        className="text-xl sm:text-2xl font-semibold tracking-tight text-primary"
+      >
+        Paramètres
+      </motion.h2>
+      
       <div className="space-y-6">
         <motion.div variants={itemVariants}>
           <SettingsSection title="Apparence">

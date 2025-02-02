@@ -85,6 +85,7 @@ export function DashboardContent({
       case 5: // Tools
         return (
           <div className="w-full px-4">
+            <h2 className="text-2xl font-bold mb-4">Outils</h2>
             <div className="w-full sm:max-w-3xl mx-auto">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="tasks" className="border rounded-lg bg-card">

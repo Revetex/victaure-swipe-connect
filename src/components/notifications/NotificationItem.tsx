@@ -1,10 +1,7 @@
-import { X, UserPlus, UserMinus } from "lucide-react";
+import { X } from "lucide-react";
 import { formatTime } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface NotificationItemProps {
   id: string;
@@ -23,71 +20,6 @@ export function NotificationItem({
   read,
   onDelete,
 }: NotificationItemProps) {
-  const isFriendRequest = title.toLowerCase().includes("demande d'ami");
-
-  const handleAcceptFriend = async () => {
-    try {
-      // Extract sender ID from the message
-      const senderId = message.match(/ID:(\S+)/)?.[1];
-      if (!senderId) {
-        toast.error("Impossible de traiter la demande");
-        return;
-      }
-
-      // Update friend request status
-      const { error: requestError } = await supabase
-        .from('friend_requests')
-        .update({ status: 'accepted' })
-        .eq('sender_id', senderId);
-
-      if (requestError) throw requestError;
-
-      // Create notification for the sender
-      const { error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          user_id: senderId,
-          title: 'Demande acceptée',
-          message: 'Votre demande d\'ami a été acceptée',
-        });
-
-      if (notifError) {
-        console.error('Error creating notification:', notifError);
-      }
-
-      onDelete(id);
-      toast.success("Demande d'ami acceptée");
-    } catch (error) {
-      console.error('Error accepting friend request:', error);
-      toast.error("Une erreur est survenue");
-    }
-  };
-
-  const handleRejectFriend = async () => {
-    try {
-      // Extract sender ID from the message
-      const senderId = message.match(/ID:(\S+)/)?.[1];
-      if (!senderId) {
-        toast.error("Impossible de traiter la demande");
-        return;
-      }
-
-      // Delete friend request
-      const { error: requestError } = await supabase
-        .from('friend_requests')
-        .delete()
-        .eq('sender_id', senderId);
-
-      if (requestError) throw requestError;
-
-      onDelete(id);
-      toast.success("Demande d'ami refusée");
-    } catch (error) {
-      console.error('Error rejecting friend request:', error);
-      toast.error("Une erreur est survenue");
-    }
-  };
-
   return (
     <motion.div
       layout
@@ -129,29 +61,6 @@ export function NotificationItem({
       )}>
         {message}
       </p>
-
-      {isFriendRequest && (
-        <div className="flex gap-2 mt-3">
-          <Button
-            size="sm"
-            variant="default"
-            className="flex items-center gap-1"
-            onClick={handleAcceptFriend}
-          >
-            <UserPlus className="h-4 w-4" />
-            Accepter
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="flex items-center gap-1"
-            onClick={handleRejectFriend}
-          >
-            <UserMinus className="h-4 w-4" />
-            Refuser
-          </Button>
-        </div>
-      )}
     </motion.div>
   );
 }
