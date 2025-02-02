@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AssistantMessage } from "./AssistantMessage";
-import { Loader } from "lucide-react";
 
 interface MessagesListProps {
   messages: any[];
@@ -79,6 +78,19 @@ export function MessagesList({
   console.log("Messages disponibles:", messages); // For debugging
   const unreadCount = messages?.filter((message) => !message.read).length || 0;
 
+  const handleAcceptMessage = async (message: any) => {
+    try {
+      // Mark message as read
+      await onMarkAsRead(message.id);
+      
+      // Navigate to the conversation with the sender
+      navigate(`/dashboard/messages/${message.sender_id}`);
+    } catch (error) {
+      console.error("Error accepting message:", error);
+      toast.error("Erreur lors de l'acceptation du message");
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       <SearchHeader 
@@ -101,7 +113,7 @@ export function MessagesList({
             <UserMessage
               key={message.id}
               message={message}
-              onMarkAsRead={onMarkAsRead}
+              onMarkAsRead={() => handleAcceptMessage(message)}
             />
           ))}
 
