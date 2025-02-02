@@ -35,6 +35,7 @@ export function MessagesList({
       <SearchHeader 
         onSearch={handleSearch}
         onNewConversation={handleNewConversation}
+        searchValue={searchQuery}
       />
       
       <ScrollArea className="flex-1">
