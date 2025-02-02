@@ -11,6 +11,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export function ProfileSearch() {
   const navigate = useNavigate();
@@ -19,24 +20,28 @@ export function ProfileSearch() {
   const { data: profiles, isLoading } = useQuery({
     queryKey: ["profiles", searchQuery],
     queryFn: async () => {
+      console.log("Searching for:", searchQuery);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .or(`full_name.ilike.%${searchQuery}%,role.ilike.%${searchQuery}%`)
+        .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,role.ilike.%${searchQuery}%`)
         .order("full_name", { ascending: true });
 
       if (error) {
         console.error("Error fetching profiles:", error);
+        toast.error("Erreur lors de la recherche des profils");
         throw error;
       }
 
+      console.log("Search results:", data);
       return data || [];
     },
     enabled: searchQuery.length > 0
   });
 
   const handleViewProfile = (userId: string) => {
-    navigate(`/profile/${userId}`);
+    console.log("Navigating to profile:", userId);
+    navigate(`/dashboard/profile/${userId}`);
   };
 
   return (
@@ -59,7 +64,8 @@ export function ProfileSearch() {
               profiles?.map((profile) => (
                 <CommandItem
                   key={profile.id}
-                  className="flex items-center gap-2 p-2 cursor-pointer"
+                  value={`${profile.id}-${profile.full_name}`} // Make value unique
+                  className="flex items-center gap-2 p-2 cursor-pointer hover:bg-accent"
                   onSelect={() => handleViewProfile(profile.id)}
                 >
                   {profile.avatar_url ? (
@@ -71,7 +77,10 @@ export function ProfileSearch() {
                   ) : (
                     <UserCircle className="w-8 h-8 text-muted-foreground" />
                   )}
-                  <span>{profile.full_name}</span>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{profile.full_name}</span>
+                    <span className="text-sm text-muted-foreground">{profile.role}</span>
+                  </div>
                 </CommandItem>
               ))
             )}
