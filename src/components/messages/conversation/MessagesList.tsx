@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AssistantMessage } from "./AssistantMessage";
+import { Loader } from "lucide-react";
 
 interface MessagesListProps {
   messages: any[];
@@ -34,6 +35,9 @@ export function MessagesList({
 
   const handleSelectFriend = async (friendId: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
       // Check if conversation already exists
       const { data: existingMessages, error: checkError } = await supabase
         .from('messages')
@@ -48,7 +52,7 @@ export function MessagesList({
         const { data: message, error: insertError } = await supabase
           .from('messages')
           .insert({
-            sender_id: (await supabase.auth.getUser()).data.user?.id,
+            sender_id: user.id,
             receiver_id: friendId,
             content: "👋 Bonjour!",
             read: false
@@ -59,7 +63,6 @@ export function MessagesList({
         if (insertError) throw insertError;
       }
 
-      // Navigate to conversation
       navigate(`/dashboard/messages/${friendId}`);
       toast.success("Conversation créée avec succès");
     } catch (error) {
@@ -68,13 +71,13 @@ export function MessagesList({
     }
   };
 
-  // Filtrer les messages en fonction de la recherche
-  const filteredMessages = messages.filter((message) =>
-    message.sender?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter messages based on search query
+  const filteredMessages = messages?.filter((message) =>
+    message?.sender?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
-  console.log("Messages disponibles:", messages); // Pour le débogage
-  const unreadCount = messages.filter((message) => !message.read).length;
+  console.log("Messages disponibles:", messages); // For debugging
+  const unreadCount = messages?.filter((message) => !message.read).length || 0;
 
   return (
     <div className="h-full flex flex-col">
@@ -101,6 +104,14 @@ export function MessagesList({
               onMarkAsRead={onMarkAsRead}
             />
           ))}
+
+          {/* Show empty state when no messages */}
+          {messages?.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+              <p>Aucune conversation pour le moment</p>
+              <p className="text-sm">Commencez une nouvelle conversation!</p>
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>
