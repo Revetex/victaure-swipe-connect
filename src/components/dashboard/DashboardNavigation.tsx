@@ -18,7 +18,7 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
 
   return (
     <nav className="w-full">
-      <ul className="flex items-center justify-between lg:justify-start lg:gap-4">
+      <ul className="flex items-center justify-center max-w-2xl mx-auto gap-2 lg:gap-4">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
