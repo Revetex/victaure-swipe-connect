@@ -1,4 +1,4 @@
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search, MessageSquarePlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 interface SearchHeaderProps {
   unreadCount: number;
   onSearch: (value: string) => void;
-  onToggleSort: () => void;
+  onNewConversation: () => void;
 }
 
-export function SearchHeader({ unreadCount, onSearch, onToggleSort }: SearchHeaderProps) {
+export function SearchHeader({ unreadCount, onSearch, onNewConversation }: SearchHeaderProps) {
   return (
     <div className="border-b p-4 space-y-4">
       <div className="flex items-center justify-between">
@@ -31,12 +31,12 @@ export function SearchHeader({ unreadCount, onSearch, onToggleSort }: SearchHead
           />
         </div>
         <Button
-          variant="outline"
+          variant="default"
           size="icon"
-          onClick={onToggleSort}
+          onClick={onNewConversation}
           className="shrink-0"
         >
-          <ArrowUpDown className="h-4 w-4" />
+          <MessageSquarePlus className="h-4 w-4" />
         </Button>
       </div>
     </div>

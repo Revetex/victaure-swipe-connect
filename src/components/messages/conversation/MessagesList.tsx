@@ -22,27 +22,20 @@ export function MessagesList({
   onMarkAsRead,
 }: MessagesListProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const handleSearch = (value: string) => {
     setSearchQuery(value.toLowerCase());
   };
 
-  const toggleSortOrder = () => {
-    setSortOrder(prev => prev === "asc" ? "desc" : "asc");
-    toast.success(`Messages triés par date ${sortOrder === "asc" ? "décroissante" : "croissante"}`);
+  const handleNewConversation = () => {
+    onSelectConversation("assistant");
+    toast.success("Nouvelle conversation démarrée");
   };
 
   const filteredMessages = messages.filter(message => 
     message.content.toLowerCase().includes(searchQuery) ||
     message.sender.full_name.toLowerCase().includes(searchQuery)
   );
-
-  const sortedMessages = [...filteredMessages].sort((a, b) => {
-    const dateA = new Date(a.created_at).getTime();
-    const dateB = new Date(b.created_at).getTime();
-    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-  });
 
   const unreadCount = messages.filter(m => !m.read).length;
 
@@ -58,7 +51,7 @@ export function MessagesList({
       <SearchHeader 
         unreadCount={unreadCount}
         onSearch={handleSearch}
-        onToggleSort={toggleSortOrder}
+        onNewConversation={handleNewConversation}
       />
 
       <ScrollArea className="flex-1">
@@ -72,7 +65,7 @@ export function MessagesList({
           </div>
 
           {/* User Messages Section */}
-          {sortedMessages.length > 0 ? (
+          {filteredMessages.length > 0 ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between px-4">
                 <div className="flex items-center gap-2">
@@ -80,11 +73,11 @@ export function MessagesList({
                   <h2 className="text-lg font-semibold">Conversations</h2>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {sortedMessages.length} message{sortedMessages.length > 1 ? 's' : ''}
+                  {filteredMessages.length} message{filteredMessages.length > 1 ? 's' : ''}
                 </span>
               </div>
               <div className="space-y-2">
-                {sortedMessages.map((message) => (
+                {filteredMessages.map((message) => (
                   <UserMessage
                     key={message.id}
                     message={message}
