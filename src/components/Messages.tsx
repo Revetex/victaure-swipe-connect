@@ -53,12 +53,14 @@ function MessagesWithQuery({
         setSelectedReceiver({
           id: 'assistant',
           full_name: 'M. Victaure',
-          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+          online_status: true,
+          last_seen: new Date().toISOString()
         });
         setShowConversation(true);
       } else if (type === "user" && receiver) {
         const unreadMessages = messages.filter(
-          m => m.sender_id === receiver.id && !m.read
+          m => m.sender?.id === receiver.id && !m.read
         );
         
         for (const message of unreadMessages) {
@@ -85,8 +87,8 @@ function MessagesWithQuery({
     }
   };
 
-  const formattedMessages = formatChatMessages(chatMessages);
-  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedMessages : messages;
+  const formattedChatMessages = formatChatMessages(chatMessages);
+  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
   const filteredMessages = filterMessages(currentMessages, selectedReceiver);
 
   return showConversation ? (
@@ -105,7 +107,7 @@ function MessagesWithQuery({
   ) : (
     <ConversationList
       messages={messages}
-      chatMessages={formattedMessages}
+      chatMessages={formattedChatMessages}
       onSelectConversation={handleSelectConversation}
     />
   );

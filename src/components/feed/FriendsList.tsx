@@ -1,11 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CircleDot, User, MessageCircle } from "lucide-react";
+import { CircleDot, User, MessageCircle, UserPlus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { Friend } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
+
+type FriendPreview = {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  online_status: boolean;
+  last_seen: string;
+};
 
 export function FriendsList() {
+  const navigate = useNavigate();
+  
   const { data: friends } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
@@ -36,7 +49,7 @@ export function FriendsList() {
 
       return friendRequests?.map(request => {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend;
+        return friend as FriendPreview;
       }) || [];
     }
   });
@@ -63,32 +76,83 @@ export function FriendsList() {
     }
   });
 
+  const handleMessage = (friendId: string) => {
+    navigate(`/dashboard/messages/${friendId}`);
+  };
+
   return (
-    <Card className="p-4">
-      <div className="mb-4">
-        <h3 className="font-semibold text-lg mb-2">Mes amis</h3>
-        <ScrollArea className="h-[300px]">
-          <div className="space-y-2">
-            {friends?.map((friend: Friend) => (
-              <div key={friend.id} className="flex items-center gap-2 p-2 hover:bg-muted rounded-lg">
-                <User className="h-5 w-5 text-muted-foreground" />
-                <span className="flex-1">{friend.full_name}</span>
-                <CircleDot className={`h-3 w-3 ${friend.online_status ? "text-green-500" : "text-gray-300"}`} />
+    <Card className="p-4 bg-card/50 backdrop-blur-sm">
+      <div className="mb-6">
+        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+          <User className="h-5 w-5 text-primary" />
+          Mes amis
+        </h3>
+        <ScrollArea className="h-[300px] pr-4">
+          <div className="space-y-3">
+            {friends?.map((friend: FriendPreview) => (
+              <div 
+                key={friend.id} 
+                className="flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors group relative"
+              >
+                <Avatar className="h-10 w-10 border-2 border-primary/10">
+                  <AvatarImage src={friend.avatar_url || ''} alt={friend.full_name || ''} />
+                  <AvatarFallback>
+                    {friend.full_name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{friend.full_name}</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <CircleDot className={`h-2 w-2 ${friend.online_status ? "text-green-500" : "text-gray-300"}`} />
+                    {friend.online_status ? "En ligne" : "Hors ligne"}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => handleMessage(friend.id)}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
               </div>
             ))}
+            {(!friends || friends.length === 0) && (
+              <div className="text-center py-8 text-muted-foreground">
+                <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>Aucun ami pour le moment</p>
+                <p className="text-sm">Commencez à ajouter des amis!</p>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </div>
 
       {pendingRequests && pendingRequests.length > 0 && (
         <div>
-          <h3 className="font-semibold text-lg mb-2">Demandes en attente</h3>
-          <ScrollArea className="h-[200px]">
-            <div className="space-y-2">
+          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+            <UserPlus className="h-5 w-5 text-primary" />
+            Demandes en attente
+          </h3>
+          <ScrollArea className="h-[200px] pr-4">
+            <div className="space-y-3">
               {pendingRequests.map((request) => (
-                <div key={request.sender.id} className="flex items-center gap-2 p-2 hover:bg-muted rounded-lg">
-                  <MessageCircle className="h-5 w-5 text-blue-500" />
-                  <span className="flex-1">{request.sender.full_name}</span>
+                <div 
+                  key={request.sender.id} 
+                  className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
+                >
+                  <Avatar className="h-10 w-10 border-2 border-primary/10">
+                    <AvatarImage src={request.sender.avatar_url || ''} alt={request.sender.full_name || ''} />
+                    <AvatarFallback>
+                      {request.sender.full_name?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{request.sender.full_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Souhaite vous ajouter comme ami
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

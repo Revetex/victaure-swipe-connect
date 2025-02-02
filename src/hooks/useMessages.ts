@@ -1,19 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-export interface Message {
-  id: string;
-  content: string;
-  sender_id: string;
-  receiver_id: string;
-  read: boolean;
-  created_at: string;
-  sender?: {
-    full_name: string;
-    avatar_url?: string;
-  };
-}
+import { Message, MessageSender } from "@/types/messages";
 
 export function useMessages() {
   const queryClient = useQueryClient();
@@ -24,14 +12,16 @@ export function useMessages() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      // Fetch messages where the current user is either the sender or receiver
       const { data: messages, error } = await supabase
         .from("messages")
         .select(`
           *,
           sender:profiles!messages_sender_id_fkey(
+            id,
             full_name,
-            avatar_url
+            avatar_url,
+            online_status,
+            last_seen
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -43,7 +33,6 @@ export function useMessages() {
         throw error;
       }
 
-      console.log("Messages fetched:", messages); // Debug log
       return messages as Message[];
     }
   });
