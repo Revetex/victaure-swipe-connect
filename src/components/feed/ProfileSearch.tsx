@@ -13,7 +13,7 @@ export function ProfileSearch() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
 
-  const { data: profiles } = useQuery({
+  const { data: profiles = [] } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
       if (!search) return [];
@@ -24,8 +24,12 @@ export function ProfileSearch() {
         .ilike("full_name", `%${search}%`)
         .limit(5);
 
-      if (error) throw error;
-      return data as UserProfile[];
+      if (error) {
+        console.error("Error fetching profiles:", error);
+        return [];
+      }
+
+      return (data || []) as UserProfile[];
     },
     enabled: search.length > 0,
   });
@@ -53,14 +57,14 @@ export function ProfileSearch() {
             <CommandList className="max-h-[300px] overflow-y-auto p-2">
               <CommandEmpty>Aucun profil trouvé</CommandEmpty>
               <CommandGroup>
-                {profiles?.map((profile) => (
+                {profiles.map((profile) => (
                   <CommandItem
                     key={profile.id}
                     value={profile.full_name || ""}
                     onSelect={() => handleSelectProfile(profile)}
                     className="flex items-center gap-2 cursor-pointer p-2 hover:bg-accent rounded-md"
                   >
-                    {profile.full_name}
+                    {profile.full_name || "Sans nom"}
                   </CommandItem>
                 ))}
               </CommandGroup>
