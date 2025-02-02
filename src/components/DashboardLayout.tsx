@@ -9,6 +9,7 @@ import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
 import { Logo } from "@/components/Logo";
 import { ProfileSearch } from "@/components/feed/ProfileSearch";
+import { useLocation } from "react-router-dom";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -16,6 +17,7 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(3);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const location = useLocation();
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -61,6 +63,8 @@ export function DashboardLayout() {
     }
   };
 
+  const isInConversation = location.pathname.includes('/messages/');
+
   return (
     <div className="relative min-h-screen bg-background">
       {isEditing && (
@@ -77,22 +81,24 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between py-2 px-4 border-b">
-            <div className="flex items-center gap-4 flex-1">
-              <div className="flex items-center gap-2">
-                <Logo size="sm" />
-                <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
+          {!isInConversation && (
+            <div className="flex items-center justify-between py-2 px-4 border-b">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="flex items-center gap-2">
+                  <Logo size="sm" />
+                  <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
+                </div>
+                <div className="h-6 w-px bg-border mx-2" />
+                <h2 className="text-lg font-semibold text-foreground">
+                  {getPageTitle(currentPage)}
+                </h2>
+                <div className="ml-4 flex-1 max-w-lg">
+                  <ProfileSearch />
+                </div>
               </div>
-              <div className="h-6 w-px bg-border mx-2" />
-              <h2 className="text-lg font-semibold text-foreground">
-                {getPageTitle(currentPage)}
-              </h2>
-              <div className="ml-4 flex-1 max-w-lg">
-                <ProfileSearch />
-              </div>
+              <NotificationsBox />
             </div>
-            <NotificationsBox />
-          </div>
+          )}
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
@@ -116,22 +122,24 @@ export function DashboardLayout() {
         </div>
       </div>
       
-      <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
-          isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-        }`}
-        style={{ 
-          height: isMobile ? '5rem' : '4rem',
-          paddingBottom: 'env(safe-area-inset-bottom)'
-        }}
-      >
-        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
-          <DashboardNavigation 
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </nav>
+      {!isInConversation && (
+        <nav 
+          className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
+            isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+          }`}
+          style={{ 
+            height: isMobile ? '5rem' : '4rem',
+            paddingBottom: 'env(safe-area-inset-bottom)'
+          }}
+        >
+          <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+            <DashboardNavigation 
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </nav>
+      )}
     </div>
   );
 }
