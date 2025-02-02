@@ -30,12 +30,23 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
 
   const handleAddEducation = async () => {
     try {
+      // Validate required fields
+      if (!newEducation.school_name || !newEducation.degree) {
+        toast.error("Le nom de l'école et le diplôme sont requis");
+        return;
+      }
+
       const { data: education, error } = await supabase
         .from('education')
         .insert([
           {
             profile_id: profile.id,
-            ...newEducation,
+            school_name: newEducation.school_name,
+            degree: newEducation.degree,
+            field_of_study: newEducation.field_of_study,
+            start_date: newEducation.start_date,
+            end_date: newEducation.end_date,
+            description: newEducation.description,
           },
         ])
         .select()
@@ -115,6 +126,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             value={newEducation.school_name || ""}
             onChange={(e) => setNewEducation({ ...newEducation, school_name: e.target.value })}
             className="w-full p-2 border rounded"
+            required
           />
           <input
             type="text"
@@ -122,6 +134,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             value={newEducation.degree || ""}
             onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })}
             className="w-full p-2 border rounded"
+            required
           />
           <input
             type="text"
