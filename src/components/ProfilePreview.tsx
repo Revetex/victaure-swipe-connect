@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { UserRound, MessageCircle, UserPlus, Briefcase, MapPin, Mail, UserMinus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -15,19 +16,81 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   const navigate = useNavigate();
   const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
 
+  useEffect(() => {
+    const checkExistingRequest = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: existingRequest } = await supabase
+        .from('friend_requests')
+        .select('*')
+        .eq('sender_id', user.id)
+        .eq('receiver_id', profile.id)
+        .single();
+
+      if (existingRequest) {
+        setIsFriendRequestSent(true);
+      }
+    };
+
+    checkExistingRequest();
+  }, [profile.id]);
+
   const handleSendMessage = () => {
     navigate(`/dashboard/messages/${profile.id}`);
     toast.success("Redirection vers la messagerie");
     onClose();
   };
 
-  const handleFriendRequest = () => {
-    if (isFriendRequestSent) {
-      toast.success("Demande d'ami annulée");
-      setIsFriendRequestSent(false);
-    } else {
-      toast.success("Demande d'ami envoyée");
-      setIsFriendRequestSent(true);
+  const handleFriendRequest = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté");
+        return;
+      }
+
+      if (isFriendRequestSent) {
+        // Delete the friend request
+        const { error: deleteError } = await supabase
+          .from('friend_requests')
+          .delete()
+          .eq('sender_id', user.id)
+          .eq('receiver_id', profile.id);
+
+        if (deleteError) throw deleteError;
+
+        toast.success("Demande d'ami annulée");
+        setIsFriendRequestSent(false);
+      } else {
+        // Create the friend request
+        const { error: requestError } = await supabase
+          .from('friend_requests')
+          .insert({
+            sender_id: user.id,
+            receiver_id: profile.id,
+            status: 'pending'
+          });
+
+        if (requestError) throw requestError;
+
+        // Create a notification for the receiver
+        const { error: notifError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: profile.id,
+            title: "Nouvelle demande d'ami",
+            message: `${user.email} souhaite vous ajouter comme ami`,
+          });
+
+        if (notifError) throw notifError;
+
+        toast.success("Demande d'ami envoyée");
+        setIsFriendRequestSent(true);
+      }
+    } catch (error) {
+      console.error('Error handling friend request:', error);
+      toast.error("Une erreur est survenue");
     }
   };
 
