@@ -16,6 +16,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandLoading,
 } from "@/components/ui/command";
 
 interface Post {
@@ -62,7 +63,7 @@ export function Feed() {
     }
   });
 
-  const { data: profiles } = useQuery({
+  const { data: profiles, isLoading: isLoadingProfiles } = useQuery({
     queryKey: ["profiles"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -134,12 +135,10 @@ export function Feed() {
   };
 
   const handleViewProfile = (userId: string) => {
-    // Navigate to profile view (implement this route)
     navigate(`/dashboard/profile/${userId}`);
   };
 
   const handleMessage = (userId: string) => {
-    // Navigate to messages with this user selected
     navigate(`/dashboard/messages?user=${userId}`);
   };
 
@@ -179,50 +178,54 @@ export function Feed() {
         <CommandInput placeholder="Rechercher un profil..." />
         <CommandList>
           <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
-          <CommandGroup heading="Profils">
-            {profiles?.map((profile) => (
-              <CommandItem
-                key={profile.id}
-                className="flex items-center justify-between p-2"
-              >
-                <div className="flex items-center gap-2">
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <UserCircle className="w-8 h-8 text-muted-foreground" />
-                  )}
-                  <span>{profile.full_name}</span>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleViewProfile(profile.id)}
-                  >
-                    <UserCircle className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleMessage(profile.id)}
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleConnect(profile.id)}
-                  >
-                    <UserPlus className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          {isLoadingProfiles ? (
+            <CommandLoading>Chargement des profils...</CommandLoading>
+          ) : profiles && profiles.length > 0 ? (
+            <CommandGroup heading="Profils">
+              {profiles.map((profile) => (
+                <CommandItem
+                  key={profile.id}
+                  className="flex items-center justify-between p-2"
+                >
+                  <div className="flex items-center gap-2">
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <UserCircle className="w-8 h-8 text-muted-foreground" />
+                    )}
+                    <span>{profile.full_name}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleViewProfile(profile.id)}
+                    >
+                      <UserCircle className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleMessage(profile.id)}
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleConnect(profile.id)}
+                    >
+                      <UserPlus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ) : null}
         </CommandList>
       </CommandDialog>
 
