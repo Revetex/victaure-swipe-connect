@@ -63,7 +63,7 @@
   fill: hsl(var(--primary-foreground)) !important;
 }
 
-/* Results styling */
+/* Results styling with improved dark mode visibility */
 .gsc-results-wrapper-overlay {
   background: hsl(var(--background)) !important;
   border: 1px solid hsl(var(--border)) !important;
@@ -86,11 +86,14 @@
   border-bottom: 1px solid hsl(var(--border)) !important;
   padding: 1rem !important;
   background: transparent !important;
+  margin: 0.5rem 0 !important;
 }
 
+/* Improved text visibility in dark mode */
 .gs-title {
   color: hsl(var(--primary)) !important;
   text-decoration: none !important;
+  font-weight: 500 !important;
 }
 
 .gs-title:hover {
@@ -99,84 +102,38 @@
 
 .gs-snippet {
   color: hsl(var(--foreground)) !important;
+  opacity: 0.9 !important;
+  line-height: 1.5 !important;
 }
 
 .gs-visibleUrl {
   color: hsl(var(--muted-foreground)) !important;
-}
-
-/* Modal close button */
-.gsc-modal-background-image {
-  background-color: rgba(0, 0, 0, 0.5) !important;
-}
-
-.gsc-results-close-btn {
-  color: hsl(var(--foreground)) !important;
-}
-
-/* Autocomplete dropdown */
-.gsc-completion-container {
-  border: 1px solid hsl(var(--border)) !important;
-  background: hsl(var(--background)) !important;
-  color: hsl(var(--foreground)) !important;
-  z-index: 1000 !important;
-  width: 100% !important;
-}
-
-.gsc-completion-selected {
-  background: hsl(var(--accent)) !important;
+  opacity: 0.8 !important;
 }
 
 /* Dark mode specific overrides */
-.dark .gsc-input-box {
-  background-color: hsl(var(--background)) !important;
-}
-
-.dark .gsc-input-box input {
-  color: hsl(var(--foreground)) !important;
-}
-
 .dark .gsc-results-wrapper-overlay {
   background-color: hsl(var(--background)) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2) !important;
 }
 
-.dark .gsc-webResult.gsc-result {
+.dark .gsc-result {
   background-color: transparent !important;
 }
 
-/* Fix z-index issues */
-.gsc-completion-container {
-  z-index: 1000 !important;
+.dark .gs-title {
+  color: hsl(var(--primary)) !important;
+  font-weight: 600 !important;
 }
 
-/* Make sure the search box is visible */
-.gcse-search {
-  display: block !important;
-  width: 100% !important;
-  min-height: 44px !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  position: relative !important;
+.dark .gs-snippet {
+  color: hsl(var(--foreground)) !important;
+  opacity: 0.95 !important;
 }
 
-/* Force visibility of search container */
-.gsc-control-wrapper-cse {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-  width: 100% !important;
-}
-
-/* Table results styling */
-.gsc-table-result, 
-.gsc-thumbnail-inside, 
-.gsc-url-top {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.gsc-table-result td {
-  padding: 0.5rem !important;
+.dark .gs-visibleUrl {
+  color: hsl(var(--muted-foreground)) !important;
+  opacity: 0.9 !important;
 }
 
 /* Mobile optimizations */
@@ -195,22 +152,7 @@
     position: fixed !important;
   }
 
-  .gsc-above-wrapper-area {
-    padding: 0 !important;
-  }
-
   .gsc-result {
     padding: 0.75rem !important;
-    background: transparent !important;
-  }
-
-  .gsc-search-box {
-    padding: 0 !important;
-    width: 100% !important;
-  }
-
-  .gsc-input-box,
-  .gsc-search-button {
-    width: 100% !important;
   }
 }
