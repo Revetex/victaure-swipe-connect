@@ -40,16 +40,21 @@ export function ConversationList({
 
           if (error) throw error;
         }
+        toast.success("Conversation effacée avec succès");
       } else if (onClearChat) {
         // Clear AI chat
         onClearChat();
       }
-      toast.success("Conversation effacée avec succès");
     } catch (error) {
       console.error("Error clearing chat:", error);
       toast.error("Erreur lors de l'effacement de la conversation");
     }
   };
+
+  // Filter out self-conversations after deletion
+  const filteredMessages = messages.filter(message => 
+    message.sender_id !== message.receiver_id
+  );
 
   return (
     <ScrollArea className="flex-1">
@@ -77,7 +82,7 @@ export function ConversationList({
           </Button>
         </div>
         
-        {messages.map((message) => (
+        {filteredMessages.map((message) => (
           <div 
             key={message.id}
             className="group relative"
@@ -102,7 +107,7 @@ export function ConversationList({
           </div>
         ))}
 
-        {messages?.length === 0 && (
+        {filteredMessages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <p>Aucune conversation pour le moment</p>
             <p className="text-sm">Commencez une nouvelle conversation!</p>
