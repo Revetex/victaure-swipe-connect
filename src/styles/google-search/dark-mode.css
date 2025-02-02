@@ -1,0 +1,25 @@
+/* Dark mode specific overrides */
+.dark .gsc-results-wrapper-overlay {
+  background-color: hsl(var(--background)) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2) !important;
+}
+
+.dark .gsc-result {
+  background-color: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .gs-title {
+  color: hsl(var(--primary)) !important;
+  font-weight: 600 !important;
+}
+
+.dark .gs-snippet {
+  color: hsl(var(--foreground)) !important;
+  opacity: 0.95 !important;
+}
+
+.dark .gs-visibleUrl {
+  color: hsl(var(--accent-foreground)) !important;
+  opacity: 0.9 !important;
+}

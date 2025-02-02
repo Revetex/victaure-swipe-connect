@@ -1,0 +1,73 @@
+/* Results styling with improved dark mode visibility */
+.gsc-results-wrapper-overlay {
+  background: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+  height: auto !important;
+  max-height: 90vh !important;
+  position: fixed !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.gsc-result {
+  border-bottom: 1px solid hsl(var(--border)) !important;
+  padding: 1rem !important;
+  background: hsl(var(--card)) !important;
+  margin: 0.5rem 0 !important;
+  border-radius: 0.375rem !important;
+}
+
+/* Results container background fix */
+.gsc-results-wrapper-visible {
+  background: hsl(var(--background)) !important;
+}
+
+.gsc-results {
+  background: hsl(var(--background)) !important;
+  padding: 0.5rem !important;
+}
+
+/* Improved text visibility in dark mode */
+.gs-title {
+  color: hsl(var(--primary)) !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+}
+
+.gs-title:hover {
+  text-decoration: underline !important;
+}
+
+.gs-snippet {
+  color: hsl(var(--foreground)) !important;
+  opacity: 0.95 !important;
+  line-height: 1.6 !important;
+  font-size: 0.95rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.gs-visibleUrl {
+  color: hsl(var(--accent-foreground)) !important;
+  opacity: 0.9 !important;
+  font-size: 0.9rem !important;
+  margin-top: 0.25rem !important;
+}
+
+/* Hide "Search on Google" bottom link */
+.gsc-results .gsc-cursor-box.gs-bidi-start-align {
+  margin-bottom: 0 !important;
+}
+
+.gs-web-image-box,
+.gcsc-find-more-on-google {
+  display: none !important;
+}
