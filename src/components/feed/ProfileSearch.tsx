@@ -27,7 +27,7 @@ export function ProfileSearch() {
           return [];
         }
 
-        return (data || []) as UserProfile[];
+        return data as UserProfile[] || [];
       } catch (error) {
         console.error("Error in query:", error);
         return [];
@@ -60,19 +60,20 @@ export function ProfileSearch() {
           placeholder="Rechercher un profil..."
           className="w-full px-4 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
-        {isInputFocused && search.length > 0 && (
+        {isInputFocused && search.length > 0 && Array.isArray(profiles) && (
           <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden">
-            {profiles.map((profile) => (
-              <Command.Item
-                key={profile.id}
-                value={profile.full_name || ''}
-                onSelect={() => handleSelectProfile(profile)}
-                className="px-4 py-2 hover:bg-muted cursor-pointer"
-              >
-                {profile.full_name}
-              </Command.Item>
-            ))}
-            {profiles.length === 0 && (
+            {profiles.length > 0 ? (
+              profiles.map((profile) => (
+                <Command.Item
+                  key={profile.id}
+                  value={profile.full_name || ''}
+                  onSelect={() => handleSelectProfile(profile)}
+                  className="px-4 py-2 hover:bg-muted cursor-pointer"
+                >
+                  {profile.full_name}
+                </Command.Item>
+              ))
+            ) : (
               <Command.Item
                 value="no-results"
                 className="px-4 py-2 text-muted-foreground"
