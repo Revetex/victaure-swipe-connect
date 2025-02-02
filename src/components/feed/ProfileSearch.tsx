@@ -3,15 +3,12 @@ import { Command } from "cmdk";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { ProfilePreview } from "@/components/ProfilePreview";
 
 export function ProfileSearch() {
   const [search, setSearch] = useState("");
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const navigate = useNavigate();
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles", search],
@@ -42,6 +39,7 @@ export function ProfileSearch() {
 
   const handleSelectProfile = (profile: UserProfile) => {
     setSelectedProfile(profile);
+    setIsInputFocused(false);
   };
 
   const handleCloseProfile = () => {
