@@ -67,14 +67,14 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             {(profile.experiences || []).map((exp: Experience) => (
               <Reorder.Item key={exp.id} value={exp}>
                 <motion.div 
-                  className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-500/20 w-full"
+                  className="relative bg-purple-50/50 dark:bg-purple-950/20 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-purple-200 dark:border-purple-800/30 shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   <div className="absolute top-4 left-2 cursor-move">
-                    <GripVertical className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />
+                    <GripVertical className="h-4 w-4 text-purple-500 dark:text-purple-400" />
                   </div>
-                  <div className="ml-6 w-full">
+                  <div className="ml-6 w-full space-y-4">
                     <div className="flex items-center gap-2 w-full">
-                      <Building2 className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
+                      <Building2 className="h-4 w-4 shrink-0 text-purple-600 dark:text-purple-400" />
                       <Input
                         value={exp.company}
                         onChange={(e) => {
@@ -84,11 +84,11 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                           setProfile({ ...profile, experiences: newExperiences });
                         }}
                         placeholder="Nom de l'entreprise"
-                        className="flex-1 bg-white/10 border-indigo-500/20 min-h-[44px] w-full"
+                        className="flex-1 bg-white/50 dark:bg-white/5 border-purple-200 dark:border-purple-800/30 min-h-[44px]"
                       />
                     </div>
                     <div className="flex items-center gap-2 mt-2">
-                      <Briefcase className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
+                      <Briefcase className="h-4 w-4 shrink-0 text-purple-600 dark:text-purple-400" />
                       <Input
                         value={exp.position}
                         onChange={(e) => {
@@ -98,12 +98,12 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                           setProfile({ ...profile, experiences: newExperiences });
                         }}
                         placeholder="Poste"
-                        className="flex-1 bg-white/10 border-indigo-500/20 min-h-[44px]"
+                        className="flex-1 bg-white/50 dark:bg-white/5 border-purple-200 dark:border-purple-800/30 min-h-[44px]"
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
+                        <Calendar className="h-4 w-4 shrink-0 text-purple-600 dark:text-purple-400" />
                         <Input
                           type="date"
                           value={exp.start_date || ''}
@@ -113,11 +113,11 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                             newExperiences[expIndex] = { ...exp, start_date: e.target.value };
                             setProfile({ ...profile, experiences: newExperiences });
                           }}
-                          className="flex-1 bg-white/10 border-indigo-500/20 min-h-[44px]"
+                          className="flex-1 bg-white/50 dark:bg-white/5 border-purple-200 dark:border-purple-800/30 min-h-[44px]"
                         />
                       </div>
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
+                        <Calendar className="h-4 w-4 shrink-0 text-purple-600 dark:text-purple-400" />
                         <Input
                           type="date"
                           value={exp.end_date || ''}
@@ -127,7 +127,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                             newExperiences[expIndex] = { ...exp, end_date: e.target.value };
                             setProfile({ ...profile, experiences: newExperiences });
                           }}
-                          className="flex-1 bg-white/10 border-indigo-500/20 min-h-[44px]"
+                          className="flex-1 bg-white/50 dark:bg-white/5 border-purple-200 dark:border-purple-800/30 min-h-[44px]"
                         />
                       </div>
                     </div>
@@ -141,7 +141,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                           setProfile({ ...profile, experiences: newExperiences });
                         }}
                         placeholder="Description du poste"
-                        className="w-full bg-white/10 border-indigo-500/20 min-h-[100px]"
+                        className="w-full bg-white/50 dark:bg-white/5 border-purple-200 dark:border-purple-800/30 min-h-[100px]"
                       />
                     </div>
                     <div className="absolute top-2 right-2">
@@ -149,7 +149,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
                         variant="ghost"
                         size="icon"
                         onClick={() => handleRemoveExperience(exp.id)}
-                        className="hover:text-destructive transition-colors"
+                        className="hover:text-red-500 dark:hover:text-red-400 transition-colors"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -205,11 +205,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
           >
             <Button 
               onClick={handleAddExperience} 
-              className="w-full transition-colors duration-200 min-h-[44px]"
-              style={{ 
-                backgroundColor: selectedStyle.colors.primary,
-                color: '#fff'
-              }}
+              className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 text-white transition-colors duration-200 min-h-[44px]"
             >
               Ajouter une expérience
             </Button>

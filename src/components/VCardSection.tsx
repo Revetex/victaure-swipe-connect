@@ -21,17 +21,17 @@ export function VCardSection({ title, icon, children, className = "" }: VCardSec
     >
       <div className={`flex items-center gap-2 pb-2 border-b ${
         isExperience 
-          ? 'border-purple-200 dark:border-purple-900/30' 
+          ? 'border-purple-300 dark:border-purple-800/30' 
           : isEducation 
-            ? 'border-indigo-200 dark:border-indigo-900/30'
-            : 'border-indigo-100 dark:border-indigo-900/30'
+            ? 'border-indigo-300 dark:border-indigo-800/30'
+            : 'border-primary/20'
       }`}>
         <div className={
           isExperience 
             ? 'text-purple-600 dark:text-purple-400'
             : isEducation
               ? 'text-indigo-600 dark:text-indigo-400'
-              : 'text-indigo-600 dark:text-indigo-400'
+              : 'text-primary'
         }>
           {icon}
         </div>
@@ -40,12 +40,18 @@ export function VCardSection({ title, icon, children, className = "" }: VCardSec
             ? 'text-purple-900 dark:text-purple-100'
             : isEducation
               ? 'text-indigo-900 dark:text-indigo-100'
-              : 'text-gray-900 dark:text-gray-100'
+              : 'text-primary'
         }`}>
           {title}
         </h3>
       </div>
-      <div className="pt-2">
+      <div className={`pt-2 ${
+        isExperience 
+          ? 'text-purple-800 dark:text-purple-200'
+          : isEducation
+            ? 'text-indigo-800 dark:text-indigo-200'
+            : 'text-primary/90'
+      }`}>
         {children}
       </div>
     </motion.div>
