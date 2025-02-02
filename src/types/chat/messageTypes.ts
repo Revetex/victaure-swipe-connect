@@ -4,8 +4,7 @@ export interface Message {
   sender: string;
   thinking?: boolean;
   timestamp: Date;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
   sender_id: string;
   receiver_id: string;
   read: boolean;
