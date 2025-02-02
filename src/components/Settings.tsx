@@ -1,4 +1,4 @@
-import { LogOut, Bell, Moon, Lock, Sun, Monitor } from "lucide-react";
+import { LogOut, Bell, Moon, Lock, Sun, Monitor, Eye, EyeOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { supabase } from "@/integrations/supabase/client";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -32,11 +33,52 @@ export function Settings() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [privacyEnabled, setPrivacyEnabled] = useState(false);
   const { signOut } = useAuth();
 
   useEffect(() => {
     setMounted(true);
+    fetchPrivacySettings();
   }, []);
+
+  const fetchPrivacySettings = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('privacy_enabled')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setPrivacyEnabled(profile?.privacy_enabled || false);
+    } catch (error) {
+      console.error('Error fetching privacy settings:', error);
+      toast.error("Erreur lors du chargement des paramètres de confidentialité");
+    }
+  };
+
+  const handlePrivacyToggle = async (checked: boolean) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ privacy_enabled: checked })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setPrivacyEnabled(checked);
+      toast.success(`Profil ${checked ? 'privé' : 'public'}`);
+    } catch (error) {
+      console.error('Error updating privacy settings:', error);
+      toast.error("Erreur lors de la mise à jour des paramètres de confidentialité");
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -111,6 +153,27 @@ export function Settings() {
                   </Label>
                 </div>
               </RadioGroup>
+            </div>
+          </SettingsSection>
+        </motion.div>
+
+        <Separator className="my-4" />
+
+        <motion.div variants={itemVariants}>
+          <SettingsSection title="Confidentialité">
+            <div className={cn(
+              "flex items-center justify-between p-3 rounded-lg bg-muted/30",
+              "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
+              "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+            )}>
+              <Label className="text-sm cursor-pointer flex items-center gap-2 text-foreground/80">
+                {privacyEnabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                Profil privé
+              </Label>
+              <Switch 
+                checked={privacyEnabled}
+                onCheckedChange={handlePrivacyToggle}
+              />
             </div>
           </SettingsSection>
         </motion.div>

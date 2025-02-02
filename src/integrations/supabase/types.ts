@@ -686,6 +686,7 @@ export type Database = {
           notifications_enabled: boolean | null
           online_status: boolean | null
           phone: string | null
+          privacy_enabled: boolean | null
           role: string
           sections_order: string[] | null
           skills: string[] | null
@@ -718,6 +719,7 @@ export type Database = {
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
+          privacy_enabled?: boolean | null
           role: string
           sections_order?: string[] | null
           skills?: string[] | null
@@ -750,6 +752,7 @@ export type Database = {
           notifications_enabled?: boolean | null
           online_status?: boolean | null
           phone?: string | null
+          privacy_enabled?: boolean | null
           role?: string
           sections_order?: string[] | null
           skills?: string[] | null
