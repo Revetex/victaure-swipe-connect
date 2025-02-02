@@ -52,7 +52,7 @@ export function MessagesContent({
 
         <div className="flex-1 overflow-hidden bg-background/80">
           <ScrollArea className="h-full px-4 py-4">
-            <div className="max-w-5xl mx-auto space-y-4">
+            <div className="max-w-5xl mx-auto space-y-4 pb-20">
               <AnimatePresence mode="popLayout">
                 {messages.map((message) => (
                   <ChatMessage
@@ -69,7 +69,7 @@ export function MessagesContent({
           </ScrollArea>
         </div>
 
-        <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 relative z-20">
+        <div className="fixed bottom-0 left-0 right-0 shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-20">
           <div className="max-w-5xl mx-auto">
             <ChatInput
               value={inputMessage}
