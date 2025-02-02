@@ -7,7 +7,6 @@ import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import {
   CommandDialog,
@@ -16,7 +15,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandLoading,
 } from "@/components/ui/command";
 
 interface Post {
@@ -179,7 +177,9 @@ export function Feed() {
         <CommandList>
           <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
           {isLoadingProfiles ? (
-            <CommandLoading>Chargement des profils...</CommandLoading>
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              Chargement des profils...
+            </div>
           ) : profiles && profiles.length > 0 ? (
             <CommandGroup heading="Profils">
               {profiles.map((profile) => (
