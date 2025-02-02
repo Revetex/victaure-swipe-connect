@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { GoogleSearchBox } from "../../../components/google-search/GoogleSearchBox";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 interface ExternalSearchSectionProps {
@@ -19,6 +19,7 @@ export function ExternalSearchSection({
 }: ExternalSearchSectionProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const fetchSuggestions = async () => {
     try {
@@ -95,45 +96,64 @@ export function ExternalSearchSection({
             <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse" />
             <h3 className="text-xs sm:text-sm font-medium">Suggestions IA</h3>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={fetchSuggestions}
-            className="h-7 w-7 p-0"
-            disabled={loadingSuggestions}
-          >
-            {loadingSuggestions ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <RefreshCw className="h-3.5 w-3.5" />
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={fetchSuggestions}
+              className="h-7 w-7 p-0"
+              disabled={loadingSuggestions}
+            >
+              {loadingSuggestions ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="h-3.5 w-3.5" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSuggestions(!showSuggestions)}
+              className="h-7 w-7 p-0"
+            >
+              {showSuggestions ? (
+                <ChevronUp className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          </div>
         </div>
         
-        <motion.div 
-          className="flex flex-wrap gap-1.5 sm:gap-2"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          {suggestions.map((suggestion, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.05 }}
+        <AnimatePresence>
+          {showSuggestions && (
+            <motion.div 
+              className="flex flex-wrap gap-1.5 sm:gap-2"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <Button
-                variant="secondary"
-                size="sm"
-                className="h-7 text-[11px] sm:text-xs whitespace-nowrap bg-background/50 hover:bg-background/80 px-2 py-0"
-                onClick={() => applySuggestion(suggestion)}
-              >
-                {suggestion}
-              </Button>
+              {suggestions.map((suggestion, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-7 text-[11px] sm:text-xs whitespace-nowrap bg-background/50 hover:bg-background/80 px-2 py-0"
+                    onClick={() => applySuggestion(suggestion)}
+                  >
+                    {suggestion}
+                  </Button>
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       
       <div className="relative w-full min-h-[44px] bg-background rounded-lg">
