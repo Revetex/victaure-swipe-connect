@@ -54,24 +54,36 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
 
       if (checkError) throw checkError;
 
+      let messageId;
+
       // If no conversation exists, create initial message
       if (!existingMessages || existingMessages.length === 0) {
-        const { error: insertError } = await supabase
+        const { data: newMessage, error: insertError } = await supabase
           .from('messages')
           .insert({
             sender_id: user.id,
             receiver_id: profile.id,
             content: "👋 Bonjour!",
             read: false
-          });
+          })
+          .select()
+          .single();
 
         if (insertError) throw insertError;
+        messageId = newMessage.id;
+      } else {
+        messageId = existingMessages[0].id;
       }
 
-      // Navigate to messages route with the profile ID
-      navigate(`/dashboard/messages/${profile.id}`);
-      onClose(); // Close the profile preview
-      toast.success("Conversation créée avec succès");
+      // Close the profile preview before navigation
+      onClose();
+      
+      // Use setTimeout to ensure state updates are processed before navigation
+      setTimeout(() => {
+        navigate(`/dashboard/messages/${profile.id}`);
+        toast.success("Conversation créée avec succès");
+      }, 0);
+
     } catch (error) {
       console.error("Error creating conversation:", error);
       toast.error("Erreur lors de la création de la conversation");
