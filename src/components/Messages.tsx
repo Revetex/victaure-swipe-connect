@@ -4,6 +4,8 @@ import { useState } from "react";
 import { MessagesList } from "./messages/conversation/MessagesList";
 import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
+import { ProfileSearch } from "./feed/ProfileSearch";
+import { Dialog, DialogContent } from "./ui/dialog";
 
 export function Messages() {
   const {
@@ -19,6 +21,7 @@ export function Messages() {
 
   const { messages, markAsRead } = useMessages();
   const [showConversation, setShowConversation] = useState(false);
+  const [showConnectionsDialog, setShowConnectionsDialog] = useState(false);
 
   const handleBack = () => {
     setShowConversation(false);
@@ -56,6 +59,10 @@ export function Messages() {
     }
   };
 
+  const handleNewConversation = () => {
+    setShowConnectionsDialog(true);
+  };
+
   return (
     <div className="h-full flex flex-col">
       {showConversation ? (
@@ -76,8 +83,17 @@ export function Messages() {
           chatMessages={chatMessages}
           onSelectConversation={handleSelectConversation}
           onMarkAsRead={handleMarkAsRead}
+          onNewConversation={handleNewConversation}
         />
       )}
+
+      <Dialog open={showConnectionsDialog} onOpenChange={setShowConnectionsDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <div className="grid gap-4 py-4">
+            <ProfileSearch onClose={() => setShowConnectionsDialog(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
