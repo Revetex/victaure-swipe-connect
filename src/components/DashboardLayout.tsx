@@ -10,7 +10,7 @@ import { useDebounce } from "use-debounce";
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(3); // Changed initial state to 3 (jobs page)
+  const [currentPage, setCurrentPage] = useState(3);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   
@@ -60,12 +60,12 @@ export function DashboardLayout() {
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen pb-40 lg:pb-24"
+              className="transform transition-all duration-300 w-full min-h-screen"
               style={{ 
-                maxHeight: isEditing ? viewportHeight : 'none',
+                maxHeight: isEditing ? `${viewportHeight - (isMobile ? 80 : 40)}px` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
+                paddingBottom: isEditing ? (isMobile ? '6rem' : '4rem') : '10rem'
               }}
             >
               <DashboardContent

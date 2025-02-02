@@ -186,7 +186,7 @@ export function UnifiedBoard({
                         <StickyNote className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p className="text-lg">Aucune note</p>
                         <p className="text-sm mt-2">
-                          Créez votre première note en utilisant le formulaire ci-dessus
+                          Créez votre première note
                         </p>
                       </motion.div>
                     )}
