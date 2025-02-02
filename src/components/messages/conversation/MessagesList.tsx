@@ -13,7 +13,7 @@ interface MessagesListProps {
 }
 
 export function MessagesList({
-  messages,
+  messages = [], // Add default empty array
   chatMessages,
   onSelectConversation,
   onMarkAsRead
@@ -23,9 +23,17 @@ export function MessagesList({
   const { data: profiles = {} } = useQuery({
     queryKey: ["profiles", messages],
     queryFn: async () => {
+      if (!messages?.length || !currentProfile?.id) {
+        return {};
+      }
+
       const profileIds = messages.map(msg => 
-        msg.sender_id === currentProfile?.id ? msg.receiver_id : msg.sender_id
-      );
+        msg.sender_id === currentProfile.id ? msg.receiver_id : msg.sender_id
+      ).filter(Boolean); // Filter out any undefined values
+
+      if (!profileIds.length) {
+        return {};
+      }
 
       const { data, error } = await supabase
         .from("profiles")
@@ -38,21 +46,25 @@ export function MessagesList({
       }
 
       return data.reduce((acc: Record<string, UserProfile>, profile) => {
-        acc[profile.id] = profile;
+        if (profile && profile.id) {
+          acc[profile.id] = profile;
+        }
         return acc;
       }, {});
     },
-    enabled: messages.length > 0 && !!currentProfile,
+    enabled: messages?.length > 0 && !!currentProfile?.id,
     initialData: {}
   });
 
   const handleSelectMessage = async (message: any) => {
-    const profileId = message.sender_id === currentProfile?.id ? message.receiver_id : message.sender_id;
+    if (!currentProfile) return;
+    
+    const profileId = message.sender_id === currentProfile.id ? message.receiver_id : message.sender_id;
     const profile = profiles[profileId];
     
     if (profile) {
       onSelectConversation("assistant", profile);
-      if (!message.read && message.receiver_id === currentProfile?.id) {
+      if (!message.read && message.receiver_id === currentProfile.id) {
         onMarkAsRead(message.id);
       }
     }
@@ -74,8 +86,10 @@ export function MessagesList({
           </div>
         </div>
 
-        {messages.map((message) => {
-          const profileId = message.sender_id === currentProfile?.id ? message.receiver_id : message.sender_id;
+        {messages?.map((message) => {
+          if (!message || !currentProfile) return null;
+          
+          const profileId = message.sender_id === currentProfile.id ? message.receiver_id : message.sender_id;
           const profile = profiles[profileId];
           
           if (!profile) return null;
@@ -100,7 +114,7 @@ export function MessagesList({
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium">{profile.full_name}</h3>
-                  {!message.read && message.receiver_id === currentProfile?.id && (
+                  {!message.read && message.receiver_id === currentProfile.id && (
                     <span className="w-2 h-2 bg-primary rounded-full" />
                   )}
                 </div>
