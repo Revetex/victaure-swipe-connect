@@ -24,7 +24,7 @@ export function ProfileSearch() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const { data: profiles, isLoading: isLoadingProfiles } = useQuery({
+  const { data: profiles = [], isLoading: isLoadingProfiles } = useQuery({
     queryKey: ["profiles", searchQuery],
     queryFn: async () => {
       if (!searchQuery) return [];
@@ -35,8 +35,13 @@ export function ProfileSearch() {
         .ilike("full_name", `%${searchQuery}%`)
         .limit(5);
 
-      if (error) throw error;
-      return data as Profile[];
+      if (error) {
+        console.error("Error fetching profiles:", error);
+        toast.error("Erreur lors de la recherche des profils");
+        return [];
+      }
+      
+      return (data || []) as Profile[];
     },
     enabled: searchQuery.length > 0
   });
