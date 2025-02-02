@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -118,11 +119,12 @@ export function Messages() {
 
   const [showConversation, setShowConversation] = useState(false);
   const [selectedReceiver, setSelectedReceiver] = useState<any>(null);
+  const location = useLocation();
 
   // Fetch receiver profile when conversation is opened from URL
   useEffect(() => {
     const fetchReceiverFromUrl = async () => {
-      const path = window.location.pathname;
+      const path = location.pathname;
       const match = path.match(/\/messages\/([^\/]+)/);
       
       if (match) {
@@ -137,11 +139,15 @@ export function Messages() {
           setSelectedReceiver(receiver);
           setShowConversation(true);
         }
+      } else {
+        // If no receiver ID in URL, show the messages list
+        setShowConversation(false);
+        setSelectedReceiver(null);
       }
     };
 
     fetchReceiverFromUrl();
-  }, []);
+  }, [location.pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
