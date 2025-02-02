@@ -3,6 +3,7 @@ import { TodoInput } from "./TodoInput";
 import { TodoList } from "./TodoList";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { addDays, addHours, isFuture } from "date-fns";
 
 interface TodoSectionProps {
   todos: Todo[];
@@ -44,10 +45,51 @@ export function TodoSection({
     });
   };
 
+  const createReminderNotifications = async (todoText: string, dueDate: Date, dueTime?: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    let notificationDate = dueDate;
+    
+    // If there's a specific time
+    if (dueTime) {
+      const [hours, minutes] = dueTime.split(':').map(Number);
+      notificationDate.setHours(hours, minutes);
+
+      // Create notification 1 hour before if the time hasn't passed yet
+      const oneHourBefore = addHours(notificationDate, -1);
+      if (isFuture(oneHourBefore)) {
+        await supabase.from('notifications').insert({
+          user_id: user.id,
+          title: 'Rappel de tâche (1 heure)',
+          message: `Rappel: "${todoText}" est prévu dans 1 heure`,
+          created_at: oneHourBefore.toISOString(),
+        });
+      }
+    }
+
+    // Create notification 1 day before if the date hasn't passed yet
+    const oneDayBefore = addDays(notificationDate, -1);
+    if (isFuture(oneDayBefore)) {
+      await supabase.from('notifications').insert({
+        user_id: user.id,
+        title: 'Rappel de tâche (1 jour)',
+        message: `Rappel: "${todoText}" est prévu demain${dueTime ? ` à ${dueTime}` : ''}`,
+        created_at: oneDayBefore.toISOString(),
+      });
+    }
+  };
+
   const handleAddTodo = async () => {
     if (newTodo.trim()) {
       onAddTodo();
       await createNotification(newTodo);
+      
+      // Create reminder notifications if there's a due date
+      if (selectedDate) {
+        await createReminderNotifications(newTodo, selectedDate, !allDay ? selectedTime : undefined);
+      }
+      
       toast.success("Tâche ajoutée avec succès");
     }
   };
@@ -55,7 +97,7 @@ export function TodoSection({
   return (
     <div className="h-full max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)]">
       <div className="flex flex-col h-full bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
-        <div className="p-4 sm:p-6 bg-background/50 backdrop-blur-sm sticky top-[72px] z-10 border-b">
+        <div className="p-4">
           <TodoInput
             newTodo={newTodo}
             selectedDate={selectedDate}

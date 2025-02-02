@@ -29,7 +29,7 @@ export function NotesSection({
 }: NotesSectionProps) {
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)]">
-      <div className="p-4 sm:p-6 bg-background/50 backdrop-blur-sm sticky top-[72px] z-10 border-b">
+      <div className="p-4">
         <NotesInput
           newNote={newNote}
           selectedColor={selectedColor}
@@ -43,7 +43,7 @@ export function NotesSection({
       <ScrollArea className="flex-1">
         <motion.div 
           className={cn(
-            "grid gap-4 p-4 sm:p-6",
+            "grid gap-4 p-4",
             "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
             "min-h-[300px]"
           )}
