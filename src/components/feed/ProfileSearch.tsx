@@ -54,13 +54,15 @@ export function ProfileSearch() {
           onValueChange={setSearchQuery}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            // Petit délai pour permettre la sélection d'un résultat
             setTimeout(() => setIsInputFocused(false), 200);
           }}
           className="h-9"
         />
-        {(isInputFocused || searchQuery) && (
-          <CommandList className="absolute w-full bg-white dark:bg-gray-950 rounded-b-lg border border-t-0 shadow-lg max-h-[300px] overflow-y-auto z-50">
+      </Command>
+      
+      {(isInputFocused || searchQuery) && (
+        <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-950 rounded-lg border shadow-lg max-h-[300px] overflow-y-auto z-50">
+          <CommandList>
             {searchQuery.length === 0 ? null : (
               <>
                 <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
@@ -97,8 +99,8 @@ export function ProfileSearch() {
               </>
             )}
           </CommandList>
-        )}
-      </Command>
+        </div>
+      )}
     </div>
   );
 }
