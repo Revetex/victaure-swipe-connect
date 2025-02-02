@@ -16,6 +16,7 @@ export interface Message {
   timestamp: Date;
   sender?: MessageSender;
   thinking?: boolean;
+  updated_at?: string;
 }
 
 export interface Receiver {
