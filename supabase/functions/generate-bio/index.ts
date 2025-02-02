@@ -12,37 +12,48 @@ serve(async (req) => {
   }
 
   try {
-    const { skills, experiences, education } = await req.json()
+    const { skills, experiences, education, certifications } = await req.json()
     
-    console.log('Received profile data:', { skills, experiences, education })
+    console.log('Received profile data:', { skills, experiences, education, certifications })
 
     const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY')
     if (!huggingFaceApiKey) {
       throw new Error('Hugging Face API key not configured')
     }
 
-    // Construct the prompt with the profile information
-    const prompt = `Tu es un expert en rédaction de profils professionnels québécois. Génère une bio professionnelle basée sur ces informations:
+    // Construct a more detailed prompt with all available information
+    const prompt = `Tu es un expert en rédaction de profils professionnels québécois. Génère une bio professionnelle percutante basée sur ces informations:
 
-Compétences: ${skills ? skills.join(', ') : 'Non spécifiées'}
-${experiences && experiences.length > 0 ? `Expériences: ${experiences.map(exp => 
-  `${exp.position} chez ${exp.company} (${exp.start_date} - ${exp.end_date || 'Présent'})`
-).join(', ')}` : 'Pas d\'expérience professionnelle spécifiée'}
-${education && education.length > 0 ? `Formation: ${education.map(edu => 
-  `${edu.degree} en ${edu.field_of_study} à ${edu.school_name}`
-).join(', ')}` : 'Pas de formation spécifiée'}
+${skills && skills.length > 0 ? `Compétences principales: ${skills.join(', ')}` : ''}
 
-La bio doit:
-- Être adaptée au marché du travail québécois
-- Rester concise (maximum 3 phrases)
-- Utiliser un ton professionnel mais chaleureux
-- Mettre en valeur les points forts du profil
-- Utiliser des expressions québécoises appropriées
-- Être rédigée à la première personne`
+${experiences && experiences.length > 0 ? `Expérience professionnelle:
+${experiences.map(exp => 
+  `- ${exp.position} chez ${exp.company}${exp.description ? ` - ${exp.description}` : ''} (${exp.start_date || 'Date non spécifiée'} - ${exp.end_date || 'Présent'})`
+).join('\n')}` : ''}
+
+${education && education.length > 0 ? `Formation:
+${education.map(edu => 
+  `- ${edu.degree}${edu.field_of_study ? ` en ${edu.field_of_study}` : ''} à ${edu.school_name}`
+).join('\n')}` : ''}
+
+${certifications && certifications.length > 0 ? `Certifications:
+${certifications.map(cert => 
+  `- ${cert.title} (${cert.issuer})`
+).join('\n')}` : ''}
+
+Directives pour la bio:
+- Longueur: 2-3 phrases maximum
+- Ton: professionnel mais chaleureux
+- Style: première personne du singulier
+- Mettre en avant: expertise principale et réalisations clés
+- Inclure: une touche personnelle qui reflète la passion pour le domaine
+- Adapter: au contexte québécois
+- Éviter: les clichés et le jargon trop technique
+
+Génère une bio qui capture l'essence du profil tout en restant concise et engageante.`
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
-    // Using a more reliable model for text generation
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
       method: 'POST',
       headers: {
@@ -64,7 +75,7 @@ La bio doit:
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Hugging Face API error response:', errorText)
-      throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}\n${errorText}`)
+      throw new Error(`Erreur lors de la génération: ${response.status} ${response.statusText}`)
     }
 
     const data = await response.json()
@@ -72,7 +83,7 @@ La bio doit:
 
     if (!Array.isArray(data) || !data[0]?.generated_text) {
       console.error('Invalid response format:', data)
-      throw new Error('Format de réponse invalide de l\'API')
+      throw new Error('Format de réponse invalide')
     }
 
     const bio = data[0].generated_text.trim()
@@ -92,8 +103,7 @@ La bio doit:
     return new Response(
       JSON.stringify({
         error: 'Une erreur est survenue lors de la génération de la bio',
-        details: error.message,
-        timestamp: new Date().toISOString()
+        details: error.message
       }),
       { 
         status: 500,

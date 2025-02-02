@@ -27,7 +27,7 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       
       if (sessionError) {
         console.error("Session error:", sessionError);
-        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+        toast.error("Erreur d'authentification");
         return;
       }
 
@@ -40,27 +40,39 @@ export function VCardBio({ profile, isEditing, setProfile }: VCardBioProps) {
       
       if (userError || !user) {
         console.error("User verification error:", userError);
-        toast.error("Erreur de vérification utilisateur. Veuillez vous reconnecter.");
+        toast.error("Erreur de vérification utilisateur");
         return;
       }
 
-      console.log("Generating bio with profile data:", {
-        skills: profile.skills,
-        experiences: profile.experiences,
-        education: profile.education,
-      });
+      const bioContext = {
+        skills: profile.skills || [],
+        experiences: (profile.experiences || []).map((exp: any) => ({
+          position: exp.position,
+          company: exp.company,
+          description: exp.description,
+          start_date: exp.start_date,
+          end_date: exp.end_date
+        })),
+        education: (profile.education || []).map((edu: any) => ({
+          degree: edu.degree,
+          field_of_study: edu.field_of_study,
+          school_name: edu.school_name
+        })),
+        certifications: (profile.certifications || []).map((cert: any) => ({
+          title: cert.title,
+          issuer: cert.issuer
+        }))
+      };
+
+      console.log("Generating bio with context:", bioContext);
 
       const { data, error } = await supabase.functions.invoke('generate-bio', {
-        body: {
-          skills: profile.skills || [],
-          experiences: profile.experiences || [],
-          education: profile.education || [],
-        }
+        body: bioContext
       });
 
       if (error) {
         console.error("Error from generate-bio function:", error);
-        throw new Error(error.message || "Erreur lors de la génération de la bio");
+        throw new Error("Erreur lors de la génération de la bio");
       }
 
       if (!data?.bio) {
