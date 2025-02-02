@@ -1,4 +1,3 @@
-import { ProfileSearch } from "./feed/ProfileSearch";
 import { CreatePost } from "./feed/CreatePost";
 import { PostList } from "./feed/PostList";
 import { FriendsList } from "./feed/FriendsList";
@@ -12,16 +11,10 @@ export function Feed() {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
 
-  const handleProfileSelect = (profile: UserProfile) => {
-    // Handle the profile selection here if needed
-    console.log("Selected profile:", profile);
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <ProfileSearch onSelect={handleProfileSelect} />
           <CreatePost onPostCreated={handlePostCreated} />
           <PostList />
         </div>
