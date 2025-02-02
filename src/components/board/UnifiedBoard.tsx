@@ -35,10 +35,10 @@ interface UnifiedBoardProps {
 }
 
 export function UnifiedBoard({
-  todos,
-  notes,
-  newTodo,
-  newNote,
+  todos = [],
+  notes = [],
+  newTodo = "",
+  newNote = "",
   selectedDate,
   selectedTime,
   allDay,
@@ -130,7 +130,7 @@ export function UnifiedBoard({
               <div className="p-4">
                 <motion.div layout className="space-y-3 max-w-3xl mx-auto">
                   <AnimatePresence mode="popLayout">
-                    {todos.map((todo) => (
+                    {todos?.map((todo) => (
                       <TodoItem
                         key={todo.id}
                         todo={todo}
@@ -138,7 +138,7 @@ export function UnifiedBoard({
                         onDelete={onDeleteTodo}
                       />
                     ))}
-                    {todos.length === 0 && (
+                    {(!todos || todos.length === 0) && (
                       <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -169,7 +169,7 @@ export function UnifiedBoard({
                   )}
                 >
                   <AnimatePresence mode="popLayout">
-                    {notes.map((note) => (
+                    {notes?.map((note) => (
                       <StickyNoteComponent
                         key={note.id}
                         note={note}
@@ -177,7 +177,7 @@ export function UnifiedBoard({
                         onDelete={onDeleteNote}
                       />
                     ))}
-                    {notes.length === 0 && (
+                    {(!notes || notes.length === 0) && (
                       <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
