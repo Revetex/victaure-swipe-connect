@@ -3,10 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Avatar } from "@/components/ui/avatar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
+import { Loader2 } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -21,52 +19,71 @@ interface ProfileSearchProps {
   className?: string;
 }
 
-export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisateur...", className }: ProfileSearchProps) {
-  const [open, setOpen] = useState(false);
+export function ProfileSearch({ 
+  onSelect, 
+  placeholder = "Rechercher un utilisateur...", 
+  className 
+}: ProfileSearchProps) {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
 
   const { data: searchResults = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
-      if (!debouncedSearch) return [];
+      if (!debouncedSearch?.trim()) return [];
       
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, avatar_url")
-        .or(`full_name.ilike.%${debouncedSearch}%,email.ilike.%${debouncedSearch}%`)
-        .limit(5);
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, full_name, email, avatar_url")
+          .or(`full_name.ilike.%${debouncedSearch}%,email.ilike.%${debouncedSearch}%`)
+          .limit(5);
 
-      if (error) {
-        console.error("Error fetching profiles:", error);
+        if (error) {
+          console.error("Error fetching profiles:", error);
+          return [];
+        }
+
+        return data || [];
+      } catch (error) {
+        console.error("Error in search query:", error);
         return [];
       }
-      return data || [];
     },
-    enabled: Boolean(debouncedSearch),
+    enabled: Boolean(debouncedSearch?.trim()),
   });
 
   const handleSelect = useCallback((profile: Profile) => {
     onSelect(profile);
-    setOpen(false);
     setSearch(""); // Reset search after selection
   }, [onSelect]);
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+  };
 
   return (
     <Command className={`relative ${className}`}>
       <CommandInput
         placeholder={placeholder}
         value={search}
-        onValueChange={setSearch}
+        onValueChange={handleSearchChange}
         className="w-full"
       />
       {(search || isLoading) && (
         <div className="absolute top-full left-0 right-0 z-50 mt-1">
-          <CommandList className="bg-popover border rounded-md shadow-md">
+          <CommandList className="bg-popover border rounded-md shadow-md max-h-[300px] overflow-y-auto">
             {isLoading ? (
-              <CommandEmpty>Recherche en cours...</CommandEmpty>
+              <CommandEmpty className="py-6 text-center">
+                <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                <span className="text-sm text-muted-foreground mt-2">
+                  Recherche en cours...
+                </span>
+              </CommandEmpty>
             ) : searchResults.length === 0 ? (
-              <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+              <CommandEmpty className="py-6">
+                Aucun résultat trouvé.
+              </CommandEmpty>
             ) : (
               <CommandGroup>
                 {searchResults.map((profile) => (
