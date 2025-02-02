@@ -41,7 +41,7 @@ export async function saveMessage(message: Message): Promise<void> {
         user_id: user.id,
         content: message.content,
         sender: message.sender,
-        created_at: message.timestamp.toISOString()
+        created_at: message.created_at
       });
 
     if (error) throw error;
@@ -70,6 +70,7 @@ export async function loadMessages(): Promise<Message[]> {
       content: msg.content,
       sender: msg.sender,
       timestamp: new Date(msg.created_at),
+      created_at: msg.created_at,
       sender_id: msg.sender === 'user' ? user.id : 'assistant',
       receiver_id: msg.sender === 'user' ? 'assistant' : user.id,
       read: true
