@@ -33,7 +33,7 @@ export function Messages() {
 
   // Filter out self-conversations before passing to MessageList
   const filteredMessages = messages?.filter(message => 
-    message.sender_id !== message.receiver_id
+    message.sender?.id !== message.receiver_id
   ) || [];
 
   return (
