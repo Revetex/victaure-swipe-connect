@@ -12,7 +12,7 @@ export function ProfileSearch() {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
 
-  const { data: profiles = [], isLoading, error } = useQuery({
+  const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
       if (!search) return [];
@@ -25,14 +25,13 @@ export function ProfileSearch() {
 
       if (error) {
         console.error("Error fetching profiles:", error);
-        throw error;
+        return [];
       }
 
       return (data || []) as UserProfile[];
     },
     enabled: search.length > 0,
     initialData: [],
-    staleTime: 1000 * 60, // Cache for 1 minute
   });
 
   const handleSelectProfile = (profile: UserProfile) => {
@@ -51,10 +50,8 @@ export function ProfileSearch() {
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            // Small delay to allow clicking on a profile
             setTimeout(() => setIsInputFocused(false), 200);
           }}
-          className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Rechercher un profil..."
         />
         {shouldShowResults && (
