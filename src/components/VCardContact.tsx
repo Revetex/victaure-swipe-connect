@@ -2,8 +2,10 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { quebecCities } from "@/hooks/data/cities";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { provinceData } from "@/hooks/data/provinces";
+import { useState } from "react";
+import { Combobox } from "@/components/ui/combobox";
 
 interface VCardContactProps {
   profile: UserProfile;
@@ -12,8 +14,19 @@ interface VCardContactProps {
 }
 
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
+  const [selectedProvince, setSelectedProvince] = useState(profile.state || "");
+  const provinces = Object.keys(provinceData);
+  const cities = selectedProvince ? provinceData[selectedProvince as keyof typeof provinceData] || [] : [];
+
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
+  };
+
+  const handleProvinceChange = (province: string) => {
+    setSelectedProvince(province);
+    handleInputChange("state", province);
+    // Reset city when province changes
+    handleInputChange("city", "");
   };
 
   return (
@@ -47,21 +60,32 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             </div>
             <div className="flex items-center gap-3">
               <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-              <Select
-                value={profile.city || ""}
-                onValueChange={(value) => handleInputChange("city", value)}
-              >
-                <SelectTrigger className="w-full bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]">
-                  <SelectValue placeholder="Sélectionnez une ville" />
-                </SelectTrigger>
-                <SelectContent>
-                  {quebecCities.map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex-1 space-y-2">
+                <Select
+                  value={selectedProvince}
+                  onValueChange={handleProvinceChange}
+                >
+                  <SelectTrigger className="w-full bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]">
+                    <SelectValue placeholder="Sélectionnez une province" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {provinces.map((province) => (
+                      <SelectItem key={province} value={province}>
+                        {province}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Combobox
+                  items={cities}
+                  value={profile.city || ""}
+                  onChange={(value) => handleInputChange("city", value)}
+                  placeholder="Entrez ou sélectionnez une ville"
+                  className="w-full bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]"
+                  allowCustomValue
+                />
+              </div>
             </div>
           </div>
         ) : (
@@ -94,14 +118,14 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 </a>
               </motion.div>
             )}
-            {profile.city && (
+            {(profile.city || profile.state) && (
               <motion.div 
                 className="flex items-center gap-3 p-2 rounded-lg"
                 whileHover={{ scale: 1.01 }}
               >
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-foreground/80">
-                  {profile.city}
+                  {[profile.city, profile.state].filter(Boolean).join(", ")}
                 </span>
               </motion.div>
             )}

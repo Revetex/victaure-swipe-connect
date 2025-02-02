@@ -133,17 +133,6 @@ export function VCardHeader({
               <p className="text-sm sm:text-base text-primary/70">
                 {profile.role || "Rôle non défini"}
               </p>
-              <div className="mt-2 space-y-1 text-sm text-primary/60">
-                {profile.email && (
-                  <p>{profile.email}</p>
-                )}
-                {profile.phone && (
-                  <p>{profile.phone}</p>
-                )}
-                {(profile.city || profile.state) && (
-                  <p>{[profile.city, profile.state].filter(Boolean).join(", ")}</p>
-                )}
-              </div>
             </>
           )}
         </div>
