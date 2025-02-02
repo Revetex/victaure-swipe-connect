@@ -52,7 +52,7 @@ export function ProfileSearch() {
             {searchResults.map((profile) => (
               <CommandItem
                 key={profile.id}
-                value={profile.full_name || profile.email}
+                value={profile.id} // Changed to use ID as the unique value
                 onSelect={() => setSelectedProfile(profile)}
                 className="cursor-pointer"
               >
