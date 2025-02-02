@@ -19,6 +19,7 @@ export function ExternalSearchSection({
 }: ExternalSearchSectionProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   const fetchSuggestions = async () => {
     try {
@@ -65,6 +66,7 @@ export function ExternalSearchSection({
           resultsElement.innerHTML = '';
         }
       }
+      setShowResults(false);
     };
   }, []);
 
@@ -74,6 +76,7 @@ export function ExternalSearchSection({
       searchInput.value = suggestion;
       const searchButton = document.querySelector('.gsc-search-button') as HTMLButtonElement;
       if (searchButton) {
+        setShowResults(true);
         searchButton.click();
       }
     }
@@ -140,9 +143,10 @@ export function ExternalSearchSection({
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full"
+          className={`w-full transition-all duration-300 ${!showResults ? 'h-[44px] overflow-hidden' : ''}`}
+          onClick={() => setShowResults(true)}
         >
-          <GoogleSearchBox />
+          <GoogleSearchBox onSearch={() => setShowResults(true)} />
         </motion.div>
       </div>
       
