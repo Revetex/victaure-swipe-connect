@@ -27,7 +27,7 @@ export function ProfileSearch() {
           return [];
         }
 
-        return data as UserProfile[] || [];
+        return (data || []) as UserProfile[];
       } catch (error) {
         console.error("Error in query:", error);
         return [];
@@ -40,9 +40,10 @@ export function ProfileSearch() {
   const handleSelectProfile = (profile: UserProfile) => {
     console.log("Selected profile:", profile);
     setSelectedProfile(profile);
-    // Don't clear the search immediately to prevent UI flicker
+    // Use setTimeout to prevent UI flicker
     setTimeout(() => {
       setSearch("");
+      setIsInputFocused(false);
     }, 100);
   };
 
@@ -65,7 +66,6 @@ export function ProfileSearch() {
           className="w-full px-4 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
         
-        {/* Only show results if we're focused and have a search term */}
         {isInputFocused && search.length > 0 && (
           <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden z-50">
             {Array.isArray(profiles) && profiles.length > 0 ? (
@@ -92,7 +92,6 @@ export function ProfileSearch() {
         )}
       </Command>
 
-      {/* Show profile preview if a profile is selected */}
       {selectedProfile && (
         <ProfilePreview 
           profile={selectedProfile} 
