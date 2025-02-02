@@ -7,7 +7,6 @@ import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
-import { Logo } from "@/components/Logo";
 import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -112,11 +111,6 @@ export function DashboardLayout() {
               <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between py-2 px-4 border-b">
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Logo size="sm" />
-                      <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
-                    </div>
-                    <div className="h-6 w-px bg-border mx-2" />
                     <h2 className="text-lg font-semibold text-foreground">
                       {getPageTitle(currentPage)}
                     </h2>
