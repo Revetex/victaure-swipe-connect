@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Send } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 interface MessagesContentProps {
   messages: any[];
@@ -37,6 +38,15 @@ export function MessagesContent({
 }: MessagesContentProps) {
   const { profile } = useProfile();
   const isAIChat = !receiver?.full_name;
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   if (isAIChat) {
     return (
@@ -53,7 +63,8 @@ export function MessagesContent({
 
         <div className="flex-1 overflow-hidden bg-background/80 mt-14 mb-32">
           <ScrollArea className="h-full px-4">
-            <div className="max-w-5xl mx-auto space-y-4">
+            <div className="max-w-5xl mx-auto space-y-4 flex flex-col-reverse">
+              <div ref={messagesEndRef} />
               <AnimatePresence mode="popLayout">
                 {messages.map((message) => (
                   <ChatMessage
@@ -115,6 +126,7 @@ export function MessagesContent({
       <div className="flex-1 overflow-hidden mt-14 mb-32">
         <ScrollArea className="h-full">
           <div className="flex flex-col-reverse p-4 gap-4">
+            <div ref={messagesEndRef} />
             <AnimatePresence mode="popLayout">
               {messages.map((message) => (
                 <ChatMessage
