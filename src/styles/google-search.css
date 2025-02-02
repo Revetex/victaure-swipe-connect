@@ -65,7 +65,7 @@
 
 /* Results styling with improved dark mode visibility */
 .gsc-results-wrapper-overlay {
-  background: hsl(var(--background)) !important;
+  background: hsl(var(--card)) !important;
   border: 1px solid hsl(var(--border)) !important;
   border-radius: 0.5rem !important;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
@@ -93,7 +93,8 @@
 .gs-title {
   color: hsl(var(--primary)) !important;
   text-decoration: none !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
 }
 
 .gs-title:hover {
@@ -102,23 +103,28 @@
 
 .gs-snippet {
   color: hsl(var(--foreground)) !important;
-  opacity: 0.9 !important;
-  line-height: 1.5 !important;
+  opacity: 0.95 !important;
+  line-height: 1.6 !important;
+  font-size: 0.95rem !important;
+  margin-top: 0.5rem !important;
 }
 
 .gs-visibleUrl {
-  color: hsl(var(--muted-foreground)) !important;
-  opacity: 0.8 !important;
+  color: hsl(var(--accent-foreground)) !important;
+  opacity: 0.9 !important;
+  font-size: 0.9rem !important;
+  margin-top: 0.25rem !important;
 }
 
 /* Dark mode specific overrides */
 .dark .gsc-results-wrapper-overlay {
-  background-color: hsl(var(--background)) !important;
+  background-color: hsl(var(--card)) !important;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2) !important;
 }
 
 .dark .gsc-result {
   background-color: transparent !important;
+  border-color: hsl(var(--border)) !important;
 }
 
 .dark .gs-title {
@@ -132,7 +138,7 @@
 }
 
 .dark .gs-visibleUrl {
-  color: hsl(var(--muted-foreground)) !important;
+  color: hsl(var(--accent-foreground)) !important;
   opacity: 0.9 !important;
 }
 
@@ -154,5 +160,13 @@
 
   .gsc-result {
     padding: 0.75rem !important;
+  }
+
+  .gs-title {
+    font-size: 1rem !important;
+  }
+
+  .gs-snippet {
+    font-size: 0.9rem !important;
   }
 }
