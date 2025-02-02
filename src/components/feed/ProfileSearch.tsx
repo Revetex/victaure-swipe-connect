@@ -18,9 +18,10 @@ interface Profile {
 interface ProfileSearchProps {
   onSelect: (profile: Profile) => void;
   placeholder?: string;
+  className?: string;
 }
 
-export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisateur..." }: ProfileSearchProps) {
+export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisateur...", className }: ProfileSearchProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
@@ -56,7 +57,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
           variant="outline" 
           role="combobox" 
           aria-expanded={open}
-          className="w-full justify-start text-left font-normal"
+          className={`justify-start text-left font-normal ${className}`}
         >
           <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
           {selectedProfile ? (
