@@ -5,13 +5,17 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
   return messages.map(msg => ({
     id: msg.id,
     content: msg.content,
-    sender_id: msg.sender_id || '',
-    receiver_id: msg.receiver_id || '',
+    sender_id: msg.sender === 'user' ? msg.sender_id || 'user' : 'assistant',
+    receiver_id: msg.sender === 'user' ? 'assistant' : msg.sender_id || 'user',
     read: msg.read || false,
     created_at: msg.created_at || new Date().toISOString(),
     thinking: msg.thinking,
     timestamp: msg.timestamp?.toString(),
-    sender: msg.sender
+    sender: msg.sender === 'user' ? undefined : {
+      id: 'assistant',
+      full_name: 'M. Victaure',
+      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+    }
   }));
 };
 
