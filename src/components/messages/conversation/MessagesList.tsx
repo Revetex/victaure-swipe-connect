@@ -6,6 +6,7 @@ import { Message } from "@/types/chat/messageTypes";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AssistantMessage } from "./AssistantMessage";
 
 interface MessagesListProps {
   messages: any[];
@@ -84,6 +85,13 @@ export function MessagesList({
       
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
+          {/* Mr. Victaure's conversation always pinned at the top */}
+          <AssistantMessage
+            chatMessages={chatMessages}
+            onSelectConversation={onSelectConversation}
+          />
+          
+          {/* Other conversations */}
           {filteredMessages.map((message) => (
             <UserMessage
               key={message.id}
