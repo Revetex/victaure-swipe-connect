@@ -57,7 +57,7 @@ body {
 
 .dark body {
   background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  color: hsl(var(--foreground)/90%);
 }
 
 @media (max-width: 640px) {
@@ -89,7 +89,7 @@ body {
   border-radius: 1rem;
   border: 1px solid hsl(var(--border) / 10%);
   transition: all 0.3s ease;
-  color: hsl(var(--card-foreground));
+  color: hsl(var(--card-foreground) / 90%);
   box-shadow: 
     0 4px 6px -1px hsl(var(--card-foreground) / 5%), 
     0 2px 4px -1px hsl(var(--card-foreground) / 3%);
@@ -98,7 +98,7 @@ body {
 .dark .glass-card {
   background: hsl(var(--card) / 80%);
   border: 1px solid hsl(var(--border) / 10%);
-  color: hsl(var(--card-foreground));
+  color: hsl(var(--card-foreground) / 85%);
   box-shadow: 
     0 4px 6px -1px hsl(var(--background) / 20%), 
     0 2px 4px -1px hsl(var(--background) / 10%);
@@ -106,7 +106,7 @@ body {
 
 .enhanced-button {
   @apply px-4 py-3 rounded-xl
-         bg-primary text-primary-foreground
+         bg-primary text-primary-foreground/90
          font-medium text-sm
          shadow-sm hover:shadow-md
          transition-all duration-300
@@ -119,14 +119,14 @@ body {
   @apply bg-background/70
          border border-border
          rounded-xl px-4 py-3
-         text-foreground placeholder:text-muted-foreground
+         text-foreground/90 placeholder:text-muted-foreground/70
          focus:ring-2 focus:ring-primary/50 focus:border-primary
          transition-all duration-300
          disabled:opacity-50;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply font-bold tracking-tight text-foreground;
+  @apply font-bold tracking-tight text-foreground/90;
 }
 
 h1 { @apply text-2xl sm:text-4xl mb-4 sm:mb-6; }
@@ -136,7 +136,7 @@ h4 { @apply text-base sm:text-xl mb-2 sm:mb-3; }
 h5 { @apply text-sm sm:text-lg mb-1 sm:mb-2; }
 h6 { @apply text-xs sm:text-base mb-1 sm:mb-2; }
 
-p { @apply text-sm sm:text-base mb-3 leading-relaxed text-foreground/90; }
+p { @apply text-sm sm:text-base mb-3 leading-relaxed text-foreground/80; }
 
 ::-webkit-scrollbar {
   width: 8px;
