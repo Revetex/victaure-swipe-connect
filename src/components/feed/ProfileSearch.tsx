@@ -23,7 +23,7 @@ export function ProfileSearch() {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .or(`full_name.ilike.%${term}%,role.ilike.%${term}%`)
+        .or(`full_name.ilike.%${term}%,email.ilike.%${term}%`)
         .limit(10);
 
       if (error) {
@@ -38,6 +38,7 @@ export function ProfileSearch() {
         phone: profile.privacy_enabled && profile.id !== user?.id ? null : profile.phone,
       })) || [];
 
+      console.log('Found profiles:', filteredProfiles); // Debug log
       setProfiles(filteredProfiles);
     } catch (error) {
       console.error('Error:', error);
