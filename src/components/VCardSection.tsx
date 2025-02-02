@@ -28,10 +28,10 @@ export function VCardSection({
   return (
     <section className={cn(
       "rounded-xl border backdrop-blur-sm transition-colors duration-200",
-      "p-4 sm:p-6 space-y-4",
+      "p-0 sm:p-6 space-y-4",
       getVariantStyles()
     )}>
-      <div className="flex items-center gap-2 pb-2 border-b border-border/10">
+      <div className="flex items-center gap-2 pb-2 border-b border-border/10 px-4 sm:px-0">
         {icon && (
           <span className="shrink-0 text-muted-foreground">
             {icon}
