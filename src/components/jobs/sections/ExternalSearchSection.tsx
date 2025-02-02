@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { GoogleSearchBox } from "../../../components/google-search/GoogleSearchBox";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 interface ExternalSearchSectionProps {
@@ -53,16 +53,13 @@ export function ExternalSearchSection({
   }, []);
 
   useEffect(() => {
-    // Clear search results when component unmounts
     return () => {
       const searchElement = document.querySelector('.gcse-search') as HTMLElement;
       if (searchElement) {
-        // Clear the search input
         const inputElement = searchElement.querySelector('input[type="text"]') as HTMLInputElement;
         if (inputElement) {
           inputElement.value = '';
         }
-        // Clear the results
         const resultsElement = document.querySelector('.gsc-results-wrapper-visible');
         if (resultsElement) {
           resultsElement.innerHTML = '';
@@ -75,7 +72,6 @@ export function ExternalSearchSection({
     const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
     if (searchInput) {
       searchInput.value = suggestion;
-      // Trigger the search
       const searchButton = document.querySelector('.gsc-search-button') as HTMLButtonElement;
       if (searchButton) {
         searchButton.click();
@@ -92,7 +88,54 @@ export function ExternalSearchSection({
   }
 
   return (
-    <div className="space-y-4 w-full">
+    <div className="space-y-6 w-full">
+      <div className="bg-secondary/30 rounded-lg p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+            <h3 className="text-sm font-medium">Suggestions IA personnalisées</h3>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchSuggestions}
+            className="h-8"
+            disabled={loadingSuggestions}
+          >
+            {loadingSuggestions ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+        
+        <motion.div 
+          className="flex flex-wrap gap-2 justify-start"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {suggestions.map((suggestion, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Button
+                variant="secondary"
+                size="sm"
+                className="text-xs whitespace-nowrap bg-background/50 hover:bg-background/80"
+                onClick={() => applySuggestion(suggestion)}
+              >
+                {suggestion}
+              </Button>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+      
       <div className="relative w-full min-h-[100px] bg-background rounded-lg">
         <motion.div 
           initial={{ opacity: 0 }}
@@ -103,41 +146,7 @@ export function ExternalSearchSection({
         </motion.div>
       </div>
       
-      <div className="flex items-center justify-center gap-2">
-        {loadingSuggestions ? (
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Chargement des suggestions...</span>
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-wrap gap-2 justify-center px-4">
-              {suggestions.map((suggestion, index) => (
-                <Button
-                  key={index}
-                  variant="secondary"
-                  size="sm"
-                  className="text-xs"
-                  onClick={() => applySuggestion(suggestion)}
-                >
-                  {suggestion}
-                </Button>
-              ))}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={fetchSuggestions}
-              className="ml-2"
-              disabled={loadingSuggestions}
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </>
-        )}
-      </div>
-      
-      <p className="text-sm text-muted-foreground text-center italic px-4">
+      <p className="text-xs text-muted-foreground text-center italic px-4">
         Conseil : Cliquez sur les suggestions ou utilisez vos propres mots-clés pour trouver des offres pertinentes
       </p>
     </div>
