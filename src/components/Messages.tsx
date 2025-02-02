@@ -1,6 +1,6 @@
 import { useChat } from "@/hooks/useChat";
 import { MessagesContent } from "./messages/MessagesContent";
-import { MessagesList } from "./messages/conversation/MessagesList";
+import { ConversationList } from "./messages/conversation/ConversationList";
 import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -103,7 +103,7 @@ function MessagesWithQuery({
       receiver={selectedReceiver}
     />
   ) : (
-    <MessagesList
+    <ConversationList
       messages={messages}
       chatMessages={formattedChatMessages}
       onSelectConversation={handleSelectConversation}
