@@ -1,92 +1,80 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "cmdk";
+import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { UserCircle } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { useState } from "react";
-import { toast } from "sonner";
+import { UserProfile } from "@/types/profile";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 export function ProfileSearch() {
+  const [search, setSearch] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: profiles, isLoading } = useQuery({
-    queryKey: ["profiles", searchQuery],
+  const { data: profiles } = useQuery({
+    queryKey: ["profiles", search],
     queryFn: async () => {
-      console.log("Searching for:", searchQuery);
+      if (!search) return [];
+      
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,role.ilike.%${searchQuery}%`)
-        .order("full_name", { ascending: true });
+        .ilike("full_name", `%${search}%`)
+        .limit(5);
 
-      if (error) {
-        console.error("Error fetching profiles:", error);
-        toast.error("Erreur lors de la recherche des profils");
-        throw error;
-      }
-
-      console.log("Search results:", data);
-      return data || [];
+      if (error) throw error;
+      return data as UserProfile[];
     },
-    enabled: searchQuery.length > 0
+    enabled: search.length > 0,
   });
 
-  const handleViewProfile = (userId: string) => {
-    console.log("Navigating to profile:", userId);
-    navigate(`/dashboard/profile/${userId}`);
+  const handleSelectProfile = (profile: UserProfile) => {
+    setSelectedProfile(profile);
   };
 
   return (
-    <div className="relative w-full">
-      <Command className="rounded-lg border shadow-md">
-        <CommandInput 
-          placeholder="Rechercher un profil..." 
-          value={searchQuery}
-          onValueChange={setSearchQuery}
-          className="h-9"
+    <>
+      <div className="w-full max-w-2xl mx-auto">
+        <Command className="rounded-lg border shadow-md">
+          <div className="flex items-center border-b px-3">
+            <Search className="h-4 w-4 shrink-0 opacity-50" />
+            <CommandInput
+              placeholder="Rechercher un profil..."
+              className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              value={search}
+              onValueChange={setSearch}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setIsInputFocused(false)}
+            />
+          </div>
+          {isInputFocused && search && (
+            <CommandList className="max-h-[300px] overflow-y-auto p-2">
+              <CommandEmpty>Aucun profil trouvé</CommandEmpty>
+              <CommandGroup>
+                {profiles?.map((profile) => (
+                  <CommandItem
+                    key={profile.id}
+                    value={profile.full_name || ""}
+                    onSelect={() => handleSelectProfile(profile)}
+                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-accent rounded-md"
+                  >
+                    {profile.full_name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          )}
+        </Command>
+      </div>
+
+      {selectedProfile && (
+        <ProfilePreview 
+          profile={selectedProfile} 
+          onClose={() => setSelectedProfile(null)} 
         />
-        <CommandList>
-          <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
-          <CommandGroup>
-            {isLoading ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                Chargement des profils...
-              </div>
-            ) : (
-              profiles?.map((profile) => (
-                <CommandItem
-                  key={profile.id}
-                  value={`${profile.id}-${profile.full_name}`} // Make value unique
-                  className="flex items-center gap-2 p-2 cursor-pointer hover:bg-accent"
-                  onSelect={() => handleViewProfile(profile.id)}
-                >
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <UserCircle className="w-8 h-8 text-muted-foreground" />
-                  )}
-                  <div className="flex flex-col">
-                    <span className="font-medium">{profile.full_name}</span>
-                    <span className="text-sm text-muted-foreground">{profile.role}</span>
-                  </div>
-                </CommandItem>
-              ))
-            )}
-          </CommandGroup>
-        </CommandList>
-      </Command>
-    </div>
+      )}
+    </>
   );
 }
