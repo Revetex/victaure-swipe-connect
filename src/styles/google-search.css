@@ -37,6 +37,11 @@
   width: 100% !important;
 }
 
+/* Hide "search for on google" text */
+.gsst_a .gscb_a {
+  display: none !important;
+}
+
 /* Search button styling */
 .gsc-search-button {
   margin: 0 !important;
