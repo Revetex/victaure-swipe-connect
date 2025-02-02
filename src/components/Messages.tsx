@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Message, Receiver } from "@/types/messages";
+import { Message, Receiver, MessageSender } from "@/types/messages";
 import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
 
 const queryClient = new QueryClient();
@@ -87,12 +87,18 @@ function MessagesWithQuery({
 
   const formattedMessages = messages?.map(msg => ({
     ...msg,
-    sender: msg.sender || { id: msg.sender_id, full_name: "Unknown", avatar_url: "" }
+    sender: msg.sender || {
+      id: msg.sender_id,
+      full_name: "Unknown",
+      avatar_url: "",
+      online_status: false,
+      last_seen: new Date().toISOString()
+    } as MessageSender
   }));
 
   const formattedChatMessages = formatChatMessages(chatMessages);
   const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : formattedMessages;
-  const filteredMessages = filterMessages(currentMessages, selectedReceiver);
+  const filteredMessages = filterMessages(currentMessages || [], selectedReceiver);
 
   return showConversation ? (
     <MessagesContent
