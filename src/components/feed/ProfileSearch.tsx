@@ -12,7 +12,7 @@ export function ProfileSearch() {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
 
-  const { data: profiles = [], isLoading } = useQuery({
+  const { data: profiles = [] } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
       if (!search) return [];
@@ -37,7 +37,6 @@ export function ProfileSearch() {
   const handleSelectProfile = (profile: UserProfile) => {
     setSelectedProfile(profile);
     setSearch("");
-    setIsInputFocused(false);
   };
 
   const shouldShowResults = isInputFocused && search.length > 0;
