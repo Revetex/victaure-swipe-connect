@@ -64,7 +64,7 @@ export function ProfileSearch() {
         
         {isInputFocused && search.length > 0 && (
           <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden z-50">
-            {Array.isArray(profiles) && profiles.length > 0 ? (
+            {profiles && profiles.length > 0 ? (
               profiles.map((profile) => (
                 <Command.Item
                   key={profile.id}
