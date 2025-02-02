@@ -87,11 +87,9 @@ export function DashboardLayout() {
               <h2 className="text-lg font-semibold text-foreground">
                 {getPageTitle(currentPage)}
               </h2>
-              {currentPage === 4 && (
-                <div className="ml-4 flex-1 max-w-lg">
-                  <ProfileSearch />
-                </div>
-              )}
+              <div className="ml-4 flex-1 max-w-lg">
+                <ProfileSearch />
+              </div>
             </div>
             <NotificationsBox />
           </div>
