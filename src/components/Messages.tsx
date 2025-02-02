@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -41,18 +41,24 @@ function MessagesWithQuery({
   setSelectedReceiver: (receiver: any) => void;
 }) {
   const { messages, markAsRead } = useMessages();
+  const navigate = useNavigate();
 
   const handleBack = () => {
     setShowConversation(false);
     setSelectedReceiver(null);
+    navigate('/dashboard/messages');
   };
 
   const handleSelectConversation = async (type: "assistant" | "user", receiver?: any) => {
     try {
-      if (type === "user" && receiver) {
+      if (type === "assistant") {
+        setSelectedReceiver(null);
+        setShowConversation(true);
+      } else if (type === "user" && receiver) {
         setSelectedReceiver(receiver);
+        setShowConversation(true);
+        navigate(`/dashboard/messages/${receiver.id}`);
       }
-      setShowConversation(true);
     } catch (error) {
       console.error("Error selecting conversation:", error);
       toast.error("Erreur lors de la sélection de la conversation");
@@ -82,9 +88,12 @@ function MessagesWithQuery({
     }
   };
 
+  // Determine which messages to show based on conversation type
+  const displayMessages = selectedReceiver ? messages : chatMessages;
+
   return showConversation ? (
     <MessagesContent
-      messages={chatMessages}
+      messages={displayMessages}
       inputMessage={inputMessage}
       isListening={isListening}
       isThinking={isThinking}
