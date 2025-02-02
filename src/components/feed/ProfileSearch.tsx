@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserCircle, MessageSquare, UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
   Command,
@@ -22,7 +21,6 @@ interface Profile {
 }
 
 export function ProfileSearch() {
-  const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -76,91 +74,75 @@ export function ProfileSearch() {
 
   const handleViewProfile = (userId: string) => {
     navigate(`/dashboard/profile/${userId}`);
-    setOpen(false);
   };
 
   const handleMessage = (userId: string) => {
     navigate(`/dashboard/messages?user=${userId}`);
-    setOpen(false);
   };
 
   return (
     <div className="relative w-full">
-      <Button 
-        variant="outline" 
-        className="w-full justify-start text-muted-foreground"
-        onClick={() => setOpen(true)}
-      >
-        <UserCircle className="mr-2 h-4 w-4" />
-        Rechercher un profil...
-      </Button>
-
-      {open && (
-        <div className="absolute z-50 w-full mt-2">
-          <Command className="rounded-lg border shadow-md">
-            <CommandInput 
-              placeholder="Rechercher un profil..." 
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-            />
-            <CommandList>
-              <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
-              {searchQuery.length > 0 && (
-                <CommandGroup heading="Profils">
-                  {isLoadingProfiles ? (
-                    <div className="p-4 text-center text-sm text-muted-foreground">
-                      Chargement des profils...
+      <Command className="rounded-lg border shadow-md">
+        <CommandInput 
+          placeholder="Rechercher un profil..." 
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+          className="h-11"
+        />
+        {searchQuery.length > 0 && (
+          <CommandList>
+            <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
+            <CommandGroup heading="Profils">
+              {isLoadingProfiles ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Chargement des profils...
+                </div>
+              ) : profiles && profiles.length > 0 ? (
+                profiles.map((profile) => (
+                  <CommandItem
+                    key={profile.id}
+                    className="flex items-center justify-between p-2 cursor-pointer"
+                    onSelect={() => handleViewProfile(profile.id)}
+                  >
+                    <div className="flex items-center gap-2">
+                      {profile.avatar_url ? (
+                        <img
+                          src={profile.avatar_url}
+                          alt={profile.full_name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <UserCircle className="w-8 h-8 text-muted-foreground" />
+                      )}
+                      <span>{profile.full_name}</span>
                     </div>
-                  ) : profiles && profiles.length > 0 ? (
-                    profiles.map((profile) => (
-                      <CommandItem
-                        key={profile.id}
-                        className="flex items-center justify-between p-2"
+                    <div className="flex gap-2">
+                      <button
+                        className="p-1 hover:bg-accent rounded-md"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMessage(profile.id);
+                        }}
                       >
-                        <div className="flex items-center gap-2">
-                          {profile.avatar_url ? (
-                            <img
-                              src={profile.avatar_url}
-                              alt={profile.full_name}
-                              className="w-8 h-8 rounded-full object-cover"
-                            />
-                          ) : (
-                            <UserCircle className="w-8 h-8 text-muted-foreground" />
-                          )}
-                          <span>{profile.full_name}</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleViewProfile(profile.id)}
-                          >
-                            <UserCircle className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleMessage(profile.id)}
-                          >
-                            <MessageSquare className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleConnect(profile.id)}
-                          >
-                            <UserPlus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CommandItem>
-                    ))
-                  ) : null}
-                </CommandGroup>
-              )}
-            </CommandList>
-          </Command>
-        </div>
-      )}
+                        <MessageSquare className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="p-1 hover:bg-accent rounded-md"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConnect(profile.id);
+                        }}
+                      >
+                        <UserPlus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </CommandItem>
+                ))
+              ) : null}
+            </CommandGroup>
+          </CommandList>
+        )}
+      </Command>
     </div>
   );
 }
