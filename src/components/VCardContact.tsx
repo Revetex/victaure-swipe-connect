@@ -1,97 +1,126 @@
-import { useState, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { provinces } from "@/hooks/data/provinces";
-import { getCitiesForProvince } from "@/hooks/data/cities";
-import { provinceData } from "@/hooks/data/provinces";
+import { VCardSection } from "@/components/VCardSection";
+import { MapPin, Mail, Phone, Globe } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { motion } from "framer-motion";
 
 interface VCardContactProps {
   profile: UserProfile;
   isEditing: boolean;
-  setProfile: React.Dispatch<React.SetStateAction<UserProfile>>;
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
-  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const { user } = useAuth();
+  const isOwnProfile = user?.id === profile.id;
+  const shouldShowPrivateInfo = !profile.privacy_enabled || isOwnProfile;
 
-  useEffect(() => {
-    if (profile.state && profile.state in provinceData) {
-      const cities = getCitiesForProvince(profile.state as keyof typeof provinceData);
-      setAvailableCities(cities);
-    } else {
-      setAvailableCities([]);
-    }
-  }, [profile.state]);
-
-  if (!isEditing) {
-    return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label>Téléphone</Label>
-            <p className="text-sm text-muted-foreground">{profile.phone || "Non spécifié"}</p>
-          </div>
-          <div>
-            <Label>Ville</Label>
-            <p className="text-sm text-muted-foreground">{profile.city || "Non spécifié"}</p>
-          </div>
-          <div>
-            <Label>Province</Label>
-            <p className="text-sm text-muted-foreground">{profile.state || "Non spécifié"}</p>
-          </div>
-          <div>
-            <Label>Pays</Label>
-            <p className="text-sm text-muted-foreground">{profile.country || "Non spécifié"}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleInputChange = (field: string, value: string) => {
+    setProfile({ ...profile, [field]: value });
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="phone">Téléphone</Label>
-          <Input
-            id="phone"
-            value={profile.phone || ""}
-            onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
-            placeholder="Votre numéro de téléphone"
-          />
+    <VCardSection
+      title="Contact"
+      icon={<Mail className="h-3 w-3 text-muted-foreground" />}
+    >
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="grid gap-4 p-4"
+      >
+        {shouldShowPrivateInfo ? (
+          <>
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              {isEditing ? (
+                <Input
+                  value={profile.email || ""}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  placeholder="Votre email"
+                  className="h-8"
+                />
+              ) : (
+                <span className="text-sm">{profile.email}</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-muted-foreground" />
+              {isEditing ? (
+                <Input
+                  value={profile.phone || ""}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  placeholder="Votre téléphone"
+                  className="h-8"
+                />
+              ) : (
+                <span className="text-sm">{profile.phone}</span>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground italic">
+            Les informations de contact sont privées
+          </p>
+        )}
+
+        <div className="flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-muted-foreground" />
+          {isEditing ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 flex-1">
+              <Input
+                value={profile.city || ""}
+                onChange={(e) => handleInputChange("city", e.target.value)}
+                placeholder="Ville"
+                className="h-8"
+              />
+              <Input
+                value={profile.state || ""}
+                onChange={(e) => handleInputChange("state", e.target.value)}
+                placeholder="Province"
+                className="h-8"
+              />
+              <Input
+                value={profile.country || ""}
+                onChange={(e) => handleInputChange("country", e.target.value)}
+                placeholder="Pays"
+                className="h-8"
+              />
+            </div>
+          ) : (
+            <span className="text-sm">
+              {[profile.city, profile.state, profile.country]
+                .filter(Boolean)
+                .join(", ")}
+            </span>
+          )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="province">Province</Label>
-          <Input
-            id="province"
-            value={profile.state || ""}
-            onChange={(e) => setProfile(prev => ({ ...prev, state: e.target.value }))}
-            placeholder="Votre province"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="city">Ville</Label>
-          <Input
-            id="city"
-            value={profile.city || ""}
-            onChange={(e) => setProfile(prev => ({ ...prev, city: e.target.value }))}
-            placeholder="Votre ville"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="country">Pays</Label>
-          <Input
-            id="country"
-            value={profile.country || ""}
-            onChange={(e) => setProfile(prev => ({ ...prev, country: e.target.value }))}
-            placeholder="Votre pays"
-          />
-        </div>
-      </div>
-    </div>
+        {shouldShowPrivateInfo && (
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-muted-foreground" />
+            {isEditing ? (
+              <Input
+                value={profile.website || ""}
+                onChange={(e) => handleInputChange("website", e.target.value)}
+                placeholder="Votre site web"
+                className="h-8"
+              />
+            ) : profile.website ? (
+              <a
+                href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary hover:underline"
+              >
+                {profile.website}
+              </a>
+            ) : null}
+          </div>
+        )}
+      </motion.div>
+    </VCardSection>
   );
 }
