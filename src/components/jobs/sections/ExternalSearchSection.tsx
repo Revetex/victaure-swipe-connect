@@ -88,30 +88,30 @@ export function ExternalSearchSection({
   }
 
   return (
-    <div className="space-y-6 w-full">
-      <div className="bg-secondary/30 rounded-lg p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-            <h3 className="text-sm font-medium">Suggestions IA personnalisées</h3>
+    <div className="w-full space-y-4 px-2 sm:px-4">
+      <div className="bg-secondary/30 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse" />
+            <h3 className="text-xs sm:text-sm font-medium">Suggestions IA</h3>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={fetchSuggestions}
-            className="h-8"
+            className="h-7 w-7 p-0"
             disabled={loadingSuggestions}
           >
             {loadingSuggestions ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className="h-3.5 w-3.5" />
             )}
           </Button>
         </div>
         
         <motion.div 
-          className="flex flex-wrap gap-2 justify-start"
+          className="flex flex-wrap gap-1.5 sm:gap-2"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -121,12 +121,12 @@ export function ExternalSearchSection({
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
             >
               <Button
                 variant="secondary"
                 size="sm"
-                className="text-xs whitespace-nowrap bg-background/50 hover:bg-background/80"
+                className="h-7 text-[11px] sm:text-xs whitespace-nowrap bg-background/50 hover:bg-background/80 px-2 py-0"
                 onClick={() => applySuggestion(suggestion)}
               >
                 {suggestion}
@@ -136,7 +136,7 @@ export function ExternalSearchSection({
         </motion.div>
       </div>
       
-      <div className="relative w-full min-h-[100px] bg-background rounded-lg">
+      <div className="relative w-full min-h-[44px] bg-background rounded-lg">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -146,8 +146,8 @@ export function ExternalSearchSection({
         </motion.div>
       </div>
       
-      <p className="text-xs text-muted-foreground text-center italic px-4">
-        Conseil : Cliquez sur les suggestions ou utilisez vos propres mots-clés pour trouver des offres pertinentes
+      <p className="text-[10px] sm:text-xs text-muted-foreground text-center italic">
+        Conseil : Cliquez sur les suggestions ou utilisez vos propres mots-clés
       </p>
     </div>
   );
