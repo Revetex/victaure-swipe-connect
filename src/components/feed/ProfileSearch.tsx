@@ -14,28 +14,35 @@ export function ProfileSearch() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
 
-  const { data: profiles = [], isLoading, error } = useQuery({
+  const { data: profiles, isLoading, error } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
-      if (!search) return [];
-      
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .ilike("full_name", `%${search}%`)
-        .limit(5);
+      try {
+        if (!search) return [];
+        
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .ilike("full_name", `%${search}%`)
+          .limit(5);
 
-      if (error) {
-        console.error("Error fetching profiles:", error);
+        if (error) {
+          console.error("Error fetching profiles:", error);
+          throw error;
+        }
+
+        return (data || []) as UserProfile[];
+      } catch (error) {
+        console.error("Error in query function:", error);
         return [];
       }
-
-      return (data || []) as UserProfile[];
     },
     enabled: search.length > 0,
+    initialData: [],
   });
 
   const handleSelectProfile = (profile: UserProfile) => {
+    if (!profile) return;
     setSelectedProfile(profile);
   };
 
@@ -62,7 +69,7 @@ export function ProfileSearch() {
                 </div>
               ) : error ? (
                 <CommandEmpty>Une erreur est survenue</CommandEmpty>
-              ) : profiles.length === 0 ? (
+              ) : !profiles || profiles.length === 0 ? (
                 <CommandEmpty>Aucun profil trouvé</CommandEmpty>
               ) : (
                 <CommandGroup>
