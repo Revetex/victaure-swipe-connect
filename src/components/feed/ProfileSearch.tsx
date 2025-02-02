@@ -27,7 +27,7 @@ export function ProfileSearch() {
           return [];
         }
 
-        return (data || []) as UserProfile[];
+        return data || [];
       } catch (error) {
         console.error("Error in query:", error);
         return [];
@@ -39,13 +39,9 @@ export function ProfileSearch() {
 
   const handleSelectProfile = (profile: UserProfile) => {
     if (!profile) return;
-    
-    console.log("Selected profile:", profile);
     setSelectedProfile(profile);
-    setTimeout(() => {
-      setSearch("");
-      setIsInputFocused(false);
-    }, 100);
+    setSearch("");
+    setIsInputFocused(false);
   };
 
   const handleCloseProfile = () => {
@@ -60,7 +56,8 @@ export function ProfileSearch() {
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            setTimeout(() => setIsInputFocused(false), 200);
+            // Un délai plus court pour éviter les conflits avec les événements de clic
+            setTimeout(() => setIsInputFocused(false), 100);
           }}
           placeholder="Rechercher un profil..."
           className="w-full px-4 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
