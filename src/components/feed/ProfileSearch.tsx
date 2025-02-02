@@ -56,7 +56,6 @@ export function ProfileSearch() {
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            // Un délai plus court pour éviter les conflits avec les événements de clic
             setTimeout(() => setIsInputFocused(false), 100);
           }}
           placeholder="Rechercher un profil..."
