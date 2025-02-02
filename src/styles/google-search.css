@@ -90,6 +90,16 @@
   border-radius: 0.375rem !important;
 }
 
+/* Results container background fix */
+.gsc-results-wrapper-visible {
+  background: hsl(var(--background)) !important;
+}
+
+.gsc-results {
+  background: hsl(var(--background)) !important;
+  padding: 0.5rem !important;
+}
+
 /* Improved text visibility in dark mode */
 .gs-title {
   color: hsl(var(--primary)) !important;
