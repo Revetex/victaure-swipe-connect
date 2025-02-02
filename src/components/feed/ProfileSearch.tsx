@@ -44,39 +44,6 @@ export function ProfileSearch() {
     setSelectedProfile(profile);
   };
 
-  const handleMessage = async (profile: UserProfile) => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Vous devez être connecté pour envoyer un message");
-        return;
-      }
-
-      const { data: message, error } = await supabase
-        .from('messages')
-        .insert({
-          sender_id: session.user.id,
-          receiver_id: profile.id,
-          content: "Nouvelle conversation",
-          read: false
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Error creating message:", error);
-        toast.error("Erreur lors de la création de la conversation");
-        return;
-      }
-
-      navigate(`/dashboard/messages/${message.id}`);
-      toast.success("Conversation créée avec succès");
-    } catch (error) {
-      console.error("Error in handleMessage:", error);
-      toast.error("Une erreur est survenue");
-    }
-  };
-
   const handleCloseProfile = () => {
     setSelectedProfile(null);
   };
@@ -99,18 +66,9 @@ export function ProfileSearch() {
                 key={profile.id}
                 value={profile.full_name || ''}
                 onSelect={() => handleSelectProfile(profile)}
-                className="px-4 py-2 hover:bg-muted cursor-pointer flex items-center justify-between"
+                className="px-4 py-2 hover:bg-muted cursor-pointer"
               >
-                <span>{profile.full_name}</span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleMessage(profile);
-                  }}
-                  className="px-3 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90"
-                >
-                  Message
-                </button>
+                {profile.full_name}
               </Command.Item>
             ))}
           </Command.List>
