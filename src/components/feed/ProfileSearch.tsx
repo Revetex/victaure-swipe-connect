@@ -31,7 +31,7 @@ export function ProfileSearch() {
         return;
       }
 
-      // Filtrer les informations en fonction des paramètres de confidentialité
+      // Filter sensitive information based on privacy settings
       const filteredProfiles = data?.map(profile => ({
         ...profile,
         email: profile.privacy_enabled && profile.id !== user?.id ? null : profile.email,
