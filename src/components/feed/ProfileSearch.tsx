@@ -33,8 +33,8 @@ export function ProfileSearch({ onClose }: ProfileSearchProps) {
       const { data: friends, error: friendError } = await supabase
         .from('friend_requests')
         .select(`
-          sender:sender_id(id, full_name, email, avatar_url),
-          receiver:receiver_id(id, full_name, email, avatar_url)
+          sender:profiles!friend_requests_sender_id_fkey(id, full_name, email, avatar_url),
+          receiver:profiles!friend_requests_receiver_id_fkey(id, full_name, email, avatar_url)
         `)
         .or(`sender_id.eq.${session.user.id},receiver_id.eq.${session.user.id}`)
         .eq('status', 'accepted');
