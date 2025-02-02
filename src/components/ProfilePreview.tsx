@@ -37,10 +37,45 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
     checkExistingRequest();
   }, [profile.id]);
 
-  const handleSendMessage = () => {
-    navigate(`/dashboard/messages/${profile.id}`);
-    toast.success("Redirection vers la messagerie");
-    onClose();
+  const handleSendMessage = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté");
+        return;
+      }
+
+      // Check if conversation already exists
+      const { data: existingMessages, error: checkError } = await supabase
+        .from('messages')
+        .select('*')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`)
+        .limit(1);
+
+      if (checkError) throw checkError;
+
+      // If no conversation exists, create initial message
+      if (!existingMessages || existingMessages.length === 0) {
+        const { error: insertError } = await supabase
+          .from('messages')
+          .insert({
+            sender_id: user.id,
+            receiver_id: profile.id,
+            content: "👋 Bonjour!",
+            read: false
+          });
+
+        if (insertError) throw insertError;
+      }
+
+      navigate(`/dashboard/messages/${profile.id}`);
+      toast.success("Conversation créée avec succès");
+      onClose();
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      toast.error("Erreur lors de la création de la conversation");
+    }
   };
 
   const handleFriendRequest = async () => {
