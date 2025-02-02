@@ -56,7 +56,7 @@ function MessagesWithQuery({
           avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
         });
         setShowConversation(true);
-      } else if (type === "user" && receiver && receiver.id) {
+      } else if (type === "user" && receiver) {
         const unreadMessages = messages.filter(
           m => m.sender?.id === receiver.id && !m.read
         );
@@ -102,9 +102,15 @@ function MessagesWithQuery({
     }
   };
 
+  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
+  const filteredMessages = currentMessages.filter(msg => 
+    (msg.sender_id === selectedReceiver?.id && msg.receiver_id === 'user') ||
+    (msg.sender_id === 'user' && msg.receiver_id === selectedReceiver?.id)
+  );
+
   return showConversation ? (
     <MessagesContent
-      messages={selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages}
+      messages={filteredMessages}
       inputMessage={inputMessage}
       isListening={isListening}
       isThinking={isThinking}
