@@ -97,7 +97,7 @@ function MessagesWithQuery({
       online_status: false,
       last_seen: new Date().toISOString()
     } as MessageSender
-  })) as Message[];
+  }));
 
   const formattedChatMessages = formatChatMessages(chatMessages).map(msg => ({
     ...msg,
@@ -109,7 +109,9 @@ function MessagesWithQuery({
       last_seen: new Date().toISOString()
     } as MessageSender : msg.sender,
     sender_id: msg.sender_id || (typeof msg.sender === 'string' ? msg.sender : msg.sender.id),
-    receiver_id: selectedReceiver?.id || 'assistant'
+    receiver_id: selectedReceiver?.id || 'assistant',
+    thinking: msg.thinking || false,
+    read: true
   })) as Message[];
 
   const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : formattedMessages;
