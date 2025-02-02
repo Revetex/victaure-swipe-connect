@@ -3,7 +3,7 @@ import { MessageSender } from "../messages";
 export interface Message {
   id: string;
   content: string;
-  sender: MessageSender | string;
+  sender: string | MessageSender;
   thinking?: boolean;
   timestamp: Date;
   created_at: string;

@@ -9,7 +9,7 @@ export const saveMessage = async (message: Message) => {
         id: message.id,
         user_id: message.sender_id === 'assistant' ? message.receiver_id : message.sender_id,
         content: message.content,
-        sender: message.sender,
+        sender: message.sender_id === 'assistant' ? 'assistant' : 'user',
         created_at: message.created_at,
         updated_at: message.updated_at
       });
