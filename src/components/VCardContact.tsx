@@ -1,117 +1,104 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Phone, MapPin } from "lucide-react";
+import { UserProfile } from "@/types/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Combobox } from "@/components/ui/combobox";
-import { provinces } from "@/hooks/data/provinces";
-import { cities } from "@/hooks/data/cities";
-import { UserProfile } from "@/types/profile";
+import { provinces, provinceData } from "@/hooks/data/provinces";
+import { getCitiesForProvince } from "@/hooks/data/cities";
+import { useState, useEffect } from "react";
 
 interface VCardContactProps {
   profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
+  setProfile: React.Dispatch<React.SetStateAction<UserProfile>>;
 }
 
-export function VCardContact({
-  profile,
-  isEditing,
-  setProfile,
-}: VCardContactProps) {
-  const [selectedProvince, setSelectedProvince] = useState<string>(profile.state || "");
-  const [selectedCity, setSelectedCity] = useState<string>(profile.city || "");
+export function VCardContact({ profile, isEditing, setProfile }: VCardContactProps) {
   const [availableCities, setAvailableCities] = useState<string[]>([]);
-  const [customCity, setCustomCity] = useState<string>("");
 
   useEffect(() => {
-    if (selectedProvince) {
-      const provinceCities = cities[selectedProvince] || [];
-      setAvailableCities(provinceCities);
+    if (profile.state && profile.state in provinceData) {
+      setAvailableCities(getCitiesForProvince(profile.state as keyof typeof provinceData));
     } else {
       setAvailableCities([]);
     }
-  }, [selectedProvince]);
+  }, [profile.state]);
 
   const handleProvinceChange = (value: string) => {
-    setSelectedProvince(value);
-    setProfile({ ...profile, state: value });
-    // Reset city when province changes
-    setSelectedCity("");
-    setProfile({ ...profile, state: value, city: "" });
+    setProfile(prev => ({ ...prev, state: value, city: "" }));
   };
 
   const handleCityChange = (value: string) => {
-    setSelectedCity(value);
-    setCustomCity(value);
-    setProfile({ ...profile, city: value });
+    setProfile(prev => ({ ...prev, city: value }));
   };
 
-  const handlePhoneChange = (value: string) => {
-    setProfile({ ...profile, phone: value });
-  };
+  if (!isEditing) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Téléphone</Label>
+            <p className="text-sm text-muted-foreground">{profile.phone || "Non spécifié"}</p>
+          </div>
+          <div>
+            <Label>Ville</Label>
+            <p className="text-sm text-muted-foreground">{profile.city || "Non spécifié"}</p>
+          </div>
+          <div>
+            <Label>Province</Label>
+            <p className="text-sm text-muted-foreground">{profile.state || "Non spécifié"}</p>
+          </div>
+          <div>
+            <Label>Pays</Label>
+            <p className="text-sm text-muted-foreground">{profile.country || "Non spécifié"}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4"
-    >
-      <div className="flex flex-col space-y-4">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="phone">Téléphone</Label>
-          <div className="relative">
-            <Phone className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="phone"
-              placeholder="Votre numéro de téléphone"
-              value={profile.phone || ""}
-              onChange={(e) => handlePhoneChange(e.target.value)}
-              className="pl-8"
-              disabled={!isEditing}
-            />
-          </div>
+          <Input
+            id="phone"
+            value={profile.phone || ""}
+            onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
+            placeholder="Votre numéro de téléphone"
+          />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="province">Province</Label>
           <Combobox
             items={provinces.map(p => ({ label: p.name, value: p.name }))}
-            value={selectedProvince}
+            value={profile.state || ""}
             onChange={handleProvinceChange}
             placeholder="Sélectionnez une province"
-            disabled={!isEditing}
           />
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="city">Ville</Label>
-          <div className="relative">
-            <MapPin className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            {isEditing ? (
-              <Combobox
-                items={[
-                  ...availableCities.map(city => ({ label: city, value: city })),
-                  ...(customCity && !availableCities.includes(customCity) 
-                    ? [{ label: customCity, value: customCity }] 
-                    : [])
-                ]}
-                value={selectedCity}
-                onChange={handleCityChange}
-                placeholder="Entrez ou sélectionnez une ville"
-                allowCustomValue
-                disabled={!selectedProvince}
-              />
-            ) : (
-              <Input
-                value={profile.city || ""}
-                className="pl-8"
-                disabled
-              />
-            )}
-          </div>
+          <Combobox
+            items={availableCities.map(city => ({ label: city, value: city }))}
+            value={profile.city || ""}
+            onChange={handleCityChange}
+            placeholder="Sélectionnez une ville"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="country">Pays</Label>
+          <Input
+            id="country"
+            value={profile.country || ""}
+            onChange={(e) => setProfile(prev => ({ ...prev, country: e.target.value }))}
+            placeholder="Votre pays"
+          />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
