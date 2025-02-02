@@ -99,25 +99,17 @@ export function DashboardContent({
                     <div className="h-[calc(100vh-16rem)]">
                       <TodoSection
                         todos={todos}
-                        notes={notes}
                         newTodo={newTodo}
-                        newNote={newNote}
                         selectedDate={selectedDate}
                         selectedTime={selectedTime}
                         allDay={allDay}
-                        selectedColor={selectedColor}
-                        colors={colors}
                         onTodoChange={setNewTodo}
-                        onNoteChange={setNewNote}
                         onDateChange={setSelectedDate}
                         onTimeChange={setSelectedTime}
                         onAllDayChange={setAllDay}
-                        onColorChange={setSelectedColor}
                         onAddTodo={addTodo}
-                        onAddNote={addNote}
                         onToggleTodo={toggleTodo}
                         onDeleteTodo={deleteTodo}
-                        onDeleteNote={deleteNote}
                       />
                     </div>
                   </AccordionContent>

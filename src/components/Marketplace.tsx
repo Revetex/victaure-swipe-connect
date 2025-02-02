@@ -4,10 +4,7 @@ import { ExternalSearchSection } from "@/components/jobs/sections/ExternalSearch
 export function Marketplace() {
   const [isExternalSearchLoading, setIsExternalSearchLoading] = useState(false);
   const [hasExternalSearchError, setHasExternalSearchError] = useState(false);
-
-  const handleRetryExternalSearch = () => {
-    setHasExternalSearchError(false);
-  };
+  const [errorMessage, setErrorMessage] = useState<string>();
 
   return (
     <div className="w-full">
@@ -21,7 +18,7 @@ export function Marketplace() {
             <ExternalSearchSection
               isLoading={isExternalSearchLoading}
               hasError={hasExternalSearchError}
-              onRetry={handleRetryExternalSearch}
+              errorMessage={errorMessage}
             />
           </div>
         </div>
