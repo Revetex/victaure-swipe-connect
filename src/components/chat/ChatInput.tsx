@@ -83,7 +83,6 @@ export function ChatInput({
         uploadedUrls.push(publicUrl);
       }
 
-      // Add file URLs to the message
       const fileLinks = uploadedUrls
         .map(url => `\n[Fichier joint](${url})`)
         .join('\n');
