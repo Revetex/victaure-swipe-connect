@@ -24,7 +24,7 @@ export function ProfileSearch() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const { data: profiles, isLoading } = useQuery({
+  const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", searchQuery],
     queryFn: async () => {
       if (!searchQuery) return [];
@@ -43,7 +43,6 @@ export function ProfileSearch() {
       
       return data || [];
     },
-    initialData: [],
     enabled: searchQuery.length > 0
   });
 
@@ -102,7 +101,7 @@ export function ProfileSearch() {
               <div className="p-4 text-center text-sm text-muted-foreground">
                 Chargement des profils...
               </div>
-            ) : profiles && profiles.length > 0 ? (
+            ) : (
               profiles.map((profile) => (
                 <CommandItem
                   key={profile.id}
@@ -143,7 +142,7 @@ export function ProfileSearch() {
                   </div>
                 </CommandItem>
               ))
-            ) : null}
+            )}
           </CommandGroup>
         </CommandList>
       </Command>
