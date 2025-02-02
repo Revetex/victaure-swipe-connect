@@ -21,10 +21,10 @@ interface MessagesContentProps {
 }
 
 export function MessagesContent({
-  messages = [], // Add default empty array
-  inputMessage = "", // Add default empty string
-  isListening = false,
-  isThinking = false,
+  messages,
+  inputMessage,
+  isListening,
+  isThinking,
   onBack,
   onSendMessage,
   onVoiceInput,
@@ -52,7 +52,7 @@ export function MessagesContent({
   };
 
   useEffect(() => {
-    if (!showScrollButton && messages?.length > 0) {
+    if (!showScrollButton) {
       scrollToBottom();
     }
   }, [messages, showScrollButton]);
@@ -104,14 +104,14 @@ export function MessagesContent({
         >
           <div className="w-full space-y-2">
             <AnimatePresence mode="popLayout">
-              {messages?.map((message) => (
+              {messages.map((message) => (
                 <ChatMessage
-                  key={message?.id || Math.random()}
-                  content={message?.content || ""}
-                  sender={message?.sender || "assistant"}
-                  thinking={message?.thinking || false}
+                  key={message.id}
+                  content={message.content}
+                  sender={message.sender}
+                  thinking={message.thinking}
                   showTimestamp={true}
-                  timestamp={message?.timestamp || new Date()}
+                  timestamp={message.timestamp}
                 />
               ))}
             </AnimatePresence>

@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Command } from "cmdk";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { ProfilePreview } from "@/components/ProfilePreview";
+import { UserRound } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function ProfileSearch() {
   const [search, setSearch] = useState("");
@@ -27,7 +29,7 @@ export function ProfileSearch() {
           return [];
         }
 
-        return data || [];
+        return (data || []) as UserProfile[];
       } catch (error) {
         console.error("Error in query:", error);
         return [];
@@ -38,60 +40,54 @@ export function ProfileSearch() {
   });
 
   const handleSelectProfile = (profile: UserProfile) => {
-    if (!profile) return;
     setSelectedProfile(profile);
-    setSearch("");
-    setIsInputFocused(false);
-  };
-
-  const handleCloseProfile = () => {
-    setSelectedProfile(null);
   };
 
   return (
-    <div className="relative z-50">
-      <Command className="relative max-w-lg mx-auto" shouldFilter={false}>
-        <Command.Input
+    <div className="relative w-full">
+      <Command className="rounded-lg border shadow-md">
+        <CommandInput
           value={search}
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            setTimeout(() => setIsInputFocused(false), 100);
+            // Add a small delay to allow click events to complete
+            setTimeout(() => setIsInputFocused(false), 200);
           }}
           placeholder="Rechercher un profil..."
-          className="w-full px-4 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
-        
-        {isInputFocused && search.length > 0 && (
-          <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden z-50">
-            {profiles && profiles.length > 0 ? (
-              profiles.map((profile) => (
-                <Command.Item
+        {search.length > 0 && (
+          <CommandList>
+            <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+            <CommandGroup>
+              {profiles.map((profile) => (
+                <CommandItem
                   key={profile.id}
-                  value={profile.full_name || ''}
+                  value={profile.full_name || ""}
                   onSelect={() => handleSelectProfile(profile)}
-                  className="px-4 py-2 hover:bg-muted cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-accent"
                 >
-                  {profile.full_name}
-                </Command.Item>
-              ))
-            ) : (
-              <Command.Item
-                value="no-results"
-                className="px-4 py-2 text-muted-foreground"
-                disabled
-              >
-                Aucun résultat
-              </Command.Item>
-            )}
-          </Command.List>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={profile.avatar_url || ""} alt={profile.full_name || ""} />
+                    <AvatarFallback>
+                      <UserRound className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{profile.full_name}</span>
+                    <span className="text-sm text-muted-foreground">{profile.role}</span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         )}
       </Command>
 
       {selectedProfile && (
         <ProfilePreview 
           profile={selectedProfile} 
-          onClose={handleCloseProfile}
+          onClose={() => setSelectedProfile(null)} 
         />
       )}
     </div>

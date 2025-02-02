@@ -1,131 +1,122 @@
-import { Message } from "@/types/chat/messageTypes";
-import { UserProfile } from "@/types/profile";
-import { useProfile } from "@/hooks/useProfile";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { MessageSquare, InboxIcon } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import type { Message } from "@/hooks/useMessages";
+import { useState } from "react";
+import { toast } from "sonner";
+import { AssistantMessage } from "./AssistantMessage";
+import { UserMessage } from "./UserMessage";
+import { SearchHeader } from "./SearchHeader";
 
 interface MessagesListProps {
-  messages: any[];
-  chatMessages: Message[];
-  onSelectConversation: (type: "assistant", profile?: UserProfile) => void;
+  messages: Message[];
+  chatMessages: any[];
+  onSelectConversation: (type: "assistant") => void;
   onMarkAsRead: (messageId: string) => void;
 }
 
 export function MessagesList({
-  messages = [], // Add default empty array
+  messages,
   chatMessages,
   onSelectConversation,
-  onMarkAsRead
+  onMarkAsRead,
 }: MessagesListProps) {
-  const { profile: currentProfile } = useProfile();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const { data: profiles = {} } = useQuery({
-    queryKey: ["profiles", messages],
-    queryFn: async () => {
-      if (!messages?.length || !currentProfile?.id) {
-        return {};
-      }
-
-      const profileIds = messages.map(msg => 
-        msg.sender_id === currentProfile.id ? msg.receiver_id : msg.sender_id
-      ).filter(Boolean); // Filter out any undefined values
-
-      if (!profileIds.length) {
-        return {};
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .in("id", profileIds);
-
-      if (error) {
-        console.error("Error fetching profiles:", error);
-        return {};
-      }
-
-      return data.reduce((acc: Record<string, UserProfile>, profile) => {
-        if (profile && profile.id) {
-          acc[profile.id] = profile;
-        }
-        return acc;
-      }, {});
-    },
-    enabled: messages?.length > 0 && !!currentProfile?.id,
-    initialData: {}
-  });
-
-  const handleSelectMessage = async (message: any) => {
-    if (!currentProfile) return;
-    
-    const profileId = message.sender_id === currentProfile.id ? message.receiver_id : message.sender_id;
-    const profile = profiles[profileId];
-    
-    if (profile) {
-      onSelectConversation("assistant", profile);
-      if (!message.read && message.receiver_id === currentProfile.id) {
-        onMarkAsRead(message.id);
-      }
-    }
+  const handleSearch = (value: string) => {
+    setSearchQuery(value.toLowerCase());
   };
 
+  const toggleSortOrder = () => {
+    setSortOrder(prev => prev === "asc" ? "desc" : "asc");
+    toast.success(`Messages triés par date ${sortOrder === "asc" ? "décroissante" : "croissante"}`);
+  };
+
+  const filteredMessages = messages.filter(message => 
+    message.content.toLowerCase().includes(searchQuery) ||
+    message.sender.full_name.toLowerCase().includes(searchQuery)
+  );
+
+  const sortedMessages = [...filteredMessages].sort((a, b) => {
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
+
+  const unreadCount = messages.filter(m => !m.read).length;
+
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      <div className="space-y-2">
-        <div 
-          className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted cursor-pointer"
-          onClick={() => onSelectConversation("assistant")}
-        >
-          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-            <MessageCircle className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-medium">M. Victaure</h3>
-            <p className="text-sm text-muted-foreground">Assistant IA</p>
-          </div>
-        </div>
+    <motion.div
+      key="message-list"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      transition={{ duration: 0.2 }}
+      className="h-full flex flex-col overflow-hidden bg-background/95 backdrop-blur-sm"
+    >
+      <SearchHeader 
+        unreadCount={unreadCount}
+        onSearch={handleSearch}
+        onToggleSort={toggleSortOrder}
+      />
 
-        {messages?.map((message) => {
-          if (!message || !currentProfile) return null;
-          
-          const profileId = message.sender_id === currentProfile.id ? message.receiver_id : message.sender_id;
-          const profile = profiles[profileId];
-          
-          if (!profile) return null;
+      <ScrollArea className="flex-1">
+        <div className="space-y-2 p-4">
+          {/* Pinned Assistant Message */}
+          <div className="mb-6">
+            <AssistantMessage 
+              chatMessages={chatMessages}
+              onSelectConversation={onSelectConversation}
+            />
+          </div>
 
-          return (
-            <div
-              key={message.id}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted cursor-pointer"
-              onClick={() => handleSelectMessage(message)}
-            >
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                {profile.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt={profile.full_name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium">{profile.full_name}</h3>
-                  {!message.read && message.receiver_id === currentProfile.id && (
-                    <span className="w-2 h-2 bg-primary rounded-full" />
-                  )}
+          {/* User Messages Section */}
+          {sortedMessages.length > 0 ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between px-4">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  <h2 className="text-lg font-semibold">Conversations</h2>
                 </div>
-                <p className="text-sm text-muted-foreground truncate">
-                  {message.content}
-                </p>
+                <span className="text-sm text-muted-foreground">
+                  {sortedMessages.length} message{sortedMessages.length > 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {sortedMessages.map((message) => (
+                  <UserMessage
+                    key={message.id}
+                    message={message}
+                    onMarkAsRead={onMarkAsRead}
+                  />
+                ))}
               </div>
             </div>
-          );
-        })}
-      </div>
-    </div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center p-8 text-center text-muted-foreground mt-8"
+            >
+              <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+                <InboxIcon className="h-8 w-8 opacity-50" />
+              </div>
+              {searchQuery ? (
+                <>
+                  <p className="text-lg font-medium">Aucun message trouvé</p>
+                  <p className="text-sm mt-1">Essayez avec d'autres termes de recherche</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-lg font-medium">Votre boîte de réception est vide</p>
+                  <p className="text-sm mt-1">Les nouveaux messages apparaîtront ici</p>
+                </>
+              )}
+            </motion.div>
+          )}
+        </div>
+      </ScrollArea>
+    </motion.div>
   );
 }

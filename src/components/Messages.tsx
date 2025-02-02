@@ -4,10 +4,6 @@ import { useState } from "react";
 import { MessagesList } from "./messages/conversation/MessagesList";
 import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
-import { ProfilePreview } from "./ProfilePreview";
-import { UserProfile } from "@/types/profile";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export function Messages() {
   const {
@@ -23,39 +19,13 @@ export function Messages() {
 
   const { messages, markAsRead } = useMessages();
   const [showConversation, setShowConversation] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-
-  const { data: profile } = useQuery({
-    queryKey: ["profile", selectedProfile?.id],
-    queryFn: async () => {
-      if (!selectedProfile?.id) return null;
-      
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", selectedProfile.id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching profile:", error);
-        return null;
-      }
-
-      return data as UserProfile;
-    },
-    enabled: !!selectedProfile?.id
-  });
 
   const handleBack = () => {
     setShowConversation(false);
-    setSelectedProfile(null);
   };
 
-  const handleSelectConversation = async (type: "assistant", profile?: UserProfile) => {
+  const handleSelectConversation = async (type: "assistant") => {
     try {
-      if (profile) {
-        setSelectedProfile(profile);
-      }
       setShowConversation(true);
     } catch (error) {
       console.error("Error selecting conversation:", error);
@@ -86,12 +56,8 @@ export function Messages() {
     }
   };
 
-  const handleCloseProfile = () => {
-    setSelectedProfile(null);
-  };
-
   return (
-    <div className="h-full flex flex-col relative">
+    <div className="h-full flex flex-col">
       {showConversation ? (
         <MessagesContent
           messages={chatMessages}
@@ -105,22 +71,12 @@ export function Messages() {
           onBack={handleBack}
         />
       ) : (
-        <>
-          <MessagesList
-            messages={messages}
-            chatMessages={chatMessages}
-            onSelectConversation={handleSelectConversation}
-            onMarkAsRead={handleMarkAsRead}
-          />
-          {selectedProfile && (
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50">
-              <ProfilePreview 
-                profile={selectedProfile} 
-                onClose={handleCloseProfile}
-              />
-            </div>
-          )}
-        </>
+        <MessagesList
+          messages={messages}
+          chatMessages={chatMessages}
+          onSelectConversation={handleSelectConversation}
+          onMarkAsRead={handleMarkAsRead}
+        />
       )}
     </div>
   );
