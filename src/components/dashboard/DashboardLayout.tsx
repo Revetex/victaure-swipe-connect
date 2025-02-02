@@ -31,7 +31,6 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      // Reset editing state for all pages except Notes/Tasks
       if (page !== 4) {
         setIsEditing(false);
       }
@@ -44,7 +43,7 @@ export function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen bg-background">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 pt-20">
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div 
