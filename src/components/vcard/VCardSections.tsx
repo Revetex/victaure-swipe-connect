@@ -21,9 +21,6 @@ export function VCardSections({
   profile,
   isEditing,
   setProfile,
-  newSkill,
-  setNewSkill,
-  handleAddSkill,
   handleRemoveSkill,
   selectedStyle,
   sectionsOrder,
@@ -48,9 +45,6 @@ export function VCardSections({
             profile={profile}
             isEditing={isEditing}
             setProfile={setProfile}
-            newSkill={newSkill}
-            setNewSkill={setNewSkill}
-            handleAddSkill={handleAddSkill}
             handleRemoveSkill={handleRemoveSkill}
             selectedStyle={selectedStyle}
           />
