@@ -43,7 +43,19 @@ export function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen bg-background">
-      <div className="container mx-auto px-4">
+      {isEditing && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50 py-2">
+          <div className="container mx-auto px-4">
+            <div className="max-w-7xl mx-auto">
+              <h1 className="text-center text-sm font-medium text-muted-foreground">
+                Mode édition
+              </h1>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className={`container mx-auto px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div 
