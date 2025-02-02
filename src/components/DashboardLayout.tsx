@@ -62,10 +62,10 @@ export function DashboardLayout() {
               variants={itemVariants} 
               className="transform transition-all duration-300 w-full min-h-screen"
               style={{ 
-                maxHeight: isEditing ? `${viewportHeight - (isMobile ? 80 : 40)}px` : 'none',
+                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '120px' : '80px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? (isMobile ? '6rem' : '4rem') : '10rem'
+                paddingBottom: isEditing ? (isMobile ? '8rem' : '4rem') : '10rem'
               }}
             >
               <DashboardContent
@@ -85,7 +85,7 @@ export function DashboardLayout() {
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
-          height: '4rem',
+          height: isMobile ? '5rem' : '4rem',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
       >

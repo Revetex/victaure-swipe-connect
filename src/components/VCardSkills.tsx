@@ -27,57 +27,60 @@ export function VCardSkills({
       title="Compétences"
       icon={<Code className="h-5 w-5 text-muted-foreground" />}
     >
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="flex flex-wrap gap-2 p-4"
-      >
-        {uniqueSkills.length > 0 ? (
-          uniqueSkills.map((skill) => (
-            <motion.div
-              key={skill}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              whileHover={{ scale: 1.05 }}
-              className="relative group"
-            >
-              <Badge 
-                variant="secondary"
-                className="px-3 py-1.5 text-sm bg-secondary/40 hover:bg-secondary/60 text-secondary-foreground transition-colors duration-200"
+      <div className="space-y-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-wrap gap-2 p-4"
+        >
+          {uniqueSkills.length > 0 ? (
+            uniqueSkills.map((skill) => (
+              <motion.div
+                key={skill}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.05 }}
+                className="relative group"
               >
-                {skill}
-                {isEditing && (
-                  <button
-                    onClick={() => handleRemoveSkill(skill)}
-                    className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                )}
-              </Badge>
-            </motion.div>
-          ))
-        ) : (
-          <p className="text-sm text-muted-foreground italic">
-            Aucune compétence ajoutée
-          </p>
+                <Badge 
+                  variant="secondary"
+                  className="px-3 py-1.5 text-sm bg-secondary/40 hover:bg-secondary/60 text-secondary-foreground transition-colors duration-200"
+                >
+                  {skill}
+                  {isEditing && (
+                    <button
+                      onClick={() => handleRemoveSkill(skill)}
+                      className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </Badge>
+              </motion.div>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground italic">
+              Aucune compétence ajoutée
+            </p>
+          )}
+        </motion.div>
+        
+        {isEditing && (
+          <div className="px-4 pb-4">
+            <TouchFriendlySkillSelector
+              onSkillSelect={(skill) => {
+                if (!profile.skills?.includes(skill)) {
+                  setProfile({
+                    ...profile,
+                    skills: [...(profile.skills || []), skill],
+                  });
+                }
+              }}
+              existingSkills={uniqueSkills}
+            />
+          </div>
         )}
-      </motion.div>
-      {isEditing && (
-        <div className="mt-4">
-          <TouchFriendlySkillSelector
-            onSkillSelect={(skill) => {
-              if (!profile.skills?.includes(skill)) {
-                setProfile({
-                  ...profile,
-                  skills: [...(profile.skills || []), skill],
-                });
-              }
-            }}
-            existingSkills={uniqueSkills}
-          />
-        </div>
-      )}
+      </div>
     </VCardSection>
   );
 }
