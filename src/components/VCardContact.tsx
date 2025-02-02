@@ -20,12 +20,12 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-3 p-0 sm:p-6 rounded-xl bg-card/50 dark:bg-card/20 backdrop-blur-sm border border-border/10"
+      className="space-y-3 p-4 sm:p-6 rounded-xl bg-card/50 dark:bg-card/20 backdrop-blur-sm border border-border/10"
     >
-      <h3 className="text-base sm:text-lg font-semibold text-foreground/90 px-4 sm:px-0">Contact</h3>
+      <h3 className="text-base sm:text-lg font-semibold text-foreground/90">Contact</h3>
       <div className="space-y-2">
         {isEditing ? (
-          <div className="space-y-3 px-4 sm:px-0">
+          <div className="space-y-3">
             <div className="flex items-center gap-3">
               <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
               <Input
@@ -65,10 +65,10 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             </div>
           </div>
         ) : (
-          <div className="px-4 sm:px-0">
+          <div>
             {profile.email && (
               <motion.div 
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-background/10 dark:hover:bg-background/5 transition-colors"
+                className="flex items-center gap-3 p-2 rounded-lg"
                 whileHover={{ scale: 1.01 }}
               >
                 <Mail className="h-4 w-4 text-muted-foreground" />
@@ -82,7 +82,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             )}
             {profile.phone && (
               <motion.div 
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-background/10 dark:hover:bg-background/5 transition-colors"
+                className="flex items-center gap-3 p-2 rounded-lg"
                 whileHover={{ scale: 1.01 }}
               >
                 <Phone className="h-4 w-4 text-muted-foreground" />
@@ -96,7 +96,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             )}
             {profile.city && (
               <motion.div 
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-background/10 dark:hover:bg-background/5 transition-colors"
+                className="flex items-center gap-3 p-2 rounded-lg"
                 whileHover={{ scale: 1.01 }}
               >
                 <MapPin className="h-4 w-4 text-muted-foreground" />

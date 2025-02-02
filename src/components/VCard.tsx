@@ -10,6 +10,7 @@ import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard } from "@/utils/pdfGenerator";
 import { supabase } from "@/integrations/supabase/client";
+import { VCardContact } from "./VCardContact";
 
 interface VCardProps {
   onEditStateChange?: (isEditing: boolean) => void;
@@ -112,7 +113,12 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           onDownloadBusinessCard={handleDownloadBusinessCard}
         />
 
-        <div className="mt-8">
+        <div className="mt-8 space-y-6">
+          <VCardContact
+            profile={profile}
+            isEditing={isEditing}
+            setProfile={setProfile}
+          />
           <VCardSectionsManager
             profile={profile}
             isEditing={isEditing}
