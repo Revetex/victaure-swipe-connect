@@ -43,7 +43,8 @@ export function ProfileSearch() {
       
       return data || [];
     },
-    enabled: searchQuery.length > 0
+    enabled: searchQuery.length > 0,
+    initialData: []
   });
 
   const handleConnect = async (userId: string) => {
