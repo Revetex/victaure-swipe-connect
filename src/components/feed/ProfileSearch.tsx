@@ -87,12 +87,10 @@ export function ProfileSearch() {
       </Command>
 
       {selectedProfile && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-          <ProfilePreview 
-            profile={selectedProfile} 
-            onClose={handleCloseProfile}
-          />
-        </div>
+        <ProfilePreview 
+          profile={selectedProfile} 
+          onClose={handleCloseProfile}
+        />
       )}
     </div>
   );
