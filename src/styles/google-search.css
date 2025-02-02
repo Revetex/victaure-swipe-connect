@@ -65,7 +65,7 @@
 
 /* Results styling with improved dark mode visibility */
 .gsc-results-wrapper-overlay {
-  background: hsl(var(--card)) !important;
+  background: hsl(var(--background)) !important;
   border: 1px solid hsl(var(--border)) !important;
   border-radius: 0.5rem !important;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
@@ -118,7 +118,7 @@
 
 /* Dark mode specific overrides */
 .dark .gsc-results-wrapper-overlay {
-  background-color: hsl(var(--card)) !important;
+  background-color: hsl(var(--background)) !important;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2) !important;
 }
 
