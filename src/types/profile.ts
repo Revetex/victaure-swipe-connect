@@ -34,6 +34,11 @@ export interface Experience {
   updated_at?: Date | null;
 }
 
+export interface Friend {
+  id: string;
+  full_name: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -61,4 +66,5 @@ export interface UserProfile {
   custom_text_color?: string | null;
   sections_order?: string[] | null;
   privacy_enabled?: boolean;
+  friends?: Friend[];
 }

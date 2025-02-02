@@ -45,7 +45,7 @@ export function SearchHeader({
               >
                 Parler avec M. Victaure
               </Button>
-              {profile?.friends?.map((friend: any) => (
+              {profile?.friends?.map((friend) => (
                 <Button
                   key={friend.id}
                   onClick={() => onSelectFriend(friend.id)}
