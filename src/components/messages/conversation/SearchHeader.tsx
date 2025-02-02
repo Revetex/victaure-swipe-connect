@@ -7,7 +7,7 @@ interface SearchHeaderProps {
   unreadCount?: number;
   onSearch: (value: string) => void;
   onNewConversation: () => void;
-  onSelectFriend?: (friendId: string) => void;  // Made optional with ?
+  onSelectFriend?: (friendId: string) => void;
 }
 
 export function SearchHeader({
