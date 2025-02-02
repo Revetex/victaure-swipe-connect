@@ -8,6 +8,8 @@ import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
 import { Logo } from "@/components/Logo";
+import { ProfileSearch } from "@/components/feed/ProfileSearch";
+import { useNavigate } from "react-router-dom";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -15,6 +17,7 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(3);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const navigate = useNavigate();
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -41,6 +44,13 @@ export function DashboardLayout() {
   const handleRequestChat = useCallback(() => {
     handlePageChange(2);
   }, [handlePageChange]);
+
+  const handleProfileSelect = (profile: any) => {
+    // Navigate to the selected profile's page
+    if (profile?.id) {
+      navigate(`/profile/${profile.id}`);
+    }
+  };
 
   const getPageTitle = (page: number) => {
     switch (page) {
@@ -88,8 +98,17 @@ export function DashboardLayout() {
                 {getPageTitle(currentPage)}
               </h2>
             </div>
-            <NotificationsBox />
+            
+            <div className="flex items-center gap-4 flex-1 max-w-xl mx-4">
+              <ProfileSearch 
+                onSelect={handleProfileSelect} 
+                placeholder="Rechercher un profil..."
+                className="w-full"
+              />
+              <NotificationsBox />
+            </div>
           </div>
+          
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
