@@ -50,8 +50,7 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
         .from('messages')
         .select('*')
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`)
-        .limit(1);
+        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`);
 
       if (checkError) throw checkError;
 
@@ -69,9 +68,10 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
         if (insertError) throw insertError;
       }
 
+      // Navigate to messages route with the profile ID
       navigate(`/dashboard/messages/${profile.id}`);
+      onClose(); // Close the profile preview
       toast.success("Conversation créée avec succès");
-      onClose();
     } catch (error) {
       console.error("Error creating conversation:", error);
       toast.error("Erreur lors de la création de la conversation");
