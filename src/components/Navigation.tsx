@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 
 export function Navigation() {
   const isMobile = useIsMobile();
@@ -30,6 +31,7 @@ export function Navigation() {
         <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </a>
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
+        <NotificationsBox />
         <ThemeToggle />
         <Button 
           variant="ghost" 
@@ -59,7 +61,7 @@ export function Navigation() {
         >
           <Logo size={isMobile ? "sm" : "md"} />
           <span className="font-bold text-xl md:text-2xl text-primary relative">
-            Victaure
+            VICTAURE
             <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
           </span>
         </motion.a>
