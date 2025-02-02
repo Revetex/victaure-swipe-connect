@@ -11,6 +11,8 @@ import { useNotes } from "@/hooks/useNotes";
 import { Feed } from "@/components/Feed";
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ListTodo, StickyNote } from "lucide-react";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -78,51 +80,72 @@ export function DashboardContent({
         return <Messages />;
       case 3: // Jobs
         return <Marketplace />;
-      case 4: // Feed (previously Notes/Tasks)
+      case 4: // Feed
         return <Feed />;
       case 5: // Tools
         return (
           <div className="container mx-auto px-4 py-8">
             <h2 className="text-2xl font-bold mb-6">Outils</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="h-[calc(100vh-16rem)]">
-                <h3 className="text-xl font-semibold mb-4">Tâches</h3>
-                <TodoSection
-                  todos={todos}
-                  notes={notes}
-                  newTodo={newTodo}
-                  newNote={newNote}
-                  selectedDate={selectedDate}
-                  selectedTime={selectedTime}
-                  allDay={allDay}
-                  selectedColor={selectedColor}
-                  colors={colors}
-                  onTodoChange={setNewTodo}
-                  onNoteChange={setNewNote}
-                  onDateChange={setSelectedDate}
-                  onTimeChange={setSelectedTime}
-                  onAllDayChange={setAllDay}
-                  onColorChange={setSelectedColor}
-                  onAddTodo={addTodo}
-                  onAddNote={addNote}
-                  onToggleTodo={toggleTodo}
-                  onDeleteTodo={deleteTodo}
-                  onDeleteNote={deleteNote}
-                />
-              </div>
-              <div className="h-[calc(100vh-16rem)]">
-                <h3 className="text-xl font-semibold mb-4">Notes</h3>
-                <NotesSection
-                  notes={notes}
-                  newNote={newNote}
-                  selectedColor={selectedColor}
-                  colors={colors}
-                  onNoteChange={setNewNote}
-                  onColorChange={setSelectedColor}
-                  onAdd={addNote}
-                  onDelete={deleteNote}
-                />
-              </div>
+            <div className="max-w-3xl mx-auto">
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                <AccordionItem value="tasks" className="border rounded-lg bg-card">
+                  <AccordionTrigger className="px-4 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <ListTodo className="h-5 w-5" />
+                      <span className="font-semibold">Tâches</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="h-[calc(100vh-16rem)]">
+                      <TodoSection
+                        todos={todos}
+                        notes={notes}
+                        newTodo={newTodo}
+                        newNote={newNote}
+                        selectedDate={selectedDate}
+                        selectedTime={selectedTime}
+                        allDay={allDay}
+                        selectedColor={selectedColor}
+                        colors={colors}
+                        onTodoChange={setNewTodo}
+                        onNoteChange={setNewNote}
+                        onDateChange={setSelectedDate}
+                        onTimeChange={setSelectedTime}
+                        onAllDayChange={setAllDay}
+                        onColorChange={setSelectedColor}
+                        onAddTodo={addTodo}
+                        onAddNote={addNote}
+                        onToggleTodo={toggleTodo}
+                        onDeleteTodo={deleteTodo}
+                        onDeleteNote={deleteNote}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="notes" className="border rounded-lg bg-card">
+                  <AccordionTrigger className="px-4 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <StickyNote className="h-5 w-5" />
+                      <span className="font-semibold">Notes</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="h-[calc(100vh-16rem)]">
+                      <NotesSection
+                        notes={notes}
+                        newNote={newNote}
+                        selectedColor={selectedColor}
+                        colors={colors}
+                        onNoteChange={setNewNote}
+                        onColorChange={setSelectedColor}
+                        onAdd={addNote}
+                        onDelete={deleteNote}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
         );
