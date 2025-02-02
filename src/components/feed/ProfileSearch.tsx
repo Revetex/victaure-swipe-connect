@@ -17,28 +17,24 @@ export function ProfileSearch() {
   const { data: profiles = [], isLoading, error } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
-      try {
-        if (!search) return [];
-        
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .ilike("full_name", `%${search}%`)
-          .limit(5);
+      if (!search) return [];
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .ilike('full_name', `%${search}%`)
+        .limit(5);
 
-        if (error) {
-          console.error("Error fetching profiles:", error);
-          throw error;
-        }
-
-        return data as UserProfile[] || [];
-      } catch (error) {
-        console.error("Error in query function:", error);
-        return [];
+      if (error) {
+        console.error("Error fetching profiles:", error);
+        throw error;
       }
+
+      return (data || []) as UserProfile[];
     },
     enabled: search.length > 0,
     initialData: [],
+    staleTime: 1000 * 60, // Cache for 1 minute
   });
 
   const handleSelectProfile = (profile: UserProfile) => {
@@ -60,7 +56,7 @@ export function ProfileSearch() {
             onValueChange={setSearch}
             onFocus={() => setIsInputFocused(true)}
             onBlur={() => {
-              // Petit délai pour permettre le clic sur un profil
+              // Small delay to allow clicking on a profile
               setTimeout(() => setIsInputFocused(false), 200);
             }}
             className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
