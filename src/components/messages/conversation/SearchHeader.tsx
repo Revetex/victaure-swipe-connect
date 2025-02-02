@@ -7,7 +7,7 @@ interface SearchHeaderProps {
   unreadCount?: number;
   onSearch: (value: string) => void;
   onNewConversation: () => void;
-  onSelectFriend: (friendId: string) => void;
+  onSelectFriend?: (friendId: string) => void;  // Made optional with ?
 }
 
 export function SearchHeader({
@@ -26,7 +26,7 @@ export function SearchHeader({
             onChange={(e) => onSearch(e.target.value)}
           />
         </div>
-        <FriendSelector onSelectFriend={onSelectFriend} />
+        {onSelectFriend && <FriendSelector onSelectFriend={onSelectFriend} />}
         <Button
           variant="outline"
           size="icon"
