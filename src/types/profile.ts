@@ -1,3 +1,35 @@
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  role: string;
+  bio: string | null;
+  phone: string | null;
+  city: string | null;
+  state: string | null;
+  country: string;
+  skills: string[] | null;
+  latitude: number | null;
+  longitude: number | null;
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
+  website?: string | null;
+  company_name?: string | null;
+  company_size?: string | null;
+  industry?: string | null;
+  style_id?: string;
+  custom_font?: string | null;
+  custom_background?: string | null;
+  custom_text_color?: string | null;
+  sections_order?: string[] | null;
+  privacy_enabled?: boolean;
+  friends?: Friend[];
+  online_status?: boolean;
+  last_seen?: string;
+}
+
 export interface Certification {
   id: string;
   profile_id: string;
@@ -37,34 +69,4 @@ export interface Experience {
 export interface Friend {
   id: string;
   full_name: string;
-}
-
-export interface UserProfile {
-  id: string;
-  email: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  role: string;
-  bio: string | null;
-  phone: string | null;
-  city: string | null;
-  state: string | null;
-  country: string;
-  skills: string[] | null;
-  latitude: number | null;
-  longitude: number | null;
-  certifications?: Certification[];
-  education?: Education[];
-  experiences?: Experience[];
-  website?: string | null;
-  company_name?: string | null;
-  company_size?: string | null;
-  industry?: string | null;
-  style_id?: string;
-  custom_font?: string | null;
-  custom_background?: string | null;
-  custom_text_color?: string | null;
-  sections_order?: string[] | null;
-  privacy_enabled?: boolean;
-  friends?: Friend[];
 }

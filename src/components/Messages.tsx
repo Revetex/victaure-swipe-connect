@@ -53,7 +53,9 @@ function MessagesWithQuery({
         setSelectedReceiver({
           id: 'assistant',
           full_name: 'M. Victaure',
-          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+          online_status: true,
+          last_seen: new Date().toISOString()
         });
         setShowConversation(true);
       } else if (type === "user" && receiver) {
