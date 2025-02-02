@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserCircle2 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export function ProfileSearch() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,42 +37,50 @@ export function ProfileSearch() {
   };
 
   return (
-    <Command className="rounded-lg border shadow-md">
-      <CommandInput
-        placeholder="Rechercher un profil..."
-        value={searchTerm}
-        onValueChange={setSearchTerm}
-      />
-      <CommandList>
-        {searchTerm.trim() && (
-          <>
-            <CommandEmpty>Aucun profil trouvé</CommandEmpty>
-            <CommandGroup>
-              {profiles.map((profile) => (
-                <CommandItem
-                  key={profile.id}
-                  value={profile.id}
-                  onSelect={() => handleProfileSelect(profile.id)}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={profile.avatar_url || ''} />
-                      <AvatarFallback>
-                        <UserCircle2 className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium">{profile.full_name}</p>
-                      <p className="text-xs text-muted-foreground">{profile.role}</p>
+    <div className="w-full">
+      <div className="flex items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <Logo size="sm" />
+        <span className="text-xl font-bold text-primary">Victaure</span>
+      </div>
+
+      <div className="p-4">
+        <Command className="rounded-lg border shadow-md">
+          <CommandInput
+            placeholder="Rechercher un profil..."
+            value={searchTerm}
+            onValueChange={setSearchTerm}
+          />
+          <CommandList>
+            {searchTerm.trim() && (profiles.length === 0 ? (
+              <CommandEmpty>Aucun profil trouvé</CommandEmpty>
+            ) : (
+              <CommandGroup>
+                {profiles.map((profile) => (
+                  <CommandItem
+                    key={profile.id}
+                    value={profile.id}
+                    onSelect={() => handleProfileSelect(profile.id)}
+                    className="cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={profile.avatar_url || ''} />
+                        <AvatarFallback>
+                          <UserCircle2 className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium">{profile.full_name}</p>
+                        <p className="text-xs text-muted-foreground">{profile.role}</p>
+                      </div>
                     </div>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </>
-        )}
-      </CommandList>
-    </Command>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+          </CommandList>
+        </Command>
+      </div>
+    </div>
   );
 }
