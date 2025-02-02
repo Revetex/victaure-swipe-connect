@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { updateProfile } from "@/utils/profileActions";
 import { VCardContainer } from "./vcard/VCardContainer";
 import { VCardHeader } from "./VCardHeader";
-import { VCardCustomization } from "./vcard/VCardCustomization";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
 import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { generateBusinessCard } from "@/utils/pdfGenerator";
@@ -59,9 +58,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
       const updatedProfile = {
         ...profile,
         id: user.id,
-        custom_font: profile.custom_font || null,
-        custom_background: profile.custom_background || null,
-        custom_text_color: profile.custom_text_color || null,
       };
 
       await updateProfile(updatedProfile);
@@ -103,14 +99,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   }
 
   return (
-    <VCardContainer 
-      isEditing={isEditing} 
-      customStyles={{
-        font: profile.custom_font,
-        background: profile.custom_background,
-        textColor: profile.custom_text_color
-      }}
-    >
+    <VCardContainer isEditing={isEditing}>
       <div className="w-full mx-auto text-gray-900 dark:text-gray-100">
         <VCardHeader 
           profile={profile}
@@ -122,10 +111,6 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           onSave={handleSave}
           onDownloadBusinessCard={handleDownloadBusinessCard}
         />
-
-        {isEditing && (
-          <VCardCustomization profile={profile} setProfile={setProfile} />
-        )}
 
         <div className="mt-8">
           <VCardSectionsManager
