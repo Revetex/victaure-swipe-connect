@@ -71,4 +71,5 @@ export interface UserProfile {
   privacy_enabled?: boolean;
   online_status?: boolean;
   last_seen?: string;
+  friends?: Friend[];
 }
