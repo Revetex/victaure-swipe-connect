@@ -1,10 +1,10 @@
+import { useState, useEffect } from "react";
 import { UserProfile } from "@/types/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Combobox } from "@/components/ui/combobox";
-import { provinces, provinceData } from "@/hooks/data/provinces";
+import { provinces } from "@/hooks/data/provinces";
 import { getCitiesForProvince } from "@/hooks/data/cities";
-import { useState, useEffect } from "react";
 
 interface VCardContactProps {
   profile: UserProfile;
@@ -16,8 +16,9 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
   const [availableCities, setAvailableCities] = useState<string[]>([]);
 
   useEffect(() => {
-    if (profile.state && profile.state in provinceData) {
-      setAvailableCities(getCitiesForProvince(profile.state as keyof typeof provinceData));
+    if (profile.state) {
+      const cities = getCitiesForProvince(profile.state as keyof typeof provinceData);
+      setAvailableCities(cities);
     } else {
       setAvailableCities([]);
     }

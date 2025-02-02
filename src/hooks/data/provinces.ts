@@ -76,6 +76,3 @@ export const provinceData = {
     "The Pas"
   ]
 } as const;
-
-export type Province = typeof provinces[number]["name"];
-export type ProvinceData = typeof provinceData;
