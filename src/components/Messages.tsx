@@ -56,7 +56,7 @@ function MessagesWithQuery({
           avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
         });
         setShowConversation(true);
-      } else if (type === "user" && receiver) {
+      } else if (type === "user" && receiver && receiver.id) {
         const unreadMessages = messages.filter(
           m => m.sender?.id === receiver.id && !m.read
         );
@@ -85,8 +85,13 @@ function MessagesWithQuery({
     }
   };
 
+  const formattedMessages = messages?.map(msg => ({
+    ...msg,
+    sender: msg.sender || { id: msg.sender_id, full_name: "Unknown", avatar_url: "" }
+  }));
+
   const formattedChatMessages = formatChatMessages(chatMessages);
-  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
+  const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : formattedMessages;
   const filteredMessages = filterMessages(currentMessages, selectedReceiver);
 
   return showConversation ? (
@@ -104,7 +109,7 @@ function MessagesWithQuery({
     />
   ) : (
     <ConversationList
-      messages={messages}
+      messages={formattedMessages || []}
       chatMessages={formattedChatMessages}
       onSelectConversation={handleSelectConversation}
     />
