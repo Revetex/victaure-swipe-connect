@@ -86,7 +86,7 @@ export function ProfileSearch() {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full z-50">
       <Command className="rounded-lg border shadow-md">
         <CommandInput 
           placeholder="Rechercher un profil..." 
