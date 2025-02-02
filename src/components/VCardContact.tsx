@@ -82,14 +82,14 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 </a>
               </motion.div>
             )}
-            {(profile.city || profile.state) && (
+            {profile.city && (
               <motion.div 
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-background/10 dark:hover:bg-background/5 transition-colors"
                 whileHover={{ scale: 1.01 }}
               >
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-foreground/80">
-                  {[profile.city, profile.state].filter(Boolean).join(", ")}
+                  {profile.city}
                 </span>
               </motion.div>
             )}

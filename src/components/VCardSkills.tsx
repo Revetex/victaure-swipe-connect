@@ -43,7 +43,7 @@ export function VCardSkills({
             >
               <Badge 
                 variant="secondary"
-                className="px-3 py-1.5 text-sm bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary-foreground/90 transition-colors duration-200"
+                className="px-3 py-1.5 text-sm bg-secondary/40 hover:bg-secondary/60 text-secondary-foreground transition-colors duration-200"
               >
                 {skill}
                 {isEditing && (
