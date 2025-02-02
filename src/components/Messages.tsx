@@ -52,7 +52,7 @@ function MessagesWithQuery({
       if (type === "assistant") {
         setSelectedReceiver(null);
         setShowConversation(true);
-      } else if (type === "user" && receiver) {
+      } else if (type === "user" && receiver && receiver.id) {
         const unreadMessages = messages.filter(
           m => m.sender?.id === receiver.id && !m.read
         );
