@@ -50,13 +50,14 @@ function MessagesWithQuery({
   const handleSelectConversation = async (type: "assistant" | "user", receiver?: Receiver) => {
     try {
       if (type === "assistant") {
-        setSelectedReceiver({
+        const assistantReceiver: Receiver = {
           id: 'assistant',
           full_name: 'M. Victaure',
           avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
           online_status: true,
           last_seen: new Date().toISOString()
-        });
+        };
+        setSelectedReceiver(assistantReceiver);
         setShowConversation(true);
       } else if (type === "user" && receiver && receiver.id) {
         const unreadMessages = messages.filter(
@@ -95,12 +96,19 @@ function MessagesWithQuery({
       avatar_url: "",
       online_status: false,
       last_seen: new Date().toISOString()
-    }
+    } as MessageSender
   })) as Message[];
 
   const formattedChatMessages = formatChatMessages(chatMessages).map(msg => ({
     ...msg,
-    sender_id: msg.sender_id || msg.sender,
+    sender: typeof msg.sender === 'string' ? {
+      id: msg.sender,
+      full_name: msg.sender === 'assistant' ? 'M. Victaure' : 'You',
+      avatar_url: msg.sender === 'assistant' ? '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png' : '',
+      online_status: msg.sender === 'assistant',
+      last_seen: new Date().toISOString()
+    } as MessageSender : msg.sender,
+    sender_id: msg.sender_id || (typeof msg.sender === 'string' ? msg.sender : msg.sender.id),
     receiver_id: selectedReceiver?.id || 'assistant'
   })) as Message[];
 
