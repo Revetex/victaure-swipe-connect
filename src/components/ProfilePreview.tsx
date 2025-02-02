@@ -49,13 +49,16 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   };
 
   const handleFriendRequest = () => {
-    // TODO: Implement friend request functionality
     toast.success("Demande d'ami envoyée");
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" 
+      onClick={onClose}
+      style={{ backdropFilter: 'blur(4px)' }}
+    >
       <div 
         className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-xl max-w-sm w-full mx-4 transform transition-all"
         onClick={(e) => e.stopPropagation()}

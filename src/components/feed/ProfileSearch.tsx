@@ -38,6 +38,7 @@ export function ProfileSearch() {
   });
 
   const handleSelectProfile = (profile: UserProfile) => {
+    console.log("Selected profile:", profile);
     setSelectedProfile(profile);
     setSearch("");
     setIsInputFocused(false);
@@ -48,21 +49,20 @@ export function ProfileSearch() {
   };
 
   return (
-    <div className="relative">
-      <Command className="relative z-40 max-w-lg mx-auto">
+    <div className="relative z-50">
+      <Command className="relative max-w-lg mx-auto">
         <Command.Input
           value={search}
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            // Give time for the click event to register before closing
-            requestAnimationFrame(() => setIsInputFocused(false));
+            setTimeout(() => setIsInputFocused(false), 200);
           }}
           placeholder="Rechercher un profil..."
           className="w-full px-4 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
         {isInputFocused && search.length > 0 && (
-          <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden z-50">
+          <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden">
             {profiles.map((profile) => (
               <Command.Item
                 key={profile.id}
