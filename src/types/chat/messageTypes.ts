@@ -7,6 +7,9 @@ export interface Message {
   created_at?: string;
   updated_at?: string;
   user_id?: string;
+  sender_id?: string;
+  receiver_id?: string;
+  read?: boolean;
 }
 
 export interface ChatState {
