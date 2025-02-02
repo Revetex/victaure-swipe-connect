@@ -194,6 +194,16 @@
   border-color: hsl(var(--primary)) !important;
 }
 
+/* Hide "Search on Google" bottom link */
+.gsc-results .gsc-cursor-box.gs-bidi-start-align {
+  margin-bottom: 0 !important;
+}
+
+.gs-web-image-box,
+.gcsc-find-more-on-google {
+  display: none !important;
+}
+
 /* Mobile optimizations */
 @media (max-width: 640px) {
   .gsc-results-wrapper-overlay {
