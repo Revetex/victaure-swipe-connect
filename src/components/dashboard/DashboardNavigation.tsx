@@ -1,4 +1,4 @@
-import { Home, User, MessageCircle, Briefcase, Newspaper, Settings } from "lucide-react";
+import { Home, User, Briefcase, Newspaper, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DashboardNavigationProps {
@@ -9,7 +9,6 @@ interface DashboardNavigationProps {
 export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
   const navItems = [
     { id: 1, icon: User, label: "Profil" },
-    { id: 2, icon: MessageCircle, label: "Messages" },
     { id: 3, icon: Briefcase, label: "Emplois" },
     { id: 4, icon: Newspaper, label: "Actualités" },
     { id: 5, icon: Home, label: "Outils" },
