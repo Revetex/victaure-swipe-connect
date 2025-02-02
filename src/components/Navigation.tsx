@@ -7,14 +7,22 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
+import { ProfileSearch } from "@/components/feed/ProfileSearch";
+import { useNavigate } from "react-router-dom";
 
 export function Navigation() {
   const isMobile = useIsMobile();
   const { signOut, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return null;
   }
+
+  const handleProfileSelect = (profile: any) => {
+    // Navigate to the selected profile's page or handle the selection
+    console.log("Selected profile:", profile);
+  };
 
   const NavLinks = () => (
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
@@ -65,6 +73,11 @@ export function Navigation() {
             <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
           </span>
         </motion.a>
+        
+        {/* Add ProfileSearch here */}
+        <div className="flex-1 max-w-md mx-4">
+          <ProfileSearch onSelect={handleProfileSelect} placeholder="Rechercher un profil..." />
+        </div>
         
         {isMobile ? (
           <Sheet>
