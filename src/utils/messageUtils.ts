@@ -8,7 +8,8 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
     sender_id: msg.sender_id,
     receiver_id: msg.receiver_id,
     read: msg.read,
-    created_at: msg.created_at || new Date().toISOString(),
+    created_at: msg.created_at,
+    timestamp: msg.timestamp,
     thinking: msg.thinking,
     sender: msg.sender === 'user' ? undefined : {
       id: 'assistant',

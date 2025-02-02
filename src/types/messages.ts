@@ -13,6 +13,7 @@ export interface Message {
   receiver_id: string;
   read: boolean;
   created_at: string;
+  timestamp: Date;
   sender?: MessageSender;
   thinking?: boolean;
 }

@@ -75,8 +75,8 @@ export async function loadMessages(): Promise<Message[]> {
       timestamp: new Date(msg.created_at),
       created_at: msg.created_at,
       updated_at: msg.updated_at,
-      sender_id: msg.sender || user.id,
-      receiver_id: msg.receiver || 'assistant',
+      sender_id: msg.sender_id || user.id,
+      receiver_id: msg.receiver_id || 'assistant',
       read: msg.read || false
     }));
   } catch (error) {
