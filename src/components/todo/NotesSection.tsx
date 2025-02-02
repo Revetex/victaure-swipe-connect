@@ -29,13 +29,6 @@ export function NotesSection({
 }: NotesSectionProps) {
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)]">
-      <div className="flex items-center gap-3 text-primary p-4 sm:p-6 bg-background/50 backdrop-blur-sm sticky top-0 z-10 border-b">
-        <div className="p-2 rounded-full bg-primary/10 dark:bg-primary/20">
-          <StickyNoteIcon className="h-6 w-6" />
-        </div>
-        <h2 className="text-xl font-semibold">Notes</h2>
-      </div>
-
       <div className="p-4 sm:p-6 bg-background/50 backdrop-blur-sm sticky top-[72px] z-10 border-b">
         <NotesInput
           newNote={newNote}
