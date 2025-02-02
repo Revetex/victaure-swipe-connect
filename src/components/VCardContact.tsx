@@ -2,6 +2,8 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import { quebecCities } from "@/hooks/data/cities";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface VCardContactProps {
   profile: UserProfile;
@@ -39,17 +41,27 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
                 value={profile.phone || ""}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 placeholder="Téléphone"
+                type="tel"
                 className="flex-1 bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]"
               />
             </div>
             <div className="flex items-center gap-3">
               <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-              <Input
+              <Select
                 value={profile.city || ""}
-                onChange={(e) => handleInputChange("city", e.target.value)}
-                placeholder="Ville"
-                className="flex-1 bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]"
-              />
+                onValueChange={(value) => handleInputChange("city", value)}
+              >
+                <SelectTrigger className="w-full bg-background/50 dark:bg-background/20 border-border/20 min-h-[44px]">
+                  <SelectValue placeholder="Sélectionnez une ville" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quebecCities.map((city) => (
+                    <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         ) : (
