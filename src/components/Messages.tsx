@@ -53,7 +53,6 @@ function MessagesWithQuery({
         setSelectedReceiver(null);
         setShowConversation(true);
       } else if (type === "user" && receiver) {
-        // Mark all unread messages from this sender as read
         const unreadMessages = messages.filter(
           m => m.sender?.id === receiver.id && !m.read
         );
