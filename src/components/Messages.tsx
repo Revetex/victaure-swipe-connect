@@ -96,7 +96,9 @@ function MessagesWithQuery({
       avatar_url: "",
       online_status: false,
       last_seen: new Date().toISOString()
-    } as MessageSender
+    } as MessageSender,
+    sender_id: msg.sender_id || (msg.sender ? msg.sender.id : ''),
+    receiver_id: msg.receiver_id || selectedReceiver?.id || ''
   })) as Message[];
 
   const formattedChatMessages = formatChatMessages(chatMessages).map(msg => ({
