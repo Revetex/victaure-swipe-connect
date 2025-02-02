@@ -85,8 +85,9 @@
 .gsc-result {
   border-bottom: 1px solid hsl(var(--border)) !important;
   padding: 1rem !important;
-  background: transparent !important;
+  background: hsl(var(--card)) !important;
   margin: 0.5rem 0 !important;
+  border-radius: 0.375rem !important;
 }
 
 /* Improved text visibility in dark mode */
@@ -123,7 +124,7 @@
 }
 
 .dark .gsc-result {
-  background-color: transparent !important;
+  background-color: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
 }
 
