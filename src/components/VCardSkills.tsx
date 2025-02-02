@@ -1,6 +1,6 @@
 import { VCardSection } from "./VCardSection";
 import { Code } from "lucide-react";
-import { CategorizedSkills } from "./skills/CategorizedSkills";
+import { TouchFriendlySkillSelector } from "./skills/TouchFriendlySkillSelector";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
@@ -65,10 +65,16 @@ export function VCardSkills({
       </motion.div>
       {isEditing && (
         <div className="mt-4">
-          <CategorizedSkills
-            profile={profile}
-            isEditing={isEditing}
-            onRemoveSkill={handleRemoveSkill}
+          <TouchFriendlySkillSelector
+            onSkillSelect={(skill) => {
+              if (!profile.skills?.includes(skill)) {
+                setProfile({
+                  ...profile,
+                  skills: [...(profile.skills || []), skill],
+                });
+              }
+            }}
+            existingSkills={uniqueSkills}
           />
         </div>
       )}
