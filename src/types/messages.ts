@@ -9,7 +9,7 @@ export interface MessageSender {
 export interface Message {
   id: string;
   content: string;
-  sender?: MessageSender;
+  sender: MessageSender | string;
   sender_id: string;
   receiver_id: string;
   read: boolean;

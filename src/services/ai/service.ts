@@ -60,7 +60,7 @@ export const loadMessages = async (): Promise<Message[]> => {
       updated_at: msg.updated_at,
       sender_id: msg.sender === 'assistant' ? 'assistant' : user.id,
       receiver_id: msg.sender === 'assistant' ? user.id : 'assistant',
-      read: true // AI messages are always considered read
+      read: true
     }));
   } catch (error) {
     console.error("Error loading messages:", error);
