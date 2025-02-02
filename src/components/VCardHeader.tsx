@@ -34,6 +34,7 @@ export function VCardHeader({
 }: VCardHeaderProps) {
   const { selectedStyle } = useVCardStyle();
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
+  const [isAvatarDeleted, setIsAvatarDeleted] = useState(false);
 
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
@@ -78,6 +79,7 @@ export function VCardHeader({
         .getPublicUrl(filePath);
 
       setProfile({ ...profile, avatar_url: publicUrl });
+      setIsAvatarDeleted(false);
       toast.success("Photo de profil mise à jour");
     } catch (error) {
       console.error('Error uploading avatar:', error);
@@ -95,11 +97,23 @@ export function VCardHeader({
             .remove([fileName]);
         }
         setProfile({ ...profile, avatar_url: null });
+        setIsAvatarDeleted(true);
         toast.success("Photo de profil supprimée");
       }
     } catch (error) {
       console.error('Error deleting avatar:', error);
       toast.error("Impossible de supprimer la photo de profil");
+    }
+  };
+
+  const handleSave = async () => {
+    if (onSave) {
+      // Ensure avatar_url is explicitly set to null if it was deleted
+      if (isAvatarDeleted) {
+        setProfile({ ...profile, avatar_url: null });
+      }
+      await onSave();
+      setIsAvatarDeleted(false);
     }
   };
 
@@ -209,7 +223,7 @@ export function VCardHeader({
               isEditing={isEditing}
               isProcessing={isProcessing}
               setIsEditing={onEditToggle}
-              onSave={onSave}
+              onSave={handleSave}
               onDownloadBusinessCard={onDownloadBusinessCard}
             />
           </div>
