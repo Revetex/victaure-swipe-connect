@@ -1,86 +1,77 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { UserCircle } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserCircle2 } from "lucide-react";
 
 export function ProfileSearch() {
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: profiles, isLoading } = useQuery({
-    queryKey: ["profiles", searchQuery],
+  const { data: profiles = [] } = useQuery({
+    queryKey: ["profiles", searchTerm],
     queryFn: async () => {
+      if (!searchTerm.trim()) return [];
+      
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .or(`full_name.ilike.%${searchQuery}%,role.ilike.%${searchQuery}%`)
-        .order("full_name", { ascending: true });
+        .ilike("full_name", `%${searchTerm}%`)
+        .limit(5);
 
       if (error) {
         console.error("Error fetching profiles:", error);
-        throw error;
+        return [];
       }
 
       return data || [];
     },
-    enabled: searchQuery.length > 0
+    enabled: searchTerm.length > 0
   });
 
-  const handleViewProfile = (userId: string) => {
-    navigate(`/profile/${userId}`);
+  const handleProfileSelect = (profileId: string) => {
+    navigate(`/dashboard/profile/${profileId}`);
   };
 
   return (
-    <div className="relative w-full">
-      <Command className="rounded-lg border shadow-md">
-        <CommandInput 
-          placeholder="Rechercher un profil..." 
-          value={searchQuery}
-          onValueChange={setSearchQuery}
-          className="h-9"
-        />
-        {searchQuery.length > 0 && (
-          <CommandList>
-            {isLoading ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                Chargement des profils...
-              </div>
-            ) : profiles && profiles.length > 0 ? (
-              <CommandGroup>
-                {profiles.map((profile) => (
-                  <CommandItem
-                    key={profile.id}
-                    className="flex items-center gap-2 p-2 cursor-pointer"
-                    onSelect={() => handleViewProfile(profile.id)}
-                  >
-                    {profile.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt={profile.full_name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <UserCircle className="w-8 h-8 text-muted-foreground" />
-                    )}
-                    <span>{profile.full_name}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            ) : (
-              <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
-            )}
-          </CommandList>
+    <Command className="rounded-lg border shadow-md">
+      <CommandInput
+        placeholder="Rechercher un profil..."
+        value={searchTerm}
+        onValueChange={setSearchTerm}
+      />
+      <CommandList>
+        {searchTerm.trim() && (
+          <>
+            <CommandEmpty>Aucun profil trouvé</CommandEmpty>
+            <CommandGroup>
+              {profiles.map((profile) => (
+                <CommandItem
+                  key={profile.id}
+                  value={profile.id}
+                  onSelect={() => handleProfileSelect(profile.id)}
+                  className="cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={profile.avatar_url || ''} />
+                      <AvatarFallback>
+                        <UserCircle2 className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium">{profile.full_name}</p>
+                      <p className="text-xs text-muted-foreground">{profile.role}</p>
+                    </div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </>
         )}
-      </Command>
-    </div>
+      </CommandList>
+    </Command>
   );
 }
