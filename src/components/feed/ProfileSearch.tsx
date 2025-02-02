@@ -41,7 +41,7 @@ export function ProfileSearch() {
         return [];
       }
       
-      return (data || []) as Profile[];
+      return data || [];
     },
     enabled: searchQuery.length > 0
   });
