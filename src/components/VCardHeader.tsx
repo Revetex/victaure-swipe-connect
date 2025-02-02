@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { UserCircle2, Upload } from "lucide-react";
+import { UserCircle2, Upload, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { UserProfile } from "@/types/profile";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
 import { VCardActions } from "./VCardActions";
+import { Button } from "./ui/button";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -53,6 +54,16 @@ export function VCardHeader({
         return;
       }
 
+      // Delete old avatar if it exists
+      if (profile.avatar_url) {
+        const oldFileName = profile.avatar_url.split('/').pop();
+        if (oldFileName) {
+          await supabase.storage
+            .from('vcards')
+            .remove([oldFileName]);
+        }
+      }
+
       const fileExt = file.name.split('.').pop();
       const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
@@ -71,6 +82,24 @@ export function VCardHeader({
     } catch (error) {
       console.error('Error uploading avatar:', error);
       toast.error("Impossible de mettre à jour la photo de profil");
+    }
+  };
+
+  const handleDeleteAvatar = async () => {
+    try {
+      if (profile.avatar_url) {
+        const fileName = profile.avatar_url.split('/').pop();
+        if (fileName) {
+          await supabase.storage
+            .from('vcards')
+            .remove([fileName]);
+        }
+        setProfile({ ...profile, avatar_url: null });
+        toast.success("Photo de profil supprimée");
+      }
+    } catch (error) {
+      console.error('Error deleting avatar:', error);
+      toast.error("Impossible de supprimer la photo de profil");
     }
   };
 
@@ -93,19 +122,31 @@ export function VCardHeader({
             </AvatarFallback>
           </Avatar>
           {isEditing && (
-            <label 
-              className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
-              htmlFor="avatar-upload"
-            >
-              <Upload className="h-6 w-6 text-white/90" />
-              <input
-                id="avatar-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarUpload}
-              />
-            </label>
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              <label 
+                className="flex items-center justify-center w-10 h-10 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
+                htmlFor="avatar-upload"
+              >
+                <Upload className="h-5 w-5 text-white/90" />
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+              </label>
+              {profile.avatar_url && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-10 h-10 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-500/40 transition-all duration-200"
+                  onClick={handleDeleteAvatar}
+                >
+                  <Trash2 className="h-5 w-5 text-white/90" />
+                </Button>
+              )}
+            </div>
           )}
         </div>
 
@@ -127,12 +168,16 @@ export function VCardHeader({
             </>
           ) : (
             <>
-              <h2 className="text-xl sm:text-2xl font-bold truncate text-primary">
-                {profile.full_name || "Nom non défini"}
-              </h2>
-              <p className="text-sm sm:text-base text-primary/70">
-                {profile.role || "Rôle non défini"}
-              </p>
+              {profile.full_name && (
+                <h2 className="text-xl sm:text-2xl font-bold truncate text-primary">
+                  {profile.full_name}
+                </h2>
+              )}
+              {profile.role && (
+                <p className="text-sm sm:text-base text-primary/70">
+                  {profile.role}
+                </p>
+              )}
             </>
           )}
         </div>
