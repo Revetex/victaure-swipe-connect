@@ -22,6 +22,6 @@ export interface Receiver {
   avatar_url?: string;
 }
 
-export interface FormattedMessage extends Message {
+export interface FormattedMessage extends Omit<Message, 'sender'> {
   sender: string | MessageSender;
 }

@@ -71,12 +71,9 @@ export function MessagesList({
     message?.sender?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-  const unreadCount = messages?.filter((message) => !message.read).length || 0;
-
   return (
     <div className="h-full flex flex-col">
       <SearchHeader 
-        unreadCount={unreadCount}
         onSearch={handleSearch}
         onNewConversation={handleNewConversation}
         onSelectFriend={handleSelectFriend}
