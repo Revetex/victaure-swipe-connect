@@ -82,21 +82,23 @@ export function DashboardLayout() {
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
           {!isInConversation && (
-            <div className="flex items-center justify-between py-2 px-4 border-b">
-              <div className="flex items-center gap-4 flex-1">
-                <div className="flex items-center gap-2">
-                  <Logo size="sm" />
-                  <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
+            <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50">
+              <div className="flex items-center justify-between py-2 px-4">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="flex items-center gap-2">
+                    <Logo size="sm" />
+                    <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
+                  </div>
+                  <div className="h-6 w-px bg-border mx-2" />
+                  <h2 className="text-lg font-semibold text-foreground">
+                    {getPageTitle(currentPage)}
+                  </h2>
+                  <div className="ml-4 flex-1 max-w-lg">
+                    <ProfileSearch />
+                  </div>
                 </div>
-                <div className="h-6 w-px bg-border mx-2" />
-                <h2 className="text-lg font-semibold text-foreground">
-                  {getPageTitle(currentPage)}
-                </h2>
-                <div className="ml-4 flex-1 max-w-lg">
-                  <ProfileSearch />
-                </div>
+                <NotificationsBox />
               </div>
-              <NotificationsBox />
             </div>
           )}
           <AnimatePresence mode="wait">
