@@ -14,7 +14,7 @@ export function ProfileSearch() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
 
-  const { data: profiles, isLoading, error } = useQuery({
+  const { data: profiles = [], isLoading, error } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
       try {
@@ -31,7 +31,7 @@ export function ProfileSearch() {
           throw error;
         }
 
-        return (data || []) as UserProfile[];
+        return data as UserProfile[] || [];
       } catch (error) {
         console.error("Error in query function:", error);
         return [];
@@ -69,7 +69,7 @@ export function ProfileSearch() {
                 </div>
               ) : error ? (
                 <CommandEmpty>Une erreur est survenue</CommandEmpty>
-              ) : !profiles || profiles.length === 0 ? (
+              ) : profiles.length === 0 ? (
                 <CommandEmpty>Aucun profil trouvé</CommandEmpty>
               ) : (
                 <CommandGroup>
