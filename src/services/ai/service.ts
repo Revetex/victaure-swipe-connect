@@ -44,7 +44,7 @@ export async function saveMessage(message: Message): Promise<void> {
         created_at: message.timestamp.toISOString(),
         sender_id: message.sender_id,
         receiver_id: message.receiver_id,
-        read: message.read || false
+        read: message.read
       });
 
     if (error) throw error;
@@ -75,8 +75,8 @@ export async function loadMessages(): Promise<Message[]> {
       timestamp: new Date(msg.created_at),
       created_at: msg.created_at,
       updated_at: msg.updated_at,
-      sender_id: msg.sender_id || user.id,
-      receiver_id: msg.receiver_id || 'assistant',
+      sender_id: msg.sender || user.id,
+      receiver_id: msg.receiver || 'assistant',
       read: msg.read || false
     }));
   } catch (error) {

@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 
+type FriendPreview = {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  online_status: boolean;
+  last_seen: string;
+};
+
 export function FriendsList() {
   const navigate = useNavigate();
   
@@ -41,7 +49,7 @@ export function FriendsList() {
 
       return friendRequests?.map(request => {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend;
+        return friend as FriendPreview;
       }) || [];
     }
   });
@@ -81,7 +89,7 @@ export function FriendsList() {
         </h3>
         <ScrollArea className="h-[300px] pr-4">
           <div className="space-y-3">
-            {friends?.map((friend: UserProfile) => (
+            {friends?.map((friend: FriendPreview) => (
               <div 
                 key={friend.id} 
                 className="flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors group relative"
