@@ -63,14 +63,14 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
       icon={<GraduationCap className="h-5 w-5" />}
       variant="education"
     >
-      <div className="space-y-6">
+      <div className="w-full space-y-6 px-0 sm:px-4">
         {(profile.education || []).map((edu) => (
           <motion.div
             key={edu.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="relative bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-200/50 dark:border-indigo-800/30"
+            className="relative w-full bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-200/50 dark:border-indigo-800/30"
           >
             {isEditing ? (
               <>
@@ -165,6 +165,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
+            className="w-full px-4 sm:px-0"
           >
             <Button
               onClick={handleAddEducation}

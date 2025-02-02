@@ -19,7 +19,6 @@ export function VCardSkills({
   setProfile,
   handleRemoveSkill,
 }: VCardSkillsProps) {
-  // Remove duplicates from skills array
   const uniqueSkills = profile.skills ? Array.from(new Set(profile.skills)) : [];
 
   return (
@@ -27,7 +26,7 @@ export function VCardSkills({
       title="Compétences"
       icon={<Code className="h-5 w-5 text-muted-foreground" />}
     >
-      <div className="space-y-4">
+      <div className="w-full space-y-4">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -66,7 +65,7 @@ export function VCardSkills({
         </motion.div>
         
         {isEditing && (
-          <div className="px-4 pb-4">
+          <div className="w-full px-4">
             <TouchFriendlySkillSelector
               onSkillSelect={(skill) => {
                 if (!profile.skills?.includes(skill)) {

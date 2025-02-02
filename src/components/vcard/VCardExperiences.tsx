@@ -62,13 +62,13 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
       icon={<Briefcase className="h-4 w-4" />}
       variant="education"
     >
-      <div className="space-y-6 w-full px-4">
+      <div className="w-full space-y-6 px-0 sm:px-4">
         {isEditing ? (
           <Reorder.Group axis="y" values={profile.experiences || []} onReorder={handleReorder}>
             {(profile.experiences || []).map((exp: Experience) => (
               <Reorder.Item key={exp.id} value={exp}>
                 <motion.div 
-                  className="relative bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-200/50 dark:border-indigo-800/30 shadow-sm hover:shadow-md transition-all duration-200"
+                  className="relative w-full bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-500/20"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -168,7 +168,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-500/20"
+              className="relative w-full bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-500/20"
             >
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4 shrink-0" />
@@ -203,7 +203,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="w-full"
+            className="w-full px-4 sm:px-0"
           >
             <Button 
               onClick={handleAddExperience} 
