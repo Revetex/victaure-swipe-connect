@@ -9,26 +9,31 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function ProfileSearch() {
   const [search, setSearch] = useState("");
-  const [isInputFocused, setIsInputFocused] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
       if (!search) return [];
       
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .ilike('full_name', `%${search}%`)
-        .limit(5);
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .ilike('full_name', `%${search}%`)
+          .limit(5);
 
-      if (error) {
-        console.error("Error fetching profiles:", error);
+        if (error) {
+          console.error("Error fetching profiles:", error);
+          return [];
+        }
+
+        return (data || []) as UserProfile[];
+      } catch (error) {
+        console.error("Error in query:", error);
         return [];
       }
-
-      return (data || []) as UserProfile[];
     },
     enabled: search.length > 0,
     initialData: [],
@@ -36,7 +41,6 @@ export function ProfileSearch() {
 
   const handleSelectProfile = (profile: UserProfile) => {
     setSelectedProfile(profile);
-    setSearch("");
   };
 
   return (
