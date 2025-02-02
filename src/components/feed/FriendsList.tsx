@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CircleDot, User, MessageCircle, UserPlus } from "lucide-react";
+import { CircleDot, User, MessageCircle, UserPlus, UserMinus, Check, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type FriendPreview = {
   id: string;
@@ -19,7 +20,7 @@ type FriendPreview = {
 export function FriendsList() {
   const navigate = useNavigate();
   
-  const { data: friends } = useQuery({
+  const { data: friends, refetch: refetchFriends } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -54,7 +55,7 @@ export function FriendsList() {
     }
   });
 
-  const { data: pendingRequests } = useQuery({
+  const { data: pendingRequests, refetch: refetchPending } = useQuery({
     queryKey: ["pendingFriendRequests"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -63,6 +64,7 @@ export function FriendsList() {
       const { data: requests } = await supabase
         .from("friend_requests")
         .select(`
+          id,
           sender:profiles!friend_requests_sender_id_fkey(
             id,
             full_name,
@@ -80,9 +82,106 @@ export function FriendsList() {
     navigate(`/dashboard/messages/${friendId}`);
   };
 
+  const handleAcceptRequest = async (requestId: string, senderId: string, senderName: string) => {
+    try {
+      const { error: updateError } = await supabase
+        .from('friend_requests')
+        .update({ status: 'accepted' })
+        .eq('id', requestId);
+
+      if (updateError) throw updateError;
+
+      const { error: notifError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: senderId,
+          title: 'Demande acceptée',
+          message: `Votre demande d'ami a été acceptée`,
+        });
+
+      if (notifError) {
+        console.error('Error creating notification:', notifError);
+      }
+
+      toast.success(`Vous êtes maintenant ami avec ${senderName}`);
+      refetchFriends();
+      refetchPending();
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+      toast.error("Une erreur est survenue");
+    }
+  };
+
+  const handleRejectRequest = async (requestId: string, senderName: string) => {
+    try {
+      const { error } = await supabase
+        .from('friend_requests')
+        .delete()
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      toast.success(`Demande de ${senderName} refusée`);
+      refetchPending();
+    } catch (error) {
+      console.error('Error rejecting friend request:', error);
+      toast.error("Une erreur est survenue");
+    }
+  };
+
   return (
     <Card className="p-4 bg-card/50 backdrop-blur-sm">
-      <div className="mb-6">
+      {pendingRequests && pendingRequests.length > 0 && (
+        <div className="mb-6">
+          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+            <UserPlus className="h-5 w-5 text-primary" />
+            Demandes en attente
+          </h3>
+          <ScrollArea className="h-[200px] pr-4">
+            <div className="space-y-3">
+              {pendingRequests.map((request) => (
+                <div 
+                  key={request.sender.id} 
+                  className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg animate-pulse"
+                >
+                  <Avatar className="h-10 w-10 border-2 border-primary/10">
+                    <AvatarImage src={request.sender.avatar_url || ''} alt={request.sender.full_name || ''} />
+                    <AvatarFallback>
+                      {request.sender.full_name?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{request.sender.full_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Souhaite vous ajouter comme ami
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="h-8 px-3"
+                      onClick={() => handleAcceptRequest(request.id, request.sender.id, request.sender.full_name)}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 px-3"
+                      onClick={() => handleRejectRequest(request.id, request.sender.full_name)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+      )}
+
+      <div>
         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
           <User className="h-5 w-5 text-primary" />
           Mes amis
@@ -127,38 +226,6 @@ export function FriendsList() {
           </div>
         </ScrollArea>
       </div>
-
-      {pendingRequests && pendingRequests.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-primary" />
-            Demandes en attente
-          </h3>
-          <ScrollArea className="h-[200px] pr-4">
-            <div className="space-y-3">
-              {pendingRequests.map((request) => (
-                <div 
-                  key={request.sender.id} 
-                  className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
-                >
-                  <Avatar className="h-10 w-10 border-2 border-primary/10">
-                    <AvatarImage src={request.sender.avatar_url || ''} alt={request.sender.full_name || ''} />
-                    <AvatarFallback>
-                      {request.sender.full_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{request.sender.full_name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Souhaite vous ajouter comme ami
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        </div>
-      )}
     </Card>
   );
 }
