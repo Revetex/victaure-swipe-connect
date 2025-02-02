@@ -1,11 +1,12 @@
 import { UserProfile } from "@/types/profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserRound, MessageCircle, UserPlus, Briefcase, MapPin, Mail, UserMinus } from "lucide-react";
+import { UserRound, MessageCircle, UserPlus, Briefcase, MapPin, Mail, UserMinus, Globe, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -21,7 +22,6 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Check for existing friend request in both directions
       const { data: existingRequests } = await supabase
         .from('friend_requests')
         .select('*')
@@ -51,7 +51,6 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
         return;
       }
 
-      // Check for existing friend request in both directions
       const { data: existingRequests } = await supabase
         .from('friend_requests')
         .select('*')
@@ -60,8 +59,6 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
 
       if (existingRequests && existingRequests.length > 0) {
         const request = existingRequests[0];
-        
-        // If the current user sent the request, they can cancel it
         if (request.sender_id === user.id) {
           const { error: deleteError } = await supabase
             .from('friend_requests')
@@ -69,17 +66,14 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
             .eq('id', request.id);
 
           if (deleteError) throw deleteError;
-
           toast.success("Demande d'ami annulée");
           setIsFriendRequestSent(false);
         } else {
-          // If they received the request, inform them
           toast.info("Cette personne vous a déjà envoyé une demande d'ami");
         }
         return;
       }
 
-      // Create the friend request
       const { error: requestError } = await supabase
         .from('friend_requests')
         .insert({
@@ -88,16 +82,8 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
           status: 'pending'
         });
 
-      if (requestError) {
-        console.error('Error creating friend request:', requestError);
-        if (requestError.code === '23505') {
-          toast.error("Une demande d'ami existe déjà");
-          return;
-        }
-        throw requestError;
-      }
+      if (requestError) throw requestError;
 
-      // Create a notification for the receiver
       const { error: notifError } = await supabase
         .from('notifications')
         .insert({
@@ -108,7 +94,6 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
 
       if (notifError) {
         console.error('Error creating notification:', notifError);
-        // Don't throw here, as the friend request was successful
         toast.error("Impossible d'envoyer la notification");
       } else {
         toast.success("Demande d'ami envoyée");
@@ -120,16 +105,30 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
     }
   };
 
+  const renderInfoItem = (icon: JSX.Element, value?: string | null, label?: string) => {
+    if (!value) return null;
+    return (
+      <div className="flex items-center gap-2 text-muted-foreground">
+        {icon}
+        <span className="text-sm">
+          {label ? `${label}: ${value}` : value}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
-      <div 
-        className="bg-card dark:bg-card/95 rounded-xl p-6 shadow-xl max-w-sm w-full mx-4 transform transition-all animate-scale-in"
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-card dark:bg-card/95 rounded-xl p-6 shadow-xl max-w-sm w-full mx-4 space-y-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center space-y-6">
+        <div className="flex flex-col items-center space-y-4">
           <Avatar className="h-24 w-24 ring-2 ring-primary/10">
             <AvatarImage src={profile.avatar_url || ""} alt={profile.full_name || ""} />
             <AvatarFallback>
@@ -138,25 +137,20 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
           </Avatar>
           
           <div className="text-center space-y-2">
-            <h3 className="text-2xl font-semibold tracking-tight">{profile.full_name}</h3>
-            <div className="flex items-center justify-center gap-2 text-muted-foreground">
-              <Briefcase className="h-4 w-4" />
-              <p className="text-sm">{profile.role}</p>
-            </div>
-            
-            {(profile.city || profile.country) && (
-              <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <p className="text-sm">{[profile.city, profile.country].filter(Boolean).join(", ")}</p>
-              </div>
+            <h3 className="text-2xl font-semibold tracking-tight">
+              {profile.full_name || "Utilisateur"}
+            </h3>
+            {renderInfoItem(<Briefcase className="h-4 w-4" />, profile.role)}
+          </div>
+
+          <div className="w-full space-y-2">
+            {renderInfoItem(
+              <MapPin className="h-4 w-4" />,
+              [profile.city, profile.state, profile.country].filter(Boolean).join(", ")
             )}
-            
-            {profile.email && (
-              <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <p className="text-sm">{profile.email}</p>
-              </div>
-            )}
+            {renderInfoItem(<Mail className="h-4 w-4" />, profile.email)}
+            {renderInfoItem(<Globe className="h-4 w-4" />, profile.website)}
+            {renderInfoItem(<Building2 className="h-4 w-4" />, profile.company_name)}
           </div>
 
           {profile.bio && (
@@ -207,7 +201,7 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
             </Button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
