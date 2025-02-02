@@ -104,6 +104,7 @@ export function MessageList({
       messages={messages}
       chatMessages={chatMessages}
       onSelectConversation={handleSelectConversation}
+      onClearChat={handleClearConversation}
     />
   );
 }

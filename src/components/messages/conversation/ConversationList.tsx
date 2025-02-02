@@ -2,35 +2,83 @@ import { Message } from "@/types/messages";
 import { UserMessage } from "./UserMessage";
 import { AssistantMessage } from "./AssistantMessage";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ConversationListProps {
   messages: Message[];
   chatMessages: Message[];
   onSelectConversation: (type: "assistant" | "user", receiver?: any) => void;
+  onClearChat?: () => void;
 }
 
 export function ConversationList({
   messages,
   chatMessages,
-  onSelectConversation
+  onSelectConversation,
+  onClearChat
 }: ConversationListProps) {
+  const handleClearChat = () => {
+    try {
+      if (onClearChat) {
+        onClearChat();
+        toast.success("Conversation effacée avec succès");
+      }
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      toast.error("Erreur lors de l'effacement de la conversation");
+    }
+  };
+
   return (
     <ScrollArea className="flex-1">
       <div className="p-4 space-y-4">
-        <div onClick={() => onSelectConversation("assistant")}>
-          <AssistantMessage
-            chatMessages={chatMessages}
-            onSelectConversation={onSelectConversation}
-          />
+        <div className="group relative">
+          <div 
+            onClick={() => onSelectConversation("assistant")}
+            className="cursor-pointer"
+          >
+            <AssistantMessage
+              chatMessages={chatMessages}
+              onSelectConversation={onSelectConversation}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClearChat();
+            }}
+            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
         
         {messages.map((message) => (
           <div 
             key={message.id}
-            onClick={() => onSelectConversation("user", message.sender)}
-            className="cursor-pointer"
+            className="group relative"
           >
-            <UserMessage message={message} />
+            <div
+              onClick={() => onSelectConversation("user", message.sender)}
+              className="cursor-pointer"
+            >
+              <UserMessage message={message} />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClearChat();
+              }}
+              className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         ))}
 
