@@ -1,4 +1,3 @@
-import { useMessages } from "@/hooks/useMessages";
 import { useChat } from "@/hooks/useChat";
 import { ConversationView } from "../conversation/ConversationView";
 import { useProfile } from "@/hooks/useProfile";
@@ -19,14 +18,14 @@ export function MessagesTab() {
   return (
     <ConversationView 
       messages={chatMessages || []}
+      profile={profile}
       inputMessage={inputMessage}
       isListening={isListening}
       isThinking={isThinking}
-      profile={profile}
+      onInputChange={setInputMessage}
       onSendMessage={handleSendMessage}
       onVoiceInput={handleVoiceInput}
-      setInputMessage={setInputMessage}
-      onClearChat={clearChat}
+      onBack={() => {}}
     />
   );
 }

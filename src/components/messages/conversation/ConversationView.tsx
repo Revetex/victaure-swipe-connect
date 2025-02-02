@@ -6,17 +6,17 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserCircle } from "lucide-react";
-import { Profile } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 import { Message } from "@/types/messages";
 
 interface ConversationViewProps {
   messages: Message[];
-  profile: Profile | null;
+  profile: UserProfile | null;
   isThinking?: boolean;
   isListening?: boolean;
   inputMessage: string;
   onInputChange: (value: string) => void;
-  onSendMessage: (message: string, profile: Profile | null) => void;
+  onSendMessage: (message: string) => void;
   onVoiceInput?: () => void;
   onBack?: () => void;
 }
@@ -27,7 +27,7 @@ export function ConversationView({
   isThinking,
   isListening,
   inputMessage,
-  onInputChange: setInputMessage,
+  onInputChange,
   onSendMessage,
   onVoiceInput,
   onBack
@@ -53,14 +53,6 @@ export function ConversationView({
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
     
     setShowScrollButton(!isNearBottom);
-  };
-
-  const handleSendMessage = async (message: string) => {
-    try {
-      await onSendMessage(message, profile);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
   };
 
   return (
@@ -112,9 +104,11 @@ export function ConversationView({
             {messages.map((message, index) => (
               <ChatMessage
                 key={message.id}
-                message={message}
-                isFirst={index === 0}
-                isLast={index === messages.length - 1}
+                content={message.content}
+                sender={typeof message.sender === 'string' ? message.sender : message.sender.id}
+                thinking={message.thinking}
+                showTimestamp={true}
+                timestamp={message.created_at}
               />
             ))}
           </AnimatePresence>
@@ -144,8 +138,8 @@ export function ConversationView({
       <div className="sticky bottom-0 shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
         <ChatInput
           value={inputMessage}
-          onChange={setInputMessage}
-          onSend={() => handleSendMessage(inputMessage)}
+          onChange={onInputChange}
+          onSend={() => onSendMessage(inputMessage)}
           onVoiceInput={onVoiceInput}
           isListening={isListening}
           isThinking={isThinking}
