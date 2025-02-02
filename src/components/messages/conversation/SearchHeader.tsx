@@ -124,8 +124,8 @@ export function SearchHeader({ unreadCount, onSearch }: SearchHeaderProps) {
                   {filteredFriends.map((friend) => (
                     <div
                       key={friend.id}
-                      onClick={() => friend.status === 'accepted' && handleSelectFriend(friend.id)}
-                      className={`flex items-center justify-between p-2 rounded-lg hover:bg-accent ${friend.status === 'accepted' ? 'cursor-pointer' : 'cursor-not-allowed opacity-70'}`}
+                      onClick={() => handleSelectFriend(friend.id)}
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-accent cursor-pointer"
                     >
                       <div className="flex items-center space-x-4">
                         <Avatar>
