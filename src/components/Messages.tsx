@@ -43,7 +43,7 @@ function MessagesWithQuery({
   selectedReceiver: any;
   setSelectedReceiver: (receiver: any) => void;
 }) {
-  const { messages } = useMessages();
+  const { messages, markAsRead } = useMessages();
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -58,6 +58,15 @@ function MessagesWithQuery({
         setSelectedReceiver(null);
         setShowConversation(true);
       } else if (type === "user" && receiver) {
+        // Mark all unread messages from this sender as read
+        const unreadMessages = messages.filter(
+          m => m.sender.id === receiver.id && !m.read
+        );
+        
+        for (const message of unreadMessages) {
+          await markAsRead.mutateAsync(message.id);
+        }
+
         setSelectedReceiver(receiver);
         setShowConversation(true);
         navigate(`/dashboard/messages/${receiver.id}`);
@@ -108,6 +117,7 @@ export function Messages() {
   const [showConversation, setShowConversation] = useState(false);
   const [selectedReceiver, setSelectedReceiver] = useState<any>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchReceiverFromUrl = async () => {
