@@ -68,7 +68,7 @@ export function ScrapedJobs() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold">Emplois récents</h2>
         <Button 
@@ -91,7 +91,7 @@ export function ScrapedJobs() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {jobs.map((job, index) => (
           <motion.div
             key={job.id}
@@ -99,11 +99,11 @@ export function ScrapedJobs() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Card className="p-4 hover:shadow-lg transition-shadow">
+            <Card className="p-4 hover:shadow-lg transition-shadow h-full">
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
                   <h3 className="font-semibold line-clamp-2">{job.title}</h3>
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded whitespace-nowrap ml-2">
                     {formatDistanceToNow(new Date(job.posted_at), {
                       addSuffix: true,
                       locale: fr
@@ -113,13 +113,13 @@ export function ScrapedJobs() {
                 
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4" />
-                    <span>{job.company}</span>
+                    <Building2 className="h-4 w-4 shrink-0" />
+                    <span className="line-clamp-1">{job.company}</span>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span>{job.location}</span>
+                    <MapPin className="h-4 w-4 shrink-0" />
+                    <span className="line-clamp-1">{job.location}</span>
                   </div>
                 </div>
 

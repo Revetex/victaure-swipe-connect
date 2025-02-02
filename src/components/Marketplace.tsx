@@ -22,8 +22,8 @@ export function Marketplace() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full">
+      <div className="px-4 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">Emplois disponibles</h1>
