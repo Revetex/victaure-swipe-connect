@@ -13,7 +13,7 @@ export interface Message {
   created_at: string;
   sender?: MessageSender;
   thinking?: boolean;
-  timestamp?: string;
+  timestamp?: string | Date;
 }
 
 export interface Receiver {
