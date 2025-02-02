@@ -9,10 +9,11 @@ import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
 import { Logo } from "@/components/Logo";
 import { ProfileSearch } from "@/components/feed/ProfileSearch";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useReceiver } from "@/hooks/useReceiver";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -22,6 +23,8 @@ export function DashboardLayout() {
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { showConversation } = useReceiver();
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -73,6 +76,20 @@ export function DashboardLayout() {
         return "";
     }
   };
+
+  const isInConversation = location.pathname.includes('/messages') && showConversation;
+
+  if (isInConversation) {
+    return (
+      <DashboardContent
+        currentPage={currentPage}
+        isEditing={isEditing}
+        viewportHeight={viewportHeight}
+        onEditStateChange={setIsEditing}
+        onRequestChat={handleRequestChat}
+      />
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-background">

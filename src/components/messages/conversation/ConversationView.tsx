@@ -64,7 +64,6 @@ export function ConversationView({
 
   const handleSendMessage = async (message: string) => {
     try {
-      console.log("Sending message:", message);
       await onSendMessage(message, profile);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -73,9 +72,9 @@ export function ConversationView({
   };
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-14">
+    <div className="fixed inset-0 bg-background z-50 flex flex-col">
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
-        <div className="flex items-center justify-between max-w-5xl mx-auto">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {onBack && (
               <Button
@@ -116,7 +115,7 @@ export function ConversationView({
           className="h-full px-4 py-4" 
           onScroll={handleScroll}
         >
-          <div className="max-w-5xl mx-auto space-y-4">
+          <div className="space-y-4">
             <AnimatePresence mode="popLayout">
               {messages.map((message, index) => (
                 <ChatMessage
@@ -157,19 +156,17 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 relative z-20">
-        <div className="max-w-5xl mx-auto">
-          <ChatInput
-            value={inputMessage}
-            onChange={setInputMessage}
-            onSend={() => handleSendMessage(inputMessage)}
-            onVoiceInput={onVoiceInput}
-            isListening={isListening}
-            isThinking={isThinking}
-            placeholder="Écrivez votre message..."
-            className="w-full"
-          />
-        </div>
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
+        <ChatInput
+          value={inputMessage}
+          onChange={setInputMessage}
+          onSend={() => handleSendMessage(inputMessage)}
+          onVoiceInput={onVoiceInput}
+          isListening={isListening}
+          isThinking={isThinking}
+          placeholder="Écrivez votre message..."
+          className="w-full"
+        />
       </div>
     </div>
   );
