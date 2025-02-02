@@ -4,6 +4,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { MessageList } from "./messages/MessageList";
+import { Message } from "@/types/messages";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +34,7 @@ export function Messages() {
     <QueryClientProvider client={queryClient}>
       <div className="h-full flex flex-col">
         <MessageList
-          chatMessages={chatMessages}
+          chatMessages={chatMessages as Message[]}
           inputMessage={inputMessage}
           isListening={isListening}
           isThinking={isThinking}
@@ -45,7 +46,7 @@ export function Messages() {
           clearChat={clearChat}
           selectedReceiver={selectedReceiver}
           setSelectedReceiver={setSelectedReceiver}
-          messages={messages}
+          messages={messages as Message[]}
           markAsRead={markAsRead}
           navigate={navigate}
         />
