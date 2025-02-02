@@ -1,4 +1,5 @@
-import { Home, User, Briefcase, Newspaper, Settings } from "lucide-react";
+import { UserCircle, MessageSquare, BriefcaseIcon, Settings, Newspaper, Wrench } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface DashboardNavigationProps {
@@ -7,38 +8,39 @@ interface DashboardNavigationProps {
 }
 
 export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
-  const navItems = [
-    { id: 1, icon: User, label: "Profil" },
-    { id: 3, icon: Briefcase, label: "Emplois" },
-    { id: 4, icon: Newspaper, label: "Actualités" },
-    { id: 5, icon: Home, label: "Outils" },
-    { id: 6, icon: Settings, label: "Paramètres" },
+  const navigationItems = [
+    { id: 1, icon: UserCircle, name: "Profil" },
+    { id: 2, icon: MessageSquare, name: "Messages" },
+    { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+    { id: 4, icon: Newspaper, name: "Actualités" },
+    { id: 5, icon: Wrench, name: "Outils" },
+    { id: 6, icon: Settings, name: "Paramètres" }
   ];
 
   return (
-    <nav className="w-full">
-      <ul className="flex items-center justify-center max-w-2xl mx-auto gap-2 lg:gap-4">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <li key={item.id}>
-              <button
-                onClick={() => onPageChange(item.id)}
-                className={cn(
-                  "flex flex-col items-center gap-1 p-2 rounded-lg transition-colors",
-                  "hover:text-primary",
-                  currentPage === item.id
-                    ? "text-primary"
-                    : "text-muted-foreground"
-                )}
-              >
-                <Icon className="h-5 w-5" />
-                <span className="text-xs font-medium">{item.label}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <div className="flex items-center justify-around w-full max-w-2xl mx-auto">
+      {navigationItems.map(({ id, icon: Icon, name }) => (
+        <motion.button
+          key={id}
+          onClick={() => onPageChange(id)}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: id * 0.1 }}
+          className={cn(
+            "p-3 rounded-xl transition-all duration-300",
+            "hover:bg-primary/10 active:scale-95",
+            "focus:outline-none focus:ring-2 focus:ring-primary/20",
+            "touch-manipulation min-h-[44px] min-w-[44px]",
+            currentPage === id
+              ? "bg-primary text-primary-foreground shadow-lg"
+              : "text-muted-foreground hover:text-primary"
+          )}
+          title={name}
+          aria-label={name}
+        >
+          <Icon className="h-5 w-5" />
+        </motion.button>
+      ))}
+    </div>
   );
 }

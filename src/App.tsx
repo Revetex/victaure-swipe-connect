@@ -4,9 +4,10 @@ import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDebounce } from "use-debounce";
 import "./styles/google-search/index.css";
 
 function App() {
@@ -84,7 +85,7 @@ function App() {
                 exit={{ opacity: 0 }}
               >
                 {isAuthenticated ? (
-                  <Navigate to="/dashboard/feed" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Navigate to="/auth" replace />
                 )}
@@ -96,7 +97,7 @@ function App() {
             path="/auth" 
             element={
               isAuthenticated ? (
-                <Navigate to="/dashboard/feed" replace />
+                <Navigate to="/dashboard" replace />
               ) : (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -135,7 +136,7 @@ function App() {
                 exit={{ opacity: 0 }}
               >
                 {isAuthenticated ? (
-                  <Navigate to="/dashboard/feed" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Navigate to="/auth" replace />
                 )}
@@ -149,3 +150,4 @@ function App() {
 }
 
 export default App;
+

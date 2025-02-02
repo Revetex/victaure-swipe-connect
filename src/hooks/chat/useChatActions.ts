@@ -1,7 +1,6 @@
 import { Message } from "@/types/chat/messageTypes";
 import { deleteAllMessages, generateAIResponse, saveMessage } from "@/services/ai/service";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 export function useChatActions(
   messages: Message[],
@@ -15,18 +14,11 @@ export function useChatActions(
     if (!message.trim()) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
       const userMessage: Message = {
         id: crypto.randomUUID(),
         content: message,
         sender: "user",
         timestamp: new Date(),
-        created_at: new Date().toISOString(),
-        sender_id: user.id,
-        receiver_id: 'assistant',
-        read: false
       };
 
       const thinkingMessage: Message = {
@@ -35,10 +27,6 @@ export function useChatActions(
         sender: "assistant",
         thinking: true,
         timestamp: new Date(),
-        created_at: new Date().toISOString(),
-        sender_id: 'assistant',
-        receiver_id: user.id,
-        read: false
       };
 
       setMessages([...messages, userMessage, thinkingMessage]);
@@ -56,10 +44,6 @@ export function useChatActions(
           content: aiResponse,
           sender: "assistant",
           timestamp: new Date(),
-          created_at: new Date().toISOString(),
-          sender_id: 'assistant',
-          receiver_id: user.id,
-          read: false
         };
 
         await saveMessage(assistantMessage);

@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/dialog";
 import { UserPlus } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
-import { Friend } from "@/types/profile";
 
 interface FriendSelectorProps {
   onSelectFriend: (friendId: string) => void;
@@ -16,7 +15,6 @@ interface FriendSelectorProps {
 
 export function FriendSelector({ onSelectFriend }: FriendSelectorProps) {
   const { profile } = useProfile();
-  const friends = profile?.friends || [];
 
   return (
     <Dialog>
@@ -30,7 +28,7 @@ export function FriendSelector({ onSelectFriend }: FriendSelectorProps) {
           <DialogTitle>Sélectionner un ami</DialogTitle>
         </DialogHeader>
         <div className="space-y-2">
-          {friends.map((friend: Friend) => (
+          {profile?.friends?.map((friend) => (
             <Button
               key={friend.id}
               onClick={() => onSelectFriend(friend.id)}
@@ -40,7 +38,7 @@ export function FriendSelector({ onSelectFriend }: FriendSelectorProps) {
               {friend.full_name}
             </Button>
           ))}
-          {friends.length === 0 && (
+          {(!profile?.friends || profile.friends.length === 0) && (
             <p className="text-sm text-muted-foreground text-center py-4">
               Aucun ami pour le moment
             </p>

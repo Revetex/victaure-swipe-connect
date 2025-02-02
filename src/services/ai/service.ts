@@ -41,7 +41,7 @@ export async function saveMessage(message: Message): Promise<void> {
         user_id: user.id,
         content: message.content,
         sender: message.sender,
-        created_at: message.created_at
+        created_at: message.timestamp.toISOString()
       });
 
     if (error) throw error;
@@ -71,9 +71,8 @@ export async function loadMessages(): Promise<Message[]> {
       sender: msg.sender,
       timestamp: new Date(msg.created_at),
       created_at: msg.created_at,
-      sender_id: msg.sender === 'user' ? user.id : 'assistant',
-      receiver_id: msg.sender === 'user' ? 'assistant' : user.id,
-      read: true
+      updated_at: msg.updated_at,
+      user_id: msg.user_id
     }));
   } catch (error) {
     console.error('Error loading messages:', error);
