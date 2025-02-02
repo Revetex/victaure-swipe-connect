@@ -1,5 +1,5 @@
 import { UserProfile } from "@/types/profile";
-import { motion } from "framer-motion";
+import { ColorPicker } from "./ColorPicker";
 
 interface VCardCustomizationProps {
   profile: UserProfile;
@@ -7,15 +7,35 @@ interface VCardCustomizationProps {
 }
 
 export function VCardCustomization({ profile, setProfile }: VCardCustomizationProps) {
+  const handleCustomizationChange = (field: string, value: string) => {
+    setProfile({ ...profile, [field]: value });
+  };
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6 p-6 rounded-xl bg-card/20 backdrop-blur-md border border-border shadow-xl"
-    >
-      <div className="flex items-center gap-2 border-b pb-4 border-border">
-        <h3 className="text-xl font-medium text-foreground">Mode édition</h3>
+    <div className="space-y-6 mb-8">
+      <div className="flex items-center gap-2">
+        <ColorPicker
+          label="Police personnalisée"
+          value={profile.custom_font || ""}
+          onChange={(value) => handleCustomizationChange("custom_font", value)}
+        />
       </div>
-    </motion.div>
+
+      <div className="flex items-center gap-2">
+        <ColorPicker
+          label="Arrière-plan personnalisé"
+          value={profile.custom_background || ""}
+          onChange={(value) => handleCustomizationChange("custom_background", value)}
+        />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <ColorPicker
+          label="Couleur du texte personnalisée"
+          value={profile.custom_text_color || ""}
+          onChange={(value) => handleCustomizationChange("custom_text_color", value)}
+        />
+      </div>
+    </div>
   );
 }
