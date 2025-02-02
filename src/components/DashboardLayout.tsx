@@ -10,6 +10,9 @@ import { useDebounce } from "use-debounce";
 import { Logo } from "@/components/Logo";
 import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -17,6 +20,7 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(3);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
   
   const [debouncedSetViewportHeight] = useDebounce(
@@ -36,7 +40,6 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      // Always disable edit mode when changing pages
       setIsEditing(false);
     }
   }, [lastPageChange]);
@@ -46,9 +49,9 @@ export function DashboardLayout() {
   }, [handlePageChange]);
 
   const handleProfileSelect = (profile: any) => {
-    // Navigate to the selected profile's page
     if (profile?.id) {
       navigate(`/profile/${profile.id}`);
+      setIsSearchOpen(false);
     }
   };
 
@@ -99,12 +102,31 @@ export function DashboardLayout() {
               </h2>
             </div>
             
-            <div className="flex items-center gap-4 flex-1 max-w-xl mx-4">
-              <ProfileSearch 
-                onSelect={handleProfileSelect} 
-                placeholder="Rechercher un profil..."
-                className="w-full"
-              />
+            <div className="flex items-center gap-4">
+              {isMobile ? (
+                <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-muted-foreground">
+                      <Search className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="top" className="w-full p-4">
+                    <ProfileSearch 
+                      onSelect={handleProfileSelect}
+                      placeholder="Rechercher un profil..."
+                      className="w-full"
+                    />
+                  </SheetContent>
+                </Sheet>
+              ) : (
+                <div className="w-[300px]">
+                  <ProfileSearch 
+                    onSelect={handleProfileSelect}
+                    placeholder="Rechercher un profil..."
+                    className="w-full"
+                  />
+                </div>
+              )}
               <NotificationsBox />
             </div>
           </div>

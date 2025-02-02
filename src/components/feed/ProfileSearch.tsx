@@ -53,26 +53,16 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
   }, [onSelect]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
-          role="combobox" 
-          aria-expanded={open}
-          className={`w-full justify-start text-left font-normal ${className}`}
-        >
-          <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-          <span className="text-muted-foreground">{placeholder}</span>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0" align="start">
-        <Command shouldFilter={false}>
-          <CommandInput
-            placeholder={placeholder}
-            value={search}
-            onValueChange={setSearch}
-          />
-          <CommandList>
+    <Command className={`relative ${className}`}>
+      <CommandInput
+        placeholder={placeholder}
+        value={search}
+        onValueChange={setSearch}
+        className="w-full"
+      />
+      {(search || isLoading) && (
+        <div className="absolute top-full left-0 right-0 z-50 mt-1">
+          <CommandList className="bg-popover border rounded-md shadow-md">
             {isLoading ? (
               <CommandEmpty>Recherche en cours...</CommandEmpty>
             ) : searchResults.length === 0 ? (
@@ -111,8 +101,8 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher un utilisate
               </CommandGroup>
             )}
           </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+        </div>
+      )}
+    </Command>
   );
 }
