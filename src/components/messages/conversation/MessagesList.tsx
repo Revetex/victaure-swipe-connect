@@ -85,17 +85,24 @@ export function MessagesList({
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
           {/* Mr. Victaure's conversation always pinned at the top */}
-          <AssistantMessage
-            chatMessages={chatMessages}
-            onSelectConversation={onSelectConversation}
-          />
+          <div onClick={() => onSelectConversation("assistant")}>
+            <AssistantMessage
+              chatMessages={chatMessages}
+              onSelectConversation={onSelectConversation}
+            />
+          </div>
           
           {/* Other conversations */}
           {filteredMessages.map((message) => (
-            <UserMessage
+            <div 
               key={message.id}
-              message={message}
-            />
+              onClick={() => onSelectConversation("user", message.sender)}
+              className="cursor-pointer"
+            >
+              <UserMessage
+                message={message}
+              />
+            </div>
           ))}
 
           {/* Show empty state when no messages */}
