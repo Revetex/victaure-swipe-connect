@@ -11,3 +11,12 @@ export const formatTime = (timestamp: string) => {
   if (hours < 24) return `Il y a ${hours}h`;
   return `Il y a ${days}j`;
 };
+
+export const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
