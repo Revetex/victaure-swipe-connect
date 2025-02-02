@@ -39,12 +39,6 @@ export function SearchHeader({
           <DialogContent>
             <div className="space-y-4 p-4">
               <h2 className="text-lg font-semibold">Nouvelle conversation</h2>
-              <Button 
-                onClick={onNewConversation}
-                className="w-full"
-              >
-                Parler avec M. Victaure
-              </Button>
               {profile?.friends?.map((friend) => (
                 <Button
                   key={friend.id}
