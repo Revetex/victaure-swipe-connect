@@ -1,109 +1,83 @@
-import { useIsMobile } from "@/hooks/use-mobile";
-import { motion, AnimatePresence } from "framer-motion";
-import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useCallback, useEffect } from "react";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
-import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
+import React, { useState } from "react";
+import { Navigation } from "@/components/Navigation";
+import { AIAssistant } from "@/components/dashboard/AIAssistant";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { useVCardStyle } from "@/components/vcard/VCardStyleContext";
+import { VCardStyleSelector } from "@/components/vcard/VCardStyleSelector";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { useDebounce } from "use-debounce";
-import { Logo } from "@/components/Logo";
 
 export function DashboardLayout() {
-  const isMobile = useIsMobile();
-  const { containerVariants, itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(3);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  
-  const [debouncedSetViewportHeight] = useDebounce(
-    (height: number) => setViewportHeight(height),
-    100
-  );
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const { selectedStyle } = useVCardStyle();
+  const viewportHeight = window.innerHeight;
 
-  const [lastPageChange, setLastPageChange] = useState(Date.now());
-  const THROTTLE_DELAY = 300;
-
-  const updateHeight = useCallback(() => {
-    debouncedSetViewportHeight(window.innerHeight);
-  }, [debouncedSetViewportHeight]);
-
-  const handlePageChange = useCallback((page: number) => {
-    const now = Date.now();
-    if (now - lastPageChange >= THROTTLE_DELAY) {
-      setCurrentPage(page);
-      setLastPageChange(now);
-      // Always disable edit mode when changing pages
-      setIsEditing(false);
+  const getPageTitle = (pageNumber: number) => {
+    switch (pageNumber) {
+      case 1:
+        return "Profils";
+      case 2:
+        return "Messages";
+      case 3:
+        return "Emplois";
+      case 4:
+        return "Fil d'actualité";
+      case 5:
+        return "Outils";
+      case 6:
+        return "Paramètres";
+      default:
+        return "";
     }
-  }, [lastPageChange]);
+  };
 
-  const handleRequestChat = useCallback(() => {
-    handlePageChange(2);
-  }, [handlePageChange]);
+  const handleEditStateChange = (editing: boolean) => {
+    setIsEditing(editing);
+  };
+
+  const handleRequestChat = () => {
+    setIsChatOpen(true);
+  };
 
   return (
-    <div className="relative min-h-screen bg-background">
-      {isEditing && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50 py-2">
-          <div className="container mx-auto px-4">
-            <div className="max-w-7xl mx-auto">
-              <h1 className="text-center text-sm font-medium text-muted-foreground">
-                Mode édition
-              </h1>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background">
+      <div className="flex items-center justify-between py-2 px-4">
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-semibold">VICTAURE</span>
+          <span className="text-muted-foreground">|</span>
+          <span className="text-lg">{getPageTitle(currentPage)}</span>
         </div>
-      )}
-      
-      <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between py-2 px-4">
-            <div className="flex items-center gap-2">
-              <Logo size="sm" />
-              <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
-            </div>
-            <NotificationsBox />
+        <NotificationsBox />
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-2">
+            <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
           </div>
-          <AnimatePresence mode="wait">
-            <motion.div 
-              variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen"
-              style={{ 
-                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
-                overflowY: isEditing ? 'auto' : 'visible',
-                WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? (isMobile ? '10rem' : '4rem') : '10rem'
-              }}
-            >
-              <DashboardContent
-                currentPage={currentPage}
-                isEditing={isEditing}
-                viewportHeight={viewportHeight}
-                onEditStateChange={setIsEditing}
-                onRequestChat={handleRequestChat}
-              />
-            </motion.div>
-          </AnimatePresence>
+
+          <div className="lg:col-span-8">
+            <DashboardContent
+              currentPage={currentPage}
+              viewportHeight={viewportHeight}
+              isEditing={isEditing}
+              onEditStateChange={handleEditStateChange}
+              onRequestChat={handleRequestChat}
+            />
+          </div>
+
+          <div className="lg:col-span-2 space-y-4">
+            {currentPage === 1 && !isEditing && (
+              <VCardStyleSelector selectedStyle={selectedStyle} />
+            )}
+            <AIAssistant
+              isOpen={isChatOpen}
+              onClose={() => setIsChatOpen(false)}
+            />
+          </div>
         </div>
       </div>
-      
-      <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
-          isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-        }`}
-        style={{ 
-          height: isMobile ? '5rem' : '4rem',
-          paddingBottom: 'env(safe-area-inset-bottom)'
-        }}
-      >
-        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
-          <DashboardNavigation 
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </nav>
     </div>
   );
 }
