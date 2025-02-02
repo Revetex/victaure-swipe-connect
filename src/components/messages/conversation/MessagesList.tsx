@@ -22,10 +22,6 @@ export function MessagesList({
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
-
   const handleNewConversation = () => {
     onSelectConversation("assistant");
   };
@@ -33,9 +29,7 @@ export function MessagesList({
   return (
     <div className="h-full flex flex-col">
       <SearchHeader 
-        onSearch={handleSearch}
         onNewConversation={handleNewConversation}
-        searchValue={searchQuery}
       />
       
       <ScrollArea className="flex-1">
