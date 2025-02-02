@@ -42,6 +42,25 @@ export function DashboardLayout() {
     handlePageChange(2);
   }, [handlePageChange]);
 
+  const getPageTitle = (page: number) => {
+    switch (page) {
+      case 1:
+        return "Profil";
+      case 2:
+        return "Messages";
+      case 3:
+        return "Emplois";
+      case 4:
+        return "Actualités";
+      case 5:
+        return "Outils";
+      case 6:
+        return "Paramètres";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-background">
       {isEditing && (
@@ -58,10 +77,16 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between py-2 px-4">
-            <div className="flex items-center gap-2">
-              <Logo size="sm" />
-              <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
+          <div className="flex items-center justify-between py-2 px-4 border-b">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Logo size="sm" />
+                <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
+              </div>
+              <div className="h-6 w-px bg-border mx-2" />
+              <h2 className="text-lg font-semibold text-foreground">
+                {getPageTitle(currentPage)}
+              </h2>
             </div>
             <NotificationsBox />
           </div>
