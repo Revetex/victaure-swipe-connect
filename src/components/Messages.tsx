@@ -92,16 +92,26 @@ function MessagesWithQuery({
     }
   }));
 
+  const handleClearConversation = () => {
+    try {
+      clearChat();
+      toast.success("Conversation effacée avec succès");
+    } catch (error) {
+      console.error("Error clearing conversation:", error);
+      toast.error("Erreur lors de l'effacement de la conversation");
+    }
+  };
+
   return showConversation ? (
     <MessagesContent
-      messages={selectedReceiver ? messages : formattedChatMessages}
+      messages={selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages}
       inputMessage={inputMessage}
       isListening={isListening}
       isThinking={isThinking}
       onSendMessage={handleSendMessage}
       onVoiceInput={handleVoiceInput}
       setInputMessage={setInputMessage}
-      onClearChat={clearChat}
+      onClearChat={handleClearConversation}
       onBack={handleBack}
       receiver={selectedReceiver}
     />
