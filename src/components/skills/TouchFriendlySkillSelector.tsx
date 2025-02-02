@@ -4,6 +4,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus } from "lucide-react";
 import { skillCategories } from "@/data/skills";
 import { CategoryIcon } from "./CategoryIcon";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 interface TouchFriendlySkillSelectorProps {
   onSkillSelect: (skill: string) => void;
@@ -11,9 +13,17 @@ interface TouchFriendlySkillSelectorProps {
 }
 
 export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: TouchFriendlySkillSelectorProps) {
+  const [customSkill, setCustomSkill] = useState("");
+
+  const handleCustomSkillSubmit = () => {
+    if (customSkill.trim() && !existingSkills.includes(customSkill.trim())) {
+      onSkillSelect(customSkill.trim());
+      setCustomSkill("");
+    }
+  };
+
   return (
     <Dialog>
-
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 gap-2">
           <Plus className="h-4 w-4" />
@@ -25,7 +35,27 @@ export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: To
         <DialogHeader>
           <DialogTitle>Sélectionner une compétence</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="h-[50vh] mt-4">
+        
+        <div className="flex gap-2 mb-4">
+          <Input
+            placeholder="Ajouter une compétence personnalisée"
+            value={customSkill}
+            onChange={(e) => setCustomSkill(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                handleCustomSkillSubmit();
+              }
+            }}
+          />
+          <Button 
+            onClick={handleCustomSkillSubmit}
+            disabled={!customSkill.trim() || existingSkills.includes(customSkill.trim())}
+          >
+            Ajouter
+          </Button>
+        </div>
+
+        <ScrollArea className="h-[50vh]">
           <div className="space-y-6 pr-4">
             {Object.entries(skillCategories).map(([category, skills]) => (
               <div key={category} className="space-y-3">

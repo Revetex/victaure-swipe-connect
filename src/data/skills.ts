@@ -7,7 +7,15 @@ export const skillCategories: Record<string, string[]> = {
     "Peinture",
     "Carrelage",
     "Menuiserie",
-    "Toiture"
+    "Toiture",
+    "Isolation",
+    "Démolition",
+    "Rénovation",
+    "Construction durable",
+    "Lecture de plans",
+    "Coffrage",
+    "Ferraillage",
+    "Étanchéité"
   ],
   "Gestion": [
     "Gestion de projet",
@@ -15,7 +23,15 @@ export const skillCategories: Record<string, string[]> = {
     "Gestion d'équipe",
     "Planification",
     "Budgétisation",
-    "Leadership"
+    "Leadership",
+    "Coordination",
+    "Supervision",
+    "Estimation",
+    "Approvisionnement",
+    "Contrôle qualité",
+    "Gestion des risques",
+    "Gestion des contrats",
+    "Négociation"
   ],
   "Technique": [
     "Lecture de plans",
@@ -23,14 +39,29 @@ export const skillCategories: Record<string, string[]> = {
     "SketchUp",
     "Revit",
     "BIM",
-    "Estimation"
+    "Estimation",
+    "Topographie",
+    "Dessin technique",
+    "Modélisation 3D",
+    "Calcul de structures",
+    "Métrés",
+    "Diagnostic technique",
+    "Maintenance préventive",
+    "Contrôle technique"
   ],
   "Sécurité": [
     "Sécurité au travail",
     "Premiers soins",
     "SIMDUT",
     "Travail en hauteur",
-    "Protection incendie"
+    "Protection incendie",
+    "Prévention des risques",
+    "Équipements de protection",
+    "Gestion des urgences",
+    "Conformité SST",
+    "Analyse des risques",
+    "Formation sécurité",
+    "Inspection sécurité"
   ],
   "Soft Skills": [
     "Communication",
@@ -38,7 +69,29 @@ export const skillCategories: Record<string, string[]> = {
     "Résolution de problèmes",
     "Autonomie",
     "Organisation",
-    "Ponctualité"
+    "Ponctualité",
+    "Adaptabilité",
+    "Gestion du stress",
+    "Service client",
+    "Leadership",
+    "Créativité",
+    "Esprit d'initiative",
+    "Fiabilité",
+    "Polyvalence"
+  ],
+  "Spécialisations": [
+    "Énergie solaire",
+    "Domotique",
+    "Construction écologique",
+    "Rénovation patrimoniale",
+    "Smart building",
+    "Efficacité énergétique",
+    "Construction métallique",
+    "Génie climatique",
+    "Acoustique",
+    "Accessibilité PMR",
+    "Construction passive",
+    "Restauration"
   ]
 };
 
