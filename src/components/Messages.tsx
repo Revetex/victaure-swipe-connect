@@ -97,7 +97,7 @@ function MessagesWithQuery({
       online_status: false,
       last_seen: new Date().toISOString()
     } as MessageSender
-  }));
+  })) as Message[];
 
   const formattedChatMessages = formatChatMessages(chatMessages).map(msg => ({
     ...msg,
