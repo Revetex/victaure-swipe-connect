@@ -95,10 +95,15 @@ function MessagesWithQuery({
       avatar_url: "",
       online_status: false,
       last_seen: new Date().toISOString()
-    } as MessageSender
+    }
   })) as Message[];
 
-  const formattedChatMessages = formatChatMessages(chatMessages);
+  const formattedChatMessages = formatChatMessages(chatMessages).map(msg => ({
+    ...msg,
+    sender_id: msg.sender_id || msg.sender,
+    receiver_id: selectedReceiver?.id || 'assistant'
+  })) as Message[];
+
   const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : formattedMessages;
   const filteredMessages = filterMessages(currentMessages || [], selectedReceiver);
 
