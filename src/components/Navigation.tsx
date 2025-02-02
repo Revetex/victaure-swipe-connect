@@ -7,27 +7,14 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { useLocation } from "react-router-dom";
 
 export function Navigation() {
   const isMobile = useIsMobile();
   const { signOut, isLoading } = useAuth();
-  const location = useLocation();
 
   if (isLoading) {
     return null;
   }
-
-  const getPageTitle = (path: string) => {
-    const routes: Record<string, string> = {
-      '/dashboard': 'Tableau de bord',
-      '/dashboard/messages': 'Messages',
-      '/dashboard/jobs': 'Emplois',
-      '/dashboard/profile': 'Profil',
-      '/dashboard/settings': 'Paramètres',
-    };
-    return routes[path] || '';
-  };
 
   const NavLinks = () => (
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
@@ -63,32 +50,21 @@ export function Navigation() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-b border-border/40 z-50"
+      className="sticky top-0 bg-background/80 backdrop-blur-lg border-b border-border/40 z-50"
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <motion.a 
-            href="/" 
-            className="flex items-center gap-3 group"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <Logo size={isMobile ? "sm" : "md"} />
-            <span className="font-bold text-xl md:text-2xl text-primary relative">
-              VICTAURE
-              <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
-            </span>
-          </motion.a>
-          
-          {getPageTitle(location.pathname) && (
-            <div className="flex items-center">
-              <span className="text-muted-foreground/50 mx-3">|</span>
-              <h1 className="text-xl font-semibold text-foreground/90">
-                {getPageTitle(location.pathname)}
-              </h1>
-            </div>
-          )}
-        </div>
+        <motion.a 
+          href="/" 
+          className="flex items-center gap-3 group"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <Logo size={isMobile ? "sm" : "md"} />
+          <span className="font-bold text-xl md:text-2xl text-primary relative">
+            VICTAURE
+            <span className="absolute -inset-x-4 -inset-y-2 border border-primary/20 rounded-lg scale-0 group-hover:scale-100 transition-transform" />
+          </span>
+        </motion.a>
         
         {isMobile ? (
           <Sheet>
