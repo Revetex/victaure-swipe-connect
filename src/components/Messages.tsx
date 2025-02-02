@@ -110,7 +110,7 @@ function MessagesWithQuery({
       online_status: msg.sender === 'assistant',
       last_seen: new Date().toISOString()
     } as MessageSender : msg.sender,
-    sender_id: msg.sender_id || (typeof msg.sender === 'string' ? msg.sender : msg.sender.id),
+    sender_id: msg.sender_id || (typeof msg.sender === 'string' ? msg.sender : (msg.sender as MessageSender).id),
     receiver_id: selectedReceiver?.id || 'assistant',
     thinking: msg.thinking || false,
     read: true
