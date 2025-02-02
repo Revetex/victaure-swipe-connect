@@ -38,9 +38,10 @@ export function ProfileSearch() {
   });
 
   const handleSelectProfile = (profile: UserProfile) => {
+    if (!profile) return;
+    
     console.log("Selected profile:", profile);
     setSelectedProfile(profile);
-    // Use setTimeout to prevent UI flicker
     setTimeout(() => {
       setSearch("");
       setIsInputFocused(false);
@@ -53,13 +54,12 @@ export function ProfileSearch() {
 
   return (
     <div className="relative z-50">
-      <Command className="relative max-w-lg mx-auto">
+      <Command className="relative max-w-lg mx-auto" shouldFilter={false}>
         <Command.Input
           value={search}
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
-            // Delay hiding results to allow click events to register
             setTimeout(() => setIsInputFocused(false), 200);
           }}
           placeholder="Rechercher un profil..."
