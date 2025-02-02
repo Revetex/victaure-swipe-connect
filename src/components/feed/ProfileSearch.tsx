@@ -37,14 +37,14 @@ export function ProfileSearch() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full">
       <Command className="rounded-lg border shadow-md">
         <CommandInput 
           placeholder="Rechercher un profil..." 
           onValueChange={handleSearch}
-          className="h-12"
+          className="h-9"
         />
-        <CommandList>
+        <CommandList className="absolute w-full bg-background border rounded-lg mt-1 shadow-lg">
           {hasSearched && searchResults.length === 0 && (
             <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
           )}

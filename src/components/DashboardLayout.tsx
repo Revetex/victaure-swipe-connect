@@ -8,6 +8,7 @@ import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
 import { Logo } from "@/components/Logo";
+import { ProfileSearch } from "@/components/feed/ProfileSearch";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -33,7 +34,6 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      // Always disable edit mode when changing pages
       setIsEditing(false);
     }
   }, [lastPageChange]);
@@ -78,7 +78,7 @@ export function DashboardLayout() {
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between py-2 px-4 border-b">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
               <div className="flex items-center gap-2">
                 <Logo size="sm" />
                 <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
@@ -87,6 +87,11 @@ export function DashboardLayout() {
               <h2 className="text-lg font-semibold text-foreground">
                 {getPageTitle(currentPage)}
               </h2>
+              {currentPage === 4 && (
+                <div className="ml-4 flex-1 max-w-lg">
+                  <ProfileSearch />
+                </div>
+              )}
             </div>
             <NotificationsBox />
           </div>
