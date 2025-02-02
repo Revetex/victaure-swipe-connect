@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from "react";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
 
 export function DashboardLayout() {
@@ -56,6 +57,9 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
+          <div className="flex justify-end p-4">
+            <NotificationsBox />
+          </div>
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
