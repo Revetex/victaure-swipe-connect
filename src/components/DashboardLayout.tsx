@@ -58,8 +58,8 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between py-2 px-4">
+            <div className="flex items-center gap-2">
               <Logo size="sm" />
               <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
             </div>
