@@ -48,35 +48,38 @@ export function ProfileSearch() {
           onValueChange={setSearchQuery}
           className="h-9"
         />
-        <CommandList>
-          <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
-          <CommandGroup>
+        {searchQuery.length > 0 && (
+          <CommandList>
             {isLoading ? (
               <div className="p-4 text-center text-sm text-muted-foreground">
                 Chargement des profils...
               </div>
+            ) : profiles && profiles.length > 0 ? (
+              <CommandGroup>
+                {profiles.map((profile) => (
+                  <CommandItem
+                    key={profile.id}
+                    className="flex items-center gap-2 p-2 cursor-pointer"
+                    onSelect={() => handleViewProfile(profile.id)}
+                  >
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <UserCircle className="w-8 h-8 text-muted-foreground" />
+                    )}
+                    <span>{profile.full_name}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
             ) : (
-              profiles?.map((profile) => (
-                <CommandItem
-                  key={profile.id}
-                  className="flex items-center gap-2 p-2 cursor-pointer"
-                  onSelect={() => handleViewProfile(profile.id)}
-                >
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  ) : (
-                    <UserCircle className="w-8 h-8 text-muted-foreground" />
-                  )}
-                  <span>{profile.full_name}</span>
-                </CommandItem>
-              ))
+              <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
             )}
-          </CommandGroup>
-        </CommandList>
+          </CommandList>
+        )}
       </Command>
     </div>
   );
