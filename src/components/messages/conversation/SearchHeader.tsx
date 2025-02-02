@@ -33,14 +33,18 @@ export function SearchHeader({ unreadCount, onSearch }: SearchHeaderProps) {
         .from('friend_requests')
         .select(`
           sender:profiles!friend_requests_sender_id_fkey(id, full_name, avatar_url, email),
-          receiver:profiles!friend_requests_receiver_id_fkey(id, full_name, avatar_url, email)
+          receiver:profiles!friend_requests_receiver_id_fkey(id, full_name, avatar_url, email),
+          status
         `)
-        .eq('status', 'accepted')
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
       if (friendRequests) {
         const friendsList = friendRequests.map(request => {
-          return request.sender.id === user.id ? request.receiver : request.sender;
+          const friend = request.sender.id === user.id ? request.receiver : request.sender;
+          return {
+            ...friend,
+            status: request.status
+          };
         });
         setFriends(friendsList);
       }
@@ -120,19 +124,24 @@ export function SearchHeader({ unreadCount, onSearch }: SearchHeaderProps) {
                   {filteredFriends.map((friend) => (
                     <div
                       key={friend.id}
-                      onClick={() => handleSelectFriend(friend.id)}
-                      className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
+                      onClick={() => friend.status === 'accepted' && handleSelectFriend(friend.id)}
+                      className={`flex items-center justify-between p-2 rounded-lg hover:bg-accent ${friend.status === 'accepted' ? 'cursor-pointer' : 'cursor-not-allowed opacity-70'}`}
                     >
-                      <Avatar>
-                        <AvatarImage src={friend.avatar_url} />
-                        <AvatarFallback>
-                          <UserRound className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium">{friend.full_name || 'Sans nom'}</p>
-                        <p className="text-xs text-muted-foreground">{friend.email}</p>
+                      <div className="flex items-center space-x-4">
+                        <Avatar>
+                          <AvatarImage src={friend.avatar_url} />
+                          <AvatarFallback>
+                            <UserRound className="h-4 w-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">{friend.full_name || 'Sans nom'}</p>
+                          <p className="text-xs text-muted-foreground">{friend.email}</p>
+                        </div>
                       </div>
+                      {friend.status === 'pending' && (
+                        <Badge variant="secondary" className="ml-2">En attente</Badge>
+                      )}
                     </div>
                   ))}
                 </div>
