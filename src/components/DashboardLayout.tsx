@@ -107,51 +107,57 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between py-2 px-4 border-b">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Logo size="sm" />
-                <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
-              </div>
-              <div className="h-6 w-px bg-border mx-2" />
-              <h2 className="text-lg font-semibold text-foreground">
-                {getPageTitle(currentPage)}
-              </h2>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {isMobile ? (
-                <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-muted-foreground">
-                      <Search className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="top" className="w-full p-4">
-                    <ProfileSearch 
-                      onSelect={handleProfileSelect}
-                      placeholder="Rechercher un profil..."
-                      className="w-full"
-                    />
-                  </SheetContent>
-                </Sheet>
-              ) : (
-                <div className="w-[300px]">
-                  <ProfileSearch 
-                    onSelect={handleProfileSelect}
-                    placeholder="Rechercher un profil..."
-                    className="w-full"
-                  />
+          <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm">
+            <div className="container mx-auto px-0 sm:px-4">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex items-center justify-between py-2 px-4 border-b">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Logo size="sm" />
+                      <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
+                    </div>
+                    <div className="h-6 w-px bg-border mx-2" />
+                    <h2 className="text-lg font-semibold text-foreground">
+                      {getPageTitle(currentPage)}
+                    </h2>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    {isMobile ? (
+                      <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+                        <SheetTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-muted-foreground">
+                            <Search className="h-5 w-5" />
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent side="top" className="w-full p-4">
+                          <ProfileSearch 
+                            onSelect={handleProfileSelect}
+                            placeholder="Rechercher un profil..."
+                            className="w-full"
+                          />
+                        </SheetContent>
+                      </Sheet>
+                    ) : (
+                      <div className="w-[300px]">
+                        <ProfileSearch 
+                          onSelect={handleProfileSelect}
+                          placeholder="Rechercher un profil..."
+                          className="w-full"
+                        />
+                      </div>
+                    )}
+                    <NotificationsBox />
+                  </div>
                 </div>
-              )}
-              <NotificationsBox />
+              </div>
             </div>
           </div>
           
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen"
+              className="transform transition-all duration-300 w-full min-h-screen pt-16"
               style={{ 
                 maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
