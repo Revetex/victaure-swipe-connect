@@ -7,15 +7,16 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
+import { Message } from "@/types/messages";
 
-interface MessagesContentProps {
-  messages: any[];
+export interface MessagesContentProps {
+  messages: Message[];
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
   profile: any;
   onBack?: () => void;
-  onSendMessage: (message: string, profile: any) => void;
+  onSendMessage: (message: string) => void;
   onVoiceInput: () => void;
   setInputMessage: (message: string) => void;
   onClearChat: () => void;
@@ -62,16 +63,6 @@ export function MessagesContent({
     }
   };
 
-  const handleSendMessage = async (message: string) => {
-    try {
-      console.log("Sending message:", message);
-      await onSendMessage(message, profile);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Erreur lors de l'envoi du message");
-    }
-  };
-
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-14">
       <header className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3">
@@ -88,13 +79,13 @@ export function MessagesContent({
               </Button>
             )}
             <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
+              <AvatarImage src={profile?.avatar_url} alt={profile?.full_name} />
               <AvatarFallback className="bg-primary/20">
                 <Bot className="h-5 w-5 text-primary" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold truncate">Mr. Victaure</h2>
+              <h2 className="text-lg font-semibold truncate">{profile?.full_name}</h2>
               <p className="text-sm text-muted-foreground truncate">
                 {isThinking ? "En train de réfléchir..." : "Assistant IA Personnel"}
               </p>
@@ -162,7 +153,7 @@ export function MessagesContent({
           <ChatInput
             value={inputMessage}
             onChange={setInputMessage}
-            onSend={() => handleSendMessage(inputMessage)}
+            onSend={() => onSendMessage(inputMessage)}
             onVoiceInput={onVoiceInput}
             isListening={isListening}
             isThinking={isThinking}

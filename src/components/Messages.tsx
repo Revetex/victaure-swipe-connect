@@ -11,6 +11,21 @@ import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
 
 const queryClient = new QueryClient();
 
+interface MessagesWithQueryProps {
+  chatMessages: Message[];
+  inputMessage: string;
+  isListening: boolean;
+  isThinking: boolean;
+  showConversation: boolean;
+  setShowConversation: (show: boolean) => void;
+  handleSendMessage: (message: string) => Promise<void>;
+  handleVoiceInput: () => void;
+  setInputMessage: (message: string) => void;
+  clearChat: () => void;
+  selectedReceiver: Receiver | null;
+  setSelectedReceiver: (receiver: Receiver | null) => void;
+}
+
 function MessagesWithQuery({
   chatMessages,
   inputMessage,
@@ -24,20 +39,7 @@ function MessagesWithQuery({
   clearChat,
   selectedReceiver,
   setSelectedReceiver
-}: {
-  chatMessages: Message[];
-  inputMessage: string;
-  isListening: boolean;
-  isThinking: boolean;
-  showConversation: boolean;
-  setShowConversation: (show: boolean) => void;
-  handleSendMessage: (message: string) => Promise<void>;
-  handleVoiceInput: () => void;
-  setInputMessage: (message: string) => void;
-  clearChat: () => void;
-  selectedReceiver: Receiver | null;
-  setSelectedReceiver: (receiver: Receiver | null) => void;
-}) {
+}: MessagesWithQueryProps) {
   const { messages, markAsRead } = useMessages();
   const navigate = useNavigate();
 
@@ -130,7 +132,7 @@ function MessagesWithQuery({
       setInputMessage={setInputMessage}
       onClearChat={handleClearConversation}
       onBack={handleBack}
-      receiver={selectedReceiver}
+      profile={selectedReceiver}
     />
   ) : (
     <ConversationList
