@@ -16,13 +16,45 @@
 
   .gsc-result {
     padding: 0.75rem !important;
+    width: 100% !important;
   }
 
   .gs-title {
     font-size: 1rem !important;
+    width: 100% !important;
   }
 
   .gs-snippet {
     font-size: 0.9rem !important;
+    width: 100% !important;
+  }
+
+  .gsc-control-cse,
+  .gsc-control-wrapper-cse,
+  .gsc-results-wrapper-visible,
+  .gsc-results {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .gsc-search-box {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 0.5rem !important;
+  }
+
+  .gsc-input-box {
+    width: 100% !important;
+  }
+
+  .gsc-input {
+    padding-right: 0 !important;
+  }
+
+  .gcse-search {
+    width: 100% !important;
+    padding: 0 !important;
   }
 }

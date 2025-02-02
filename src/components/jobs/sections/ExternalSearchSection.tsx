@@ -72,8 +72,8 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
   }
 
   return (
-    <div className="space-y-4">
-      <div className="relative w-full min-h-[100px] bg-background rounded-lg p-4 sm:p-0">
+    <div className="space-y-4 w-full">
+      <div className="relative w-full min-h-[100px] bg-background rounded-lg">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -83,7 +83,7 @@ export function ExternalSearchSection({ isLoading, hasError, onRetry }: External
         </motion.div>
       </div>
       
-      <p className="text-sm text-muted-foreground text-center italic">
+      <p className="text-sm text-muted-foreground text-center italic px-4">
         Conseil : Essayez des mots-clés comme "construction", "comptable" ou une ville (ex: "Alma") pour trouver des offres pertinentes
       </p>
     </div>

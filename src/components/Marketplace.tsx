@@ -11,13 +11,13 @@ export function Marketplace() {
 
   return (
     <div className="w-full">
-      <div className="px-4 py-8">
+      <div className="py-8">
         <div className="flex flex-col gap-6 w-full">
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full px-4 sm:px-0">
             <h1 className="text-2xl font-bold">Emplois disponibles</h1>
           </div>
 
-          <div className="w-full -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="w-full">
             <ExternalSearchSection
               isLoading={isExternalSearchLoading}
               hasError={hasExternalSearchError}
