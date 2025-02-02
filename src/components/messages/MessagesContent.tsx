@@ -108,24 +108,6 @@ export function MessagesContent({
             </div>
           </div>
         </div>
-        <div className="px-4 pb-3">
-          <div className="flex gap-2">
-            <input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Écrivez votre message..."
-              className="flex-1 bg-muted/50 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <Button
-              size="icon"
-              className="rounded-full shrink-0"
-              onClick={() => onSendMessage(inputMessage)}
-              disabled={!inputMessage.trim()}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
       </div>
 
       <div className="flex-1 overflow-hidden">
@@ -145,6 +127,25 @@ export function MessagesContent({
             </AnimatePresence>
           </div>
         </ScrollArea>
+      </div>
+
+      <div className="border-t bg-background/95 backdrop-blur-sm px-4 py-3 pb-20">
+        <div className="flex gap-2">
+          <input
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Écrivez votre message..."
+            className="flex-1 bg-muted/50 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <Button
+            size="icon"
+            className="rounded-full shrink-0"
+            onClick={() => onSendMessage(inputMessage)}
+            disabled={!inputMessage.trim()}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
