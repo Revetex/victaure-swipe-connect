@@ -1,51 +1,52 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { motion } from "framer-motion";
-import { Clock, User } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { User } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface UserMessageProps {
   message: any;
+  onClick: () => void;
 }
 
-export function UserMessage({ message }: UserMessageProps) {
-  const formattedDate = message.created_at ? format(new Date(message.created_at), "d MMMM", { locale: fr }) : "";
-  const formattedTime = message.created_at ? format(new Date(message.created_at), "HH:mm", { locale: fr }) : "";
+export function UserMessage({ message, onClick }: UserMessageProps) {
+  const sender = typeof message.sender === 'string' ? { full_name: message.sender } : message.sender;
+  const formattedDate = message.timestamp ? format(new Date(message.timestamp), "d MMM", { locale: fr }) : "";
+  const formattedTime = message.timestamp ? format(new Date(message.timestamp), "HH:mm", { locale: fr }) : "";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-      className="group relative p-4 rounded-lg transition-all duration-200 hover:scale-[1.02] bg-card hover:bg-card/80 border shadow-sm hover:shadow-md"
+      exit={{ opacity: 0, y: -10 }}
+      className={cn(
+        "flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors",
+        !message.read && "bg-muted/30"
+      )}
+      onClick={onClick}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
-      <div className="relative flex gap-4">
-        <Avatar className="h-12 w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-200 group-hover:ring-primary/20">
-          <AvatarImage src={message.sender?.avatar_url} alt={message.sender?.full_name} />
-          <AvatarFallback className="bg-primary/5">
-            <User className="h-6 w-6 text-primary" />
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0 space-y-1">
-          <div className="flex justify-between items-center gap-2">
-            <h3 className="font-semibold text-lg">{message.sender?.full_name}</h3>
-            {!message.read && (
-              <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">
-                Nouveau
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground line-clamp-2 text-left">
+      <Avatar className="h-10 w-10">
+        <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
+        <AvatarFallback>
+          <User className="h-5 w-5" />
+        </AvatarFallback>
+      </Avatar>
+      
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <p className="font-medium truncate">{sender.full_name}</p>
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
+            {formattedTime}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground truncate">
             {message.content}
           </p>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-            <Clock className="h-3 w-3" />
-            <span>{formattedTime}</span>
-            <span className="mx-1">•</span>
-            <span>{formattedDate}</span>
-          </div>
+          {!message.read && (
+            <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
+          )}
         </div>
       </div>
     </motion.div>

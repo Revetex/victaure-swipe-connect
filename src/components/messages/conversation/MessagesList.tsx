@@ -1,12 +1,12 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SearchHeader } from "../conversation/SearchHeader";
 import { UserMessage } from "../conversation/UserMessage";
-import { useState } from "react";
 import { Message } from "@/types/chat/messageTypes";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AssistantMessage } from "./AssistantMessage";
+import { Separator } from "@/components/ui/separator";
 
 interface MessagesListProps {
   messages: any[];
@@ -19,7 +19,6 @@ export function MessagesList({
   chatMessages,
   onSelectConversation,
 }: MessagesListProps) {
-  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const handleNewConversation = () => {
@@ -33,22 +32,40 @@ export function MessagesList({
       />
       
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
-          {/* Only show Mr. Victaure's conversation */}
-          <div onClick={() => onSelectConversation("assistant")}>
-            <AssistantMessage
-              chatMessages={chatMessages}
-              onSelectConversation={onSelectConversation}
-            />
+        <div className="p-4 space-y-6">
+          {/* AI Assistant Section */}
+          <div>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-2 px-2">Assistant IA</h3>
+            <div onClick={() => onSelectConversation("assistant")}>
+              <AssistantMessage
+                chatMessages={chatMessages}
+                onSelectConversation={onSelectConversation}
+              />
+            </div>
           </div>
 
-          {/* Show empty state when no messages */}
-          {messages?.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-              <p>Aucune conversation pour le moment</p>
-              <p className="text-sm">Commencez une nouvelle conversation!</p>
+          <Separator className="my-4" />
+
+          {/* Users Section */}
+          <div>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-2 px-2">Conversations</h3>
+            <div className="space-y-2">
+              {messages?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <p>Aucune conversation pour le moment</p>
+                  <p className="text-sm">Commencez une nouvelle conversation!</p>
+                </div>
+              ) : (
+                messages.map((message) => (
+                  <UserMessage
+                    key={message.id}
+                    message={message}
+                    onClick={() => onSelectConversation("user", message.sender)}
+                  />
+                ))
+              )}
             </div>
-          )}
+          </div>
         </div>
       </ScrollArea>
     </div>
