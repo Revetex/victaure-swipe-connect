@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile } from "@/types/profile";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 export function ProfileSearch() {
   const [search, setSearch] = useState("");
@@ -45,14 +46,12 @@ export function ProfileSearch() {
 
   const handleMessage = async (profile: UserProfile) => {
     try {
-      // Get the current user's session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error("Vous devez être connecté pour envoyer un message");
         return;
       }
 
-      // Create or get existing conversation
       const { data: message, error } = await supabase
         .from('messages')
         .insert({
@@ -70,13 +69,16 @@ export function ProfileSearch() {
         return;
       }
 
-      // Navigate to messages page
       navigate(`/dashboard/messages/${message.id}`);
       toast.success("Conversation créée avec succès");
     } catch (error) {
       console.error("Error in handleMessage:", error);
       toast.error("Une erreur est survenue");
     }
+  };
+
+  const handleCloseProfile = () => {
+    setSelectedProfile(null);
   };
 
   return (
@@ -116,18 +118,10 @@ export function ProfileSearch() {
       </Command>
 
       {selectedProfile && (
-        <div className="mt-4 p-4 border rounded-lg">
-          <h3 className="font-medium">{selectedProfile.full_name}</h3>
-          <p className="text-sm text-muted-foreground">{selectedProfile.role}</p>
-          <div className="mt-2 flex gap-2">
-            <button
-              onClick={() => handleMessage(selectedProfile)}
-              className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            >
-              Envoyer un message
-            </button>
-          </div>
-        </div>
+        <ProfilePreview 
+          profile={selectedProfile} 
+          onClose={handleCloseProfile}
+        />
       )}
     </div>
   );
