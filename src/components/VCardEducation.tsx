@@ -1,216 +1,174 @@
 import { VCardSection } from "./VCardSection";
-import { Input } from "@/components/ui/input";
+import { GraduationCap, Building2, Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { X, GraduationCap, Building2, Calendar, GripVertical } from "lucide-react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { UserProfile } from "@/types/profile";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useVCardStyle } from "./vcard/VCardStyleContext";
-
-interface Education {
-  id: string;
-  school_name: string;
-  degree: string;
-  field_of_study?: string;
-  start_date?: string;
-  end_date?: string;
-  description?: string;
-}
 
 interface VCardEducationProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
-export function VCardEducation({
-  profile,
-  isEditing,
-  setProfile,
-}: VCardEducationProps) {
-  const { selectedStyle } = useVCardStyle();
-
+export function VCardEducation({ profile, isEditing, setProfile }: VCardEducationProps) {
   const handleAddEducation = () => {
+    const newEducation = {
+      id: crypto.randomUUID(),
+      school_name: "",
+      degree: "",
+      field_of_study: "",
+      start_date: null,
+      end_date: null,
+      description: "",
+    };
+
     setProfile({
       ...profile,
-      education: [
-        ...(profile.education || []),
-        { id: crypto.randomUUID(), school_name: "", degree: "", field_of_study: "", start_date: "", end_date: "" },
-      ],
+      education: [...(profile.education || []), newEducation],
     });
     toast.success("Formation ajoutée");
   };
 
-  const handleRemoveEducation = (educationId: string) => {
-    const newEducation = [...(profile.education || [])].filter(edu => edu.id !== educationId);
-    setProfile({ ...profile, education: newEducation });
+  const handleRemoveEducation = (id: string) => {
+    setProfile({
+      ...profile,
+      education: profile.education?.filter((edu) => edu.id !== id),
+    });
     toast.success("Formation supprimée");
   };
 
-  const handleReorder = (newOrder: Education[]) => {
-    setProfile({ ...profile, education: newOrder });
+  const handleEducationChange = (id: string, field: string, value: string) => {
+    setProfile({
+      ...profile,
+      education: profile.education?.map((edu) =>
+        edu.id === id ? { ...edu, [field]: value } : edu
+      ),
+    });
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long'
+  const formatDate = (date: string | undefined) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
     });
   };
 
   return (
-    <VCardSection 
+    <VCardSection
       title="Formation"
-      icon={<GraduationCap className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />}
+      icon={<GraduationCap className="h-5 w-5" />}
+      variant="education"
     >
-      <div className="space-y-6 w-full">
-        {isEditing ? (
-          <Reorder.Group axis="y" values={profile.education || []} onReorder={handleReorder}>
-            {(profile.education || []).map((edu: Education) => (
-              <Reorder.Item key={edu.id} value={edu}>
-                <motion.div 
-                  className="relative bg-white/5 backdrop-blur-sm rounded-lg p-6 space-y-4 border border-indigo-500/20"
+      <div className="space-y-6">
+        {(profile.education || []).map((edu) => (
+          <motion.div
+            key={edu.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="relative bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-lg p-4 sm:p-6 space-y-4 border border-indigo-200/50 dark:border-indigo-800/30"
+          >
+            {isEditing ? (
+              <>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                  <Building2 className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                  <Input
+                    value={edu.school_name}
+                    onChange={(e) =>
+                      handleEducationChange(edu.id, "school_name", e.target.value)
+                    }
+                    placeholder="Nom de l'école"
+                    className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                  <GraduationCap className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                  <Input
+                    value={edu.degree}
+                    onChange={(e) =>
+                      handleEducationChange(edu.id, "degree", e.target.value)
+                    }
+                    placeholder="Diplôme"
+                    className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <Calendar className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                    <Input
+                      type="date"
+                      value={edu.start_date || ""}
+                      onChange={(e) =>
+                        handleEducationChange(edu.id, "start_date", e.target.value)
+                      }
+                      className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                    />
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <Calendar className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-3 sm:mt-0" />
+                    <Input
+                      type="date"
+                      value={edu.end_date || ""}
+                      onChange={(e) =>
+                        handleEducationChange(edu.id, "end_date", e.target.value)
+                      }
+                      className="flex-1 bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[44px]"
+                    />
+                  </div>
+                </div>
+                <Textarea
+                  value={edu.description || ""}
+                  onChange={(e) =>
+                    handleEducationChange(edu.id, "description", e.target.value)
+                  }
+                  placeholder="Description de la formation"
+                  className="w-full bg-white/50 dark:bg-white/5 border-indigo-200/50 dark:border-indigo-800/30 min-h-[100px]"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemoveEducation(edu.id)}
+                  className="absolute top-2 right-2 hover:bg-red-500/20 hover:text-red-500 transition-colors"
                 >
-                  <div className="absolute top-4 left-2 cursor-move">
-                    <GripVertical className="h-4 w-4" style={{ color: selectedStyle.colors.primary }} />
-                  </div>
-                  <div className="ml-6">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                      <Input
-                        value={edu.school_name}
-                        onChange={(e) => {
-                          const newEducation = [...(profile.education || [])];
-                          const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                          newEducation[eduIndex] = { ...edu, school_name: e.target.value };
-                          setProfile({ ...profile, education: newEducation });
-                        }}
-                        placeholder="Nom de l'école"
-                        className="flex-1 bg-white/10 border-indigo-500/20"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <GraduationCap className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                      <Input
-                        value={edu.degree}
-                        onChange={(e) => {
-                          const newEducation = [...(profile.education || [])];
-                          const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                          newEducation[eduIndex] = { ...edu, degree: e.target.value };
-                          setProfile({ ...profile, education: newEducation });
-                        }}
-                        placeholder="Diplôme"
-                        className="flex-1 bg-white/10 border-indigo-500/20"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Input
-                        value={edu.field_of_study}
-                        onChange={(e) => {
-                          const newEducation = [...(profile.education || [])];
-                          const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                          newEducation[eduIndex] = { ...edu, field_of_study: e.target.value };
-                          setProfile({ ...profile, education: newEducation });
-                        }}
-                        placeholder="Domaine d'études"
-                        className="flex-1 bg-white/10 border-indigo-500/20"
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                        <Input
-                          type="date"
-                          value={edu.start_date}
-                          onChange={(e) => {
-                            const newEducation = [...(profile.education || [])];
-                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                            newEducation[eduIndex] = { ...edu, start_date: e.target.value };
-                            setProfile({ ...profile, education: newEducation });
-                          }}
-                          className="flex-1 bg-white/10 border-indigo-500/20"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                        <Input
-                          type="date"
-                          value={edu.end_date}
-                          onChange={(e) => {
-                            const newEducation = [...(profile.education || [])];
-                            const eduIndex = newEducation.findIndex(e => e.id === edu.id);
-                            newEducation[eduIndex] = { ...edu, end_date: e.target.value };
-                            setProfile({ ...profile, education: newEducation });
-                          }}
-                          className="flex-1 bg-white/10 border-indigo-500/20"
-                        />
-                      </div>
-                    </div>
-                    <div className="absolute top-2 right-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveEducation(edu.id)}
-                        className="hover:text-destructive transition-colors"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
-        ) : (
-          (profile.education || []).map((edu: Education) => (
-            <motion.div 
-              key={edu.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="relative bg-white/5 backdrop-blur-sm rounded-lg p-6 space-y-4 border border-indigo-500/20"
-            >
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                <p className="font-medium" style={{ color: selectedStyle.colors.text.primary }}>
-                  {edu.school_name || "École non définie"}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                <p style={{ color: selectedStyle.colors.text.secondary }}>
-                  {edu.degree || "Diplôme non défini"}
-                </p>
-              </div>
-              {edu.field_of_study && (
-                <p className="pl-6" style={{ color: selectedStyle.colors.text.muted }}>
-                  {edu.field_of_study}
-                </p>
-              )}
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 shrink-0" style={{ color: selectedStyle.colors.primary }} />
-                <span style={{ color: selectedStyle.colors.text.muted }}>
-                  {edu.start_date ? formatDate(edu.start_date) : "?"} 
-                  {" - "}
-                  {edu.end_date ? formatDate(edu.end_date) : "Présent"}
-                </span>
-              </div>
-            </motion.div>
-          ))
-        )}
+                  <X className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <h3 className="font-medium">{edu.school_name}</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <p>{edu.degree}</p>
+                </div>
+                {edu.description && (
+                  <p className="text-muted-foreground pl-6">{edu.description}</p>
+                )}
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <span>
+                    {formatDate(edu.start_date)} - {formatDate(edu.end_date) || "Présent"}
+                  </span>
+                </div>
+              </>
+            )}
+          </motion.div>
+        ))}
         {isEditing && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Button 
-              onClick={handleAddEducation} 
-              className="w-full transition-colors duration-200"
-              style={{ 
-                backgroundColor: selectedStyle.colors.primary,
-                color: '#fff'
-              }}
+            <Button
+              onClick={handleAddEducation}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 text-white transition-colors duration-200 min-h-[44px]"
             >
               Ajouter une formation
             </Button>

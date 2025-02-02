@@ -1,59 +1,47 @@
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface VCardSectionProps {
   title: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   children: ReactNode;
-  className?: string;
+  variant?: "default" | "education" | "experience";
 }
 
-export function VCardSection({ title, icon, children, className = "" }: VCardSectionProps) {
-  const isExperience = title.toLowerCase().includes('expérience');
-  const isEducation = title.toLowerCase().includes('formation') || title.toLowerCase().includes('éducation');
+export function VCardSection({ 
+  title, 
+  icon, 
+  children,
+  variant = "default" 
+}: VCardSectionProps) {
+  const getVariantStyles = () => {
+    switch (variant) {
+      case "education":
+        return "bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200/50 dark:border-indigo-800/30";
+      case "experience":
+        return "bg-purple-50/50 dark:bg-purple-950/20 border-purple-200/50 dark:border-purple-800/30";
+      default:
+        return "bg-card/5 border-border/10";
+    }
+  };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`space-y-4 ${className}`}
-    >
-      <div className={`flex items-center gap-2 pb-2 border-b ${
-        isExperience 
-          ? 'border-purple-300 dark:border-purple-800/30' 
-          : isEducation 
-            ? 'border-indigo-300 dark:border-indigo-800/30'
-            : 'border-primary/20'
-      }`}>
-        <div className={
-          isExperience 
-            ? 'text-purple-600 dark:text-purple-400'
-            : isEducation
-              ? 'text-indigo-600 dark:text-indigo-400'
-              : 'text-primary'
-        }>
-          {icon}
-        </div>
-        <h3 className={`text-lg font-semibold ${
-          isExperience 
-            ? 'text-purple-900 dark:text-purple-100'
-            : isEducation
-              ? 'text-indigo-900 dark:text-indigo-100'
-              : 'text-primary'
-        }`}>
+    <section className={cn(
+      "rounded-xl border backdrop-blur-sm transition-colors duration-200",
+      "p-4 sm:p-6 space-y-4",
+      getVariantStyles()
+    )}>
+      <div className="flex items-center gap-2 pb-2 border-b border-border/10">
+        {icon && (
+          <span className="shrink-0 text-muted-foreground">
+            {icon}
+          </span>
+        )}
+        <h2 className="text-lg sm:text-xl font-semibold">
           {title}
-        </h3>
+        </h2>
       </div>
-      <div className={`pt-2 ${
-        isExperience 
-          ? 'text-purple-800 dark:text-purple-200'
-          : isEducation
-            ? 'text-indigo-800 dark:text-indigo-200'
-            : 'text-primary/90'
-      }`}>
-        {children}
-      </div>
-    </motion.div>
+      {children}
+    </section>
   );
 }

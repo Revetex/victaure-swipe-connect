@@ -117,7 +117,7 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
           </AvatarFallback>
         </Avatar>
         {isEditing && (
-          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <label className="cursor-pointer p-2 rounded-full hover:bg-white/20 transition-colors">
               <Upload className="h-6 w-6 text-white" />
               <input
@@ -131,10 +131,10 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
               <Button
                 variant="ghost"
                 size="icon"
-                className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                className="p-2 rounded-full hover:bg-red-500/20 transition-colors"
                 onClick={handleDeleteAvatar}
               >
-                <Trash2 className="h-6 w-6 text-white" />
+                <Trash2 className="h-6 w-6 text-red-400 hover:text-red-300" />
               </Button>
             )}
           </div>
