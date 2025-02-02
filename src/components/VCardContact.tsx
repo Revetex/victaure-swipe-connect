@@ -6,28 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Combobox } from "@/components/ui/combobox";
 import { provinces } from "@/hooks/data/provinces";
 import { cities } from "@/hooks/data/cities";
+import { UserProfile } from "@/types/profile";
 
 interface VCardContactProps {
-  phone: string | null;
-  city: string | null;
-  province: string | null;
-  isEditing?: boolean;
-  onPhoneChange: (phone: string) => void;
-  onCityChange: (city: string) => void;
-  onProvinceChange: (province: string) => void;
+  profile: UserProfile;
+  isEditing: boolean;
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardContact({
-  phone,
-  city,
-  province,
+  profile,
   isEditing,
-  onPhoneChange,
-  onCityChange,
-  onProvinceChange,
+  setProfile,
 }: VCardContactProps) {
-  const [selectedProvince, setSelectedProvince] = useState<string>(province || "");
-  const [selectedCity, setSelectedCity] = useState<string>(city || "");
+  const [selectedProvince, setSelectedProvince] = useState<string>(profile.state || "");
+  const [selectedCity, setSelectedCity] = useState<string>(profile.city || "");
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [customCity, setCustomCity] = useState<string>("");
 
@@ -42,16 +35,20 @@ export function VCardContact({
 
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
-    onProvinceChange(value);
+    setProfile({ ...profile, state: value });
     // Reset city when province changes
     setSelectedCity("");
-    onCityChange("");
+    setProfile({ ...profile, state: value, city: "" });
   };
 
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
     setCustomCity(value);
-    onCityChange(value);
+    setProfile({ ...profile, city: value });
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setProfile({ ...profile, phone: value });
   };
 
   return (
@@ -68,8 +65,8 @@ export function VCardContact({
             <Input
               id="phone"
               placeholder="Votre numéro de téléphone"
-              value={phone || ""}
-              onChange={(e) => onPhoneChange(e.target.value)}
+              value={profile.phone || ""}
+              onChange={(e) => handlePhoneChange(e.target.value)}
               className="pl-8"
               disabled={!isEditing}
             />
@@ -107,7 +104,7 @@ export function VCardContact({
               />
             ) : (
               <Input
-                value={city || ""}
+                value={profile.city || ""}
                 className="pl-8"
                 disabled
               />
