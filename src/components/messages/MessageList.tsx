@@ -2,7 +2,7 @@ import { Message, Receiver } from "@/types/messages";
 import { MessagesContent } from "./MessagesContent";
 import { ConversationList } from "./conversation/ConversationList";
 import { toast } from "sonner";
-import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
+import { filterMessages } from "@/utils/messageUtils";
 
 interface MessageListProps {
   chatMessages: Message[];

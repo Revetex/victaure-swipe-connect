@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { MessageList } from "./messages/MessageList";
 import { Message } from "@/types/messages";
+import { formatChatMessages } from "@/utils/messageUtils";
 
 const queryClient = new QueryClient();
 
