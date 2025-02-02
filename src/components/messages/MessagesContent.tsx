@@ -38,21 +38,22 @@ export function MessagesContent({
   const { profile } = useProfile();
   const isAIChat = !receiver?.full_name;
 
-  // If it's the AI chat (Mr. Victaure), use the original layout
   if (isAIChat) {
     return (
-      <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-14">
-        <ChatHeader
-          onBack={onBack}
-          title="M. Victaure"
-          subtitle="Assistant de Placement Virtuel"
-          avatarUrl="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png"
-          isThinking={isThinking}
-        />
+      <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col">
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <ChatHeader
+            onBack={onBack}
+            title="M. Victaure"
+            subtitle="Assistant de Placement Virtuel"
+            avatarUrl="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png"
+            isThinking={isThinking}
+          />
+        </div>
 
-        <div className="flex-1 overflow-hidden bg-background/80">
-          <ScrollArea className="h-full px-4 py-4">
-            <div className="max-w-5xl mx-auto space-y-4 pb-20">
+        <div className="flex-1 overflow-hidden bg-background/80 mt-14 mb-32">
+          <ScrollArea className="h-full px-4">
+            <div className="max-w-5xl mx-auto space-y-4">
               <AnimatePresence mode="popLayout">
                 {messages.map((message) => (
                   <ChatMessage
@@ -69,7 +70,7 @@ export function MessagesContent({
           </ScrollArea>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 shrink-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-20">
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-sm p-4 pb-24">
           <div className="max-w-5xl mx-auto">
             <ChatInput
               value={inputMessage}
@@ -87,30 +88,31 @@ export function MessagesContent({
     );
   }
 
-  // For user-to-user chat, use the new layout with input at the top
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col pt-14">
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center h-14 px-4 gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="shrink-0"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex items-center gap-3 flex-1">
-            <div className="min-w-0">
-              <h2 className="text-base font-semibold truncate">
-                {receiver?.full_name || "Utilisateur"}
-              </h2>
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm flex flex-col">
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center h-14 px-4 gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center gap-3 flex-1">
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold truncate">
+                  {receiver?.full_name || "Utilisateur"}
+                </h2>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden mt-14 mb-32">
         <ScrollArea className="h-full">
           <div className="flex flex-col-reverse p-4 gap-4">
             <AnimatePresence mode="popLayout">
@@ -129,7 +131,7 @@ export function MessagesContent({
         </ScrollArea>
       </div>
 
-      <div className="border-t bg-background/95 backdrop-blur-sm px-4 py-3 pb-20">
+      <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-sm px-4 py-3 pb-24">
         <div className="flex gap-2">
           <input
             value={inputMessage}
