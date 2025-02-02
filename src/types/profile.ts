@@ -60,4 +60,5 @@ export interface UserProfile {
   custom_background?: string | null;
   custom_text_color?: string | null;
   sections_order?: string[] | null;
+  privacy_enabled?: boolean;
 }
