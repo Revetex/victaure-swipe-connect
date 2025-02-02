@@ -53,7 +53,9 @@ function MessagesWithQuery({
         setSelectedReceiver({
           id: 'assistant',
           full_name: 'M. Victaure',
-          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+          online_status: true,
+          last_seen: new Date().toISOString()
         });
         setShowConversation(true);
       } else if (type === "user" && receiver && receiver.id) {
@@ -94,7 +96,7 @@ function MessagesWithQuery({
       online_status: false,
       last_seen: new Date().toISOString()
     } as MessageSender
-  }));
+  })) as Message[];
 
   const formattedChatMessages = formatChatMessages(chatMessages);
   const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : formattedMessages;
