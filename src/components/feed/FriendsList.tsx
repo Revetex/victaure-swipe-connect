@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CircleDot, User, MessageCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { UserProfile } from "@/types/profile";
+import { Friend } from "@/types/profile";
 
 export function FriendsList() {
   const { data: friends } = useQuery({
@@ -69,7 +69,7 @@ export function FriendsList() {
         <h3 className="font-semibold text-lg mb-2">Mes amis</h3>
         <ScrollArea className="h-[300px]">
           <div className="space-y-2">
-            {friends?.map((friend: UserProfile) => (
+            {friends?.map((friend: Friend) => (
               <div key={friend.id} className="flex items-center gap-2 p-2 hover:bg-muted rounded-lg">
                 <User className="h-5 w-5 text-muted-foreground" />
                 <span className="flex-1">{friend.full_name}</span>

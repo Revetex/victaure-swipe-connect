@@ -37,6 +37,9 @@ export interface Experience {
 export interface Friend {
   id: string;
   full_name: string;
+  avatar_url?: string;
+  online_status?: boolean;
+  last_seen?: string;
 }
 
 export interface UserProfile {
@@ -66,5 +69,6 @@ export interface UserProfile {
   custom_text_color?: string | null;
   sections_order?: string[] | null;
   privacy_enabled?: boolean;
-  friends?: Friend[];
+  online_status?: boolean;
+  last_seen?: string;
 }
