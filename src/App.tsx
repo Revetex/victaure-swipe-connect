@@ -8,7 +8,8 @@ import { useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDebounce } from "use-debounce";
-import "./styles/google-search.css";
+import "./styles/google-search/index.css";
+
 function App() {
   const { isAuthenticated, isLoading, error } = useAuth();
   
@@ -149,3 +150,4 @@ function App() {
 }
 
 export default App;
+
