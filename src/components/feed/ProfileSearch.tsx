@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { UserCircle, MessageSquare, UserPlus } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   Command,
@@ -46,47 +46,12 @@ export function ProfileSearch() {
     enabled: searchQuery.length > 0
   });
 
-  const handleConnect = async (userId: string) => {
-    try {
-      const { data: existingRequest } = await supabase
-        .from("messages")
-        .select()
-        .eq("sender_id", userId)
-        .maybeSingle();
-
-      if (existingRequest) {
-        toast.info("Une demande de connexion existe déjà");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("messages")
-        .insert([
-          {
-            sender_id: userId,
-            receiver_id: userId,
-            content: "Demande de connexion",
-          }
-        ]);
-
-      if (error) throw error;
-      toast.success("Demande de connexion envoyée");
-    } catch (error) {
-      console.error("Error sending connection request:", error);
-      toast.error("Erreur lors de l'envoi de la demande de connexion");
-    }
-  };
-
   const handleViewProfile = (userId: string) => {
     navigate(`/dashboard/profile/${userId}`);
   };
 
-  const handleMessage = (userId: string) => {
-    navigate(`/dashboard/messages?user=${userId}`);
-  };
-
   return (
-    <div className="relative w-full z-50">
+    <div className="relative w-full">
       <Command className="rounded-lg border shadow-md">
         <CommandInput 
           placeholder="Rechercher un profil..." 
@@ -96,7 +61,7 @@ export function ProfileSearch() {
         />
         <CommandList>
           <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
-          <CommandGroup heading="Profils">
+          <CommandGroup>
             {isLoading ? (
               <div className="p-4 text-center text-sm text-muted-foreground">
                 Chargement des profils...
@@ -105,41 +70,19 @@ export function ProfileSearch() {
               profiles.map((profile) => (
                 <CommandItem
                   key={profile.id}
-                  className="flex items-center justify-between p-2 cursor-pointer"
+                  className="flex items-center gap-2 p-2 cursor-pointer"
                   onSelect={() => handleViewProfile(profile.id)}
                 >
-                  <div className="flex items-center gap-2">
-                    {profile.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt={profile.full_name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <UserCircle className="w-8 h-8 text-muted-foreground" />
-                    )}
-                    <span>{profile.full_name}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="p-1 hover:bg-accent rounded-md"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMessage(profile.id);
-                      }}
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="p-1 hover:bg-accent rounded-md"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleConnect(profile.id);
-                      }}
-                    >
-                      <UserPlus className="h-4 w-4" />
-                    </button>
-                  </div>
+                  {profile.avatar_url ? (
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile.full_name}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <UserCircle className="w-8 h-8 text-muted-foreground" />
+                  )}
+                  <span>{profile.full_name}</span>
                 </CommandItem>
               ))
             )}
