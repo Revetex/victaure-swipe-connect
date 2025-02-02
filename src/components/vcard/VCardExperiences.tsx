@@ -100,7 +100,7 @@ export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperi
           >
             <Button 
               onClick={handleAddExperience} 
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors duration-200 min-h-[44px]"
+              className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 min-h-[44px]"
             >
               Ajouter une expérience
             </Button>

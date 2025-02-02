@@ -54,6 +54,7 @@ export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: To
             <Button 
               onClick={handleCustomSkillSubmit}
               disabled={!customSkill.trim() || existingSkills.includes(customSkill.trim())}
+              className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white"
             >
               Ajouter
             </Button>

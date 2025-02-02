@@ -172,7 +172,7 @@ export function VCardEducation({ profile, isEditing, setProfile }: VCardEducatio
           >
             <Button
               onClick={handleAddEducation}
-              className="w-full bg-background hover:bg-background/90 text-foreground transition-colors duration-200 min-h-[44px]"
+              className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors duration-200 min-h-[44px]"
             >
               Ajouter une formation
             </Button>
