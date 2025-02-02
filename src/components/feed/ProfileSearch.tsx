@@ -41,7 +41,6 @@ export function ProfileSearch() {
     console.log("Selected profile:", profile);
     setSelectedProfile(profile);
     setSearch("");
-    setIsInputFocused(false);
   };
 
   const handleCloseProfile = () => {
