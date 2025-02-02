@@ -39,8 +39,6 @@ export function ProfileSearch() {
     setSearch("");
   };
 
-  const shouldShowResults = isInputFocused && search.length > 0;
-
   return (
     <div className="relative w-full">
       <Command className="rounded-lg border shadow-md">
@@ -49,11 +47,12 @@ export function ProfileSearch() {
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
+            // Add a small delay to allow click events to complete
             setTimeout(() => setIsInputFocused(false), 200);
           }}
           placeholder="Rechercher un profil..."
         />
-        {shouldShowResults && (
+        {search.length > 0 && (
           <CommandList>
             <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
             <CommandGroup>
