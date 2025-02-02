@@ -16,6 +16,7 @@ import { toast } from "sonner";
 export function ProfileSearch() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const { data: profiles, isLoading } = useQuery({
     queryKey: ["profiles", searchQuery],
@@ -51,41 +52,52 @@ export function ProfileSearch() {
           placeholder="Rechercher un profil..." 
           value={searchQuery}
           onValueChange={setSearchQuery}
+          onFocus={() => setIsInputFocused(true)}
+          onBlur={() => {
+            // Petit délai pour permettre la sélection d'un résultat
+            setTimeout(() => setIsInputFocused(false), 200);
+          }}
           className="h-9"
         />
-        <CommandList>
-          <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
-          <CommandGroup>
-            {isLoading ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                Chargement des profils...
-              </div>
-            ) : (
-              profiles?.map((profile) => (
-                <CommandItem
-                  key={profile.id}
-                  value={`${profile.id}-${profile.full_name}`} // Make value unique
-                  className="flex items-center gap-2 p-2 cursor-pointer hover:bg-accent"
-                  onSelect={() => handleViewProfile(profile.id)}
-                >
-                  {profile.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
+        {(isInputFocused || searchQuery) && (
+          <CommandList className="absolute w-full bg-white dark:bg-gray-950 rounded-b-lg border border-t-0 shadow-lg max-h-[300px] overflow-y-auto z-50">
+            {searchQuery.length === 0 ? null : (
+              <>
+                <CommandEmpty>Aucun profil trouvé.</CommandEmpty>
+                <CommandGroup>
+                  {isLoading ? (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      Chargement des profils...
+                    </div>
                   ) : (
-                    <UserCircle className="w-8 h-8 text-muted-foreground" />
+                    profiles?.map((profile) => (
+                      <CommandItem
+                        key={profile.id}
+                        value={`${profile.id}-${profile.full_name}`}
+                        className="flex items-center gap-2 p-2 cursor-pointer hover:bg-accent"
+                        onSelect={() => handleViewProfile(profile.id)}
+                      >
+                        {profile.avatar_url ? (
+                          <img
+                            src={profile.avatar_url}
+                            alt={profile.full_name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                        ) : (
+                          <UserCircle className="w-8 h-8 text-muted-foreground" />
+                        )}
+                        <div className="flex flex-col">
+                          <span className="font-medium">{profile.full_name}</span>
+                          <span className="text-sm text-muted-foreground">{profile.role}</span>
+                        </div>
+                      </CommandItem>
+                    ))
                   )}
-                  <div className="flex flex-col">
-                    <span className="font-medium">{profile.full_name}</span>
-                    <span className="text-sm text-muted-foreground">{profile.role}</span>
-                  </div>
-                </CommandItem>
-              ))
+                </CommandGroup>
+              </>
             )}
-          </CommandGroup>
-        </CommandList>
+          </CommandList>
+        )}
       </Command>
     </div>
   );
