@@ -8,6 +8,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ExternalSearchSection } from "@/components/jobs/sections/ExternalSearchSection";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export function Marketplace() {
   const [selectedType, setSelectedType] = useState("all");
@@ -16,9 +25,19 @@ export function Marketplace() {
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [isExternalSearchLoading, setIsExternalSearchLoading] = useState(false);
   const [hasExternalSearchError, setHasExternalSearchError] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleRetryExternalSearch = () => {
     setHasExternalSearchError(false);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Trigger search with new page
+    const searchElement = document.querySelector('.gsc-search-button');
+    if (searchElement instanceof HTMLElement) {
+      searchElement.click();
+    }
   };
 
   return (
@@ -118,6 +137,39 @@ export function Marketplace() {
               hasError={hasExternalSearchError}
               onRetry={handleRetryExternalSearch}
             />
+          </div>
+
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className="cursor-pointer"
+                  />
+                </PaginationItem>
+                {[1, 2, 3, 4, 5].map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className="cursor-pointer"
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         </div>
       </div>
