@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Message, Receiver, MessageSender } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
 import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
 
 const queryClient = new QueryClient();
