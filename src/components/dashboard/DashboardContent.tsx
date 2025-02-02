@@ -8,6 +8,9 @@ import { Settings } from "@/components/Settings";
 import { UnifiedBoard } from "@/components/board/UnifiedBoard";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
+import { Feed } from "@/components/Feed";
+import { TodoSection } from "@/components/todo/TodoSection";
+import { NotesSection } from "@/components/todo/NotesSection";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -75,42 +78,42 @@ export function DashboardContent({
         return <Messages />;
       case 3: // Jobs
         return <Marketplace />;
-      case 4: // Tasks/Notes
-        return (
-          <UnifiedBoard
-            todos={todos}
-            notes={notes}
-            newTodo={newTodo}
-            newNote={newNote}
-            selectedDate={selectedDate}
-            selectedTime={selectedTime}
-            allDay={allDay}
-            selectedColor={selectedColor}
-            colors={colors}
-            onTodoChange={setNewTodo}
-            onNoteChange={setNewNote}
-            onDateChange={setSelectedDate}
-            onTimeChange={setSelectedTime}
-            onAllDayChange={setAllDay}
-            onColorChange={setSelectedColor}
-            onAddTodo={addTodo}
-            onAddNote={addNote}
-            onToggleTodo={toggleTodo}
-            onDeleteTodo={deleteTodo}
-            onDeleteNote={deleteNote}
-          />
-        );
+      case 4: // Feed (previously Notes/Tasks)
+        return <Feed />;
       case 5: // Tools
         return (
           <div className="container mx-auto px-4 py-8">
             <h2 className="text-2xl font-bold mb-6">Outils</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Placeholder for tools content */}
-              <div className="p-6 rounded-lg border border-border bg-card">
-                <h3 className="text-lg font-semibold mb-2">Bientôt disponible</h3>
-                <p className="text-muted-foreground">
-                  De nouveaux outils seront ajoutés prochainement.
-                </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="h-[calc(100vh-16rem)]">
+                <h3 className="text-xl font-semibold mb-4">Tâches</h3>
+                <TodoSection
+                  todos={todos}
+                  newTodo={newTodo}
+                  selectedDate={selectedDate}
+                  selectedTime={selectedTime}
+                  allDay={allDay}
+                  onTodoChange={setNewTodo}
+                  onDateChange={setSelectedDate}
+                  onTimeChange={setSelectedTime}
+                  onAllDayChange={setAllDay}
+                  onAddTodo={addTodo}
+                  onToggleTodo={toggleTodo}
+                  onDeleteTodo={deleteTodo}
+                />
+              </div>
+              <div className="h-[calc(100vh-16rem)]">
+                <h3 className="text-xl font-semibold mb-4">Notes</h3>
+                <NotesSection
+                  notes={notes}
+                  newNote={newNote}
+                  selectedColor={selectedColor}
+                  colors={colors}
+                  onNoteChange={setNewNote}
+                  onColorChange={setSelectedColor}
+                  onAdd={addNote}
+                  onDelete={deleteNote}
+                />
               </div>
             </div>
           </div>
