@@ -68,10 +68,12 @@ export function MessagesList({
     }
   };
 
+  // Filtrer les messages en fonction de la recherche
   const filteredMessages = messages.filter((message) =>
-    message.sender.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+    message.sender?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  console.log("Messages disponibles:", messages); // Pour le débogage
   const unreadCount = messages.filter((message) => !message.read).length;
 
   return (

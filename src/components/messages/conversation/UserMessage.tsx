@@ -15,6 +15,8 @@ export function UserMessage({ message, onMarkAsRead }: UserMessageProps) {
     return format(new Date(date), "d MMMM à HH:mm", { locale: fr });
   };
 
+  console.log("Message reçu:", message); // Pour le débogage
+
   return (
     <motion.div
       key={message.id}
@@ -27,7 +29,7 @@ export function UserMessage({ message, onMarkAsRead }: UserMessageProps) {
       <div className="relative space-y-2">
         <div className="flex justify-between items-start gap-2">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium text-base">{message.sender.full_name}</h3>
+            <h3 className="font-medium text-base">{message.sender?.full_name || "Utilisateur"}</h3>
             {!message.read && (
               <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full animate-pulse">
                 Nouveau
