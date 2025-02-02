@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "cmdk";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
+import { Loader } from "@/components/ui/loader";
 
 export function ProfileSearch() {
   const [search, setSearch] = useState("");
@@ -13,7 +14,7 @@ export function ProfileSearch() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const navigate = useNavigate();
 
-  const { data: profiles = [] } = useQuery({
+  const { data: profiles = [], isLoading, error } = useQuery({
     queryKey: ["profiles", search],
     queryFn: async () => {
       if (!search) return [];
@@ -55,19 +56,28 @@ export function ProfileSearch() {
           </div>
           {isInputFocused && search && (
             <CommandList className="max-h-[300px] overflow-y-auto p-2">
-              <CommandEmpty>Aucun profil trouvé</CommandEmpty>
-              <CommandGroup>
-                {profiles.map((profile) => (
-                  <CommandItem
-                    key={profile.id}
-                    value={profile.full_name || ""}
-                    onSelect={() => handleSelectProfile(profile)}
-                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-accent rounded-md"
-                  >
-                    {profile.full_name || "Sans nom"}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+              {isLoading ? (
+                <div className="flex justify-center p-4">
+                  <Loader className="h-6 w-6" />
+                </div>
+              ) : error ? (
+                <CommandEmpty>Une erreur est survenue</CommandEmpty>
+              ) : profiles.length === 0 ? (
+                <CommandEmpty>Aucun profil trouvé</CommandEmpty>
+              ) : (
+                <CommandGroup>
+                  {profiles.map((profile) => (
+                    <CommandItem
+                      key={profile.id}
+                      value={profile.full_name || ""}
+                      onSelect={() => handleSelectProfile(profile)}
+                      className="flex items-center gap-2 cursor-pointer p-2 hover:bg-accent rounded-md"
+                    >
+                      {profile.full_name || "Sans nom"}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
             </CommandList>
           )}
         </Command>
