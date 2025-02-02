@@ -85,6 +85,8 @@ export function MessagesList({
       
       // Navigate to the conversation with the sender
       navigate(`/dashboard/messages/${message.sender_id}`);
+      
+      toast.success("Message accepté");
     } catch (error) {
       console.error("Error accepting message:", error);
       toast.error("Erreur lors de l'acceptation du message");
