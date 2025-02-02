@@ -11,13 +11,13 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
     created_at: msg.created_at,
     timestamp: msg.timestamp,
     thinking: msg.thinking,
-    sender: msg.sender === 'user' ? undefined : {
+    sender: typeof msg.sender === 'string' ? {
       id: 'assistant',
       full_name: 'M. Victaure',
       avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
       online_status: true,
       last_seen: new Date().toISOString()
-    }
+    } : msg.sender
   }));
 };
 

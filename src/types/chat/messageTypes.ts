@@ -1,7 +1,9 @@
+import { MessageSender } from "../messages";
+
 export interface Message {
   id: string;
   content: string;
-  sender: string;
+  sender: MessageSender | string;
   thinking?: boolean;
   timestamp: Date;
   created_at: string;
