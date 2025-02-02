@@ -40,7 +40,10 @@ export function ProfileSearch() {
   const handleSelectProfile = (profile: UserProfile) => {
     console.log("Selected profile:", profile);
     setSelectedProfile(profile);
-    setSearch("");
+    // Don't clear the search immediately to prevent UI flicker
+    setTimeout(() => {
+      setSearch("");
+    }, 100);
   };
 
   const handleCloseProfile = () => {
@@ -55,14 +58,17 @@ export function ProfileSearch() {
           onValueChange={setSearch}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => {
+            // Delay hiding results to allow click events to register
             setTimeout(() => setIsInputFocused(false), 200);
           }}
           placeholder="Rechercher un profil..."
           className="w-full px-4 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
-        {isInputFocused && search.length > 0 && Array.isArray(profiles) && (
-          <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden">
-            {profiles.length > 0 ? (
+        
+        {/* Only show results if we're focused and have a search term */}
+        {isInputFocused && search.length > 0 && (
+          <Command.List className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg overflow-hidden z-50">
+            {Array.isArray(profiles) && profiles.length > 0 ? (
               profiles.map((profile) => (
                 <Command.Item
                   key={profile.id}
@@ -86,6 +92,7 @@ export function ProfileSearch() {
         )}
       </Command>
 
+      {/* Show profile preview if a profile is selected */}
       {selectedProfile && (
         <ProfilePreview 
           profile={selectedProfile} 
