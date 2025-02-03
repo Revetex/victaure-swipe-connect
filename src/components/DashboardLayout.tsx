@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
 import { toast } from "sonner";
+import { FriendsList } from "@/components/feed/FriendsList";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -23,6 +25,7 @@ export function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showConversation } = useReceiver();
+  const [showFriendsList, setShowFriendsList] = useState(false);
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -101,18 +104,39 @@ export function DashboardLayout() {
           <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b-2 border-black">
             <div className="container mx-auto px-0 sm:px-4">
               <div className="max-w-7xl mx-auto">
-                <div className="flex items-center justify-between py-2 px-4">
-                  <div className="flex items-center gap-4">
-                    <Logo size="sm" />
-                    <div className="h-6 w-px bg-border mx-2" />
-                    <h2 className="text-lg font-semibold text-foreground">
-                      {getPageTitle(currentPage)}
-                    </h2>
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-between py-2 px-4">
+                    <div className="flex items-center gap-4">
+                      <Logo size="sm" />
+                      <div className="h-6 w-px bg-border mx-2" />
+                      <h2 className="text-lg font-semibold text-foreground">
+                        {getPageTitle(currentPage)}
+                      </h2>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <NotificationsBox />
+                      {isMobile && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setShowFriendsList(!showFriendsList)}
+                          className="ml-2"
+                        >
+                          {showFriendsList ? (
+                            <ChevronUp className="h-5 w-5" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5" />
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <NotificationsBox />
-                  </div>
+                  {isMobile && showFriendsList && (
+                    <div className="px-4 pb-4 border-t border-border/50">
+                      <FriendsList />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
