@@ -66,10 +66,6 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   };
 
   const handleViewProfile = () => {
-    if (!areFriends) {
-      toast.error("Vous devez être amis pour voir le profil complet");
-      return;
-    }
     navigate(`/dashboard/profile/${profile.id}`);
     onClose();
   };
