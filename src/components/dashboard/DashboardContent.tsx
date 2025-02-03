@@ -96,7 +96,7 @@ export function DashboardContent({
         );
       case 5:
         return (
-          <div className="w-full px-4 overflow-y-auto">
+          <div className="w-full px-4 overflow-y-auto pt-6">
             <div className="w-full sm:max-w-3xl mx-auto">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="tasks" className="border-2 border-black rounded-lg bg-card mb-4">
