@@ -7,6 +7,7 @@ import { FriendItem } from "./FriendItem";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
+import { ProfilePreview } from "@/components/ProfilePreview";
 
 export function ConnectionsSection() {
   const navigate = useNavigate();
@@ -26,14 +27,26 @@ export function ConnectionsSection() {
             full_name,
             avatar_url,
             online_status,
-            last_seen
+            last_seen,
+            role,
+            bio,
+            city,
+            state,
+            country,
+            skills
           ),
           receiver:profiles!friend_requests_receiver_id_fkey(
             id,
             full_name,
             avatar_url,
             online_status,
-            last_seen
+            last_seen,
+            role,
+            bio,
+            city,
+            state,
+            country,
+            skills
           ),
           status
         `)
@@ -47,7 +60,17 @@ export function ConnectionsSection() {
           full_name: friend.full_name,
           avatar_url: friend.avatar_url,
           online_status: friend.online_status,
-          last_seen: friend.last_seen
+          last_seen: friend.last_seen,
+          role: friend.role,
+          bio: friend.bio,
+          city: friend.city,
+          state: friend.state,
+          country: friend.country,
+          skills: friend.skills,
+          email: '',
+          phone: null,
+          latitude: null,
+          longitude: null
         };
       }) || [];
     }

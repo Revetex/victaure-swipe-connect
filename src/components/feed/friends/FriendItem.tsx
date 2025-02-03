@@ -47,21 +47,7 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
 
       {showProfile && (
         <ProfilePreview
-          profile={{
-            id: friend.id,
-            full_name: friend.full_name,
-            avatar_url: friend.avatar_url,
-            email: '',
-            role: 'professional',
-            bio: null,
-            phone: null,
-            city: null,
-            state: null,
-            country: 'Canada',
-            skills: [],
-            latitude: null,
-            longitude: null
-          }}
+          profile={friend}
           onClose={() => setShowProfile(false)}
         />
       )}
