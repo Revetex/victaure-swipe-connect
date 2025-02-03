@@ -186,7 +186,7 @@ export function DashboardLayout() {
                 maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? (isMobile ? '10rem' : '4rem') : '10rem',
+                paddingBottom: isMobile ? '5rem' : '4rem', // Reduced padding bottom
                 height: isMobile ? `${viewportHeight}px` : 'auto'
               }}
             >
@@ -207,12 +207,12 @@ export function DashboardLayout() {
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
-          height: isMobile ? 'auto' : '4rem',
+          height: 'auto',
           paddingBottom: 'env(safe-area-inset-bottom)',
-          paddingTop: isMobile ? '0.5rem' : '0'
+          paddingTop: '0.5rem'
         }}
       >
-        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+        <div className="container mx-auto px-4 pb-2 h-full flex items-center max-w-7xl">
           <DashboardNavigation 
             currentPage={currentPage}
             onPageChange={handlePageChange}
