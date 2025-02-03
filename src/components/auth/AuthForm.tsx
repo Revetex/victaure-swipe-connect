@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { AuthFormHeader } from "./form/AuthFormHeader";
+import { SignUpFields } from "./form/SignUpFields";
+import { PasswordField } from "./form/PasswordField";
 
 export const AuthForm = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -47,19 +47,13 @@ export const AuthForm = () => {
         
         toast.success("Inscription réussie ! Vérifiez vos emails.");
       } else {
-        console.log("Attempting login...");
         const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
         
         if (error) throw error;
-
-        console.log("Login successful:", data);
-        
-        if (!data.session) {
-          throw new Error("No session after login");
-        }
+        if (!data.session) throw new Error("No session after login");
 
         toast.success("Connexion réussie !");
         navigate("/dashboard");
@@ -96,43 +90,23 @@ export const AuthForm = () => {
     }
   };
 
+  const handleFieldChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className="relative space-y-6">
-      <div className="mb-6 flex justify-end">
-        <ThemeToggle />
-      </div>
+      <AuthFormHeader />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {isSignUp && (
-          <>
-            <div className="space-y-2">
-              <label htmlFor="fullName" className="text-sm font-medium text-foreground">
-                Nom complet
-              </label>
-              <Input
-                id="fullName"
-                type="text"
-                value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                placeholder="Votre nom complet"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="phone" className="text-sm font-medium text-foreground">
-                Numéro de téléphone
-              </label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="Votre numéro de téléphone"
-                required
-              />
-            </div>
-          </>
+          <SignUpFields
+            fullName={formData.fullName}
+            phone={formData.phone}
+            onChange={handleFieldChange}
+          />
         )}
+
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-foreground">
             Email
@@ -141,39 +115,16 @@ export const AuthForm = () => {
             id="email"
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) => handleFieldChange('email', e.target.value)}
             placeholder="Votre adresse email"
             required
           />
         </div>
-        <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-foreground">
-            Mot de passe
-          </label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              placeholder="Votre mot de passe"
-              required
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 hover:bg-transparent"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <Eye className="h-4 w-4 text-muted-foreground" />
-              )}
-            </Button>
-          </div>
-        </div>
+
+        <PasswordField
+          value={formData.password}
+          onChange={(value) => handleFieldChange('password', value)}
+        />
 
         {!isSignUp && (
           <div className="flex justify-center">
