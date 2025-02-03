@@ -4,8 +4,35 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
 import { Separator } from "@/components/ui/separator";
+import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
 
 export function ToolsSection() {
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
+
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -52,7 +79,20 @@ export function ToolsSection() {
               </HoverCardContent>
             </HoverCard>
           </div>
-          <TodoSection />
+          <TodoSection 
+            todos={todos}
+            newTodo={newTodo}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
+            onTodoChange={setNewTodo}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
+            onAllDayChange={setAllDay}
+            onAddTodo={addTodo}
+            onToggleTodo={toggleTodo}
+            onDeleteTodo={deleteTodo}
+          />
         </div>
 
         <div className="space-y-4">
@@ -71,7 +111,15 @@ export function ToolsSection() {
               </HoverCardContent>
             </HoverCard>
           </div>
-          <NotesSection />
+          <NotesSection 
+            notes={notes}
+            newNote={newNote}
+            selectedColor={selectedColor}
+            onNoteChange={setNewNote}
+            onColorChange={setSelectedColor}
+            onAddNote={addNote}
+            onDeleteNote={deleteNote}
+          />
         </div>
       </div>
     </motion.div>
