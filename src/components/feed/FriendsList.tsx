@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { User, UserPlus, ArrowLeft } from "lucide-react";
+import { User, UserPlus, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { UserProfile } from "@/types/profile";
@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export function FriendsList() {
   const navigate = useNavigate();
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = useIsMobile();
   
   const { data: friends, refetch: refetchFriends } = useQuery({
@@ -171,83 +172,109 @@ export function FriendsList() {
     setSelectedProfile(profile);
   };
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const content = (
+    <>
+      <div className="mb-6">
+        <ProfileSearch 
+          onSelect={handleProfileSelect}
+          placeholder="Rechercher quelqu'un..."
+        />
+      </div>
+
+      <div className="mb-6">
+        <FriendListHeader 
+          icon={<UserPlus className="h-5 w-5 text-primary" />}
+          title="Demandes en attente"
+        />
+        <ScrollArea className="h-[200px] pr-4">
+          <div className="space-y-3">
+            {pendingRequests.map((request) => (
+              <PendingRequest
+                key={request.id}
+                request={request}
+                onAccept={handleAcceptRequest}
+                onReject={handleRejectRequest}
+                onCancel={handleCancelRequest}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+
+      <div>
+        <FriendListHeader 
+          icon={<User className="h-5 w-5 text-primary" />}
+          title="Mes connections"
+        />
+        <ScrollArea className="h-[300px] pr-4">
+          <div className="space-y-3">
+            {friends?.map((friend) => (
+              <FriendItem
+                key={friend.id}
+                friend={friend}
+                onMessage={handleMessage}
+                onViewProfile={() => setSelectedProfile({
+                  ...friend,
+                  email: '',
+                  role: 'professional',
+                  bio: null,
+                  phone: null,
+                  city: null,
+                  state: null,
+                  country: 'Canada',
+                  skills: [],
+                  latitude: null,
+                  longitude: null
+                })}
+              />
+            ))}
+            {(!friends || friends.length === 0) && (
+              <div className="text-center py-8 text-muted-foreground">
+                <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>Aucun ami pour le moment</p>
+                <p className="text-sm">Commencez à ajouter des amis!</p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    </>
+  );
+
   return (
     <>
-      <Card className="relative p-4 bg-card/50 backdrop-blur-sm">
+      <Card className="relative bg-card/50 backdrop-blur-sm">
         {isMobile && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute left-2 top-2 lg:hidden"
-            onClick={() => navigate("/dashboard")}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center justify-between p-4 border-b">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => navigate("/dashboard")}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleExpand}
+              className="lg:hidden"
+            >
+              {isExpanded ? (
+                <ChevronUp className="h-5 w-5" />
+              ) : (
+                <ChevronDown className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         )}
         
-        <div className={`${isMobile ? "mt-12" : "mt-0"} mb-6`}>
-          <ProfileSearch 
-            onSelect={handleProfileSelect}
-            placeholder="Rechercher quelqu'un..."
-          />
-        </div>
-
-        <div className="mb-6">
-          <FriendListHeader 
-            icon={<UserPlus className="h-5 w-5 text-primary" />}
-            title="Demandes en attente"
-          />
-          <ScrollArea className="h-[200px] pr-4">
-            <div className="space-y-3">
-              {pendingRequests.map((request) => (
-                <PendingRequest
-                  key={request.id}
-                  request={request}
-                  onAccept={handleAcceptRequest}
-                  onReject={handleRejectRequest}
-                  onCancel={handleCancelRequest}
-                />
-              ))}
-            </div>
-          </ScrollArea>
-        </div>
-
-        <div>
-          <FriendListHeader 
-            icon={<User className="h-5 w-5 text-primary" />}
-            title="Mes connections"
-          />
-          <ScrollArea className="h-[300px] pr-4">
-            <div className="space-y-3">
-              {friends?.map((friend) => (
-                <FriendItem
-                  key={friend.id}
-                  friend={friend}
-                  onMessage={handleMessage}
-                  onViewProfile={() => setSelectedProfile({
-                    ...friend,
-                    email: '',
-                    role: 'professional',
-                    bio: null,
-                    phone: null,
-                    city: null,
-                    state: null,
-                    country: 'Canada',
-                    skills: [],
-                    latitude: null,
-                    longitude: null
-                  })}
-                />
-              ))}
-              {(!friends || friends.length === 0) && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>Aucun ami pour le moment</p>
-                  <p className="text-sm">Commencez à ajouter des amis!</p>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
+        <div className={`${isMobile ? (isExpanded ? 'block' : 'hidden') : 'block'} p-4`}>
+          {content}
         </div>
       </Card>
 
