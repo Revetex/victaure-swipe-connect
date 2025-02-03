@@ -66,8 +66,11 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   };
 
   const handleViewProfile = () => {
-    navigate(`/dashboard/profile/${profile.id}`);
-    onClose();
+    onClose(); // First close the modal
+    // Then navigate to the profile page
+    setTimeout(() => {
+      navigate(`/dashboard/profile/${profile.id}`);
+    }, 100);
   };
 
   return (
