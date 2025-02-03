@@ -17,7 +17,10 @@ function App() {
     <VCardStyleProvider>
       <Routes>
         <Route path="/" element={
-          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/auth" replace />
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/dashboard" replace />
+        } />
+        <Route path="/auth" element={
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/dashboard" replace />
         } />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route
