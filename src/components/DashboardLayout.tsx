@@ -35,8 +35,28 @@ export function DashboardLayout() {
   const [lastPageChange, setLastPageChange] = useState(Date.now());
   const THROTTLE_DELAY = 300;
 
-  const updateHeight = useCallback(() => {
-    debouncedSetViewportHeight(window.innerHeight);
+  useEffect(() => {
+    // Add meta viewport tag for better mobile resolution
+    const meta = document.createElement('meta');
+    meta.name = 'viewport';
+    meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+    document.getElementsByTagName('head')[0].appendChild(meta);
+
+    // Handle viewport height changes
+    const handleResize = () => {
+      debouncedSetViewportHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    // Initial call
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, [debouncedSetViewportHeight]);
 
   const handlePageChange = useCallback((page: number) => {
@@ -166,7 +186,8 @@ export function DashboardLayout() {
                 maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? (isMobile ? '10rem' : '4rem') : '10rem'
+                paddingBottom: isEditing ? (isMobile ? '10rem' : '4rem') : '10rem',
+                height: isMobile ? `${viewportHeight}px` : 'auto'
               }}
             >
               <DashboardContent
