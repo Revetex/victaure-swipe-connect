@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { KeyRound } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { ThemeSelector } from "./ThemeSelector";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const AuthForm = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -97,7 +98,9 @@ export const AuthForm = () => {
 
   return (
     <div className="space-y-6">
-      <ThemeSelector />
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {isSignUp && (
@@ -147,14 +150,29 @@ export const AuthForm = () => {
           <label htmlFor="password" className="text-sm font-medium text-foreground">
             Mot de passe
           </label>
-          <Input
-            id="password"
-            type="password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            placeholder="Votre mot de passe"
-            required
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              placeholder="Votre mot de passe"
+              required
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-1/2 -translate-y-1/2 hover:bg-transparent"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+          </div>
         </div>
 
         {!isSignUp && (
@@ -165,7 +183,6 @@ export const AuthForm = () => {
               className="text-xs text-muted-foreground hover:text-primary px-0"
               onClick={handleForgotPassword}
             >
-              <KeyRound className="mr-1 h-3 w-3" />
               Mot de passe oublié ?
             </Button>
           </div>
