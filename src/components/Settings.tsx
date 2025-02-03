@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
+import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -204,6 +205,16 @@ export function Settings() {
                 <h3 className="text-sm font-medium">Mot de passe</h3>
               </div>
               <PasswordChangeSection />
+            </div>
+          </SettingsSection>
+        </motion.div>
+
+        <Separator className="my-4" />
+
+        <motion.div variants={itemVariants}>
+          <SettingsSection title="Utilisateurs bloqués">
+            <div className="p-3 rounded-lg bg-muted/30">
+              <BlockedUsersSection />
             </div>
           </SettingsSection>
         </motion.div>
