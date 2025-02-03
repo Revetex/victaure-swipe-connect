@@ -1,35 +1,31 @@
 import { useState } from "react";
-import { initializeSpeechRecognition } from "@/services/speechRecognitionService";
-import { useMessages } from "./chat/useMessages";
-import { useChatActions } from "./chat/useChatActions";
-import type { ChatState, ChatActions } from "@/types/chat/messageTypes";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Message } from "@/types/messages";
 
-export function useChat(): ChatState & ChatActions {
+export function useChat() {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
-  
-  const {
-    messages,
-    setMessages,
-    deletedMessages,
-    setDeletedMessages
-  } = useMessages();
 
-  const {
-    handleSendMessage: sendMessage,
-    clearChat,
-    restoreChat
-  } = useChatActions(
-    messages || [],
-    setMessages,
-    deletedMessages || [],
-    setDeletedMessages,
-    setInputMessage,
-    setIsThinking
-  );
+  const sendMessage = async (content: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
+    const { data, error } = await supabase
+      .from("ai_chat_messages")
+      .insert({
+        user_id: user.id,
+        content,
+        sender: user.id
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  };
 
   const handleSendMessage = async (message: string) => {
     try {
@@ -40,35 +36,27 @@ export function useChat(): ChatState & ChatActions {
       }
 
       setIsThinking(true);
-      
-      const response = await fetch('/api/ai-chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get AI response');
-      }
-
-      const data = await response.json();
       await sendMessage(message);
-      
-      // Add AI response to messages
-      if (data.response) {
-        const aiMessage = {
-          id: crypto.randomUUID(),
-          content: data.response,
-          sender: "assistant",
-          timestamp: new Date(),
-          created_at: new Date().toISOString(),
-          sender_id: 'assistant',
-          receiver_id: session.user.id,
-          read: true
-        };
-        setMessages(prev => [...prev, aiMessage]);
+      setInputMessage("");
+
+      // Fetch AI response
+      const { data: aiResponse, error: aiError } = await supabase
+        .functions.invoke('ai-chat', {
+          body: { message }
+        });
+
+      if (aiError) throw aiError;
+
+      if (aiResponse?.message) {
+        const { error: insertError } = await supabase
+          .from("ai_chat_messages")
+          .insert({
+            user_id: session.user.id,
+            content: aiResponse.message,
+            sender: 'assistant'
+          });
+
+        if (insertError) throw insertError;
       }
 
     } catch (error) {
@@ -81,6 +69,7 @@ export function useChat(): ChatState & ChatActions {
 
   const handleVoiceInput = () => {
     try {
+      setIsListening(true);
       const recognition = initializeSpeechRecognition(setIsListening, setInputMessage);
       if (recognition) {
         recognition.start();
@@ -88,22 +77,38 @@ export function useChat(): ChatState & ChatActions {
         toast.error("La reconnaissance vocale n'est pas disponible sur votre navigateur");
       }
     } catch (error) {
-      console.error("Error initializing speech recognition:", error);
-      toast.error("Erreur lors de l'initialisation de la reconnaissance vocale");
+      console.error("Error in handleVoiceInput:", error);
+      toast.error("Une erreur est survenue avec l'entrée vocale");
+      setIsListening(false);
+    }
+  };
+
+  const clearChat = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { error } = await supabase
+        .from("ai_chat_messages")
+        .delete()
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      setMessages([]);
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      toast.error("Une erreur est survenue lors de l'effacement du chat");
     }
   };
 
   return {
-    messages: messages || [],
-    deletedMessages: deletedMessages || [],
+    messages,
     inputMessage,
     isListening,
     isThinking,
-    setMessages,
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,
-    clearChat,
-    restoreChat
+    clearChat
   };
 }
