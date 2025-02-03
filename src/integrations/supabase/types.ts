@@ -791,6 +791,7 @@ export type Database = {
           id: string
           images: string[] | null
           likes: number | null
+          privacy_level: string
           updated_at: string | null
           user_id: string
         }
@@ -801,6 +802,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           likes?: number | null
+          privacy_level?: string
           updated_at?: string | null
           user_id: string
         }
@@ -811,6 +813,7 @@ export type Database = {
           id?: string
           images?: string[] | null
           likes?: number | null
+          privacy_level?: string
           updated_at?: string | null
           user_id?: string
         }

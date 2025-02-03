@@ -1,10 +1,21 @@
 import { Card } from "@/components/ui/card";
-import { UserCircle, ThumbsUp, ThumbsDown, MessageSquare, Trash2, EyeOff } from "lucide-react";
+import { UserCircle, ThumbsUp, ThumbsDown, MessageSquare, Trash2, EyeOff, Globe, Lock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface Post {
   id: string;
@@ -12,6 +23,7 @@ interface Post {
   images: string[];
   created_at: string;
   user_id: string;
+  privacy_level: "public" | "connections";
   profiles: {
     full_name: string;
     avatar_url: string;
@@ -34,6 +46,7 @@ export function PostList() {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
   const { data: posts } = useQuery({
     queryKey: ["posts"],
@@ -184,6 +197,7 @@ export function PostList() {
         title: "Success",
         description: "Post deleted successfully"
       });
+      setPostToDelete(null);
     }
   };
 
@@ -243,16 +257,30 @@ export function PostList() {
               </div>
               <div className="flex-1">
                 <h3 className="font-medium">{post.profiles.full_name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {new Date(post.created_at).toLocaleDateString()}
-                </p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    {post.privacy_level === "public" ? (
+                      <>
+                        <Globe className="h-3 w-3" />
+                        <span>Public</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-3 w-3" />
+                        <span>Connexions</span>
+                      </>
+                    )}
+                  </span>
+                </div>
               </div>
               <div className="flex gap-2">
                 {post.user_id === user?.id ? (
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDelete(post.id)}
+                    onClick={() => setPostToDelete(post.id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -299,6 +327,23 @@ export function PostList() {
           </Card>
         );
       })}
+
+      <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette publication ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action ne peut pas être annulée. La publication sera définitivement supprimée.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={() => postToDelete && handleDelete(postToDelete)}>
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
