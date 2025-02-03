@@ -44,7 +44,7 @@ export function ProfileSearch({
       return profiles as UserProfile[];
     },
     enabled: debouncedSearch.length >= 2,
-    keepPreviousData: true
+    placeholderData: []
   });
 
   return (
