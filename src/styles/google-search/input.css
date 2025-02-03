@@ -10,11 +10,14 @@
   margin: 0 !important;
   max-width: 100% !important;
   width: 100% !important;
+  border: 2px solid black !important;
+  border-radius: 0.375rem !important;
+  padding: 2px !important;
 }
 
 /* Input box styling */
 .gsc-input-box {
-  border: 1px solid hsl(var(--border)) !important;
+  border: none !important;
   border-radius: 0.375rem !important;
   background: hsl(var(--background)) !important;
   padding: 0 !important;

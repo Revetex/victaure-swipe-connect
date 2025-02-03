@@ -107,10 +107,10 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm">
+          <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b-2 border-black">
             <div className="container mx-auto px-0 sm:px-4">
               <div className="max-w-7xl mx-auto">
-                <div className="flex items-center justify-between py-2 px-4 border-b">
+                <div className="flex items-center justify-between py-2 px-4">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Logo size="sm" />
@@ -178,7 +178,7 @@ export function DashboardLayout() {
       </div>
       
       <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t-2 border-black z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
