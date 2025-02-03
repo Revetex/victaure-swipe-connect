@@ -252,6 +252,7 @@ export function PostList() {
         const dislikes = post.reactions?.filter(r => r.reaction_type === 'dislike').length || 0;
         const userReaction = post.reactions?.find(r => r.user_id === user?.id)?.reaction_type;
         const isExpanded = expandedComments.includes(post.id);
+        const commentCount = post.comments?.length || 0;
 
         return (
           <Card key={post.id} className="p-4">
@@ -307,7 +308,7 @@ export function PostList() {
                 )}
               </div>
             </div>
-            <p className="text-foreground mb-4">{post.content}</p>
+            <p className="text-foreground mb-4 whitespace-pre-wrap">{post.content}</p>
             {post.images && post.images.length > 0 && (
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {post.images.map((image, index) => (
@@ -360,19 +361,21 @@ export function PostList() {
                 onClick={() => toggleComments(post.id)}
               >
                 <MessageSquare className="h-4 w-4" />
-                <span>{post.comments?.length || 0}</span>
+                <span>{commentCount}</span>
               </Button>
             </div>
 
             {isExpanded && post.comments && post.comments.length > 0 && (
               <div className="mt-4 space-y-3 pl-4 border-l-2 border-muted">
                 {post.comments.map((comment) => (
-                  <div key={comment.id} className="text-sm">
-                    <div className="font-medium">{comment.profiles.full_name}</div>
-                    <div className="text-muted-foreground text-xs">
-                      {format(new Date(comment.created_at), "d MMMM 'à' HH:mm", { locale: fr })}
+                  <div key={comment.id} className="group relative bg-muted/50 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{comment.profiles.full_name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {format(new Date(comment.created_at), "d MMM 'à' HH:mm", { locale: fr })}
+                      </span>
                     </div>
-                    <div className="mt-1">{comment.content}</div>
+                    <p className="mt-1 text-sm">{comment.content}</p>
                   </div>
                 ))}
               </div>
