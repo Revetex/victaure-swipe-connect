@@ -56,7 +56,7 @@ export function MessagesContent({
     }
   };
 
-  // Convert Receiver to UserProfile format
+  // Convert Receiver to UserProfile format with all required fields
   const profileFromReceiver: UserProfile | null = receiver ? {
     id: receiver.id,
     email: '',  // Required field but not needed for display
@@ -71,8 +71,24 @@ export function MessagesContent({
     skills: null,
     latitude: null,
     longitude: null,
-    online_status: receiver.online_status,
-    last_seen: receiver.last_seen
+    online_status: receiver.online_status || false,
+    last_seen: receiver.last_seen || new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    company_name: null,
+    company_size: null,
+    industry: null,
+    website: null,
+    style_id: 'modern',
+    custom_font: null,
+    custom_background: null,
+    custom_text_color: null,
+    sections_order: ['header', 'bio', 'contact', 'skills', 'education', 'experience'],
+    notifications_enabled: true,
+    location_enabled: false,
+    auto_update_enabled: true,
+    two_factor_enabled: false,
+    privacy_enabled: false
   } : null;
 
   return (
