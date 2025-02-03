@@ -67,36 +67,36 @@ export function DashboardContent({
 
   const renderContent = () => {
     switch (currentPage) {
-      case 1: // Profile
+      case 1:
         return (
-          <div className="w-full p-4">
+          <div className="w-full p-4 overflow-y-auto">
             <VCard 
               onEditStateChange={onEditStateChange}
               onRequestChat={onRequestChat}
             />
           </div>
         );
-      case 2: // Messages
+      case 2:
         return (
-          <div className="w-full p-4">
+          <div className="w-full p-4 overflow-y-auto">
             <Messages />
           </div>
         );
-      case 3: // Jobs
+      case 3:
         return (
-          <div className="w-full p-4">
+          <div className="w-full p-4 overflow-y-auto">
             <Marketplace />
           </div>
         );
-      case 4: // Feed
+      case 4:
         return (
-          <div className="w-full p-4">
+          <div className="w-full p-4 overflow-y-auto">
             <Feed />
           </div>
         );
-      case 5: // Tools
+      case 5:
         return (
-          <div className="w-full px-4">
+          <div className="w-full px-4 overflow-y-auto">
             <div className="w-full sm:max-w-3xl mx-auto">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="tasks" className="border-2 border-black rounded-lg bg-card mb-4">
@@ -152,9 +152,9 @@ export function DashboardContent({
             </div>
           </div>
         );
-      case 6: // Settings
+      case 6:
         return (
-          <div className="w-full p-4">
+          <div className="w-full p-4 overflow-y-auto">
             <Settings />
           </div>
         );
@@ -169,7 +169,11 @@ export function DashboardContent({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="w-full"
+      className="w-full h-full overflow-hidden"
+      style={{
+        height: isEditing ? `calc(${viewportHeight}px - 80px)` : '100%',
+        overflowY: 'auto'
+      }}
     >
       {renderContent()}
     </motion.div>

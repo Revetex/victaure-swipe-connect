@@ -4,6 +4,7 @@ import { Check, Clock, X } from "lucide-react";
 import type { PendingRequest as PendingRequestType } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
+import { UserProfile } from "@/types/profile";
 
 interface PendingRequestProps {
   request: PendingRequestType;
@@ -15,6 +16,23 @@ interface PendingRequestProps {
 export function PendingRequest({ request, onAccept, onReject, onCancel }: PendingRequestProps) {
   const [showProfile, setShowProfile] = useState(false);
   const profile = request.type === 'incoming' ? request.sender : request.receiver;
+
+  // Create a complete UserProfile object from the partial profile data
+  const userProfile: UserProfile = {
+    id: profile.id,
+    email: '',  // Required by UserProfile type but not needed for display
+    full_name: profile.full_name,
+    avatar_url: profile.avatar_url,
+    role: '',   // Required by UserProfile type but not needed for display
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: 'Canada',
+    skills: [],
+    latitude: null,
+    longitude: null
+  };
 
   return (
     <>
@@ -79,7 +97,7 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
 
       {showProfile && (
         <ProfilePreview
-          profile={profile}
+          profile={userProfile}
           isOpen={showProfile}
           onClose={() => setShowProfile(false)}
         />
