@@ -3,10 +3,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { ProfileAvatar } from "./profile/ProfileAvatar";
-import { ProfileInfo } from "./profile/ProfileInfo";
-import { ProfileBio } from "./profile/ProfileBio";
-import { ProfileSkills } from "./profile/ProfileSkills";
-import { ProfileActions } from "./profile/ProfileActions";
+import { Button } from "./ui/button";
+import { UserPlus, Check, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -40,6 +38,32 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
 
     checkRelationship();
   }, [profile.id]);
+
+  const handleSendFriendRequest = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Vous devez être connecté pour envoyer une demande d'ami");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('friend_requests')
+        .insert({
+          sender_id: user.id,
+          receiver_id: profile.id,
+          status: 'pending'
+        });
+
+      if (error) throw error;
+
+      setIsFriendRequestSent(true);
+      toast.success("Demande d'ami envoyée !");
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+      toast.error("Erreur lors de l'envoi de la demande d'ami");
+    }
+  };
 
   const handleViewProfile = () => {
     if (!areFriends) {
@@ -92,14 +116,36 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
             </div>
           )}
 
-          <ProfileActions 
-            profileId={profile.id}
-            isFriendRequestSent={isFriendRequestSent}
-            onClose={onClose}
-            onFriendRequestChange={setIsFriendRequestSent}
-            onViewProfile={handleViewProfile}
-            areFriends={areFriends}
-          />
+          <div className="flex gap-2 w-full">
+            {!areFriends && !isFriendRequestSent ? (
+              <Button 
+                className="w-full"
+                onClick={handleSendFriendRequest}
+                variant="default"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Ajouter
+              </Button>
+            ) : isFriendRequestSent ? (
+              <Button 
+                className="w-full"
+                variant="secondary"
+                disabled
+              >
+                <Check className="w-4 h-4 mr-2" />
+                Demande envoyée
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                onClick={handleViewProfile}
+                variant="default"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Voir le profil
+              </Button>
+            )}
+          </div>
         </div>
       </motion.div>
     </div>
