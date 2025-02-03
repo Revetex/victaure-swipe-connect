@@ -97,8 +97,8 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="absolute top-4 right-4">
+    <div className="relative space-y-6">
+      <div className="mb-6 flex justify-end">
         <ThemeToggle />
       </div>
 
@@ -208,4 +208,4 @@ export const AuthForm = () => {
       </button>
     </div>
   );
-}
+};
