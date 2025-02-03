@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
 import { toast } from "sonner";
-import { FriendsList } from "@/components/feed/FriendsList";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function DashboardLayout() {
@@ -143,10 +142,12 @@ export function DashboardLayout() {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="overflow-hidden border-t border-border/50"
+                        className="overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm"
                       >
-                        <div className="px-4 py-3">
-                          <FriendsList />
+                        <div className="p-4">
+                          <div className="space-y-4">
+                            <FriendsContent />
+                          </div>
                         </div>
                       </motion.div>
                     )}

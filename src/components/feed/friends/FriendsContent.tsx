@@ -11,15 +11,17 @@ export function FriendsContent() {
 
   return (
     <>
-      <div className="mb-6">
+      <div className="mb-4">
         <ProfileSearch 
           onSelect={setSelectedProfile}
           placeholder="Rechercher quelqu'un..."
         />
       </div>
 
-      <FriendRequestsSection />
-      <ConnectionsSection />
+      <div className="space-y-6">
+        <FriendRequestsSection />
+        <ConnectionsSection />
+      </div>
 
       {selectedProfile && (
         <ProfilePreview
