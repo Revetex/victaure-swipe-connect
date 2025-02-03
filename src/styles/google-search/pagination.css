@@ -1,16 +1,7 @@
-/* Pagination styling */
-.gsc-cursor-box {
-  display: none !important;
-}
-
-.gsc-cursor {
-  display: none !important;
-}
-
-.gsc-cursor-page {
-  display: none !important;
-}
-
+/* Hide all pagination elements */
+.gsc-cursor-box,
+.gsc-cursor,
+.gsc-cursor-page,
 .gsc-cursor-current-page {
   display: none !important;
 }

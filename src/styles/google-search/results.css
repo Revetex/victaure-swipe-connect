@@ -9,7 +9,11 @@
 .gcsc-find-more-on-google,
 .gcsc-more-maybe-branding-root,
 .gsc-adBlock,
-.gs-title:contains("Search on Google") {
+.gs-title:contains("Search on Google"),
+.gsc-cursor-box,
+.gsc-cursor,
+.gsc-cursor-page,
+.gsc-cursor-current-page {
   display: none !important;
 }
 
@@ -135,4 +139,22 @@
 .gsc-webResult.gsc-result.gsc-featured-result .gs-snippet {
   color: hsl(var(--muted-foreground)) !important;
   text-transform: none !important;
+}
+
+/* Hide all pagination elements */
+.gsc-results .gsc-cursor-box {
+  display: none !important;
+}
+
+/* Hide "Search on Google" text */
+.gcsc-more-maybe-branding-root {
+  display: none !important;
+}
+
+/* Force font family on all elements */
+.gsc-control-cse *,
+.gsc-control-wrapper-cse *,
+.gsc-results-wrapper-visible *,
+.gsc-results * {
+  font-family: "Helvetica Neue", sans-serif !important;
 }

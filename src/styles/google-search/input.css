@@ -33,3 +33,9 @@
 .gsc-results-wrapper-visible {
   margin-top: 1rem !important;
 }
+
+/* Force font family on input elements */
+.gsc-input-box *,
+.gsc-input * {
+  font-family: "Helvetica Neue", sans-serif !important;
+}
