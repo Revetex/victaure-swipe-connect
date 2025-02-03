@@ -7,7 +7,9 @@
 
 .gsc-above-wrapper-area,
 .gcsc-find-more-on-google,
-.gcsc-more-maybe-branding-root {
+.gcsc-more-maybe-branding-root,
+.gsc-adBlock,
+.gs-title:contains("Search on Google") {
   display: none !important;
 }
 

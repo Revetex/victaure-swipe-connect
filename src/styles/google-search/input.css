@@ -16,11 +16,13 @@
   text-transform: none !important;
 }
 
-.gsc-search-button {
-  display: none !important;
-}
-
-.gsc-orderby {
+.gsc-search-button,
+.gsc-orderby,
+.gsc-adBlock,
+.gcsc-more-maybe-branding-root,
+.gsc-above-wrapper-area,
+.gcsc-find-more-on-google,
+.gsc-results-wrapper-nodata {
   display: none !important;
 }
 
@@ -30,12 +32,4 @@
 
 .gsc-results-wrapper-visible {
   margin-top: 1rem !important;
-}
-
-/* Hide unnecessary elements */
-.gsc-adBlock,
-.gcsc-more-maybe-branding-root,
-.gsc-above-wrapper-area,
-.gcsc-find-more-on-google {
-  display: none !important;
 }
