@@ -25,14 +25,18 @@ export function useAuth() {
   const signOut = async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
+      
+      // First clear all local storage
       clearStorages();
       
+      // Then sign out from Supabase
       const { error: signOutError } = await supabase.auth.signOut({
         scope: 'global'
       });
       
       if (signOutError) throw signOutError;
       
+      // Update local state
       setState({
         isLoading: false,
         isAuthenticated: false,
@@ -40,8 +44,8 @@ export function useAuth() {
         user: null
       });
 
-      // Update: Redirect to /auth after logout
-      navigate('/auth', { replace: true });
+      // Redirect to auth page
+      navigate('/auth');
       toast.success("Déconnexion réussie");
       
     } catch (error) {
@@ -53,7 +57,7 @@ export function useAuth() {
         error: error instanceof Error ? error : new Error('Unknown error')
       }));
       // Even on error, redirect to auth
-      navigate('/auth', { replace: true });
+      navigate('/auth');
     }
   };
 
@@ -107,7 +111,7 @@ export function useAuth() {
           });
         }
         toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
-        navigate('/auth', { replace: true });
+        navigate('/auth');
       }
     };
 
@@ -123,6 +127,7 @@ export function useAuth() {
           error: null,
           user: session.user
         });
+        navigate('/dashboard');
       } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
         setState({
           isLoading: false,
@@ -130,7 +135,7 @@ export function useAuth() {
           error: null,
           user: null
         });
-        navigate('/auth', { replace: true });
+        navigate('/auth');
       }
     });
 
