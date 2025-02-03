@@ -12,14 +12,10 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { FriendItem } from "./friends/FriendItem";
 import { PendingRequest } from "./friends/PendingRequest";
 import { FriendListHeader } from "./friends/FriendListHeader";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export function FriendsList() {
   const navigate = useNavigate();
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-  const isMobile = useIsMobile();
   
   const { data: friends, refetch: refetchFriends } = useQuery({
     queryKey: ["friends"],
@@ -172,112 +168,81 @@ export function FriendsList() {
     setSelectedProfile(profile);
   };
 
-  const FriendsListContent = () => (
-    <Card className="p-4 bg-card/50 backdrop-blur-sm h-full">
-      <div className="mb-6">
-        <ProfileSearch 
-          onSelect={handleProfileSelect}
-          placeholder="Rechercher quelqu'un..."
-        />
-      </div>
-
-      <div className="mb-6">
-        <FriendListHeader 
-          icon={<UserPlus className="h-5 w-5 text-primary" />}
-          title="Demandes en attente"
-        />
-        <ScrollArea className="h-[200px] pr-4">
-          <div className="space-y-3">
-            {pendingRequests.map((request) => (
-              <PendingRequest
-                key={request.id}
-                request={request}
-                onAccept={handleAcceptRequest}
-                onReject={handleRejectRequest}
-                onCancel={handleCancelRequest}
-              />
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
-
-      <div>
-        <FriendListHeader 
-          icon={<User className="h-5 w-5 text-primary" />}
-          title="Mes connections"
-        />
-        <ScrollArea className="h-[300px] pr-4">
-          <div className="space-y-3">
-            {friends?.map((friend) => (
-              <FriendItem
-                key={friend.id}
-                friend={friend}
-                onMessage={handleMessage}
-                onViewProfile={() => setSelectedProfile({
-                  ...friend,
-                  email: '',
-                  role: 'professional',
-                  bio: null,
-                  phone: null,
-                  city: null,
-                  state: null,
-                  country: 'Canada',
-                  skills: [],
-                  latitude: null,
-                  longitude: null
-                })}
-              />
-            ))}
-            {(!friends || friends.length === 0) && (
-              <div className="text-center py-8 text-muted-foreground">
-                <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>Aucun ami pour le moment</p>
-                <p className="text-sm">Commencez à ajouter des amis!</p>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-      </div>
-    </Card>
-  );
-
-  if (isMobile) {
-    return (
-      <>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon"
-              className="fixed bottom-24 right-4 z-50 rounded-full shadow-lg"
-            >
-              <User className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
-            <FriendsListContent />
-          </SheetContent>
-        </Sheet>
-
-        {selectedProfile && (
-          <ProfilePreview
-            profile={selectedProfile}
-            onClose={() => setSelectedProfile(null)}
-          />
-        )}
-      </>
-    );
-  }
-
   return (
-    <div className="w-[300px] fixed left-0 top-16 bottom-0 p-4 overflow-hidden">
-      <FriendsListContent />
+    <>
+      <Card className="p-4 bg-card/50 backdrop-blur-sm">
+        <div className="mb-6">
+          <ProfileSearch 
+            onSelect={handleProfileSelect}
+            placeholder="Rechercher quelqu'un..."
+          />
+        </div>
+
+        <div className="mb-6">
+          <FriendListHeader 
+            icon={<UserPlus className="h-5 w-5 text-primary" />}
+            title="Demandes en attente"
+          />
+          <ScrollArea className="h-[200px] pr-4">
+            <div className="space-y-3">
+              {pendingRequests.map((request) => (
+                <PendingRequest
+                  key={request.id}
+                  request={request}
+                  onAccept={handleAcceptRequest}
+                  onReject={handleRejectRequest}
+                  onCancel={handleCancelRequest}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        <div>
+          <FriendListHeader 
+            icon={<User className="h-5 w-5 text-primary" />}
+            title="Mes connections"
+          />
+          <ScrollArea className="h-[300px] pr-4">
+            <div className="space-y-3">
+              {friends?.map((friend) => (
+                <FriendItem
+                  key={friend.id}
+                  friend={friend}
+                  onMessage={handleMessage}
+                  onViewProfile={() => setSelectedProfile({
+                    ...friend,
+                    email: '',
+                    role: 'professional',
+                    bio: null,
+                    phone: null,
+                    city: null,
+                    state: null,
+                    country: 'Canada',
+                    skills: [],
+                    latitude: null,
+                    longitude: null
+                  })}
+                />
+              ))}
+              {(!friends || friends.length === 0) && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>Aucun ami pour le moment</p>
+                  <p className="text-sm">Commencez à ajouter des amis!</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+      </Card>
+
       {selectedProfile && (
         <ProfilePreview
           profile={selectedProfile}
           onClose={() => setSelectedProfile(null)}
         />
       )}
-    </div>
+    </>
   );
 }
