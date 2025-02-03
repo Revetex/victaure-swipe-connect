@@ -207,8 +207,9 @@ export function DashboardLayout() {
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
-          height: '4rem',
-          paddingBottom: 'env(safe-area-inset-bottom)'
+          height: isMobile ? 'auto' : '4rem',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          paddingTop: isMobile ? '0.5rem' : '0'
         }}
       >
         <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
