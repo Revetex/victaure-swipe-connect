@@ -49,6 +49,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
       }
     },
     enabled: debouncedSearch.length > 0,
+    initialData: [],
   });
 
   const handleSelect = useCallback((profile: Profile) => {
@@ -87,7 +88,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
                 </CommandEmpty>
               ) : (
                 <CommandGroup className="max-h-60 overflow-y-auto">
-                  {searchResults?.map((profile) => (
+                  {Array.isArray(searchResults) && searchResults.map((profile) => (
                     <CommandItem
                       key={profile.id}
                       value={profile.id}
