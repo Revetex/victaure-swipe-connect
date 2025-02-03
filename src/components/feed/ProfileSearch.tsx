@@ -79,7 +79,7 @@ export function ProfileSearch({
                   <AvatarImage src={profile.avatar_url || ""} />
                   <AvatarFallback>
                     <UserRound className="h-4 w-4" />
-                  </AvaterFallback>
+                  </AvatarFallback>
                 </Avatar>
                 <span>{profile.full_name}</span>
               </CommandItem>
