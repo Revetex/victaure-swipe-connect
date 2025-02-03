@@ -196,7 +196,7 @@ export function FriendsList() {
         <div className="mb-6">
           <ProfileSearch 
             onSelect={handleProfileSelect}
-            placeholder="Rechercher un ami..."
+            placeholder="Rechercher quelqu'un..."
           />
         </div>
 
@@ -273,7 +273,7 @@ export function FriendsList() {
         <div>
           <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
-            Mes amis
+            Mes connections
           </h3>
           <ScrollArea className="h-[300px] pr-4">
             <div className="space-y-3">
