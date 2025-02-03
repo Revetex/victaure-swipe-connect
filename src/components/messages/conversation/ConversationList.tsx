@@ -8,17 +8,17 @@ import { toast } from "sonner";
 import { AssistantMessage } from "./AssistantMessage";
 import { Separator } from "@/components/ui/separator";
 
-interface MessagesListProps {
+interface ConversationListProps {
   messages: any[];
   chatMessages: Message[];
   onSelectConversation: (type: "assistant" | "user", receiver?: any) => void;
 }
 
-export function MessagesList({
+export function ConversationList({
   messages,
   chatMessages,
   onSelectConversation,
-}: MessagesListProps) {
+}: ConversationListProps) {
   const navigate = useNavigate();
 
   const handleNewConversation = () => {
