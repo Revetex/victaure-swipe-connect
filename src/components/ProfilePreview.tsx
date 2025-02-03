@@ -24,7 +24,7 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
 
   const handleViewProfile = () => {
     onClose();
-    navigate(`/profile/${profile.id}`);
+    navigate(`/dashboard/profile/${profile.id}`);
   };
 
   return (
