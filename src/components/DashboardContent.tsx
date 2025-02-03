@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ProfileSection } from "./sections/ProfileSection";
-import { MessagesSection } from "./sections/MessagesSection";
-import { JobsSection } from "./sections/JobsSection";
-import { FeedSection } from "./sections/FeedSection";
-import { ToolsSection } from "./sections/ToolsSection";
-import { SettingsSection } from "./sections/SettingsSection";
+import { ProfileSection } from "@/components/dashboard/sections/ProfileSection";
+import { MessagesSection } from "@/components/dashboard/sections/MessagesSection";
+import { JobsSection } from "@/components/dashboard/sections/JobsSection";
+import { FeedSection } from "@/components/dashboard/sections/FeedSection";
+import { ToolsSection } from "@/components/dashboard/sections/ToolsSection";
+import { SettingsSection } from "@/components/dashboard/sections/SettingsSection";
 
 interface DashboardContentProps {
   currentPage: number;
