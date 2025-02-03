@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserProfile } from "@/types/profile";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileInfo } from "@/components/profile/ProfileInfo";
@@ -24,12 +24,13 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
 
   const handleViewProfile = () => {
     onClose();
-    navigate(`/dashboard/profile/${profile.id}`);
+    navigate(`/profile/${profile.id}`);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] gap-4">
+        <DialogTitle className="sr-only">Profile Preview</DialogTitle>
         <div className="flex flex-col items-center gap-4">
           <ProfileAvatar profile={profile} />
           <ProfileInfo profile={profile} />
