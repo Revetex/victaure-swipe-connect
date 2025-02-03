@@ -83,6 +83,13 @@ export function PostList() {
         .eq('user_id', user.id)
         .maybeSingle();
 
+      // Get post details to check if it's the user's own post
+      const { data: post } = await supabase
+        .from('posts')
+        .select('user_id')
+        .eq('id', postId)
+        .single();
+
       if (existingReaction) {
         // If reaction exists and it's the same type, delete it
         if (existingReaction.reaction_type === type) {
@@ -102,6 +109,21 @@ export function PostList() {
             .eq('user_id', user.id);
 
           if (error) throw error;
+
+          // If it's the user's own post, create a notification
+          if (post && post.user_id === user.id) {
+            const { error: notifError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: user.id,
+                title: "Réaction à votre publication",
+                message: type === 'like' ? "Vous avez aimé votre propre publication" : "Vous avez réagi à votre propre publication"
+              });
+
+            if (notifError) {
+              console.error('Error creating notification:', notifError);
+            }
+          }
         }
       } else {
         // If no reaction exists, insert new one
@@ -114,6 +136,21 @@ export function PostList() {
           });
 
         if (error) throw error;
+
+        // If it's the user's own post, create a notification
+        if (post && post.user_id === user.id) {
+          const { error: notifError } = await supabase
+            .from('notifications')
+            .insert({
+              user_id: user.id,
+              title: "Réaction à votre publication",
+              message: type === 'like' ? "Vous avez aimé votre propre publication" : "Vous avez réagi à votre propre publication"
+            });
+
+          if (notifError) {
+            console.error('Error creating notification:', notifError);
+          }
+        }
       }
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
