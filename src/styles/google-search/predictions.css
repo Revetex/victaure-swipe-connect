@@ -22,3 +22,9 @@
 .gsc-completion-container table {
   width: 100% !important;
 }
+
+/* Hide "Search on Google" */
+.gs-title:contains("Search on Google"),
+.gcsc-more-maybe-branding-root {
+  display: none !important;
+}

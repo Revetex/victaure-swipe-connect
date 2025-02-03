@@ -51,3 +51,11 @@
   height: 16px !important;
   fill: hsl(var(--primary-foreground)) !important;
 }
+
+/* Hide Google Ads */
+.gsc-adBlock,
+.gsc-adBlockVertical,
+.gsc-adBlockHorizontal,
+.gcsc-find-more-on-google {
+  display: none !important;
+}
