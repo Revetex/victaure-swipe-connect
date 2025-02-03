@@ -1,66 +1,61 @@
-import { useState, useCallback } from "react";
-import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
-import { Avatar } from "@/components/ui/avatar";
-import { useDebounce } from "use-debounce";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
-interface Profile {
-  id: string;
-  full_name: string;
-  avatar_url?: string;
-}
+import { UserProfile } from "@/types/profile";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Loader2, UserRound } from "lucide-react";
+import { useDebounce } from "use-debounce";
 
 interface ProfileSearchProps {
-  onSelect: (profile: Profile) => void;
+  onSelect: (profile: UserProfile) => void;
   placeholder?: string;
   className?: string;
 }
 
-export function ProfileSearch({ onSelect, placeholder = "Rechercher...", className = "" }: ProfileSearchProps) {
+interface Profile extends UserProfile {
+  id: string;
+}
+
+export function ProfileSearch({ onSelect, placeholder = "Search...", className = "" }: ProfileSearchProps) {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const { data: searchResults = [], isLoading, error } = useQuery({
-    queryKey: ["profiles", debouncedSearch],
+  const { data: searchResults, isLoading } = useQuery({
+    queryKey: ["profile-search", debouncedSearch],
     queryFn: async () => {
-      if (!debouncedSearch?.trim()) return [];
+      if (!debouncedSearch.trim()) return [];
+      
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .ilike("full_name", `%${debouncedSearch}%`)
+        .limit(5);
 
-      try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("id, full_name, avatar_url")
-          .ilike("full_name", `%${debouncedSearch}%`)
-          .limit(5);
-
-        if (error) {
-          console.error("Error fetching profiles:", error);
-          toast.error("Erreur lors de la recherche");
-          return [];
-        }
-
-        return data || [];
-      } catch (error) {
-        console.error("Error in search query:", error);
-        toast.error("Erreur lors de la recherche");
+      if (error) {
+        console.error("Error searching profiles:", error);
         return [];
       }
+
+      return data || [];
     },
-    enabled: debouncedSearch.length > 0,
     initialData: [],
+    enabled: debouncedSearch.trim().length > 0,
   });
 
-  const handleSelect = useCallback((profile: Profile) => {
-    if (!profile?.id) {
-      toast.error("Erreur: Profil invalide");
-      return;
+  const handleSelect = (profileId: string) => {
+    const selectedProfile = searchResults.find((p) => p.id === profileId);
+    if (selectedProfile) {
+      onSelect(selectedProfile);
+      setSearch("");
     }
-    console.log("Selected profile:", profile);
-    onSelect(profile);
-    setSearch(""); // Reset search after selection
-  }, [onSelect]);
+  };
 
   return (
     <div className={`relative ${className}`}>
@@ -69,51 +64,39 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
           placeholder={placeholder}
           value={search}
           onValueChange={setSearch}
-          className="h-9"
+          className="border-none focus:ring-0"
         />
-        {search.length > 0 && (
-          <div className="absolute left-0 right-0 top-full mt-1 z-[100]">
-            <div className="rounded-lg border bg-popover text-popover-foreground shadow-lg">
-              {isLoading ? (
-                <div className="p-4 text-center">
-                  <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-                </div>
-              ) : error ? (
-                <CommandEmpty className="p-4 text-center text-sm text-muted-foreground">
-                  Une erreur est survenue.
-                </CommandEmpty>
-              ) : searchResults.length === 0 ? (
-                <CommandEmpty className="p-4 text-center text-sm text-muted-foreground">
-                  Aucun résultat trouvé.
-                </CommandEmpty>
-              ) : (
-                <CommandGroup>
-                  {searchResults?.map((profile: Profile) => (
-                    <CommandItem
-                      key={profile.id}
-                      value={profile.id}
-                      onSelect={() => handleSelect(profile)}
-                      className="cursor-pointer hover:bg-accent p-2"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          {profile.avatar_url && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={profile.avatar_url}
-                              alt={profile.full_name}
-                              className="h-full w-full object-cover"
-                            />
-                          )}
-                        </Avatar>
-                        <span className="text-sm">{profile.full_name}</span>
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-            </div>
-          </div>
+        {search.trim().length > 0 && (
+          <CommandGroup className="max-h-[300px] overflow-y-auto p-2">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            ) : searchResults.length === 0 ? (
+              <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
+                No results found.
+              </CommandEmpty>
+            ) : (
+              <CommandGroup>
+                {searchResults.map((profile: Profile) => (
+                  <CommandItem
+                    key={profile.id}
+                    value={profile.id}
+                    onSelect={handleSelect}
+                    className="flex items-center gap-2 px-2"
+                  >
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={profile.avatar_url || ""} />
+                      <AvatarFallback>
+                        <UserRound className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{profile.full_name}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+          </CommandGroup>
         )}
       </Command>
     </div>
