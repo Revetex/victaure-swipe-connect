@@ -6,6 +6,7 @@ import { Image, Send, Globe, Lock, Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useProfile } from "@/hooks/useProfile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Select,
   SelectContent,
@@ -24,6 +25,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const { profile } = useProfile();
+  const isMobile = useIsMobile();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -121,7 +123,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           </div>
         )}
         <div className="flex justify-between items-center">
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-2 sm:gap-4 items-center">
             <input
               type="file"
               id="file-upload"
@@ -130,11 +132,11 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
               onChange={handleFileChange}
               accept="image/*,.pdf,.doc,.docx"
             />
-            <Button variant="outline" size="icon" onClick={() => document.getElementById('file-upload')?.click()}>
+            <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10" onClick={() => document.getElementById('file-upload')?.click()}>
               <Image className="h-4 w-4" />
             </Button>
             <Select value={privacy} onValueChange={(value: "public" | "connections") => setPrivacy(value)}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[140px] sm:w-[180px] h-8 sm:h-10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -153,7 +155,12 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={handleCreatePost} disabled={isUploading}>
+          <Button 
+            onClick={handleCreatePost} 
+            disabled={isUploading}
+            size={isMobile ? "sm" : "default"}
+            className="px-3 sm:px-4"
+          >
             {isUploading ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : (

@@ -181,7 +181,7 @@ export function DashboardLayout() {
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen pt-16"
+              className="transform transition-all duration-300 w-full min-h-screen pt-24 sm:pt-16"
               style={{ 
                 maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
