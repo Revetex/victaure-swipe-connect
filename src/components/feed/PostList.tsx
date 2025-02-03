@@ -296,6 +296,32 @@ export function PostList() {
               </div>
             </div>
             <p className="text-foreground mb-4">{post.content}</p>
+            {post.images && post.images.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {post.images.map((image, index) => (
+                  <div key={index} className="relative">
+                    {image.toLowerCase().endsWith('.pdf') ? (
+                      <a 
+                        href={image} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="block p-4 bg-muted rounded hover:bg-muted/80 transition-colors"
+                      >
+                        <div className="flex items-center justify-center">
+                          <span className="text-sm">Voir le PDF</span>
+                        </div>
+                      </a>
+                    ) : (
+                      <img
+                        src={image}
+                        alt={`Attachment ${index + 1}`}
+                        className="w-full h-48 object-cover rounded"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex gap-4 items-center">
               <Button
                 variant={userReaction === 'like' ? 'default' : 'ghost'}
