@@ -5,7 +5,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationHeader } from "./NotificationHeader";
 import { cn } from "@/lib/utils";
@@ -28,7 +27,6 @@ export function NotificationsBox() {
 
       if (error) {
         console.error('Error fetching notifications:', error);
-        toast.error("Impossible de charger les notifications");
         return;
       }
 
@@ -60,24 +58,6 @@ export function NotificationsBox() {
     };
   }, [user]);
 
-  const markAsRead = async (id: string) => {
-    const { error } = await supabase
-      .from('notifications')
-      .update({ read: true })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error marking notification as read:', error);
-      toast.error("Impossible de marquer la notification comme lue");
-      return;
-    }
-
-    setNotifications(notifications.map(n => 
-      n.id === id ? { ...n, read: true } : n
-    ));
-    setUnreadCount(prev => Math.max(0, prev - 1));
-  };
-
   const deleteNotification = async (id: string) => {
     const { error } = await supabase
       .from('notifications')
@@ -86,12 +66,10 @@ export function NotificationsBox() {
 
     if (error) {
       console.error('Error deleting notification:', error);
-      toast.error("Impossible de supprimer la notification");
       return;
     }
 
     setNotifications(notifications.filter(n => n.id !== id));
-    toast.success("Notification supprimée");
   };
 
   return (
@@ -140,7 +118,6 @@ export function NotificationsBox() {
                         key={notification.id}
                         {...notification}
                         onDelete={() => deleteNotification(notification.id)}
-                        onRead={() => markAsRead(notification.id)}
                       />
                     ))
                   ) : (

@@ -3,7 +3,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { NotificationItem } from "../../notifications/NotificationItem";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -38,10 +37,7 @@ export function NotificationsTab() {
     const fetchNotifications = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast.error("Vous devez être connecté pour voir vos notifications");
-          return;
-        }
+        if (!user) return;
 
         const { data, error } = await supabase
           .from('notifications')
@@ -53,7 +49,6 @@ export function NotificationsTab() {
         setNotifications(data || []);
       } catch (error) {
         console.error('Error fetching notifications:', error);
-        toast.error("Impossible de charger les notifications");
       } finally {
         setIsLoading(false);
       }
@@ -91,10 +86,8 @@ export function NotificationsTab() {
       if (error) throw error;
 
       setNotifications(notifications.filter(n => n.id !== id));
-      toast.success("Notification supprimée");
     } catch (error) {
       console.error('Error deleting notification:', error);
-      toast.error("Impossible de supprimer la notification");
     }
   };
 

@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface NotificationItemProps {
   id: string;
@@ -27,14 +26,9 @@ export function NotificationItem({
 
   const handleAcceptFriend = async () => {
     try {
-      // Extract sender ID from the message
       const senderId = message.match(/ID:(\S+)/)?.[1];
-      if (!senderId) {
-        toast.error("Impossible de traiter la demande");
-        return;
-      }
+      if (!senderId) return;
 
-      // Update friend request status
       const { error: requestError } = await supabase
         .from('friend_requests')
         .update({ status: 'accepted' })
@@ -42,7 +36,6 @@ export function NotificationItem({
 
       if (requestError) throw requestError;
 
-      // Create notification for the sender
       const { error: notifError } = await supabase
         .from('notifications')
         .insert({
@@ -56,23 +49,16 @@ export function NotificationItem({
       }
 
       onDelete(id);
-      toast.success("Demande d'ami acceptée");
     } catch (error) {
       console.error('Error accepting friend request:', error);
-      toast.error("Une erreur est survenue");
     }
   };
 
   const handleRejectFriend = async () => {
     try {
-      // Extract sender ID from the message
       const senderId = message.match(/ID:(\S+)/)?.[1];
-      if (!senderId) {
-        toast.error("Impossible de traiter la demande");
-        return;
-      }
+      if (!senderId) return;
 
-      // Delete friend request
       const { error: requestError } = await supabase
         .from('friend_requests')
         .delete()
@@ -81,10 +67,8 @@ export function NotificationItem({
       if (requestError) throw requestError;
 
       onDelete(id);
-      toast.success("Demande d'ami refusée");
     } catch (error) {
       console.error('Error rejecting friend request:', error);
-      toast.error("Une erreur est survenue");
     }
   };
 
