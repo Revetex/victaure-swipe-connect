@@ -50,7 +50,12 @@ export const AuthForm = () => {
           password: formData.password,
         });
         
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            throw new Error('Email ou mot de passe incorrect');
+          }
+          throw error;
+        }
       }
     } catch (error: any) {
       console.error('Auth error:', error);
