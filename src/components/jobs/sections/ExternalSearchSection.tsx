@@ -86,8 +86,8 @@ export function ExternalSearchSection({
   }
 
   return (
-    <div className="w-full space-y-2 px-2 sm:px-4">
-      <div className="bg-secondary/30 backdrop-blur-sm rounded-lg p-3">
+    <div className="w-full space-y-2 px-2 sm:px-4 -mt-4">
+      <div className="bg-background/50 backdrop-blur-sm rounded-lg p-3 border border-border/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse" />
@@ -153,11 +153,11 @@ export function ExternalSearchSection({
         </AnimatePresence>
       </div>
       
-      <div className="relative w-full min-h-[44px] bg-background rounded-lg">
+      <div className="relative w-full min-h-[44px] bg-background/50 backdrop-blur-sm rounded-lg border border-border/50">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full [&_.gsc-input-box]:!bg-background [&_.gsc-input-box]:!border-border [&_.gsc-input]:!bg-background"
+          className="w-full [&_.gsc-input-box]:!bg-background/50 [&_.gsc-input-box]:!border-border/50 [&_.gsc-input]:!bg-transparent"
         >
           <GoogleSearchBox />
         </motion.div>

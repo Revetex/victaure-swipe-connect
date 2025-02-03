@@ -17,7 +17,7 @@
 
 .gsc-input-box-focus {
   box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28) !important;
-  border-color: transparent !important;
+  border-color: hsl(var(--primary)) !important;
 }
 
 .gsc-input-box input {
