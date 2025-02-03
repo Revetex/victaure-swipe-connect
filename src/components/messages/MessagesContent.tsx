@@ -3,6 +3,7 @@ import { ConversationView } from "./conversation/ConversationView";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { UserProfile } from "@/types/profile";
 
 interface MessagesContentProps {
   messages: Message[];
@@ -55,10 +56,29 @@ export function MessagesContent({
     }
   };
 
+  // Convert Receiver to UserProfile format
+  const profileFromReceiver: UserProfile | null = receiver ? {
+    id: receiver.id,
+    email: '',  // Required field but not needed for display
+    full_name: receiver.full_name || '',
+    avatar_url: receiver.avatar_url || null,
+    role: 'professional',  // Default role
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: 'Canada',
+    skills: null,
+    latitude: null,
+    longitude: null,
+    online_status: receiver.online_status,
+    last_seen: receiver.last_seen
+  } : null;
+
   return (
     <ConversationView
       messages={messages}
-      profile={receiver}
+      profile={profileFromReceiver}
       inputMessage={inputMessage}
       isListening={isListening}
       isThinking={isThinking}
