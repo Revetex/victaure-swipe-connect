@@ -45,8 +45,11 @@ export function DashboardLayout() {
       setCurrentPage(page);
       setLastPageChange(now);
       setIsEditing(false);
+      if (isMobile) {
+        setShowFriendsList(false);
+      }
     }
-  }, [lastPageChange]);
+  }, [lastPageChange, isMobile]);
 
   const handleRequestChat = useCallback(() => {
     handlePageChange(2);
@@ -101,11 +104,11 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b-2 border-black">
+          <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50">
             <div className="container mx-auto px-0 sm:px-4">
               <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col">
-                  <div className="flex items-center justify-between py-2 px-4">
+                  <div className="flex items-center justify-between py-3 px-4">
                     <div className="flex items-center gap-4">
                       <Logo size="sm" />
                       <div className="h-6 w-px bg-border mx-2" />
@@ -114,14 +117,14 @@ export function DashboardLayout() {
                       </h2>
                     </div>
                     
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <NotificationsBox />
                       {isMobile && (
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => setShowFriendsList(!showFriendsList)}
-                          className="ml-2"
+                          className="relative"
                         >
                           {showFriendsList ? (
                             <ChevronUp className="h-5 w-5" />
@@ -132,11 +135,22 @@ export function DashboardLayout() {
                       )}
                     </div>
                   </div>
-                  {isMobile && showFriendsList && (
-                    <div className="px-4 pb-4 border-t border-border/50">
-                      <FriendsList />
-                    </div>
-                  )}
+                  
+                  <AnimatePresence>
+                    {isMobile && showFriendsList && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden border-t border-border/50"
+                      >
+                        <div className="px-4 py-3">
+                          <FriendsList />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -166,11 +180,11 @@ export function DashboardLayout() {
       </div>
       
       <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t-2 border-black z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
-          height: isMobile ? '5rem' : '4rem',
+          height: '4rem',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
       >
