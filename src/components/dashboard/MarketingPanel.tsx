@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { 
   Megaphone, 
-  HandShake, 
+  Handshake, 
   TrendingUp, 
   Building2, 
   Users,
-  ChartBarHorizontal,
+  BarChartHorizontal,
   Gift
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export function MarketingPanel() {
       bgColor: "bg-blue-500/10"
     },
     {
-      icon: HandShake,
+      icon: Handshake,
       title: "Programme d'Affiliation",
       description: "Gagnez des commissions en recommandant Victaure à votre réseau.",
       action: "Devenir Partenaire",
@@ -55,7 +55,7 @@ export function MarketingPanel() {
       bgColor: "bg-indigo-500/10"
     },
     {
-      icon: ChartBarHorizontal,
+      icon: BarChartHorizontal,
       value: "85%",
       label: "Taux de Satisfaction",
       color: "text-emerald-500",
