@@ -26,6 +26,7 @@ export function FriendsContent() {
       {selectedProfile && (
         <ProfilePreview
           profile={selectedProfile}
+          isOpen={!!selectedProfile}
           onClose={() => setSelectedProfile(null)}
         />
       )}

@@ -97,6 +97,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
         <ProfilePreview 
           profile={selectedProfile} 
           onClose={handleProfilePreviewClose}
+          isOpen={!!selectedProfile}
         />
       )}
     </div>

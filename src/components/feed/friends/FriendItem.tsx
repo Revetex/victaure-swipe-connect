@@ -45,12 +45,11 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
         </Button>
       </div>
 
-      {showProfile && (
-        <ProfilePreview
-          profile={friend}
-          onClose={() => setShowProfile(false)}
-        />
-      )}
+      <ProfilePreview
+        profile={friend}
+        isOpen={showProfile}
+        onClose={() => setShowProfile(false)}
+      />
     </>
   );
 }
