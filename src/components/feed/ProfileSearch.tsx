@@ -57,26 +57,17 @@ export function ProfileSearch({
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
-  const handleValueChange = (value: string) => {
-    setSearch(value || "");
-  };
-
-  const handleSelect = (profile: UserProfile) => {
-    if (profile && onSelect) {
-      onSelect(profile);
-    }
-  };
-
-  const safeProfiles = profiles || [];
+  // Ensure we always have a valid array to work with
+  const safeProfiles = Array.isArray(profiles) ? profiles : [];
 
   return (
     <Command className={`rounded-lg border shadow-md ${className}`}>
       <CommandInput 
         placeholder={placeholder}
-        value={search}
-        onValueChange={handleValueChange}
+        value={search || ""}
+        onValueChange={(value) => setSearch(value || "")}
       />
-      {search.length >= 2 && (
+      {(search?.length ?? 0) >= 2 && (
         <CommandGroup>
           {isLoading ? (
             <div className="flex items-center justify-center p-4">
@@ -86,7 +77,11 @@ export function ProfileSearch({
             safeProfiles.map((profile) => (
               <CommandItem
                 key={profile.id}
-                onSelect={() => handleSelect(profile)}
+                onSelect={() => {
+                  if (profile && onSelect) {
+                    onSelect(profile);
+                  }
+                }}
                 className="flex items-center gap-2 p-2"
               >
                 <Avatar className="h-8 w-8">
