@@ -78,7 +78,7 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-card dark:bg-card/95 rounded-xl p-6 shadow-xl max-w-sm w-full mx-4 space-y-6"
+        className="bg-card dark:bg-card/95 rounded-xl p-6 shadow-xl max-w-md w-full mx-4 space-y-6 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center space-y-4">
@@ -94,14 +94,14 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
           </div>
 
           {profile.bio && (
-            <p className="text-sm text-center text-muted-foreground/90 line-clamp-2">
+            <p className="text-sm text-center text-muted-foreground/90">
               {profile.bio}
             </p>
           )}
 
           {profile.skills && profile.skills.length > 0 && (
             <div className="flex flex-wrap gap-2 justify-center">
-              {profile.skills.slice(0, 3).map((skill, index) => (
+              {profile.skills.map((skill, index) => (
                 <span 
                   key={index}
                   className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs"
