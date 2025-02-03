@@ -1,68 +1,60 @@
 .gsc-input-box {
   height: auto !important;
-  background: #FFFFFF !important;
+  background: hsl(var(--background)) !important;
   margin: 0 !important;
   max-width: 100% !important;
   width: 100% !important;
-  border: 1px solid #9E9E9E !important;
-  border-radius: 24px !important;
-  padding: 2px 8px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.375rem !important;
+  padding: 0.25rem 0.5rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
   font-family: "Helvetica Neue", sans-serif !important;
   text-transform: none !important;
 }
 
 .gsc-input {
   background: transparent !important;
-  padding: 8px 12px !important;
+  padding: 0.375rem 0.5rem !important;
   text-transform: none !important;
 }
 
 .gsc-input-box-focus {
-  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28) !important;
-  border-color: #9E9E9E !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border-color: hsl(var(--primary)) !important;
 }
 
 .gsc-input-box input {
   background: transparent !important;
-  color: #000000 !important;
-  font-size: 16px !important;
-  padding: 8px 0 !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.875rem !important;
+  padding: 0.25rem 0 !important;
   font-family: "Helvetica Neue", sans-serif !important;
   text-transform: none !important;
 }
 
 .gsc-input-box input::placeholder {
-  color: #9E9E9E !important;
+  color: hsl(var(--muted-foreground)) !important;
   opacity: 0.7 !important;
   text-transform: none !important;
 }
 
 .gsc-search-button {
   margin: 0 !important;
-  padding: 8px !important;
-  border: 1px solid #9E9E9E !important;
-  background: #BBBBBB !important;
+  padding: 0.375rem !important;
+  border: 1px solid hsl(var(--border)) !important;
+  background: hsl(var(--accent)) !important;
   border-radius: 0.375rem !important;
   transition: all 0.2s !important;
   text-transform: none !important;
 }
 
 .gsc-search-button:hover {
-  background: #9E9E9E !important;
+  background: hsl(var(--accent)/0.9) !important;
   opacity: 0.9 !important;
 }
 
 .gsc-search-button svg {
-  width: 16px !important;
-  height: 16px !important;
-  fill: #9E9E9E !important;
-}
-
-/* Hide Google Ads */
-.gsc-adBlock,
-.gsc-adBlockVertical,
-.gsc-adBlockHorizontal,
-.gcsc-find-more-on-google {
-  display: none !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  fill: hsl(var(--accent-foreground)) !important;
 }
