@@ -18,6 +18,15 @@ type FriendPreview = {
   last_seen: string;
 };
 
+type PendingRequest = {
+  id: string;
+  sender: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
+};
+
 export function FriendsList() {
   const navigate = useNavigate();
   
@@ -55,6 +64,60 @@ export function FriendsList() {
       }) || [];
     }
   });
+
+  const { data: pendingRequests = [], refetch: refetchPendingRequests } = useQuery({
+    queryKey: ["pending-requests"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: requests } = await supabase
+        .from("friend_requests")
+        .select(`
+          id,
+          sender:profiles!friend_requests_sender_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq("receiver_id", user.id)
+        .eq("status", "pending");
+
+      return (requests || []) as PendingRequest[];
+    }
+  });
+
+  const handleAcceptRequest = async (requestId: string, senderId: string, senderName: string) => {
+    const { error } = await supabase
+      .from("friend_requests")
+      .update({ status: "accepted" })
+      .eq("id", requestId);
+
+    if (error) {
+      toast.error("Erreur lors de l'acceptation de la demande");
+      return;
+    }
+
+    toast.success(`Vous êtes maintenant ami avec ${senderName}`);
+    refetchFriends();
+    refetchPendingRequests();
+  };
+
+  const handleRejectRequest = async (requestId: string, senderName: string) => {
+    const { error } = await supabase
+      .from("friend_requests")
+      .delete()
+      .eq("id", requestId);
+
+    if (error) {
+      toast.error("Erreur lors du rejet de la demande");
+      return;
+    }
+
+    toast.success(`Vous avez rejeté la demande de ${senderName}`);
+    refetchPendingRequests();
+  };
 
   const handleMessage = (friendId: string) => {
     navigate(`/dashboard/messages/${friendId}`);
