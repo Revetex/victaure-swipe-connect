@@ -45,7 +45,6 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
 
       return (data || []) as Profile[];
     },
-    initialData: [],
     enabled: debouncedSearch.trim().length > 0,
   });
 
@@ -59,7 +58,11 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
 
   return (
     <div className={`relative ${className}`}>
-      <Command value={search} shouldFilter={false} className="rounded-lg border shadow-md">
+      <Command 
+        value={search} 
+        shouldFilter={false} 
+        className="rounded-lg border shadow-md"
+      >
         <CommandInput
           placeholder={placeholder}
           value={search}
