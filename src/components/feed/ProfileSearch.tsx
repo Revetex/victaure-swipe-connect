@@ -19,8 +19,12 @@ interface ProfileSearchProps {
   className?: string;
 }
 
-export function ProfileSearch({ onSelect, placeholder = "Rechercher...", className = "" }: ProfileSearchProps) {
-  const [search, setSearch] = useState("");
+export function ProfileSearch({ 
+  onSelect, 
+  placeholder = "Rechercher...", 
+  className = "" 
+}: ProfileSearchProps) {
+  const [search, setSearch] = useState<string>("");
   const [debouncedSearch] = useDebounce(search, 300);
 
   const { data: profiles = [], isLoading } = useQuery({
@@ -44,6 +48,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
       return data || [];
     },
     enabled: debouncedSearch.length >= 2,
+    initialData: [], // Ensure we always have an array
   });
 
   return (
@@ -51,7 +56,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
       <CommandInput 
         placeholder={placeholder}
         value={search}
-        onValueChange={setSearch}
+        onValueChange={(value) => setSearch(value || "")}
       />
       {search.length >= 2 && (
         <CommandGroup>
@@ -59,9 +64,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
-          ) : profiles.length === 0 ? (
-            <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
-          ) : (
+          ) : profiles && profiles.length > 0 ? (
             profiles.map((profile) => (
               <CommandItem
                 key={profile.id}
@@ -77,6 +80,8 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
                 <span>{profile.full_name}</span>
               </CommandItem>
             ))
+          ) : (
+            <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
           )}
         </CommandGroup>
       )}
