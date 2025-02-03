@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { useProfile } from "@/hooks/useProfile";
 import { useVCardStyle } from "@/components/vcard/VCardStyleContext";
@@ -12,7 +12,10 @@ import { Feed } from "@/components/Feed";
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ListTodo, StickyNote } from "lucide-react";
+import { ListTodo, StickyNote, Info } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -65,37 +68,103 @@ export function DashboardContent({
     { value: "purple", label: "Violet", class: "bg-purple-200" }
   ];
 
+  const InfoBadge = ({ content }: { content: string }) => (
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <button className="inline-flex items-center justify-center rounded-full bg-primary/10 p-1 hover:bg-primary/20 transition-colors">
+          <Info className="h-4 w-4 text-primary" />
+        </button>
+      </HoverCardTrigger>
+      <HoverCardContent className="w-80">
+        <p className="text-sm text-muted-foreground">{content}</p>
+      </HoverCardContent>
+    </HoverCard>
+  );
+
   const renderContent = () => {
     switch (currentPage) {
       case 1: // Profile
         return (
-          <div className="w-full">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full space-y-6"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-2xl font-semibold">Votre Profil Professionnel</h2>
+              <InfoBadge content="Créez votre carte de visite professionnelle personnalisée et partagez-la facilement." />
+            </div>
             <VCard 
               onEditStateChange={onEditStateChange}
               onRequestChat={onRequestChat}
             />
-          </div>
+          </motion.div>
         );
       case 2: // Messages
-        return <Messages />;
+        return (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full space-y-6"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-2xl font-semibold">Messages</h2>
+              <InfoBadge content="Communiquez efficacement avec vos contacts professionnels et restez connecté." />
+            </div>
+            <Messages />
+          </motion.div>
+        );
       case 3: // Jobs
-        return <Marketplace />;
+        return (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full space-y-6"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-2xl font-semibold">Opportunités Professionnelles</h2>
+              <InfoBadge content="Découvrez des opportunités adaptées à votre profil et développez votre carrière." />
+            </div>
+            <Marketplace />
+          </motion.div>
+        );
       case 4: // Feed
-        return <Feed />;
+        return (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full space-y-6"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-2xl font-semibold">Actualités</h2>
+              <InfoBadge content="Restez informé des dernières actualités de votre réseau professionnel." />
+            </div>
+            <Feed />
+          </motion.div>
+        );
       case 5: // Tools
         return (
-          <div className="w-full px-4">
-            <div className="w-full sm:max-w-3xl mx-auto">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="tasks" className="border rounded-lg bg-card">
-                  <AccordionTrigger className="px-4 hover:no-underline">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }} 
+            className="w-full px-4"
+          >
+            <div className="w-full sm:max-w-3xl mx-auto space-y-6">
+              <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-2xl font-semibold">Outils de Productivité</h2>
+                <InfoBadge content="Gérez efficacement vos tâches et prenez des notes pour rester organisé." />
+              </div>
+              
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                <AccordionItem value="tasks" className="border rounded-lg bg-card shadow-sm">
+                  <AccordionTrigger className="px-4 hover:no-underline group">
                     <div className="flex items-center gap-2">
-                      <ListTodo className="h-5 w-5" />
-                      <span className="font-semibold">Tâches</span>
+                      <ListTodo className="h-5 w-5 text-primary group-hover:text-primary/80 transition-colors" />
+                      <span className="font-semibold group-hover:text-primary/80 transition-colors">Tâches</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-4 pb-4">
-                    <div className="h-[calc(100vh-16rem)]">
+                    <div className="h-[calc(100vh-16rem)] overflow-auto">
                       <TodoSection
                         todos={todos}
                         newTodo={newTodo}
@@ -114,15 +183,15 @@ export function DashboardContent({
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="notes" className="border rounded-lg bg-card">
-                  <AccordionTrigger className="px-4 hover:no-underline">
+                <AccordionItem value="notes" className="border rounded-lg bg-card shadow-sm">
+                  <AccordionTrigger className="px-4 hover:no-underline group">
                     <div className="flex items-center gap-2">
-                      <StickyNote className="h-5 w-5" />
-                      <span className="font-semibold">Notes</span>
+                      <StickyNote className="h-5 w-5 text-primary group-hover:text-primary/80 transition-colors" />
+                      <span className="font-semibold group-hover:text-primary/80 transition-colors">Notes</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-4 pb-4">
-                    <div className="h-[calc(100vh-16rem)]">
+                    <div className="h-[calc(100vh-16rem)] overflow-auto">
                       <NotesSection
                         notes={notes}
                         newNote={newNote}
@@ -138,10 +207,22 @@ export function DashboardContent({
                 </AccordionItem>
               </Accordion>
             </div>
-          </div>
+          </motion.div>
         );
       case 6: // Settings
-        return <Settings />;
+        return (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full space-y-6"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-2xl font-semibold">Paramètres</h2>
+              <InfoBadge content="Personnalisez votre expérience et gérez vos préférences." />
+            </div>
+            <Settings />
+          </motion.div>
+        );
       default:
         return null;
     }
@@ -153,9 +234,14 @@ export function DashboardContent({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="w-full"
+      className={cn(
+        "w-full min-h-screen pb-20",
+        "bg-gradient-to-br from-background via-background/95 to-background/90"
+      )}
     >
-      {renderContent()}
+      <div className="container mx-auto px-4 py-6">
+        {renderContent()}
+      </div>
     </motion.div>
   );
 }
