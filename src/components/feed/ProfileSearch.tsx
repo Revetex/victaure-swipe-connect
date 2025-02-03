@@ -38,7 +38,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
         return [];
       }
 
-      return data || [];
+      return data as UserProfile[];
     },
     enabled: Boolean(debouncedSearch),
   });
@@ -50,7 +50,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
 
   return (
     <div className={`relative ${className}`}>
-      <Command className="rounded-lg border">
+      <Command className="rounded-lg border shadow-md">
         <CommandInput
           placeholder={placeholder}
           value={search}
@@ -58,7 +58,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
         />
         <CommandList>
           {debouncedSearch && (
-            <CommandGroup className="absolute w-full bg-background/95 backdrop-blur-sm rounded-lg border shadow-lg max-h-[300px] overflow-y-auto">
+            <CommandGroup>
               {isLoading && (
                 <CommandItem disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
