@@ -15,6 +15,7 @@
   top: 50% !important;
   transform: translateY(-50%) !important;
   font-family: "Helvetica Neue", sans-serif !important;
+  text-transform: none !important;
 }
 
 .gsc-result {
@@ -24,6 +25,7 @@
   background: #FFFFFF !important;
   margin: 0 0 16px 0 !important;
   transition: background-color 0.2s !important;
+  text-transform: none !important;
 }
 
 .gsc-result:hover {
@@ -42,6 +44,7 @@
   padding: 0 !important;
   width: 100% !important;
   margin: 0 !important;
+  text-transform: none !important;
 }
 
 .gs-title {
@@ -51,6 +54,8 @@
   font-size: 18px !important;
   line-height: 1.3 !important;
   margin-bottom: 4px !important;
+  font-family: "Helvetica Neue", sans-serif !important;
+  text-transform: none !important;
 }
 
 .gs-title:visited {
@@ -72,12 +77,16 @@
   line-height: 1.6 !important;
   font-size: 14px !important;
   margin: 4px 0 !important;
+  font-family: "Helvetica Neue", sans-serif !important;
+  text-transform: none !important;
 }
 
 .gs-visibleUrl {
   color: #000000 !important;
   font-size: 13px !important;
   margin-top: 4px !important;
+  font-family: "Helvetica Neue", sans-serif !important;
+  text-transform: none !important;
 }
 
 .gcsc-find-more-on-google {
@@ -94,6 +103,8 @@
   margin: 0 !important;
   background: transparent !important;
   border: none !important;
+  font-family: "Helvetica Neue", sans-serif !important;
+  text-transform: none !important;
 }
 
 .gsc-search-box {
@@ -110,6 +121,7 @@
 
 .gsc-result.gsc-webResult.gsc-featured-result .gs-title {
   color: #000000 !important;
+  text-transform: none !important;
 }
 
 .gsc-result.gsc-webResult.gsc-featured-result .gs-title:visited {
@@ -126,8 +138,10 @@
 
 .gsc-result.gsc-webResult.gsc-featured-result .gs-visibleUrl {
   color: #000000 !important;
+  text-transform: none !important;
 }
 
 .gsc-result.gsc-webResult.gsc-featured-result .gs-snippet {
   color: #000000 !important;
+  text-transform: none !important;
 }

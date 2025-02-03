@@ -9,11 +9,13 @@
   padding: 2px 8px !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
   font-family: "Helvetica Neue", sans-serif !important;
+  text-transform: none !important;
 }
 
 .gsc-input {
   background: transparent !important;
   padding: 8px 12px !important;
+  text-transform: none !important;
 }
 
 .gsc-input-box-focus {
@@ -27,11 +29,13 @@
   font-size: 16px !important;
   padding: 8px 0 !important;
   font-family: "Helvetica Neue", sans-serif !important;
+  text-transform: none !important;
 }
 
 .gsc-input-box input::placeholder {
   color: #9E9E9E !important;
   opacity: 0.7 !important;
+  text-transform: none !important;
 }
 
 .gsc-search-button {
@@ -41,6 +45,7 @@
   background: #BBBBBB !important;
   border-radius: 0.375rem !important;
   transition: all 0.2s !important;
+  text-transform: none !important;
 }
 
 .gsc-search-button:hover {
