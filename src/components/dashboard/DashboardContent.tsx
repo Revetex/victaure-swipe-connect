@@ -69,7 +69,7 @@ export function DashboardContent({
     switch (currentPage) {
       case 1: // Profile
         return (
-          <div className="w-full">
+          <div className="w-full border-2 border-black rounded-lg p-4">
             <VCard 
               onEditStateChange={onEditStateChange}
               onRequestChat={onRequestChat}
@@ -77,17 +77,29 @@ export function DashboardContent({
           </div>
         );
       case 2: // Messages
-        return <Messages />;
+        return (
+          <div className="w-full border-2 border-black rounded-lg p-4">
+            <Messages />
+          </div>
+        );
       case 3: // Jobs
-        return <Marketplace />;
+        return (
+          <div className="w-full border-2 border-black rounded-lg p-4">
+            <Marketplace />
+          </div>
+        );
       case 4: // Feed
-        return <Feed />;
+        return (
+          <div className="w-full border-2 border-black rounded-lg p-4">
+            <Feed />
+          </div>
+        );
       case 5: // Tools
         return (
           <div className="w-full px-4">
             <div className="w-full sm:max-w-3xl mx-auto">
               <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="tasks" className="border rounded-lg bg-card">
+                <AccordionItem value="tasks" className="border-2 border-black rounded-lg bg-card mb-4">
                   <AccordionTrigger className="px-4 hover:no-underline">
                     <div className="flex items-center gap-2">
                       <ListTodo className="h-5 w-5" />
@@ -114,7 +126,7 @@ export function DashboardContent({
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="notes" className="border rounded-lg bg-card">
+                <AccordionItem value="notes" className="border-2 border-black rounded-lg bg-card">
                   <AccordionTrigger className="px-4 hover:no-underline">
                     <div className="flex items-center gap-2">
                       <StickyNote className="h-5 w-5" />
@@ -141,7 +153,11 @@ export function DashboardContent({
           </div>
         );
       case 6: // Settings
-        return <Settings />;
+        return (
+          <div className="w-full border-2 border-black rounded-lg p-4">
+            <Settings />
+          </div>
+        );
       default:
         return null;
     }

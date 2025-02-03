@@ -17,6 +17,9 @@
   margin-right: auto;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  border: 2px solid black;
+  border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
 @media (min-width: 640px) {
