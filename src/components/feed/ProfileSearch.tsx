@@ -37,7 +37,7 @@ export function ProfileSearch({
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, full_name, avatar_url")
+          .select("*") // Select all fields to match UserProfile type
           .ilike("full_name", `%${debouncedSearch}%`)
           .limit(5);
 
@@ -46,7 +46,7 @@ export function ProfileSearch({
           return [];
         }
 
-        return data || [];
+        return (data || []) as UserProfile[];
       } catch (error) {
         console.error("Error in profile search:", error);
         return [];
