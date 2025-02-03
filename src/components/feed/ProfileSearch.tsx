@@ -26,43 +26,32 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
-      try {
-        if (!debouncedSearch || debouncedSearch.length < 2) return [];
-
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .ilike("full_name", `%${debouncedSearch}%`)
-          .limit(5);
-
-        if (error) {
-          console.error("Error searching profiles:", error);
-          return [];
-        }
-
-        return data || [];
-      } catch (error) {
-        console.error("Error in profile search:", error);
+      if (!debouncedSearch || debouncedSearch.length < 2) {
         return [];
       }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .ilike("full_name", `%${debouncedSearch}%`)
+        .limit(5);
+
+      if (error) {
+        console.error("Error searching profiles:", error);
+        return [];
+      }
+
+      return data || [];
     },
     enabled: debouncedSearch.length >= 2,
   });
-
-  const handleSearch = (value: string) => {
-    try {
-      setSearch(value);
-    } catch (error) {
-      console.error("Error in handleSearch:", error);
-    }
-  };
 
   return (
     <Command className={`rounded-lg border shadow-md ${className}`}>
       <CommandInput 
         placeholder={placeholder}
         value={search}
-        onValueChange={handleSearch}
+        onValueChange={setSearch}
       />
       {search.length >= 2 && (
         <CommandGroup>
