@@ -83,7 +83,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
                 </CommandEmpty>
               ) : (
                 <CommandGroup className="max-h-60 overflow-y-auto">
-                  {Array.isArray(searchResults) && searchResults.map((profile) => (
+                  {searchResults.map((profile) => (
                     <CommandItem
                       key={profile.id}
                       value={profile.id}
