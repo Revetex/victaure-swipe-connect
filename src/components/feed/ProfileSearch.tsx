@@ -46,6 +46,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
       return (data || []) as Profile[];
     },
     enabled: debouncedSearch.trim().length > 0,
+    initialData: [],
   });
 
   const handleSelect = (profileId: string) => {
@@ -59,7 +60,8 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
   return (
     <div className={`relative ${className}`}>
       <Command 
-        value={search} 
+        value={search}
+        onValueChange={setSearch}
         shouldFilter={false} 
         className="rounded-lg border shadow-md"
       >
