@@ -27,36 +27,54 @@ export function ProfileSearch({
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const { data: profiles = [], isLoading } = useQuery({
+  const { data: profiles, isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
       if (!debouncedSearch || debouncedSearch.length < 2) {
         return [];
       }
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .ilike("full_name", `%${debouncedSearch}%`)
-        .limit(5);
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .ilike("full_name", `%${debouncedSearch}%`)
+          .limit(5);
 
-      if (error) {
-        console.error("Error searching profiles:", error);
+        if (error) {
+          console.error("Error searching profiles:", error);
+          return [];
+        }
+
+        return data || [];
+      } catch (error) {
+        console.error("Error in profile search:", error);
         return [];
       }
-
-      return data || [];
     },
     enabled: debouncedSearch.length >= 2,
-    initialData: [], // Ensure we always have an array
+    initialData: [],
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
+
+  const handleValueChange = (value: string) => {
+    setSearch(value || "");
+  };
+
+  const handleSelect = (profile: UserProfile) => {
+    if (profile && onSelect) {
+      onSelect(profile);
+    }
+  };
+
+  const safeProfiles = profiles || [];
 
   return (
     <Command className={`rounded-lg border shadow-md ${className}`}>
       <CommandInput 
         placeholder={placeholder}
         value={search}
-        onValueChange={(value) => setSearch(value || "")}
+        onValueChange={handleValueChange}
       />
       {search.length >= 2 && (
         <CommandGroup>
@@ -64,11 +82,11 @@ export function ProfileSearch({
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
-          ) : profiles && profiles.length > 0 ? (
-            profiles.map((profile) => (
+          ) : safeProfiles.length > 0 ? (
+            safeProfiles.map((profile) => (
               <CommandItem
                 key={profile.id}
-                onSelect={() => onSelect(profile)}
+                onSelect={() => handleSelect(profile)}
                 className="flex items-center gap-2 p-2"
               >
                 <Avatar className="h-8 w-8">
