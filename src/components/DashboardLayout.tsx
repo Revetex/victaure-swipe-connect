@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
