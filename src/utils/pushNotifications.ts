@@ -14,11 +14,11 @@ export async function requestPushPermission() {
       const registration = await navigator.serviceWorker.register('/sw.js');
       
       // Get VAPID public key from Supabase
-      const { data: { secret }, error: secretError } = await supabase.rpc('get_secret', {
+      const { data, error: secretError } = await supabase.rpc('get_secret', {
         secret_name: 'VAPID_PUBLIC_KEY'
       });
       
-      if (secretError || !secret) {
+      if (secretError || !data || data.length === 0) {
         console.error('Error getting VAPID key:', secretError);
         toast.error("Erreur lors de la configuration des notifications");
         return false;
@@ -26,7 +26,7 @@ export async function requestPushPermission() {
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: secret
+        applicationServerKey: data[0].secret
       });
 
       // Save subscription to profile
