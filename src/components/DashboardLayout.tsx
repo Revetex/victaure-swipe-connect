@@ -14,6 +14,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
+import { toast } from "sonner";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -53,8 +54,12 @@ export function DashboardLayout() {
 
   const handleProfileSelect = (profile: any) => {
     if (profile?.id) {
+      console.log("Navigating to profile:", profile.id);
       navigate(`/profile/${profile.id}`);
       setIsSearchOpen(false);
+      toast.success("Redirection vers le profil");
+    } else {
+      toast.error("Erreur: Profil invalide");
     }
   };
 

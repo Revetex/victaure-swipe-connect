@@ -5,6 +5,7 @@ import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, Command
 import { Avatar } from "@/components/ui/avatar";
 import { useDebounce } from "use-debounce";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Profile {
   id: string;
@@ -27,7 +28,7 @@ export function ProfileSearch({
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const { data: searchResults = [], isLoading } = useQuery({
+  const { data: searchResults = [], isLoading, error } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
       if (!debouncedSearch?.trim()) return [];
@@ -41,12 +42,14 @@ export function ProfileSearch({
 
         if (error) {
           console.error("Error fetching profiles:", error);
+          toast.error("Erreur lors de la recherche");
           return [];
         }
 
         return data || [];
       } catch (error) {
         console.error("Error in search query:", error);
+        toast.error("Erreur lors de la recherche");
         return [];
       }
     },
@@ -54,6 +57,7 @@ export function ProfileSearch({
   });
 
   const handleSelect = useCallback((profile: Profile) => {
+    console.log("Selected profile:", profile);
     onSelect(profile);
     setSearch(""); // Reset search after selection
   }, [onSelect]);
@@ -91,7 +95,7 @@ export function ProfileSearch({
                     key={profile.id}
                     value={profile.id}
                     onSelect={() => handleSelect(profile)}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-accent"
                   >
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
