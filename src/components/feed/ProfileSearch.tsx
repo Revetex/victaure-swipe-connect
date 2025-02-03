@@ -43,7 +43,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
         return [];
       }
 
-      return data as Profile[] || [];
+      return (data || []) as Profile[];
     },
     initialData: [],
     enabled: debouncedSearch.trim().length > 0,
@@ -59,7 +59,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
 
   return (
     <div className={`relative ${className}`}>
-      <Command shouldFilter={false} className="rounded-lg border shadow-md">
+      <Command value={search} shouldFilter={false} className="rounded-lg border shadow-md">
         <CommandInput
           placeholder={placeholder}
           value={search}
@@ -67,7 +67,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
           className="border-none focus:ring-0"
         />
         {search.trim().length > 0 && (
-          <CommandGroup heading="" className="max-h-[300px] overflow-y-auto p-2">
+          <CommandGroup className="max-h-[300px] overflow-y-auto p-2">
             {isLoading ? (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -77,7 +77,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
                 No results found.
               </CommandEmpty>
             ) : (
-              searchResults.map((profile: Profile) => (
+              searchResults.map((profile) => (
                 <CommandItem
                   key={profile.id}
                   value={profile.id}
