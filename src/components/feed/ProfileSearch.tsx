@@ -27,7 +27,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const { data: searchResults, isLoading } = useQuery({
+  const { data: searchResults = [], isLoading } = useQuery({
     queryKey: ["profile-search", debouncedSearch],
     queryFn: async () => {
       if (!debouncedSearch.trim()) return [];
@@ -43,7 +43,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
         return [];
       }
 
-      return data || [];
+      return data as Profile[] || [];
     },
     initialData: [],
     enabled: debouncedSearch.trim().length > 0,
@@ -59,7 +59,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
 
   return (
     <div className={`relative ${className}`}>
-      <Command className="rounded-lg border shadow-md">
+      <Command shouldFilter={false} className="rounded-lg border shadow-md">
         <CommandInput
           placeholder={placeholder}
           value={search}
@@ -67,7 +67,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
           className="border-none focus:ring-0"
         />
         {search.trim().length > 0 && (
-          <CommandGroup className="max-h-[300px] overflow-y-auto p-2">
+          <CommandGroup heading="" className="max-h-[300px] overflow-y-auto p-2">
             {isLoading ? (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -77,24 +77,22 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
                 No results found.
               </CommandEmpty>
             ) : (
-              <CommandGroup>
-                {searchResults.map((profile: Profile) => (
-                  <CommandItem
-                    key={profile.id}
-                    value={profile.id}
-                    onSelect={handleSelect}
-                    className="flex items-center gap-2 px-2"
-                  >
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={profile.avatar_url || ""} />
-                      <AvatarFallback>
-                        <UserRound className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{profile.full_name}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+              searchResults.map((profile: Profile) => (
+                <CommandItem
+                  key={profile.id}
+                  value={profile.id}
+                  onSelect={handleSelect}
+                  className="flex items-center gap-2 px-2"
+                >
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={profile.avatar_url || ""} />
+                    <AvatarFallback>
+                      <UserRound className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{profile.full_name}</span>
+                </CommandItem>
+              ))
             )}
           </CommandGroup>
         )}
