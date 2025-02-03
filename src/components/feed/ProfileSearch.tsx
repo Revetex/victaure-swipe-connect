@@ -64,7 +64,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
 
   return (
     <div className={`relative ${className}`}>
-      <Command className="rounded-lg border shadow-md" shouldFilter={false}>
+      <Command className="rounded-lg border shadow-md">
         <CommandInput
           placeholder={placeholder}
           value={search}
@@ -88,7 +88,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
                 </CommandEmpty>
               ) : (
                 <CommandGroup>
-                  {searchResults.map((profile) => (
+                  {searchResults?.map((profile: Profile) => (
                     <CommandItem
                       key={profile.id}
                       value={profile.id}
