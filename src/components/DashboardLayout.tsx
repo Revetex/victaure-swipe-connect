@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
 import { toast } from "sonner";
+import { Menu } from "lucide-react";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -111,6 +112,24 @@ export function DashboardLayout() {
                   </div>
                   
                   <div className="flex items-center gap-4">
+                    {isMobile && (
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <Button variant="outline" size="icon" className="shrink-0">
+                            <Menu className="h-5 w-5" />
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent side="right" className="w-full sm:w-[400px] p-0">
+                          <DashboardContent
+                            currentPage={currentPage}
+                            isEditing={isEditing}
+                            viewportHeight={viewportHeight}
+                            onEditStateChange={setIsEditing}
+                            onRequestChat={handleRequestChat}
+                          />
+                        </SheetContent>
+                      </Sheet>
+                    )}
                     <NotificationsBox />
                   </div>
                 </div>
@@ -129,13 +148,15 @@ export function DashboardLayout() {
                 paddingBottom: isEditing ? (isMobile ? '10rem' : '4rem') : '10rem'
               }}
             >
-              <DashboardContent
-                currentPage={currentPage}
-                isEditing={isEditing}
-                viewportHeight={viewportHeight}
-                onEditStateChange={setIsEditing}
-                onRequestChat={handleRequestChat}
-              />
+              {!isMobile && (
+                <DashboardContent
+                  currentPage={currentPage}
+                  isEditing={isEditing}
+                  viewportHeight={viewportHeight}
+                  onEditStateChange={setIsEditing}
+                  onRequestChat={handleRequestChat}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
