@@ -54,7 +54,9 @@ export function ProfileSearch({
           value={search}
           onValueChange={setSearch}
         />
-        <div className="absolute w-full z-50 bg-background border rounded-b-lg shadow-lg max-h-[300px] overflow-y-auto">
+      </Command>
+      {(isLoading || profiles.length > 0 || debouncedSearch) && (
+        <div className="absolute w-full mt-1 bg-background border rounded-lg shadow-lg max-h-[300px] overflow-y-auto">
           <CommandList>
             <CommandGroup>
               {isLoading && (
@@ -87,7 +89,7 @@ export function ProfileSearch({
             </CommandGroup>
           </CommandList>
         </div>
-      </Command>
+      )}
     </div>
   );
 }
