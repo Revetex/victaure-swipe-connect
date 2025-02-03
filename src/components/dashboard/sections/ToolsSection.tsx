@@ -3,6 +3,7 @@ import { Info } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
+import { Separator } from "@/components/ui/separator";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
 

@@ -4,9 +4,10 @@ import Dashboard from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import { Loader } from "./components/ui/loader";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDebounce } from "use-debounce";
 import "./styles/google-search/index.css";
 
 function App() {
@@ -32,7 +33,6 @@ function App() {
   // Show error toast if authentication fails
   useEffect(() => {
     if (error) {
-      console.error("Auth error:", error);
       toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
     }
   }, [error]);
@@ -150,3 +150,4 @@ function App() {
 }
 
 export default App;
+

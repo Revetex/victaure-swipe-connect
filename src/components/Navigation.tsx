@@ -2,6 +2,7 @@ import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
@@ -39,6 +40,7 @@ export function Navigation() {
       </a>
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
         <NotificationsBox />
+        <ThemeToggle />
         <Button 
           variant="ghost" 
           size="icon"
@@ -72,6 +74,7 @@ export function Navigation() {
           </span>
         </motion.a>
         
+        {/* Add ProfileSearch here */}
         <div className="flex-1 max-w-md mx-4">
           <ProfileSearch onSelect={handleProfileSelect} placeholder="Rechercher un profil..." />
         </div>

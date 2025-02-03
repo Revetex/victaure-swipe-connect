@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { AuthFormHeader } from "./form/AuthFormHeader";
-import { SignUpFields } from "./form/SignUpFields";
-import { PasswordField } from "./form/PasswordField";
+import { useNavigate } from "react-router-dom";
+import { ThemeSelector } from "./ThemeSelector";
 
 export const AuthForm = () => {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ export const AuthForm = () => {
         
         if (signUpError) throw signUpError;
 
+        // Update the profile with phone number
         const { error: profileError } = await supabase
           .from('profiles')
           .update({ phone: formData.phone })
@@ -49,17 +51,22 @@ export const AuthForm = () => {
           email: formData.email,
           password: formData.password,
         });
+        if (error) throw error;
+
+        // Ensure we have a fresh session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
         
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            throw new Error('Email ou mot de passe incorrect');
-          }
-          throw error;
+        if (!session) {
+          throw new Error("No session after login");
         }
+
+        navigate("/dashboard");
       }
     } catch (error: any) {
       console.error('Auth error:', error);
       
+      // Handle specific error cases
       if (error.message.includes('refresh_token_not_found') || 
           error.message.includes('Invalid Refresh Token')) {
         localStorage.clear();
@@ -89,23 +96,41 @@ export const AuthForm = () => {
     }
   };
 
-  const handleFieldChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
   return (
-    <div className="relative space-y-4">
-      <AuthFormHeader />
+    <div className="space-y-6">
+      <ThemeSelector />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {isSignUp && (
-          <SignUpFields
-            fullName={formData.fullName}
-            phone={formData.phone}
-            onChange={handleFieldChange}
-          />
+          <>
+            <div className="space-y-2">
+              <label htmlFor="fullName" className="text-sm font-medium text-foreground">
+                Nom complet
+              </label>
+              <Input
+                id="fullName"
+                type="text"
+                value={formData.fullName}
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                placeholder="Votre nom complet"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="phone" className="text-sm font-medium text-foreground">
+                Numéro de téléphone
+              </label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="Votre numéro de téléphone"
+                required
+              />
+            </div>
+          </>
         )}
-
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-foreground">
             Email
@@ -114,16 +139,24 @@ export const AuthForm = () => {
             id="email"
             type="email"
             value={formData.email}
-            onChange={(e) => handleFieldChange('email', e.target.value)}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="Votre adresse email"
             required
           />
         </div>
-
-        <PasswordField
-          value={formData.password}
-          onChange={(value) => handleFieldChange('password', value)}
-        />
+        <div className="space-y-2">
+          <label htmlFor="password" className="text-sm font-medium text-foreground">
+            Mot de passe
+          </label>
+          <Input
+            id="password"
+            type="password"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            placeholder="Votre mot de passe"
+            required
+          />
+        </div>
 
         {!isSignUp && (
           <div className="flex justify-center">
@@ -133,6 +166,7 @@ export const AuthForm = () => {
               className="text-xs text-muted-foreground hover:text-primary px-0"
               onClick={handleForgotPassword}
             >
+              <KeyRound className="mr-1 h-3 w-3" />
               Mot de passe oublié ?
             </Button>
           </div>

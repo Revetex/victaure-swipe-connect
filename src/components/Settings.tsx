@@ -1,4 +1,4 @@
-import { LogOut, Bell, Moon, Lock, Sun, Monitor, Eye, EyeOff, Shield, FileText, Cookie } from "lucide-react";
+import { LogOut, Bell, Moon, Lock, Sun, Monitor, Eye, EyeOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -8,15 +8,11 @@ import { toast } from "sonner";
 import { SettingsSection } from "./settings/SettingsSection";
 import { Separator } from "./ui/separator";
 import { PasswordChangeSection } from "./settings/PasswordChangeSection";
-import { PrivacyPolicy } from "./settings/PrivacyPolicy";
-import { CookiePolicy } from "./settings/CookiePolicy";
-import { TermsOfService } from "./settings/TermsOfService";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -109,7 +105,6 @@ export function Settings() {
       className="space-y-6 p-4 sm:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border border-border/50 shadow-lg h-full overflow-y-auto"
     >
       <div className="space-y-6">
-        {/* Appearance Section */}
         <motion.div variants={itemVariants}>
           <SettingsSection title="Apparence">
             <div className={cn(
@@ -157,67 +152,27 @@ export function Settings() {
 
         <Separator className="my-4" />
 
-        {/* Privacy Section */}
         <motion.div variants={itemVariants}>
           <SettingsSection title="Confidentialité">
-            <div className="space-y-4">
-              <div className={cn(
-                "flex items-center justify-between p-3 rounded-lg bg-muted/30",
-                "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
-                "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
-              )}>
-                <Label className="text-sm cursor-pointer flex items-center gap-2 text-foreground/80">
-                  {privacyEnabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  Profil privé
-                </Label>
-                <Switch 
-                  checked={privacyEnabled}
-                  onCheckedChange={handlePrivacyToggle}
-                />
-              </div>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Politique de confidentialité
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <PrivacyPolicy />
-                </DialogContent>
-              </Dialog>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full flex items-center gap-2">
-                    <Cookie className="h-4 w-4" />
-                    Politique des cookies
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <CookiePolicy />
-                </DialogContent>
-              </Dialog>
-
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Conditions d'utilisation
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <TermsOfService />
-                </DialogContent>
-              </Dialog>
+            <div className={cn(
+              "flex items-center justify-between p-3 rounded-lg bg-muted/30",
+              "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
+              "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+            )}>
+              <Label className="text-sm cursor-pointer flex items-center gap-2 text-foreground/80">
+                {privacyEnabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                Profil privé
+              </Label>
+              <Switch 
+                checked={privacyEnabled}
+                onCheckedChange={handlePrivacyToggle}
+              />
             </div>
           </SettingsSection>
         </motion.div>
 
         <Separator className="my-4" />
 
-        {/* Notifications Section */}
         <motion.div variants={itemVariants}>
           <SettingsSection title="Notifications">
             <div className={cn(
@@ -241,7 +196,6 @@ export function Settings() {
 
         <Separator className="my-4" />
 
-        {/* Security Section */}
         <motion.div variants={itemVariants}>
           <SettingsSection title="Sécurité">
             <div className="space-y-3 p-3 rounded-lg bg-muted/30">
@@ -256,7 +210,6 @@ export function Settings() {
 
         <Separator className="my-4" />
 
-        {/* Logout Section */}
         <motion.div variants={itemVariants}>
           <Button 
             variant="destructive" 

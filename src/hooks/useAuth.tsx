@@ -1,52 +1,144 @@
-import { useState, useEffect, createContext, useContext } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { User } from '@supabase/supabase-js';
+import { useSession } from './useSession';
+import { clearStorages } from '@/utils/authUtils';
+import { toast } from 'sonner';
 
-const AuthContext = createContext<any>(null);
+interface AuthState {
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: Error | null;
+  user: User | null;
+}
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function useAuth() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const [state, setState] = useState<AuthState>({
+    isLoading: true,
+    isAuthenticated: false,
+    error: null,
+    user: null
+  });
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+    try {
+      setState(prev => ({ ...prev, isLoading: true }));
+      clearStorages();
+      
+      const { error: signOutError } = await supabase.auth.signOut({
+        scope: 'global'
+      });
+      
+      if (signOutError) throw signOutError;
+      
+      setState({
+        isLoading: false,
+        isAuthenticated: false,
+        error: null,
+        user: null
+      });
+
+      navigate('/auth', { replace: true });
+      
+    } catch (error) {
+      console.error('Sign out error:', error);
+      setState(prev => ({ 
+        ...prev, 
+        isAuthenticated: false,
+        isLoading: false,
+        error: error instanceof Error ? error : new Error('Unknown error')
+      }));
+      navigate('/auth', { replace: true });
+    }
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        signOut,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  useEffect(() => {
+    let mounted = true;
+    
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          throw sessionError;
+        }
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+        if (!session) {
+          if (mounted) {
+            setState({
+              isLoading: false,
+              isAuthenticated: false,
+              error: null,
+              user: null
+            });
+          }
+          return;
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.error('User error:', userError);
+          throw userError;
+        }
+
+        if (mounted && user) {
+          setState({
+            isLoading: false,
+            isAuthenticated: true,
+            error: null,
+            user
+          });
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setState({
+            isLoading: false,
+            isAuthenticated: false,
+            error: error instanceof Error ? error : new Error('Authentication failed'),
+            user: null
+          });
+        }
+        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+        navigate('/auth', { replace: true });
+      }
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
+      
+      if (event === 'SIGNED_IN' && session) {
+        setState({
+          isLoading: false,
+          isAuthenticated: true,
+          error: null,
+          user: session.user
+        });
+      } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+        setState({
+          isLoading: false,
+          isAuthenticated: false,
+          error: null,
+          user: null
+        });
+        navigate('/auth', { replace: true });
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  return { 
+    ...state,
+    signOut
+  };
+}
