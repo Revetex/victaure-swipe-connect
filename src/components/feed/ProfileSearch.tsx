@@ -52,6 +52,10 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
   });
 
   const handleSelect = useCallback((profile: Profile) => {
+    if (!profile?.id) {
+      toast.error("Erreur: Profil invalide");
+      return;
+    }
     console.log("Selected profile:", profile);
     onSelect(profile);
     setSearch(""); // Reset search after selection
@@ -67,7 +71,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
           className="h-9"
         />
         {search.length > 0 && (
-          <div className="absolute left-0 right-0 top-full mt-1 z-50">
+          <div className="absolute left-0 right-0 top-full mt-1 z-[100]">
             <div className="rounded-lg border bg-popover text-popover-foreground shadow-lg">
               {isLoading ? (
                 <div className="p-4 text-center">
@@ -79,7 +83,7 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
                 </CommandEmpty>
               ) : (
                 <CommandGroup className="max-h-60 overflow-y-auto">
-                  {searchResults.map((profile) => (
+                  {Array.isArray(searchResults) && searchResults.map((profile) => (
                     <CommandItem
                       key={profile.id}
                       value={profile.id}
