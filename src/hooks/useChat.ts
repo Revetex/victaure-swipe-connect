@@ -33,19 +33,51 @@ export function useChat(): ChatState & ChatActions {
 
   const handleSendMessage = async (message: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast.error("Vous devez être connecté pour utiliser le chat")
-        return
+        toast.error("Vous devez être connecté pour utiliser le chat");
+        return;
       }
+
+      setIsThinking(true);
       
-      await sendMessage(message)
+      const response = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      await sendMessage(message);
+      
+      // Add AI response to messages
+      if (data.response) {
+        const aiMessage = {
+          id: crypto.randomUUID(),
+          content: data.response,
+          sender: "assistant",
+          timestamp: new Date(),
+          created_at: new Date().toISOString(),
+          sender_id: 'assistant',
+          receiver_id: session.user.id,
+          read: true
+        };
+        setMessages(prev => [...prev, aiMessage]);
+      }
+
     } catch (error) {
-      console.error("Error in handleSendMessage:", error)
-      toast.error("Une erreur est survenue lors de l'envoi du message")
-      setIsThinking(false)
+      console.error("Error in handleSendMessage:", error);
+      toast.error("Une erreur est survenue lors de l'envoi du message");
+    } finally {
+      setIsThinking(false);
     }
-  }
+  };
 
   const handleVoiceInput = () => {
     try {
