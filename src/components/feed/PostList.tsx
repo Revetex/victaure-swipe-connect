@@ -10,8 +10,6 @@ interface Post {
   id: string;
   content: string;
   images: string[];
-  likes: number;
-  dislikes: number;
   created_at: string;
   user_id: string;
   profiles: {
@@ -20,6 +18,7 @@ interface Post {
   };
   reactions?: {
     reaction_type: string;
+    user_id: string;
   }[];
   comments?: {
     id: string;
@@ -47,7 +46,10 @@ export function PostList() {
             full_name,
             avatar_url
           ),
-          reactions:post_reactions(reaction_type),
+          reactions:post_reactions(
+            reaction_type,
+            user_id
+          ),
           comments:post_comments(
             id,
             content,
@@ -183,77 +185,83 @@ export function PostList() {
 
   return (
     <div className="space-y-4">
-      {posts?.map((post) => (
-        <Card key={post.id} className="p-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-              {post.profiles.avatar_url ? (
-                <img
-                  src={post.profiles.avatar_url}
-                  alt={post.profiles.full_name}
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                <UserCircle className="w-6 h-6 text-muted-foreground" />
-              )}
+      {posts?.map((post) => {
+        const likes = post.reactions?.filter(r => r.reaction_type === 'like').length || 0;
+        const dislikes = post.reactions?.filter(r => r.reaction_type === 'dislike').length || 0;
+        const userReaction = post.reactions?.find(r => r.user_id === user?.id)?.reaction_type;
+
+        return (
+          <Card key={post.id} className="p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                {post.profiles.avatar_url ? (
+                  <img
+                    src={post.profiles.avatar_url}
+                    alt={post.profiles.full_name}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <UserCircle className="w-6 h-6 text-muted-foreground" />
+                )}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-medium">{post.profiles.full_name}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {new Date(post.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {post.user_id === user?.id ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(post.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleHide(post.id)}
+                  >
+                    <EyeOff className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="font-medium">{post.profiles.full_name}</h3>
-              <p className="text-sm text-muted-foreground">
-                {new Date(post.created_at).toLocaleDateString()}
-              </p>
+            <p className="text-foreground mb-4">{post.content}</p>
+            <div className="flex gap-4 items-center">
+              <Button
+                variant={userReaction === 'like' ? 'default' : 'ghost'}
+                size="sm"
+                className="flex gap-2"
+                onClick={() => handleReaction(post.id, 'like')}
+              >
+                <ThumbsUp className="h-4 w-4" />
+                <span>{likes}</span>
+              </Button>
+              <Button
+                variant={userReaction === 'dislike' ? 'default' : 'ghost'}
+                size="sm"
+                className="flex gap-2"
+                onClick={() => handleReaction(post.id, 'dislike')}
+              >
+                <ThumbsDown className="h-4 w-4" />
+                <span>{dislikes}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex gap-2"
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span>{post.comments?.length || 0}</span>
+              </Button>
             </div>
-            <div className="flex gap-2">
-              {post.user_id === user?.id ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(post.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleHide(post.id)}
-                >
-                  <EyeOff className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-          <p className="text-foreground mb-4">{post.content}</p>
-          <div className="flex gap-4 items-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex gap-2"
-              onClick={() => handleReaction(post.id, 'like')}
-            >
-              <ThumbsUp className="h-4 w-4" />
-              <span>{post.likes || 0}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex gap-2"
-              onClick={() => handleReaction(post.id, 'dislike')}
-            >
-              <ThumbsDown className="h-4 w-4" />
-              <span>{post.dislikes || 0}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex gap-2"
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span>{post.comments?.length || 0}</span>
-            </Button>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </div>
   );
 }
