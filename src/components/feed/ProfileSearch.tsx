@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Loader2 } from "lucide-react";
 import { useDebounce } from "use-debounce";
+import { ProfilePreview } from "@/components/ProfilePreview";
+import { UserProfile } from "@/types/profile";
 
 interface ProfileSearchProps {
-  onSelect: (profile: any) => void;
+  onSelect: (profile: UserProfile) => void;
   placeholder?: string;
   className?: string;
 }
@@ -15,6 +17,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
   const [search, setSearch] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [debouncedSearch] = useDebounce(search, 300);
+  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
@@ -39,6 +42,11 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
     },
     enabled: Boolean(debouncedSearch),
   });
+
+  const handleProfileClick = (profile: UserProfile) => {
+    setSelectedProfile(profile);
+    onSelect(profile);
+  };
 
   return (
     <div className={`relative ${className}`}>
@@ -65,7 +73,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
               {profiles.map((profile) => (
                 <CommandItem
                   key={profile.id}
-                  onSelect={() => onSelect(profile)}
+                  onSelect={() => handleProfileClick(profile)}
                   onMouseEnter={() => setHoveredId(profile.id)}
                   onMouseLeave={() => setHoveredId(null)}
                   className={`cursor-pointer ${
@@ -79,6 +87,13 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
           )}
         </CommandList>
       </Command>
+
+      {selectedProfile && (
+        <ProfilePreview 
+          profile={selectedProfile} 
+          onClose={() => setSelectedProfile(null)}
+        />
+      )}
     </div>
   );
 }
