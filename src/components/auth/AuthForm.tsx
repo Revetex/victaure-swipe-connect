@@ -3,13 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { AuthFormHeader } from "./form/AuthFormHeader";
 import { SignUpFields } from "./form/SignUpFields";
 import { PasswordField } from "./form/PasswordField";
 
 export const AuthForm = () => {
-  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,16 +45,12 @@ export const AuthForm = () => {
         
         toast.success("Inscription réussie ! Vérifiez vos emails.");
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
         
         if (error) throw error;
-        if (!data.session) throw new Error("No session after login");
-
-        toast.success("Connexion réussie !");
-        navigate("/dashboard");
       }
     } catch (error: any) {
       console.error('Auth error:', error);
