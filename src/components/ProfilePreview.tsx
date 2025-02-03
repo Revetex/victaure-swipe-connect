@@ -11,9 +11,10 @@ import { ProfileActions } from "./profile/ProfileActions";
 interface ProfilePreviewProps {
   profile: UserProfile;
   onClose: () => void;
+  onViewProfile: () => void;
 }
 
-export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
+export function ProfilePreview({ profile, onClose, onViewProfile }: ProfilePreviewProps) {
   const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
             isFriendRequestSent={isFriendRequestSent}
             onClose={onClose}
             onFriendRequestChange={setIsFriendRequestSent}
+            onViewProfile={onViewProfile}
           />
         </div>
       </motion.div>
