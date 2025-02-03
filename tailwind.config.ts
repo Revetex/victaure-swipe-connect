@@ -23,6 +23,7 @@ export default {
         playfair: ['Playfair Display', 'serif'],
         roboto: ['Roboto', 'sans-serif'],
         opensans: ['Open Sans', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
