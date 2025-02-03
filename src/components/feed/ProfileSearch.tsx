@@ -48,38 +48,40 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
           value={search}
           onValueChange={setSearch}
         />
-        {debouncedSearch && (isLoading || profiles.length > 0) && (
-          <div className="absolute left-0 right-0 top-full z-50 mt-1 bg-background/95 backdrop-blur-sm rounded-lg border shadow-lg">
-            <CommandList className="max-h-[300px] overflow-y-auto">
-              <CommandGroup>
-                {isLoading && (
-                  <CommandItem disabled>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Recherche en cours...
-                  </CommandItem>
-                )}
-                
-                {!isLoading && profiles.length === 0 && (
-                  <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
-                )}
+        <div className="relative">
+          {debouncedSearch && (
+            <div className="absolute left-0 right-0 top-0 z-50 bg-background/95 backdrop-blur-sm rounded-lg border shadow-lg">
+              <CommandList>
+                <CommandGroup>
+                  {isLoading && (
+                    <CommandItem disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Recherche en cours...
+                    </CommandItem>
+                  )}
+                  
+                  {!isLoading && profiles.length === 0 && (
+                    <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+                  )}
 
-                {profiles.map((profile) => (
-                  <CommandItem
-                    key={profile.id}
-                    onSelect={() => onSelect(profile)}
-                    onMouseEnter={() => setHoveredId(profile.id)}
-                    onMouseLeave={() => setHoveredId(null)}
-                    className={`cursor-pointer ${
-                      hoveredId === profile.id ? "bg-accent" : ""
-                    }`}
-                  >
-                    {profile.full_name || profile.email}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </div>
-        )}
+                  {profiles.map((profile) => (
+                    <CommandItem
+                      key={profile.id}
+                      onSelect={() => onSelect(profile)}
+                      onMouseEnter={() => setHoveredId(profile.id)}
+                      onMouseLeave={() => setHoveredId(null)}
+                      className={`cursor-pointer ${
+                        hoveredId === profile.id ? "bg-accent" : ""
+                      }`}
+                    >
+                      {profile.full_name || profile.email}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </div>
+          )}
+        </div>
       </Command>
     </div>
   );
