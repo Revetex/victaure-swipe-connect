@@ -36,16 +36,29 @@ export function MessagesContent({
     try {
       if (!receiver) return;
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      // If it's the AI assistant, use the ai_chat_messages table
+      if (receiver.id === 'assistant') {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
 
-      // Delete all messages in the conversation
-      const { error } = await supabase
-        .from('messages')
-        .delete()
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
+        const { error } = await supabase
+          .from('ai_chat_messages')
+          .delete()
+          .eq('user_id', user.id);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // For regular users, use the messages table
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const { error } = await supabase
+          .from('messages')
+          .delete()
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+
+        if (error) throw error;
+      }
 
       onBack();
       navigate('/dashboard/messages');

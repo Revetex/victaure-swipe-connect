@@ -25,6 +25,8 @@ export function useMessages() {
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .not('sender_id', 'eq', 'assistant')
+        .not('receiver_id', 'eq', 'assistant')
         .order("created_at", { ascending: false });
 
       if (error) {
