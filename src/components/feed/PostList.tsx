@@ -73,30 +73,48 @@ export function PostList() {
     }
 
     try {
-      const { error } = await supabase
+      // First, check if a reaction already exists
+      const { data: existingReaction } = await supabase
         .from('post_reactions')
-        .upsert(
-          { 
-            post_id: postId, 
-            user_id: user.id,
-            reaction_type: type 
-          },
-          { 
-            onConflict: 'post_id,user_id',
-            ignoreDuplicates: false 
-          }
-        );
+        .select('*')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (error) {
-        console.error('Reaction error:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update reaction",
-          variant: "destructive"
-        });
+      if (existingReaction) {
+        // If reaction exists and it's the same type, delete it
+        if (existingReaction.reaction_type === type) {
+          const { error } = await supabase
+            .from('post_reactions')
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', user.id);
+
+          if (error) throw error;
+        } else {
+          // If reaction exists but different type, update it
+          const { error } = await supabase
+            .from('post_reactions')
+            .update({ reaction_type: type })
+            .eq('post_id', postId)
+            .eq('user_id', user.id);
+
+          if (error) throw error;
+        }
       } else {
-        queryClient.invalidateQueries({ queryKey: ["posts"] });
+        // If no reaction exists, insert new one
+        const { error } = await supabase
+          .from('post_reactions')
+          .insert({
+            post_id: postId,
+            user_id: user.id,
+            reaction_type: type
+          });
+
+        if (error) throw error;
       }
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
       console.error('Error handling reaction:', error);
       toast({
