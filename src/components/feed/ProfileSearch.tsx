@@ -46,14 +46,14 @@ export function ProfileSearch({
           return [];
         }
 
-        return (data || []) as UserProfile[];
+        return data || [];
       } catch (error) {
         console.error("Error in profile search:", error);
         return [];
       }
     },
     enabled: debouncedSearch.length >= 2,
-    initialData: [], // Provide initial data to prevent undefined
+    initialData: [],
   });
 
   return (
@@ -63,31 +63,33 @@ export function ProfileSearch({
         value={search}
         onValueChange={setSearch}
       />
-      <CommandGroup>
-        {isLoading ? (
-          <div className="flex items-center justify-center p-4">
-            <Loader2 className="h-4 w-4 animate-spin" />
-          </div>
-        ) : profiles.length > 0 ? (
-          profiles.map((profile) => (
-            <CommandItem
-              key={profile.id}
-              onSelect={() => onSelect(profile)}
-              className="flex items-center gap-2 p-2"
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={profile.avatar_url || ""} />
-                <AvatarFallback>
-                  <UserRound className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-              <span>{profile.full_name}</span>
-            </CommandItem>
-          ))
-        ) : (
-          <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
-        )}
-      </CommandGroup>
+      {debouncedSearch.length >= 2 ? (
+        <CommandGroup>
+          {isLoading ? (
+            <div className="flex items-center justify-center p-4">
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+          ) : profiles.length > 0 ? (
+            profiles.map((profile) => (
+              <CommandItem
+                key={profile.id}
+                onSelect={() => onSelect(profile)}
+                className="flex items-center gap-2 p-2"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={profile.avatar_url || ""} />
+                  <AvatarFallback>
+                    <UserRound className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <span>{profile.full_name}</span>
+              </CommandItem>
+            ))
+          ) : (
+            <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
+          )}
+        </CommandGroup>
+      ) : null}
     </Command>
   );
 }
