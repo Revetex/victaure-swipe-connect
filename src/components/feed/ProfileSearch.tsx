@@ -37,7 +37,7 @@ export function ProfileSearch({
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("*")
+          .select("id, full_name, avatar_url")
           .ilike("full_name", `%${debouncedSearch}%`)
           .limit(5);
 
@@ -53,42 +53,33 @@ export function ProfileSearch({
       }
     },
     enabled: debouncedSearch.length >= 2,
-    initialData: [],
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
-
-  // Ensure we always have a valid array to work with
-  const safeProfiles = Array.isArray(profiles) ? profiles : [];
 
   return (
     <Command className={`rounded-lg border shadow-md ${className}`}>
       <CommandInput 
         placeholder={placeholder}
-        value={search || ""}
-        onValueChange={(value) => setSearch(value || "")}
+        value={search}
+        onValueChange={setSearch}
       />
-      {(search?.length ?? 0) >= 2 && (
+      {debouncedSearch.length >= 2 && (
         <CommandGroup>
           {isLoading ? (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
-          ) : safeProfiles.length > 0 ? (
-            safeProfiles.map((profile) => (
+          ) : profiles && profiles.length > 0 ? (
+            profiles.map((profile) => (
               <CommandItem
                 key={profile.id}
-                onSelect={() => {
-                  if (profile && onSelect) {
-                    onSelect(profile);
-                  }
-                }}
+                onSelect={() => onSelect(profile)}
                 className="flex items-center gap-2 p-2"
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={profile.avatar_url || ""} />
                   <AvatarFallback>
                     <UserRound className="h-4 w-4" />
-                  </AvatarFallback>
+                  </AvaterFallback>
                 </Avatar>
                 <span>{profile.full_name}</span>
               </CommandItem>
