@@ -8,18 +8,18 @@ export const AuthHeader = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col items-center space-y-8"
+      className="flex flex-col items-center space-y-6"
     >
       <Logo size="lg" className="mb-2" />
       
-      <div className="relative space-y-3 text-center">
+      <div className="relative space-y-2 text-center">
         <motion.h1 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-4xl font-semibold tracking-tight text-foreground mb-2"
+          className="text-4xl font-bold tracking-tight text-foreground mb-2 font-playfair uppercase"
         >
-          Victaure
+          VICTAURE
         </motion.h1>
         
         <motion.h2 
@@ -45,7 +45,7 @@ export const AuthHeader = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="grid grid-cols-2 gap-4 w-full max-w-md mx-auto mt-2"
+        className="grid grid-cols-2 gap-4 w-full max-w-md mx-auto"
       >
         {[
           "Matching intelligent",

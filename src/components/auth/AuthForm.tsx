@@ -95,7 +95,7 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="relative space-y-6">
+    <div className="relative space-y-4">
       <AuthFormHeader />
 
       <form onSubmit={handleSubmit} className="space-y-4">
