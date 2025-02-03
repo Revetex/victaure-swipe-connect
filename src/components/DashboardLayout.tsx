@@ -8,9 +8,7 @@ import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
 import { Logo } from "@/components/Logo";
-import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -22,7 +20,6 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(3);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { showConversation } = useReceiver();
@@ -51,17 +48,6 @@ export function DashboardLayout() {
   const handleRequestChat = useCallback(() => {
     handlePageChange(2);
   }, [handlePageChange]);
-
-  const handleProfileSelect = (profile: any) => {
-    if (profile?.id) {
-      console.log("Navigating to profile:", profile.id);
-      navigate(`/profile/${profile.id}`);
-      setIsSearchOpen(false);
-      toast.success("Redirection vers le profil");
-    } else {
-      toast.error("Erreur: Profil invalide");
-    }
-  };
 
   const getPageTitle = (page: number) => {
     switch (page) {
@@ -125,30 +111,6 @@ export function DashboardLayout() {
                   </div>
                   
                   <div className="flex items-center gap-4">
-                    {isMobile ? (
-                      <Sheet open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-                        <SheetTrigger asChild>
-                          <Button variant="ghost" size="icon" className="text-muted-foreground">
-                            <Search className="h-5 w-5" />
-                          </Button>
-                        </SheetTrigger>
-                        <SheetContent side="top" className="w-full p-4">
-                          <ProfileSearch 
-                            onSelect={handleProfileSelect}
-                            placeholder="Rechercher un profil..."
-                            className="w-full"
-                          />
-                        </SheetContent>
-                      </Sheet>
-                    ) : (
-                      <div className="w-[300px]">
-                        <ProfileSearch 
-                          onSelect={handleProfileSelect}
-                          placeholder="Rechercher un profil..."
-                          className="w-full"
-                        />
-                      </div>
-                    )}
                     <NotificationsBox />
                   </div>
                 </div>
