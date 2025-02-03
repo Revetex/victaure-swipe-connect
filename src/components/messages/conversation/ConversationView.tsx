@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MoreVertical } from "lucide-react";
+import { ArrowLeft, MoreVertical, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -8,6 +8,23 @@ import { AnimatePresence, motion } from "framer-motion";
 import { UserCircle } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 import { Message } from "@/types/messages";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 interface ConversationViewProps {
   messages: Message[];
@@ -19,6 +36,7 @@ interface ConversationViewProps {
   onSendMessage: (message: string) => void;
   onVoiceInput?: () => void;
   onBack?: () => void;
+  onDeleteConversation?: () => void;
 }
 
 export function ConversationView({
@@ -30,11 +48,13 @@ export function ConversationView({
   onInputChange,
   onSendMessage,
   onVoiceInput,
-  onBack
+  onBack,
+  onDeleteConversation
 }: ConversationViewProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     scrollToBottom();
@@ -53,6 +73,14 @@ export function ConversationView({
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
     
     setShowScrollButton(!isNearBottom);
+  };
+
+  const handleDelete = () => {
+    if (onDeleteConversation) {
+      onDeleteConversation();
+      toast.success("Conversation supprimée avec succès");
+    }
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -88,9 +116,22 @@ export function ConversationView({
               </span>
             </div>
           </div>
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-5 w-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem 
+                className="text-destructive focus:text-destructive"
+                onClick={() => setShowDeleteDialog(true)}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Supprimer la conversation
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -101,7 +142,7 @@ export function ConversationView({
       >
         <div className="px-4 py-4 space-y-4">
           <AnimatePresence mode="popLayout">
-            {messages.map((message, index) => (
+            {messages.map((message) => (
               <ChatMessage
                 key={message.id}
                 content={message.content}
@@ -147,6 +188,26 @@ export function ConversationView({
           className="w-full"
         />
       </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer la conversation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
