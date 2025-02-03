@@ -48,9 +48,9 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
           value={search}
           onValueChange={setSearch}
         />
-        {debouncedSearch && (
-          <CommandList className="absolute w-full bg-background/95 backdrop-blur-sm rounded-lg border shadow-lg max-h-[300px] overflow-y-auto">
-            <CommandGroup>
+        <CommandList>
+          {debouncedSearch && (
+            <CommandGroup className="absolute w-full bg-background/95 backdrop-blur-sm rounded-lg border shadow-lg max-h-[300px] overflow-y-auto">
               {isLoading && (
                 <CommandItem disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -76,8 +76,8 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
                 </CommandItem>
               ))}
             </CommandGroup>
-          </CommandList>
-        )}
+          )}
+        </CommandList>
       </Command>
     </div>
   );
