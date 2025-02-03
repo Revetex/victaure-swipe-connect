@@ -18,7 +18,7 @@ export function ConversationList({
   // Filter out test messages and ensure we have real conversations
   const realMessages = messages?.filter(message => {
     const sender = typeof message.sender === 'string' ? { id: message.sender } : message.sender;
-    return sender && sender.id && message.content;
+    return sender && sender.id && message.content && sender.id !== '21b11d42-5ea2-462c-a58d-bf3621dfa6a9';
   }) || [];
   
   const hasMessages = realMessages.length > 0;
