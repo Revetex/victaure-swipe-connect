@@ -33,7 +33,7 @@ interface Post {
 
 export function PostList() {
   const { toast } = useToast();
-  const { session } = useSession();
+  const { session } = useSession({ required: false });
   const queryClient = useQueryClient();
 
   const { data: posts } = useQuery({
