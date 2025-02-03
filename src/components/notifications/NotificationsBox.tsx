@@ -3,16 +3,19 @@ import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationHeader } from "./NotificationHeader";
 import { cn } from "@/lib/utils";
+import { requestPushPermission, togglePushNotifications } from "@/utils/pushNotifications";
 
 export function NotificationsBox() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [pushEnabled, setPushEnabled] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -34,7 +37,20 @@ export function NotificationsBox() {
       setUnreadCount(data?.filter(n => !n.read).length || 0);
     };
 
+    const fetchPushSettings = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('push_notifications_enabled')
+        .eq('id', user.id)
+        .single();
+
+      if (!error && data) {
+        setPushEnabled(data.push_notifications_enabled);
+      }
+    };
+
     fetchNotifications();
+    fetchPushSettings();
 
     // Subscribe to realtime notifications
     const channel = supabase
@@ -70,6 +86,18 @@ export function NotificationsBox() {
     }
 
     setNotifications(notifications.filter(n => n.id !== id));
+  };
+
+  const handlePushToggle = async (checked: boolean) => {
+    if (checked && !pushEnabled) {
+      const success = await requestPushPermission();
+      if (success) {
+        setPushEnabled(true);
+      }
+    } else {
+      await togglePushNotifications(checked);
+      setPushEnabled(checked);
+    }
   };
 
   return (
@@ -109,6 +137,14 @@ export function NotificationsBox() {
               )}
             >
               <NotificationHeader unreadCount={unreadCount} />
+              
+              <div className="flex items-center justify-between py-2 border-b mb-2">
+                <span className="text-sm text-muted-foreground">Notifications push</span>
+                <Switch
+                  checked={pushEnabled}
+                  onCheckedChange={handlePushToggle}
+                />
+              </div>
               
               <ScrollArea className="h-[400px] mt-4">
                 <div className="space-y-2">
