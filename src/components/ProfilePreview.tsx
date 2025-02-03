@@ -5,8 +5,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileInfo } from "@/components/profile/ProfileInfo";
+import { ProfileActions } from "@/components/profile/ProfileActions";
 import { ProfileBio } from "@/components/profile/ProfileBio";
-import { CategorizedSkills } from "@/components/skills/CategorizedSkills";
+import { ProfileSkills } from "@/components/profile/ProfileSkills";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -16,15 +17,10 @@ interface ProfilePreviewProps {
 
 export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps) {
   const navigate = useNavigate();
-  const [isEditing] = useState(false);
-
-  const handleRemoveSkill = () => {
-    // Placeholder for skill removal functionality
-  };
 
   const handleViewProfile = () => {
     onClose();
-    navigate(`/profile/${profile.id}`);
+    navigate(`/dashboard/public-profile/${profile.id}`);
   };
 
   return (
@@ -34,22 +30,26 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
         <div className="flex flex-col items-center gap-4">
           <ProfileAvatar profile={profile} />
           <ProfileInfo profile={profile} />
-          <ProfileBio bio={profile.bio} />
           
           <div className="w-full">
-            <CategorizedSkills
-              profile={profile}
-              isEditing={isEditing}
-              onRemoveSkill={handleRemoveSkill}
-            />
+            <ProfileBio profile={profile} />
+            <ProfileSkills profile={profile} />
           </div>
 
-          <div className="flex justify-end w-full">
+          <div className="flex gap-2 w-full">
             <Button 
               onClick={handleViewProfile}
-              className="w-full bg-primary text-white hover:bg-primary/90"
+              className="flex-1"
+              variant="default"
             >
-              Voir le profil
+              View Profile
+            </Button>
+            <Button 
+              onClick={onClose}
+              className="flex-1"
+              variant="outline"
+            >
+              Close
             </Button>
           </div>
         </div>
