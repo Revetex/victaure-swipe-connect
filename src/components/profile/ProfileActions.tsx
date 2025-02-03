@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { UserRound, UserPlus, Eye } from "lucide-react";
 
 interface ProfileActionsProps {
   profileId: string;
   isFriendRequestSent: boolean;
+  areFriends: boolean;
   onClose: () => void;
   onFriendRequestChange: (value: boolean) => void;
   onViewProfile: () => void;
@@ -13,7 +14,8 @@ interface ProfileActionsProps {
 
 export function ProfileActions({ 
   profileId, 
-  isFriendRequestSent, 
+  isFriendRequestSent,
+  areFriends,
   onClose,
   onFriendRequestChange,
   onViewProfile
@@ -43,19 +45,30 @@ export function ProfileActions({
   return (
     <div className="flex flex-col w-full gap-2">
       <Button 
-        variant="default"
+        variant={areFriends ? "default" : "secondary"}
         className="w-full"
         onClick={onViewProfile}
       >
-        Voir le profil complet
+        {areFriends ? (
+          <>
+            <Eye className="mr-2 h-4 w-4" />
+            Voir le profil complet
+          </>
+        ) : (
+          <>
+            <UserRound className="mr-2 h-4 w-4" />
+            Aperçu limité
+          </>
+        )}
       </Button>
       
-      {!isFriendRequestSent && (
+      {!isFriendRequestSent && !areFriends && (
         <Button
           variant="outline"
           className="w-full"
           onClick={handleSendFriendRequest}
         >
+          <UserPlus className="mr-2 h-4 w-4" />
           Ajouter en ami
         </Button>
       )}
