@@ -66,7 +66,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
           onValueChange={setSearch}
           className="border-none focus:ring-0"
         />
-        <CommandGroup className="max-h-[300px] overflow-y-auto p-2">
+        <CommandGroup>
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
