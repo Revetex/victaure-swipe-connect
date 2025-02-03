@@ -1,4 +1,3 @@
-/* Mobile optimizations */
 @media (max-width: 640px) {
   .gsc-results-wrapper-overlay {
     width: 100% !important;
@@ -15,18 +14,19 @@
   }
 
   .gsc-result {
-    padding: 0.75rem !important;
-    width: 100% !important;
+    padding: 12px !important;
   }
 
   .gs-title {
-    font-size: 1rem !important;
-    width: 100% !important;
+    font-size: 16px !important;
   }
 
   .gs-snippet {
-    font-size: 0.9rem !important;
-    width: 100% !important;
+    font-size: 13px !important;
+  }
+
+  .gs-visibleUrl {
+    font-size: 12px !important;
   }
 
   .gsc-control-cse,
@@ -42,7 +42,7 @@
   .gsc-search-box {
     max-width: 100% !important;
     width: 100% !important;
-    padding: 0 0.5rem !important;
+    padding: 0 8px !important;
   }
 
   .gsc-input-box {
