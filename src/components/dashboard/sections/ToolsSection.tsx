@@ -117,8 +117,8 @@ export function ToolsSection() {
             selectedColor={selectedColor}
             onNoteChange={setNewNote}
             onColorChange={setSelectedColor}
-            onAddNote={addNote}
-            onDeleteNote={deleteNote}
+            onAdd={addNote}
+            onDelete={deleteNote}
           />
         </div>
       </div>
