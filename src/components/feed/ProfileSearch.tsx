@@ -24,8 +24,6 @@ export function ProfileSearch({
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
-      if (!debouncedSearch) return [];
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
