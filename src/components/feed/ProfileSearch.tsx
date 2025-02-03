@@ -1,18 +1,11 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, UserRound } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import { UserProfile } from "@/types/profile";
 
 interface ProfileSearchProps {
   onSelect: (profile: UserProfile) => void;
@@ -31,29 +24,26 @@ export function ProfileSearch({
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
-      try {
-        if (debouncedSearch.length < 2) {
-          return [];
-        }
+      if (debouncedSearch.length < 2) return [];
 
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .ilike("full_name", `%${debouncedSearch}%`)
-          .limit(5);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
 
-        if (error) {
-          throw error;
-        }
+      const { data: profiles, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .neq("id", user.id)
+        .ilike("full_name", `%${debouncedSearch}%`)
+        .limit(5);
 
-        return data || [];
-      } catch (error) {
-        console.error("Error in profile search:", error);
+      if (error) {
+        console.error("Error fetching profiles:", error);
         return [];
       }
+
+      return profiles as UserProfile[];
     },
-    enabled: debouncedSearch.length >= 2,
-    initialData: [],
+    enabled: debouncedSearch.length >= 2
   });
 
   return (
@@ -65,31 +55,29 @@ export function ProfileSearch({
       />
       <CommandList>
         <CommandGroup>
-          {debouncedSearch.length >= 2 && isLoading && (
+          {isLoading && (
             <div className="flex items-center justify-center p-4">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
           )}
-          {debouncedSearch.length >= 2 && !isLoading && profiles.length === 0 && (
+          {!isLoading && debouncedSearch.length >= 2 && profiles.length === 0 && (
             <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
           )}
-          {debouncedSearch.length >= 2 && !isLoading && profiles.length > 0 && 
-            profiles.map((profile) => (
-              <CommandItem
-                key={profile.id}
-                onSelect={() => onSelect(profile)}
-                className="flex items-center gap-2 p-2"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={profile.avatar_url || ""} />
-                  <AvatarFallback>
-                    <UserRound className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <span>{profile.full_name}</span>
-              </CommandItem>
-            ))
-          }
+          {!isLoading && profiles.map((profile) => (
+            <CommandItem
+              key={profile.id}
+              onSelect={() => onSelect(profile)}
+              className="flex items-center gap-2 p-2"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={profile.avatar_url || ""} />
+                <AvatarFallback>
+                  <UserRound className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
+              <span>{profile.full_name}</span>
+            </CommandItem>
+          ))}
         </CommandGroup>
       </CommandList>
     </Command>
