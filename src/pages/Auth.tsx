@@ -31,7 +31,8 @@ export default function Auth() {
 
         if (session?.user) {
           console.log("User already logged in, redirecting to dashboard");
-          navigate("/dashboard", { replace: true });
+          navigate("/dashboard");
+          return;
         }
       } catch (error) {
         console.error("Auth check error:", error);
@@ -47,8 +48,9 @@ export default function Auth() {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_IN' && session) {
+        console.log("User signed in, redirecting to dashboard");
         toast.success("Connexion réussie");
-        navigate("/dashboard", { replace: true });
+        navigate("/dashboard");
       }
     });
 

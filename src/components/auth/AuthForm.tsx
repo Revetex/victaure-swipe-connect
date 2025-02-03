@@ -37,7 +37,6 @@ export const AuthForm = () => {
         
         if (signUpError) throw signUpError;
 
-        // Update the profile with phone number
         const { error: profileError } = await supabase
           .from('profiles')
           .update({ phone: formData.phone })
@@ -47,26 +46,26 @@ export const AuthForm = () => {
         
         toast.success("Inscription réussie ! Vérifiez vos emails.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        console.log("Attempting login...");
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
+        
         if (error) throw error;
 
-        // Ensure we have a fresh session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError) throw sessionError;
+        console.log("Login successful:", data);
         
-        if (!session) {
+        if (!data.session) {
           throw new Error("No session after login");
         }
 
+        toast.success("Connexion réussie !");
         navigate("/dashboard");
       }
     } catch (error: any) {
       console.error('Auth error:', error);
       
-      // Handle specific error cases
       if (error.message.includes('refresh_token_not_found') || 
           error.message.includes('Invalid Refresh Token')) {
         localStorage.clear();
