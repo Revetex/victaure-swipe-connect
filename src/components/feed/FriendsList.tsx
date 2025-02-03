@@ -47,7 +47,13 @@ export function FriendsList() {
 
       return friendRequests?.map(request => {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend;
+        return {
+          id: friend.id,
+          full_name: friend.full_name,
+          avatar_url: friend.avatar_url,
+          online_status: friend.online_status,
+          last_seen: friend.last_seen
+        };
       }) || [];
     }
   });
@@ -162,10 +168,6 @@ export function FriendsList() {
     setSelectedProfile(profile);
   };
 
-  const handleViewFriendProfile = (friend: UserProfile) => {
-    setSelectedProfile(friend);
-  };
-
   return (
     <>
       <Card className="p-4 bg-card/50 backdrop-blur-sm">
@@ -208,7 +210,19 @@ export function FriendsList() {
                   key={friend.id}
                   friend={friend}
                   onMessage={handleMessage}
-                  onViewProfile={handleViewFriendProfile}
+                  onViewProfile={() => setSelectedProfile({
+                    ...friend,
+                    email: '',
+                    role: 'professional',
+                    bio: null,
+                    phone: null,
+                    city: null,
+                    state: null,
+                    country: 'Canada',
+                    skills: [],
+                    latitude: null,
+                    longitude: null
+                  })}
                 />
               ))}
               {(!friends || friends.length === 0) && (

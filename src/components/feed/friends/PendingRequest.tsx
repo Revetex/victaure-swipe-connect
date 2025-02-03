@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Check, Clock, X } from "lucide-react";
-import { PendingRequest } from "@/types/profile";
+import type { PendingRequest as PendingRequestType } from "@/types/profile";
 
 interface PendingRequestProps {
-  request: PendingRequest;
+  request: PendingRequestType;
   onAccept: (requestId: string, senderId: string, senderName: string) => Promise<void>;
   onReject: (requestId: string, senderName: string) => Promise<void>;
   onCancel: (requestId: string, receiverName: string) => Promise<void>;
