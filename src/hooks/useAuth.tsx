@@ -40,7 +40,9 @@ export function useAuth() {
         user: null
       });
 
+      // Update: Redirect to /auth after logout
       navigate('/auth', { replace: true });
+      toast.success("Déconnexion réussie");
       
     } catch (error) {
       console.error('Sign out error:', error);
@@ -50,6 +52,7 @@ export function useAuth() {
         isLoading: false,
         error: error instanceof Error ? error : new Error('Unknown error')
       }));
+      // Even on error, redirect to auth
       navigate('/auth', { replace: true });
     }
   };

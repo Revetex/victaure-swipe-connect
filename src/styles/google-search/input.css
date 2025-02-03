@@ -10,7 +10,7 @@
   margin: 0 !important;
   max-width: 100% !important;
   width: 100% !important;
-  border: 2px solid black !important;
+  border: 2px solid hsl(var(--border)) !important;
   border-radius: 0.375rem !important;
   padding: 2px !important;
 }
