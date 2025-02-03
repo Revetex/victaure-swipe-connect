@@ -2,6 +2,8 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message } from "@/types/messages";
+import { initializeSpeechRecognition } from "@/services/speechRecognitionService";
+import { v4 as uuidv4 } from "uuid";
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -13,9 +15,11 @@ export function useChat() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("User not authenticated");
 
+    const messageId = uuidv4();
     const { data, error } = await supabase
       .from("ai_chat_messages")
       .insert({
+        id: messageId,
         user_id: user.id,
         content,
         sender: user.id
@@ -48,9 +52,11 @@ export function useChat() {
       if (aiError) throw aiError;
 
       if (aiResponse?.message) {
+        const messageId = uuidv4();
         const { error: insertError } = await supabase
           .from("ai_chat_messages")
           .insert({
+            id: messageId,
             user_id: session.user.id,
             content: aiResponse.message,
             sender: 'assistant'
