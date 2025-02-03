@@ -19,19 +19,15 @@ interface ProfileSearchProps {
   className?: string;
 }
 
-interface Profile extends UserProfile {
-  id: string;
-}
-
-export function ProfileSearch({ onSelect, placeholder = "Search...", className = "" }: ProfileSearchProps) {
+export function ProfileSearch({ onSelect, placeholder = "Rechercher...", className = "" }: ProfileSearchProps) {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const { data: searchResults = [], isLoading } = useQuery({
-    queryKey: ["profile-search", debouncedSearch],
+  const { data: profiles = [], isLoading } = useQuery({
+    queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
       if (!debouncedSearch.trim()) return [];
-      
+
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -43,47 +39,34 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
         return [];
       }
 
-      return (data || []) as Profile[];
+      return data || [];
     },
-    enabled: debouncedSearch.trim().length > 0,
-    initialData: [],
+    enabled: debouncedSearch.length > 0,
   });
 
-  const handleSelect = (profileId: string) => {
-    const selectedProfile = searchResults.find((p) => p.id === profileId);
-    if (selectedProfile) {
-      onSelect(selectedProfile);
-      setSearch("");
-    }
-  };
-
   return (
-    <div className={`relative ${className}`}>
-      <Command className="rounded-lg border shadow-md">
-        <CommandInput
-          placeholder={placeholder}
-          value={search}
-          onValueChange={setSearch}
-          className="border-none focus:ring-0"
-        />
+    <Command className={`rounded-lg border shadow-md ${className}`}>
+      <CommandInput 
+        placeholder={placeholder}
+        value={search}
+        onValueChange={setSearch}
+      />
+      {search.length > 0 && (
         <CommandGroup>
           {isLoading ? (
-            <div className="flex items-center justify-center py-6">
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <div className="flex items-center justify-center p-4">
+              <Loader2 className="h-4 w-4 animate-spin" />
             </div>
-          ) : searchResults.length === 0 ? (
-            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-              Aucun résultat trouvé.
-            </CommandEmpty>
+          ) : profiles.length === 0 ? (
+            <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
           ) : (
-            searchResults.map((profile) => (
+            profiles.map((profile) => (
               <CommandItem
                 key={profile.id}
-                value={profile.id}
-                onSelect={handleSelect}
-                className="flex items-center gap-2 px-2"
+                onSelect={() => onSelect(profile)}
+                className="flex items-center gap-2 p-2"
               >
-                <Avatar className="h-6 w-6">
+                <Avatar className="h-8 w-8">
                   <AvatarImage src={profile.avatar_url || ""} />
                   <AvatarFallback>
                     <UserRound className="h-4 w-4" />
@@ -94,7 +77,7 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
             ))
           )}
         </CommandGroup>
-      </Command>
-    </div>
+      )}
+    </Command>
   );
 }
