@@ -6,7 +6,6 @@ import { Loader2 } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
-import { useNavigate } from "react-router-dom";
 
 interface ProfileSearchProps {
   onSelect: (profile: UserProfile) => void;
@@ -19,7 +18,6 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [debouncedSearch] = useDebounce(search, 300);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-  const navigate = useNavigate();
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
@@ -53,11 +51,6 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
   const handleProfilePreviewClose = () => {
     setSelectedProfile(null);
     setSearch("");
-  };
-
-  const handleViewProfile = (profileId: string) => {
-    navigate(`/dashboard/profile/${profileId}`);
-    handleProfilePreviewClose();
   };
 
   return (
@@ -104,7 +97,6 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
         <ProfilePreview 
           profile={selectedProfile} 
           onClose={handleProfilePreviewClose}
-          onViewProfile={() => handleViewProfile(selectedProfile.id)}
         />
       )}
     </div>

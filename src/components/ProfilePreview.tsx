@@ -8,16 +8,17 @@ import { ProfileBio } from "./profile/ProfileBio";
 import { ProfileSkills } from "./profile/ProfileSkills";
 import { ProfileActions } from "./profile/ProfileActions";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
   onClose: () => void;
-  onViewProfile: () => void;
 }
 
-export function ProfilePreview({ profile, onClose, onViewProfile }: ProfilePreviewProps) {
+export function ProfilePreview({ profile, onClose }: ProfilePreviewProps) {
   const [isFriendRequestSent, setIsFriendRequestSent] = useState(false);
   const [areFriends, setAreFriends] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkRelationship = async () => {
@@ -45,7 +46,8 @@ export function ProfilePreview({ profile, onClose, onViewProfile }: ProfilePrevi
       toast.error("Vous devez être amis pour voir le profil complet");
       return;
     }
-    onViewProfile();
+    navigate(`/dashboard/profile/${profile.id}`);
+    onClose();
   };
 
   return (
@@ -62,7 +64,6 @@ export function ProfilePreview({ profile, onClose, onViewProfile }: ProfilePrevi
         <div className="flex flex-col items-center space-y-4">
           <ProfileAvatar profile={profile} />
           
-          {/* Informations limitées si pas amis */}
           <div className="text-center">
             <h3 className="text-2xl font-semibold tracking-tight">
               {profile.full_name || "Utilisateur"}
@@ -72,14 +73,12 @@ export function ProfilePreview({ profile, onClose, onViewProfile }: ProfilePrevi
             </p>
           </div>
 
-          {/* Bio courte si disponible */}
           {profile.bio && (
             <p className="text-sm text-center text-muted-foreground/90 line-clamp-2">
               {profile.bio}
             </p>
           )}
 
-          {/* Quelques compétences si disponibles */}
           {profile.skills && profile.skills.length > 0 && (
             <div className="flex flex-wrap gap-2 justify-center">
               {profile.skills.slice(0, 3).map((skill, index) => (
