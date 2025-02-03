@@ -9,9 +9,7 @@ import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Info } from "lucide-react";
+import { DownloadApp } from "@/components/dashboard/DownloadApp";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -19,6 +17,7 @@ export default function Auth() {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
+    // Check current session
     const checkSession = async () => {
       try {
         setIsLoading(true);
@@ -43,6 +42,7 @@ export default function Auth() {
 
     checkSession();
 
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       
@@ -74,26 +74,16 @@ export default function Auth() {
       <div className="relative w-full py-8 px-4">
         <div className="container max-w-sm mx-auto space-y-8">
           {/* Header */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center space-y-2 text-center"
-          >
+          <div className="flex flex-col items-center space-y-2 text-center">
             <Logo size="lg" className="mb-2" />
             <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
             <p className="text-sm text-muted-foreground">
               Connectez-vous ou créez un compte pour continuer
             </p>
-          </motion.div>
+          </div>
 
           {/* Auth Card */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm"
-          >
+          <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
             <BiometricAuth />
             <AuthForm />
             <div className="flex items-center justify-center space-x-2">
@@ -110,32 +100,24 @@ export default function Auth() {
                 Rester connecté
               </label>
             </div>
-          </motion.div>
+          </div>
 
           {/* Video Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="w-full"
-          >
+          <div className="w-full">
             <AuthVideo />
-          </motion.div>
+          </div>
 
-          {/* Legal Links - Improved Layout */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-center text-sm pb-8 space-y-4"
-          >
-            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8">
+          {/* Download App Section */}
+          <div className="w-full">
+            <DownloadApp />
+          </div>
+
+          {/* Legal Links - Centered */}
+          <div className="text-center text-sm pb-8 space-y-4">
+            <div className="flex justify-center space-x-4">
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <Info className="w-4 h-4" />
-                    Politique de confidentialité
-                  </Button>
+                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                  Politique de confidentialité
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
                   <DialogHeader>
@@ -167,13 +149,9 @@ export default function Auth() {
                   </div>
                 </DialogContent>
               </Dialog>
-
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <Info className="w-4 h-4" />
-                    Conditions d'utilisation
-                  </Button>
+                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                  Conditions d'utilisation
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto">
                   <DialogHeader>
@@ -201,7 +179,7 @@ export default function Auth() {
             <div className="text-muted-foreground">
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

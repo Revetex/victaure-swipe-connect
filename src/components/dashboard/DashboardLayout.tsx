@@ -2,23 +2,17 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback } from "react";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { DashboardNavigation } from "./DashboardNavigation";
+import { DashboardContainer } from "./DashboardContainer";
+import { DashboardContent } from "./DashboardContent";
 import { useDebounce } from "use-debounce";
-import { useLocation } from "react-router-dom";
-import { useReceiver } from "@/hooks/useReceiver";
-import { DashboardHeader } from "./DashboardHeader";
-import { DashboardEditMode } from "./DashboardEditMode";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
-  const { itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(3);
+  const { containerVariants, itemVariants } = useDashboardAnimations();
+  const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const location = useLocation();
-  const { showConversation } = useReceiver();
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -28,12 +22,19 @@ export function DashboardLayout() {
   const [lastPageChange, setLastPageChange] = useState(Date.now());
   const THROTTLE_DELAY = 300;
 
+  const updateHeight = useCallback(() => {
+    debouncedSetViewportHeight(window.innerHeight);
+  }, [debouncedSetViewportHeight]);
+
   const handlePageChange = useCallback((page: number) => {
     const now = Date.now();
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      setIsEditing(false);
+      // Reset editing state for all pages except Notes/Tasks
+      if (page !== 4) {
+        setIsEditing(false);
+      }
     }
   }, [lastPageChange]);
 
@@ -41,41 +42,19 @@ export function DashboardLayout() {
     handlePageChange(2);
   }, [handlePageChange]);
 
-  const isInConversation = location.pathname.includes('/messages') && showConversation;
-
-  if (isInConversation) {
-    return (
-      <DashboardContent
-        currentPage={currentPage}
-        isEditing={isEditing}
-        viewportHeight={viewportHeight}
-        onEditStateChange={setIsEditing}
-        onRequestChat={handleRequestChat}
-      />
-    );
-  }
-
   return (
     <div className="relative min-h-screen bg-background">
-      <DashboardEditMode isEditing={isEditing} />
-      
-      <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-12' : ''}`}>
+      <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
-          <DashboardHeader 
-            currentPage={currentPage}
-            isSearchOpen={isSearchOpen}
-            setIsSearchOpen={setIsSearchOpen}
-          />
-          
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen pt-16"
+              className="transform transition-all duration-300 w-full min-h-screen pb-40 lg:pb-24"
               style={{ 
-                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
+                maxHeight: isEditing ? viewportHeight : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? (isMobile ? '10rem' : '4rem') : '10rem'
+                paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
               }}
             >
               <DashboardContent
@@ -95,7 +74,7 @@ export function DashboardLayout() {
           isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
-          height: isMobile ? '5rem' : '4rem',
+          height: '4rem',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}
       >
