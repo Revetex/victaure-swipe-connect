@@ -12,9 +12,21 @@ export async function requestPushPermission() {
     if (permission === "granted") {
       // Register service worker for push notifications
       const registration = await navigator.serviceWorker.register('/sw.js');
+      
+      // Get VAPID public key from Supabase
+      const { data: { secret }, error: secretError } = await supabase.rpc('get_secret', {
+        secret_name: 'VAPID_PUBLIC_KEY'
+      });
+      
+      if (secretError || !secret) {
+        console.error('Error getting VAPID key:', secretError);
+        toast.error("Erreur lors de la configuration des notifications");
+        return false;
+      }
+
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY' // You'll need to set this up
+        applicationServerKey: secret
       });
 
       // Save subscription to profile
