@@ -18,12 +18,12 @@ export default function AppWrapper() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Router>
+        <Router>
+          <AuthProvider>
             <App />
             <Toaster position="top-right" expand={false} richColors />
-          </Router>
-        </AuthProvider>
+          </AuthProvider>
+        </Router>
       </QueryClientProvider>
     </ThemeProvider>
   );
