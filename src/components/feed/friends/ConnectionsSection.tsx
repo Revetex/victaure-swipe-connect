@@ -70,19 +70,6 @@ export function ConnectionsSection() {
               key={friend.id}
               friend={friend}
               onMessage={handleMessage}
-              onViewProfile={() => setSelectedProfile({
-                ...friend,
-                email: '',
-                role: 'professional',
-                bio: null,
-                phone: null,
-                city: null,
-                state: null,
-                country: 'Canada',
-                skills: [],
-                latitude: null,
-                longitude: null
-              })}
             />
           ))}
           {(!friends || friends.length === 0) && (
