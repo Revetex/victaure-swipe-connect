@@ -4,7 +4,6 @@ import { GoogleSearchBox } from "../../../components/google-search/GoogleSearchB
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from "lucide-react";
-import { toast } from "sonner";
 
 interface ExternalSearchSectionProps {
   isLoading?: boolean;
@@ -39,11 +38,9 @@ export function ExternalSearchSection({
       
       if (data?.suggestions) {
         setSuggestions(data.suggestions);
-        toast.success("Suggestions régénérées");
       }
     } catch (error) {
       console.error('Error fetching suggestions:', error);
-      toast.error("Erreur lors du chargement des suggestions");
     } finally {
       setLoadingSuggestions(false);
     }
@@ -89,9 +86,9 @@ export function ExternalSearchSection({
   }
 
   return (
-    <div className="w-full space-y-4 px-2 sm:px-4">
-      <div className="bg-secondary/30 backdrop-blur-sm rounded-lg p-3 sm:p-4">
-        <div className="flex items-center justify-between mb-3">
+    <div className="w-full space-y-2 px-2 sm:px-4">
+      <div className="bg-secondary/30 backdrop-blur-sm rounded-lg p-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary animate-pulse" />
             <h3 className="text-xs sm:text-sm font-medium">Suggestions IA</h3>
@@ -128,7 +125,7 @@ export function ExternalSearchSection({
         <AnimatePresence>
           {showSuggestions && (
             <motion.div 
-              className="flex flex-wrap gap-1.5 sm:gap-2"
+              className="flex flex-wrap gap-1.5 sm:gap-2 mt-2"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
