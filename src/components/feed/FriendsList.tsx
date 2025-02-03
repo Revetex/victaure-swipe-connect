@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { User, UserPlus } from "lucide-react";
+import { User, UserPlus, ArrowLeft } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { UserProfile } from "@/types/profile";
@@ -12,10 +12,13 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { FriendItem } from "./friends/FriendItem";
 import { PendingRequest } from "./friends/PendingRequest";
 import { FriendListHeader } from "./friends/FriendListHeader";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function FriendsList() {
   const navigate = useNavigate();
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const isMobile = useIsMobile();
   
   const { data: friends, refetch: refetchFriends } = useQuery({
     queryKey: ["friends"],
@@ -170,8 +173,19 @@ export function FriendsList() {
 
   return (
     <>
-      <Card className="p-4 bg-card/50 backdrop-blur-sm">
-        <div className="mb-6">
+      <Card className="relative p-4 bg-card/50 backdrop-blur-sm">
+        {isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-2 top-2 lg:hidden"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        
+        <div className={`${isMobile ? "mt-12" : "mt-0"} mb-6`}>
           <ProfileSearch 
             onSelect={handleProfileSelect}
             placeholder="Rechercher quelqu'un..."
