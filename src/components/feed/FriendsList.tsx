@@ -3,19 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { CircleDot, User, MessageCircle, UserPlus, UserMinus, Check, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
-type FriendPreview = {
-  id: string;
-  full_name: string;
-  avatar_url: string;
-  online_status: boolean;
-  last_seen: string;
-};
+import { motion, AnimatePresence } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function FriendsList() {
   const navigate = useNavigate();
@@ -50,7 +43,7 @@ export function FriendsList() {
 
       return friendRequests?.map(request => {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend as FriendPreview;
+        return friend;
       }) || [];
     }
   });
@@ -91,18 +84,6 @@ export function FriendsList() {
 
       if (updateError) throw updateError;
 
-      const { error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          user_id: senderId,
-          title: 'Demande acceptée',
-          message: `Votre demande d'ami a été acceptée`,
-        });
-
-      if (notifError) {
-        console.error('Error creating notification:', notifError);
-      }
-
       toast.success(`Vous êtes maintenant ami avec ${senderName}`);
       refetchFriends();
       refetchPending();
@@ -130,25 +111,81 @@ export function FriendsList() {
   };
 
   return (
-    <Card className="p-4 bg-card/50 backdrop-blur-sm">
-      {pendingRequests && pendingRequests.length > 0 && (
-        <div className="mb-6">
-          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-primary" />
-            Demandes en attente
-          </h3>
-          <ScrollArea className="h-[200px] pr-4">
-            <div className="space-y-3">
-              {pendingRequests.map((request) => (
-                <div 
-                  key={request.sender.id} 
-                  className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg animate-pulse"
+    <Card className="p-4 bg-card/50 backdrop-blur-sm h-full">
+      <Tabs defaultValue="friends" className="w-full">
+        <TabsList className="w-full mb-4">
+          <TabsTrigger value="friends" className="flex-1">
+            <User className="h-4 w-4 mr-2" />
+            Amis
+          </TabsTrigger>
+          {pendingRequests?.length > 0 && (
+            <TabsTrigger value="requests" className="flex-1">
+              <UserPlus className="h-4 w-4 mr-2" />
+              Demandes
+              <span className="ml-2 bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs">
+                {pendingRequests.length}
+              </span>
+            </TabsTrigger>
+          )}
+        </TabsList>
+
+        <TabsContent value="friends" className="mt-0">
+          <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
+            <AnimatePresence>
+              {friends?.map((friend) => (
+                <motion.div
+                  key={friend.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors group relative"
+                >
+                  <Avatar className="h-10 w-10 border-2 border-primary/10">
+                    <AvatarImage src={friend.avatar_url || ''} alt={friend.full_name || ''} />
+                    <AvatarFallback>{friend.full_name?.charAt(0) || 'U'}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{friend.full_name}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <CircleDot className={`h-2 w-2 ${friend.online_status ? "text-green-500" : "text-gray-300"}`} />
+                      {friend.online_status ? "En ligne" : "Hors ligne"}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => handleMessage(friend.id)}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              ))}
+              {(!friends || friends.length === 0) && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>Aucun ami pour le moment</p>
+                  <p className="text-sm">Commencez à ajouter des amis!</p>
+                </div>
+              )}
+            </AnimatePresence>
+          </ScrollArea>
+        </TabsContent>
+
+        <TabsContent value="requests" className="mt-0">
+          <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
+            <AnimatePresence>
+              {pendingRequests?.map((request) => (
+                <motion.div
+                  key={request.sender.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg mb-2"
                 >
                   <Avatar className="h-10 w-10 border-2 border-primary/10">
                     <AvatarImage src={request.sender.avatar_url || ''} alt={request.sender.full_name || ''} />
-                    <AvatarFallback>
-                      {request.sender.full_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
+                    <AvatarFallback>{request.sender.full_name?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{request.sender.full_name}</p>
@@ -160,7 +197,7 @@ export function FriendsList() {
                     <Button
                       size="sm"
                       variant="default"
-                      className="h-8 px-3"
+                      className="h-8 w-8 p-0"
                       onClick={() => handleAcceptRequest(request.id, request.sender.id, request.sender.full_name)}
                     >
                       <Check className="h-4 w-4" />
@@ -168,64 +205,18 @@ export function FriendsList() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-8 px-3"
+                      className="h-8 w-8 p-0"
                       onClick={() => handleRejectRequest(request.id, request.sender.full_name)}
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </AnimatePresence>
           </ScrollArea>
-        </div>
-      )}
-
-      <div>
-        <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-          <User className="h-5 w-5 text-primary" />
-          Mes amis
-        </h3>
-        <ScrollArea className="h-[300px] pr-4">
-          <div className="space-y-3">
-            {friends?.map((friend: FriendPreview) => (
-              <div 
-                key={friend.id} 
-                className="flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors group relative"
-              >
-                <Avatar className="h-10 w-10 border-2 border-primary/10">
-                  <AvatarImage src={friend.avatar_url || ''} alt={friend.full_name || ''} />
-                  <AvatarFallback>
-                    {friend.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{friend.full_name}</p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <CircleDot className={`h-2 w-2 ${friend.online_status ? "text-green-500" : "text-gray-300"}`} />
-                    {friend.online_status ? "En ligne" : "Hors ligne"}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => handleMessage(friend.id)}
-                >
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-            {(!friends || friends.length === 0) && (
-              <div className="text-center py-8 text-muted-foreground">
-                <User className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>Aucun ami pour le moment</p>
-                <p className="text-sm">Commencez à ajouter des amis!</p>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-      </div>
+        </TabsContent>
+      </Tabs>
     </Card>
   );
 }
