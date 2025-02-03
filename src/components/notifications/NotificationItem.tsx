@@ -1,9 +1,11 @@
-import { X, UserPlus, UserMinus } from "lucide-react";
+import { X, UserPlus, UserMinus, FileText } from "lucide-react";
 import { formatTime } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface NotificationItemProps {
   id: string;
@@ -22,7 +24,55 @@ export function NotificationItem({
   read,
   onDelete,
 }: NotificationItemProps) {
+  const navigate = useNavigate();
   const isFriendRequest = title.toLowerCase().includes("demande d'ami");
+  const isCVRequest = title.toLowerCase().includes("demande de cv");
+
+  const handleAcceptCV = async () => {
+    try {
+      const requesterId = message.match(/ID:(\S+)/)?.[1];
+      if (!requesterId) return;
+
+      // Create notification for the requester
+      const { error: notifError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: requesterId,
+          title: 'Accès au CV accordé',
+          message: 'Votre demande d\'accès au CV a été acceptée. Vous pouvez maintenant voir le profil complet.',
+        });
+
+      if (notifError) throw notifError;
+
+      onDelete(id);
+      toast.success("Accès accordé avec succès");
+    } catch (error) {
+      console.error('Error accepting CV request:', error);
+      toast.error("Erreur lors de l'acceptation de la demande");
+    }
+  };
+
+  const handleRejectCV = () => {
+    try {
+      const requesterId = message.match(/ID:(\S+)/)?.[1];
+      if (!requesterId) return;
+
+      // Create rejection notification
+      supabase
+        .from('notifications')
+        .insert({
+          user_id: requesterId,
+          title: 'Accès au CV refusé',
+          message: 'Votre demande d\'accès au CV a été refusée.',
+        });
+
+      onDelete(id);
+      toast.success("Demande refusée");
+    } catch (error) {
+      console.error('Error rejecting CV request:', error);
+      toast.error("Erreur lors du refus de la demande");
+    }
+  };
 
   const handleAcceptFriend = async () => {
     try {
@@ -132,6 +182,29 @@ export function NotificationItem({
             onClick={handleRejectFriend}
           >
             <UserMinus className="h-4 w-4" />
+            Refuser
+          </Button>
+        </div>
+      )}
+
+      {isCVRequest && (
+        <div className="flex gap-2 mt-3">
+          <Button
+            size="sm"
+            variant="default"
+            className="flex items-center gap-1"
+            onClick={handleAcceptCV}
+          >
+            <FileText className="h-4 w-4" />
+            Accepter
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex items-center gap-1"
+            onClick={handleRejectCV}
+          >
+            <X className="h-4 w-4" />
             Refuser
           </Button>
         </div>
