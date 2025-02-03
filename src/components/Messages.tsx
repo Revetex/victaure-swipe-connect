@@ -38,7 +38,7 @@ function MessagesWithQuery({
   selectedReceiver: Receiver | null;
   setSelectedReceiver: (receiver: Receiver | null) => void;
 }) {
-  const { messages, markAsRead } = useMessages();
+  const { messages = [], markAsRead } = useMessages();
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -90,14 +90,14 @@ function MessagesWithQuery({
     }
   };
 
-  const formattedChatMessages = formatChatMessages(chatMessages);
+  const formattedChatMessages = formatChatMessages(chatMessages || []);
   const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
-  const filteredMessages = filterMessages(currentMessages, selectedReceiver);
+  const filteredMessages = filterMessages(currentMessages || [], selectedReceiver);
 
   return showConversation ? (
     <MessagesContent
       messages={filteredMessages}
-      inputMessage={inputMessage}
+      inputMessage={inputMessage || ""}
       isListening={isListening}
       isThinking={isThinking}
       onSendMessage={handleSendMessage}
@@ -109,7 +109,7 @@ function MessagesWithQuery({
     />
   ) : (
     <ConversationList
-      messages={messages}
+      messages={messages || []}
       chatMessages={formattedChatMessages}
       onSelectConversation={handleSelectConversation}
     />
@@ -118,10 +118,10 @@ function MessagesWithQuery({
 
 export function Messages() {
   const {
-    messages: chatMessages,
-    inputMessage,
-    isListening,
-    isThinking,
+    messages: chatMessages = [],
+    inputMessage = "",
+    isListening = false,
+    isThinking = false,
     setInputMessage,
     handleSendMessage,
     handleVoiceInput,

@@ -2,9 +2,11 @@ import { Message as ChatMessage } from "@/types/chat/messageTypes";
 import { Message, Receiver } from "@/types/messages";
 
 export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
+  if (!Array.isArray(messages)) return [];
+  
   return messages.map(msg => ({
     id: msg.id,
-    content: msg.content,
+    content: msg.content || "",
     sender_id: msg.sender_id,
     receiver_id: msg.receiver_id,
     read: msg.read,
@@ -22,13 +24,13 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
 };
 
 export const filterMessages = (messages: Message[], receiver: Receiver | null): Message[] => {
-  if (!receiver) return [];
+  if (!Array.isArray(messages) || !receiver) return [];
   
   if (receiver.id === 'assistant') {
     return messages;
   }
 
   return messages.filter(message => 
-    message.sender_id === receiver.id || message.receiver_id === receiver.id
+    message && (message.sender_id === receiver.id || message.receiver_id === receiver.id)
   );
 };
