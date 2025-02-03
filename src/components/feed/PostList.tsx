@@ -72,26 +72,38 @@ export function PostList() {
       return;
     }
 
-    const { error } = await supabase
-      .from('post_reactions')
-      .upsert(
-        { 
-          post_id: postId, 
-          user_id: user.id,
-          reaction_type: type 
-        },
-        { onConflict: 'post_id,user_id' }
-      );
+    try {
+      const { error } = await supabase
+        .from('post_reactions')
+        .upsert(
+          { 
+            post_id: postId, 
+            user_id: user.id,
+            reaction_type: type 
+          },
+          { 
+            onConflict: 'post_id,user_id',
+            ignoreDuplicates: false 
+          }
+        );
 
-    if (error) {
-      console.error('Reaction error:', error);
+      if (error) {
+        console.error('Reaction error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update reaction",
+          variant: "destructive"
+        });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      }
+    } catch (error) {
+      console.error('Error handling reaction:', error);
       toast({
         title: "Error",
-        description: "Failed to update reaction",
+        description: "An unexpected error occurred",
         variant: "destructive"
       });
-    } else {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
     }
   };
 
