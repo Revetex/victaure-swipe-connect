@@ -20,6 +20,7 @@ export function ProfileSearch({
 }: ProfileSearchProps) {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
@@ -46,39 +47,47 @@ export function ProfileSearch({
   });
 
   return (
-    <Command className={`rounded-lg border shadow-md ${className}`}>
-      <CommandInput 
-        placeholder={placeholder}
-        value={search}
-        onValueChange={setSearch}
-      />
-      <CommandList>
-        <CommandGroup>
-          {isLoading && (
-            <div className="flex items-center justify-center p-4">
-              <Loader2 className="h-4 w-4 animate-spin" />
-            </div>
-          )}
-          {!isLoading && debouncedSearch && profiles.length === 0 && (
-            <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
-          )}
-          {!isLoading && profiles.map((profile) => (
-            <CommandItem
-              key={profile.id}
-              onSelect={() => onSelect(profile)}
-              className="flex items-center gap-2 p-2"
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={profile.avatar_url || ""} />
-                <AvatarFallback>
-                  <UserRound className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-              <span>{profile.full_name}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
+    <div className="relative w-full">
+      <Command className={`rounded-lg border shadow-md ${className}`}>
+        <CommandInput 
+          placeholder={placeholder}
+          value={search}
+          onValueChange={setSearch}
+        />
+        <div className="absolute w-full z-50 bg-background border rounded-b-lg shadow-lg max-h-[300px] overflow-y-auto">
+          <CommandList>
+            <CommandGroup>
+              {isLoading && (
+                <div className="flex items-center justify-center p-4">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </div>
+              )}
+              {!isLoading && debouncedSearch && profiles.length === 0 && (
+                <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
+              )}
+              {!isLoading && profiles.map((profile) => (
+                <CommandItem
+                  key={profile.id}
+                  onSelect={() => onSelect(profile)}
+                  onMouseEnter={() => setHoveredId(profile.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  className={`flex items-center gap-2 p-2 cursor-pointer transition-colors ${
+                    hoveredId === profile.id ? 'bg-accent' : ''
+                  }`}
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={profile.avatar_url || ""} />
+                    <AvatarFallback>
+                      <UserRound className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{profile.full_name}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </div>
+      </Command>
+    </div>
   );
 }
