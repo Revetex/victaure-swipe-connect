@@ -19,12 +19,12 @@ export function ProfileSearch({
   className = ""
 }: ProfileSearchProps) {
   const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 500);
+  const [debouncedSearch] = useDebounce(search, 300);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
-      if (debouncedSearch.length < 2) return [];
+      if (!debouncedSearch || debouncedSearch.length < 2) return [];
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -43,7 +43,8 @@ export function ProfileSearch({
 
       return profiles as UserProfile[];
     },
-    enabled: debouncedSearch.length >= 2
+    enabled: debouncedSearch.length >= 2,
+    keepPreviousData: true
   });
 
   return (
