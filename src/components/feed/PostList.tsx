@@ -3,7 +3,7 @@ import { UserCircle, ThumbsUp, ThumbsDown, MessageSquare, Trash2, EyeOff } from 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useSession } from "@/hooks/useSession";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 
 interface Post {
@@ -33,7 +33,7 @@ interface Post {
 
 export function PostList() {
   const { toast } = useToast();
-  const { session } = useSession({ required: false });
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: posts } = useQuery({
@@ -63,18 +63,28 @@ export function PostList() {
   });
 
   const handleReaction = async (postId: string, type: 'like' | 'dislike') => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to react to posts",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const { error } = await supabase
       .from('post_reactions')
       .upsert(
         { 
           post_id: postId, 
-          user_id: session?.user.id,
+          user_id: user.id,
           reaction_type: type 
         },
         { onConflict: 'post_id,user_id' }
       );
 
     if (error) {
+      console.error('Reaction error:', error);
       toast({
         title: "Error",
         description: "Failed to update reaction",
@@ -86,6 +96,8 @@ export function PostList() {
   };
 
   const handleDelete = async (postId: string) => {
+    if (!user) return;
+
     const { error } = await supabase
       .from('posts')
       .delete()
@@ -107,14 +119,24 @@ export function PostList() {
   };
 
   const handleHide = async (postId: string) => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to hide posts",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const { error } = await supabase
       .from('hidden_posts')
       .insert({
         post_id: postId,
-        user_id: session?.user.id
+        user_id: user.id
       });
 
     if (error) {
+      console.error('Hide post error:', error);
       toast({
         title: "Error",
         description: "Failed to hide post",
@@ -152,7 +174,7 @@ export function PostList() {
               </p>
             </div>
             <div className="flex gap-2">
-              {post.user_id === session?.user.id ? (
+              {post.user_id === user?.id ? (
                 <Button
                   variant="ghost"
                   size="icon"
