@@ -7,44 +7,57 @@ export const AuthHeader = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col items-center space-y-4 text-center"
+      className="flex flex-col items-center space-y-8"
     >
       <Logo size="lg" className="mb-2" />
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
+      
+      <div className="relative space-y-3 text-center max-w-md">
+        <motion.h1 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-2xl font-medium tracking-tight text-foreground/90"
+        >
           Votre Carrière, Notre Mission
-        </h1>
-        <p className="text-sm text-muted-foreground max-w-md">
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-sm text-muted-foreground/80"
+        >
           Découvrez des opportunités uniques et connectez-vous avec des professionnels qui partagent vos ambitions
-        </p>
+        </motion.p>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 w-full max-w-lg">
-        <div className="flex items-center gap-2 text-xs">
-          <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            ✓
-          </div>
-          <span className="text-muted-foreground">Matching intelligent</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            ✓
-          </div>
-          <span className="text-muted-foreground">Profil professionnel avancé</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            ✓
-          </div>
-          <span className="text-muted-foreground">Opportunités exclusives</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            ✓
-          </div>
-          <span className="text-muted-foreground">Réseau professionnel ciblé</span>
-        </div>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="grid grid-cols-2 gap-4 w-full max-w-md mx-auto mt-2"
+      >
+        {[
+          "Matching intelligent",
+          "Profil professionnel",
+          "Opportunités exclusives",
+          "Réseau ciblé"
+        ].map((feature, index) => (
+          <motion.div
+            key={feature}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 + index * 0.1 }}
+            className="flex items-center gap-2 group"
+          >
+            <div className="h-6 w-6 rounded-full bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary transition-colors duration-200">
+              <span className="text-xs">✓</span>
+            </div>
+            <span className="text-xs text-muted-foreground/70 group-hover:text-foreground/90 transition-colors duration-200">
+              {feature}
+            </span>
+          </motion.div>
+        ))}
+      </motion.div>
     </motion.div>
   );
 };
