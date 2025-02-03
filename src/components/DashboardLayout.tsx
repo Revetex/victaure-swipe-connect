@@ -112,10 +112,7 @@ export function DashboardLayout() {
               <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between py-2 px-4">
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Logo size="sm" />
-                      <h1 className="text-xl font-bold text-primary">VICTAURE</h1>
-                    </div>
+                    <Logo size="sm" />
                     <div className="h-6 w-px bg-border mx-2" />
                     <h2 className="text-lg font-semibold text-foreground">
                       {getPageTitle(currentPage)}
