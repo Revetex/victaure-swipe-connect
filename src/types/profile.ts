@@ -70,3 +70,26 @@ export interface Friend {
   id: string;
   full_name: string;
 }
+
+export type FriendPreview = {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  online_status: boolean;
+  last_seen: string;
+};
+
+export type PendingRequest = {
+  id: string;
+  sender: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
+  receiver: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
+  type: 'incoming' | 'outgoing';
+};

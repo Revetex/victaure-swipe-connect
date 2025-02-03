@@ -1,39 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CircleDot, User, MessageCircle, UserPlus, UserMinus, Check, X, Clock } from "lucide-react";
+import { User, UserPlus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { UserProfile } from "@/types/profile";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { useState } from "react";
 import { ProfilePreview } from "@/components/ProfilePreview";
-
-type FriendPreview = {
-  id: string;
-  full_name: string;
-  avatar_url: string;
-  online_status: boolean;
-  last_seen: string;
-};
-
-type PendingRequest = {
-  id: string;
-  sender: {
-    id: string;
-    full_name: string;
-    avatar_url: string;
-  };
-  receiver: {
-    id: string;
-    full_name: string;
-    avatar_url: string;
-  };
-  type: 'incoming' | 'outgoing';
-};
+import { FriendItem } from "./friends/FriendItem";
+import { PendingRequest } from "./friends/PendingRequest";
+import { FriendListHeader } from "./friends/FriendListHeader";
 
 export function FriendsList() {
   const navigate = useNavigate();
@@ -69,7 +47,7 @@ export function FriendsList() {
 
       return friendRequests?.map(request => {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend as FriendPreview;
+        return friend;
       }) || [];
     }
   });
@@ -80,7 +58,6 @@ export function FriendsList() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Get incoming requests
       const { data: incomingRequests } = await supabase
         .from("friend_requests")
         .select(`
@@ -99,7 +76,6 @@ export function FriendsList() {
         .eq("receiver_id", user.id)
         .eq("status", "pending");
 
-      // Get outgoing requests
       const { data: outgoingRequests } = await supabase
         .from("friend_requests")
         .select(`
@@ -128,7 +104,7 @@ export function FriendsList() {
         type: 'outgoing' as const
       }));
 
-      return [...formattedIncoming, ...formattedOutgoing] as PendingRequest[];
+      return [...formattedIncoming, ...formattedOutgoing];
     }
   });
 
@@ -186,8 +162,8 @@ export function FriendsList() {
     setSelectedProfile(profile);
   };
 
-  const handleViewFriendProfile = (friend: FriendPreview) => {
-    setSelectedProfile(friend as UserProfile);
+  const handleViewFriendProfile = (friend: UserProfile) => {
+    setSelectedProfile(friend);
   };
 
   return (
@@ -200,114 +176,40 @@ export function FriendsList() {
           />
         </div>
 
-        {/* Pending Requests Section */}
         <div className="mb-6">
-          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-primary" />
-            Demandes en attente
-          </h3>
+          <FriendListHeader 
+            icon={<UserPlus className="h-5 w-5 text-primary" />}
+            title="Demandes en attente"
+          />
           <ScrollArea className="h-[200px] pr-4">
             <div className="space-y-3">
               {pendingRequests.map((request) => (
-                <div 
-                  key={request.id} 
-                  className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg animate-pulse"
-                >
-                  <Avatar className="h-10 w-10 border-2 border-primary/10">
-                    <AvatarImage 
-                      src={request.type === 'incoming' ? request.sender.avatar_url : request.receiver.avatar_url} 
-                      alt={request.type === 'incoming' ? request.sender.full_name : request.receiver.full_name} 
-                    />
-                    <AvatarFallback>
-                      {(request.type === 'incoming' ? request.sender.full_name : request.receiver.full_name)?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">
-                      {request.type === 'incoming' ? request.sender.full_name : request.receiver.full_name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {request.type === 'incoming' 
-                        ? "Souhaite vous ajouter comme ami" 
-                        : "Demande envoyée"}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {request.type === 'incoming' ? (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="default"
-                          className="h-8 px-3"
-                          onClick={() => handleAcceptRequest(request.id, request.sender.id, request.sender.full_name)}
-                        >
-                          <Check className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 px-3"
-                          onClick={() => handleRejectRequest(request.id, request.sender.full_name)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 px-3"
-                        onClick={() => handleCancelRequest(request.id, request.receiver.full_name)}
-                      >
-                        <Clock className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                <PendingRequest
+                  key={request.id}
+                  request={request}
+                  onAccept={handleAcceptRequest}
+                  onReject={handleRejectRequest}
+                  onCancel={handleCancelRequest}
+                />
               ))}
             </div>
           </ScrollArea>
         </div>
 
-        {/* Friends List Section */}
         <div>
-          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" />
-            Mes connections
-          </h3>
+          <FriendListHeader 
+            icon={<User className="h-5 w-5 text-primary" />}
+            title="Mes connections"
+          />
           <ScrollArea className="h-[300px] pr-4">
             <div className="space-y-3">
-              {friends?.map((friend: FriendPreview) => (
-                <div 
-                  key={friend.id} 
-                  className="flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors group relative cursor-pointer"
-                  onClick={() => handleViewFriendProfile(friend)}
-                >
-                  <Avatar className="h-10 w-10 border-2 border-primary/10">
-                    <AvatarImage src={friend.avatar_url || ''} alt={friend.full_name || ''} />
-                    <AvatarFallback>
-                      {friend.full_name?.charAt(0) || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{friend.full_name}</p>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <CircleDot className={`h-2 w-2 ${friend.online_status ? "text-green-500" : "text-gray-300"}`} />
-                      {friend.online_status ? "En ligne" : "Hors ligne"}
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMessage(friend.id);
-                    }}
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                  </Button>
-                </div>
+              {friends?.map((friend) => (
+                <FriendItem
+                  key={friend.id}
+                  friend={friend}
+                  onMessage={handleMessage}
+                  onViewProfile={handleViewFriendProfile}
+                />
               ))}
               {(!friends || friends.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground">
