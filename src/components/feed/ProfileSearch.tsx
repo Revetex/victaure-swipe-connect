@@ -66,36 +66,34 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className =
           onValueChange={setSearch}
           className="border-none focus:ring-0"
         />
-        {search.trim().length > 0 && (
-          <CommandGroup className="max-h-[300px] overflow-y-auto p-2">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-6">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-              </div>
-            ) : searchResults.length === 0 ? (
-              <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-                No results found.
-              </CommandEmpty>
-            ) : (
-              searchResults.map((profile) => (
-                <CommandItem
-                  key={profile.id}
-                  value={profile.id}
-                  onSelect={handleSelect}
-                  className="flex items-center gap-2 px-2"
-                >
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={profile.avatar_url || ""} />
-                    <AvatarFallback>
-                      <UserRound className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <span>{profile.full_name}</span>
-                </CommandItem>
-              ))
-            )}
-          </CommandGroup>
-        )}
+        <CommandGroup className="max-h-[300px] overflow-y-auto p-2">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-6">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
+          ) : searchResults.length === 0 ? (
+            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
+              Aucun résultat trouvé.
+            </CommandEmpty>
+          ) : (
+            searchResults.map((profile) => (
+              <CommandItem
+                key={profile.id}
+                value={profile.id}
+                onSelect={handleSelect}
+                className="flex items-center gap-2 px-2"
+              >
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={profile.avatar_url || ""} />
+                  <AvatarFallback>
+                    <UserRound className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <span>{profile.full_name}</span>
+              </CommandItem>
+            ))
+          )}
+        </CommandGroup>
       </Command>
     </div>
   );
