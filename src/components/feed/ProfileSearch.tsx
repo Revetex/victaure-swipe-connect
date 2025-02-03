@@ -77,13 +77,17 @@ export function ProfileSearch({ onSelect, placeholder = "Rechercher...", classNa
                 <div className="p-4 text-center">
                   <Loader2 className="h-4 w-4 animate-spin mx-auto" />
                 </div>
+              ) : error ? (
+                <CommandEmpty className="p-4 text-center text-sm text-muted-foreground">
+                  Une erreur est survenue.
+                </CommandEmpty>
               ) : searchResults.length === 0 ? (
                 <CommandEmpty className="p-4 text-center text-sm text-muted-foreground">
                   Aucun résultat trouvé.
                 </CommandEmpty>
               ) : (
                 <CommandGroup className="max-h-60 overflow-y-auto">
-                  {searchResults.map((profile) => (
+                  {searchResults?.map((profile) => (
                     <CommandItem
                       key={profile.id}
                       value={profile.id}
