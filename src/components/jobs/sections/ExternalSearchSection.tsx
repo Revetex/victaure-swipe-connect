@@ -86,7 +86,7 @@ export function ExternalSearchSection({
   }
 
   return (
-    <div className="w-full space-y-2 px-2 sm:px-4 -mt-4">
+    <div className="w-full space-y-2 px-2 sm:px-4 -mt-8">
       <div className="bg-background/50 backdrop-blur-sm rounded-lg p-3 border border-border/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
