@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileInfo } from "@/components/profile/ProfileInfo";
 import { ProfileActions } from "@/components/profile/ProfileActions";
-import { ProfileBio } from "@/components/profile/ProfileBio";
-import { ProfileSkills } from "@/components/profile/ProfileSkills";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -31,9 +29,20 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
           <ProfileAvatar profile={profile} />
           <ProfileInfo profile={profile} />
           
-          <div className="w-full">
-            <ProfileBio profile={profile} />
-            <ProfileSkills profile={profile} />
+          <div className="w-full space-y-4">
+            <div className="text-sm text-muted-foreground">
+              {profile.bio || "No bio available"}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {profile.skills?.map((skill, index) => (
+                <span 
+                  key={index}
+                  className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="flex gap-2 w-full">

@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { StyleOption } from './types';
 
 const defaultStyle: StyleOption = {
@@ -31,6 +31,16 @@ const VCardStyleContext = createContext<{
   selectedStyle: defaultStyle,
   setSelectedStyle: () => {},
 });
+
+export function VCardStyleProvider({ children }: { children: ReactNode }) {
+  const [selectedStyle, setSelectedStyle] = useState<StyleOption>(defaultStyle);
+
+  return (
+    <VCardStyleContext.Provider value={{ selectedStyle, setSelectedStyle }}>
+      {children}
+    </VCardStyleContext.Provider>
+  );
+}
 
 export const useVCardStyle = () => useContext(VCardStyleContext);
 
