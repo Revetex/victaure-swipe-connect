@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MoreVertical, Trash2 } from "lucide-react";
+import { ArrowLeft, MoreVertical, Trash2, ArrowDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -55,17 +55,22 @@ export function ConversationView({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    if (messagesEndRef.current && isAutoScrollEnabled) {
+      messagesEndRef.current.scrollIntoView({ behavior, block: "end" });
     }
   };
 
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (isAutoScrollEnabled) {
+      scrollToBottom("instant");
+    }
+  }, [messages, isAutoScrollEnabled]);
+
+  // Handle scroll events
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     
@@ -73,6 +78,12 @@ export function ConversationView({
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
     
     setShowScrollButton(!isNearBottom);
+    setIsAutoScrollEnabled(isNearBottom);
+  };
+
+  const handleScrollButtonClick = () => {
+    setIsAutoScrollEnabled(true);
+    scrollToBottom();
   };
 
   const handleDelete = () => {
@@ -137,7 +148,7 @@ export function ConversationView({
 
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto relative"
         onScroll={handleScroll}
       >
         <div className="px-4 py-4 space-y-4">
@@ -174,6 +185,17 @@ export function ConversationView({
           )}
           <div ref={messagesEndRef} />
         </div>
+
+        {showScrollButton && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="fixed bottom-24 right-4 rounded-full shadow-lg"
+            onClick={handleScrollButtonClick}
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <div className="sticky bottom-0 shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
