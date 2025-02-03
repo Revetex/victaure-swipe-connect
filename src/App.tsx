@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Dashboard } from "@/components/Dashboard";
 import { Landing } from "@/components/Landing";
@@ -12,28 +12,26 @@ import { Chat } from "@/components/Chat";
 
 function App() {
   return (
-    <Router>
-      <VCardStyleProvider>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          >
-            <Route path="public-profile/:id" element={<PublicProfile />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="connections" element={<Connections />} />
-            <Route path="chat" element={<Chat />} />
-          </Route>
-        </Routes>
-        <Toaster />
-      </VCardStyleProvider>
-    </Router>
+    <VCardStyleProvider>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        >
+          <Route path="public-profile/:id" element={<PublicProfile />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="connections" element={<Connections />} />
+          <Route path="chat" element={<Chat />} />
+        </Route>
+      </Routes>
+      <Toaster />
+    </VCardStyleProvider>
   );
 }
 
