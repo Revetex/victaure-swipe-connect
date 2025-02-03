@@ -71,10 +71,7 @@ export interface Friend {
   full_name: string;
 }
 
-export type FriendPreview = {
-  id: string;
-  full_name: string;
-  avatar_url: string;
+export type FriendPreview = UserProfile & {
   online_status: boolean;
   last_seen: string;
 };
