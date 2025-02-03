@@ -37,8 +37,10 @@ export default defineConfig(({ mode }) => ({
         'Authorization', 
         'X-Client-Info', 
         'apikey', 
-        'X-Supabase-Auth'
+        'X-Supabase-Auth',
+        'Range'
       ],
+      exposedHeaders: ['Content-Range'],
       credentials: true,
       preflightContinue: true,
       optionsSuccessStatus: 204
