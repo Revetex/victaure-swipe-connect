@@ -123,7 +123,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           </div>
         )}
         <div className="flex justify-between items-center">
-          <div className="flex gap-2 sm:gap-4 items-center">
+          <div className="flex gap-2 items-center">
             <input
               type="file"
               id="file-upload"
@@ -132,23 +132,28 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
               onChange={handleFileChange}
               accept="image/*,.pdf,.doc,.docx"
             />
-            <Button variant="outline" size="icon" className="h-8 w-8 sm:h-10 sm:w-10" onClick={() => document.getElementById('file-upload')?.click()}>
-              <Image className="h-4 w-4" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="h-7 w-7 sm:h-9 sm:w-9" 
+              onClick={() => document.getElementById('file-upload')?.click()}
+            >
+              <Image className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
             <Select value={privacy} onValueChange={(value: "public" | "connections") => setPrivacy(value)}>
-              <SelectTrigger className="w-[140px] sm:w-[180px] h-8 sm:h-10">
+              <SelectTrigger className="w-[120px] sm:w-[180px] h-7 sm:h-9 text-xs sm:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="public">
                   <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
+                    <Globe className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>Public</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="connections">
                   <div className="flex items-center gap-2">
-                    <Lock className="h-4 w-4" />
+                    <Lock className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>Connexions uniquement</span>
                   </div>
                 </SelectItem>
@@ -158,13 +163,13 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           <Button 
             onClick={handleCreatePost} 
             disabled={isUploading}
-            size={isMobile ? "sm" : "default"}
-            className="px-3 sm:px-4"
+            size="sm"
+            className="h-7 px-2 text-xs sm:h-9 sm:px-3 sm:text-sm"
           >
             {isUploading ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin mr-1 sm:mr-2" />
             ) : (
-              <Send className="h-4 w-4 mr-2" />
+              <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             )}
             Publier
           </Button>
