@@ -69,7 +69,7 @@ export function DashboardContent({
     switch (currentPage) {
       case 1: // Profile
         return (
-          <div className="w-full border-2 border-black rounded-lg p-4">
+          <div className="w-full p-4">
             <VCard 
               onEditStateChange={onEditStateChange}
               onRequestChat={onRequestChat}
@@ -78,19 +78,19 @@ export function DashboardContent({
         );
       case 2: // Messages
         return (
-          <div className="w-full border-2 border-black rounded-lg p-4">
+          <div className="w-full p-4">
             <Messages />
           </div>
         );
       case 3: // Jobs
         return (
-          <div className="w-full border-2 border-black rounded-lg p-4">
+          <div className="w-full p-4">
             <Marketplace />
           </div>
         );
       case 4: // Feed
         return (
-          <div className="w-full border-2 border-black rounded-lg p-4">
+          <div className="w-full p-4">
             <Feed />
           </div>
         );
@@ -154,7 +154,7 @@ export function DashboardContent({
         );
       case 6: // Settings
         return (
-          <div className="w-full border-2 border-black rounded-lg p-4">
+          <div className="w-full p-4">
             <Settings />
           </div>
         );
