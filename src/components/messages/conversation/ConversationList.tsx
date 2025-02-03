@@ -15,7 +15,13 @@ export function ConversationList({
   chatMessages,
   onSelectConversation
 }: ConversationListProps) {
-  const hasMessages = messages?.length > 0;
+  // Filter out test messages and ensure we have real conversations
+  const realMessages = messages?.filter(message => {
+    const sender = typeof message.sender === 'string' ? { id: message.sender } : message.sender;
+    return sender && sender.id && message.content;
+  }) || [];
+  
+  const hasMessages = realMessages.length > 0;
   
   return (
     <ScrollArea className="flex-1">
@@ -43,7 +49,7 @@ export function ConversationList({
                 <p className="text-sm">Commencez une nouvelle conversation!</p>
               </div>
             ) : (
-              messages.map((message) => (
+              realMessages.map((message) => (
                 <UserMessage
                   key={message.id}
                   message={message}
