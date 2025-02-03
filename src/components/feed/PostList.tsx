@@ -16,6 +16,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Post {
   id: string;
@@ -47,6 +49,7 @@ export function PostList() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
+  const [expandedComments, setExpandedComments] = useState<string[]>([]);
 
   const { data: posts } = useQuery({
     queryKey: ["posts"],
@@ -234,12 +237,21 @@ export function PostList() {
     }
   };
 
+  const toggleComments = (postId: string) => {
+    setExpandedComments(prev => 
+      prev.includes(postId) 
+        ? prev.filter(id => id !== postId)
+        : [...prev, postId]
+    );
+  };
+
   return (
     <div className="space-y-4">
       {posts?.map((post) => {
         const likes = post.reactions?.filter(r => r.reaction_type === 'like').length || 0;
         const dislikes = post.reactions?.filter(r => r.reaction_type === 'dislike').length || 0;
         const userReaction = post.reactions?.find(r => r.user_id === user?.id)?.reaction_type;
+        const isExpanded = expandedComments.includes(post.id);
 
         return (
           <Card key={post.id} className="p-4">
@@ -258,7 +270,7 @@ export function PostList() {
               <div className="flex-1">
                 <h3 className="font-medium">{post.profiles.full_name}</h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                  <span>{format(new Date(post.created_at), "d MMMM 'à' HH:mm", { locale: fr })}</span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
                     {post.privacy_level === "public" ? (
@@ -342,14 +354,29 @@ export function PostList() {
                 <span>{dislikes}</span>
               </Button>
               <Button
-                variant="ghost"
+                variant={isExpanded ? 'default' : 'ghost'}
                 size="sm"
                 className="flex gap-2"
+                onClick={() => toggleComments(post.id)}
               >
                 <MessageSquare className="h-4 w-4" />
                 <span>{post.comments?.length || 0}</span>
               </Button>
             </div>
+
+            {isExpanded && post.comments && post.comments.length > 0 && (
+              <div className="mt-4 space-y-3 pl-4 border-l-2 border-muted">
+                {post.comments.map((comment) => (
+                  <div key={comment.id} className="text-sm">
+                    <div className="font-medium">{comment.profiles.full_name}</div>
+                    <div className="text-muted-foreground text-xs">
+                      {format(new Date(comment.created_at), "d MMMM 'à' HH:mm", { locale: fr })}
+                    </div>
+                    <div className="mt-1">{comment.content}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
         );
       })}
