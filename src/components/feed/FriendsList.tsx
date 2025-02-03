@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CircleDot, User, MessageCircle, UserPlus, UserMinus, Check, X } from "lucide-react";
+import { CircleDot, User, MessageCircle, UserPlus, UserMinus, Check, X, Clock } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { UserProfile } from "@/types/profile";
@@ -27,6 +27,12 @@ type PendingRequest = {
     full_name: string;
     avatar_url: string;
   };
+  receiver: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
+  type: 'incoming' | 'outgoing';
 };
 
 export function FriendsList() {
@@ -74,11 +80,17 @@ export function FriendsList() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: requests } = await supabase
+      // Get incoming requests
+      const { data: incomingRequests } = await supabase
         .from("friend_requests")
         .select(`
           id,
           sender:profiles!friend_requests_sender_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
             id,
             full_name,
             avatar_url
@@ -87,7 +99,36 @@ export function FriendsList() {
         .eq("receiver_id", user.id)
         .eq("status", "pending");
 
-      return (requests || []) as PendingRequest[];
+      // Get outgoing requests
+      const { data: outgoingRequests } = await supabase
+        .from("friend_requests")
+        .select(`
+          id,
+          sender:profiles!friend_requests_sender_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq("sender_id", user.id)
+        .eq("status", "pending");
+
+      const formattedIncoming = (incomingRequests || []).map(request => ({
+        ...request,
+        type: 'incoming' as const
+      }));
+
+      const formattedOutgoing = (outgoingRequests || []).map(request => ({
+        ...request,
+        type: 'outgoing' as const
+      }));
+
+      return [...formattedIncoming, ...formattedOutgoing] as PendingRequest[];
     }
   });
 
@@ -119,6 +160,21 @@ export function FriendsList() {
     }
 
     toast.success(`Vous avez rejeté la demande de ${senderName}`);
+    refetchPendingRequests();
+  };
+
+  const handleCancelRequest = async (requestId: string, receiverName: string) => {
+    const { error } = await supabase
+      .from("friend_requests")
+      .delete()
+      .eq("id", requestId);
+
+    if (error) {
+      toast.error("Erreur lors de l'annulation de la demande");
+      return;
+    }
+
+    toast.success(`Demande d'ami à ${receiverName} annulée`);
     refetchPendingRequests();
   };
 
@@ -154,38 +210,58 @@ export function FriendsList() {
             <div className="space-y-3">
               {pendingRequests.map((request) => (
                 <div 
-                  key={request.sender.id} 
+                  key={request.id} 
                   className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg animate-pulse"
                 >
                   <Avatar className="h-10 w-10 border-2 border-primary/10">
-                    <AvatarImage src={request.sender.avatar_url || ''} alt={request.sender.full_name || ''} />
+                    <AvatarImage 
+                      src={request.type === 'incoming' ? request.sender.avatar_url : request.receiver.avatar_url} 
+                      alt={request.type === 'incoming' ? request.sender.full_name : request.receiver.full_name} 
+                    />
                     <AvatarFallback>
-                      {request.sender.full_name?.charAt(0) || 'U'}
+                      {(request.type === 'incoming' ? request.sender.full_name : request.receiver.full_name)?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{request.sender.full_name}</p>
+                    <p className="font-medium truncate">
+                      {request.type === 'incoming' ? request.sender.full_name : request.receiver.full_name}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      Souhaite vous ajouter comme ami
+                      {request.type === 'incoming' 
+                        ? "Souhaite vous ajouter comme ami" 
+                        : "Demande envoyée"}
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="default"
-                      className="h-8 px-3"
-                      onClick={() => handleAcceptRequest(request.id, request.sender.id, request.sender.full_name)}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8 px-3"
-                      onClick={() => handleRejectRequest(request.id, request.sender.full_name)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    {request.type === 'incoming' ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="default"
+                          className="h-8 px-3"
+                          onClick={() => handleAcceptRequest(request.id, request.sender.id, request.sender.full_name)}
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 px-3"
+                          onClick={() => handleRejectRequest(request.id, request.sender.full_name)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 px-3"
+                        onClick={() => handleCancelRequest(request.id, request.receiver.full_name)}
+                      >
+                        <Clock className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -193,6 +269,7 @@ export function FriendsList() {
           </ScrollArea>
         </div>
 
+        {/* Friends List Section */}
         <div>
           <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
