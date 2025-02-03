@@ -24,7 +24,7 @@ export function ProfileSearch({
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
     queryFn: async () => {
-      if (!debouncedSearch || debouncedSearch.length < 2) return [];
+      if (!debouncedSearch) return [];
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -43,7 +43,7 @@ export function ProfileSearch({
 
       return profiles as UserProfile[];
     },
-    enabled: debouncedSearch.length >= 2,
+    enabled: true,
     placeholderData: []
   });
 
@@ -61,7 +61,7 @@ export function ProfileSearch({
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
           )}
-          {!isLoading && debouncedSearch.length >= 2 && profiles.length === 0 && (
+          {!isLoading && debouncedSearch && profiles.length === 0 && (
             <CommandEmpty>Aucun résultat trouvé</CommandEmpty>
           )}
           {!isLoading && profiles.map((profile) => (
