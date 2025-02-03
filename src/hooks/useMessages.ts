@@ -1,63 +1,67 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Message, MessageSender } from "@/types/messages";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export function useMessages() {
-  const queryClient = useQueryClient();
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
-  const { data: messages = [], isLoading } = useQuery({
-    queryKey: ["messages"],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+  useEffect(() => {
+    if (!user) return;
 
-      const { data: messages, error } = await supabase
-        .from("messages")
-        .select(`
-          *,
-          sender:profiles!messages_sender_id_fkey(
-            id,
-            full_name,
-            avatar_url,
-            online_status,
-            last_seen
-          )
-        `)
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order("created_at", { ascending: false });
+    const fetchMessages = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error("Error fetching messages:", error);
-        toast.error("Erreur lors du chargement des messages");
-        throw error;
+        if (error) throw error;
+        setMessages(data || []);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      return messages as Message[];
-    }
-  });
+    fetchMessages();
 
-  const markAsRead = useMutation({
-    mutationFn: async (messageId: string) => {
+    const subscription = supabase
+      .channel('messages')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, fetchMessages)
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
+
+  const sendMessage = async (receiverId: string, content: string) => {
+    if (!user) return;
+
+    try {
       const { error } = await supabase
-        .from("messages")
-        .update({ read: true })
-        .eq("id", messageId);
+        .from('messages')
+        .insert([
+          {
+            sender_id: user.id,
+            receiver_id: receiverId,
+            content,
+          },
+        ]);
 
-      if (error) {
-        console.error("Error marking message as read:", error);
-        toast.error("Erreur lors du marquage du message comme lu");
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
-  });
+  };
 
   return {
     messages,
     isLoading,
-    markAsRead
+    sendMessage,
   };
 }

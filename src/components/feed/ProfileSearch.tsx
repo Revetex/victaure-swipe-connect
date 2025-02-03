@@ -1,125 +1,80 @@
-import React, { useState, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
-import { Avatar } from "@/components/ui/avatar";
-import { useDebounce } from "use-debounce";
-import { Loader2 } from "lucide-react";
-
-interface Profile {
-  id: string;
-  full_name: string | null;
-  email: string;
-  avatar_url: string | null;
-}
+import { Command } from "cmdk";
+import { Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ProfileSearchProps {
-  onSelect: (profile: Profile) => void;
+  onSelect: (profile: any) => void;
   placeholder?: string;
   className?: string;
 }
 
-export function ProfileSearch({ 
-  onSelect, 
-  placeholder = "Rechercher un utilisateur...", 
-  className 
-}: ProfileSearchProps) {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 300);
+export function ProfileSearch({ onSelect, placeholder = "Search...", className }: ProfileSearchProps) {
+  const [query, setQuery] = useState("");
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: searchResults = [], isLoading } = useQuery({
-    queryKey: ["profiles", debouncedSearch],
-    queryFn: async () => {
-      if (!debouncedSearch?.trim()) return [];
-      
+  useEffect(() => {
+    const searchProfiles = async () => {
+      if (!query.trim()) {
+        setProfiles([]);
+        return;
+      }
+
+      setIsLoading(true);
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, full_name, email, avatar_url")
-          .or(`full_name.ilike.%${debouncedSearch}%,email.ilike.%${debouncedSearch}%`)
+          .select("*")
+          .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
           .limit(5);
 
-        if (error) {
-          console.error("Error fetching profiles:", error);
-          return [];
-        }
-
-        return data || [];
+        if (error) throw error;
+        setProfiles(data || []);
       } catch (error) {
-        console.error("Error in search query:", error);
-        return [];
+        console.error("Error searching profiles:", error);
+      } finally {
+        setIsLoading(false);
       }
-    },
-    enabled: Boolean(debouncedSearch?.trim()),
-  });
+    };
 
-  const handleSelect = useCallback((profile: Profile) => {
-    onSelect(profile);
-    setSearch(""); // Reset search after selection
-  }, [onSelect]);
-
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-  };
+    const debounce = setTimeout(searchProfiles, 300);
+    return () => clearTimeout(debounce);
+  }, [query]);
 
   return (
-    <Command className={`relative ${className}`}>
-      <CommandInput
-        placeholder={placeholder}
-        value={search}
-        onValueChange={handleSearchChange}
-        className="w-full"
-      />
-      {(search || isLoading) && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1">
-          <CommandList className="bg-popover border rounded-md shadow-md max-h-[300px] overflow-y-auto">
-            {isLoading ? (
-              <CommandEmpty className="py-6 text-center">
-                <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-                <span className="text-sm text-muted-foreground mt-2">
-                  Recherche en cours...
-                </span>
-              </CommandEmpty>
-            ) : searchResults.length === 0 ? (
-              <CommandEmpty className="py-6">
-                Aucun résultat trouvé.
-              </CommandEmpty>
-            ) : (
-              <CommandGroup>
-                {searchResults.map((profile) => (
-                  <CommandItem
-                    key={profile.id}
-                    value={profile.id}
-                    onSelect={() => handleSelect(profile)}
-                    className="cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <img 
-                          src={profile.avatar_url || "/user-icon.svg"} 
-                          alt={profile.full_name || ""}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/user-icon.svg";
-                          }}
-                        />
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {profile.full_name || "Sans nom"}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {profile.email}
-                        </span>
-                      </div>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-          </CommandList>
-        </div>
+    <Command className={cn("relative rounded-lg border shadow-md", className)}>
+      <div className="flex items-center border-b px-3">
+        <Search className="h-4 w-4 shrink-0 opacity-50" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder={placeholder}
+        />
+      </div>
+      {query.length > 0 && (
+        <ul className="max-h-[300px] overflow-y-auto p-2">
+          {isLoading ? (
+            <li className="py-2 px-4 text-sm text-muted-foreground">Searching...</li>
+          ) : profiles.length > 0 ? (
+            profiles.map((profile) => (
+              <li key={profile.id}>
+                <button
+                  className="w-full rounded-md px-4 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => onSelect(profile)}
+                >
+                  <span className="font-medium">{profile.full_name}</span>
+                  <span className="ml-2 text-muted-foreground">{profile.email}</span>
+                </button>
+              </li>
+            ))
+          ) : (
+            <li className="py-2 px-4 text-sm text-muted-foreground">No results found.</li>
+          )}
+        </ul>
       )}
     </Command>
   );
-}
+};
