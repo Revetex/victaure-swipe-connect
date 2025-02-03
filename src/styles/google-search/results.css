@@ -5,7 +5,9 @@
   padding: 0 !important;
 }
 
-.gsc-above-wrapper-area {
+.gsc-above-wrapper-area,
+.gcsc-find-more-on-google,
+.gcsc-more-maybe-branding-root {
   display: none !important;
 }
 
@@ -78,10 +80,6 @@
   margin-top: 0.25rem !important;
   font-family: "Helvetica Neue", sans-serif !important;
   text-transform: none !important;
-}
-
-.gcsc-find-more-on-google {
-  display: none !important;
 }
 
 .gcse-search,
