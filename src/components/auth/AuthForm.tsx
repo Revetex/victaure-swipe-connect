@@ -17,7 +17,7 @@ export function AuthForm() {
               brandAccent: 'rgb(124, 58, 237)',
               brandButtonText: 'white',
             },
-            borderRadii: {
+            radii: {
               button: '1rem',
               input: '1rem',
             },
