@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { MessagesContainer } from "./messages/MessagesContainer";
 
 export function Feed() {
   const queryClient = useQueryClient();
