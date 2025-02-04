@@ -4,6 +4,7 @@ import { MessagesList } from "./conversation/MessagesList";
 import { useMessages } from "@/hooks/useMessages";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface MessagesWrapperProps {
   chatMessages: Message[];
@@ -36,6 +37,7 @@ export function MessagesWrapper({
 }: MessagesWrapperProps) {
   const { messages = [], markAsRead } = useMessages();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleBack = () => {
     setShowConversation(false);
@@ -55,6 +57,12 @@ export function MessagesWrapper({
         });
         setShowConversation(true);
       } else if (type === "user" && receiver) {
+        // Prevent self-conversation
+        if (receiver.id === user?.id) {
+          toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
+          return;
+        }
+
         const unreadMessages = messages.filter(
           m => {
             const senderId = typeof m.sender === 'string' ? m.sender : m.sender.id;

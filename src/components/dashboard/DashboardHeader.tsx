@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 
@@ -15,22 +15,11 @@ export function DashboardHeader({
   title,
   showFriendsList,
   onToggleFriendsList,
-  isEditing,
-  onToolReturn
+  isEditing
 }: DashboardHeaderProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b">
       <div className="flex items-center gap-4">
-        {onToolReturn && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToolReturn}
-            className="mr-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-        )}
         <Logo size="sm" />
         <h1 className="text-lg font-semibold sm:text-xl md:text-2xl">{title}</h1>
       </div>
