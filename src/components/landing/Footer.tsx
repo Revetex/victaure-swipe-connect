@@ -5,23 +5,7 @@ export function Footer() {
   return (
     <footer className="w-full py-12 bg-background/80 backdrop-blur-sm border-t">
       <div className="container px-4 mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Notre Mission</h3>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="prose prose-sm text-muted-foreground"
-            >
-              <p>
-                Chez Victaure, notre mission est de révolutionner le recrutement grâce à l'intelligence artificielle. 
-                Nous créons des connexions significatives entre les talents et les opportunités, 
-                en utilisant des technologies de pointe pour un matching précis et personnalisé.
-              </p>
-            </motion.div>
-          </div>
-          
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-3">
             <h3 className="font-semibold text-lg">Légal</h3>
             <ul className="space-y-2 text-sm">
