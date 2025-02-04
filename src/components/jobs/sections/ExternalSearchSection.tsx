@@ -25,6 +25,30 @@ export function ExternalSearchSection({
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
   const [usedSuggestions] = useState(new Set<string>());
 
+  // Add styles to fix search results visibility
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .gsc-results-wrapper-overlay {
+        background-color: hsl(var(--background)) !important;
+      }
+      .gs-title, .gs-snippet {
+        color: hsl(var(--foreground)) !important;
+      }
+      .gsc-input {
+        font-family: var(--font-sans) !important;
+      }
+      .gsc-completion-container {
+        background: hsl(var(--background)) !important;
+        color: hsl(var(--foreground)) !important;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   const fetchSuggestions = async () => {
     try {
       setIsRefreshing(true);
@@ -41,7 +65,6 @@ export function ExternalSearchSection({
 
       if (error) throw error;
       if (data?.suggestions) {
-        // Filter out suggestions that have already been used
         const newSuggestions = data.suggestions.filter(
           (suggestion: string) => !usedSuggestions.has(suggestion)
         );
@@ -62,103 +85,17 @@ export function ExternalSearchSection({
     fetchSuggestions();
   }, []);
 
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      .gsc-control-cse {
-        background: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-      }
-      .gsc-search-box {
-        margin-bottom: 0 !important;
-      }
-      .gsc-input-box {
-        border: 1px solid hsl(var(--border)) !important;
-        border-radius: 0.5rem !important;
-        background: transparent !important;
-      }
-      .gsc-input {
-        background: transparent !important;
-        color: hsl(var(--foreground)) !important;
-      }
-      .gsc-results-wrapper-overlay {
-        background: hsl(var(--background)) !important;
-        backdrop-filter: blur(12px) !important;
-      }
-      .gsc-webResult.gsc-result {
-        background: transparent !important;
-        border: none !important;
-      }
-      .gs-title, .gs-snippet {
-        color: hsl(var(--muted-foreground)) !important;
-        font-family: var(--font-sans) !important;
-        font-size: 0.875rem !important;
-      }
-      .gs-title b, .gs-snippet b, .gsc-result b {
-        color: inherit !important;
-        font-weight: inherit !important;
-        background: none !important;
-      }
-      .gsc-completion-container {
-        background: hsl(var(--background)) !important;
-        border: 1px solid hsl(var(--border)) !important;
-        backdrop-filter: blur(12px) !important;
-      }
-      .gsc-completion-title {
-        color: hsl(var(--foreground)) !important;
-      }
-      .gsc-cursor-box {
-        margin: 16px 0 !important;
-      }
-      .gsc-cursor-page {
-        color: hsl(var(--muted-foreground)) !important;
-        background: transparent !important;
-        padding: 8px !important;
-      }
-      .gsc-cursor-current-page {
-        color: hsl(var(--foreground)) !important;
-        font-weight: bold !important;
-      }
-      .gsc-modal-background-image {
-        background: rgba(0, 0, 0, 0.5) !important;
-        backdrop-filter: blur(4px) !important;
-      }
-      .gcsc-find-more-on-google {
-        color: hsl(var(--muted-foreground)) !important;
-      }
-      .gcsc-find-more-on-google-root {
-        background: transparent !important;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (hasError) {
-    return <div>Error: {errorMessage}</div>;
-  }
-
   const handleSuggestionClick = (suggestion: string) => {
     const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
     if (searchInput) {
       searchInput.value = suggestion;
       searchInput.dispatchEvent(new Event('input', { bubbles: true }));
       
-      // Add the used suggestion to the Set
       usedSuggestions.add(suggestion);
-      // Remove the used suggestion from the current suggestions
       setSuggestions(prevSuggestions => 
         prevSuggestions.filter(s => s !== suggestion)
       );
 
-      // Find and click the search button after a short delay
       setTimeout(() => {
         const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
         if (searchButton) {
@@ -230,8 +167,6 @@ export function ExternalSearchSection({
                     <Skeleton className="h-8 w-32" />
                     <Skeleton className="h-8 w-40" />
                     <Skeleton className="h-8 w-36" />
-                    <Skeleton className="h-8 w-44" />
-                    <Skeleton className="h-8 w-38" />
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
@@ -242,7 +177,7 @@ export function ExternalSearchSection({
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: index * 0.1 }}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="text-sm px-4 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-colors duration-200 border border-blue-500/20 hover:border-blue-500/30"
+                        className="text-sm px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors duration-200 border border-primary/20 hover:border-primary/30"
                       >
                         {suggestion}
                       </motion.button>
@@ -257,7 +192,7 @@ export function ExternalSearchSection({
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent"
+          className="w-full [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent relative"
         >
           <GoogleSearchBox />
         </motion.div>
