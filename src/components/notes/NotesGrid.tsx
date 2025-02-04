@@ -22,6 +22,7 @@ export function NotesGrid({ showGrid, gridSize, maxDistance }: NotesGridProps) {
         y2={maxDistance}
         stroke="#ddd"
         strokeWidth="1"
+        strokeDasharray="4 4"
       />
     );
   }
@@ -38,19 +39,23 @@ export function NotesGrid({ showGrid, gridSize, maxDistance }: NotesGridProps) {
         y2={position}
         stroke="#ddd"
         strokeWidth="1"
+        strokeDasharray="4 4"
       />
     );
   }
 
   return (
     <svg
-      className="absolute inset-0 pointer-events-none"
+      className="absolute inset-0 w-full h-full pointer-events-none"
       style={{ 
-        width: maxDistance * 2, 
-        height: maxDistance * 2, 
-        left: -maxDistance, 
-        top: -maxDistance 
+        width: '100%',
+        height: '100%',
+        left: 0,
+        top: 0,
+        overflow: 'visible'
       }}
+      viewBox={`${-maxDistance} ${-maxDistance} ${maxDistance * 2} ${maxDistance * 2}`}
+      preserveAspectRatio="xMidYMid slice"
     >
       {gridLines}
     </svg>

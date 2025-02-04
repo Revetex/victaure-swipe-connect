@@ -93,9 +93,12 @@ export function NotesMap() {
           maxScale={2}
           onTransformed={(ref) => setScale(ref.state.scale)}
         >
-          <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
+          <TransformComponent 
+            wrapperClass="w-full h-full" 
+            contentClass="w-full h-full"
+          >
             <div 
-              className="relative w-full h-full min-h-[1000px]"
+              className="relative w-full h-full min-h-[calc(100vh-12rem)]"
               onClick={handleAddNote}
             >
               <NotesGrid showGrid={showGrid} gridSize={GRID_SIZE} maxDistance={MAX_DISTANCE} />
