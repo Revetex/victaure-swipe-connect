@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ExternalSearchSectionProps {
   isLoading?: boolean;
@@ -21,12 +22,17 @@ export function ExternalSearchSection({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
 
   const fetchSuggestions = async () => {
     try {
       setIsRefreshing(true);
+      setIsFetchingSuggestions(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast.error("Vous devez être connecté pour voir les suggestions");
+        return;
+      }
 
       const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
         body: { user_id: user.id }
@@ -36,12 +42,14 @@ export function ExternalSearchSection({
       if (data?.suggestions) {
         setSuggestions(data.suggestions);
         setShowSuggestions(true);
+        toast.success("Nouvelles suggestions générées!");
       }
     } catch (error) {
       console.error('Error fetching suggestions:', error);
       toast.error("Erreur lors de la génération des suggestions");
     } finally {
       setIsRefreshing(false);
+      setIsFetchingSuggestions(false);
     }
   };
 
@@ -168,14 +176,16 @@ export function ExternalSearchSection({
           <GoogleSearchBox />
         </motion.div>
 
-        {suggestions.length > 0 && (
+        {(suggestions.length > 0 || isFetchingSuggestions) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mt-4 space-y-2"
           >
             <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground font-medium">Suggestions de recherche :</p>
+              <p className="text-sm text-muted-foreground font-medium">
+                Suggestions IA pour votre profil :
+              </p>
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -187,21 +197,34 @@ export function ExternalSearchSection({
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {suggestions.map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
-                    if (searchInput) {
-                      searchInput.value = suggestion;
-                      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
-                  }}
-                  className="text-sm px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
-                >
-                  {suggestion}
-                </button>
-              ))}
+              {isFetchingSuggestions ? (
+                <>
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-8 w-40" />
+                  <Skeleton className="h-8 w-36" />
+                  <Skeleton className="h-8 w-44" />
+                  <Skeleton className="h-8 w-38" />
+                </>
+              ) : (
+                suggestions.map((suggestion, index) => (
+                  <motion.button
+                    key={index}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => {
+                      const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
+                      if (searchInput) {
+                        searchInput.value = suggestion;
+                        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                      }
+                    }}
+                    className="text-sm px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+                  >
+                    {suggestion}
+                  </motion.button>
+                ))
+              )}
             </div>
           </motion.div>
         )}
