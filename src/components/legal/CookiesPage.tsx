@@ -1,8 +1,21 @@
+import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export function CookiesPage() {
+  const navigate = useNavigate();
+
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-6 top-6 text-muted-foreground hover:text-foreground"
+        onClick={() => navigate('/')}
+      >
+        <X className="h-6 w-6" />
+      </Button>
       <Card>
         <CardHeader>
           <CardTitle>Politique des cookies</CardTitle>
