@@ -27,10 +27,12 @@ export function StickyNote({ note, colorClass, onDelete, draggable }: StickyNote
       }}
       style={{ x: position.x, y: position.y }}
       className={cn(
-        "group relative p-4 rounded-lg shadow-lg backdrop-blur-sm",
+        "sticky-note group",
         "hover:shadow-xl transition-shadow duration-200",
         colorClass
       )}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <Button

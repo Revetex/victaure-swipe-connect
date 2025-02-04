@@ -25,7 +25,6 @@ export function NotesToolbar({
 
   const handleReturn = () => {
     navigate("/dashboard");
-    console.log("Navigating to dashboard...");
   };
 
   return (
@@ -35,7 +34,7 @@ export function NotesToolbar({
           variant="outline" 
           size="icon"
           onClick={handleReturn}
-          className="h-9 w-9"
+          className="h-9 w-9 hover:bg-accent hover:text-accent-foreground"
           title="Return to Dashboard"
         >
           <LayoutDashboard className="h-4 w-4" />
@@ -44,7 +43,7 @@ export function NotesToolbar({
           variant="outline"
           size="icon"
           onClick={onAddNote}
-          className="h-9 w-9"
+          className="h-9 w-9 hover:bg-accent hover:text-accent-foreground"
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -53,7 +52,7 @@ export function NotesToolbar({
             variant="outline"
             size="icon"
             onClick={onToggleGrid}
-            className={`h-9 w-9 ${showGrid ? 'bg-accent' : ''}`}
+            className={`h-9 w-9 hover:bg-accent hover:text-accent-foreground ${showGrid ? 'bg-accent' : ''}`}
           >
             <Grid className="h-4 w-4" />
           </Button>
@@ -66,7 +65,7 @@ export function NotesToolbar({
             variant="outline"
             size="icon"
             onClick={onNavigateLeft}
-            className="h-9 w-9"
+            className="h-9 w-9 hover:bg-accent hover:text-accent-foreground"
           >
             ←
           </Button>
@@ -76,7 +75,7 @@ export function NotesToolbar({
             variant="outline"
             size="icon"
             onClick={onNavigateRight}
-            className="h-9 w-9"
+            className="h-9 w-9 hover:bg-accent hover:text-accent-foreground"
           >
             →
           </Button>
