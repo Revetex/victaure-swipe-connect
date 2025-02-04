@@ -43,21 +43,21 @@ export function ConversationView({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-background">
       <ConversationHeader
         profile={profile}
         onBack={onBack || (() => {})}
         onDeleteConversation={() => setShowDeleteDialog(true)}
       />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-hidden">
         <ConversationMessages
           messages={messages}
           isThinking={isThinking}
         />
       </div>
 
-      <div className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}

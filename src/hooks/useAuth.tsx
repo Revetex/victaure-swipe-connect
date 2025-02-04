@@ -25,6 +25,7 @@ export function useAuth() {
   const signOut = async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true }));
+      toast.loading("Déconnexion en cours...");
       
       // First clear all local storage
       clearStorages();
@@ -44,9 +45,10 @@ export function useAuth() {
         user: null
       });
 
-      // Redirect to auth page
-      navigate('/auth');
+      // Show success toast and redirect
+      toast.dismiss();
       toast.success("Déconnexion réussie");
+      navigate('/auth');
       
     } catch (error) {
       console.error('Sign out error:', error);
@@ -56,6 +58,7 @@ export function useAuth() {
         isLoading: false,
         error: error instanceof Error ? error : new Error('Unknown error')
       }));
+      toast.dismiss();
       toast.error("Erreur lors de la déconnexion");
       navigate('/auth');
     }
