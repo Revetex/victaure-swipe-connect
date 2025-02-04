@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardNavigation } from "../dashboard/DashboardNavigation";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -63,6 +64,18 @@ export function ToolsPage() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <nav 
+        className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-40"
+        style={{ 
+          height: '4rem',
+          paddingBottom: 'env(safe-area-inset-bottom)'
+        }}
+      >
+        <div className="container mx-auto px-4 h-full flex items-center">
+          <DashboardNavigation currentPage={4} onPageChange={() => {}} />
+        </div>
+      </nav>
     </div>
   );
 }
