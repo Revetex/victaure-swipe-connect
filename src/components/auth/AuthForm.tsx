@@ -21,14 +21,21 @@ export function AuthForm() {
               buttonBorderRadius: '1rem',
               inputBorderRadius: '1rem',
             },
+            fonts: {
+              bodyFontFamily: `'Montserrat', sans-serif`,
+              buttonFontFamily: `'Montserrat', sans-serif`,
+              inputFontFamily: `'Montserrat', sans-serif`,
+              labelFontFamily: `'Playfair Display', serif`,
+            },
           },
         },
         className: {
-          button: 'hover:scale-[1.02] transition-transform duration-200',
+          button: 'hover:scale-[1.02] transition-transform duration-200 font-montserrat',
           container: 'gap-4',
           divider: 'bg-muted',
-          input: 'rounded-xl bg-background border-muted',
-          label: 'text-foreground',
+          input: 'rounded-xl bg-background border-muted font-montserrat',
+          label: 'text-foreground font-playfair',
+          message: 'font-montserrat',
         },
       }}
       theme="default"
