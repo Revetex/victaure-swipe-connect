@@ -39,10 +39,18 @@ export function MessagesWrapper() {
     setShowConversation(false);
   };
 
-  const handleSelectConversation = (type: "assistant" | "user", receiver?: any) => {
+  const handleSelectConversation = (type: "assistant" | "user", selectedReceiver?: any) => {
     if (type === "assistant") {
+      const aiReceiver: Receiver = {
+        id: 'assistant',
+        full_name: 'M. Victaure',
+        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+        online_status: true,
+        last_seen: new Date().toISOString()
+      };
       setShowConversation(true);
-    } else if (receiver) {
+    } else if (selectedReceiver) {
+      // For regular user conversations
       setShowConversation(true);
     }
   };

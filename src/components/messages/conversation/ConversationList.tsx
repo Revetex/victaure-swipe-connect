@@ -24,6 +24,11 @@ export function ConversationList({
     onSelectConversation("assistant");
   };
 
+  const handleUserConversation = (receiver: any) => {
+    onSelectConversation("user", receiver);
+    navigate(`/dashboard/messages/${receiver.id}`);
+  };
+
   return (
     <div className="h-full flex flex-col">
       <ScrollArea className="flex-1">
@@ -32,7 +37,7 @@ export function ConversationList({
           <div>
             <h3 className="font-semibold text-sm text-muted-foreground mb-2 px-2">Assistant IA</h3>
             <div 
-              onClick={() => onSelectConversation("assistant")}
+              onClick={handleNewConversation}
               className="cursor-pointer transition-all duration-200 hover:scale-[1.02]"
             >
               <AssistantMessage
@@ -52,7 +57,7 @@ export function ConversationList({
                 <UserMessage
                   key={message.id}
                   message={message}
-                  onSelect={() => onSelectConversation("user", message.sender)}
+                  onSelect={() => handleUserConversation(message.sender)}
                 />
               ))}
               {messages.length === 0 && (
