@@ -24,8 +24,10 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Politique de Confidentialité</h3>
             <Dialog>
-              <DialogTrigger className="text-primary hover:underline text-sm">
-                Lire notre politique de confidentialité
+              <DialogTrigger asChild>
+                <button className="text-primary hover:underline text-sm">
+                  Lire notre politique de confidentialité
+                </button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
@@ -83,8 +85,10 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Conditions d'Utilisation</h3>
             <Dialog>
-              <DialogTrigger className="text-primary hover:underline text-sm">
-                Voir les conditions d'utilisation
+              <DialogTrigger asChild>
+                <button className="text-primary hover:underline text-sm">
+                  Voir les conditions d'utilisation
+                </button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>

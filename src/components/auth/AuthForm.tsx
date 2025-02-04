@@ -80,13 +80,13 @@ export function AuthForm() {
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger 
             value="login"
-            className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
           >
             Connexion
           </TabsTrigger>
           <TabsTrigger 
             value="signup"
-            className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
           >
             Inscription
           </TabsTrigger>
