@@ -47,6 +47,23 @@ export const PostActions = ({
         });
 
       if (error) throw error;
+
+      // Send push notification if the user has enabled them
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('push_token, push_notifications_enabled')
+        .eq('id', userId)
+        .single();
+
+      if (profile?.push_notifications_enabled && profile?.push_token) {
+        await supabase.functions.invoke('push-notification', {
+          body: {
+            subscription: JSON.parse(profile.push_token),
+            title,
+            message
+          }
+        });
+      }
     } catch (error) {
       console.error('Error creating notification:', error);
     }
@@ -96,7 +113,7 @@ export const PostActions = ({
           )}
         >
           <ThumbsUp className="h-4 w-4" />
-          <span className="font-medium">{likes}</span>
+          <span className="font-medium">{likes || 0}</span>
         </Button>
       </motion.div>
 
@@ -111,7 +128,7 @@ export const PostActions = ({
           )}
         >
           <ThumbsDown className="h-4 w-4" />
-          <span className="font-medium">{dislikes}</span>
+          <span className="font-medium">{dislikes || 0}</span>
         </Button>
       </motion.div>
 

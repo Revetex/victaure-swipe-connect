@@ -1,4 +1,4 @@
-import { Menu, User } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -7,12 +7,10 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { useNavigate } from "react-router-dom";
 
 export function Navigation() {
   const isMobile = useIsMobile();
   const { signOut, isLoading } = useAuth();
-  const navigate = useNavigate();
 
   if (isLoading) {
     return null;
@@ -35,14 +33,6 @@ export function Navigation() {
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
         <NotificationsBox />
         <ThemeToggle />
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={signOut}
-          className="text-primary hover:text-primary/80 hover:bg-primary/5"
-        >
-          <User className="h-5 w-5" />
-        </Button>
       </div>
     </nav>
   );
@@ -56,7 +46,7 @@ export function Navigation() {
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <motion.div 
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-3 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
