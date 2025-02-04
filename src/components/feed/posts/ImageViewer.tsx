@@ -23,7 +23,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-screen-lg w-full h-[90vh] flex items-center justify-center p-0 relative">
+      <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-full p-0 flex items-center justify-center">
         <Button
           variant="ghost"
           size="icon"
@@ -59,7 +59,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
           <img
             src={images[currentIndex]}
             alt={`Image ${currentIndex + 1}`}
-            className="max-h-full max-w-full object-contain"
+            className="max-w-[90%] max-h-[90%] object-contain"
           />
         </div>
       </DialogContent>
