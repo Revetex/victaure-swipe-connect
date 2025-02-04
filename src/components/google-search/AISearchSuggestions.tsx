@@ -26,10 +26,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
 
       if (error) throw error;
       
-      // Get a random suggestion from the array
       const randomSuggestion = data.suggestions[Math.floor(Math.random() * data.suggestions.length)];
-      
-      // Automatically apply the suggestion
       onSuggestionClick(randomSuggestion);
     } catch (error) {
       console.error('Error fetching suggestions:', error);
@@ -44,19 +41,16 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   };
 
   return (
-    <div className="relative">
-      <div className="flex items-center gap-2 mb-4">
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2 bg-background hover:bg-accent"
-          onClick={fetchAndApplySuggestion}
-          disabled={isLoading}
-        >
-          <Sparkles className="h-4 w-4" />
-          {isLoading ? "Chargement..." : "Suggestion IA"}
-        </Button>
-      </div>
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 bg-background hover:bg-accent"
+        onClick={fetchAndApplySuggestion}
+        disabled={isLoading}
+      >
+        <Sparkles className="h-4 w-4 text-primary" />
+      </Button>
 
       <AnimatePresence>
         {isLoading && (
@@ -64,7 +58,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-12 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border rounded-lg shadow-lg p-4"
+            className="absolute top-12 right-0 z-50 bg-background/80 backdrop-blur-md border rounded-lg shadow-lg p-4 w-48"
           >
             <div className="space-y-2">
               <Skeleton className="h-4 w-3/4" />
@@ -72,6 +66,6 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

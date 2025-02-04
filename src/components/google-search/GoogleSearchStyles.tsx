@@ -34,17 +34,14 @@ export function useGoogleSearchStyles() {
       }
 
       .gsc-search-button-v2:hover {
-        background-color: hsl(var(--primary-foreground)) !important;
+        background-color: hsl(var(--primary)) !important;
+        opacity: 0.9 !important;
       }
 
       .gsc-search-button-v2 svg {
         width: 16px !important;
         height: 16px !important;
-        fill: hsl(var(--primary-foreground)) !important;
-      }
-
-      .gsc-search-button-v2:hover svg {
-        fill: hsl(var(--primary)) !important;
+        fill: hsl(var(--background)) !important;
       }
 
       /* Search Results Styling */
@@ -117,6 +114,11 @@ export function useGoogleSearchStyles() {
 
       .gsc-completion-selected {
         background: hsl(var(--accent)) !important;
+      }
+
+      /* Hide "Search on Google" text */
+      .gcsc-more-maybe-branding-root {
+        display: none !important;
       }
     `;
 
