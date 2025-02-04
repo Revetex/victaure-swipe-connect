@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
 import { NotesPage } from "./NotesPage";
 import { TasksPage } from "./TasksPage";
 import { CalculatorPage } from "./CalculatorPage";
 import { TranslatorPage } from "./TranslatorPage";
 import { ConverterPage } from "./ConverterPage";
 import { ChessPage } from "./ChessPage";
-import { SwipeJob } from "@/components/SwipeJob";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -43,7 +41,6 @@ export function ToolsPage() {
             <TabsTrigger value="translator">Traducteur</TabsTrigger>
             <TabsTrigger value="converter">Convertisseur</TabsTrigger>
             <TabsTrigger value="chess">Échecs</TabsTrigger>
-            <TabsTrigger value="jobs">Emplois</TabsTrigger>
           </TabsList>
 
           <TabsContent value="notes">
@@ -63,9 +60,6 @@ export function ToolsPage() {
           </TabsContent>
           <TabsContent value="chess">
             <ChessPage />
-          </TabsContent>
-          <TabsContent value="jobs">
-            <SwipeJob />
           </TabsContent>
         </Tabs>
       </div>
