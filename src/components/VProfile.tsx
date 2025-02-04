@@ -1,6 +1,7 @@
 import { UserProfile } from "@/types/profile";
 import { VCard } from "./VCard";
 import { Dialog, DialogContent } from "./ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface VProfileProps {
   profile: UserProfile;
@@ -15,8 +16,19 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
-        <VCard />
+      <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+            >
+              <VCard />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </DialogContent>
     </Dialog>
   );

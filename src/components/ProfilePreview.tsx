@@ -8,7 +8,8 @@ import { ProfileInfo } from "@/components/profile/ProfileInfo";
 import { ProfileActions } from "@/components/profile/ProfileActions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { FileText, UserPlus, UserMinus, UserX } from "lucide-react";
+import { FileText, UserPlus, UserMinus, UserX, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -60,14 +61,12 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
         return;
       }
 
-      // First remove from friends if they are friends
       await supabase
         .from('friend_requests')
         .delete()
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`);
 
-      // Then add to blocked users
       const { error } = await supabase
         .from('blocked_users')
         .insert({
@@ -118,35 +117,75 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] gap-4 overflow-y-auto max-h-[90vh]">
         <DialogTitle className="sr-only">Profile Preview</DialogTitle>
-        <div className="flex flex-col items-center gap-4">
-          <ProfileAvatar profile={profile} />
-          <ProfileInfo profile={profile} />
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <ProfileAvatar profile={profile} />
+          </motion.div>
           
-          <div className="w-full space-y-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <ProfileInfo profile={profile} />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="w-full space-y-4"
+          >
             <div className="text-sm text-muted-foreground">
               {profile.bio || "No bio available"}
             </div>
             <div className="flex flex-wrap gap-2">
               {profile.skills?.map((skill, index) => (
-                <span 
+                <motion.span 
                   key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + index * 0.1 }}
                   className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"
                 >
                   {skill}
-                </span>
+                </motion.span>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="flex flex-col gap-2 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-col gap-2 w-full"
+          >
             <Button 
               onClick={handleRequestCV}
-              className="w-full"
+              className="w-full relative"
               variant="default"
               disabled={isRequesting || isProcessing}
             >
-              <FileText className="mr-2 h-4 w-4" />
-              {isRequesting ? "Envoi..." : "Demander le CV"}
+              {isRequesting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Envoi en cours...
+                </>
+              ) : (
+                <>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Demander le CV
+                </>
+              )}
             </Button>
 
             <Button
@@ -176,8 +215,8 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
             >
               Fermer
             </Button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );
