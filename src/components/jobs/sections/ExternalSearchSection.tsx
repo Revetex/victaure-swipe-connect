@@ -60,98 +60,73 @@ export function ExternalSearchSection({
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
-      /* Google Search Box styling */
       .gsc-control-cse {
         background: transparent !important;
         border: none !important;
         padding: 0 !important;
       }
-
       .gsc-search-box {
         margin-bottom: 0 !important;
       }
-
       .gsc-input-box {
-        border: 2px solid hsl(var(--border)) !important;
+        border: 1px solid hsl(var(--border)) !important;
         border-radius: 0.5rem !important;
         background: transparent !important;
       }
-
       .gsc-input {
         background: transparent !important;
         color: hsl(var(--foreground)) !important;
       }
-
-      /* Results styling */
       .gsc-results-wrapper-overlay {
         background: hsl(var(--background)) !important;
         backdrop-filter: blur(12px) !important;
       }
-
       .gsc-webResult.gsc-result {
         background: transparent !important;
         border: none !important;
       }
-
       .gs-title, .gs-snippet {
         color: hsl(var(--muted-foreground)) !important;
         font-family: var(--font-sans) !important;
         font-size: 0.875rem !important;
       }
-
-      /* Remove highlighting of search terms */
-      .gs-title b,
-      .gs-snippet b,
-      .gsc-result b {
+      .gs-title b, .gs-snippet b, .gsc-result b {
         color: inherit !important;
         font-weight: inherit !important;
         background: none !important;
       }
-
-      /* Suggestions styling */
       .gsc-completion-container {
         background: hsl(var(--background)) !important;
         border: 1px solid hsl(var(--border)) !important;
         backdrop-filter: blur(12px) !important;
       }
-
       .gsc-completion-title {
         color: hsl(var(--foreground)) !important;
       }
-
-      /* Pagination styling */
       .gsc-cursor-box {
         margin: 16px 0 !important;
       }
-
       .gsc-cursor-page {
         color: hsl(var(--muted-foreground)) !important;
         background: transparent !important;
         padding: 8px !important;
       }
-
       .gsc-cursor-current-page {
         color: hsl(var(--foreground)) !important;
         font-weight: bold !important;
       }
-
-      /* Close button styling */
       .gsc-modal-background-image {
         background: rgba(0, 0, 0, 0.5) !important;
         backdrop-filter: blur(4px) !important;
       }
-
-      /* Additional styling for better integration */
       .gcsc-find-more-on-google {
         color: hsl(var(--muted-foreground)) !important;
       }
-
       .gcsc-find-more-on-google-root {
         background: transparent !important;
       }
     `;
     document.head.appendChild(style);
-
     return () => {
       document.head.removeChild(style);
     };
@@ -167,24 +142,24 @@ export function ExternalSearchSection({
 
   return (
     <div className="w-full space-y-4">
-      <Card className="p-4">
+      <Card className="p-4 bg-background/60 backdrop-blur-sm border border-border/50">
         <div className="mb-4">
           <Button
             variant="outline"
             size="lg"
             onClick={() => setShowSuggestions(!showSuggestions)}
-            className="w-full relative group glass-effect hover:shadow-lg transition-all duration-300"
+            className="w-full relative group transition-all duration-300 bg-background/80 hover:bg-background/90 border border-border/50 shadow-sm hover:shadow-md"
           >
             <div className="absolute -left-2 top-1/2 -translate-y-1/2">
               <motion.div
                 animate={{ rotate: isRefreshing ? 360 : 0 }}
                 transition={{ duration: 1, repeat: isRefreshing ? Infinity : 0 }}
               >
-                <Sparkles className="w-5 h-5 text-primary" />
+                <Sparkles className="w-5 h-5 text-blue-500" />
               </motion.div>
             </div>
-            <span className="flex items-center gap-2">
-              Suggestions IA pour votre profil
+            <span className="flex items-center gap-2 text-foreground/80">
+              Suggestions IA personnalisées
               {showSuggestions ? (
                 <ChevronUp className="w-4 h-4" />
               ) : (
@@ -204,9 +179,9 @@ export function ExternalSearchSection({
                   fetchSuggestions();
                 }}
                 disabled={isRefreshing}
-                className="h-8 w-8 rounded-full bg-primary/10"
+                className="h-8 w-8 rounded-full bg-blue-500/10 hover:bg-blue-500/20"
               >
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 text-blue-500 ${isRefreshing ? 'animate-spin' : ''}`} />
               </Button>
             </motion.div>
           </Button>
@@ -245,7 +220,7 @@ export function ExternalSearchSection({
                             searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                           }
                         }}
-                        className="text-sm px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+                        className="text-sm px-4 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-colors duration-200 border border-blue-500/20 hover:border-blue-500/30"
                       >
                         {suggestion}
                       </motion.button>
