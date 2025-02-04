@@ -10,6 +10,7 @@ export const SearchResultsStyles = `
     transition: all 0.2s ease-in-out;
     padding: 1rem !important;
     background: transparent !important;
+    border: none !important;
   }
 
   .gsc-result:hover {
@@ -65,21 +66,26 @@ export const SearchResultsStyles = `
 
   .gsc-results {
     background: transparent !important;
+    border: none !important;
   }
 
   .gsc-webResult {
     background: transparent !important;
+    border: none !important;
   }
 
   .gsc-webResult.gsc-result {
     background: transparent !important;
+    border: none !important;
   }
 
   .gsc-results .gsc-cursor-box {
     background: transparent !important;
+    border: none !important;
   }
 
   .gsc-above-wrapper-area {
     background: transparent !important;
+    border: none !important;
   }
 `;
