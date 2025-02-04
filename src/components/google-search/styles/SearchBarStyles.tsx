@@ -38,3 +38,25 @@ export const searchOptionStyles = cn(
   "bg-muted/50 hover:bg-muted",
   "cursor-pointer transition-colors"
 );
+
+// Export all styles as a single string for the GoogleSearchStyles component
+export const SearchBarStyles = `
+  .search-bar-container {
+    ${searchBarContainerStyles}
+  }
+  .search-input-container {
+    ${searchInputContainerStyles}
+  }
+  .search-input {
+    ${searchInputStyles}
+  }
+  .search-button {
+    ${searchButtonStyles}
+  }
+  .search-options-container {
+    ${searchOptionsContainerStyles}
+  }
+  .search-option {
+    ${searchOptionStyles}
+  }
+`;

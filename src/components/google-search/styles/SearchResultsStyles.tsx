@@ -38,3 +38,28 @@ export const loadingItemStyles = cn(
   "h-4 bg-muted rounded",
   "w-full"
 );
+
+// Export all styles as a single string for the GoogleSearchStyles component
+export const SearchResultsStyles = `
+  .results-container {
+    ${resultsContainerStyles}
+  }
+  .result-item {
+    ${resultItemStyles}
+  }
+  .result-title {
+    ${resultTitleStyles}
+  }
+  .result-url {
+    ${resultUrlStyles}
+  }
+  .result-description {
+    ${resultDescriptionStyles}
+  }
+  .loading-container {
+    ${loadingContainerStyles}
+  }
+  .loading-item {
+    ${loadingItemStyles}
+  }
+`;
