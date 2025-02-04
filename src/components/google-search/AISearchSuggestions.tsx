@@ -45,7 +45,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
       <Button
         variant="ghost"
         size="icon"
-        className="h-9 w-9 bg-background hover:bg-accent/80 transition-colors"
+        className="h-8 w-8 bg-background hover:bg-accent/80 transition-colors"
         onClick={fetchAndApplySuggestion}
         disabled={isLoading}
       >

@@ -21,6 +21,7 @@ export function useSearchResultsStyles() {
       border: 1px solid hsl(var(--border)) !important;
       border-radius: 0.75rem !important;
       transition: all 0.2s ease !important;
+      background: hsl(var(--background)) !important;
     }
 
     .gs-result:hover {
@@ -28,7 +29,7 @@ export function useSearchResultsStyles() {
       background: hsl(var(--accent)/0.1) !important;
     }
 
-    .gs-title {
+    .gs-title:not(.gsc-table-cell-thumbnail) {
       color: hsl(var(--primary)) !important;
       text-decoration: none !important;
       font-size: 1.1rem !important;
@@ -39,6 +40,10 @@ export function useSearchResultsStyles() {
 
     .gs-title:hover {
       text-decoration: underline !important;
+    }
+
+    .gsc-table-cell-thumbnail {
+      display: none !important;
     }
 
     .gs-snippet {
@@ -86,6 +91,10 @@ export function useSearchResultsStyles() {
     }
 
     .gcsc-more-maybe-branding-root {
+      display: none !important;
+    }
+
+    .gsc-search-button {
       display: none !important;
     }
   `;

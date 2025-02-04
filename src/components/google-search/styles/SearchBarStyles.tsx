@@ -5,7 +5,9 @@ export function useSearchBarStyles() {
       border-radius: 0.75rem !important;
       background: transparent !important;
       padding: 8px 12px !important;
-      transition: border-color 0.2s ease !important;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
     }
 
     .gsc-input-box:focus-within {
@@ -18,29 +20,33 @@ export function useSearchBarStyles() {
       padding-inline: 8px !important;
       font-size: 0.95rem !important;
       color: hsl(var(--foreground)) !important;
+      width: 100% !important;
     }
 
     .gsc-search-button {
       margin-left: 8px !important;
+      opacity: 0.7 !important;
     }
 
     .gsc-search-button-v2 {
-      padding: 8px 12px !important;
-      border-radius: 0.75rem !important;
-      background-color: hsl(var(--primary)) !important;
+      padding: 8px !important;
+      border-radius: 0.5rem !important;
+      background-color: transparent !important;
       border: none !important;
       transition: opacity 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
     .gsc-search-button-v2:hover {
-      background-color: hsl(var(--primary)) !important;
-      opacity: 0.9 !important;
+      opacity: 1 !important;
     }
 
     .gsc-search-button-v2 svg {
       width: 16px !important;
       height: 16px !important;
-      fill: hsl(var(--background)) !important;
+      fill: hsl(var(--foreground)) !important;
     }
   `;
 }

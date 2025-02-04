@@ -44,7 +44,7 @@ export function ExternalSearchSection() {
       >
         <div className="relative max-w-3xl mx-auto">
           <GoogleSearchBox />
-          <div className="absolute right-14 top-1/2 -translate-y-1/2 z-10">
+          <div className="absolute right-12 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2">
             <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
           </div>
         </div>
