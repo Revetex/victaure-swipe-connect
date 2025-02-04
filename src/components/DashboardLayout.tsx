@@ -4,8 +4,6 @@ import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useLocation } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { MainLayout } from "./layout/MainLayout";
-import { DashboardContainer } from "./layout/DashboardContainer";
-import { DashboardNavigation } from "./layout/DashboardNavigation";
 import { useViewport } from "@/hooks/useViewport";
 import { useNavigation } from "@/hooks/useNavigation";
 
@@ -61,24 +59,12 @@ export function DashboardLayout() {
       onPageChange={handlePageChange}
       isEditing={isEditing}
     >
-      <DashboardContainer
-        viewportHeight={viewportHeight}
-        isEditing={isEditing}
-        isMobile={isMobile}
-      >
-        <DashboardContent
-          currentPage={currentPage}
-          isEditing={isEditing}
-          viewportHeight={viewportHeight}
-          onEditStateChange={setIsEditing}
-          onRequestChat={handleRequestChat}
-        />
-      </DashboardContainer>
-      
-      <DashboardNavigation 
+      <DashboardContent
         currentPage={currentPage}
-        onPageChange={handlePageChange}
         isEditing={isEditing}
+        viewportHeight={viewportHeight}
+        onEditStateChange={setIsEditing}
+        onRequestChat={handleRequestChat}
       />
     </MainLayout>
   );

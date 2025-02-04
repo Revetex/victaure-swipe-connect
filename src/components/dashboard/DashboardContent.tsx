@@ -22,7 +22,6 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {
-  // Auto-open board when accessing notes section
   useEffect(() => {
     if (currentPage === 5) {
       onEditStateChange(true);
@@ -32,46 +31,21 @@ export function DashboardContent({
   const renderContent = () => {
     switch (currentPage) {
       case 1:
-        return (
-          <div className="w-full p-4 overflow-y-auto">
-            <VCard 
-              onEditStateChange={onEditStateChange}
-              onRequestChat={onRequestChat}
-            />
-          </div>
-        );
+        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
       case 2:
-        return (
-          <div className="w-full p-4 overflow-y-auto">
-            <Messages />
-          </div>
-        );
+        return <Messages />;
       case 3:
-        return (
-          <div className="w-full p-4 overflow-y-auto">
-            <Marketplace />
-          </div>
-        );
+        return <Marketplace />;
       case 4:
-        return (
-          <div className="w-full p-4 overflow-y-auto">
-            <Feed />
-          </div>
-        );
+        return <Feed />;
       case 5:
         return (
-          <div className="w-full h-full px-4 overflow-hidden">
-            <div className="w-full h-full">
-              <NotesMap />
-            </div>
+          <div className="h-full">
+            <NotesMap />
           </div>
         );
       case 6:
-        return (
-          <div className="w-full p-4 overflow-y-auto">
-            <Settings />
-          </div>
-        );
+        return <Settings />;
       default:
         return null;
     }
@@ -83,11 +57,7 @@ export function DashboardContent({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="w-full h-full overflow-hidden"
-      style={{
-        height: isEditing ? `calc(${viewportHeight}px - 80px)` : '100%',
-        overflowY: 'auto'
-      }}
+      className="w-full"
     >
       {renderContent()}
     </motion.div>
