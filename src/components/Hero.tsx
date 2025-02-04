@@ -73,7 +73,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex flex-wrap gap-4 justify-center"
+            className="flex justify-center"
           >
             <Link to="/auth">
               <Button 
@@ -88,15 +88,6 @@ export function HeroSection() {
                   transition={{ duration: 0.3 }}
                 />
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="font-montserrat hover:scale-105 transition-transform border-2 hover:border-primary/50"
-              >
-                Découvrir
               </Button>
             </Link>
           </motion.div>

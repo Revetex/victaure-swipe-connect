@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -11,7 +11,7 @@ export function AppRoutes() {
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
       <Route
-        path="/dashboard"
+        path="/dashboard/*"
         element={
           <PrivateRoute>
             <Dashboard />
@@ -26,6 +26,8 @@ export function AppRoutes() {
           </PrivateRoute>
         }
       />
+      {/* Catch all route - redirect to dashboard if authenticated, otherwise to auth */}
+      <Route path="*" element={<Navigate to="/auth" replace />} />
     </Routes>
   );
 }
