@@ -39,7 +39,7 @@ export function DashboardNavigation({
                 "touch-manipulation min-h-[44px] min-w-[44px]",
                 currentPage === id
                   ? "bg-primary text-primary-foreground shadow-lg"
-                  : "text-muted-foreground hover:text-primary"
+                  : "text-muted-foreground/80 hover:text-primary border border-border/40"
               )}
               title={name}
               aria-label={name}

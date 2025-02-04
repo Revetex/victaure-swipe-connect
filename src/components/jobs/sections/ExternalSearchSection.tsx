@@ -42,7 +42,7 @@ export function ExternalSearchSection() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent [&_.gsc-search-button]:!bg-primary-foreground [&_.gsc-input-box]:!border-white/20 [&_.gsc-input-box]:!border"
+          className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent [&_.gsc-search-button]:!bg-primary-foreground [&_.gsc-input-box]:!border-white/40 [&_.gsc-input-box]:!border-2"
         >
           <GoogleSearchBox />
         </motion.div>
