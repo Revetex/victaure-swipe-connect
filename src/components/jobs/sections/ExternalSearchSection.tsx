@@ -21,12 +21,11 @@ export function ExternalSearchSection({
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    // Add custom styles for Google Search elements
     const style = document.createElement('style');
     style.textContent = `
       /* Search box styling */
       .gsc-input-box {
-        background-color: hsl(var(--background)) !important;
+        background: transparent !important;
         border: 1px solid hsl(var(--border)) !important;
         border-radius: 0.5rem !important;
       }
@@ -52,7 +51,7 @@ export function ExternalSearchSection({
       
       /* Results styling */
       .gsc-result {
-        background-color: hsl(var(--background)) !important;
+        background: transparent !important;
         border: 1px solid hsl(var(--border)) !important;
         border-radius: 0.5rem !important;
         margin: 8px 0 !important;
@@ -75,7 +74,8 @@ export function ExternalSearchSection({
       
       /* Suggestions styling */
       .gsc-completion-container {
-        background-color: hsl(var(--background)) !important;
+        background: transparent !important;
+        backdrop-filter: blur(8px) !important;
         border: 1px solid hsl(var(--border)) !important;
         border-radius: 0.5rem !important;
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
@@ -238,7 +238,7 @@ export function ExternalSearchSection({
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full [&_.gsc-input-box]:!bg-background/50 [&_.gsc-input-box]:!border-border/50 [&_.gsc-input]:!bg-transparent"
+          className="w-full [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent"
         >
           <GoogleSearchBox />
         </motion.div>
