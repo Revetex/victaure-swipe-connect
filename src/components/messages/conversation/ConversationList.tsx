@@ -33,7 +33,7 @@ export function ConversationList({
       
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
-          {/* AI Assistant Section */}
+          {/* AI Assistant Section - Pinned at top */}
           <div>
             <h3 className="font-semibold text-sm text-muted-foreground mb-2 px-2">Assistant IA</h3>
             <div onClick={() => onSelectConversation("assistant")}>
@@ -41,6 +41,27 @@ export function ConversationList({
                 chatMessages={chatMessages}
                 onSelectConversation={onSelectConversation}
               />
+            </div>
+          </div>
+
+          <Separator className="my-4" />
+
+          {/* User Conversations Section */}
+          <div>
+            <h3 className="font-semibold text-sm text-muted-foreground mb-2 px-2">Conversations</h3>
+            <div className="space-y-2">
+              {messages.map((message) => (
+                <UserMessage
+                  key={message.id}
+                  message={message}
+                  onSelect={() => onSelectConversation("user", message.sender)}
+                />
+              ))}
+              {messages.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Aucune conversation pour le moment
+                </p>
+              )}
             </div>
           </div>
         </div>

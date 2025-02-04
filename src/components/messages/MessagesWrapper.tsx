@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MessagesContent } from "./MessagesContent";
-import { MessagesTabs } from "./MessagesTabs";
+import { ConversationList } from "./conversation/ConversationList";
 import { useReceiver } from "@/hooks/useReceiver";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../ui/button";
@@ -24,7 +24,6 @@ interface MessagesWrapperProps {
 
 export function MessagesWrapper() {
   const { showConversation, setShowConversation, receiver } = useReceiver();
-  const [activeTab, setActiveTab] = useState<"messages">("messages");
   const {
     messages,
     inputMessage,
@@ -48,7 +47,7 @@ export function MessagesWrapper() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold">{receiver.name}</h2>
+            <h2 className="text-lg font-semibold">{receiver.full_name}</h2>
           </div>
         </div>
         <MessagesContent
@@ -69,9 +68,17 @@ export function MessagesWrapper() {
 
   return (
     <div className="h-full">
-      <MessagesTabs
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
+      <ConversationList
+        messages={messages}
+        chatMessages={messages}
+        onSelectConversation={(type: "assistant" | "user", receiver?: any) => {
+          if (type === "assistant") {
+            setShowConversation(true);
+          } else if (receiver) {
+            // Handle user conversation selection
+            setShowConversation(true);
+          }
+        }}
       />
     </div>
   );
