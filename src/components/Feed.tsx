@@ -3,6 +3,7 @@ import { PostList } from "./feed/PostList";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export function Feed() {
   const queryClient = useQueryClient();
