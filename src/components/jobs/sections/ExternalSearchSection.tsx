@@ -31,6 +31,7 @@ export function ExternalSearchSection() {
 
       .gsc-search-button {
         background-color: hsl(var(--primary)) !important;
+        color: hsl(var(--primary-foreground)) !important;
         border: none !important;
         border-radius: 0.5rem !important;
         padding: 8px 16px !important;
@@ -79,16 +80,23 @@ export function ExternalSearchSection() {
 
       /* Suggestions styling */
       .gsc-completion-container {
-        background: transparent !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 50 !important;
+        background: hsl(var(--background)) !important;
         backdrop-filter: blur(10px) !important;
         -webkit-backdrop-filter: blur(10px) !important;
         border: 1px solid hsl(var(--border)) !important;
         border-radius: 0.5rem !important;
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
         font-family: var(--font-sans) !important;
+        margin-top: 4px !important;
       }
 
       .gsc-completion-container table {
+        width: 100% !important;
         background: transparent !important;
       }
 
@@ -236,7 +244,7 @@ export function ExternalSearchSection() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent"
+          className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent"
         >
           <GoogleSearchBox />
         </motion.div>
