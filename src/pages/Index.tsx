@@ -32,6 +32,11 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/50 dark:from-background dark:to-background/50">
+      {/* Main Title */}
+      <div className="text-center py-8">
+        <h1 className="text-6xl font-bold text-[#9b87f5] dark:text-[#D6BCFA]">VICTAURE</h1>
+      </div>
+
       {/* Hero Section with Video */}
       <section className="relative pt-20 pb-32 px-4 overflow-hidden">
         <div className="max-w-6xl mx-auto">
@@ -147,6 +152,41 @@ export default function Index() {
           </Button>
         </div>
       </section>
+
+      {/* Footer with Legal Information */}
+      <footer className="bg-background/80 dark:bg-background/80 py-8 px-4 mt-20 border-t border-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-semibold mb-4">Support</h3>
+              <p className="text-muted-foreground">
+                Email: <a href="mailto:tblanchet3909@hotmail.com" className="text-[#9b87f5] hover:underline">tblanchet3909@hotmail.com</a>
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Mentions Légales</h3>
+              <p className="text-muted-foreground text-sm">
+                © 2024 Victaure. Tous droits réservés.<br />
+                Toute reproduction interdite sans autorisation.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Politique de Confidentialité</h3>
+              <p className="text-muted-foreground text-sm">
+                Nous nous engageons à protéger vos données personnelles.<br />
+                <a href="#" className="text-[#9b87f5] hover:underline">Lire notre politique de confidentialité</a>
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Conditions d'Utilisation</h3>
+              <p className="text-muted-foreground text-sm">
+                En utilisant nos services, vous acceptez nos conditions.<br />
+                <a href="#" className="text-[#9b87f5] hover:underline">Voir les conditions d'utilisation</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
