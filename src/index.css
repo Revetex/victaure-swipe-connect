@@ -75,6 +75,7 @@
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
   }
   
+  /* Amélioration des cibles tactiles */
   button, 
   input, 
   select, 
@@ -82,10 +83,12 @@
     @apply min-h-[44px] touch-manipulation;
   }
 
+  /* Espacement pour les cibles tactiles */
   .touch-friendly {
     @apply space-y-6;
   }
 
+  /* Empêcher le zoom sur focus iOS */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -97,14 +100,17 @@
     @apply text-base;
   }
 
+  /* Amélioration du défilement */
   .smooth-scroll {
     @apply scroll-smooth;
   }
 
+  /* Amélioration de l'accessibilité tactile */
   .touch-target {
     @apply p-2 my-1;
   }
 
+  /* Optimisations mobiles */
   @media (max-width: 640px) {
     input, 
     select, 
@@ -122,6 +128,7 @@
   }
 }
 
+/* Nouvelles classes utilitaires pour le contraste et le cadrage */
 @layer utilities {
   .glass-effect {
     @apply backdrop-blur-lg bg-background/80 dark:bg-background/40 border border-border/50 shadow-lg;
