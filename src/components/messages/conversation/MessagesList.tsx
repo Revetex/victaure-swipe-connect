@@ -69,61 +69,6 @@ export function MessagesList({ messages, chatMessages, onSelectConversation }: M
             </div>
           </div>
         </motion.div>
-
-        <AnimatePresence>
-          {messages.map((message, index) => {
-            const sender = typeof message.sender === 'string' ? { id: message.sender } : message.sender;
-            const otherUserId = sender.id === 'assistant' ? message.receiver_id : sender.id;
-
-            if (!otherUserId) return null;
-
-            const otherUser = {
-              id: otherUserId,
-              full_name: typeof message.sender === 'string' ? message.sender : message.sender.full_name,
-              avatar_url: typeof message.sender === 'string' ? undefined : message.sender.avatar_url,
-              online_status: typeof message.sender === 'string' ? undefined : message.sender.online_status,
-              last_seen: typeof message.sender === 'string' ? undefined : message.sender.last_seen
-            };
-
-            return (
-              <motion.div
-                key={message.id}
-                variants={item}
-                className={cn(
-                  "p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors cursor-pointer",
-                  "group relative overflow-hidden"
-                )}
-                onClick={() => onSelectConversation("user", otherUser)}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative flex items-center gap-4">
-                  <Avatar className="h-12 w-12 border-2 border-primary/10">
-                    <AvatarImage src={otherUser.avatar_url || undefined} />
-                    <AvatarFallback>
-                      <UserCircle className="h-6 w-6" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-foreground">
-                        {otherUser.full_name || "Utilisateur"}
-                      </h3>
-                      <span className="text-xs text-muted-foreground">
-                        {message.created_at && formatTimestamp(message.created_at)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MessageCircle className="h-4 w-4 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground truncate">
-                        {message.content}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
       </motion.div>
     </ScrollArea>
   );

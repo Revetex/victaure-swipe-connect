@@ -24,7 +24,6 @@ serve(async (req) => {
       throw new Error('Configuration error: Missing API key')
     }
 
-    // Initialize Supabase client with service role key
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
     
@@ -64,7 +63,7 @@ serve(async (req) => {
     console.log('Sending prompt to Hugging Face:', systemPrompt)
 
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
+      'https://api-inference.huggingface.co/models/fixie-ai/ultravox-v0_4_1-llama-3_1-8b',
       {
         method: 'POST',
         headers: {
@@ -112,7 +111,6 @@ serve(async (req) => {
       }
     }
 
-    // Store learning data using the initialized Supabase client
     const { error: learningError } = await supabase
       .from('ai_learning_data')
       .insert({
