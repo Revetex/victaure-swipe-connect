@@ -1,7 +1,7 @@
 export interface MessageSender {
   id: string;
   full_name: string;
-  avatar_url?: string;
+  avatar_url: string;
   online_status?: boolean;
   last_seen?: string;
 }
@@ -15,4 +15,13 @@ export interface Message {
   read: boolean;
   sender?: MessageSender;
   receiver?: MessageSender;
+  timestamp: Date;
+}
+
+export interface Receiver {
+  id: string;
+  full_name: string;
+  avatar_url: string;
+  online_status: boolean;
+  last_seen: string;
 }

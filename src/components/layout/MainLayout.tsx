@@ -13,6 +13,7 @@ interface MainLayoutProps {
   isEditing?: boolean;
   showFriendsList?: boolean;
   onToggleFriendsList?: () => void;
+  onToolReturn?: () => void;
 }
 
 export function MainLayout({ 
@@ -22,7 +23,8 @@ export function MainLayout({
   onPageChange = () => {},
   isEditing = false,
   showFriendsList = false,
-  onToggleFriendsList = () => {}
+  onToggleFriendsList = () => {},
+  onToolReturn = () => {}
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
 
@@ -35,6 +37,7 @@ export function MainLayout({
             showFriendsList={showFriendsList}
             onToggleFriendsList={onToggleFriendsList}
             isEditing={isEditing}
+            onToolReturn={onToolReturn}
           />
           
           <AnimatePresence>
