@@ -8,6 +8,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { PostActions } from "../PostActions";
 import { CommentManager } from "../comments/CommentManager";
 import { PostImageGrid } from "./PostImageGrid";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PostCardProps {
   post: Post;
@@ -57,6 +59,8 @@ export function PostCard({
     }
   })) || [];
 
+  const isOwnPost = currentUserId === post.user_id;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -70,11 +74,24 @@ export function PostCard({
         isMobile ? "active:scale-[0.995] touch-none" : "hover:scale-[1.002]",
         "touch-pan-y"
       )}>
-        <PostHeader 
-          profile={postWithDefaultAvatar.profiles}
-          created_at={post.created_at}
-          privacy_level={post.privacy_level}
-        />
+        <div className="flex justify-between items-start">
+          <PostHeader 
+            profile={postWithDefaultAvatar.profiles}
+            created_at={post.created_at}
+            privacy_level={post.privacy_level}
+          />
+          
+          {isOwnPost && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onDelete}
+              className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
 
         <div className="space-y-4">
           <div className="text-sm text-gray-600 dark:text-gray-300">
