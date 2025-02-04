@@ -10,10 +10,15 @@ import { SwipeJob } from "@/components/SwipeJob";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
   const navigate = useNavigate();
+
+  const handleReturn = () => {
+    navigate('/dashboard');
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -21,26 +26,48 @@ export function ToolsPage() {
         <Button 
           variant="ghost" 
           size="sm"
-          onClick={() => navigate('/dashboard')}
+          onClick={handleReturn}
           className="mr-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour
         </Button>
-        <NotesToolSelector
-          selectedTool={selectedTool}
-          onToolSelect={setSelectedTool}
-        />
       </div>
 
-      <div className="flex-1 overflow-auto">
-        {selectedTool === "notes" && <NotesPage />}
-        {selectedTool === "tasks" && <TasksPage />}
-        {selectedTool === "calculator" && <CalculatorPage />}
-        {selectedTool === "translator" && <TranslatorPage />}
-        {selectedTool === "converter" && <ConverterPage />}
-        {selectedTool === "chess" && <ChessPage />}
-        {selectedTool === "jobs" && <SwipeJob />}
+      <div className="flex-1 overflow-auto p-4">
+        <Tabs defaultValue="notes" className="w-full">
+          <TabsList className="w-full justify-start mb-4 overflow-x-auto">
+            <TabsTrigger value="notes">Notes</TabsTrigger>
+            <TabsTrigger value="tasks">Tâches</TabsTrigger>
+            <TabsTrigger value="calculator">Calculatrice</TabsTrigger>
+            <TabsTrigger value="translator">Traducteur</TabsTrigger>
+            <TabsTrigger value="converter">Convertisseur</TabsTrigger>
+            <TabsTrigger value="chess">Échecs</TabsTrigger>
+            <TabsTrigger value="jobs">Emplois</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="notes">
+            <NotesPage />
+          </TabsContent>
+          <TabsContent value="tasks">
+            <TasksPage />
+          </TabsContent>
+          <TabsContent value="calculator">
+            <CalculatorPage />
+          </TabsContent>
+          <TabsContent value="translator">
+            <TranslatorPage />
+          </TabsContent>
+          <TabsContent value="converter">
+            <ConverterPage />
+          </TabsContent>
+          <TabsContent value="chess">
+            <ChessPage />
+          </TabsContent>
+          <TabsContent value="jobs">
+            <SwipeJob />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ export interface Post {
   images?: string[];
   likes: number;
   dislikes: number;
-  privacy_level: 'public' | 'private' | 'connections';
+  privacy_level: 'public' | 'connections';
   profiles: {
     id: string;
     full_name: string;
