@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
@@ -16,10 +17,17 @@ export function Footer() {
           </div>
           <div>
             <h3 className="font-semibold mb-4">Mentions Légales</h3>
-            <p className="text-muted-foreground text-sm">
-              © 2024 Victaure. Tous droits réservés.<br />
-              Toute reproduction interdite sans autorisation.
-            </p>
+            <div className="space-y-2 text-sm">
+              <p className="text-muted-foreground">
+                © 2024 Victaure. Tous droits réservés.
+              </p>
+              <p className="text-muted-foreground">
+                SIRET: 123 456 789 00012
+              </p>
+              <p className="text-muted-foreground">
+                Siège social: Montréal, QC
+              </p>
+            </div>
           </div>
           <div>
             <h3 className="font-semibold mb-4">Politique de Confidentialité</h3>
@@ -82,51 +90,62 @@ export function Footer() {
               </DialogContent>
             </Dialog>
           </div>
-          <div>
-            <h3 className="font-semibold mb-4">Conditions d'Utilisation</h3>
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="text-primary hover:underline text-sm">
-                  Voir les conditions d'utilisation
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Conditions d'Utilisation</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 text-sm text-muted-foreground">
-                  <section>
-                    <h3 className="font-semibold text-foreground">1. Acceptation des conditions</h3>
-                    <p>En utilisant Victaure, vous acceptez les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser nos services.</p>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">2. Utilisation du service</h3>
-                    <ul className="list-disc pl-5 mt-2">
-                      <li>Vous devez avoir au moins 18 ans pour utiliser nos services</li>
-                      <li>Vous êtes responsable de maintenir la confidentialité de votre compte</li>
-                      <li>Vous acceptez de ne pas utiliser le service à des fins illégales</li>
-                      <li>Vous acceptez de ne pas créer de faux profils ou de fausses informations</li>
-                    </ul>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">3. Propriété intellectuelle</h3>
-                    <p>Tous les contenus présents sur Victaure (logos, textes, fonctionnalités) sont la propriété exclusive de Victaure ou de ses partenaires.</p>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">4. Protection des données</h3>
-                    <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité et au RGPD.</p>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">5. Résiliation</h3>
-                    <p>Nous nous réservons le droit de suspendre ou de résilier votre compte en cas de violation de ces conditions.</p>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">6. Modifications</h3>
-                    <p>Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications seront effectives dès leur publication.</p>
-                  </section>
-                </div>
-              </DialogContent>
-            </Dialog>
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold mb-4">Conditions d'Utilisation</h3>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="text-primary hover:underline text-sm">
+                    Voir les conditions d'utilisation
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Conditions d'Utilisation</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 text-sm text-muted-foreground">
+                    <section>
+                      <h3 className="font-semibold text-foreground">1. Acceptation des conditions</h3>
+                      <p>En utilisant Victaure, vous acceptez les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser nos services.</p>
+                    </section>
+                    <section>
+                      <h3 className="font-semibold text-foreground">2. Utilisation du service</h3>
+                      <ul className="list-disc pl-5 mt-2">
+                        <li>Vous devez avoir au moins 18 ans pour utiliser nos services</li>
+                        <li>Vous êtes responsable de maintenir la confidentialité de votre compte</li>
+                        <li>Vous acceptez de ne pas utiliser le service à des fins illégales</li>
+                        <li>Vous acceptez de ne pas créer de faux profils ou de fausses informations</li>
+                      </ul>
+                    </section>
+                    <section>
+                      <h3 className="font-semibold text-foreground">3. Propriété intellectuelle</h3>
+                      <p>Tous les contenus présents sur Victaure (logos, textes, fonctionnalités) sont la propriété exclusive de Victaure ou de ses partenaires.</p>
+                    </section>
+                    <section>
+                      <h3 className="font-semibold text-foreground">4. Protection des données</h3>
+                      <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité et au RGPD.</p>
+                    </section>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Liens Juridiques</h3>
+              <div className="space-y-2">
+                <Link to="/legal/terms" className="block text-primary hover:underline text-sm">
+                  Conditions Générales de Vente
+                </Link>
+                <Link to="/legal/cookies" className="block text-primary hover:underline text-sm">
+                  Politique des Cookies
+                </Link>
+                <Link to="/legal/gdpr" className="block text-primary hover:underline text-sm">
+                  Conformité RGPD
+                </Link>
+                <Link to="/legal/accessibility" className="block text-primary hover:underline text-sm">
+                  Accessibilité
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
