@@ -51,7 +51,12 @@ export function PostList() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+
+      // Transform the data to ensure privacy_level is of the correct type
+      return data?.map(post => ({
+        ...post,
+        privacy_level: post.privacy_level as "public" | "connections"
+      }));
     }
   });
 
