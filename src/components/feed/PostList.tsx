@@ -1,10 +1,7 @@
-import { Card } from "@/components/ui/card";
-import { EyeOff, Trash2 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,45 +13,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { PostHeader } from "./PostHeader";
-import { PostActions } from "./PostActions";
-import { PostComments } from "./PostComments";
-import { CommentInput } from "./CommentInput";
-
-interface Post {
-  id: string;
-  content: string;
-  images: string[];
-  created_at: string;
-  user_id: string;
-  privacy_level: "public" | "connections";
-  profiles: {
-    full_name: string;
-    avatar_url: string;
-  };
-  reactions?: {
-    reaction_type: string;
-    user_id: string;
-  }[];
-  comments?: {
-    id: string;
-    content: string;
-    created_at: string;
-    user_id: string;
-    profiles: {
-      full_name: string;
-      avatar_url: string;
-    };
-  }[];
-}
+import { PostCard } from "./posts/PostCard";
 
 export function PostList() {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const [expandedComments, setExpandedComments] = useState<string[]>([]);
-  const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
 
   const { data: posts } = useQuery({
     queryKey: ["posts"],
@@ -86,7 +51,7 @@ export function PostList() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Post[];
+      return data;
     }
   });
 
@@ -200,207 +165,20 @@ export function PostList() {
     }
   };
 
-  const addComment = async (postId: string) => {
-    if (!user) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez être connecté pour commenter",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const comment = newComments[postId];
-    if (!comment?.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Le commentaire ne peut pas être vide",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      // Find the post author's ID
-      const post = posts?.find(p => p.id === postId);
-      if (!post) throw new Error("Post not found");
-
-      // Add the comment
-      const { error: commentError } = await supabase
-        .from('post_comments')
-        .insert({
-          post_id: postId,
-          user_id: user.id,
-          content: comment.trim()
-        });
-
-      if (commentError) throw commentError;
-
-      // Create notification for post author
-      if (post.user_id !== user.id) { // Don't notify if commenting on own post
-        const { error: notificationError } = await supabase
-          .from('notifications')
-          .insert({
-            user_id: post.user_id,
-            title: 'Nouveau commentaire',
-            message: `${user.email} a commenté votre publication: "${comment.substring(0, 50)}${comment.length > 50 ? '...' : ''}"`,
-          });
-
-        if (notificationError) {
-          console.error('Error creating notification:', notificationError);
-        }
-      }
-
-      setNewComments(prev => ({
-        ...prev,
-        [postId]: ''
-      }));
-
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-
-      toast({
-        title: "Succès",
-        description: "Commentaire ajouté"
-      });
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible d'ajouter le commentaire",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const deleteComment = async (commentId: string) => {
-    try {
-      const { error } = await supabase
-        .from('post_comments')
-        .delete()
-        .eq('id', commentId);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-
-      toast({
-        title: "Succès",
-        description: "Commentaire supprimé"
-      });
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de supprimer le commentaire",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const toggleComments = (postId: string) => {
-    setExpandedComments(prev => 
-      prev.includes(postId) 
-        ? prev.filter(id => id !== postId)
-        : [...prev, postId]
-    );
-  };
-
   return (
     <div className="space-y-4">
-      {posts?.map((post) => {
-        const likes = post.reactions?.filter(r => r.reaction_type === 'like').length || 0;
-        const dislikes = post.reactions?.filter(r => r.reaction_type === 'dislike').length || 0;
-        const userReaction = post.reactions?.find(r => r.user_id === user?.id)?.reaction_type;
-        const isExpanded = expandedComments.includes(post.id);
-        const commentCount = post.comments?.length || 0;
-
-        return (
-          <Card key={post.id} className="p-4">
-            <PostHeader
-              profile={post.profiles}
-              created_at={post.created_at}
-              privacy_level={post.privacy_level}
-            />
-            
-            <div className="flex gap-2 absolute right-4 top-4">
-              {post.user_id === user?.id ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setPostToDelete(post.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleHide(post.id)}
-                >
-                  <EyeOff className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-
-            <p className="text-foreground mb-4 whitespace-pre-wrap">{post.content}</p>
-
-            {post.images && post.images.length > 0 && (
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {post.images.map((image, index) => (
-                  <div key={index} className="relative">
-                    {image.toLowerCase().endsWith('.pdf') ? (
-                      <a 
-                        href={image} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="block p-4 bg-muted rounded hover:bg-muted/80 transition-colors"
-                      >
-                        <div className="flex items-center justify-center">
-                          <span className="text-sm">Voir le PDF</span>
-                        </div>
-                      </a>
-                    ) : (
-                      <img
-                        src={image}
-                        alt={`Attachment ${index + 1}`}
-                        className="w-full h-48 object-cover rounded"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <PostActions
-              likes={likes}
-              dislikes={dislikes}
-              commentCount={commentCount}
-              userReaction={userReaction}
-              isExpanded={isExpanded}
-              onLike={() => handleReaction(post.id, 'like')}
-              onDislike={() => handleReaction(post.id, 'dislike')}
-              onToggleComments={() => toggleComments(post.id)}
-            />
-
-            {isExpanded && post.comments && (
-              <PostComments
-                comments={post.comments}
-                currentUserId={user?.id}
-                onDeleteComment={deleteComment}
-              />
-            )}
-
-            <CommentInput
-              value={newComments[post.id] || ''}
-              onChange={(value) => setNewComments(prev => ({
-                ...prev,
-                [post.id]: value
-              }))}
-              onSubmit={() => addComment(post.id)}
-            />
-          </Card>
-        );
-      })}
+      {posts?.map((post) => (
+        <PostCard
+          key={post.id}
+          post={post}
+          currentUserId={user?.id}
+          userEmail={user?.email}
+          onDelete={() => setPostToDelete(post.id)}
+          onHide={handleHide}
+          onReaction={handleReaction}
+          onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
+        />
+      ))}
 
       <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
         <AlertDialogContent>
