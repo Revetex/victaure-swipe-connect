@@ -1,52 +1,45 @@
-import { Logo } from "@/components/Logo";
-import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { ChevronLeft } from "lucide-react";
 
-interface DashboardHeaderProps {
+export interface DashboardHeaderProps {
   title: string;
   showFriendsList: boolean;
   onToggleFriendsList: () => void;
-  isEditing?: boolean;
+  isEditing: boolean;
+  onToolReturn?: () => void;
 }
 
-export function DashboardHeader({ 
-  title, 
-  showFriendsList, 
+export function DashboardHeader({
+  title,
+  showFriendsList,
   onToggleFriendsList,
-  isEditing 
+  isEditing,
+  onToolReturn
 }: DashboardHeaderProps) {
-  const isMobile = useIsMobile();
-
-  if (isEditing) return null;
-
   return (
-    <div className="flex items-center justify-between py-3 px-4">
+    <div className="flex items-center justify-between p-4 border-b">
       <div className="flex items-center gap-4">
-        <Logo size="sm" />
-        <div className="h-6 w-px bg-border mx-2" />
-        <h2 className="text-lg font-semibold text-foreground">
-          {title}
-        </h2>
+        {onToolReturn && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToolReturn}
+            className="mr-2"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        )}
+        <h1 className="text-2xl font-bold">{title}</h1>
       </div>
       
-      <div className="flex items-center gap-2">
-        <NotificationsBox />
+      {!isEditing && (
         <Button
-          variant="ghost"
-          size="icon"
+          variant="outline"
           onClick={onToggleFriendsList}
-          className="relative hover:bg-accent/50"
-          title={showFriendsList ? "Masquer les amis" : "Afficher les amis"}
         >
-          {showFriendsList ? (
-            <ChevronUp className="h-5 w-5" />
-          ) : (
-            <ChevronDown className="h-5 w-5" />
-          )}
+          {showFriendsList ? 'Masquer les amis' : 'Afficher les amis'}
         </Button>
-      </div>
+      )}
     </div>
   );
 }

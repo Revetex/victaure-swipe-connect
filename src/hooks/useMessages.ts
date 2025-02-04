@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Message, MessageSender } from "@/types/messages";
+import { Message } from "@/types/messages";
 
 export function useMessages() {
   const queryClient = useQueryClient();
@@ -33,7 +33,10 @@ export function useMessages() {
         throw error;
       }
 
-      return messages as Message[];
+      return messages.map(msg => ({
+        ...msg,
+        timestamp: new Date(msg.created_at)
+      })) as Message[];
     }
   });
 

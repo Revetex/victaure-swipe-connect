@@ -13,8 +13,23 @@ serve(async (req) => {
   }
 
   try {
-    const { query, user_id, context } = await req.json();
-    const { profile, previousSuggestions = [] } = context;
+    const { userId } = await req.json();
+    
+    // Create Supabase client
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // Get user profile
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (profileError) throw new Error('Error fetching profile');
+    if (!profile) throw new Error('Profile not found');
 
     // Initialize HuggingFace
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'));
@@ -22,11 +37,9 @@ serve(async (req) => {
     // Generate base context for the model
     const baseContext = `
       Génère 5 suggestions de recherche différentes en français pour un professionnel de la construction.
-      Context: L'utilisateur est ${profile.role} et cherche: "${query}"
-      Suggestions précédentes: ${previousSuggestions.join(', ')}
+      Context: L'utilisateur est ${profile.role} et cherche des opportunités dans son domaine.
       Les suggestions doivent être:
       - Pertinentes pour le secteur de la construction
-      - Différentes des suggestions précédentes
       - Spécifiques et détaillées
       - En français
       Format: Une suggestion par ligne
@@ -48,7 +61,6 @@ serve(async (req) => {
     const suggestions = response.generated_text
       .split('\n')
       .filter(line => line.trim())
-      .filter(line => !previousSuggestions.includes(line))
       .slice(0, 5);
 
     if (!suggestions.length) {
@@ -56,7 +68,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ suggestions }),
+      JSON.stringify({ suggestion: suggestions[0] }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
