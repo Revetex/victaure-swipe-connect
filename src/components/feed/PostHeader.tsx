@@ -5,6 +5,7 @@ import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 
 interface PostHeaderProps {
   profile: {
+    id: string;
     full_name: string;
     avatar_url: string;
   };
@@ -29,7 +30,7 @@ export function PostHeader({ profile, created_at, privacy_level }: PostHeaderPro
       
       <div className="flex-1 min-w-0">
         <ProfileNameButton 
-          profile={profile} 
+          profile={profile}
           className="font-medium hover:underline p-0 h-auto"
         />
         <div className="flex items-center gap-2 text-sm text-muted-foreground">

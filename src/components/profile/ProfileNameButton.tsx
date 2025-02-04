@@ -4,7 +4,7 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 
 interface ProfileNameButtonProps {
-  profile: UserProfile;
+  profile: Partial<UserProfile> & { id: string; full_name: string | null };
   className?: string;
 }
 
@@ -22,7 +22,7 @@ export function ProfileNameButton({ profile, className }: ProfileNameButtonProps
       </Button>
 
       <ProfilePreview
-        profile={profile}
+        profile={profile as UserProfile}
         isOpen={showPreview}
         onClose={() => setShowPreview(false)}
       />

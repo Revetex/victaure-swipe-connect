@@ -10,6 +10,7 @@ interface Comment {
   created_at: string;
   user_id: string;
   profiles: {
+    id: string;
     full_name: string;
     avatar_url: string;
   };
@@ -42,7 +43,10 @@ export const PostComments = ({ comments, currentUserId, onDeleteComment }: PostC
             </div>
             <div className="flex-1 min-w-0">
               <ProfileNameButton 
-                profile={comment.profiles}
+                profile={{
+                  id: comment.user_id,
+                  ...comment.profiles
+                }}
                 className="p-0 h-auto text-sm hover:underline"
               />
               <span className="text-xs text-muted-foreground ml-2">
@@ -65,4 +69,4 @@ export const PostComments = ({ comments, currentUserId, onDeleteComment }: PostC
       ))}
     </div>
   );
-};
+}
