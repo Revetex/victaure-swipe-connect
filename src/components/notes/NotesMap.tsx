@@ -68,7 +68,7 @@ export function NotesMap() {
     switch (selectedTool) {
       case "notes":
         return (
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2">
             <Input
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
@@ -127,16 +127,15 @@ export function NotesMap() {
 
   return (
     <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 p-4">
+      <div className="flex-none p-4 space-y-4 border-b border-border/50">
         {renderTool()}
-
         <div className="flex justify-between items-center gap-2">
           <NotesToolbar showGrid={showGrid} onToggleGrid={() => setShowGrid(!showGrid)} />
           <NotesToolSelector selectedTool={selectedTool} onToolSelect={setSelectedTool} />
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden" ref={containerRef}>
+      <div className="flex-1 relative overflow-hidden">
         <TransformWrapper
           initialScale={1}
           minScale={0.5}

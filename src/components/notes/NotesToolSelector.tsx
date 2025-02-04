@@ -8,7 +8,7 @@ interface NotesToolSelectorProps {
 
 export function NotesToolSelector({ selectedTool, onToolSelect }: NotesToolSelectorProps) {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
       <Button 
         variant={selectedTool === "notes" ? "default" : "outline"}
         size="sm"
