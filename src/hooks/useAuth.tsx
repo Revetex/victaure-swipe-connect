@@ -128,7 +128,7 @@ export function useAuth() {
           user: session.user
         });
         navigate('/dashboard');
-      } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+      } else if (event === 'SIGNED_OUT') {
         setState({
           isLoading: false,
           isAuthenticated: false,

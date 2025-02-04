@@ -9,17 +9,17 @@ import { useAuth } from "@/hooks/useAuth";
 interface ConversationMessagesProps {
   messages: Message[];
   isThinking?: boolean;
-  showScrollButton: boolean;
-  onScroll: () => void;
-  onScrollToBottom: () => void;
+  showScrollButton?: boolean;
+  onScroll?: () => void;
+  onScrollToBottom?: () => void;
 }
 
 export function ConversationMessages({
   messages,
   isThinking,
-  showScrollButton,
-  onScroll,
-  onScrollToBottom
+  showScrollButton = false,
+  onScroll = () => {},
+  onScrollToBottom = () => {}
 }: ConversationMessagesProps) {
   const { user } = useAuth();
   const { deleteMessage } = useMessages();
