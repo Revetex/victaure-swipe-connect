@@ -68,7 +68,19 @@ export async function generateBio(profile: UserProfile): Promise<string> {
   console.log("Generating bio with context:", bioContext);
 
   const { data, error } = await supabase.functions.invoke('generate-bio', {
-    body: bioContext
+    body: {
+      ...bioContext,
+      options: {
+        creativity: 0.9,
+        style: "professional",
+        maxLength: 500,
+        format: "paragraphs",
+        language: "fr",
+        tone: "confident",
+        focus: ["achievements", "expertise", "potential"],
+        includeKeywords: true
+      }
+    }
   });
 
   if (error) {

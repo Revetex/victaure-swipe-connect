@@ -10,7 +10,6 @@ interface AISearchSuggestionsProps {
 
 export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [previousSuggestions, setPreviousSuggestions] = useState<string[]>([]);
 
   const handleSearch = useCallback(() => {
     try {
@@ -67,8 +66,10 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
           user_id: user.id,
           context: {
             profile,
-            previousSuggestions,
-            useHuggingFace: true
+            useHuggingFace: true,
+            creativity: 0.9,
+            diversity: true,
+            maxSuggestions: 10
           }
         }
       });
@@ -83,10 +84,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
       const randomIndex = Math.floor(Math.random() * data.suggestions.length);
       const suggestion = data.suggestions[randomIndex];
       
-      // Add to previous suggestions
-      setPreviousSuggestions(prev => [...prev, suggestion]);
       onSuggestionClick(suggestion);
-      
       searchInput.focus();
 
     } catch (error) {
@@ -95,7 +93,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, onSuggestionClick, previousSuggestions]);
+  }, [isLoading, onSuggestionClick]);
 
   return (
     <div className="flex items-center gap-2">
