@@ -47,6 +47,8 @@ serve(async (req) => {
     The suggestions should be job search queries that would be useful for finding relevant positions.
     Format: Return only an array of strings, each being a search suggestion.`;
 
+    console.log('Sending request to Hugging Face with context:', context);
+
     // Call Hugging Face API
     const response = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
