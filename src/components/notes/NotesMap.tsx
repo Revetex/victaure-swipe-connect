@@ -89,7 +89,7 @@ export function NotesMap() {
           initialScale={1}
           minScale={0.5}
           maxScale={2}
-          onZoomChange={({ state }) => setScale(state.scale)}
+          onTransformed={(ref) => setScale(ref.state.scale)}
         >
           <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
             <div className="relative w-full h-full min-h-[1000px]">
