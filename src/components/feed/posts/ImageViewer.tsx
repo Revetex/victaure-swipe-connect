@@ -27,7 +27,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-4 rounded-full"
+          className="absolute right-2 top-2 rounded-full hover:bg-background/20"
           onClick={onClose}
         >
           <X className="h-4 w-4" />
@@ -39,7 +39,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-4 rounded-full"
+                className="absolute left-4 rounded-full hover:bg-background/20"
                 onClick={handlePrevious}
               >
                 <ChevronLeft className="h-6 w-6" />
@@ -48,7 +48,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 rounded-full"
+                className="absolute right-4 rounded-full hover:bg-background/20"
                 onClick={handleNext}
               >
                 <ChevronRight className="h-6 w-6" />
@@ -59,7 +59,7 @@ export function ImageViewer({ images, initialIndex = 0, isOpen, onClose }: Image
           <img
             src={images[currentIndex]}
             alt={`Image ${currentIndex + 1}`}
-            className="max-h-full max-w-full object-contain"
+            className="max-h-full max-w-full object-contain border border-border"
           />
         </div>
       </DialogContent>

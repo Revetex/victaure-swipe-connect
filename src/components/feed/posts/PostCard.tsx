@@ -110,7 +110,7 @@ export const PostCard = ({
                   <img
                     src={image}
                     alt={`Attachment ${index + 1}`}
-                    className="w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
+                    className="w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity border border-border"
                     onClick={() => setSelectedImageIndex(index)}
                   />
                 )}
