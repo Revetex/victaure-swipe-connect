@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
+import { AuthVideo } from "@/components/auth/AuthVideo";
+import { DownloadApp } from "@/components/dashboard/DownloadApp";
+import { Footer } from "@/components/landing/Footer";
 
 export default function Auth() {
   return (
@@ -23,13 +26,21 @@ export default function Auth() {
             </p>
           </div>
 
+          <AuthVideo />
+
           <div className="glass-card p-8 rounded-2xl shadow-lg backdrop-blur-md border border-white/20 animate-fade-in">
             <Suspense fallback={<div>Chargement...</div>}>
               <AuthForm />
             </Suspense>
           </div>
+
+          <div className="mt-8 animate-fade-in">
+            <DownloadApp />
+          </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
