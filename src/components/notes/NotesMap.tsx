@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { Plus, Grid } from "lucide-react";
+import { Plus, Grid, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +11,7 @@ import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
 import { NotesGrid } from "./NotesGrid";
 import { NotesToolbar } from "./NotesToolbar";
+import { useNavigate } from "react-router-dom";
 
 const colors: ColorOption[] = [
   { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
@@ -34,6 +35,7 @@ export function NotesMap() {
     deleteNote
   } = useNotes();
 
+  const navigate = useNavigate();
   const [scale, setScale] = useState(1);
   const [showGrid, setShowGrid] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,32 +51,44 @@ export function NotesMap() {
       const rect = containerRef.current.getBoundingClientRect();
       const x = (e.clientX - rect.left) / scale;
       const y = (e.clientY - rect.top) / scale;
-      setPosition({ x, y });
+      
+      // Snap to grid if grid is enabled
+      const snappedX = showGrid ? Math.round(x / GRID_SIZE) * GRID_SIZE : x;
+      const snappedY = showGrid ? Math.round(y / GRID_SIZE) * GRID_SIZE : y;
+      
+      setPosition({ x: snappedX, y: snappedY });
     }
 
     addNote();
   };
 
-  const handleNavigateLeft = () => {
-    // Add navigation logic here
-    console.log("Navigate left");
-  };
-
-  const handleNavigateRight = () => {
-    // Add navigation logic here
-    console.log("Navigate right");
+  const handleReturnToDashboard = () => {
+    navigate("/dashboard");
   };
 
   return (
     <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
       <div className="flex-none">
-        <NotesToolbar 
-          showGrid={showGrid}
-          onToggleGrid={() => setShowGrid(!showGrid)}
-          onAddNote={() => handleAddNote()}
-          onNavigateLeft={handleNavigateLeft}
-          onNavigateRight={handleNavigateRight}
-        />
+        <div className="p-4 border-b flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReturnToDashboard}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Retour au tableau de bord
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowGrid(!showGrid)}
+            className={showGrid ? "bg-accent" : ""}
+          >
+            <Grid className="h-4 w-4" />
+          </Button>
+        </div>
         
         <div className="p-4 border-b">
           <div className="flex gap-2">

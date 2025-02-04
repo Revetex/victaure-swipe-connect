@@ -6,7 +6,7 @@
            sm:touch-none
            active:shadow-lg
            active:scale-[0.98]
-           w-full min-h-[200px];
+           w-[280px] min-h-[280px];
   }
 
   .sticky-note-preview {
@@ -36,10 +36,5 @@
   .sticky-note-purple {
     @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF];
     box-shadow: 0 2px 4px rgba(168, 85, 247, 0.1);
-  }
-
-  .sticky-note-orange {
-    @apply bg-[#FEC6A1]/90 hover:bg-[#FEC6A1];
-    box-shadow: 0 2px 4px rgba(251, 146, 60, 0.1);
   }
 }
