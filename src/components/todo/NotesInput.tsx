@@ -4,6 +4,8 @@ import { Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ColorOption } from "@/types/todo";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Textarea } from "@/components/ui/textarea";
 
 interface NotesInputProps {
   newNote: string;
@@ -22,6 +24,8 @@ export function NotesInput({
   onColorChange,
   onAdd,
 }: NotesInputProps) {
+  const isMobile = useIsMobile();
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -49,18 +53,30 @@ export function NotesInput({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2 w-full">
-      <Input
-        value={newNote}
-        onChange={(e) => onNoteChange(e.target.value)}
-        placeholder="Nouvelle note..."
-        className="flex-1 min-w-0 bg-background/50 text-foreground"
-        onKeyPress={handleKeyPress}
-      />
-      <div className="flex gap-2 sm:w-auto w-full">
+    <div className={cn(
+      "flex gap-2 w-full",
+      isMobile ? "flex-col" : "flex-row items-start"
+    )}>
+      <div className="flex-1 min-w-0">
+        <Textarea
+          value={newNote}
+          onChange={(e) => onNoteChange(e.target.value)}
+          placeholder="Nouvelle note..."
+          className={cn(
+            "flex-1 min-w-0 bg-background/50 text-foreground resize-none",
+            "min-h-[100px]",
+            isMobile ? "h-[120px]" : "h-[100px]"
+          )}
+          onKeyPress={handleKeyPress}
+        />
+      </div>
+      <div className={cn(
+        "flex gap-2",
+        isMobile ? "w-full justify-between" : "flex-col"
+      )}>
         <Select onValueChange={onColorChange} value={selectedColor}>
           <SelectTrigger className={cn(
-            "w-[120px]",
+            isMobile ? "w-[120px]" : "w-[100px]",
             getColorStyle(selectedColor),
             "border border-border/10"
           )}>
@@ -88,11 +104,18 @@ export function NotesInput({
         </Select>
         <Button 
           onClick={onAdd} 
-          size="icon"
+          size={isMobile ? "default" : "icon"}
           variant="outline"
-          className="hover:bg-primary hover:text-primary-foreground transition-colors"
+          className={cn(
+            "hover:bg-primary hover:text-primary-foreground transition-colors",
+            isMobile ? "flex-1" : "w-[100px] h-[100px]"
+          )}
         >
-          <Plus className="h-4 w-4" />
+          <Plus className={cn(
+            "h-4 w-4",
+            isMobile ? "mr-2" : "h-6 w-6"
+          )} />
+          {isMobile && "Ajouter"}
         </Button>
       </div>
     </div>

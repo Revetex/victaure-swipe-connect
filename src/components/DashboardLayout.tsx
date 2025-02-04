@@ -36,13 +36,11 @@ export function DashboardLayout() {
   const THROTTLE_DELAY = 300;
 
   useEffect(() => {
-    // Add meta viewport tag for better mobile resolution
     const meta = document.createElement('meta');
     meta.name = 'viewport';
     meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
     document.getElementsByTagName('head')[0].appendChild(meta);
 
-    // Handle viewport height changes
     const handleResize = () => {
       debouncedSetViewportHeight(window.innerHeight);
     };
@@ -50,7 +48,6 @@ export function DashboardLayout() {
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleResize);
 
-    // Initial call
     handleResize();
 
     return () => {
@@ -64,9 +61,25 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      setIsEditing(false);
-      if (isMobile) {
-        setShowFriendsList(false);
+      
+      // Automatically enter edit mode when switching to notes (page 5)
+      if (page === 5) {
+        setIsEditing(true);
+        if (isMobile) {
+          // On mobile, ensure the screen is in the right orientation
+          if (window.screen && window.screen.orientation) {
+            try {
+              window.screen.orientation.lock('landscape');
+            } catch (err) {
+              console.log('Orientation lock not supported');
+            }
+          }
+        }
+      } else {
+        setIsEditing(false);
+        if (isMobile) {
+          setShowFriendsList(false);
+        }
       }
     }
   }, [lastPageChange, isMobile]);
@@ -124,7 +137,7 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-10' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50">
+          <div className={`fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50 transition-opacity duration-300 ${currentPage === 5 && isEditing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <div className="container mx-auto px-0 sm:px-4">
               <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col">
@@ -181,9 +194,9 @@ export function DashboardLayout() {
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className="transform transition-all duration-300 w-full min-h-screen pt-16"
+              className={`transform transition-all duration-300 w-full min-h-screen ${currentPage === 5 && isEditing ? 'pt-0' : 'pt-16'}`}
               style={{ 
-                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '140px' : '80px'})` : 'none',
+                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '0px' : '0px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
                 paddingBottom: isMobile ? '4rem' : '3rem',
@@ -204,7 +217,7 @@ export function DashboardLayout() {
       
       <nav 
         className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
-          isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+          (isEditing && currentPage === 4) || (currentPage === 5 && isEditing) ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
           height: 'auto',
