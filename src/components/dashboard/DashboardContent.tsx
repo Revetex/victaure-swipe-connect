@@ -1,53 +1,181 @@
-import { useState } from "react";
-import { AIAssistant } from "./AIAssistant";
-import { DashboardStats } from "./DashboardStats";
-import { ScrapedJobs } from "./ScrapedJobs";
-import { QuickActions } from "./QuickActions";
-import { RecentActivity } from "./RecentActivity";
+import { motion } from "framer-motion";
+import { VCard } from "@/components/VCard";
+import { useProfile } from "@/hooks/useProfile";
+import { useVCardStyle } from "@/components/vcard/VCardStyleContext";
+import { Messages } from "@/components/Messages";
+import { Marketplace } from "@/components/Marketplace";
+import { Settings } from "@/components/Settings";
+import { UnifiedBoard } from "@/components/board/UnifiedBoard";
+import { useTodoList } from "@/hooks/useTodoList";
+import { useNotes } from "@/hooks/useNotes";
+import { Feed } from "@/components/Feed";
+import { TodoSection } from "@/components/todo/TodoSection";
+import { NotesSection } from "@/components/todo/NotesSection";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ListTodo, StickyNote } from "lucide-react";
 
 interface DashboardContentProps {
   currentPage: number;
-  isEditing: boolean;
   viewportHeight: number;
-  onEditStateChange: (value: boolean) => void;
+  isEditing?: boolean;
+  onEditStateChange: (isEditing: boolean) => void;
   onRequestChat: () => void;
 }
 
 export function DashboardContent({
   currentPage,
-  isEditing,
   viewportHeight,
+  isEditing,
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {
-  const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+  const { profile, setProfile } = useProfile();
+  const { selectedStyle } = useVCardStyle();
+  
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
 
-  const handleCloseAIAssistant = () => {
-    setIsAIAssistantOpen(false);
+  const {
+    notes,
+    newNote,
+    selectedColor,
+    setNewNote,
+    setSelectedColor,
+    addNote,
+    deleteNote
+  } = useNotes();
+
+  const colors = [
+    { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
+    { value: "blue", label: "Bleu", class: "bg-blue-200" },
+    { value: "green", label: "Vert", class: "bg-green-200" },
+    { value: "red", label: "Rouge", class: "bg-red-200" },
+    { value: "purple", label: "Violet", class: "bg-purple-200" }
+  ];
+
+  const renderContent = () => {
+    switch (currentPage) {
+      case 1:
+        return (
+          <div className="w-full p-4 overflow-y-auto">
+            <VCard 
+              onEditStateChange={onEditStateChange}
+              onRequestChat={onRequestChat}
+            />
+          </div>
+        );
+      case 2:
+        return (
+          <div className="w-full p-4 overflow-y-auto">
+            <Messages />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="w-full p-4 overflow-y-auto">
+            <Marketplace />
+          </div>
+        );
+      case 4:
+        return (
+          <div className="w-full p-4 overflow-y-auto">
+            <Feed />
+          </div>
+        );
+      case 5:
+        return (
+          <div className="w-full px-4 overflow-y-auto pt-6">
+            <div className="w-full sm:max-w-3xl mx-auto">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="tasks" className="border-2 border-black rounded-lg bg-card mb-4">
+                  <AccordionTrigger className="px-4 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <ListTodo className="h-5 w-5" />
+                      <span className="font-semibold">Tâches</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="h-[calc(100vh-16rem)]">
+                      <TodoSection
+                        todos={todos}
+                        newTodo={newTodo}
+                        selectedDate={selectedDate}
+                        selectedTime={selectedTime}
+                        allDay={allDay}
+                        onTodoChange={setNewTodo}
+                        onDateChange={setSelectedDate}
+                        onTimeChange={setSelectedTime}
+                        onAllDayChange={setAllDay}
+                        onAddTodo={addTodo}
+                        onToggleTodo={toggleTodo}
+                        onDeleteTodo={deleteTodo}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="notes" className="border-2 border-black rounded-lg bg-card">
+                  <AccordionTrigger className="px-4 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <StickyNote className="h-5 w-5" />
+                      <span className="font-semibold">Notes</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="h-[calc(100vh-16rem)]">
+                      <NotesSection
+                        notes={notes}
+                        newNote={newNote}
+                        selectedColor={selectedColor}
+                        colors={colors}
+                        onNoteChange={setNewNote}
+                        onColorChange={setSelectedColor}
+                        onAdd={addNote}
+                        onDelete={deleteNote}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          </div>
+        );
+      case 6:
+        return (
+          <div className="w-full p-4 overflow-y-auto">
+            <Settings />
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="w-full space-y-6">
-      {currentPage === 3 && (
-        <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <DashboardStats />
-            <div className="lg:col-span-2">
-              <ScrapedJobs />
-            </div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <QuickActions onAIAssistantOpen={() => setIsAIAssistantOpen(true)} />
-            </div>
-            <RecentActivity />
-          </div>
-          <AIAssistant 
-            isOpen={isAIAssistantOpen} 
-            onClose={handleCloseAIAssistant}
-          />
-        </>
-      )}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="w-full h-full overflow-hidden"
+      style={{
+        height: isEditing ? `calc(${viewportHeight}px - 80px)` : '100%',
+        overflowY: 'auto'
+      }}
+    >
+      {renderContent()}
+    </motion.div>
   );
 }
