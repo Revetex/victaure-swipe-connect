@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { SearchBarStyles } from './styles/SearchBarStyles';
-import { useSearchResultsStyles } from './styles/SearchResultsStyles';
+import { SearchResultsStyles } from './styles/SearchResultsStyles';
 
 export function useGoogleSearchStyles() {
   useEffect(() => {
@@ -13,7 +13,7 @@ export function useGoogleSearchStyles() {
       }
 
       ${SearchBarStyles}
-      ${useSearchResultsStyles()}
+      ${SearchResultsStyles}
     `;
 
     document.head.appendChild(style);
