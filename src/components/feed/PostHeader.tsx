@@ -7,7 +7,7 @@ interface PostHeaderProps {
   profile: {
     id: string;
     full_name: string;
-    avatar_url: string;
+    avatar_url?: string;
   };
   created_at: string;
   privacy_level: "public" | "connections";
