@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { handleJobSearch } from "./handlers/jobSearch.ts";
+import { handleCareerAdvice } from "./handlers/careerAdvice.ts";
+import { handleProfileAnalysis } from "./handlers/profileAnalysis.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,66 +15,66 @@ serve(async (req) => {
   }
 
   try {
-    const { title, category } = await req.json();
-    console.log('Generating description for:', { title, category });
+    const { message, userId, action = 'search' } = await req.json();
+    
+    console.log('Processing request:', { action, userId });
 
-    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
-    if (!apiKey) {
-      throw new Error('Missing Hugging Face API key');
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Get user profile
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (profileError) {
+      console.error('Error fetching user profile:', profileError);
+      throw new Error('Failed to fetch user profile');
     }
 
-    const prompt = `En tant que recruteur professionnel au Québec, génère une description de poste détaillée en français pour un poste de "${title}" dans la catégorie "${category}". 
-    La description doit inclure:
-    - Un bref aperçu du poste
-    - 3-4 responsabilités principales
-    - 2-3 qualifications requises
-    Format: description simple, sans puces ni titres.`;
-
-    const response = await fetch('https://api-inference.huggingface.co/models/Qwen/QwQ-32B-Preview', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 512,
-          temperature: 0.7,
-          top_p: 0.9,
-          frequency_penalty: 0.0,
-          presence_penalty: 0.0,
-          return_full_text: false
-        }
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('Hugging Face API Error:', error);
-      throw new Error('Failed to generate description');
+    let response;
+    switch (action) {
+      case 'search':
+        response = await handleJobSearch(message, profile, supabase);
+        break;
+      case 'career_advice':
+        response = await handleCareerAdvice(message, profile, supabase);
+        break;
+      case 'profile_analysis':
+        response = await handleProfileAnalysis(message, profile, supabase);
+        break;
+      default:
+        throw new Error(`Unknown action: ${action}`);
     }
-
-    const data = await response.json();
-    console.log('Generated description:', data);
-
-    const description = data[0].generated_text.trim();
 
     return new Response(
-      JSON.stringify({ description }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify(response),
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     );
 
   } catch (error) {
-    console.error('Error in job description generation:', error);
+    console.error('Error in AI job assistant:', error);
     return new Response(
       JSON.stringify({ 
-        error: "Une erreur est survenue lors de la génération de la description",
-        details: error.message 
+        error: "Une erreur est survenue", 
+        details: error.message,
+        timestamp: new Date().toISOString()
       }),
-      { 
+      {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        },
       }
     );
   }
