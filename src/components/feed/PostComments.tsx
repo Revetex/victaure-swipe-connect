@@ -12,7 +12,7 @@ interface Comment {
   profiles: {
     id: string;
     full_name: string;
-    avatar_url?: string;  // Made optional to match the data structure
+    avatar_url?: string;  // Made optional to match the database schema
   };
 }
 
