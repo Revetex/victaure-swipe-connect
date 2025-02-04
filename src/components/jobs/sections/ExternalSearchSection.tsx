@@ -20,6 +20,75 @@ export function ExternalSearchSection({
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  useEffect(() => {
+    // Add custom styles for Google Search elements
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Search box styling */
+      .gsc-input-box {
+        background-color: hsl(var(--background)) !important;
+        border: 1px solid hsl(var(--border)) !important;
+        border-radius: 0.5rem !important;
+      }
+      
+      .gsc-input {
+        color: hsl(var(--foreground)) !important;
+        background: transparent !important;
+      }
+      
+      /* Search button styling */
+      .gsc-search-button {
+        background-color: hsl(var(--primary)) !important;
+        border: none !important;
+        border-radius: 0.375rem !important;
+        padding: 8px 16px !important;
+      }
+      
+      .gsc-search-button:hover {
+        background-color: hsl(var(--primary)/0.9) !important;
+      }
+      
+      /* Results styling */
+      .gsc-result {
+        background-color: hsl(var(--background)) !important;
+        border: 1px solid hsl(var(--border)) !important;
+        border-radius: 0.5rem !important;
+        margin: 8px 0 !important;
+        padding: 12px !important;
+      }
+      
+      .gs-title {
+        color: hsl(var(--primary)) !important;
+      }
+      
+      .gs-snippet {
+        color: hsl(var(--foreground)) !important;
+      }
+      
+      /* Suggestions styling */
+      .gsc-completion-container {
+        background-color: hsl(var(--background)) !important;
+        border: 1px solid hsl(var(--border)) !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+      }
+      
+      .gsc-completion-title {
+        color: hsl(var(--foreground)) !important;
+        padding: 8px 12px !important;
+      }
+      
+      .gsc-completion-selected {
+        background-color: hsl(var(--accent)) !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   const fetchSuggestions = async () => {
     try {
       setLoadingSuggestions(true);
