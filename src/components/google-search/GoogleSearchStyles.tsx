@@ -30,6 +30,11 @@ export function useGoogleSearchStyles() {
         background-color: hsl(var(--primary)/0.9) !important;
       }
 
+      /* Change search icon color */
+      .gsc-search-button-v2 svg {
+        fill: hsl(var(--primary-foreground)) !important;
+      }
+
       /* Results styling */
       .gsc-result {
         background: transparent !important;
