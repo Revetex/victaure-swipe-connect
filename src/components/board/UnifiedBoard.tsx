@@ -14,16 +14,10 @@ interface UnifiedBoardProps {
   notes: StickyNoteType[];
   newTodo: string;
   newNote: string;
-  selectedDate?: Date;
-  selectedTime?: string;
-  allDay?: boolean;
   selectedColor?: string;
   colors?: ColorOption[];
   onTodoChange: (value: string) => void;
   onNoteChange: (value: string) => void;
-  onDateChange: (date?: Date) => void;
-  onTimeChange: (time: string) => void;
-  onAllDayChange: (checked: boolean) => void;
   onColorChange: (color: string) => void;
   onAddTodo: () => void;
   onAddNote: () => void;
@@ -67,13 +61,13 @@ export function UnifiedBoard({
   };
 
   return (
-    <div className="h-full bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
+    <div className="h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border">
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as "todos" | "notes")}
         className="h-full flex flex-col"
       >
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <TabsList className="grid w-full grid-cols-2 h-12">
             <TabsTrigger value="todos" className="flex items-center gap-2 text-base">
               <ListTodo className="h-4 w-4" />
@@ -85,24 +79,22 @@ export function UnifiedBoard({
             </TabsTrigger>
           </TabsList>
           
-          <div className="p-3">
-            {activeTab === "todos" ? (
-              <TodoToolbar
-                newTodo={newTodo}
-                onTodoChange={onTodoChange}
-                onAddTodo={handleAddTodo}
-              />
-            ) : (
-              <NoteToolbar
-                newNote={newNote}
-                selectedColor={selectedColor}
-                colors={colors}
-                onNoteChange={onNoteChange}
-                onColorChange={onColorChange}
-                onAddNote={handleAddNote}
-              />
-            )}
-          </div>
+          {activeTab === "todos" ? (
+            <TodoToolbar
+              newTodo={newTodo}
+              onTodoChange={onTodoChange}
+              onAddTodo={handleAddTodo}
+            />
+          ) : (
+            <NoteToolbar
+              newNote={newNote}
+              selectedColor={selectedColor}
+              colors={colors}
+              onNoteChange={onNoteChange}
+              onColorChange={onColorChange}
+              onAddNote={handleAddNote}
+            />
+          )}
         </div>
 
         <div className="flex-1 overflow-hidden">
