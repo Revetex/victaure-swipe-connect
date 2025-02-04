@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback } from "react";
 import { DashboardNavigation } from "../navigation/DashboardNavigation";
-import { DashboardContainer } from "./DashboardContainer";
 import { DashboardContent } from "../content/DashboardContent";
 import { useDebounce } from "use-debounce";
 
