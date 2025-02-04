@@ -56,17 +56,7 @@ export function DashboardLayout() {
       setLastPageChange(now);
       
       if (page === 5) {
-        setIsEditing(true);
-        if (isMobile && window.screen?.orientation) {
-          try {
-            window.screen.orientation.lock('landscape')
-              .catch((error: Error) => {
-                console.log('Orientation lock failed:', error.message);
-              });
-          } catch (error) {
-            console.log('Orientation lock not supported');
-          }
-        }
+        navigate('/dashboard/tools');
       } else {
         setIsEditing(false);
         if (isMobile) {
@@ -74,7 +64,7 @@ export function DashboardLayout() {
         }
       }
     }
-  }, [lastPageChange, isMobile]);
+  }, [lastPageChange, isMobile, navigate]);
 
   const handleRequestChat = useCallback(() => {
     handlePageChange(2);
