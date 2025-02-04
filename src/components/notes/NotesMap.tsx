@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { Plus, Minus, MoveIcon, Calculator, Languages, Ruler, ListTodo, Grid } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +11,9 @@ import { StickyNote } from "@/components/todo/StickyNote";
 import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
 import { TodoSection } from "@/components/todo/TodoSection";
+import { NotesToolbar } from "./NotesToolbar";
+import { NotesToolSelector } from "./NotesToolSelector";
+import { NotesGrid } from "./NotesGrid";
 
 const colors: ColorOption[] = [
   { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
@@ -20,8 +23,8 @@ const colors: ColorOption[] = [
   { value: "purple", label: "Violet", class: "bg-purple-200" }
 ];
 
-const GRID_SIZE = 50; // Size of grid cells in pixels
-const MAX_DISTANCE = 2000; // Maximum distance from center in pixels
+const GRID_SIZE = 50;
+const MAX_DISTANCE = 2000;
 
 export function NotesMap() {
   const {
@@ -59,54 +62,6 @@ export function NotesMap() {
       addNote();
       toast.success("Note ajoutée avec succès");
     }
-  };
-
-  const renderGrid = () => {
-    if (!showGrid) return null;
-
-    const gridLines = [];
-    const numLines = Math.ceil(MAX_DISTANCE / GRID_SIZE) * 2;
-    
-    // Vertical lines
-    for (let i = 0; i < numLines; i++) {
-      const position = (i - numLines/2) * GRID_SIZE;
-      gridLines.push(
-        <line
-          key={`v${i}`}
-          x1={position}
-          y1={-MAX_DISTANCE}
-          x2={position}
-          y2={MAX_DISTANCE}
-          stroke="#ddd"
-          strokeWidth="1"
-        />
-      );
-    }
-    
-    // Horizontal lines
-    for (let i = 0; i < numLines; i++) {
-      const position = (i - numLines/2) * GRID_SIZE;
-      gridLines.push(
-        <line
-          key={`h${i}`}
-          x1={-MAX_DISTANCE}
-          y1={position}
-          x2={MAX_DISTANCE}
-          y2={position}
-          stroke="#ddd"
-          strokeWidth="1"
-        />
-      );
-    }
-
-    return (
-      <svg
-        className="absolute inset-0 pointer-events-none"
-        style={{ width: MAX_DISTANCE * 2, height: MAX_DISTANCE * 2, left: -MAX_DISTANCE, top: -MAX_DISTANCE }}
-      >
-        {gridLines}
-      </svg>
-    );
   };
 
   const renderTool = () => {
@@ -176,63 +131,8 @@ export function NotesMap() {
         {renderTool()}
 
         <div className="flex justify-between items-center gap-2">
-          <div className="flex gap-2">
-            <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setShowGrid(!showGrid)}>
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <Minus className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <MoveIcon className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="flex gap-2">
-            <Button 
-              variant={selectedTool === "notes" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedTool("notes")}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Notes
-            </Button>
-            <Button 
-              variant={selectedTool === "tasks" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedTool("tasks")}
-            >
-              <ListTodo className="h-4 w-4 mr-2" />
-              Tâches
-            </Button>
-            <Button 
-              variant={selectedTool === "calculator" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedTool("calculator")}
-            >
-              <Calculator className="h-4 w-4 mr-2" />
-              Calculatrice
-            </Button>
-            <Button 
-              variant={selectedTool === "translator" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedTool("translator")}
-            >
-              <Languages className="h-4 w-4 mr-2" />
-              Traducteur
-            </Button>
-            <Button 
-              variant={selectedTool === "converter" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedTool("converter")}
-            >
-              <Ruler className="h-4 w-4 mr-2" />
-              Convertisseur
-            </Button>
-          </div>
+          <NotesToolbar showGrid={showGrid} onToggleGrid={() => setShowGrid(!showGrid)} />
+          <NotesToolSelector selectedTool={selectedTool} onToolSelect={setSelectedTool} />
         </div>
       </div>
 
@@ -245,7 +145,7 @@ export function NotesMap() {
         >
           <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
             <div className="relative w-full h-full min-h-[1000px]">
-              {renderGrid()}
+              <NotesGrid showGrid={showGrid} gridSize={GRID_SIZE} maxDistance={MAX_DISTANCE} />
               <motion.div layout className="absolute inset-0">
                 <AnimatePresence mode="popLayout">
                   {notes?.map((note) => (
