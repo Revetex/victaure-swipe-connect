@@ -56,7 +56,7 @@ export function useAuth() {
         isLoading: false,
         error: error instanceof Error ? error : new Error('Unknown error')
       }));
-      // Even on error, redirect to auth
+      toast.error("Erreur lors de la déconnexion");
       navigate('/auth');
     }
   };
@@ -117,7 +117,7 @@ export function useAuth() {
 
     initializeAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
       if (event === 'SIGNED_IN' && session) {
@@ -128,7 +128,7 @@ export function useAuth() {
           user: session.user
         });
         navigate('/dashboard');
-      } else if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+      } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
         setState({
           isLoading: false,
           isAuthenticated: false,
