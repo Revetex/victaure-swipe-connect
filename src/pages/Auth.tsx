@@ -7,12 +7,10 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
-import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -60,12 +58,21 @@ export default function Auth() {
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-background overflow-y-auto">
-      {/* Background Pattern */}
-      <div className="fixed inset-0 bg-dashboard-pattern opacity-5 pointer-events-none" />
-      
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
+      {/* Header */}
+      <header className="w-full py-6 px-4 border-b border-border/5 backdrop-blur-sm">
+        <div className="container max-w-7xl mx-auto flex items-center justify-between">
+          <Logo className="h-8 w-auto" />
+          <nav className="flex items-center gap-4">
+            <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Accueil
+            </a>
+          </nav>
+        </div>
+      </header>
+
       {/* Main Content */}
-      <div className="relative w-full py-8 px-4">
+      <main className="flex-1 w-full py-8 px-4">
         <div className="container max-w-sm mx-auto space-y-8">
           {/* Header with Logo above Title */}
           <div className="flex flex-col items-center space-y-4 text-center">
@@ -81,21 +88,7 @@ export default function Auth() {
           {/* Auth Card */}
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
             <BiometricAuth />
-            <AuthForm rememberMe={rememberMe} />
-            <div className="flex items-center justify-center space-x-2">
-              <Checkbox 
-                id="rememberMe" 
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                className="h-3 w-3"
-              />
-              <label 
-                htmlFor="rememberMe" 
-                className="text-sm text-muted-foreground cursor-pointer"
-              >
-                Rester connecté
-              </label>
-            </div>
+            <AuthForm />
           </div>
 
           {/* Legal Links - Centered */}
@@ -167,7 +160,14 @@ export default function Auth() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full py-6 px-4 border-t border-border/5 backdrop-blur-sm">
+        <div className="container max-w-7xl mx-auto text-center text-sm text-muted-foreground">
+          <p>Propulsé par Victaure Technologies Inc.</p>
+        </div>
+      </footer>
     </div>
   );
 }

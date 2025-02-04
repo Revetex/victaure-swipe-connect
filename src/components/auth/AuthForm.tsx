@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { KeyRound, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { ThemeSelector } from "./ThemeSelector";
@@ -13,17 +14,17 @@ const authSchema = z.object({
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
   fullName: z.string().min(2, "Le nom doit contenir au moins 2 caractères").optional(),
   phone: z.string().regex(/^\+?[0-9]{10,}$/, "Numéro de téléphone invalide").optional(),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "Vous devez accepter les conditions d'utilisation",
+  }),
 });
 
-interface AuthFormProps {
-  rememberMe: boolean;
-}
-
-export const AuthForm = ({ rememberMe }: AuthFormProps) => {
+export const AuthForm = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -34,9 +35,9 @@ export const AuthForm = ({ rememberMe }: AuthFormProps) => {
 
   const validateForm = () => {
     try {
-      const dataToValidate = isSignUp ? formData : {
-        email: formData.email,
-        password: formData.password,
+      const dataToValidate = {
+        ...formData,
+        acceptTerms: isSignUp ? acceptTerms : true,
       };
       authSchema.parse(dataToValidate);
       setErrors({});
@@ -226,6 +227,22 @@ export const AuthForm = ({ rememberMe }: AuthFormProps) => {
           )}
         </div>
 
+        {isSignUp && (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="terms"
+              checked={acceptTerms}
+              onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
+            />
+            <label
+              htmlFor="terms"
+              className="text-sm text-muted-foreground cursor-pointer"
+            >
+              J'accepte les conditions d'utilisation et la politique de confidentialité
+            </label>
+          </div>
+        )}
+
         {!isSignUp && (
           <div className="flex justify-center">
             <Button
@@ -243,7 +260,7 @@ export const AuthForm = ({ rememberMe }: AuthFormProps) => {
         <Button 
           type="submit" 
           className="w-full h-11 text-sm font-medium transition-all hover:-translate-y-[1px]"
-          disabled={loading}
+          disabled={loading || (isSignUp && !acceptTerms)}
         >
           {loading ? "Chargement..." : isSignUp ? "S'inscrire" : "Se connecter"}
         </Button>
@@ -251,7 +268,11 @@ export const AuthForm = ({ rememberMe }: AuthFormProps) => {
 
       <button
         type="button"
-        onClick={() => setIsSignUp(!isSignUp)}
+        onClick={() => {
+          setIsSignUp(!isSignUp);
+          setAcceptTerms(false);
+          setErrors({});
+        }}
         className="w-full text-sm text-muted-foreground hover:text-primary"
       >
         {isSignUp
@@ -260,4 +281,4 @@ export const AuthForm = ({ rememberMe }: AuthFormProps) => {
       </button>
     </div>
   );
-}
+};
