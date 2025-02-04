@@ -76,11 +76,10 @@ export function useChat() {
 
       if (saveError) throw saveError;
 
-      // Get AI response
-      const { data, error } = await supabase.functions.invoke('ai-chat', {
+      // Get AI response from our new edge function
+      const { data, error } = await supabase.functions.invoke('ai-career-chat', {
         body: { 
           message,
-          userId: user.id,
           context: {
             previousMessages: state.messages.slice(-5),
             userProfile: profile,
