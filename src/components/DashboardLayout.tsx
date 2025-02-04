@@ -3,26 +3,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback, useEffect } from "react";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
-import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
-import { Logo } from "@/components/Logo";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
-import { toast } from "sonner";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { FriendsContent } from "@/components/feed/friends/FriendsContent";
+import { DashboardHeader } from "./dashboard/DashboardHeader";
+import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
-  const { containerVariants, itemVariants } = useDashboardAnimations();
+  const { itemVariants } = useDashboardAnimations();
   const [currentPage, setCurrentPage] = useState(3);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-  const navigate = useNavigate();
   const location = useLocation();
   const { showConversation } = useReceiver();
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -140,49 +133,16 @@ export function DashboardLayout() {
             <div className="container mx-auto px-0 sm:px-4">
               <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col">
-                  <div className="flex items-center justify-between py-3 px-4">
-                    <div className="flex items-center gap-4">
-                      <Logo size="sm" />
-                      <div className="h-6 w-px bg-border mx-2" />
-                      <h2 className="text-lg font-semibold text-foreground">
-                        {getPageTitle(currentPage)}
-                      </h2>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <NotificationsBox />
-                      {isMobile && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setShowFriendsList(!showFriendsList)}
-                          className="relative"
-                        >
-                          {showFriendsList ? (
-                            <ChevronUp className="h-5 w-5" />
-                          ) : (
-                            <ChevronDown className="h-5 w-5" />
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+                  <DashboardHeader 
+                    title={getPageTitle(currentPage)}
+                    showFriendsList={showFriendsList}
+                    onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+                    isEditing={isEditing}
+                  />
                   
                   <AnimatePresence>
-                    {isMobile && showFriendsList && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm"
-                      >
-                        <div className="p-4">
-                          <div className="space-y-4">
-                            <FriendsContent />
-                          </div>
-                        </div>
-                      </motion.div>
+                    {isMobile && (
+                      <DashboardFriendsList show={showFriendsList} />
                     )}
                   </AnimatePresence>
                 </div>

@@ -1,35 +1,53 @@
-import { motion } from "framer-motion";
-import { useProfile } from "@/hooks/useProfile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserCircle } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-export function DashboardHeader() {
-  const { profile } = useProfile();
+interface DashboardHeaderProps {
+  title: string;
+  showFriendsList: boolean;
+  onToggleFriendsList: () => void;
+  isEditing?: boolean;
+}
 
-  if (!profile) return null;
+export function DashboardHeader({ 
+  title, 
+  showFriendsList, 
+  onToggleFriendsList,
+  isEditing 
+}: DashboardHeaderProps) {
+  const isMobile = useIsMobile();
+
+  if (isEditing) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mb-8 p-6 rounded-2xl bg-card shadow-lg border border-border/50"
-    >
+    <div className="flex items-center justify-between py-3 px-4">
       <div className="flex items-center gap-4">
-        <Avatar className="h-16 w-16 ring-2 ring-primary/10">
-          <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || 'Profile'} />
-          <AvatarFallback>
-            <UserCircle className="h-8 w-8" />
-          </AvatarFallback>
-        </Avatar>
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">
-            {profile.full_name || 'Bienvenue'}
-          </h1>
-          <p className="text-muted-foreground">
-            {profile.bio ? profile.bio.substring(0, 100) + '...' : 'Complétez votre profil pour commencer'}
-          </p>
-        </div>
+        <Logo size="sm" />
+        <div className="h-6 w-px bg-border mx-2" />
+        <h2 className="text-lg font-semibold text-foreground">
+          {title}
+        </h2>
       </div>
-    </motion.div>
+      
+      <div className="flex items-center gap-2">
+        <NotificationsBox />
+        {isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleFriendsList}
+            className="relative"
+          >
+            {showFriendsList ? (
+              <ChevronUp className="h-5 w-5" />
+            ) : (
+              <ChevronDown className="h-5 w-5" />
+            )}
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
