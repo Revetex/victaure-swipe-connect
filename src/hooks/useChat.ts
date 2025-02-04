@@ -1,13 +1,22 @@
 import { useState, useCallback } from 'react';
-import { MessageSender } from '@/types/messages';
+import { Message, MessageSender } from '@/types/messages';
 import { useProfile } from './useProfile';
+import { toast } from 'sonner';
+
+interface ChatState {
+  messages: Message[];
+  inputMessage: string;
+  isListening: boolean;
+  isThinking: boolean;
+}
 
 export function useChat() {
-  const [messages, setMessages] = useState<Array<{
-    content: string;
-    sender: MessageSender;
-    timestamp: string;
-  }>>([]);
+  const [state, setState] = useState<ChatState>({
+    messages: [],
+    inputMessage: '',
+    isListening: false,
+    isThinking: false
+  });
   const { profile } = useProfile();
 
   const defaultSender: MessageSender = {
@@ -19,20 +28,59 @@ export function useChat() {
   };
 
   const addMessage = useCallback((content: string, sender: MessageSender = defaultSender) => {
-    setMessages(prev => [...prev, {
+    const newMessage: Message = {
+      id: crypto.randomUUID(),
       content,
+      sender_id: sender.id,
+      receiver_id: 'assistant',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      read: false,
       sender,
       timestamp: new Date().toISOString()
-    }]);
+    };
+
+    setState(prev => ({
+      ...prev,
+      messages: [...prev.messages, newMessage]
+    }));
   }, [defaultSender]);
 
-  const clearMessages = useCallback(() => {
-    setMessages([]);
+  const setInputMessage = useCallback((message: string) => {
+    setState(prev => ({ ...prev, inputMessage: message }));
+  }, []);
+
+  const handleSendMessage = useCallback(async (message: string) => {
+    if (!message.trim()) return;
+    
+    setState(prev => ({ ...prev, isThinking: true }));
+    try {
+      addMessage(message);
+      setInputMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error("Erreur lors de l'envoi du message");
+    } finally {
+      setState(prev => ({ ...prev, isThinking: false }));
+    }
+  }, [addMessage, setInputMessage]);
+
+  const handleVoiceInput = useCallback(() => {
+    setState(prev => ({ ...prev, isListening: !prev.isListening }));
+  }, []);
+
+  const clearChat = useCallback(() => {
+    setState(prev => ({ ...prev, messages: [] }));
   }, []);
 
   return {
-    messages,
-    addMessage,
-    clearMessages
+    messages: state.messages,
+    inputMessage: state.inputMessage,
+    isListening: state.isListening,
+    isThinking: state.isThinking,
+    setInputMessage,
+    handleSendMessage,
+    handleVoiceInput,
+    clearChat
   };
 }

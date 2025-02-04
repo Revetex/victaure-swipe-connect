@@ -35,7 +35,7 @@ export function useMessages() {
 
       return messages.map(msg => ({
         ...msg,
-        timestamp: new Date(msg.created_at)
+        timestamp: msg.created_at
       })) as Message[];
     }
   });

@@ -11,7 +11,8 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
     receiver_id: msg.receiver_id,
     read: msg.read,
     created_at: msg.created_at,
-    timestamp: msg.timestamp,
+    updated_at: msg.created_at,
+    timestamp: msg.created_at,
     thinking: msg.thinking,
     sender: typeof msg.sender === 'string' ? {
       id: 'assistant',

@@ -16,6 +16,7 @@ export interface Message {
   read: boolean;
   sender: MessageSender;
   timestamp: string;
+  thinking?: boolean;
 }
 
 export interface Receiver {
