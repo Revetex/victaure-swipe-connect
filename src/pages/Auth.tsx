@@ -15,7 +15,7 @@ export default function Auth() {
       <ThemeSelector />
       
       <main className="flex-1 w-full py-12 px-4 relative z-10">
-        <div className="container max-w-md mx-auto space-y-8">
+        <div className="container max-w-xl mx-auto space-y-8">
           <div className="text-center space-y-6 animate-fade-in">
             <Logo size="xl" className="mx-auto" />
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent animate-scale-in font-playfair">

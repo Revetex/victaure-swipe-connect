@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,6 +25,9 @@ export function AuthForm() {
           email,
           password,
           options: {
+            data: {
+              full_name: fullName,
+            },
             emailRedirectTo: window.location.origin + '/auth/callback'
           }
         });
@@ -63,42 +69,55 @@ export function AuthForm() {
   };
 
   return (
-    <div className="w-full max-w-md space-y-8 p-8 bg-card rounded-lg border shadow-sm">
-      <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Bienvenue sur Victaure
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Connectez-vous ou créez un compte pour continuer
-        </p>
-      </div>
+    <Tabs defaultValue="login" className="w-full space-y-6">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="login">Connexion</TabsTrigger>
+        <TabsTrigger value="signup">Inscription</TabsTrigger>
+      </TabsList>
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Input
-            id="email"
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            className="w-full"
-          />
+      <TabsContent value="login" className="space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Connectez-vous à votre compte
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Entrez vos identifiants pour accéder à votre espace
+          </p>
         </div>
-        <div className="space-y-2">
-          <Input
-            id="password"
-            placeholder="Mot de passe"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-            className="w-full"
-          />
-        </div>
-      </div>
 
-      <div className="space-y-4">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email-login">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="email-login"
+                placeholder="nom@exemple.com"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                className="pl-10"
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="password-login">Mot de passe</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="password-login"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                className="pl-10"
+              />
+            </div>
+          </div>
+        </div>
+
         <Button
           onClick={() => handleAuth('login')}
           disabled={loading || !email || !password}
@@ -110,11 +129,70 @@ export function AuthForm() {
             "Se connecter"
           )}
         </Button>
-        
+      </TabsContent>
+
+      <TabsContent value="signup" className="space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Créez votre compte
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Rejoignez-nous en quelques clics
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Nom complet</Label>
+            <div className="relative">
+              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="fullName"
+                placeholder="Jean Dupont"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={loading}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email-signup">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="email-signup"
+                placeholder="nom@exemple.com"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                className="pl-10"
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="password-signup">Mot de passe</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="password-signup"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                className="pl-10"
+              />
+            </div>
+          </div>
+        </div>
+
         <Button
           onClick={() => handleAuth('signup')}
-          variant="outline"
-          disabled={loading || !email || !password}
+          disabled={loading || !email || !password || !fullName}
           className="w-full"
         >
           {loading ? (
@@ -123,7 +201,7 @@ export function AuthForm() {
             "Créer un compte"
           )}
         </Button>
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }
