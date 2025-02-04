@@ -21,7 +21,7 @@ export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
         isMobile ? 'fixed inset-x-0 top-[4rem] z-50 max-h-[80vh] overflow-y-auto' : 'relative'
       }`}
     >
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="p-4">
             <div className="space-y-4">

@@ -32,18 +32,19 @@ export function DashboardHeader({
           </Button>
         )}
         <Logo size="sm" />
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <h1 className="text-lg font-semibold sm:text-xl md:text-2xl">{title}</h1>
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         <NotificationsBox />
         {!isEditing && (
           <Button
             variant="outline"
             onClick={onToggleFriendsList}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-sm sm:text-base"
+            size="sm"
           >
-            <span>{showFriendsList ? 'Masquer les amis' : 'Afficher les amis'}</span>
+            <span className="hidden sm:inline">{showFriendsList ? 'Masquer les amis' : 'Afficher les amis'}</span>
             {showFriendsList ? (
               <ChevronUp className="h-4 w-4" />
             ) : (

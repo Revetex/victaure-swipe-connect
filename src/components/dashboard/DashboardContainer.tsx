@@ -29,10 +29,11 @@ export function DashboardContainer({
         "min-h-screen bg-background text-foreground",
         "bg-gradient-to-br from-background via-background/95 to-background/90",
         "dark:from-background dark:via-background/95 dark:to-background/90",
+        "px-4 sm:px-6 lg:px-8",
         className
       )}
     >
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto py-4 sm:py-6">
         <div className="max-w-7xl mx-auto">
           {children}
         </div>
