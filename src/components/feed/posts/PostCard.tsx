@@ -57,34 +57,44 @@ export const PostCard = ({
 
   return (
     <Card className="p-4">
-      <PostHeader
-        profile={post.profiles}
-        created_at={post.created_at}
-        privacy_level={post.privacy_level}
-      />
-      
-      <PostActions
-        currentUserId={currentUserId}
-        postUserId={post.user_id}
-        onDelete={() => onDelete(post.id)}
-        onHide={() => onHide(post.id)}
-      />
+      <div className="space-y-4">
+        <PostHeader
+          profile={post.profiles}
+          created_at={post.created_at}
+          privacy_level={post.privacy_level}
+        />
+        
+        <PostActions
+          currentUserId={currentUserId}
+          postUserId={post.user_id}
+          onDelete={() => onDelete(post.id)}
+          onHide={() => onHide(post.id)}
+        />
 
-      <PostContent
-        content={post.content}
-        postId={post.id}
-        currentUserId={currentUserId}
-        userEmail={userEmail}
-        likes={likes}
-        dislikes={dislikes}
-        commentCount={commentCount}
-        userReaction={userReaction}
-        comments={post.comments}
-        onReaction={(type) => onReaction(post.id, type)}
-        onCommentAdded={onCommentAdded}
-      />
+        <div className="space-y-4">
+          <p className="text-foreground whitespace-pre-wrap">{post.content}</p>
+          
+          {post.images && post.images.length > 0 && (
+            <PostImageGrid images={post.images} />
+          )}
+        </div>
 
-      <PostImageGrid images={post.images} />
+        <div className="pt-4 border-t border-border">
+          <PostContent
+            content=""
+            postId={post.id}
+            currentUserId={currentUserId}
+            userEmail={userEmail}
+            likes={likes}
+            dislikes={dislikes}
+            commentCount={commentCount}
+            userReaction={userReaction}
+            comments={post.comments}
+            onReaction={(type) => onReaction(post.id, type)}
+            onCommentAdded={onCommentAdded}
+          />
+        </div>
+      </div>
     </Card>
   );
 };
