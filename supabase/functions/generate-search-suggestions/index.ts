@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -18,89 +17,32 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get user ID from request
-    const { user_id } = await req.json();
+    const { query, user_id, context } = await req.json();
     
-    if (!user_id) {
-      throw new Error('User ID is required');
+    if (!query || !user_id) {
+      throw new Error('Query and user ID are required');
     }
 
-    // Fetch user profile
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('skills, role, city, state')
-      .eq('id', user_id)
-      .single();
+    const { profile, previousSuggestions = [] } = context || {};
 
-    if (profileError) {
-      throw profileError;
-    }
+    // Generate base suggestions based on the user's profile and search query
+    const baseSuggestions = [
+      `${query} ${profile?.city || 'Québec'}`,
+      `${query} emploi ${profile?.role || 'construction'}`,
+      `${query} formation ${profile?.skills?.[0] || ''}`,
+      `${query} certification ${profile?.industry || 'construction'}`,
+      `${query} opportunités ${profile?.state || 'Québec'}`,
+    ].filter(Boolean);
 
-    // Generate search suggestions based on profile
-    const suggestions = [];
-    const possibleFormats = [
-      // Location-based formats
-      (role: string, location: string) => `emplois ${role} ${location}`,
-      (role: string, location: string) => `recrutement ${role} ${location}`,
-      (role: string, location: string) => `offres d'emploi ${role} ${location}`,
-      
-      // Skills-based formats
-      (skills: string[]) => `emplois ${skills.join(' ')} Québec`,
-      (skills: string[]) => `offres ${skills.join(' ')} Montréal`,
-      (skills: string[]) => `recrutement ${skills.join(' ')} Canada`,
-      
-      // Role-based formats
-      (role: string) => `${role} temps plein`,
-      (role: string) => `${role} urgent`,
-      (role: string) => `${role} débutant`,
-      (role: string) => `${role} expérimenté`,
-    ];
+    // Filter out any previously used suggestions
+    const newSuggestions = baseSuggestions.filter(
+      suggestion => !previousSuggestions.includes(suggestion)
+    );
 
-    // Add location-based suggestions
-    if (profile.city || profile.state) {
-      const location = [profile.city, profile.state].filter(Boolean).join(', ');
-      const randomLocationFormats = possibleFormats
-        .slice(0, 3)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2);
-      
-      randomLocationFormats.forEach(format => {
-        suggestions.push(format(profile.role || 'construction', location));
-      });
-    }
-
-    // Add skills-based suggestions
-    if (profile.skills?.length > 0) {
-      const randomSkills = [...profile.skills]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2);
-      
-      const randomSkillsFormat = possibleFormats
-        .slice(3, 6)
-        .sort(() => Math.random() - 0.5)[0];
-      
-      suggestions.push(randomSkillsFormat(randomSkills));
-    }
-
-    // Add role-based suggestions
-    if (profile.role) {
-      const randomRoleFormats = possibleFormats
-        .slice(6)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2);
-      
-      randomRoleFormats.forEach(format => {
-        suggestions.push(format(profile.role));
-      });
-    }
-
-    // Always add a general construction suggestion as fallback
-    suggestions.push('emplois construction Québec');
-
-    // Shuffle final array
-    const shuffledSuggestions = suggestions
-      .filter(Boolean)
-      .sort(() => Math.random() - 0.5);
+    // Shuffle the suggestions array
+    const shuffledSuggestions = newSuggestions
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3); // Get up to 3 random suggestions
 
     return new Response(
       JSON.stringify({ suggestions: shuffledSuggestions }),
