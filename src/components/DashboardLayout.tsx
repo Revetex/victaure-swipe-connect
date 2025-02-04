@@ -17,6 +17,7 @@ export function DashboardLayout() {
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const location = useLocation();
+  const navigate = useNavigate();
   const { showConversation } = useReceiver();
   const [showFriendsList, setShowFriendsList] = useState(false);
   
@@ -57,6 +58,7 @@ export function DashboardLayout() {
       
       if (page === 5) {
         navigate('/dashboard/tools');
+        setIsEditing(false);
       } else {
         setIsEditing(false);
         if (isMobile) {
