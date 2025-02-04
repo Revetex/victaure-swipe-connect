@@ -80,21 +80,19 @@ export function PostList({ onPostDeleted }: PostListProps) {
   }
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="space-y-4 pb-safe">
-        {posts?.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            currentUserId={user?.id}
-            userEmail={user?.email}
-            onDelete={() => setPostToDelete(post.id)}
-            onHide={(postId) => handleHide(postId, user?.id)}
-            onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
-            onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
-          />
-        ))}
-      </div>
+    <div className="space-y-4 pb-safe">
+      {posts?.map((post) => (
+        <PostCard
+          key={post.id}
+          post={post}
+          currentUserId={user?.id}
+          userEmail={user?.email}
+          onDelete={() => setPostToDelete(post.id)}
+          onHide={(postId) => handleHide(postId, user?.id)}
+          onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
+          onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
+        />
+      ))}
 
       <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
         <AlertDialogContent>
