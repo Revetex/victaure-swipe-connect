@@ -40,13 +40,13 @@ export function PostCard({
         "hover:shadow-md hover:border-primary/20"
       )}>
         <PostHeader 
-          profile={post.profiles!}
+          profile={post.profiles}
           created_at={post.created_at}
           privacy_level={post.privacy_level}
         />
         <PostContent 
           content={post.content}
-          postId={post.id}
+          images={post.images}
           currentUserId={currentUserId}
           userEmail={userEmail}
           likes={post.likes}
@@ -55,14 +55,14 @@ export function PostCard({
           userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type}
           comments={post.comments}
           onReaction={(type) => onReaction?.(post.id, type)}
-          onCommentAdded={onCommentAdded}
+          onCommentAdded={onCommentAdded!}
           onDelete={onDelete}
           onHide={() => onHide?.(post.id)}
           postUserId={post.user_id}
         />
-        {showComments && (
+        {showComments && post.comments && (
           <PostComments 
-            comments={post.comments || []}
+            comments={post.comments}
             currentUserId={currentUserId}
             onDeleteComment={() => onCommentAdded?.()}
           />

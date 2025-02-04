@@ -7,12 +7,17 @@ export interface Post {
   created_at: string;
   updated_at?: string;
   user_id: string;
-  privacy_level: 'public' | 'private' | 'connections';
+  privacy_level: 'public' | 'connections';
   profiles: {
     id: string;
     full_name: string;
     avatar_url?: string;
   };
+  reactions?: {
+    reaction_type: string;
+    user_id: string;
+  }[];
+  comments?: Comment[];
 }
 
 export interface Comment {

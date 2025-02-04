@@ -15,6 +15,9 @@ interface PostContentProps {
   onCommentAdded: () => void;
   onDelete?: () => void;
   onHide?: () => void;
+  postUserId?: string;
+  currentUserId?: string;
+  userEmail?: string;
 }
 
 export function PostContent({
@@ -28,7 +31,10 @@ export function PostContent({
   onReaction,
   onCommentAdded,
   onDelete,
-  onHide
+  onHide,
+  postUserId,
+  currentUserId,
+  userEmail
 }: PostContentProps) {
   const [showComments, setShowComments] = useState(false);
 
