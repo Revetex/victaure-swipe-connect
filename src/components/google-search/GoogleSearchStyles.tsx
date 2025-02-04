@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSearchBarStyles } from './styles/SearchBarStyles';
+import { SearchBarStyles } from './styles/SearchBarStyles';
 import { useSearchResultsStyles } from './styles/SearchResultsStyles';
 
 export function useGoogleSearchStyles() {
@@ -12,7 +12,7 @@ export function useGoogleSearchStyles() {
         background: transparent !important;
       }
 
-      ${useSearchBarStyles()}
+      ${SearchBarStyles}
       ${useSearchResultsStyles()}
     `;
 
