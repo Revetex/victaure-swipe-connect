@@ -42,7 +42,7 @@ export function ExternalSearchSection() {
         animate={{ opacity: 1 }}
         className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent [&_.gsc-search-button]:!bg-primary"
       >
-        <div className="relative">
+        <div className="relative max-w-3xl mx-auto">
           <GoogleSearchBox />
           <div className="absolute right-14 top-1/2 -translate-y-1/2 z-10">
             <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
