@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +27,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
   const navigate = useNavigate();
   const { profile } = useProfile();
 
-  const handleAction = (action: string, data?: any) => {
+  const handleAction = useCallback((action: string, data?: any) => {
     switch (action) {
       case 'navigate_to_jobs':
         navigate('/jobs');
@@ -41,19 +41,24 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       default:
         console.log('Action non reconnue:', action);
     }
-  };
+  }, [navigate]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: "smooth",
+        block: "end"
+      });
+    }
+  }, []);
 
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
     const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
     setShowScrollButton(!isNearBottom);
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
@@ -93,6 +98,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       }]);
 
       setInput("");
+      scrollToBottom();
       
     } catch (error) {
       console.error('Error:', error);
@@ -102,7 +108,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       setIsThinking(false);
       setIsTyping(false);
     }
-  };
+  }, [input, isLoading, messages, profile, scrollToBottom]);
 
   return (
     <motion.div
@@ -111,7 +117,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       exit={{ opacity: 0, y: 20 }}
       className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6 lg:p-8"
     >
-      <Card className="max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-gray-200 dark:border-gray-800">
+      <Card className="max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-gray-200 dark:border-gray-800 shadow-lg">
         <AIAssistantHeader onClose={onClose} />
 
         <AIMessageList 
@@ -130,7 +136,7 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
             >
               <Button
                 size="icon"
-                className="rounded-full shadow-lg"
+                className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
                 onClick={scrollToBottom}
               >
                 <ArrowDown className="h-4 w-4" />

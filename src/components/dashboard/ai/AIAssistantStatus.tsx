@@ -15,11 +15,12 @@ export function AIAssistantStatus({ isThinking, isTyping, isListening }: AIAssis
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="flex items-center gap-2 text-sm text-muted-foreground"
+      className="flex items-center gap-2 text-sm text-muted-foreground p-2 bg-muted/50 mx-4 rounded-lg"
     >
       <motion.div
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ repeat: Infinity, duration: 2 }}
+        className="text-primary"
       >
         <Bot className="h-4 w-4" />
       </motion.div>
@@ -39,7 +40,7 @@ export function AIAssistantStatus({ isThinking, isTyping, isListening }: AIAssis
               duration: 1.5,
               delay: i * 0.2
             }}
-            className="text-lg leading-none"
+            className="text-lg leading-none text-primary"
           >
             •
           </motion.span>

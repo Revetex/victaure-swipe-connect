@@ -17,7 +17,7 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
     >
-      <Card className="w-full max-w-lg p-6 bg-white/95 backdrop-blur-sm shadow-lg border-primary/10">
+      <Card className="w-full max-w-lg p-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg border-primary/10">
         <div className="flex items-center gap-4 mb-6">
           <motion.div 
             className="p-3 rounded-full bg-primary/10"
@@ -34,7 +34,7 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
 
         <div className="space-y-6 mb-6">
           <p className="text-lg">
-            Bonjour! Je suis M. Victaure, votre conseiller personnel. Je suis là pour vous accompagner dans tous vos projets et répondre à vos questions, peu importe le domaine. Mon objectif est de vous aider à atteindre vos objectifs en vous offrant des conseils personnalisés et un soutien adapté à vos besoins.
+            Bonjour! Je suis M. Victaure, votre conseiller personnel. Je suis là pour vous accompagner dans tous vos projets et répondre à vos questions. Mon objectif est de vous aider à atteindre vos objectifs en vous offrant des conseils personnalisés et un soutien adapté à vos besoins.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -60,8 +60,11 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
                 description: "Un soutien pour votre réussite"
               }
             ].map((feature, index) => (
-              <div 
+              <motion.div 
                 key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
                 className={cn(
                   "flex items-start gap-3 p-4 rounded-lg",
                   "bg-muted/50 hover:bg-muted/80 transition-colors"
@@ -72,7 +75,7 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
                   <h3 className="font-medium">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

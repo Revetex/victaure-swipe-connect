@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
@@ -17,14 +17,14 @@ export function AIAssistantInput({ input, isLoading, onInputChange, onSubmit }: 
         <Input
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          placeholder="Posez vos questions sur l'emploi, les missions, ou demandez des conseils..."
-          className="flex-1"
+          placeholder="Posez vos questions à M. Victaure..."
+          className="flex-1 bg-background/50 backdrop-blur-sm"
           disabled={isLoading}
         />
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="bg-blue-500 hover:bg-blue-600 text-white"
+          className="bg-primary hover:bg-primary/90 text-white"
         >
           {isLoading ? (
             <motion.div
