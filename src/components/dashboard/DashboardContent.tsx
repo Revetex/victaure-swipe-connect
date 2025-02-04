@@ -5,14 +5,12 @@ import { useVCardStyle } from "@/components/vcard/VCardStyleContext";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Settings } from "@/components/Settings";
-import { UnifiedBoard } from "@/components/board/UnifiedBoard";
+import { NotesMap } from "@/components/notes/NotesMap";
 import { useTodoList } from "@/hooks/useTodoList";
 import { useNotes } from "@/hooks/useNotes";
 import { Feed } from "@/components/Feed";
 import { TodoSection } from "@/components/todo/TodoSection";
-import { NotesSection } from "@/components/todo/NotesSection";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ListTodo, StickyNote } from "lucide-react";
+import { ListTodo } from "lucide-react";
 import { useEffect } from "react";
 
 interface DashboardContentProps {
@@ -47,24 +45,6 @@ export function DashboardContent({
     toggleTodo,
     deleteTodo
   } = useTodoList();
-
-  const {
-    notes,
-    newNote,
-    selectedColor,
-    setNewNote,
-    setSelectedColor,
-    addNote,
-    deleteNote
-  } = useNotes();
-
-  const colors = [
-    { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
-    { value: "blue", label: "Bleu", class: "bg-blue-200" },
-    { value: "green", label: "Vert", class: "bg-green-200" },
-    { value: "red", label: "Rouge", class: "bg-red-200" },
-    { value: "purple", label: "Violet", class: "bg-purple-200" }
-  ];
 
   // Auto-open board when accessing notes section
   useEffect(() => {
@@ -104,59 +84,9 @@ export function DashboardContent({
         );
       case 5:
         return (
-          <div className="w-full px-4 overflow-y-auto pt-6">
-            <div className="w-full sm:max-w-3xl mx-auto">
-              <Accordion type="single" collapsible className="w-full" defaultValue="notes">
-                <AccordionItem value="tasks" className="border-2 border-black rounded-lg bg-card mb-4">
-                  <AccordionTrigger className="px-4 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <ListTodo className="h-5 w-5" />
-                      <span className="font-semibold">Tâches</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4">
-                    <div className="h-[calc(100vh-16rem)]">
-                      <TodoSection
-                        todos={todos}
-                        newTodo={newTodo}
-                        selectedDate={selectedDate}
-                        selectedTime={selectedTime}
-                        allDay={allDay}
-                        onTodoChange={setNewTodo}
-                        onDateChange={setSelectedDate}
-                        onTimeChange={setSelectedTime}
-                        onAllDayChange={setAllDay}
-                        onAddTodo={addTodo}
-                        onToggleTodo={toggleTodo}
-                        onDeleteTodo={deleteTodo}
-                      />
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="notes" className="border-2 border-black rounded-lg bg-card">
-                  <AccordionTrigger className="px-4 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <StickyNote className="h-5 w-5" />
-                      <span className="font-semibold">Notes</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4">
-                    <div className="h-[calc(100vh-16rem)]">
-                      <NotesSection
-                        notes={notes}
-                        newNote={newNote}
-                        selectedColor={selectedColor}
-                        colors={colors}
-                        onNoteChange={setNewNote}
-                        onColorChange={setSelectedColor}
-                        onAdd={addNote}
-                        onDelete={deleteNote}
-                      />
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+          <div className="w-full h-full px-4 overflow-hidden">
+            <div className="w-full h-full">
+              <NotesMap />
             </div>
           </div>
         );
