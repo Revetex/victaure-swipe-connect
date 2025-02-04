@@ -50,10 +50,11 @@ export function ConversationMessages({
           return (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.15 }}
+              className="will-change-transform"
             >
               {isUserMessage ? (
                 <UserMessage 
@@ -75,11 +76,12 @@ export function ConversationMessages({
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex items-center space-x-2"
+          transition={{ duration: 0.2 }}
+          className="flex items-center space-x-2 will-change-opacity"
         >
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100" />
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200" />
+          <div className="w-2 h-2 bg-primary rounded-full animate-[bounce_1s_ease-in-out_infinite]" />
+          <div className="w-2 h-2 bg-primary rounded-full animate-[bounce_1s_ease-in-out_0.2s_infinite]" />
+          <div className="w-2 h-2 bg-primary rounded-full animate-[bounce_1s_ease-in-out_0.4s_infinite]" />
         </motion.div>
       )}
       

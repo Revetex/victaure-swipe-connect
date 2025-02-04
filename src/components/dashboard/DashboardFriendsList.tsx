@@ -16,8 +16,11 @@ export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
       initial={{ height: 0, opacity: 0 }}
       animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className={`overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm ${
+      transition={{ 
+        duration: 0.15,
+        ease: "easeInOut"
+      }}
+      className={`overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm will-change-[height,opacity] ${
         isMobile ? 'fixed inset-x-0 top-[4rem] z-50 max-h-[80vh] overflow-y-auto' : 'relative'
       }`}
     >
