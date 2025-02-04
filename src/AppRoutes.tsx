@@ -1,58 +1,39 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import SettingsPage from "./pages/Settings";
-import { PrivateRoute } from "./components/PrivateRoute";
-import { useAuth } from "./hooks/useAuth";
+import { Routes, Route } from "react-router-dom";
+import { Index } from "@/pages/Index";
+import { Auth } from "@/pages/Auth";
+import { Dashboard } from "@/pages/Dashboard";
+import { Settings } from "@/pages/Settings";
+import { TermsPage } from "@/components/legal/TermsPage";
+import { PrivacyPage } from "@/components/legal/PrivacyPage";
+import { CookiesPage } from "@/components/legal/CookiesPage";
+import { LegalNoticePage } from "@/components/legal/LegalNoticePage";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 export function AppRoutes() {
-  const { isAuthenticated } = useAuth();
-
   return (
     <Routes>
-      <Route 
-        path="/" 
-        element={
-          isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <Index />
-          )
-        } 
-      />
-      <Route 
-        path="/auth" 
-        element={
-          isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <Auth />
-          )
-        } 
-      />
-      <Route path="/legal/*" element={<Index />} />
-      <Route path="/about" element={<Index />} />
-      <Route path="/contact" element={<Index />} />
-      <Route path="/faq" element={<Index />} />
+      <Route path="/" element={<Index />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/legal/terms" element={<TermsPage />} />
+      <Route path="/legal/privacy" element={<PrivacyPage />} />
+      <Route path="/legal/cookies" element={<CookiesPage />} />
+      <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route
         path="/dashboard/*"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <Dashboard />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/settings"
         element={
-          <PrivateRoute>
-            <SettingsPage />
-          </PrivateRoute>
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
         }
       />
-      {/* Catch all route - redirect to auth if not authenticated */}
-      <Route path="*" element={<Navigate to="/auth" replace />} />
     </Routes>
   );
 }
