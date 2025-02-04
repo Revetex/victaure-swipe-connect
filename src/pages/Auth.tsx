@@ -3,7 +3,6 @@ import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
 import { AuthVideo } from "@/components/auth/AuthVideo";
-import { DownloadApp } from "@/components/dashboard/DownloadApp";
 import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
 import { useLocation, Navigate } from "react-router-dom";
@@ -14,14 +13,12 @@ export default function Auth() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  // If user is already authenticated, redirect to dashboard or the attempted URL
   if (isAuthenticated) {
     const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
-    sessionStorage.removeItem('redirectTo'); // Clean up after redirect
+    sessionStorage.removeItem('redirectTo');
     return <Navigate to={redirectTo} replace />;
   }
 
-  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -31,7 +28,7 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-light-purple via-background to-light-blue relative overflow-hidden">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5">
       {/* Animated background elements */}
       <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
@@ -39,33 +36,42 @@ export default function Auth() {
         <motion.div
           className="absolute inset-0 opacity-20"
           style={{
-            background: "linear-gradient(45deg, var(--primary) 0%, transparent 100%)",
+            background: "radial-gradient(circle at center, var(--primary) 0%, transparent 70%)",
           }}
           animate={{
             scale: [1, 1.2, 1],
-            rotate: [0, 45, 0],
+            opacity: [0.2, 0.3, 0.2],
           }}
           transition={{
-            duration: 15,
+            duration: 8,
             repeat: Infinity,
-            ease: "linear",
+            ease: "easeInOut",
           }}
         />
-        <motion.div
-          className="absolute inset-0 opacity-20"
-          style={{
-            background: "linear-gradient(-45deg, var(--secondary) 0%, transparent 100%)",
-          }}
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [0, -45, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
+        
+        {/* AI-themed animated elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute h-px w-px bg-primary/30"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                scale: [0, 1, 0],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 2 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
       </div>
       
       <ThemeSelector />
@@ -102,15 +108,6 @@ export default function Auth() {
             }>
               <AuthForm redirectTo={location.state?.from?.pathname} />
             </Suspense>
-          </motion.div>
-
-          <motion.div 
-            className="mt-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <DownloadApp />
           </motion.div>
         </div>
       </main>
