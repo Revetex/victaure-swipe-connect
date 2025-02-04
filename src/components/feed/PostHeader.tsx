@@ -1,7 +1,7 @@
 import { UserCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Globe, Lock } from "lucide-react";
+import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 
 interface PostHeaderProps {
   profile: {
@@ -12,40 +12,34 @@ interface PostHeaderProps {
   privacy_level: "public" | "connections";
 }
 
-export const PostHeader = ({ profile, created_at, privacy_level }: PostHeaderProps) => {
+export function PostHeader({ profile, created_at, privacy_level }: PostHeaderProps) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
         {profile.avatar_url ? (
           <img
             src={profile.avatar_url}
             alt={profile.full_name}
-            className="w-full h-full rounded-full object-cover"
+            className="w-full h-full object-cover"
           />
         ) : (
           <UserCircle className="w-6 h-6 text-muted-foreground" />
         )}
       </div>
-      <div className="flex-1">
-        <h3 className="font-medium">{profile.full_name}</h3>
+      
+      <div className="flex-1 min-w-0">
+        <ProfileNameButton 
+          profile={profile} 
+          className="font-medium hover:underline p-0 h-auto"
+        />
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{format(new Date(created_at), "d MMMM 'à' HH:mm", { locale: fr })}</span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            {privacy_level === "public" ? (
-              <>
-                <Globe className="h-3 w-3" />
-                <span>Public</span>
-              </>
-            ) : (
-              <>
-                <Lock className="h-3 w-3" />
-                <span>Connexions</span>
-              </>
-            )}
+          <span>
+            {format(new Date(created_at), "d MMM 'à' HH:mm", { locale: fr })}
           </span>
+          <span>•</span>
+          <span className="capitalize">{privacy_level}</span>
         </div>
       </div>
     </div>
   );
-};
+}

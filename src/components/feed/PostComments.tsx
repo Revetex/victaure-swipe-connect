@@ -2,6 +2,7 @@ import { UserCircle, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
+import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 
 interface Comment {
   id: string;
@@ -39,8 +40,11 @@ export const PostComments = ({ comments, currentUserId, onDeleteComment }: PostC
                 <UserCircle className="w-5 h-5 text-muted-foreground" />
               )}
             </div>
-            <div>
-              <span className="font-medium text-sm">{comment.profiles.full_name}</span>
+            <div className="flex-1 min-w-0">
+              <ProfileNameButton 
+                profile={comment.profiles}
+                className="p-0 h-auto text-sm hover:underline"
+              />
               <span className="text-xs text-muted-foreground ml-2">
                 {format(new Date(comment.created_at), "d MMM 'à' HH:mm", { locale: fr })}
               </span>
