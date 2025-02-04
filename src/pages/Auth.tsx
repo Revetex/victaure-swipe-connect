@@ -6,8 +6,30 @@ import { AuthVideo } from "@/components/auth/AuthVideo";
 import { DownloadApp } from "@/components/dashboard/DownloadApp";
 import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
+import { useLocation, Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader } from "@/components/ui/loader";
 
 export default function Auth() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  // If user is already authenticated, redirect to dashboard or the attempted URL
+  if (isAuthenticated) {
+    const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
+    sessionStorage.removeItem('redirectTo'); // Clean up after redirect
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader className="w-8 h-8 text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-light-purple via-background to-light-blue relative overflow-hidden">
       {/* Animated background elements */}
@@ -73,8 +95,12 @@ export default function Auth() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Suspense fallback={<div>Chargement...</div>}>
-              <AuthForm />
+            <Suspense fallback={
+              <div className="flex items-center justify-center p-8">
+                <Loader className="w-6 h-6 text-primary" />
+              </div>
+            }>
+              <AuthForm redirectTo={location.state?.from?.pathname} />
             </Suspense>
           </motion.div>
 

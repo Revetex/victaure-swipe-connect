@@ -7,7 +7,11 @@ import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function AuthForm() {
+interface AuthFormProps {
+  redirectTo?: string;
+}
+
+export function AuthForm({ redirectTo = '/dashboard' }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -29,7 +33,7 @@ export function AuthForm() {
               full_name: fullName,
               phone: phone,
             },
-            emailRedirectTo: window.location.origin + '/auth/callback'
+            emailRedirectTo: `${window.location.origin}/auth/callback`
           }
         });
       } else {
@@ -58,7 +62,8 @@ export function AuthForm() {
         toast.success("Inscription réussie! Veuillez vérifier votre email");
       } else {
         toast.success("Connexion réussie!");
-        navigate('/dashboard');
+        // Use the redirectTo prop if provided, otherwise default to dashboard
+        navigate(redirectTo);
       }
 
     } catch (error) {
