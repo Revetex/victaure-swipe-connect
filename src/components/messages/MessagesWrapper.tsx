@@ -6,6 +6,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../ui/button";
 import { useChat } from "@/hooks/useChat";
+import { Message, Receiver } from "@/types/messages";
+
+interface MessagesWrapperProps {
+  chatMessages?: Message[];
+  inputMessage?: string;
+  isListening?: boolean;
+  isThinking?: boolean;
+  showConversation?: boolean;
+  setShowConversation?: (show: boolean) => void;
+  handleSendMessage?: (message: string) => void;
+  handleVoiceInput?: () => void;
+  setInputMessage?: (message: string) => void;
+  clearChat?: () => void;
+  selectedReceiver?: Receiver | null;
+  setSelectedReceiver?: (receiver: Receiver | null) => void;
+}
 
 export function MessagesWrapper() {
   const { showConversation, setShowConversation, receiver } = useReceiver();
