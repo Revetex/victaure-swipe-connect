@@ -1,9 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { X, Award, Building2 } from "lucide-react";
 import { VCardSection } from "./VCardSection";
+import { Award } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { CertificationItem } from "./vcard/certifications/CertificationItem";
 
 interface Certification {
   title: string;
@@ -33,6 +33,12 @@ export function VCardCertifications({
     toast.success("Certification ajoutée");
   };
 
+  const handleUpdateCertification = (index: number, field: keyof Certification, value: string) => {
+    const newCertifications = [...(profile.certifications || [])];
+    newCertifications[index] = { ...newCertifications[index], [field]: value };
+    setProfile({ ...profile, certifications: newCertifications });
+  };
+
   const handleRemoveCertification = (index: number) => {
     const newCertifications = [...(profile.certifications || [])];
     newCertifications.splice(index, 1);
@@ -55,68 +61,13 @@ export function VCardCertifications({
               exit={{ opacity: 0, y: -20 }}
               className="relative border-l-2 border-indigo-500/30 pl-4 py-3 space-y-3 hover:bg-white/5 rounded-r transition-colors"
             >
-              {isEditing ? (
-                <>
-                  <div className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-indigo-400 shrink-0" />
-                    <Input
-                      value={cert.title}
-                      onChange={(e) => {
-                        const newCertifications = [...(profile.certifications || [])];
-                        newCertifications[index].title = e.target.value;
-                        setProfile({ ...profile, certifications: newCertifications });
-                      }}
-                      placeholder="Titre du diplôme/certification"
-                      className="flex-1 bg-white/10 border-indigo-500/20"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-indigo-400 shrink-0" />
-                    <Input
-                      value={cert.institution}
-                      onChange={(e) => {
-                        const newCertifications = [...(profile.certifications || [])];
-                        newCertifications[index].institution = e.target.value;
-                        setProfile({ ...profile, certifications: newCertifications });
-                      }}
-                      placeholder="Institution"
-                      className="flex-1 bg-white/10 border-indigo-500/20"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Input
-                      value={cert.year}
-                      onChange={(e) => {
-                        const newCertifications = [...(profile.certifications || [])];
-                        newCertifications[index].year = e.target.value;
-                        setProfile({ ...profile, certifications: newCertifications });
-                      }}
-                      placeholder="Année"
-                      className="w-32 bg-white/10 border-indigo-500/20"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveCertification(index)}
-                      className="text-indigo-400 hover:text-red-400 transition-colors"
-                    >
-                      <X className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-indigo-400 shrink-0" />
-                    <p className="font-medium text-lg text-white">{cert.title || "Titre non défini"}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-indigo-400 shrink-0" />
-                    <p className="text-white/80">{cert.institution || "Institution non définie"}</p>
-                  </div>
-                  <p className="text-sm text-white/60">{cert.year || "Année non définie"}</p>
-                </>
-              )}
+              <CertificationItem
+                cert={cert}
+                index={index}
+                isEditing={isEditing}
+                onUpdate={handleUpdateCertification}
+                onRemove={handleRemoveCertification}
+              />
             </motion.div>
           ))}
           {isEditing && (
