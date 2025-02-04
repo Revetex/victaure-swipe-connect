@@ -10,16 +10,18 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { EyeOff, Trash2 } from "lucide-react";
 import { usePostOperations } from "./usePostOperations";
+import { useAuth } from "@/hooks/useAuth";
 
 interface PostCardProps {
   post: Post;
   onDelete?: () => void;
-  onHide?: () => void;
+  onHide?: (postId: string) => void;
 }
 
 export function PostCard({ post, onDelete, onHide }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
-  const { handleDelete, handleHide } = usePostOperations();
+  const { handleDelete, handleHide, handleReaction } = usePostOperations();
+  const { user } = useAuth();
 
   return (
     <motion.div
@@ -36,7 +38,7 @@ export function PostCard({ post, onDelete, onHide }: PostCardProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => handleHide(post.id)}
+            onClick={() => handleHide(post.id, user?.id)}
             className="h-8 w-8 hover:bg-destructive/10"
           >
             <EyeOff className="h-4 w-4" />
@@ -45,7 +47,7 @@ export function PostCard({ post, onDelete, onHide }: PostCardProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleDelete(post.id)}
+              onClick={() => handleDelete(post.id, user?.id)}
               className="h-8 w-8 hover:bg-destructive/10"
             >
               <Trash2 className="h-4 w-4" />
@@ -59,10 +61,10 @@ export function PostCard({ post, onDelete, onHide }: PostCardProps) {
           likes={post.likes}
           dislikes={post.dislikes}
           commentCount={post.comments?.length || 0}
-          userReaction={post.userReaction}
+          userReaction={post.reactions?.find(r => r.user_id === user?.id)?.reaction_type}
           isExpanded={showComments}
-          onLike={() => handleReaction(post.id, 'like')}
-          onDislike={() => handleReaction(post.id, 'dislike')}
+          onLike={() => handleReaction(post.id, user?.id, 'like')}
+          onDislike={() => handleReaction(post.id, user?.id, 'dislike')}
           onToggleComments={() => setShowComments(!showComments)}
         />
         {showComments && <PostComments postId={post.id} />}

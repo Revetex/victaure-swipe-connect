@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bot, MessageCircle, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { formatTimestamp } from "@/utils/dateUtils";
+import { formatTime } from "@/utils/dateUtils";
 import { ChatScroll } from "@/components/chat/ChatScroll";
 
 interface MessagesListProps {
