@@ -1,102 +1,88 @@
-import { useToast } from "@/hooks/use-toast";
-import { generateVCardData } from "@/utils/profileActions";
-import { generateVCard, generateBusinessCard, generateCV } from "@/utils/pdfGenerator";
-import type { UserProfile } from "@/types/profile";
-import type { StyleOption } from "../types";
+import { useState } from "react";
+import { UserProfile } from "@/types/profile";
+import { StyleOption } from "../types";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { updateProfile } from "@/utils/profileActions";
+import { generateBusinessCard } from "@/utils/pdfGenerator";
 
-export function useVCardHandlers() {
-  const { toast } = useToast();
+interface UseVCardHandlersProps {
+  profile: UserProfile | null;
+  setProfile: (profile: UserProfile) => void;
+  setIsEditing: (isEditing: boolean) => void;
+  setIsPdfGenerating: (isGenerating: boolean) => void;
+  onEditStateChange?: (isEditing: boolean) => void;
+  selectedStyle: StyleOption;
+}
 
-  const handleShare = async (profile: UserProfile) => {
-    if (!profile) return;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: profile.full_name || '',
-          text: `Profil professionnel de ${profile.full_name || ''}`,
-          url: window.location.href,
-        });
-        toast({
-          title: "Succès",
-          description: "Profil partagé avec succès",
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: "Impossible de partager le profil",
-        });
+export function useVCardHandlers({
+  profile,
+  setProfile,
+  setIsEditing,
+  setIsPdfGenerating,
+  onEditStateChange,
+  selectedStyle
+}: UseVCardHandlersProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleSave = async () => {
+    if (!profile) {
+      toast.error("Aucun profil à sauvegarder");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error('Auth error:', userError);
+        throw userError;
       }
-    } else {
-      handleCopyLink();
+      
+      if (!user) {
+        toast.error("Vous devez être connecté pour sauvegarder votre profil");
+        return;
+      }
+
+      const updatedProfile = {
+        ...profile,
+        id: user.id,
+      };
+
+      await updateProfile(updatedProfile);
+      setIsEditing(false);
+      if (onEditStateChange) {
+        onEditStateChange(false);
+      }
+      toast.success("Profil mis à jour avec succès");
+      
+    } catch (error: any) {
+      console.error('Error saving profile:', error);
+      toast.error(error.message || "Erreur lors de la sauvegarde du profil");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleDownloadBusinessPDF = async (profile: UserProfile, style: StyleOption) => {
+  const handleDownloadBusinessCard = async () => {
     if (!profile) return;
-    
+    setIsPdfGenerating(true);
     try {
-      const doc = await generateBusinessCard(profile, style);
+      const doc = await generateBusinessCard(profile, selectedStyle);
       doc.save(`carte-visite-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
-      
-      toast({
-        title: "Succès",
-        description: "Business PDF téléchargé avec succès",
-      });
+      toast.success("Carte de visite générée avec succès");
     } catch (error) {
-      console.error('Error generating business PDF:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de générer le Business PDF",
-      });
-    }
-  };
-
-  const handleDownloadCVPDF = async (profile: UserProfile, style: StyleOption) => {
-    if (!profile) return;
-    
-    try {
-      const doc = await generateCV(profile, style);
-      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'cv'}.pdf`);
-      
-      toast({
-        title: "Succès",
-        description: "CV PDF téléchargé avec succès",
-      });
-    } catch (error) {
-      console.error('Error generating CV PDF:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de générer le CV PDF",
-      });
-    }
-  };
-
-  const handleCopyLink = () => {
-    try {
-      navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: "Succès",
-        description: "Lien copié dans le presse-papier",
-      });
-    } catch (error) {
-      console.error('Error copying link:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de copier le lien",
-      });
+      console.error('Error generating business card:', error);
+      toast.error("Erreur lors de la génération de la carte de visite");
+    } finally {
+      setIsPdfGenerating(false);
     }
   };
 
   return {
-    handleShare,
-    handleDownloadBusinessPDF,
-    handleDownloadCVPDF,
-    handleCopyLink,
+    handleSave,
+    handleDownloadBusinessCard,
+    isProcessing
   };
 }
