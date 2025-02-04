@@ -1,11 +1,10 @@
 import { Card } from "@/components/ui/card";
-import { UserCircle, ThumbsUp, ThumbsDown, MessageSquare, Trash2, EyeOff, Globe, Lock, Send } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { EyeOff, Trash2 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,8 +16,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { PostHeader } from "./PostHeader";
+import { PostActions } from "./PostActions";
+import { PostComments } from "./PostComments";
+import { CommentInput } from "./CommentInput";
 
 interface Post {
   id: string;
@@ -107,68 +108,28 @@ export function PostList() {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      const { data: post } = await supabase
-        .from('posts')
-        .select('user_id')
-        .eq('id', postId)
-        .single();
-
       if (existingReaction) {
         if (existingReaction.reaction_type === type) {
-          const { error } = await supabase
+          await supabase
             .from('post_reactions')
             .delete()
             .eq('post_id', postId)
             .eq('user_id', user.id);
-
-          if (error) throw error;
         } else {
-          const { error } = await supabase
+          await supabase
             .from('post_reactions')
             .update({ reaction_type: type })
             .eq('post_id', postId)
             .eq('user_id', user.id);
-
-          if (error) throw error;
-
-          if (post && post.user_id === user.id) {
-            const { error: notifError } = await supabase
-              .from('notifications')
-              .insert({
-                user_id: user.id,
-                title: "Réaction à votre publication",
-                message: type === 'like' ? "Vous avez aimé votre propre publication" : "Vous avez réagi à votre propre publication"
-              });
-
-            if (notifError) {
-              console.error('Error creating notification:', notifError);
-            }
-          }
         }
       } else {
-        const { error } = await supabase
+        await supabase
           .from('post_reactions')
           .insert({
             post_id: postId,
             user_id: user.id,
             reaction_type: type
           });
-
-        if (error) throw error;
-
-        if (post && post.user_id === user.id) {
-          const { error: notifError } = await supabase
-            .from('notifications')
-            .insert({
-              user_id: user.id,
-              title: "Réaction à votre publication",
-              message: type === 'like' ? "Vous avez aimé votre propre publication" : "Vous avez réagi à votre propre publication"
-            });
-
-          if (notifError) {
-            console.error('Error creating notification:', notifError);
-          }
-        }
       }
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -335,59 +296,34 @@ export function PostList() {
 
         return (
           <Card key={post.id} className="p-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                {post.profiles.avatar_url ? (
-                  <img
-                    src={post.profiles.avatar_url}
-                    alt={post.profiles.full_name}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <UserCircle className="w-6 h-6 text-muted-foreground" />
-                )}
-              </div>
-              <div className="flex-1">
-                <h3 className="font-medium">{post.profiles.full_name}</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{format(new Date(post.created_at), "d MMMM 'à' HH:mm", { locale: fr })}</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    {post.privacy_level === "public" ? (
-                      <>
-                        <Globe className="h-3 w-3" />
-                        <span>Public</span>
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="h-3 w-3" />
-                        <span>Connexions</span>
-                      </>
-                    )}
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                {post.user_id === user?.id ? (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setPostToDelete(post.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleHide(post.id)}
-                  >
-                    <EyeOff className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+            <PostHeader
+              profile={post.profiles}
+              created_at={post.created_at}
+              privacy_level={post.privacy_level}
+            />
+            
+            <div className="flex gap-2 absolute right-4 top-4">
+              {post.user_id === user?.id ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setPostToDelete(post.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleHide(post.id)}
+                >
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              )}
             </div>
+
             <p className="text-foreground mb-4 whitespace-pre-wrap">{post.content}</p>
+
             {post.images && post.images.length > 0 && (
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {post.images.map((image, index) => (
@@ -414,101 +350,34 @@ export function PostList() {
                 ))}
               </div>
             )}
-            <div className="flex gap-4 items-center mb-4">
-              <Button
-                variant={userReaction === 'like' ? 'default' : 'ghost'}
-                size="sm"
-                className="flex gap-2"
-                onClick={() => handleReaction(post.id, 'like')}
-              >
-                <ThumbsUp className="h-4 w-4" />
-                <span>{likes}</span>
-              </Button>
-              <Button
-                variant={userReaction === 'dislike' ? 'default' : 'ghost'}
-                size="sm"
-                className="flex gap-2"
-                onClick={() => handleReaction(post.id, 'dislike')}
-              >
-                <ThumbsDown className="h-4 w-4" />
-                <span>{dislikes}</span>
-              </Button>
-              <Button
-                variant={isExpanded ? 'default' : 'ghost'}
-                size="sm"
-                className="flex gap-2"
-                onClick={() => toggleComments(post.id)}
-              >
-                <MessageSquare className="h-4 w-4" />
-                <span>{commentCount}</span>
-              </Button>
-            </div>
 
-            {isExpanded && (
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Ajouter un commentaire..."
-                    value={newComments[post.id] || ''}
-                    onChange={(e) => setNewComments(prev => ({
-                      ...prev,
-                      [post.id]: e.target.value
-                    }))}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        addComment(post.id);
-                      }
-                    }}
-                  />
-                  <Button
-                    size="icon"
-                    onClick={() => addComment(post.id)}
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
+            <PostActions
+              likes={likes}
+              dislikes={dislikes}
+              commentCount={commentCount}
+              userReaction={userReaction}
+              isExpanded={isExpanded}
+              onLike={() => handleReaction(post.id, 'like')}
+              onDislike={() => handleReaction(post.id, 'dislike')}
+              onToggleComments={() => toggleComments(post.id)}
+            />
 
-                {post.comments && post.comments.length > 0 && (
-                  <div className="space-y-3 pl-4 border-l-2 border-muted">
-                    {post.comments.map((comment) => (
-                      <div key={comment.id} className="group relative bg-muted/50 rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                            {comment.profiles.avatar_url ? (
-                              <img
-                                src={comment.profiles.avatar_url}
-                                alt={comment.profiles.full_name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <UserCircle className="w-5 h-5 text-muted-foreground" />
-                            )}
-                          </div>
-                          <div>
-                            <span className="font-medium text-sm">{comment.profiles.full_name}</span>
-                            <span className="text-xs text-muted-foreground ml-2">
-                              {format(new Date(comment.created_at), "d MMM 'à' HH:mm", { locale: fr })}
-                            </span>
-                          </div>
-                          {comment.user_id === user?.id && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => deleteComment(comment.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                        <p className="text-sm">{comment.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {isExpanded && post.comments && (
+              <PostComments
+                comments={post.comments}
+                currentUserId={user?.id}
+                onDeleteComment={deleteComment}
+              />
             )}
+
+            <CommentInput
+              value={newComments[post.id] || ''}
+              onChange={(value) => setNewComments(prev => ({
+                ...prev,
+                [post.id]: value
+              }))}
+              onSubmit={() => addComment(post.id)}
+            />
           </Card>
         );
       })}
