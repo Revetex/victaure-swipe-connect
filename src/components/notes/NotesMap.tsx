@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Plus, Grid, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,14 +43,23 @@ export function NotesMap() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-background to-background/80 backdrop-blur-sm rounded-lg border">
+    <div className="h-full flex flex-col">
+      {/* Animated Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90 animate-gradient" />
+        {showGrid && (
+          <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 opacity-20" />
+        )}
+      </div>
+
+      {/* Header */}
       <div className="flex-none">
-        <div className="p-4 border-b flex items-center justify-between">
+        <div className="p-4 border-b flex items-center justify-between bg-background/50 backdrop-blur-sm">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 hover:bg-accent"
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour
@@ -67,7 +75,7 @@ export function NotesMap() {
           </Button>
         </div>
         
-        <div className="p-4 border-b bg-background/50">
+        <div className="p-4 border-b bg-background/50 backdrop-blur-sm">
           <div className="flex gap-2 max-w-2xl mx-auto">
             <Input
               value={newNote}
@@ -102,47 +110,29 @@ export function NotesMap() {
         </div>
       </div>
 
-      <div className="flex-1 relative overflow-hidden" ref={containerRef}>
-        <TransformWrapper
-          initialScale={1}
-          minScale={0.5}
-          maxScale={2}
-        >
-          <TransformComponent 
-            wrapperClass="w-full h-full" 
-            contentClass="w-full h-full"
-          >
-            <div className="relative w-full h-full min-h-[calc(100vh-12rem)]">
-              {showGrid && (
-                <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 opacity-20" />
-              )}
-              <motion.div layout className="absolute inset-0 p-4">
-                <AnimatePresence mode="popLayout">
-                  {notes?.map((note) => (
-                    <motion.div
-                      key={note.id}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="absolute"
-                      style={{ 
-                        left: Math.random() * (containerRef.current?.clientWidth ?? 800 - 280),
-                        top: Math.random() * (containerRef.current?.clientHeight ?? 600 - 280),
-                      }}
-                    >
-                      <StickyNote
-                        note={note}
-                        colorClass={`sticky-note-${note.color}`}
-                        onDelete={deleteNote}
-                        draggable
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+      {/* Notes Grid */}
+      <div className="flex-1 overflow-auto p-4">
+        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <AnimatePresence mode="popLayout">
+            {notes?.map((note) => (
+              <motion.div
+                key={note.id}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+                className="h-fit"
+              >
+                <StickyNote
+                  note={note}
+                  colorClass={`sticky-note-${note.color}`}
+                  onDelete={deleteNote}
+                />
               </motion.div>
-            </div>
-          </TransformComponent>
-        </TransformWrapper>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );

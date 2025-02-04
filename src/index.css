@@ -65,7 +65,7 @@
     --ring: 212.7 26.8% 83.9%;
   }
 }
- 
+
 @layer base {
   * {
     @apply border-border;
@@ -172,42 +172,59 @@
   }
 }
 
+@layer components {
+  .sticky-note {
+    @apply p-6 rounded-lg shadow-lg transition-all duration-200 
+           hover:shadow-xl hover:-translate-y-1
+           backdrop-blur supports-[backdrop-filter]:bg-background/60 relative
+           sm:touch-none
+           active:shadow-lg
+           active:scale-[0.98]
+           w-[280px] min-h-[280px];
+  }
+
+  .sticky-note-yellow {
+    @apply bg-[#FEF7CD]/90 hover:bg-[#FEF7CD] border border-yellow-200/50;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.1);
+  }
+
+  .sticky-note-blue {
+    @apply bg-[#D3E4FD]/90 hover:bg-[#D3E4FD] border border-blue-200/50;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  }
+
+  .sticky-note-green {
+    @apply bg-[#F2FCE2]/90 hover:bg-[#F2FCE2] border border-green-200/50;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+  }
+
+  .sticky-note-red {
+    @apply bg-[#FFE5E5]/90 hover:bg-[#FFE5E5] border border-red-200/50;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+  }
+
+  .sticky-note-purple {
+    @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF] border border-purple-200/50;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+  }
+}
+
 @layer utilities {
-  .glass-effect {
-    @apply backdrop-blur-lg bg-background/80 dark:bg-background/40 border border-border/50 shadow-lg;
+  .animate-gradient {
+    animation: gradient 15s ease infinite;
+    background-size: 400% 400%;
   }
 
-  .enhanced-text {
-    @apply font-medium tracking-tight;
-  }
-
-  .enhanced-contrast {
-    @apply dark:text-white/90 text-gray-900;
-  }
-
-  .soft-shadow {
-    @apply shadow-[0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)];
-  }
-
-  .card-hover {
-    @apply hover:shadow-md transition-shadow duration-200 hover:border-primary/20;
-  }
-
-  /* Nouvelles classes pour le responsive */
-  .mobile-container {
-    @apply px-4 sm:px-6 md:px-8 max-w-7xl mx-auto w-full;
-  }
-
-  .mobile-padding {
-    @apply p-4 sm:p-6 md:p-8;
-  }
-
-  .mobile-text {
-    @apply text-sm sm:text-base;
-  }
-
-  .mobile-touch-target {
-    @apply min-h-[44px] min-w-[44px];
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
 
   .bg-grid-white\/10 {
