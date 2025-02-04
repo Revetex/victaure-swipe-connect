@@ -78,11 +78,11 @@ export function HeroSection() {
             <Link to="/auth">
               <Button 
                 size="lg" 
-                className="font-montserrat group relative overflow-hidden"
+                className="font-montserrat group relative overflow-hidden bg-[#9b87f5] hover:bg-[#8B5CF6]"
               >
                 <span className="relative z-10">Commencer maintenant</span>
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-600 to-purple-800"
+                  className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#7E69AB]"
                   initial={{ x: "100%" }}
                   whileHover={{ x: 0 }}
                   transition={{ duration: 0.3 }}

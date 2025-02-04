@@ -39,7 +39,7 @@ export function AuthForm() {
         },
       }}
       theme="default"
-      providers={["google"]}
+      providers={[]}
       redirectTo={`${window.location.origin}/auth/callback`}
       magicLink={false}
       showLinks={true}

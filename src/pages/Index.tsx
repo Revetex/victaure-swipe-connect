@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/Hero";
 import { Features } from "@/components/Features";
+import { Footer } from "@/components/landing/Footer";
 import { motion } from "framer-motion";
 
 export default function Index() {
@@ -12,6 +13,7 @@ export default function Index() {
       >
         <HeroSection />
         <Features />
+        <Footer />
       </motion.div>
     </div>
   );
