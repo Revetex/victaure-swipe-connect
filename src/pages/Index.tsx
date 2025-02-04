@@ -35,7 +35,7 @@ export default function Index() {
       {/* Logo and Title */}
       <div className="text-center pt-8">
         <div className="flex justify-center mb-4">
-          <Logo size="lg" showText={false} />
+          <Logo size="lg" showText={false} className="scale-150" />
         </div>
         <h1 className="text-6xl font-bold text-[#9b87f5] dark:text-[#D6BCFA]">VICTAURE</h1>
       </div>
@@ -49,11 +49,6 @@ export default function Index() {
               animate={{ opacity: 1, x: 0 }}
               className="text-left"
             >
-              <img 
-                src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
-                alt="Victaure Logo" 
-                className="w-48 mb-8"
-              />
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6">
                 Votre Carrière, <br/>
                 <span className="text-[#9b87f5] dark:text-[#D6BCFA]">Notre Mission</span>
@@ -102,7 +97,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-20 bg-background dark:bg-background">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
