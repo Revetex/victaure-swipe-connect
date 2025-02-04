@@ -9,9 +9,8 @@ import { useNotes } from "@/hooks/useNotes";
 import { StickyNote } from "@/components/todo/StickyNote";
 import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
-import { NotesGrid } from "./NotesGrid";
-import { NotesToolbar } from "./NotesToolbar";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const colors: ColorOption[] = [
   { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
@@ -20,9 +19,6 @@ const colors: ColorOption[] = [
   { value: "red", label: "Rouge", class: "bg-red-200" },
   { value: "purple", label: "Violet", class: "bg-purple-200" }
 ];
-
-const GRID_SIZE = 50;
-const MAX_DISTANCE = 2000;
 
 export function NotesMap() {
   const {
@@ -36,71 +32,55 @@ export function NotesMap() {
   } = useNotes();
 
   const navigate = useNavigate();
-  const [scale, setScale] = useState(1);
   const [showGrid, setShowGrid] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleAddNote = (e?: React.MouseEvent<HTMLDivElement>) => {
+  const handleAddNote = () => {
     if (!newNote.trim()) {
       toast.error("Le contenu de la note ne peut pas être vide");
       return;
     }
-
-    if (e && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / scale;
-      const y = (e.clientY - rect.top) / scale;
-      
-      // Snap to grid if grid is enabled
-      const snappedX = showGrid ? Math.round(x / GRID_SIZE) * GRID_SIZE : x;
-      const snappedY = showGrid ? Math.round(y / GRID_SIZE) * GRID_SIZE : y;
-      
-      setPosition({ x: snappedX, y: snappedY });
-    }
-
     addNote();
   };
 
-  const handleReturnToDashboard = () => {
-    navigate("/dashboard");
-  };
-
   return (
-    <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
+    <div className="h-full flex flex-col bg-gradient-to-br from-background to-background/80 backdrop-blur-sm rounded-lg border">
       <div className="flex-none">
         <div className="p-4 border-b flex items-center justify-between">
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleReturnToDashboard}
-            className="flex items-center gap-2"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 hover:bg-accent"
           >
             <ArrowLeft className="h-4 w-4" />
-            Retour au tableau de bord
+            Retour
           </Button>
           
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowGrid(!showGrid)}
-            className={showGrid ? "bg-accent" : ""}
+            className={cn(showGrid ? "bg-accent" : "")}
           >
             <Grid className="h-4 w-4" />
           </Button>
         </div>
         
-        <div className="p-4 border-b">
-          <div className="flex gap-2">
+        <div className="p-4 border-b bg-background/50">
+          <div className="flex gap-2 max-w-2xl mx-auto">
             <Input
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
               placeholder="Nouvelle note..."
-              className="flex-1"
+              className="flex-1 bg-background/50"
               onKeyPress={(e) => e.key === 'Enter' && handleAddNote()}
             />
-            <Select onValueChange={setSelectedColor} defaultValue={selectedColor}>
-              <SelectTrigger className="w-[100px]">
+            <Select 
+              value={selectedColor} 
+              onValueChange={setSelectedColor}
+            >
+              <SelectTrigger className="w-[120px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -108,13 +88,16 @@ export function NotesMap() {
                   <SelectItem 
                     key={color.value} 
                     value={color.value}
-                    className={`sticky-note-${color.value}`}
+                    className={`sticky-note-${color.value} cursor-pointer`}
                   >
                     {color.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            <Button onClick={handleAddNote} size="icon" variant="secondary">
+              <Plus className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
@@ -124,18 +107,16 @@ export function NotesMap() {
           initialScale={1}
           minScale={0.5}
           maxScale={2}
-          onTransformed={(ref) => setScale(ref.state.scale)}
         >
           <TransformComponent 
             wrapperClass="w-full h-full" 
             contentClass="w-full h-full"
           >
-            <div 
-              className="relative w-full h-full min-h-[calc(100vh-12rem)]"
-              onClick={handleAddNote}
-            >
-              <NotesGrid showGrid={showGrid} gridSize={GRID_SIZE} maxDistance={MAX_DISTANCE} />
-              <motion.div layout className="absolute inset-0">
+            <div className="relative w-full h-full min-h-[calc(100vh-12rem)]">
+              {showGrid && (
+                <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 opacity-20" />
+              )}
+              <motion.div layout className="absolute inset-0 p-4">
                 <AnimatePresence mode="popLayout">
                   {notes?.map((note) => (
                     <motion.div
@@ -143,11 +124,10 @@ export function NotesMap() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
+                      className="absolute"
                       style={{ 
-                        position: 'absolute',
-                        left: position.x,
-                        top: position.y,
-                        transform: `translate(-50%, -50%) scale(${1/scale})`
+                        left: Math.random() * (containerRef.current?.clientWidth ?? 800 - 280),
+                        top: Math.random() * (containerRef.current?.clientHeight ?? 600 - 280),
                       }}
                     >
                       <StickyNote
