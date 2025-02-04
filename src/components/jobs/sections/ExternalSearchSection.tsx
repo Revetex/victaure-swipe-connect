@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
 
 interface ExternalSearchSectionProps {
   isLoading?: boolean;
@@ -14,6 +16,29 @@ export function ExternalSearchSection({
   errorMessage 
 }: ExternalSearchSectionProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
+          body: { user_id: user.id }
+        });
+
+        if (error) throw error;
+        if (data?.suggestions) {
+          setSuggestions(data.suggestions);
+        }
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    };
+
+    fetchSuggestions();
+  }, []);
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -30,8 +55,9 @@ export function ExternalSearchSection({
       }
 
       .gsc-input-box {
+        border: 2px solid hsl(var(--border)) !important;
+        border-radius: 0.5rem !important;
         background: transparent !important;
-        border: none !important;
       }
 
       .gsc-input {
@@ -124,7 +150,7 @@ export function ExternalSearchSection({
 
   return (
     <div className="w-full space-y-4">
-      <div className="relative">
+      <Card className="p-4">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -132,7 +158,34 @@ export function ExternalSearchSection({
         >
           <GoogleSearchBox />
         </motion.div>
-      </div>
+
+        {suggestions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 space-y-2"
+          >
+            <p className="text-sm text-muted-foreground font-medium">Suggestions de recherche :</p>
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
+                    if (searchInput) {
+                      searchInput.value = suggestion;
+                      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                  }}
+                  className="text-sm px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </Card>
     </div>
   );
 }
