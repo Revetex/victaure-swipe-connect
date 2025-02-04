@@ -21,7 +21,7 @@ export function useSearchResultsStyles() {
       border: 1px solid hsl(var(--border)) !important;
       border-radius: 0.75rem !important;
       transition: all 0.2s ease !important;
-      background: hsl(var(--background)) !important;
+      background: hsl(var(--card)) !important;
     }
 
     .gs-result:hover {
