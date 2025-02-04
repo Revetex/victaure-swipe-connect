@@ -1,10 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AnimatePresence } from "framer-motion";
+import { AISearchButton } from "@/components/search/AISearchButton";
+import { LoadingSkeleton } from "@/components/search/LoadingSkeleton";
 
 interface AISearchSuggestionsProps {
   onSuggestionClick: (suggestion: string) => void;
@@ -12,61 +9,38 @@ interface AISearchSuggestionsProps {
 
 export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
-  const fetchAndApplySuggestion = async () => {
+  const handleClick = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
+      if (!searchInput?.value) return;
 
-      const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
-        body: { user_id: user.id }
+      const response = await fetch('/api/generate-search-suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchInput.value })
       });
 
-      if (error) throw error;
-      
-      const randomSuggestion = data.suggestions[Math.floor(Math.random() * data.suggestions.length)];
-      onSuggestionClick(randomSuggestion);
+      if (!response.ok) throw new Error('Failed to generate suggestions');
+
+      const data = await response.json();
+      if (data.suggestions?.[0]) {
+        onSuggestionClick(data.suggestions[0]);
+      }
     } catch (error) {
-      console.error('Error fetching suggestions:', error);
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de charger les suggestions"
-      });
+      console.error('Error generating suggestions:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <Button
-        variant="default"
-        size="sm"
-        className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center gap-2 px-4 py-2 text-sm font-semibold shadow-md hover:shadow-lg transform hover:scale-105"
-        onClick={fetchAndApplySuggestion}
-        disabled={isLoading}
-      >
-        <Sparkles className="h-4 w-4" />
-        <span>Suggestion IA</span>
-      </Button>
-
+    <div className="relative">
+      <AISearchButton onClick={handleClick} isLoading={isLoading} />
       <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute top-12 right-0 z-50 bg-background/80 backdrop-blur-md rounded-lg p-2 w-24"
-          >
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-            </div>
-          </motion.div>
-        )}
+        {isLoading && <LoadingSkeleton />}
       </AnimatePresence>
-    </>
+    </div>
   );
 }
