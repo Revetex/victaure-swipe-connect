@@ -96,7 +96,7 @@ function MessagesWithQuery({
   const filteredMessages = filterMessages(currentMessages || [], selectedReceiver);
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-[calc(100dvh-4rem)] overflow-hidden">
       {/* Animated background */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -159,7 +159,7 @@ export function Messages() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="h-full flex flex-col">
+      <div className="h-full">
         <MessagesWithQuery
           chatMessages={chatMessages}
           inputMessage={inputMessage}

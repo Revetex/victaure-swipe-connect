@@ -8,21 +8,21 @@ import { UserProfile } from "@/types/profile";
 interface MessagesContentProps {
   messages: Message[];
   inputMessage: string;
-  isListening: boolean;
-  isThinking: boolean;
-  onSendMessage: (message: string) => Promise<void>;
-  onVoiceInput: () => void;
+  isThinking?: boolean;
+  isListening?: boolean;
+  onSendMessage: (message: string) => void;
+  onVoiceInput?: () => void;
   setInputMessage: (message: string) => void;
   onClearChat: () => void;
-  onBack: () => void;
+  onBack?: () => void;
   receiver: Receiver | null;
 }
 
 export function MessagesContent({
   messages,
   inputMessage,
-  isListening,
   isThinking,
+  isListening,
   onSendMessage,
   onVoiceInput,
   setInputMessage,
@@ -32,7 +32,7 @@ export function MessagesContent({
 }: MessagesContentProps) {
   const navigate = useNavigate();
 
-  const handleDeleteConversation = async () => {
+  const handleDelete = async () => {
     try {
       if (!receiver) return;
 
@@ -60,7 +60,7 @@ export function MessagesContent({
         if (error) throw error;
       }
 
-      onBack();
+      onBack?.();
       navigate('/dashboard/messages');
       toast.success("Conversation supprimée avec succès");
     } catch (error) {
@@ -89,17 +89,19 @@ export function MessagesContent({
   } : null;
 
   return (
-    <ConversationView
-      messages={messages}
-      profile={profileFromReceiver}
-      inputMessage={inputMessage}
-      isListening={isListening}
-      isThinking={isThinking}
-      onInputChange={setInputMessage}
-      onSendMessage={onSendMessage}
-      onVoiceInput={onVoiceInput}
-      onBack={onBack}
-      onDeleteConversation={handleDeleteConversation}
-    />
+    <div className="h-full flex flex-col">
+      <ConversationView
+        messages={messages}
+        profile={profileFromReceiver}
+        inputMessage={inputMessage}
+        isListening={isListening}
+        isThinking={isThinking}
+        onInputChange={setInputMessage}
+        onSendMessage={onSendMessage}
+        onVoiceInput={onVoiceInput}
+        onBack={onBack}
+        onDeleteConversation={handleDelete}
+      />
+    </div>
   );
 }
