@@ -9,24 +9,10 @@ export interface MessageSender {
 export interface Message {
   id: string;
   content: string;
-  sender: MessageSender | string;
   sender_id: string;
   receiver_id: string;
-  read: boolean;
   created_at: string;
-  timestamp: Date;
-  thinking?: boolean;
-  updated_at?: string;
-}
-
-export interface Receiver {
-  id: string;
-  full_name?: string;
-  avatar_url?: string;
-  online_status?: boolean;
-  last_seen?: string;
-}
-
-export interface FormattedMessage extends Omit<Message, 'sender'> {
-  sender: string | MessageSender;
+  read: boolean;
+  sender?: MessageSender;
+  receiver?: MessageSender;
 }

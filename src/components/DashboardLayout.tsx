@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { MainLayout } from "./layout/MainLayout";
 import { useViewport } from "@/hooks/useViewport";
@@ -16,12 +16,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { showConversation } = useReceiver();
   const viewportHeight = useViewport();
   const { currentPage, handlePageChange } = useNavigation();
 
   const handleRequestChat = () => {
     handlePageChange(2);
+  };
+
+  const handleToolReturn = () => {
+    navigate('/dashboard');
+    handlePageChange(1);
   };
 
   const getPageTitle = (page: number) => {
@@ -65,6 +71,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       isEditing={isEditing}
       showFriendsList={showFriendsList}
       onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+      onToolReturn={handleToolReturn}
     >
       {children || (
         <DashboardContent

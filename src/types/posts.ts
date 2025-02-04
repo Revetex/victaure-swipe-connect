@@ -1,25 +1,3 @@
-export interface Post {
-  id: string;
-  content: string;
-  images?: string[];
-  likes: number;
-  dislikes: number;
-  created_at: string;
-  updated_at?: string;
-  user_id: string;
-  privacy_level: 'public' | 'connections';
-  profiles: {
-    id: string;
-    full_name: string;
-    avatar_url?: string;
-  };
-  reactions?: {
-    reaction_type: string;
-    user_id: string;
-  }[];
-  comments?: Comment[];
-}
-
 export interface Comment {
   id: string;
   content: string;
@@ -32,10 +10,24 @@ export interface Comment {
   };
 }
 
-export interface PostReaction {
+export interface Post {
   id: string;
-  post_id: string;
+  content: string;
   user_id: string;
-  reaction_type: string;
   created_at: string;
+  images?: string[];
+  likes: number;
+  dislikes: number;
+  privacy_level: 'public' | 'private' | 'connections';
+  profiles: {
+    id: string;
+    full_name: string;
+    avatar_url?: string;
+  };
+  comments?: Comment[];
+  reactions?: {
+    id: string;
+    user_id: string;
+    reaction_type: 'like' | 'dislike';
+  }[];
 }
