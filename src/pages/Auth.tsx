@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { ThemeSelector } from "@/components/auth/ThemeSelector";
 import { Logo } from "@/components/Logo";
+import { Footer } from "@/components/landing/Footer";
 
 export default function Auth() {
   return (
@@ -14,8 +15,8 @@ export default function Auth() {
       <main className="flex-1 w-full py-12 px-4 relative z-10">
         <div className="container max-w-md mx-auto space-y-8">
           <div className="text-center space-y-6 animate-fade-in">
-            <Logo size="xl" className="mx-auto" />
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent animate-scale-in font-playfair">
+            <Logo size="lg" className="mx-auto" />
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent animate-scale-in font-playfair">
               Votre Assistant IA
             </h1>
             <p className="text-sm text-muted-foreground max-w-md mx-auto font-montserrat">
@@ -30,6 +31,8 @@ export default function Auth() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
