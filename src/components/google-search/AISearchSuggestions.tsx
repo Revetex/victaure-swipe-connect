@@ -13,47 +13,65 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   const [previousSuggestions, setPreviousSuggestions] = useState<string[]>([]);
 
   const handleSearch = useCallback(() => {
-    const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
-    if (searchInput && searchInput.value) {
-      const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
-      if (searchButton) {
-        searchButton.click();
-      }
-    } else {
-      toast.error("Veuillez entrer un terme de recherche");
-    }
-  }, []);
-
-  const generateSuggestion = useCallback(async () => {
-    setIsLoading(true);
     try {
-      // Focus the search input first
       const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
       if (!searchInput) {
         toast.error("Impossible de trouver la barre de recherche");
         return;
       }
 
-      // Get the user data first
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user?.id) {
-        toast.error("Vous devez être connecté pour utiliser cette fonctionnalité");
+      const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
+      if (!searchButton) {
+        toast.error("Impossible de trouver le bouton de recherche");
         return;
       }
 
+      searchButton.click();
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.error("Une erreur est survenue lors de la recherche");
+    }
+  }, []);
+
+  const generateSuggestion = useCallback(async () => {
+    if (isLoading) return; // Prevent multiple simultaneous requests
+    
+    setIsLoading(true);
+    try {
+      // Focus the search input first
+      const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
+      if (!searchInput) {
+        throw new Error("Impossible de trouver la barre de recherche");
+      }
+
+      // Get the user data first
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) throw authError;
+      
+      if (!user?.id) {
+        throw new Error("Vous devez être connecté pour utiliser cette fonctionnalité");
+      }
+
       // Get the user's profile
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
 
+      if (profileError) throw profileError;
+
       // Use empty string if no query is present
       const query = searchInput.value.trim() || "emploi";
 
+      // Prevent duplicate suggestions
+      if (previousSuggestions.includes(query)) {
+        throw new Error("Cette suggestion a déjà été utilisée");
+      }
+
       // Call the edge function with the collected data
-      const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
+      const { data, error: functionError } = await supabase.functions.invoke('generate-search-suggestions', {
         body: {
           query,
           user_id: user.id,
@@ -64,22 +82,26 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
         }
       });
 
-      if (error) throw error;
+      if (functionError) throw functionError;
 
-      if (data?.suggestions?.length > 0) {
-        const suggestion = data.suggestions[0];
-        setPreviousSuggestions(prev => [...prev, suggestion]);
-        onSuggestionClick(suggestion);
-      } else {
-        toast.error("Aucune suggestion disponible");
+      if (!data?.suggestions?.length) {
+        throw new Error("Aucune suggestion disponible");
       }
+
+      const suggestion = data.suggestions[0];
+      setPreviousSuggestions(prev => [...prev, suggestion]);
+      onSuggestionClick(suggestion);
+      
+      // Focus the search input after suggestion
+      searchInput.focus();
+
     } catch (error) {
       console.error('Error generating suggestion:', error);
-      toast.error("Erreur lors de la génération de la suggestion");
+      toast.error(error instanceof Error ? error.message : "Erreur lors de la génération de la suggestion");
     } finally {
       setIsLoading(false);
     }
-  }, [onSuggestionClick, previousSuggestions]);
+  }, [isLoading, onSuggestionClick, previousSuggestions]);
 
   return (
     <div className="flex items-center gap-2">
