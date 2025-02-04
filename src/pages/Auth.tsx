@@ -4,9 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
+import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Logo } from "@/components/Logo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
+import { Shield, Star, Heart } from "lucide-react";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ export default function Auth() {
           <Logo className="h-8 w-auto" />
           <nav className="flex items-center gap-4">
             <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Retour à l'accueil
+              Retour
             </a>
           </nav>
         </div>
@@ -73,21 +75,55 @@ export default function Auth() {
 
       {/* Main Content */}
       <main className="flex-1 w-full py-8 px-4">
-        <div className="container max-w-sm mx-auto space-y-8">
-          {/* Header with Title */}
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
-              <p className="text-sm text-muted-foreground">
-                Connectez-vous ou créez un compte pour continuer
-              </p>
+        <div className="container max-w-6xl mx-auto grid gap-12 md:grid-cols-2 items-start">
+          {/* Left Column - Video and Features */}
+          <div className="space-y-8">
+            <AuthVideo />
+            
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold tracking-tight text-center">Pourquoi choisir Victaure ?</h2>
+              
+              <div className="grid gap-4">
+                <div className="flex items-start space-x-4 p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/5">
+                  <Star className="w-6 h-6 text-primary shrink-0" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Opportunités Uniques</h3>
+                    <p className="text-sm text-muted-foreground">Accédez à des offres exclusives et des missions passionnantes dans votre domaine.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4 p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/5">
+                  <Heart className="w-6 h-6 text-primary shrink-0" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Communauté Engagée</h3>
+                    <p className="text-sm text-muted-foreground">Rejoignez un réseau de professionnels partageant vos valeurs et ambitions.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4 p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/5">
+                  <Shield className="w-6 h-6 text-primary shrink-0" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Sécurité Garantie</h3>
+                    <p className="text-sm text-muted-foreground">Vos données sont protégées avec les plus hauts standards de sécurité.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Auth Card */}
-          <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
-            <BiometricAuth />
-            <AuthForm />
+          {/* Right Column - Auth Form */}
+          <div className="space-y-8">
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
+              <p className="text-sm text-muted-foreground">
+                Votre plateforme professionnelle de confiance
+              </p>
+            </div>
+
+            <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
+              <BiometricAuth />
+              <AuthForm />
+            </div>
           </div>
         </div>
       </main>
