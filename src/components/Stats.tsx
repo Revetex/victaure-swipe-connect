@@ -3,27 +3,27 @@ import { Users, Briefcase, DollarSign, Star } from "lucide-react";
 const stats = [
   {
     name: "Utilisateurs Actifs",
-    value: "10,000+",
+    value: "50,000+",
     icon: Users,
-    description: "Professionnels qualifiés",
+    description: "Professionnels connectés",
   },
   {
-    name: "Missions Disponibles",
-    value: "2,500+",
+    name: "Services IA",
+    value: "15+",
     icon: Briefcase,
-    description: "Opportunités variées",
+    description: "Solutions intelligentes",
   },
   {
     name: "Revenus Générés",
-    value: "€5M+",
+    value: "€10M+",
     icon: DollarSign,
-    description: "Pour nos freelances",
+    description: "Pour nos partenaires",
   },
   {
-    name: "Satisfaction Client",
-    value: "4.8/5",
+    name: "Taux de Réussite",
+    value: "98%",
     icon: Star,
-    description: "Note moyenne",
+    description: "Satisfaction client",
   },
 ];
 

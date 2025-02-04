@@ -59,7 +59,7 @@ export function HeroSection() {
                 transition={{ delay: 0.2 }}
                 className="bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600 bg-clip-text text-transparent"
               >
-                Propulsez Votre Carrière
+                L'IA au Service de Votre Succès
               </motion.span>
               <br />
               <motion.span 
@@ -68,7 +68,7 @@ export function HeroSection() {
                 transition={{ delay: 0.4 }}
                 className="text-foreground"
               >
-                avec l'Intelligence Artificielle
+                Premier Écosystème Digital Intelligent
               </motion.span>
             </h1>
             <motion.p 
@@ -77,8 +77,8 @@ export function HeroSection() {
               transition={{ delay: 0.6 }}
               className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
             >
-              Découvrez une nouvelle ère du recrutement où l'IA rencontre le talent humain. 
-              Trouvez votre prochain défi professionnel avec une précision inégalée.
+              Découvrez une plateforme révolutionnaire où l'IA optimise chaque aspect de votre activité : 
+              réseaux sociaux, services professionnels et orientation stratégique.
             </motion.p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -104,15 +104,15 @@ export function HeroSection() {
               {[
                 {
                   icon: Search,
-                  text: "IA Prédictive"
+                  text: "IA Prédictive Avancée"
                 },
                 {
                   icon: Briefcase,
-                  text: "Matching Intelligent"
+                  text: "Services Intelligents"
                 },
                 {
                   icon: Users,
-                  text: "Réseau Dynamique"
+                  text: "Communauté Active"
                 }
               ].map((feature, index) => (
                 <motion.div
