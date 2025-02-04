@@ -1,15 +1,35 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+interface SearchContext {
+  profile: any;
+  previousSearches?: string[];
+  jobPreferences?: {
+    salary?: { min?: number; max?: number };
+    location?: string;
+    remote?: boolean;
+    industries?: string[];
+  };
+}
+
 export async function handleJobSearch(message: string, profile: any, supabase: SupabaseClient) {
   console.log('Starting enhanced job search with message:', message);
   
   try {
+    // Enhanced context-aware search
+    const searchContext: SearchContext = {
+      profile,
+      previousSearches: await getPreviousSearches(supabase, profile.id),
+      jobPreferences: await getJobPreferences(supabase, profile.id)
+    };
+
+    console.log('Search context:', searchContext);
+
     // Enhanced keyword extraction with context
-    const keywords = extractKeywords(message);
-    const location = extractLocation(message);
+    const keywords = extractKeywords(message, searchContext);
+    const location = extractLocation(message, searchContext);
     const jobType = extractJobType(message);
-    const experienceLevel = extractExperienceLevel(message);
-    const salary = extractSalaryRange(message);
+    const experienceLevel = extractExperienceLevel(message, profile);
+    const salary = extractSalaryRange(message, searchContext);
     
     console.log('Search parameters:', { 
       keywords, 
@@ -19,7 +39,7 @@ export async function handleJobSearch(message: string, profile: any, supabase: S
       salary 
     });
 
-    // Enhanced job search query
+    // Build advanced query with intelligent filtering
     let query = supabase
       .from('jobs')
       .select(`
@@ -27,14 +47,15 @@ export async function handleJobSearch(message: string, profile: any, supabase: S
         employer:profiles!jobs_employer_id_fkey (
           full_name,
           avatar_url,
-          company_name
+          company_name,
+          industry
         )
       `)
       .eq('status', 'open');
 
-    // Apply filters based on extracted information
+    // Apply intelligent filters
     if (location) {
-      query = query.ilike('location', `%${location}%`);
+      query = query.or(`location.ilike.%${location}%,location.ilike.%${profile.city}%`);
     }
 
     if (jobType) {
@@ -78,24 +99,26 @@ export async function handleJobSearch(message: string, profile: any, supabase: S
 
     console.log(`Found ${jobs?.length || 0} regular jobs and ${scrapedJobs?.length || 0} scraped jobs`);
 
-    // Enhanced job formatting with more details
+    // Enhanced job formatting with AI-powered relevance scoring
     const formattedJobs = [
       ...(jobs || []).map(job => ({
         ...job,
         source: 'Victaure',
         employer_details: job.employer,
         matched_keywords: findMatchingKeywords(job, keywords),
-        relevance_score: calculateRelevanceScore(job, keywords, profile)
+        relevance_score: calculateRelevanceScore(job, keywords, profile, searchContext),
+        skill_match_percentage: calculateSkillMatchPercentage(job, profile)
       })),
       ...(scrapedJobs || []).map(job => ({
         ...job,
         source: 'Externe',
         matched_keywords: findMatchingKeywords(job, keywords),
-        relevance_score: calculateRelevanceScore(job, keywords, profile)
+        relevance_score: calculateRelevanceScore(job, keywords, profile, searchContext),
+        skill_match_percentage: 0 // Default for scraped jobs
       }))
     ];
 
-    // Enhanced filtering and sorting
+    // Enhanced filtering with AI-powered relevance
     const filteredJobs = keywords.length > 0 
       ? formattedJobs.filter(job => 
           job.matched_keywords.length > 0 ||
@@ -106,7 +129,7 @@ export async function handleJobSearch(message: string, profile: any, supabase: S
         )
       : formattedJobs;
 
-    // Sort by relevance score and date
+    // Sort by relevance score and recency
     const sortedJobs = filteredJobs.sort((a, b) => {
       if (a.relevance_score !== b.relevance_score) {
         return b.relevance_score - a.relevance_score;
@@ -115,39 +138,29 @@ export async function handleJobSearch(message: string, profile: any, supabase: S
              new Date(a.created_at || a.posted_at).getTime();
     });
 
+    // Save search for future context
+    await saveSearchHistory(supabase, profile.id, {
+      query: message,
+      filters: { keywords, location, jobType, experienceLevel, salary },
+      results_count: sortedJobs.length
+    });
+
     if (sortedJobs.length === 0) {
       return {
-        message: `Je n'ai pas trouvé d'offres d'emploi correspondant exactement à vos critères. Voici quelques suggestions pour élargir votre recherche :`,
-        suggestedActions: [
-          {
-            type: 'modify_search',
-            label: 'Élargir la zone géographique',
-            icon: 'map'
-          },
-          {
-            type: 'modify_filters',
-            label: 'Modifier les filtres',
-            icon: 'filter'
-          },
-          {
-            type: 'navigate_to_jobs',
-            label: 'Voir toutes les offres',
-            icon: 'briefcase'
-          }
-        ]
+        message: generateNoResultsMessage(searchContext),
+        suggestedActions: generateSuggestedActions(searchContext)
       };
     }
 
-    const responseMessage = generateEnhancedResponseMessage(
-      sortedJobs.length,
-      location,
-      jobType,
-      experienceLevel,
-      keywords
-    );
-
     return {
-      message: responseMessage,
+      message: generateEnhancedResponseMessage(
+        sortedJobs.length,
+        location,
+        jobType,
+        experienceLevel,
+        keywords,
+        searchContext
+      ),
       jobs: sortedJobs.slice(0, 5),
       totalResults: sortedJobs.length,
       filters: {
@@ -155,6 +168,11 @@ export async function handleJobSearch(message: string, profile: any, supabase: S
         jobType,
         experienceLevel,
         salary
+      },
+      analytics: {
+        skill_match_average: calculateAverageSkillMatch(sortedJobs),
+        top_matched_keywords: getTopMatchedKeywords(sortedJobs),
+        location_distribution: getLocationDistribution(sortedJobs)
       }
     };
 
@@ -165,6 +183,113 @@ export async function handleJobSearch(message: string, profile: any, supabase: S
       error: error.message
     };
   }
+}
+
+// Helper functions
+async function getPreviousSearches(supabase: SupabaseClient, userId: string) {
+  const { data } = await supabase
+    .from('ai_learning_data')
+    .select('question')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(5);
+  
+  return data?.map(d => d.question) || [];
+}
+
+async function getJobPreferences(supabase: SupabaseClient, userId: string) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+
+  return {
+    location: profile?.city,
+    industries: profile?.industry ? [profile.industry] : undefined
+  };
+}
+
+async function saveSearchHistory(
+  supabase: SupabaseClient, 
+  userId: string, 
+  searchData: any
+) {
+  await supabase
+    .from('ai_learning_data')
+    .insert({
+      user_id: userId,
+      question: searchData.query,
+      context: searchData
+    });
+}
+
+function calculateSkillMatchPercentage(job: any, profile: any): number {
+  if (!job.required_skills || !profile.skills) return 0;
+  
+  const matchingSkills = job.required_skills.filter((skill: string) => 
+    profile.skills.includes(skill)
+  );
+  
+  return (matchingSkills.length / job.required_skills.length) * 100;
+}
+
+function calculateAverageSkillMatch(jobs: any[]): number {
+  const matches = jobs.map(j => j.skill_match_percentage);
+  return matches.reduce((a, b) => a + b, 0) / matches.length;
+}
+
+function getTopMatchedKeywords(jobs: any[]): string[] {
+  const keywordCounts = new Map<string, number>();
+  
+  jobs.forEach(job => {
+    job.matched_keywords.forEach((keyword: string) => {
+      keywordCounts.set(keyword, (keywordCounts.get(keyword) || 0) + 1);
+    });
+  });
+  
+  return Array.from(keywordCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([keyword]) => keyword);
+}
+
+function getLocationDistribution(jobs: any[]): Record<string, number> {
+  const distribution: Record<string, number> = {};
+  
+  jobs.forEach(job => {
+    const location = job.location || 'Unknown';
+    distribution[location] = (distribution[location] || 0) + 1;
+  });
+  
+  return distribution;
+}
+
+function generateNoResultsMessage(context: SearchContext): string {
+  return `Je n'ai pas trouvé d'offres d'emploi correspondant exactement à vos critères. Voici quelques suggestions pour élargir votre recherche :
+  - Essayez d'utiliser des mots-clés plus généraux
+  - Élargissez la zone géographique
+  - Modifiez les critères de salaire ou d'expérience`;
+}
+
+function generateSuggestedActions(context: SearchContext): any[] {
+  return [
+    {
+      type: 'modify_search',
+      label: 'Élargir la zone géographique',
+      icon: 'map'
+    },
+    {
+      type: 'modify_filters',
+      label: 'Modifier les filtres',
+      icon: 'filter'
+    },
+    {
+      type: 'navigate_to_jobs',
+      label: 'Voir toutes les offres',
+      icon: 'briefcase'
+    }
+  ];
 }
 
 function extractKeywords(message: string): string[] {
