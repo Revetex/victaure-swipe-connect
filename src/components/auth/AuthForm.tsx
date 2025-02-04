@@ -123,7 +123,7 @@ export function AuthForm() {
         <Button
           onClick={() => handleAuth('login')}
           disabled={loading || !email || !password}
-          className="w-full"
+          className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] transition-colors duration-300 text-white font-medium"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -211,7 +211,7 @@ export function AuthForm() {
         <Button
           onClick={() => handleAuth('signup')}
           disabled={loading || !email || !password || !fullName}
-          className="w-full"
+          className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] transition-colors duration-300 text-white font-medium shadow-sm"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
