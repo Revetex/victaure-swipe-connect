@@ -9,10 +9,14 @@ import { motion } from "framer-motion";
 
 export default function Auth() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-light-purple via-background to-light-blue relative overflow-hidden">
-      {/* Animated background elements */}
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-light-purple via-background to-light-blue" />
+      
+      {/* Background patterns */}
       <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
+      {/* Animated background elements */}
       <div className="absolute inset-0">
         <motion.div
           className="absolute inset-0 opacity-20"
