@@ -1,62 +1,56 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
+import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
+import { motion } from "framer-motion";
 
 interface ExternalSearchSectionProps {
-  isLoading: boolean;
-  hasError: boolean;
+  isLoading?: boolean;
+  hasError?: boolean;
   errorMessage?: string;
 }
 
-export function ExternalSearchSection({ isLoading, hasError, errorMessage }: ExternalSearchSectionProps) {
-  const searchContainerRef = useRef<HTMLDivElement>(null);
+export function ExternalSearchSection({ 
+  isLoading = false, 
+  hasError = false, 
+  errorMessage 
+}: ExternalSearchSectionProps) {
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
-      /* Search box styling */
+      /* Google Search Box styling */
+      .gsc-control-cse {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+
+      .gsc-search-box {
+        margin-bottom: 0 !important;
+      }
+
       .gsc-input-box {
         background: transparent !important;
-        border: 1px solid hsl(var(--border)) !important;
-        border-radius: 0.5rem !important;
+        border: none !important;
       }
-      
+
       .gsc-input {
         background: transparent !important;
         color: hsl(var(--foreground)) !important;
-        font-family: var(--font-sans) !important;
-        font-size: 0.875rem !important;
-      }
-
-      .gsc-search-button {
-        background-color: hsl(var(--primary)) !important;
-        border: none !important;
-        border-radius: 0.5rem !important;
-        padding: 8px 16px !important;
-      }
-
-      .gsc-search-button:hover {
-        background-color: hsl(var(--primary)/0.9) !important;
       }
 
       /* Results styling */
-      .gsc-result {
+      .gsc-results-wrapper-overlay {
+        background: hsl(var(--background)) !important;
+        backdrop-filter: blur(12px) !important;
+      }
+
+      .gsc-webResult.gsc-result {
         background: transparent !important;
-        border: 1px solid hsl(var(--border)) !important;
-        border-radius: 0.5rem !important;
-        margin: 8px 0 !important;
-        padding: 12px !important;
+        border: none !important;
       }
 
-      .gsc-result:hover {
-        background-color: hsl(var(--accent)/0.1) !important;
-      }
-
-      .gsc-result .gs-title {
-        color: hsl(var(--primary)) !important;
-        font-family: var(--font-sans) !important;
-        font-size: 1rem !important;
-      }
-
-      .gsc-result .gs-snippet {
+      .gs-title, .gs-snippet {
         color: hsl(var(--muted-foreground)) !important;
         font-family: var(--font-sans) !important;
         font-size: 0.875rem !important;
@@ -73,76 +67,48 @@ export function ExternalSearchSection({ isLoading, hasError, errorMessage }: Ext
 
       /* Suggestions styling */
       .gsc-completion-container {
-        background: transparent !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
+        background: hsl(var(--background)) !important;
         border: 1px solid hsl(var(--border)) !important;
-        border-radius: 0.5rem !important;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
-        font-family: var(--font-sans) !important;
+        backdrop-filter: blur(12px) !important;
       }
 
-      .gsc-completion-container table {
-        background: transparent !important;
-      }
-
-      .gsc-completion-container tr {
-        background: transparent !important;
-      }
-
-      .gsc-completion-container td {
-        background: transparent !important;
+      .gsc-completion-title {
         color: hsl(var(--foreground)) !important;
-        font-family: var(--font-sans) !important;
-        font-size: 0.875rem !important;
-        line-height: 1.5 !important;
-        padding: 8px 12px !important;
       }
 
-      .gsc-completion-container tr:hover td {
-        background-color: hsl(var(--accent)/0.1) !important;
-      }
-
-      /* Remove any remaining white backgrounds */
-      .gsc-control-cse,
-      .gsc-control-wrapper-cse,
-      .gsc-results-wrapper-nooverlay,
-      .gsc-results-wrapper-visible,
-      .gsc-results-wrapper-overlay,
-      .gsc-results-inner-overlay,
-      .gsc-results-inner-visible,
-      .gsc-orderby-container,
-      .gsc-webResult,
-      .gsc-result {
-        background: transparent !important;
-      }
-
-      /* Additional transparency fixes */
-      .gsc-results .gsc-cursor-box {
-        background: transparent !important;
-        margin: 12px 0 !important;
+      /* Pagination styling */
+      .gsc-cursor-box {
+        margin: 16px 0 !important;
       }
 
       .gsc-cursor-page {
-        color: hsl(var(--foreground)) !important;
+        color: hsl(var(--muted-foreground)) !important;
         background: transparent !important;
-        padding: 8px 12px !important;
-        border-radius: 0.25rem !important;
+        padding: 8px !important;
       }
 
-      .gsc-cursor-page:hover,
       .gsc-cursor-current-page {
-        background-color: hsl(var(--accent)/0.1) !important;
+        color: hsl(var(--foreground)) !important;
+        font-weight: bold !important;
       }
 
-      .gsc-above-wrapper-area,
-      .gsc-refinementsArea {
+      /* Close button styling */
+      .gsc-modal-background-image {
+        background: rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(4px) !important;
+      }
+
+      /* Additional styling for better integration */
+      .gcsc-find-more-on-google {
+        color: hsl(var(--muted-foreground)) !important;
+      }
+
+      .gcsc-find-more-on-google-root {
         background: transparent !important;
-        border: none !important;
       }
     `;
-
     document.head.appendChild(style);
+
     return () => {
       document.head.removeChild(style);
     };
@@ -157,100 +123,16 @@ export function ExternalSearchSection({ isLoading, hasError, errorMessage }: Ext
   }
 
   return (
-    <div className="w-full">
-      <style>
-        {`
-          /* Google Search Box styling */
-          .gsc-control-cse {
-            background: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-          }
-
-          .gsc-search-box {
-            margin-bottom: 0 !important;
-          }
-
-          .gsc-input-box {
-            background: transparent !important;
-            border: none !important;
-          }
-
-          .gsc-input {
-            background: transparent !important;
-            color: hsl(var(--foreground)) !important;
-          }
-
-          /* Results styling */
-          .gsc-results-wrapper-overlay {
-            background: hsl(var(--background)) !important;
-            backdrop-filter: blur(12px) !important;
-          }
-
-          .gsc-webResult.gsc-result {
-            background: transparent !important;
-            border: none !important;
-          }
-
-          .gs-title, .gs-snippet {
-            color: hsl(var(--muted-foreground)) !important;
-            font-family: var(--font-sans) !important;
-            font-size: 0.875rem !important;
-          }
-
-          /* Remove highlighting of search terms */
-          .gs-title b,
-          .gs-snippet b,
-          .gsc-result b {
-            color: inherit !important;
-            font-weight: inherit !important;
-            background: none !important;
-          }
-
-          /* Suggestions styling */
-          .gsc-completion-container {
-            background: hsl(var(--background)) !important;
-            border: 1px solid hsl(var(--border)) !important;
-            backdrop-filter: blur(12px) !important;
-          }
-
-          .gsc-completion-title {
-            color: hsl(var(--foreground)) !important;
-          }
-
-          /* Pagination styling */
-          .gsc-cursor-box {
-            margin: 16px 0 !important;
-          }
-
-          .gsc-cursor-page {
-            color: hsl(var(--muted-foreground)) !important;
-            background: transparent !important;
-            padding: 8px !important;
-          }
-
-          .gsc-cursor-current-page {
-            color: hsl(var(--foreground)) !important;
-            font-weight: bold !important;
-          }
-
-          /* Close button styling */
-          .gsc-modal-background-image {
-            background: rgba(0, 0, 0, 0.5) !important;
-            backdrop-filter: blur(4px) !important;
-          }
-
-          /* Additional styling for better integration */
-          .gcsc-find-more-on-google {
-            color: hsl(var(--muted-foreground)) !important;
-          }
-
-          .gcsc-find-more-on-google-root {
-            background: transparent !important;
-          }
-        `}
-      </style>
-      <div ref={searchContainerRef} className="gcse-search"></div>
+    <div className="w-full space-y-4">
+      <div className="relative">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-full [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent"
+        >
+          <GoogleSearchBox />
+        </motion.div>
+      </div>
     </div>
   );
 }
