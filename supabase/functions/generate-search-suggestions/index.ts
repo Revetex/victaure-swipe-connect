@@ -37,6 +37,7 @@ serve(async (req) => {
       .single();
 
     if (profileError) {
+      console.error('Error fetching profile:', profileError);
       throw profileError;
     }
 
@@ -49,71 +50,79 @@ serve(async (req) => {
 
     console.log('Sending request to Hugging Face with context:', context);
 
-    // Call Hugging Face API
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
-      {
-        headers: {
-          Authorization: `Bearer ${huggingFaceApiKey}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({
-          inputs: context,
-          parameters: {
-            max_new_tokens: 256,
-            temperature: 0.7,
-            top_p: 0.95,
-            return_full_text: false,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Hugging Face API request failed');
-    }
-
-    const result = await response.json();
-    console.log('Hugging Face response:', result);
-
-    // Parse the response to extract suggestions
-    let suggestions: string[] = [];
+    // Call Hugging Face API with proper error handling
     try {
-      // The model should return a text that we can parse as an array
-      const text = result[0].generated_text;
-      // Extract suggestions using regex
-      suggestions = text.match(/["'](.+?)["']/g)?.map(s => s.replace(/["']/g, '')) || [];
-      // Ensure we have at least some suggestions
-      if (suggestions.length === 0) {
-        suggestions = text.split('\n')
-          .map(line => line.trim())
-          .filter(line => line.length > 0 && !line.includes('[') && !line.includes(']'))
-          .slice(0, 5);
-      }
-      // Limit to 5 suggestions
-      suggestions = suggestions.slice(0, 5);
-    } catch (error) {
-      console.error('Error parsing suggestions:', error);
-      // Fallback suggestions
-      suggestions = [
-        `${profile.role} ${profile.city || 'Québec'}`,
-        `emplois construction ${profile.state || 'Québec'}`,
-        `offres d'emploi ${profile.skills?.[0] || 'construction'}`,
-        `recrutement ${profile.role} expérimenté`,
-        `${profile.role} temps plein`
-      ];
-    }
-
-    return new Response(
-      JSON.stringify({ suggestions }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
+        {
+          headers: {
+            Authorization: `Bearer ${huggingFaceApiKey}`,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            inputs: context,
+            parameters: {
+              max_new_tokens: 256,
+              temperature: 0.7,
+              top_p: 0.95,
+              return_full_text: false,
+            },
+          }),
         }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Hugging Face API error:', errorData);
+        throw new Error(`Hugging Face API error: ${errorData.error || 'Unknown error'}`);
       }
-    );
+
+      const result = await response.json();
+      console.log('Hugging Face response:', result);
+
+      // Parse the response to extract suggestions
+      let suggestions: string[] = [];
+      try {
+        // The model should return a text that we can parse as an array
+        const text = result[0].generated_text;
+        // Extract suggestions using regex
+        suggestions = text.match(/["'](.+?)["']/g)?.map(s => s.replace(/["']/g, '')) || [];
+        // Ensure we have at least some suggestions
+        if (suggestions.length === 0) {
+          suggestions = text.split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0 && !line.includes('[') && !line.includes(']'))
+            .slice(0, 5);
+        }
+        // Limit to 5 suggestions
+        suggestions = suggestions.slice(0, 5);
+      } catch (error) {
+        console.error('Error parsing suggestions:', error);
+        // Fallback suggestions
+        suggestions = [
+          `${profile.role} ${profile.city || 'Québec'}`,
+          `emplois construction ${profile.state || 'Québec'}`,
+          `offres d'emploi ${profile.skills?.[0] || 'construction'}`,
+          `recrutement ${profile.role} expérimenté`,
+          `${profile.role} temps plein`
+        ];
+      }
+
+      return new Response(
+        JSON.stringify({ suggestions }),
+        { 
+          headers: { 
+            ...corsHeaders,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+    } catch (huggingFaceError) {
+      console.error('Hugging Face API error:', huggingFaceError);
+      throw new Error(`Hugging Face API error: ${huggingFaceError.message}`);
+    }
 
   } catch (error) {
     console.error('Error in generate-search-suggestions:', error);
