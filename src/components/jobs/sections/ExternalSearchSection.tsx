@@ -23,6 +23,7 @@ export function ExternalSearchSection({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+  const [usedSuggestions] = useState(new Set<string>());
 
   const fetchSuggestions = async () => {
     try {
@@ -40,7 +41,11 @@ export function ExternalSearchSection({
 
       if (error) throw error;
       if (data?.suggestions) {
-        setSuggestions(data.suggestions);
+        // Filter out suggestions that have already been used
+        const newSuggestions = data.suggestions.filter(
+          (suggestion: string) => !usedSuggestions.has(suggestion)
+        );
+        setSuggestions(newSuggestions);
         setShowSuggestions(true);
         toast.success("Nouvelles suggestions générées!");
       }
@@ -140,6 +145,20 @@ export function ExternalSearchSection({
     return <div>Error: {errorMessage}</div>;
   }
 
+  const handleSuggestionClick = (suggestion: string) => {
+    const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.value = suggestion;
+      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      // Add the used suggestion to the Set
+      usedSuggestions.add(suggestion);
+      // Remove the used suggestion from the current suggestions
+      setSuggestions(prevSuggestions => 
+        prevSuggestions.filter(s => s !== suggestion)
+      );
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
       <Card className="p-4 bg-background/60 backdrop-blur-sm border border-border/50">
@@ -213,13 +232,7 @@ export function ExternalSearchSection({
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        onClick={() => {
-                          const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
-                          if (searchInput) {
-                            searchInput.value = suggestion;
-                            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                          }
-                        }}
+                        onClick={() => handleSuggestionClick(suggestion)}
                         className="text-sm px-4 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-colors duration-200 border border-blue-500/20 hover:border-blue-500/30"
                       >
                         {suggestion}
