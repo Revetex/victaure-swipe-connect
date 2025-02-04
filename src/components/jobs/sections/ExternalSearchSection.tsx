@@ -150,12 +150,21 @@ export function ExternalSearchSection({
     if (searchInput) {
       searchInput.value = suggestion;
       searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      
       // Add the used suggestion to the Set
       usedSuggestions.add(suggestion);
       // Remove the used suggestion from the current suggestions
       setSuggestions(prevSuggestions => 
         prevSuggestions.filter(s => s !== suggestion)
       );
+
+      // Find and click the search button after a short delay
+      setTimeout(() => {
+        const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
+        if (searchButton) {
+          searchButton.click();
+        }
+      }, 100);
     }
   };
 
