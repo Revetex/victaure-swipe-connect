@@ -13,6 +13,7 @@ import { TodoSection } from "@/components/todo/TodoSection";
 import { NotesSection } from "@/components/todo/NotesSection";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ListTodo, StickyNote } from "lucide-react";
+import { useEffect } from "react";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -65,6 +66,13 @@ export function DashboardContent({
     { value: "purple", label: "Violet", class: "bg-purple-200" }
   ];
 
+  // Auto-open board when accessing notes section
+  useEffect(() => {
+    if (currentPage === 5) {
+      onEditStateChange(true);
+    }
+  }, [currentPage, onEditStateChange]);
+
   const renderContent = () => {
     switch (currentPage) {
       case 1:
@@ -98,7 +106,7 @@ export function DashboardContent({
         return (
           <div className="w-full px-4 overflow-y-auto pt-6">
             <div className="w-full sm:max-w-3xl mx-auto">
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion type="single" collapsible className="w-full" defaultValue="notes">
                 <AccordionItem value="tasks" className="border-2 border-black rounded-lg bg-card mb-4">
                   <AccordionTrigger className="px-4 hover:no-underline">
                     <div className="flex items-center gap-2">
