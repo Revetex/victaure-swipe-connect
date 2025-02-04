@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
-import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,8 +30,8 @@ serve(async (req) => {
     if (profileError) throw new Error('Error fetching profile');
     if (!profile) throw new Error('Profile not found');
 
-    // Initialize HuggingFace
-    const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'));
+    const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
+    if (!apiKey) throw new Error('Missing Hugging Face API key');
 
     // Generate base context for the model
     const baseContext = `
@@ -45,22 +44,35 @@ serve(async (req) => {
       Format: Une suggestion par ligne
     `;
 
-    // Use text generation to get suggestions
-    const response = await hf.textGeneration({
-      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-      inputs: baseContext,
-      parameters: {
-        max_new_tokens: 200,
-        temperature: 0.8,
-        top_p: 0.95,
-        repetition_penalty: 1.2
+    // Call Hugging Face API
+    const response = await fetch(
+      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: baseContext,
+          parameters: {
+            max_new_tokens: 200,
+            temperature: 0.8,
+            top_p: 0.95,
+            repetition_penalty: 1.2
+          }
+        }),
       }
-    });
+    );
 
-    // Parse the response into an array of suggestions
-    const suggestions = response.generated_text
+    if (!response.ok) {
+      throw new Error('Failed to generate suggestions');
+    }
+
+    const result = await response.json();
+    const suggestions = result[0].generated_text
       .split('\n')
-      .filter(line => line.trim())
+      .filter((line: string) => line.trim())
       .slice(0, 5);
 
     if (!suggestions.length) {

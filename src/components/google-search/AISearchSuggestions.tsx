@@ -47,43 +47,16 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Utilisateur non authentifié");
 
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError) throw profileError;
-      if (!profileData) throw new Error("Profil non trouvé");
-
-      const { data: functionData, error: functionError } = await supabase.functions.invoke(
+      const { data, error } = await supabase.functions.invoke(
         'generate-search-suggestions',
         {
-          body: {
-            userId: user.id,
-            userRole: profileData.role,
-            context: {
-              userPreferences: {
-                language: 'fr',
-                region: 'CA',
-                searchHistory: []
-              },
-              currentTime: new Date().toISOString(),
-              userIntent: 'discovery'
-            },
-            parameters: {
-              creativity: 0.8,
-              relevance: 0.9,
-              diversity: true,
-              maxSuggestions: 10
-            }
-          }
+          body: { userId: user.id }
         }
       );
 
-      if (functionError) throw functionError;
+      if (error) throw error;
 
-      const suggestion = functionData?.suggestion;
+      const suggestion = data?.suggestion;
       if (!suggestion) throw new Error("Aucune suggestion générée");
 
       if (searchInputRef.current) {
