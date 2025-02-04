@@ -4,9 +4,9 @@ import { PostContent } from "../PostContent";
 import { PostActions } from "../PostActions";
 import { PostComments } from "../PostComments";
 import { useState } from "react";
-import { Post } from "@/types/posts";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { Post } from "@/types/posts";
 
 interface PostCardProps {
   post: Post;
@@ -14,7 +14,7 @@ interface PostCardProps {
   userEmail?: string;
   onDelete: () => void;
   onHide: (postId: string) => void;
-  onReaction: (postId: string, type: string) => void;
+  onReaction: (postId: string, type: 'like' | 'dislike') => void;
   onCommentAdded: () => void;
 }
 
@@ -72,9 +72,9 @@ export function PostCard({
       <Card className="overflow-hidden">
         <div className="p-4 space-y-4">
           <PostHeader
-            author={post.profiles}
-            date={post.created_at}
-            isEdited={post.updated_at !== post.created_at}
+            profile={post.profiles}
+            created_at={post.created_at}
+            privacy_level={post.privacy_level}
           />
           
           <PostContent
@@ -104,9 +104,9 @@ export function PostCard({
                 exit={{ opacity: 0, height: 0 }}
               >
                 <PostComments
-                  postId={post.id}
                   comments={post.comments || []}
-                  onCommentAdded={onCommentAdded}
+                  currentUserId={currentUserId}
+                  onDeleteComment={() => {}}
                 />
               </motion.div>
             )}
