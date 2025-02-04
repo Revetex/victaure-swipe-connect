@@ -3,6 +3,9 @@ import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
+import { RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ExternalSearchSectionProps {
   isLoading?: boolean;
@@ -17,26 +20,32 @@ export function ExternalSearchSection({
 }: ExternalSearchSectionProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchSuggestions = async () => {
+    try {
+      setIsRefreshing(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
+        body: { user_id: user.id }
+      });
+
+      if (error) throw error;
+      if (data?.suggestions) {
+        setSuggestions(data.suggestions);
+        setShowSuggestions(true);
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      toast.error("Erreur lors de la génération des suggestions");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
-          body: { user_id: user.id }
-        });
-
-        if (error) throw error;
-        if (data?.suggestions) {
-          setSuggestions(data.suggestions);
-        }
-      } catch (error) {
-        console.error('Error fetching suggestions:', error);
-      }
-    };
-
     fetchSuggestions();
   }, []);
 
@@ -165,7 +174,18 @@ export function ExternalSearchSection({
             animate={{ opacity: 1, y: 0 }}
             className="mt-4 space-y-2"
           >
-            <p className="text-sm text-muted-foreground font-medium">Suggestions de recherche :</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground font-medium">Suggestions de recherche :</p>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={fetchSuggestions}
+                disabled={isRefreshing}
+                className="h-8 px-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
             <div className="flex flex-wrap gap-2">
               {suggestions.map((suggestion, index) => (
                 <button
