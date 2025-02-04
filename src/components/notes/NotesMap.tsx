@@ -1,18 +1,14 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { Plus } from "lucide-react";
+import { Plus, Grid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNotes } from "@/hooks/useNotes";
-import { useTodoList } from "@/hooks/useTodoList";
 import { StickyNote } from "@/components/todo/StickyNote";
 import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
-import { TodoSection } from "@/components/todo/TodoSection";
-import { NotesToolbar } from "./NotesToolbar";
-import { NotesToolSelector } from "./NotesToolSelector";
 import { NotesGrid } from "./NotesGrid";
 
 const colors: ColorOption[] = [
@@ -37,105 +33,60 @@ export function NotesMap() {
     deleteNote
   } = useNotes();
 
-  const {
-    todos,
-    newTodo,
-    selectedDate,
-    selectedTime,
-    allDay,
-    setNewTodo,
-    setSelectedDate,
-    setSelectedTime,
-    setAllDay,
-    addTodo,
-    toggleTodo,
-    deleteTodo
-  } = useTodoList();
-
   const [scale, setScale] = useState(1);
-  const [selectedTool, setSelectedTool] = useState<string>("notes");
   const [showGrid, setShowGrid] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleAddNote = () => {
-    if (newNote.trim()) {
-      addNote();
-      toast.success("Note ajoutée avec succès");
+  const handleAddNote = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!newNote.trim()) {
+      toast.error("Le contenu de la note ne peut pas être vide");
+      return;
     }
-  };
 
-  const renderTool = () => {
-    switch (selectedTool) {
-      case "notes":
-        return (
-          <div className="flex gap-2">
-            <Input
-              value={newNote}
-              onChange={(e) => setNewNote(e.target.value)}
-              placeholder="Nouvelle note..."
-              className="flex-1"
-              onKeyPress={(e) => e.key === 'Enter' && handleAddNote()}
-            />
-            <Select onValueChange={setSelectedColor} defaultValue={selectedColor}>
-              <SelectTrigger className="w-[100px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {colors.map((color) => (
-                  <SelectItem 
-                    key={color.value} 
-                    value={color.value}
-                    className={`sticky-note-${color.value}`}
-                  >
-                    {color.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button onClick={handleAddNote} size="icon" variant="ghost">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      case "tasks":
-        return (
-          <TodoSection 
-            todos={todos}
-            newTodo={newTodo}
-            selectedDate={selectedDate}
-            selectedTime={selectedTime}
-            allDay={allDay}
-            onTodoChange={setNewTodo}
-            onDateChange={setSelectedDate}
-            onTimeChange={setSelectedTime}
-            onAllDayChange={setAllDay}
-            onAddTodo={addTodo}
-            onToggleTodo={toggleTodo}
-            onDeleteTodo={deleteTodo}
-          />
-        );
-      case "calculator":
-        return <div className="p-4">Calculatrice (à implémenter)</div>;
-      case "translator":
-        return <div className="p-4">Traducteur (à implémenter)</div>;
-      case "converter":
-        return <div className="p-4">Convertisseur (à implémenter)</div>;
-      default:
-        return null;
-    }
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+
+    addNote();
+    setPosition({ x, y });
   };
 
   return (
     <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
       <div className="flex-none p-4 space-y-4 border-b border-border/50">
-        {renderTool()}
-        <div className="flex justify-between items-center gap-2">
-          <NotesToolbar showGrid={showGrid} onToggleGrid={() => setShowGrid(!showGrid)} />
-          <NotesToolSelector selectedTool={selectedTool} onToolSelect={setSelectedTool} />
+        <div className="flex gap-2">
+          <Input
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            placeholder="Nouvelle note..."
+            className="flex-1"
+          />
+          <Select onValueChange={setSelectedColor} defaultValue={selectedColor}>
+            <SelectTrigger className="w-[100px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {colors.map((color) => (
+                <SelectItem 
+                  key={color.value} 
+                  value={color.value}
+                  className={`sticky-note-${color.value}`}
+                >
+                  {color.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={() => setShowGrid(!showGrid)} size="icon" variant="ghost">
+            <Grid className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden" ref={containerRef}>
         <TransformWrapper
           initialScale={1}
           minScale={0.5}
@@ -143,17 +94,33 @@ export function NotesMap() {
           onTransformed={(ref) => setScale(ref.state.scale)}
         >
           <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
-            <div className="relative w-full h-full min-h-[1000px]">
+            <div 
+              className="relative w-full h-full min-h-[1000px]"
+              onClick={handleAddNote}
+            >
               <NotesGrid showGrid={showGrid} gridSize={GRID_SIZE} maxDistance={MAX_DISTANCE} />
               <motion.div layout className="absolute inset-0">
                 <AnimatePresence mode="popLayout">
                   {notes?.map((note) => (
-                    <StickyNote
+                    <motion.div
                       key={note.id}
-                      note={note}
-                      colorClass={`sticky-note-${note.color}`}
-                      onDelete={deleteNote}
-                    />
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      style={{ 
+                        position: 'absolute',
+                        left: position.x,
+                        top: position.y,
+                        transform: `translate(-50%, -50%) scale(${1/scale})`
+                      }}
+                    >
+                      <StickyNote
+                        note={note}
+                        colorClass={`sticky-note-${note.color}`}
+                        onDelete={deleteNote}
+                        draggable
+                      />
+                    </motion.div>
                   ))}
                 </AnimatePresence>
               </motion.div>
