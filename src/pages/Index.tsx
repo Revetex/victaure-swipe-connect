@@ -41,7 +41,11 @@ export default function Index() {
               animate={{ opacity: 1, x: 0 }}
               className="text-left"
             >
-              <Logo size="lg" className="mb-8 text-[#9b87f5] dark:text-[#D6BCFA]" />
+              <img 
+                src="/lovable-uploads/1af16883-f185-44b3-af14-6740c1358a27.png" 
+                alt="Victaure Logo" 
+                className="w-48 mb-8"
+              />
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6">
                 Votre Carrière, <br/>
                 <span className="text-[#9b87f5] dark:text-[#D6BCFA]">Notre Mission</span>
