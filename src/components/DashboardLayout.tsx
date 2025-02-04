@@ -1,5 +1,4 @@
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback, useEffect } from "react";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
@@ -7,6 +6,8 @@ import { useDebounce } from "use-debounce";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { MainLayout } from "./layout/MainLayout";
+import { DashboardContainer } from "./layout/DashboardContainer";
+import { DashboardNavigation } from "./layout/DashboardNavigation";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -104,27 +105,25 @@ export function DashboardLayout() {
       onPageChange={handlePageChange}
       isEditing={isEditing}
     >
-      <AnimatePresence mode="wait">
-        <motion.div 
-          variants={itemVariants} 
-          className="transform transition-all duration-300 w-full min-h-screen"
-          style={{ 
-            maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '0px' : '0px'})` : 'none',
-            overflowY: isEditing ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch',
-            paddingBottom: isMobile ? '4rem' : '3rem',
-            height: isMobile ? `${viewportHeight}px` : 'auto'
-          }}
-        >
-          <DashboardContent
-            currentPage={currentPage}
-            isEditing={isEditing}
-            viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
-            onRequestChat={handleRequestChat}
-          />
-        </motion.div>
-      </AnimatePresence>
+      <DashboardContainer
+        viewportHeight={viewportHeight}
+        isEditing={isEditing}
+        isMobile={isMobile}
+      >
+        <DashboardContent
+          currentPage={currentPage}
+          isEditing={isEditing}
+          viewportHeight={viewportHeight}
+          onEditStateChange={setIsEditing}
+          onRequestChat={handleRequestChat}
+        />
+      </DashboardContainer>
+      
+      <DashboardNavigation 
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        isEditing={isEditing}
+      />
     </MainLayout>
   );
 }
