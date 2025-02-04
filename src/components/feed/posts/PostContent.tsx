@@ -1,5 +1,7 @@
 import { CommentManager } from "../comments/CommentManager";
 import { PostActions as PostInteractions } from "../PostActions";
+import { Button } from "@/components/ui/button";
+import { EyeOff, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface PostContentProps {
@@ -19,11 +21,14 @@ interface PostContentProps {
     profiles: {
       id: string;
       full_name: string;
-      avatar_url: string;
+      avatar_url?: string;
     };
   }[];
   onReaction: (type: 'like' | 'dislike') => void;
   onCommentAdded: () => void;
+  onDelete?: () => void;
+  onHide?: () => void;
+  postUserId: string;
 }
 
 export const PostContent = ({
@@ -37,13 +42,38 @@ export const PostContent = ({
   userReaction,
   comments,
   onReaction,
-  onCommentAdded
+  onCommentAdded,
+  onDelete,
+  onHide,
+  postUserId
 }: PostContentProps) => {
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
 
   return (
-    <>
-      <p className="text-foreground mb-4 whitespace-pre-wrap">{content}</p>
+    <div className="relative">
+      <div className="absolute top-0 right-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        {postUserId === currentUserId ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onDelete}
+            className="h-8 w-8 hover:bg-destructive/10"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onHide}
+            className="h-8 w-8 hover:bg-destructive/10"
+          >
+            <EyeOff className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+
+      <p className="text-foreground mb-4 mt-4 whitespace-pre-wrap">{content}</p>
 
       <PostInteractions
         likes={likes}
@@ -66,6 +96,6 @@ export const PostContent = ({
           onCommentAdded={onCommentAdded}
         />
       )}
-    </>
+    </div>
   );
 };
