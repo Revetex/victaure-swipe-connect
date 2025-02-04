@@ -36,8 +36,9 @@ export function PostCard({
       className="relative group"
     >
       <Card className={cn(
-        "border shadow-sm transition-all duration-200 p-4",
-        "hover:shadow-md hover:border-primary/20"
+        "border shadow-sm transition-all duration-200",
+        "p-3 sm:p-4 hover:shadow-md hover:border-primary/20",
+        "touch-friendly"
       )}>
         <PostHeader 
           profile={post.profiles}

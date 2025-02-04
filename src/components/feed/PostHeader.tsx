@@ -15,8 +15,8 @@ interface PostHeaderProps {
 
 export function PostHeader({ profile, created_at, privacy_level }: PostHeaderProps) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+    <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-0">
+      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden shrink-0">
         {profile.avatar_url ? (
           <img
             src={profile.avatar_url}
@@ -24,16 +24,16 @@ export function PostHeader({ profile, created_at, privacy_level }: PostHeaderPro
             className="w-full h-full object-cover"
           />
         ) : (
-          <UserCircle className="w-6 h-6 text-muted-foreground" />
+          <UserCircle className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
         )}
       </div>
       
       <div className="flex-1 min-w-0">
         <ProfileNameButton 
           profile={profile}
-          className="font-medium hover:underline p-0 h-auto"
+          className="font-medium hover:underline p-0 h-auto text-sm sm:text-base"
         />
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
           <span>
             {format(new Date(created_at), "d MMM 'à' HH:mm", { locale: fr })}
           </span>

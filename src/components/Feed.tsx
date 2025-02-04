@@ -21,14 +21,15 @@ export function Feed() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="max-w-7xl mx-auto px-4 pb-20"
+      className="w-full min-h-screen pb-20 bg-background"
     >
-      <div className="grid grid-cols-1 gap-6">
-        <div className="space-y-6">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="space-y-4 sm:space-y-6">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            className="pt-4 sm:pt-6"
           >
             <CreatePost onPostCreated={handlePostCreated} />
           </motion.div>
