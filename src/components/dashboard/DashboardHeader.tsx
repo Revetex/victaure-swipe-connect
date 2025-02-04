@@ -1,35 +1,74 @@
+import { Logo } from "@/components/Logo";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
-import { useProfile } from "@/hooks/useProfile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserCircle } from "lucide-react";
+import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 
-export function DashboardHeader() {
-  const { profile } = useProfile();
+interface DashboardHeaderProps {
+  pageTitle: string;
+  showFriendsList: boolean;
+  isMobile: boolean;
+  onFriendsListToggle: () => void;
+}
 
-  if (!profile) return null;
-
+export function DashboardHeader({
+  pageTitle,
+  showFriendsList,
+  isMobile,
+  onFriendsListToggle
+}: DashboardHeaderProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mb-8 p-6 rounded-2xl bg-card shadow-lg border border-border/50"
-    >
-      <div className="flex items-center gap-4">
-        <Avatar className="h-16 w-16 ring-2 ring-primary/10">
-          <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || 'Profile'} />
-          <AvatarFallback>
-            <UserCircle className="h-8 w-8" />
-          </AvatarFallback>
-        </Avatar>
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">
-            {profile.full_name || 'Bienvenue'}
-          </h1>
-          <p className="text-muted-foreground">
-            {profile.bio ? profile.bio.substring(0, 100) + '...' : 'Complétez votre profil pour commencer'}
-          </p>
+    <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50">
+      <div className="container mx-auto px-0 sm:px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between py-3 px-4">
+              <div className="flex items-center gap-4">
+                <Logo size="sm" />
+                <div className="h-6 w-px bg-border mx-2" />
+                <h2 className="text-lg font-semibold text-foreground">
+                  {pageTitle}
+                </h2>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <NotificationsBox />
+                {isMobile && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onFriendsListToggle}
+                    className="relative"
+                  >
+                    {showFriendsList ? (
+                      <ChevronUp className="h-5 w-5" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" />
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            {isMobile && showFriendsList && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm"
+              >
+                <div className="p-4">
+                  <div className="space-y-4">
+                    <FriendsContent />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
