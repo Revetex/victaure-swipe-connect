@@ -55,7 +55,7 @@ export const loadMessages = async (): Promise<Message[]> => {
       id: msg.id,
       content: msg.content,
       sender: msg.sender,
-      timestamp: new Date(msg.created_at),
+      timestamp: msg.created_at,
       created_at: msg.created_at,
       updated_at: msg.updated_at,
       sender_id: msg.sender === 'assistant' ? 'assistant' : user.id,
