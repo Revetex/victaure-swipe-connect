@@ -1,17 +1,25 @@
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Plus, Trash } from "lucide-react";
+import { LayoutDashboard, Plus, Grid } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface NotesToolbarProps {
   onAddNote?: () => void;
   onDeleteSelected?: () => void;
-  hasSelectedNotes: boolean;
+  hasSelectedNotes?: boolean;
+  showGrid?: boolean;
+  onToggleGrid?: () => void;
+  onNavigateLeft?: () => void;
+  onNavigateRight?: () => void;
 }
 
 export function NotesToolbar({
   onAddNote,
   onDeleteSelected,
-  hasSelectedNotes
+  hasSelectedNotes = false,
+  showGrid = true,
+  onToggleGrid,
+  onNavigateLeft,
+  onNavigateRight
 }: NotesToolbarProps) {
   const navigate = useNavigate();
 
@@ -40,18 +48,51 @@ export function NotesToolbar({
         >
           <Plus className="h-4 w-4" />
         </Button>
+        {onToggleGrid && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleGrid}
+            className={`h-9 w-9 ${showGrid ? 'bg-accent' : ''}`}
+          >
+            <Grid className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       
-      {hasSelectedNotes && (
-        <Button
-          variant="destructive"
-          size="icon"
-          onClick={onDeleteSelected}
-          className="h-9 w-9"
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
-      )}
+      <div className="flex items-center gap-2">
+        {onNavigateLeft && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onNavigateLeft}
+            className="h-9 w-9"
+          >
+            ←
+          </Button>
+        )}
+        {onNavigateRight && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onNavigateRight}
+            className="h-9 w-9"
+          >
+            →
+          </Button>
+        )}
+        {hasSelectedNotes && (
+          <Button
+            variant="destructive"
+            size="icon"
+            onClick={onDeleteSelected}
+            className="h-9 w-9"
+          >
+            <span className="sr-only">Delete selected notes</span>
+            🗑️
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
