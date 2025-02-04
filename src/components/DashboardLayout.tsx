@@ -58,13 +58,12 @@ export function DashboardLayout() {
       
       if (page === 5) {
         navigate('/dashboard/tools');
-        setIsEditing(false);
       } else {
-        setIsEditing(false);
         if (isMobile) {
           setShowFriendsList(false);
         }
       }
+      setIsEditing(false);
     }
   }, [lastPageChange, isMobile, navigate]);
 
@@ -92,6 +91,7 @@ export function DashboardLayout() {
   };
 
   const isInConversation = location.pathname.includes('/messages') && showConversation;
+  const isInTools = location.pathname.includes('/tools');
 
   if (isInConversation) {
     return (
@@ -121,7 +121,7 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-10' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <div className={`fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50 transition-opacity duration-300 ${currentPage === 5 && isEditing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className={`fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50 transition-opacity duration-300 ${isEditing && !isInTools ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             <div className="container mx-auto px-0 sm:px-4">
               <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col">
@@ -145,7 +145,7 @@ export function DashboardLayout() {
           <AnimatePresence mode="wait">
             <motion.div 
               variants={itemVariants} 
-              className={`transform transition-all duration-300 w-full min-h-screen ${currentPage === 5 && isEditing ? 'pt-0' : 'pt-16'}`}
+              className={`transform transition-all duration-300 w-full min-h-screen ${isEditing && !isInTools ? 'pt-0' : 'pt-16'}`}
               style={{ 
                 maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '0px' : '0px'})` : 'none',
                 overflowY: isEditing ? 'auto' : 'visible',
@@ -168,7 +168,7 @@ export function DashboardLayout() {
       
       <nav 
         className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
-          (isEditing && currentPage === 4) || (currentPage === 5 && isEditing) ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+          (isEditing && currentPage === 4) ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
         }`}
         style={{ 
           height: 'auto',
