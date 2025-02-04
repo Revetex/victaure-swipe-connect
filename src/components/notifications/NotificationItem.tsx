@@ -1,10 +1,13 @@
-import { X } from "lucide-react";
+import { X, Bell, MessageSquare, Briefcase } from "lucide-react";
 import { formatTime } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { FriendRequestNotification } from "./types/FriendRequestNotification";
 import { CVNotification } from "./types/CVNotification";
 import { CVUploadNotification } from "./types/CVUploadNotification";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NotificationItemProps {
   id: string;
@@ -27,6 +30,27 @@ export function NotificationItem({
   const isCVRequest = title.toLowerCase().includes("demande de cv");
   const isCVAccepted = title.toLowerCase().includes("accès au cv accordé");
 
+  const markAsRead = async () => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', id);
+
+      if (error) throw error;
+      toast.success("Notification marquée comme lue");
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      toast.error("Erreur lors du marquage de la notification");
+    }
+  };
+
+  const getIcon = () => {
+    if (isFriendRequest) return <MessageSquare className="h-5 w-5 text-blue-500" />;
+    if (isCVRequest || isCVAccepted) return <Briefcase className="h-5 w-5 text-green-500" />;
+    return <Bell className="h-5 w-5 text-yellow-500" />;
+  };
+
   return (
     <motion.div
       layout
@@ -42,32 +66,50 @@ export function NotificationItem({
         "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
       )}
     >
-      <button
-        onClick={() => onDelete(id)}
-        className={cn(
-          "absolute right-2 top-2 opacity-0 group-hover:opacity-100",
-          "transition-opacity duration-200",
-          "hover:text-destructive focus:opacity-100",
-          "focus:outline-none focus:ring-2 focus:ring-ring rounded-full p-1"
+      <div className="absolute right-2 top-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {!read && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={markAsRead}
+            className="h-8 w-8 hover:text-primary focus:opacity-100"
+          >
+            <span className="sr-only">Marquer comme lu</span>
+            <Bell className="h-4 w-4" />
+          </Button>
         )}
-        aria-label="Supprimer la notification"
-      >
-        <X className="h-4 w-4" />
-      </button>
-
-      <div className="flex justify-between items-start pr-6">
-        <h3 className="font-medium text-sm">{title}</h3>
-        <span className="text-xs text-muted-foreground">
-          {formatTime(created_at)}
-        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onDelete(id)}
+          className="h-8 w-8 hover:text-destructive focus:opacity-100"
+        >
+          <span className="sr-only">Supprimer la notification</span>
+          <X className="h-4 w-4" />
+        </Button>
       </div>
 
-      <p className={cn(
-        "text-sm text-muted-foreground mt-1",
-        "line-clamp-2 group-hover:line-clamp-none transition-all duration-200"
-      )}>
-        {message}
-      </p>
+      <div className="flex items-start gap-4 pr-16">
+        <div className="p-2 rounded-full bg-gray-100 dark:bg-gray-800">
+          {getIcon()}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start">
+            <h3 className="font-medium text-sm text-foreground">
+              {title}
+            </h3>
+            <span className="text-xs text-muted-foreground ml-2">
+              {formatTime(created_at)}
+            </span>
+          </div>
+          <p className={cn(
+            "text-sm text-muted-foreground mt-1",
+            "line-clamp-2 group-hover:line-clamp-none transition-all duration-200"
+          )}>
+            {message}
+          </p>
+        </div>
+      </div>
 
       {isFriendRequest && (
         <FriendRequestNotification

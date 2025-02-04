@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationHeader } from "./NotificationHeader";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function NotificationsBox() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +37,6 @@ export function NotificationsBox() {
 
     fetchNotifications();
 
-    // Subscribe to realtime notifications
     const channel = supabase
       .channel('notifications')
       .on(
@@ -59,17 +59,25 @@ export function NotificationsBox() {
   }, [user]);
 
   const deleteNotification = async (id: string) => {
-    const { error } = await supabase
-      .from('notifications')
-      .delete()
-      .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', id);
 
-    if (error) {
+      if (error) throw error;
+
+      setNotifications(notifications.filter(n => n.id !== id));
+      toast.success("Notification supprimée");
+    } catch (error) {
       console.error('Error deleting notification:', error);
-      return;
+      toast.error("Erreur lors de la suppression");
     }
+  };
 
-    setNotifications(notifications.filter(n => n.id !== id));
+  const handleMarkAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    setUnreadCount(0);
   };
 
   return (
@@ -108,7 +116,10 @@ export function NotificationsBox() {
                 "before:absolute before:-top-2 before:right-4 before:h-4 before:w-4 before:rotate-45 before:border-l before:border-t before:bg-card"
               )}
             >
-              <NotificationHeader unreadCount={unreadCount} />
+              <NotificationHeader 
+                unreadCount={unreadCount}
+                onMarkAllAsRead={handleMarkAllAsRead}
+              />
               
               <ScrollArea className="h-[400px] mt-4">
                 <div className="space-y-2">
@@ -117,7 +128,7 @@ export function NotificationsBox() {
                       <NotificationItem
                         key={notification.id}
                         {...notification}
-                        onDelete={() => deleteNotification(notification.id)}
+                        onDelete={deleteNotification}
                       />
                     ))
                   ) : (
