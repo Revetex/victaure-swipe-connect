@@ -16,6 +16,7 @@ export const PostActions = ({ currentUserId, postUserId, onDelete, onHide }: Pos
           variant="ghost"
           size="icon"
           onClick={onDelete}
+          className="hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
