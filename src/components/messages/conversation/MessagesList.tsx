@@ -60,7 +60,7 @@ export function MessagesList({
                   <UserMessage
                     key={message.id}
                     message={message}
-                    onClick={() => onSelectConversation("user", message.sender)}
+                    onDelete={() => {}}
                   />
                 ))
               )}
