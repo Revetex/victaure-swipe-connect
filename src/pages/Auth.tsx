@@ -75,7 +75,7 @@ export default function Auth() {
         <div className="container max-w-sm mx-auto space-y-8">
           {/* Header */}
           <div className="flex flex-col items-center space-y-2 text-center">
-            <Logo size="lg" className="mb-2" />
+            <Logo size="lg" className="text-4xl font-bold mb-4" />
             <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
             <p className="text-sm text-muted-foreground">
               Connectez-vous ou créez un compte pour continuer
