@@ -74,9 +74,11 @@ export default function Auth() {
       <main className="flex-1 w-full py-8 px-4">
         <div className="container max-w-md mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">Rejoignez la communauté</h1>
-            <p className="text-sm text-muted-foreground">
-              Créez votre profil professionnel en quelques clics
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              Trouvez votre prochain emploi
+            </h1>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Rejoignez des milliers de professionnels qui ont déjà trouvé leur emploi idéal sur Victaure
             </p>
           </div>
 
