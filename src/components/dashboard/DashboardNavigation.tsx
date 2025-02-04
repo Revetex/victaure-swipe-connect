@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils";
 interface DashboardNavigationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
+  isEditing?: boolean;
 }
 
-export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavigationProps) {
+export function DashboardNavigation({ currentPage, onPageChange, isEditing }: DashboardNavigationProps) {
   const navigationItems = [
     { id: 1, icon: UserCircle, name: "Profil" },
     { id: 2, icon: MessageSquare, name: "Messages" },
@@ -16,6 +17,8 @@ export function DashboardNavigation({ currentPage, onPageChange }: DashboardNavi
     { id: 5, icon: Wrench, name: "Outils" },
     { id: 6, icon: Settings, name: "Paramètres" }
   ];
+
+  if (isEditing) return null;
 
   return (
     <div className="flex items-center justify-around w-full max-w-2xl mx-auto">
