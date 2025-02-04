@@ -53,6 +53,7 @@ export default function Index() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
+                className="flex flex-col sm:flex-row gap-4"
               >
                 <Button
                   size="lg"
@@ -60,6 +61,14 @@ export default function Index() {
                   className="bg-[#9b87f5] hover:bg-[#7E69AB] dark:bg-[#D6BCFA] dark:hover:bg-[#7E69AB] text-white px-8"
                 >
                   Commencer Maintenant
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate("/auth?mode=signup")}
+                  className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 dark:border-[#D6BCFA] dark:text-[#D6BCFA] dark:hover:bg-[#D6BCFA]/10"
+                >
+                  Inscription
                 </Button>
               </motion.div>
             </motion.div>
@@ -127,7 +136,7 @@ export default function Index() {
           </p>
           <Button
             size="lg"
-            onClick={() => navigate("/auth")}
+            onClick={() => navigate("/auth?mode=signup")}
             className="bg-[#9b87f5] hover:bg-[#7E69AB] dark:bg-[#D6BCFA] dark:hover:bg-[#7E69AB] text-white px-8"
           >
             Créer Mon Compte
