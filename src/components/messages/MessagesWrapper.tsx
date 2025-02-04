@@ -4,43 +4,38 @@ import { ConversationList } from "./conversation/ConversationList";
 import { useReceiver } from "@/hooks/useReceiver";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../ui/button";
-import { useChat } from "@/hooks/useChat";
-import { Message, Receiver } from "@/types/messages";
+import { useAIChat } from "@/hooks/useAIChat";
+import { useUserChat } from "@/hooks/useUserChat";
+import { Receiver } from "@/types/messages";
 import { toast } from "sonner";
-
-interface MessagesWrapperProps {
-  chatMessages?: Message[];
-  inputMessage?: string;
-  isListening?: boolean;
-  isThinking?: boolean;
-  showConversation?: boolean;
-  setShowConversation?: (show: boolean) => void;
-  handleSendMessage?: (message: string) => void;
-  handleVoiceInput?: () => void;
-  setInputMessage?: (message: string) => void;
-  clearChat?: () => void;
-  selectedReceiver?: Receiver | null;
-  setSelectedReceiver?: (receiver: Receiver | null) => void;
-}
 
 export function MessagesWrapper() {
   const { showConversation, setShowConversation, receiver } = useReceiver();
   const {
-    messages,
-    inputMessage,
+    messages: aiMessages,
+    inputMessage: aiInputMessage,
     isThinking,
     isListening,
-    handleSendMessage,
+    handleSendMessage: handleAISendMessage,
     handleVoiceInput,
-    setInputMessage,
-    clearChat,
-  } = useChat();
+    setInputMessage: setAIInputMessage,
+    clearChat: clearAIChat,
+  } = useAIChat();
+
+  const {
+    messages: userMessages,
+    inputMessage: userInputMessage,
+    isLoading,
+    handleSendMessage: handleUserSendMessage,
+    setInputMessage: setUserInputMessage,
+    clearChat: clearUserChat,
+  } = useUserChat();
 
   const handleBack = () => {
     setShowConversation(false);
   };
 
-  const handleSelectConversation = (type: "assistant" | "user", selectedReceiver?: any) => {
+  const handleSelectConversation = (type: "assistant" | "user", selectedReceiver?: Receiver) => {
     console.log("Selecting conversation:", { type, selectedReceiver });
     
     if (type === "assistant") {
@@ -53,8 +48,17 @@ export function MessagesWrapper() {
       };
       setShowConversation(true);
     } else if (selectedReceiver) {
-      // For regular user conversations
       setShowConversation(true);
+    }
+  };
+
+  const handleSendMessage = async (message: string) => {
+    if (!receiver) return;
+
+    if (receiver.id === 'assistant') {
+      await handleAISendMessage(message);
+    } else {
+      await handleUserSendMessage(message, receiver);
     }
   };
 
@@ -73,16 +77,16 @@ export function MessagesWrapper() {
           </div>
         </div>
         <MessagesContent
-          messages={messages}
-          inputMessage={inputMessage}
+          messages={isAIChat ? aiMessages : userMessages}
+          inputMessage={isAIChat ? aiInputMessage : userInputMessage}
           isThinking={isThinking}
           isListening={isListening}
           onSendMessage={handleSendMessage}
-          onVoiceInput={handleVoiceInput}
-          setInputMessage={setInputMessage}
+          onVoiceInput={isAIChat ? handleVoiceInput : undefined}
+          setInputMessage={isAIChat ? setAIInputMessage : setUserInputMessage}
           onBack={handleBack}
           receiver={receiver}
-          onClearChat={clearChat}
+          onClearChat={isAIChat ? clearAIChat : () => clearUserChat(receiver.id)}
         />
       </div>
     );
@@ -91,8 +95,8 @@ export function MessagesWrapper() {
   return (
     <div className="h-full">
       <ConversationList
-        messages={messages}
-        chatMessages={messages}
+        messages={userMessages}
+        chatMessages={aiMessages}
         onSelectConversation={handleSelectConversation}
       />
     </div>
