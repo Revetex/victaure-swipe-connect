@@ -1,31 +1,19 @@
-import { Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import SettingsPage from "./pages/Settings";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { createClient } from '@supabase/supabase-js';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { supabase } from "@/integrations/supabase/client";
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AppRoutes } from './AppRoutes';
+import { Toaster } from 'sonner';
 
-export default function App() {
+function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <SettingsPage />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <SessionContextProvider supabaseClient={supabase}>
+      <Router>
+        <AppRoutes />
+        <Toaster position="top-right" expand={true} richColors />
+      </Router>
+    </SessionContextProvider>
   );
 }
+
+export default App;

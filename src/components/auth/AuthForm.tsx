@@ -18,8 +18,8 @@ export function AuthForm() {
               brandButtonText: 'white',
             },
             radii: {
-              button: '1rem',
-              input: '1rem',
+              buttonBorderRadius: '1rem',
+              inputBorderRadius: '1rem',
             },
           },
         },
