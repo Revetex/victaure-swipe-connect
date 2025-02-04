@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Languages, ArrowLeftRight } from "lucide-react";
+import { Languages, ArrowLeftRight, Volume2, Copy } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const languages = [
   { code: "fr", name: "Français" },
@@ -13,6 +14,12 @@ const languages = [
   { code: "de", name: "Deutsch" },
   { code: "it", name: "Italiano" },
   { code: "pt", name: "Português" },
+  { code: "nl", name: "Nederlands" },
+  { code: "pl", name: "Polski" },
+  { code: "ru", name: "Русский" },
+  { code: "ja", name: "日本語" },
+  { code: "ko", name: "한국어" },
+  { code: "zh", name: "中文" },
 ];
 
 export function TranslatorPage() {
@@ -21,19 +28,38 @@ export function TranslatorPage() {
   const [sourceLang, setSourceLang] = useState("fr");
   const [targetLang, setTargetLang] = useState("en");
   const [isLoading, setIsLoading] = useState(false);
+  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null);
 
   const handleTranslate = async () => {
     if (!sourceText.trim()) {
-      toast.error("Veuillez entrer du texte à traduire");
+      toast.error("Please enter text to translate");
       return;
     }
 
     setIsLoading(true);
-    // TODO: Implement translation API
-    setTimeout(() => {
-      setTranslatedText("Translation API coming soon...");
+    try {
+      const { data, error } = await supabase.functions.invoke('translate-text', {
+        body: { 
+          text: sourceText,
+          sourceLang,
+          targetLang
+        }
+      });
+
+      if (error) throw error;
+
+      setTranslatedText(data.translatedText);
+      if (data.detectedLanguage) {
+        setDetectedLanguage(data.detectedLanguage);
+        const langName = languages.find(l => l.code === data.detectedLanguage)?.name;
+        toast.success(`Detected language: ${langName}`);
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error("Translation failed. Please try again.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const swapLanguages = () => {
@@ -45,6 +71,21 @@ export function TranslatorPage() {
     setTranslatedText(tempText);
   };
 
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Copied to clipboard");
+    } catch (err) {
+      toast.error("Failed to copy text");
+    }
+  };
+
+  const speakText = (text: string, lang: string) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <motion.div 
@@ -54,7 +95,7 @@ export function TranslatorPage() {
       >
         <div className="flex items-center gap-2 mb-6">
           <Languages className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Traducteur</h1>
+          <h1 className="text-2xl font-bold">Translator</h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -72,12 +113,22 @@ export function TranslatorPage() {
               </SelectContent>
             </Select>
 
-            <Textarea
-              value={sourceText}
-              onChange={(e) => setSourceText(e.target.value)}
-              placeholder="Entrez le texte à traduire..."
-              className="h-40 resize-none"
-            />
+            <div className="relative">
+              <Textarea
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+                placeholder="Enter text to translate..."
+                className="h-40 resize-none pr-10"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-2"
+                onClick={() => speakText(sourceText, sourceLang)}
+              >
+                <Volume2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -105,18 +156,36 @@ export function TranslatorPage() {
               </Button>
             </div>
 
-            <Textarea
-              value={translatedText}
-              readOnly
-              placeholder="Traduction..."
-              className="h-40 resize-none bg-muted"
-            />
+            <div className="relative">
+              <Textarea
+                value={translatedText}
+                readOnly
+                placeholder="Translation..."
+                className="h-40 resize-none bg-muted pr-10"
+              />
+              <div className="absolute right-2 top-2 flex flex-col gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => speakText(translatedText, targetLang)}
+                >
+                  <Volume2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(translatedText)}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="mt-6 flex justify-end">
           <Button onClick={handleTranslate} disabled={isLoading}>
-            {isLoading ? "Traduction en cours..." : "Traduire"}
+            {isLoading ? "Translating..." : "Translate"}
           </Button>
         </div>
       </motion.div>

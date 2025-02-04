@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calculator as CalcIcon, Plus, Minus, X, Divide, Equal } from "lucide-react";
+import { Calculator as CalcIcon, Plus, Minus, X, Divide, Equal, RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export function CalculatorPage() {
   const [display, setDisplay] = useState("0");
   const [firstNumber, setFirstNumber] = useState<number | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
   const [newNumber, setNewNumber] = useState(true);
+  const [history, setHistory] = useState<string[]>([]);
 
   const handleNumber = (num: string) => {
     if (newNumber) {
@@ -23,6 +25,7 @@ export function CalculatorPage() {
     setFirstNumber(parseFloat(display));
     setOperation(op);
     setNewNumber(true);
+    setHistory([...history, `${display} ${op}`]);
   };
 
   const calculate = () => {
@@ -42,11 +45,18 @@ export function CalculatorPage() {
         result = firstNumber * secondNumber;
         break;
       case "/":
-        result = secondNumber !== 0 ? firstNumber / secondNumber : NaN;
+        if (secondNumber === 0) {
+          toast.error("Division by zero is not allowed");
+          clear();
+          return;
+        }
+        result = firstNumber / secondNumber;
         break;
     }
 
-    setDisplay(isNaN(result) ? "Error" : result.toString());
+    const calculation = `${firstNumber} ${operation} ${secondNumber} = ${result}`;
+    setHistory([...history, calculation]);
+    setDisplay(result.toString());
     setFirstNumber(null);
     setOperation(null);
     setNewNumber(true);
@@ -59,6 +69,11 @@ export function CalculatorPage() {
     setNewNumber(true);
   };
 
+  const clearHistory = () => {
+    setHistory([]);
+    toast.success("History cleared");
+  };
+
   return (
     <div className="container mx-auto p-4">
       <motion.div 
@@ -66,9 +81,22 @@ export function CalculatorPage() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md mx-auto bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-6 shadow-lg"
       >
-        <div className="flex items-center gap-2 mb-6">
-          <CalcIcon className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Calculatrice</h1>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <CalcIcon className="h-6 w-6" />
+            <h1 className="text-2xl font-bold">Calculator</h1>
+          </div>
+          <Button variant="outline" size="icon" onClick={clearHistory}>
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="mb-4 h-32 overflow-y-auto bg-muted/50 rounded-lg p-2">
+          {history.map((item, index) => (
+            <div key={index} className="text-sm text-muted-foreground">
+              {item}
+            </div>
+          ))}
         </div>
 
         <Input
