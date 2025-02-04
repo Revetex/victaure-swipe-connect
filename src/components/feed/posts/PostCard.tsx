@@ -15,6 +15,7 @@ interface PostCardProps {
     user_id: string;
     privacy_level: "public" | "connections";
     profiles: {
+      id: string;
       full_name: string;
       avatar_url: string;
     };
@@ -28,6 +29,7 @@ interface PostCardProps {
       created_at: string;
       user_id: string;
       profiles: {
+        id: string;
         full_name: string;
         avatar_url: string;
       };

@@ -4,21 +4,24 @@ import { useToast } from "@/hooks/use-toast";
 import { PostComments } from "../PostComments";
 import { CommentInput } from "../CommentInput";
 
+interface Comment {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  profiles: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
+}
+
 interface CommentManagerProps {
   postId: string;
   postAuthorId: string;
   currentUserId?: string;
   userEmail?: string;
-  comments?: {
-    id: string;
-    content: string;
-    created_at: string;
-    user_id: string;
-    profiles: {
-      full_name: string;
-      avatar_url: string;
-    };
-  }[];
+  comments?: Comment[];
   onCommentAdded: () => void;
 }
 
