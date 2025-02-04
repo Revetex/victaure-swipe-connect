@@ -45,10 +45,16 @@ export function ExternalSearchSection({
       
       if (data?.suggestions && data.suggestions.length > 0) {
         const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
-        if (searchInput) {
+        const searchButton = document.querySelector('.gsc-search-button') as HTMLButtonElement;
+        
+        if (searchInput && searchButton) {
           // Use the first suggestion
           searchInput.value = data.suggestions[0];
           searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+          // Trigger the search
+          setTimeout(() => {
+            searchButton.click();
+          }, 100);
           toast.success("Recherche générée!");
         }
       }
@@ -76,10 +82,14 @@ export function ExternalSearchSection({
         border: 1px solid hsl(var(--border)) !important;
         border-radius: 0.5rem !important;
         background: transparent !important;
+        padding-right: 80px !important;
       }
       .gsc-input {
         background: transparent !important;
         color: hsl(var(--foreground)) !important;
+      }
+      .gsc-search-button {
+        margin-left: 0 !important;
       }
       .gsc-results-wrapper-overlay {
         background: hsl(var(--background)) !important;
@@ -131,7 +141,7 @@ export function ExternalSearchSection({
       }
       .ai-search-button {
         position: absolute !important;
-        right: 60px !important;
+        right: 48px !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
         z-index: 100 !important;
