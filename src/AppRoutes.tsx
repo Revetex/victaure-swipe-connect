@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
@@ -8,12 +8,33 @@ import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
 import { LegalNoticePage } from "@/components/legal/LegalNoticePage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/auth" element={<Auth />} />
+      <Route 
+        path="/" 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Index />
+          )
+        } 
+      />
+      <Route 
+        path="/auth" 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Auth />
+          )
+        } 
+      />
       <Route path="/legal/terms" element={<TermsPage />} />
       <Route path="/legal/privacy" element={<PrivacyPage />} />
       <Route path="/legal/cookies" element={<CookiesPage />} />
@@ -33,6 +54,17 @@ export function AppRoutes() {
             <Settings />
           </ProtectedRoute>
         }
+      />
+      {/* Catch all route - redirect to auth if not authenticated */}
+      <Route 
+        path="*" 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Navigate to="/auth" replace />
+          )
+        } 
       />
     </Routes>
   );
