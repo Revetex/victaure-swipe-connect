@@ -2,7 +2,6 @@ import { CreatePost } from "./feed/CreatePost";
 import { PostList } from "./feed/PostList";
 import { FriendsList } from "./feed/FriendsList";
 import { useQueryClient } from "@tanstack/react-query";
-import { UserProfile } from "@/types/profile";
 
 export function Feed() {
   const queryClient = useQueryClient();

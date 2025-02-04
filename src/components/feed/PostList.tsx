@@ -15,7 +15,11 @@ import { useState } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
 
-export function PostList() {
+interface PostListProps {
+  onPostDeleted: () => void;
+}
+
+export function PostList({ onPostDeleted }: PostListProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
@@ -53,13 +57,17 @@ export function PostList() {
 
       if (error) throw error;
 
-      // Transform the data to ensure privacy_level is of the correct type
       return data?.map(post => ({
         ...post,
         privacy_level: post.privacy_level as "public" | "connections"
       }));
     }
   });
+
+  const handleDeletePost = async (postId: string, userId: string | undefined) => {
+    await handleDelete(postId, userId);
+    onPostDeleted();
+  };
 
   return (
     <div className="space-y-4">
@@ -86,7 +94,7 @@ export function PostList() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={() => postToDelete && handleDelete(postToDelete, user?.id)}>
+            <AlertDialogAction onClick={() => postToDelete && handleDeletePost(postToDelete, user?.id)}>
               Supprimer
             </AlertDialogAction>
           </AlertDialogFooter>
