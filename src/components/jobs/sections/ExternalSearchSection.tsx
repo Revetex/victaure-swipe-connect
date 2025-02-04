@@ -34,6 +34,8 @@ export function ExternalSearchSection({
       .gsc-input {
         color: hsl(var(--foreground)) !important;
         background: transparent !important;
+        font-family: var(--font-sans) !important;
+        font-size: 0.875rem !important;
       }
       
       /* Search button styling */
@@ -55,14 +57,20 @@ export function ExternalSearchSection({
         border-radius: 0.5rem !important;
         margin: 8px 0 !important;
         padding: 12px !important;
+        font-family: var(--font-sans) !important;
       }
       
       .gs-title {
         color: hsl(var(--primary)) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
       }
       
       .gs-snippet {
         color: hsl(var(--foreground)) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 0.875rem !important;
       }
       
       /* Suggestions styling */
@@ -71,11 +79,15 @@ export function ExternalSearchSection({
         border: 1px solid hsl(var(--border)) !important;
         border-radius: 0.5rem !important;
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+        font-family: var(--font-sans) !important;
       }
       
       .gsc-completion-title {
         color: hsl(var(--foreground)) !important;
         padding: 8px 12px !important;
+        font-family: var(--font-sans) !important;
+        font-size: 0.875rem !important;
+        line-height: 1.25rem !important;
       }
       
       .gsc-completion-selected {
