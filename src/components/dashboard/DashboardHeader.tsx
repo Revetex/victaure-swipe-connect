@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronDown, ChevronUp } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 
@@ -41,8 +41,14 @@ export function DashboardHeader({
           <Button
             variant="outline"
             onClick={onToggleFriendsList}
+            className="flex items-center gap-2"
           >
-            {showFriendsList ? 'Masquer les amis' : 'Afficher les amis'}
+            <span>{showFriendsList ? 'Masquer les amis' : 'Afficher les amis'}</span>
+            {showFriendsList ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
           </Button>
         )}
       </div>
