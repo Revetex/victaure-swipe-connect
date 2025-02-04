@@ -15,7 +15,7 @@ export const SearchBarStyles = `
     border-radius: 0.5rem !important;
     background: hsl(var(--background)) !important;
     padding: 0.5rem !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
   }
 
   .gsc-input {

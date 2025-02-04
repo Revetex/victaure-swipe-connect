@@ -16,7 +16,10 @@ export function ToolsPage() {
         "Double-clic pour éditer",
         "Glisser-déposer pour réorganiser",
         "Ctrl+N pour nouvelle note",
-        "Ctrl+D pour dupliquer"
+        "Ctrl+D pour dupliquer",
+        "Ctrl+S pour sauvegarder",
+        "Échap pour annuler",
+        "Suppr pour supprimer"
       ]
     },
     {

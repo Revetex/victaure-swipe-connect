@@ -34,6 +34,7 @@ export const PostActions = ({
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleAction = async (action: () => void | Promise<void>) => {
+    if (isProcessing) return;
     try {
       setIsProcessing(true);
       await action();
