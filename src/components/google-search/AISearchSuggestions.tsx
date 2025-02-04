@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Search, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,19 +27,35 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   const generateSuggestion = useCallback(async () => {
     setIsLoading(true);
     try {
+      // Get the search query
       const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
-      const query = searchInput?.value || '';
+      const query = searchInput?.value;
 
+      if (!query) {
+        toast.error("Veuillez entrer un terme de recherche");
+        return;
+      }
+
+      // Get the user data first
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user?.id) {
+        toast.error("Vous devez être connecté pour utiliser cette fonctionnalité");
+        return;
+      }
+
+      // Get the user's profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('id', user.id)
         .single();
 
+      // Call the edge function with the collected data
       const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
         body: {
           query,
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: user.id,
           context: {
             profile,
             previousSuggestions
@@ -76,14 +92,6 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
         >
           <Sparkles className="h-4 w-4 mr-2" />
           <span>IA</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleSearch}
-          className="absolute right-2 z-10"
-        >
-          <Search className="h-4 w-4" />
         </Button>
       </div>
     </div>
