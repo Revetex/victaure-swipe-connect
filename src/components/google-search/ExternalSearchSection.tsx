@@ -43,10 +43,10 @@ export function ExternalSearchSection() {
         className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent [&_.gsc-search-button]:!bg-primary"
       >
         <div className="relative max-w-3xl mx-auto">
-          <div className="absolute right-4 -top-10 z-10">
+          <GoogleSearchBox />
+          <div className="absolute -right-32 top-20 z-50">
             <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
           </div>
-          <GoogleSearchBox />
         </div>
       </motion.div>
     </div>

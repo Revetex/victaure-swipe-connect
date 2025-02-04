@@ -11,6 +11,7 @@ export function useSearchResultsStyles() {
       border-radius: 0.5rem;
       transition: all 0.2s ease-in-out;
       padding: 1rem !important;
+      background: transparent !important;
     }
 
     .gsc-result:hover {
@@ -32,6 +33,7 @@ export function useSearchResultsStyles() {
       color: hsl(var(--foreground)) !important;
       font-size: 0.9rem !important;
       line-height: 1.6 !important;
+      background: transparent !important;
     }
 
     .gsc-url-top {
@@ -61,6 +63,26 @@ export function useSearchResultsStyles() {
 
     .gcsc-find-more-on-google-root {
       color: hsl(var(--muted-foreground)) !important;
+    }
+
+    .gsc-results {
+      background: transparent !important;
+    }
+
+    .gsc-webResult {
+      background: transparent !important;
+    }
+
+    .gsc-webResult.gsc-result {
+      background: transparent !important;
+    }
+
+    .gsc-results .gsc-cursor-box {
+      background: transparent !important;
+    }
+
+    .gsc-above-wrapper-area {
+      background: transparent !important;
     }
   `;
   document.head.appendChild(style);
