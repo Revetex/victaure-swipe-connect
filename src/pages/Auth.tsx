@@ -65,7 +65,7 @@ export default function Auth() {
           <Logo className="h-8 w-auto" />
           <nav className="flex items-center gap-4">
             <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Retour
+              Retour à l'accueil
             </a>
           </nav>
         </div>
@@ -74,7 +74,7 @@ export default function Auth() {
       {/* Main Content */}
       <main className="flex-1 w-full py-8 px-4">
         <div className="container max-w-sm mx-auto space-y-8">
-          {/* Header with Logo above Title */}
+          {/* Header with Title */}
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
               <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
@@ -96,19 +96,19 @@ export default function Auth() {
       <footer className="w-full py-6 px-4 border-t border-border/5 backdrop-blur-sm">
         <div className="container max-w-7xl mx-auto">
           <div className="flex flex-col items-center space-y-4">
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-wrap justify-center gap-4">
               <Dialog>
-                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                <DialogTrigger className="text-sm text-muted-foreground hover:text-foreground/80 transition-colors">
                   Politique de confidentialité
                 </DialogTrigger>
-                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Politique de confidentialité</DialogTitle>
                   </DialogHeader>
                   <div className="prose prose-sm mt-4 text-muted-foreground">
                     <h2 className="text-foreground">1. Collecte des informations</h2>
                     <p>Nous collectons les informations suivantes :</p>
-                    <ul className="text-muted-foreground">
+                    <ul>
                       <li>Nom et prénom</li>
                       <li>Adresse e-mail</li>
                       <li>Numéro de téléphone</li>
@@ -117,52 +117,63 @@ export default function Auth() {
 
                     <h2 className="text-foreground">2. Utilisation des informations</h2>
                     <p>Les informations collectées sont utilisées pour :</p>
-                    <ul className="text-muted-foreground">
-                      <li>Personnaliser l'expérience utilisateur</li>
+                    <ul>
+                      <li>Personnaliser votre expérience</li>
                       <li>Améliorer notre service</li>
                       <li>Communiquer avec vous concernant votre compte</li>
+                      <li>Vous proposer des offres d'emploi pertinentes</li>
                     </ul>
 
                     <h2 className="text-foreground">3. Protection des informations</h2>
-                    <p>Nous mettons en œuvre une variété de mesures de sécurité pour préserver la sécurité de vos informations personnelles.</p>
+                    <p>Nous mettons en œuvre des mesures de sécurité avancées pour protéger vos données personnelles.</p>
 
-                    <h2 className="text-foreground">4. Cookies</h2>
-                    <p>Nous utilisons des cookies pour améliorer l'expérience utilisateur et analyser notre trafic.</p>
+                    <h2 className="text-foreground">4. Vos droits</h2>
+                    <p>Vous disposez des droits suivants :</p>
+                    <ul>
+                      <li>Droit d'accès à vos données</li>
+                      <li>Droit de rectification</li>
+                      <li>Droit à l'effacement</li>
+                      <li>Droit à la portabilité</li>
+                    </ul>
                   </div>
                 </DialogContent>
               </Dialog>
               <Dialog>
-                <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
+                <DialogTrigger className="text-sm text-muted-foreground hover:text-foreground/80 transition-colors">
                   Conditions d'utilisation
                 </DialogTrigger>
-                <DialogContent className="max-h-[80vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Conditions d'utilisation</DialogTitle>
                   </DialogHeader>
                   <div className="prose prose-sm mt-4 text-muted-foreground">
                     <h2 className="text-foreground">1. Acceptation des conditions</h2>
-                    <p>En accédant à ce site, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
+                    <p>En utilisant Victaure, vous acceptez les présentes conditions d'utilisation.</p>
 
-                    <h2 className="text-foreground">2. Licence d'utilisation</h2>
-                    <p>Une licence limitée, non exclusive et non transférable vous est accordée pour accéder et utiliser le site.</p>
+                    <h2 className="text-foreground">2. Services proposés</h2>
+                    <p>Victaure propose :</p>
+                    <ul>
+                      <li>Une plateforme de mise en relation professionnelle</li>
+                      <li>Des outils de gestion de carrière</li>
+                      <li>Des services de recrutement innovants</li>
+                    </ul>
 
-                    <h2 className="text-foreground">3. Compte utilisateur</h2>
-                    <p>Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe.</p>
+                    <h2 className="text-foreground">3. Responsabilités</h2>
+                    <p>Les utilisateurs s'engagent à :</p>
+                    <ul>
+                      <li>Fournir des informations exactes</li>
+                      <li>Respecter la propriété intellectuelle</li>
+                      <li>Ne pas avoir un comportement préjudiciable</li>
+                    </ul>
 
-                    <h2 className="text-foreground">4. Limitations de responsabilité</h2>
-                    <p>Nous ne serons pas tenus responsables des dommages directs, indirects, accessoires ou consécutifs.</p>
-
-                    <h2 className="text-foreground">5. Modifications du service</h2>
-                    <p>Nous nous réservons le droit de modifier ou d'interrompre le service sans préavis.</p>
+                    <h2 className="text-foreground">4. Modifications</h2>
+                    <p>Victaure se réserve le droit de modifier ces conditions à tout moment.</p>
                   </div>
                 </DialogContent>
               </Dialog>
             </div>
-            <div className="text-muted-foreground text-sm">
+            <div className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
-            </div>
-            <div className="text-muted-foreground text-sm">
-              Propulsé par Victaure Technologies Inc.
             </div>
           </div>
         </div>
