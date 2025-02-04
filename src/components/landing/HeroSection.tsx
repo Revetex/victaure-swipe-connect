@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { ArrowRight, Search, Briefcase, Users, CheckCircle2 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
+import { DownloadApp } from "@/components/dashboard/DownloadApp";
+import { Footer } from "@/components/landing/Footer";
 
 export function HeroSection() {
   const navigate = useNavigate();
