@@ -29,6 +29,7 @@ export function useChat() {
   };
 
   const addMessage = useCallback((content: string, sender: MessageSender = defaultSender) => {
+    console.log("Adding message:", { content, sender });
     const newMessage: Message = {
       id: crypto.randomUUID(),
       content,
@@ -76,8 +77,9 @@ export function useChat() {
 
       if (saveError) throw saveError;
 
-      // Get AI response from our new edge function
-      const { data, error } = await supabase.functions.invoke('ai-career-chat', {
+      console.log("Getting AI response...");
+      // Get AI response from our edge function
+      const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message,
           context: {
@@ -88,6 +90,8 @@ export function useChat() {
       });
 
       if (error) throw error;
+
+      console.log("AI response received:", data);
 
       const assistantMessage = addMessage(data.response, {
         id: 'assistant',

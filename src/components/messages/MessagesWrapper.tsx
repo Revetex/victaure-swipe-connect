@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessagesContent } from "./MessagesContent";
 import { ConversationList } from "./conversation/ConversationList";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "../ui/button";
 import { useChat } from "@/hooks/useChat";
 import { Message, Receiver } from "@/types/messages";
+import { toast } from "sonner";
 
 interface MessagesWrapperProps {
   chatMessages?: Message[];
@@ -40,6 +41,8 @@ export function MessagesWrapper() {
   };
 
   const handleSelectConversation = (type: "assistant" | "user", selectedReceiver?: any) => {
+    console.log("Selecting conversation:", { type, selectedReceiver });
+    
     if (type === "assistant") {
       const aiReceiver: Receiver = {
         id: 'assistant',
@@ -56,6 +59,9 @@ export function MessagesWrapper() {
   };
 
   if (showConversation && receiver) {
+    const isAIChat = receiver.id === 'assistant';
+    console.log("Showing conversation for:", { receiver, isAIChat });
+
     return (
       <div className="fixed inset-0 z-50 bg-background">
         <div className="flex h-16 items-center border-b px-4">
