@@ -32,18 +32,16 @@ export function FriendsContent() {
           onOpenChange={setIsRequestsOpen}
           className="space-y-2"
         >
-          <div className="flex items-center justify-between">
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm" className="w-full flex justify-between">
-                <span>Demandes en attente</span>
-                {isRequestsOpen ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
-            </CollapsibleTrigger>
-          </div>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="w-full flex justify-between">
+              <span>Demandes en attente</span>
+              {isRequestsOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
           <CollapsibleContent className="space-y-2">
             <FriendRequestsSection />
           </CollapsibleContent>
