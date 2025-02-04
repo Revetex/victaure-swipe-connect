@@ -4,12 +4,33 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import SettingsPage from "./pages/Settings";
 import { PrivateRoute } from "./components/PrivateRoute";
+import { useAuth } from "./hooks/useAuth";
 
 export function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/auth" element={<Auth />} />
+      <Route 
+        path="/" 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Index />
+          )
+        } 
+      />
+      <Route 
+        path="/auth" 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Auth />
+          )
+        } 
+      />
       <Route path="/legal/*" element={<Index />} />
       <Route path="/about" element={<Index />} />
       <Route path="/contact" element={<Index />} />

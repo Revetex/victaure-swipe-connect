@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -159,24 +160,6 @@ export function SignupForm({
 
                       <h2 className="text-lg font-semibold">4. Cookies</h2>
                       <p>Nous utilisons des cookies pour améliorer l'expérience utilisateur et analyser notre trafic.</p>
-
-                      <h2 className="text-lg font-semibold">5. Conditions d'utilisation</h2>
-                      <div className="space-y-2">
-                        <h3 className="font-medium">Acceptation des conditions</h3>
-                        <p>En accédant à ce site, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
-                        
-                        <h3 className="font-medium">Licence d'utilisation</h3>
-                        <p>Une licence limitée, non exclusive et non transférable vous est accordée pour accéder et utiliser le site.</p>
-                        
-                        <h3 className="font-medium">Compte utilisateur</h3>
-                        <p>Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe.</p>
-                        
-                        <h3 className="font-medium">Limitations de responsabilité</h3>
-                        <p>Nous ne serons pas tenus responsables des dommages directs, indirects, accessoires ou consécutifs.</p>
-                        
-                        <h3 className="font-medium">Modifications du service</h3>
-                        <p>Nous nous réservons le droit de modifier ou d'interrompre le service sans préavis.</p>
-                      </div>
                     </div>
                   </ScrollArea>
                 </DialogContent>
