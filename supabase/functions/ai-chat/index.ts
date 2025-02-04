@@ -62,8 +62,9 @@ serve(async (req) => {
 
     console.log('Sending prompt to Hugging Face:', systemPrompt)
 
+    // Using a more reliable model
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/fixie-ai/ultravox-v0_4_1-llama-3_1-8b',
+      'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
         method: 'POST',
         headers: {
