@@ -1,6 +1,5 @@
 import { HeroSection } from "@/components/landing/HeroSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
-import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 import { DownloadApp } from "@/components/dashboard/DownloadApp";
 
@@ -17,10 +16,6 @@ export default function Index() {
           <div className="container mx-auto px-4 py-16 sm:py-24">
             <DownloadApp />
           </div>
-        </div>
-        <div className="relative">
-          <div className="absolute inset-0 bg-[#9b87f5]/5 dark:bg-[#D6BCFA]/5 transform skew-y-3" />
-          <CTASection />
         </div>
         <Footer />
       </div>
