@@ -59,7 +59,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-12 right-0 z-50 bg-background/80 backdrop-blur-md border rounded-lg shadow-lg p-4 w-48"
+            className="absolute top-12 right-0 z-50 bg-background/80 backdrop-blur-md rounded-lg p-2 w-24"
           >
             <div className="space-y-2">
               <Skeleton className="h-4 w-3/4" />

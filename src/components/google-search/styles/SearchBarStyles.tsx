@@ -25,6 +25,20 @@ export function useSearchBarStyles() {
       text-transform: none !important;
     }
 
+    .gsc-completion-container {
+      font-family: inherit !important;
+      text-transform: none !important;
+      background: hsl(var(--background)) !important;
+      border: 1px solid hsl(var(--border)) !important;
+      border-radius: 0.5rem !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+      margin-top: 4px !important;
+    }
+
+    .gsc-completion-selected {
+      background: hsl(var(--accent)) !important;
+    }
+
     .gsc-search-button {
       margin-left: 8px !important;
       opacity: 0.7 !important;
