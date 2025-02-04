@@ -6,6 +6,7 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { ChatThinking } from "./ChatThinking";
 import { useProfile } from "@/hooks/useProfile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatMessageProps {
   content: string;
@@ -63,9 +64,10 @@ export const ChatMessage = memo(function ChatMessage({
   };
 
   const contentVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
+      scale: 1,
       transition: {
         duration: 0.3,
         ease: [0.16, 1, 0.3, 1],
@@ -82,10 +84,23 @@ export const ChatMessage = memo(function ChatMessage({
       variants={messageVariants}
       className={cn(
         "flex flex-col gap-2 group hover:bg-muted/50 rounded-lg p-2 transition-colors relative w-full",
-        isBot ? "" : ""
+        isBot ? "bg-muted/30" : ""
       )}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-3">
+        <Avatar className={cn(
+          "h-8 w-8 ring-2 transition-shadow",
+          isBot ? "ring-primary/20" : "ring-muted"
+        )}>
+          <AvatarImage 
+            src={isBot ? "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" : profile?.avatar_url || ""} 
+            alt={firstName} 
+          />
+          <AvatarFallback>
+            {isBot ? <Bot className="h-4 w-4" /> : firstName.slice(0, 2)}
+          </AvatarFallback>
+        </Avatar>
+        
         <div className="flex-1 min-w-0">
           <motion.span 
             variants={contentVariants}

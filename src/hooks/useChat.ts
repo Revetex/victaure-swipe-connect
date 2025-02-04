@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message } from "@/types/messages";
@@ -16,22 +16,36 @@ export function useChat() {
     if (!user) throw new Error("User not authenticated");
 
     const messageId = uuidv4();
-    const { data, error } = await supabase
+    const timestamp = new Date().toISOString();
+
+    const newMessage: Message = {
+      id: messageId,
+      content,
+      sender: 'user',
+      sender_id: user.id,
+      receiver_id: 'assistant',
+      read: true,
+      created_at: timestamp,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+
+    const { error } = await supabase
       .from("ai_chat_messages")
       .insert({
         id: messageId,
         user_id: user.id,
         content,
-        sender: 'user'  // Explicitly set to 'user'
-      })
-      .select()
-      .single();
+        sender: 'user',
+        created_at: timestamp
+      });
 
     if (error) throw error;
-    return data;
+    return newMessage;
   };
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = useCallback(async (message: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -43,23 +57,43 @@ export function useChat() {
       await sendMessage(message);
       setInputMessage("");
 
-      // Fetch AI response
-      const { data: aiResponse, error: aiError } = await supabase
-        .functions.invoke('ai-chat', {
-          body: { message }
-        });
+      const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-chat', {
+        body: { 
+          message,
+          userId: session.user.id,
+          context: {
+            previousMessages: messages.slice(-5),
+          }
+        }
+      });
 
       if (aiError) throw aiError;
 
-      if (aiResponse?.message) {
+      if (aiResponse?.response) {
         const messageId = uuidv4();
+        const timestamp = new Date().toISOString();
+        
+        const assistantMessage: Message = {
+          id: messageId,
+          content: aiResponse.response,
+          sender: 'assistant',
+          sender_id: 'assistant',
+          receiver_id: session.user.id,
+          read: true,
+          created_at: timestamp,
+          timestamp: new Date(),
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+
         const { error: insertError } = await supabase
           .from("ai_chat_messages")
           .insert({
             id: messageId,
             user_id: session.user.id,
-            content: aiResponse.message,
-            sender: 'assistant'  // Explicitly set to 'assistant'
+            content: aiResponse.response,
+            sender: 'assistant',
+            created_at: timestamp
           });
 
         if (insertError) throw insertError;
@@ -71,9 +105,9 @@ export function useChat() {
     } finally {
       setIsThinking(false);
     }
-  };
+  }, [messages]);
 
-  const handleVoiceInput = () => {
+  const handleVoiceInput = useCallback(() => {
     try {
       setIsListening(true);
       const recognition = initializeSpeechRecognition(setIsListening, setInputMessage);
@@ -87,9 +121,9 @@ export function useChat() {
       toast.error("Une erreur est survenue avec l'entrée vocale");
       setIsListening(false);
     }
-  };
+  }, []);
 
-  const clearChat = async () => {
+  const clearChat = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
@@ -101,11 +135,12 @@ export function useChat() {
 
       if (error) throw error;
       setMessages([]);
+      toast.success("Conversation effacée avec succès");
     } catch (error) {
       console.error("Error clearing chat:", error);
       toast.error("Une erreur est survenue lors de l'effacement du chat");
     }
-  };
+  }, []);
 
   return {
     messages,

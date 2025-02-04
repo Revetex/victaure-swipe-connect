@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Mic, Send, Loader2, Paperclip } from "lucide-react";
-import { motion } from "framer-motion";
+import { Mic, Send, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 interface ChatInputProps {
@@ -64,42 +64,56 @@ export function ChatInput({
           disabled={isThinking}
         />
         
-        <div className="absolute bottom-1 right-1 flex items-center gap-1">
-          {onVoiceInput && (
+        <AnimatePresence>
+          <motion.div 
+            className="absolute bottom-1 right-1 flex items-center gap-1"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
+            {onVoiceInput && (
+              <Button
+                type="button"
+                size="icon"
+                variant={isListening ? "default" : "ghost"}
+                onClick={onVoiceInput}
+                className="h-8 w-8"
+                disabled={isThinking}
+              >
+                <motion.div
+                  animate={isListening ? { 
+                    scale: [1, 1.2, 1],
+                    color: ['#6366f1', '#818cf8', '#6366f1']
+                  } : {}}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 1.5,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Mic className="h-4 w-4" />
+                </motion.div>
+              </Button>
+            )}
+            
             <Button
               type="button"
               size="icon"
-              variant={isListening ? "default" : "ghost"}
-              onClick={onVoiceInput}
-              className="h-8 w-8"
-              disabled={isThinking}
+              onClick={onSend}
+              className={cn(
+                "h-8 w-8",
+                value.trim() && !isThinking && "hover:scale-105 hover:shadow-md"
+              )}
+              disabled={!value.trim() || isThinking}
             >
-              <motion.div
-                animate={isListening ? { scale: [1, 1.2, 1] } : {}}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                <Mic className="h-4 w-4" />
-              </motion.div>
+              {isThinking ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
-          )}
-          
-          <Button
-            type="button"
-            size="icon"
-            onClick={onSend}
-            className={cn(
-              "h-8 w-8",
-              value.trim() && !isThinking && "hover:scale-105"
-            )}
-            disabled={!value.trim() || isThinking}
-          >
-            {isThinking ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </motion.div>
   );
