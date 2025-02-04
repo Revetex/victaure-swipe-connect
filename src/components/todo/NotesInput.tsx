@@ -29,6 +29,25 @@ export function NotesInput({
     }
   };
 
+  const getColorStyle = (color: string) => {
+    switch (color) {
+      case "yellow":
+        return "bg-[#FEF7CD]";
+      case "blue":
+        return "bg-[#D3E4FD]";
+      case "green":
+        return "bg-[#F2FCE2]";
+      case "pink":
+        return "bg-[#FFDEE2]";
+      case "purple":
+        return "bg-[#E5DEFF]";
+      case "orange":
+        return "bg-[#FEC6A1]";
+      default:
+        return "bg-[#FEF7CD]";
+    }
+  };
+
   return (
     <div className="flex flex-col sm:flex-row gap-2 w-full">
       <Input
@@ -41,8 +60,9 @@ export function NotesInput({
       <div className="flex gap-2 sm:w-auto w-full">
         <Select onValueChange={onColorChange} value={selectedColor}>
           <SelectTrigger className={cn(
-            "w-[120px] bg-background/50",
-            `sticky-note-${selectedColor}`
+            "w-[120px]",
+            getColorStyle(selectedColor),
+            "border border-border/10"
           )}>
             <SelectValue />
           </SelectTrigger>
@@ -53,17 +73,13 @@ export function NotesInput({
                 value={color.value}
                 className={cn(
                   "flex items-center gap-2",
-                  `sticky-note-${color.value}`
+                  "cursor-pointer",
+                  "transition-colors"
                 )}
               >
                 <div className={cn(
                   "w-4 h-4 rounded-full",
-                  color.value === "yellow" && "bg-[#FEF7CD]",
-                  color.value === "blue" && "bg-[#D3E4FD]",
-                  color.value === "green" && "bg-[#F2FCE2]",
-                  color.value === "pink" && "bg-[#FFDEE2]",
-                  color.value === "purple" && "bg-[#E5DEFF]",
-                  color.value === "orange" && "bg-[#FEC6A1]"
+                  getColorStyle(color.value)
                 )} />
                 {color.label}
               </SelectItem>

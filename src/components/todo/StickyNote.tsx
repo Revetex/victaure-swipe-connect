@@ -17,6 +17,25 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 200, height: 150 });
 
+  const getBackgroundColor = () => {
+    switch (note.color) {
+      case "yellow":
+        return "bg-[#FEF7CD]/90 hover:bg-[#FEF7CD]";
+      case "blue":
+        return "bg-[#D3E4FD]/90 hover:bg-[#D3E4FD]";
+      case "green":
+        return "bg-[#F2FCE2]/90 hover:bg-[#F2FCE2]";
+      case "pink":
+        return "bg-[#FFDEE2]/90 hover:bg-[#FFDEE2]";
+      case "purple":
+        return "bg-[#E5DEFF]/90 hover:bg-[#E5DEFF]";
+      case "orange":
+        return "bg-[#FEC6A1]/90 hover:bg-[#FEC6A1]";
+      default:
+        return "bg-[#FEF7CD]/90 hover:bg-[#FEF7CD]";
+    }
+  };
+
   return (
     <motion.div
       drag
@@ -49,10 +68,9 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         maxHeight={800}
         className={cn(
           "group relative p-4 rounded-lg transition-all duration-300",
-          "bg-background/50 dark:bg-gray-800/50",
-          "border border-border/50",
+          "border border-border/10",
           "shadow-sm hover:shadow-md",
-          colorClass,
+          getBackgroundColor(),
           "cursor-move"
         )}
       >
@@ -64,11 +82,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
               e.stopPropagation();
               onDelete(note.id);
             }}
-            className={cn(
-              "h-8 w-8",
-              "hover:text-destructive",
-              "transition-colors"
-            )}
+            className="h-8 w-8 hover:text-destructive transition-colors"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -77,11 +91,8 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
           </div>
         </div>
 
-        <div className={cn(
-          "h-full overflow-auto",
-          "scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
-        )}>
-          <p className="text-sm whitespace-pre-wrap break-words">
+        <div className="h-full overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+          <p className="text-sm whitespace-pre-wrap break-words text-gray-700">
             {note.text}
           </p>
         </div>
