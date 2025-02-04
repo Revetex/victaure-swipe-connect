@@ -66,8 +66,28 @@ export const useSession = (signOut: () => Promise<void>) => {
 
     checkSession();
 
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (mounted) {
+        if (session) {
+          const { data: { user } } = await supabase.auth.getUser();
+          setState({
+            session,
+            user,
+            isLoading: false,
+          });
+        } else {
+          setState({
+            session: null,
+            user: null,
+            isLoading: false,
+          });
+        }
+      }
+    });
+
     return () => {
       mounted = false;
+      subscription.unsubscribe();
     };
   }, [signOut]);
 
