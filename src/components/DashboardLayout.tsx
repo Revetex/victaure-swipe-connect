@@ -14,7 +14,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
 import { toast } from "sonner";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { FriendsContent } from "@/components/feed/friends/FriendsContent";
+import { Connections } from "@/components/Connections";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -25,7 +25,6 @@ export function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showConversation } = useReceiver();
-  const [showFriendsList, setShowFriendsList] = useState(false);
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -36,13 +35,11 @@ export function DashboardLayout() {
   const THROTTLE_DELAY = 300;
 
   useEffect(() => {
-    // Add meta viewport tag for better mobile resolution
     const meta = document.createElement('meta');
     meta.name = 'viewport';
     meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
     document.getElementsByTagName('head')[0].appendChild(meta);
 
-    // Handle viewport height changes
     const handleResize = () => {
       debouncedSetViewportHeight(window.innerHeight);
     };
@@ -50,7 +47,6 @@ export function DashboardLayout() {
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleResize);
 
-    // Initial call
     handleResize();
 
     return () => {
@@ -65,11 +61,8 @@ export function DashboardLayout() {
       setCurrentPage(page);
       setLastPageChange(now);
       setIsEditing(false);
-      if (isMobile) {
-        setShowFriendsList(false);
-      }
     }
-  }, [lastPageChange, isMobile]);
+  }, [lastPageChange]);
 
   const handleRequestChat = useCallback(() => {
     handlePageChange(2);
@@ -139,40 +132,17 @@ export function DashboardLayout() {
                     
                     <div className="flex items-center gap-2">
                       <NotificationsBox />
-                      {isMobile && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setShowFriendsList(!showFriendsList)}
-                          className="relative"
-                        >
-                          {showFriendsList ? (
-                            <ChevronUp className="h-5 w-5" />
-                          ) : (
-                            <ChevronDown className="h-5 w-5" />
-                          )}
-                        </Button>
-                      )}
                     </div>
                   </div>
                   
-                  <AnimatePresence>
-                    {isMobile && showFriendsList && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm"
-                      >
-                        <div className="p-4">
-                          <div className="space-y-4">
-                            <FriendsContent />
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {/* Always show Connections section */}
+                  <div className="border-t border-border/50 bg-background/95 backdrop-blur-sm">
+                    <div className="p-4">
+                      <div className="space-y-4">
+                        <Connections />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -187,7 +157,8 @@ export function DashboardLayout() {
                 overflowY: isEditing ? 'auto' : 'visible',
                 WebkitOverflowScrolling: 'touch',
                 paddingBottom: isMobile ? '4rem' : '3rem',
-                height: isMobile ? `${viewportHeight}px` : 'auto'
+                height: isMobile ? `${viewportHeight}px` : 'auto',
+                marginTop: '300px' // Add margin to account for the fixed Connections section
               }}
             >
               <DashboardContent
