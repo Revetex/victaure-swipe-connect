@@ -4,11 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
 import { VCard } from "./VCard";
 import { toast } from "sonner";
+import { ProfilePreview } from "./ProfilePreview";
 
 export function PublicProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -45,6 +47,13 @@ export function PublicProfile() {
   return (
     <div className="container mx-auto py-8">
       <VCard />
+      {profile && (
+        <ProfilePreview
+          profile={profile}
+          isOpen={showPreview}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
     </div>
   );
 }
