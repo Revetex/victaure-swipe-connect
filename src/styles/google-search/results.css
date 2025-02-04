@@ -1,95 +1,51 @@
-.gsc-control-cse {
-  font-family: "Helvetica Neue", sans-serif !important;
-  border: none !important;
-  background: transparent !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.gsc-result {
+/* Results container */
+.gsc-results-wrapper-overlay {
+  box-shadow: none !important;
   border: 1px solid hsl(var(--border)) !important;
-  border-radius: 0.5rem !important;
-  padding: 1rem !important;
   background: hsl(var(--background)) !important;
-  margin: 0 0 0.75rem 0 !important;
-  transition: all 0.2s ease-in-out !important;
 }
 
-.gsc-result:hover {
-  background: hsl(var(--accent)/0.1) !important;
-  transform: translateY(-1px) !important;
+/* Individual result styling */
+.gs-result {
+  padding: 1rem !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
 }
 
 .gs-title {
-  color: hsl(var(--foreground)) !important;
-  text-decoration: none !important;
+  color: hsl(var(--primary)) !important;
+  font-family: Calibri, system-ui, -apple-system, sans-serif !important;
+  font-size: 0.75rem !important;
   font-weight: 500 !important;
-  font-size: 1rem !important;
-  line-height: 1.5 !important;
-  margin-bottom: 0.5rem !important;
-  font-family: "Helvetica Neue", sans-serif !important;
-}
-
-.gs-title:visited {
-  color: hsl(var(--muted-foreground)) !important;
+  text-decoration: none !important;
+  text-transform: none !important;
 }
 
 .gs-title:hover {
   text-decoration: underline !important;
-  color: hsl(var(--primary)) !important;
 }
 
 .gs-snippet {
-  color: hsl(var(--muted-foreground)) !important;
-  line-height: 1.6 !important;
-  font-size: 0.875rem !important;
-  margin: 0.5rem 0 !important;
-  font-family: "Helvetica Neue", sans-serif !important;
+  color: hsl(var(--foreground)) !important;
+  font-family: Calibri, system-ui, -apple-system, sans-serif !important;
+  font-size: 0.7rem !important;
+  line-height: 1.4 !important;
+  margin: 0.25rem 0 !important;
+  text-transform: none !important;
 }
 
 .gs-visibleUrl {
-  color: hsl(var(--primary)) !important;
-  font-size: 0.75rem !important;
-  margin-top: 0.5rem !important;
-  opacity: 0.9 !important;
-  font-family: "Helvetica Neue", sans-serif !important;
+  color: hsl(var(--primary)/70%) !important;
+  font-family: Calibri, system-ui, -apple-system, sans-serif !important;
+  font-size: 0.65rem !important;
+  margin-top: 0.25rem !important;
+  text-transform: none !important;
 }
 
-/* Hide pagination and branding */
-.gsc-cursor-box,
-.gsc-cursor,
-.gsc-cursor-page,
-.gsc-cursor-current-page,
-.gcsc-more-maybe-branding-root,
-.gcsc-find-more-on-google {
-  display: none !important;
-}
-
-/* Search box styling */
-.gsc-input-box {
-  border: 1px solid hsl(var(--border)) !important;
-  border-radius: 0.375rem !important;
-  background: hsl(var(--background)) !important;
-  padding: 0.5rem !important;
-}
-
-.gsc-input {
-  font-family: "Helvetica Neue", sans-serif !important;
-  font-size: 0.875rem !important;
-  color: hsl(var(--foreground)) !important;
-  background: transparent !important;
-}
-
-/* Container adjustments */
-.gsc-control-wrapper-cse,
-.gsc-results-wrapper-visible {
-  margin-top: 1rem !important;
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-/* Featured results */
-.gsc-webResult.gsc-result.gsc-promotion {
-  background: hsl(var(--accent)/0.05) !important;
-  border-color: hsl(var(--border)) !important;
+/* Mobile optimization */
+@media (max-width: 640px) {
+  .gsc-results-wrapper-overlay {
+    width: 100% !important;
+    left: 0 !important;
+    padding: 1rem !important;
+  }
 }
