@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNotes } from "@/hooks/useNotes";
+import { useTodoList } from "@/hooks/useTodoList";
 import { StickyNote } from "@/components/todo/StickyNote";
 import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
@@ -32,6 +33,21 @@ export function NotesMap() {
     addNote,
     deleteNote
   } = useNotes();
+
+  const {
+    todos,
+    newTodo,
+    selectedDate,
+    selectedTime,
+    allDay,
+    setNewTodo,
+    setSelectedDate,
+    setSelectedTime,
+    setAllDay,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  } = useTodoList();
 
   const [scale, setScale] = useState(1);
   const [selectedTool, setSelectedTool] = useState<string>("notes");
@@ -127,7 +143,22 @@ export function NotesMap() {
           </div>
         );
       case "tasks":
-        return <TodoSection />;
+        return (
+          <TodoSection 
+            todos={todos}
+            newTodo={newTodo}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
+            onTodoChange={setNewTodo}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
+            onAllDayChange={setAllDay}
+            onAddTodo={addTodo}
+            onToggleTodo={toggleTodo}
+            onDeleteTodo={deleteTodo}
+          />
+        );
       case "calculator":
         return <div className="p-4">Calculatrice (à implémenter)</div>;
       case "translator":
