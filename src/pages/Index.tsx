@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Briefcase, Shield, Zap, Users } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { Briefcase, Shield, Zap, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -31,46 +32,53 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-32 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6"
-          >
-            Votre Carrière, Notre Mission
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
-          >
-            Trouvez les meilleures opportunités professionnelles grâce à notre plateforme alimentée par l'intelligence artificielle.
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4"
-          >
-            <Button
-              size="lg"
-              onClick={() => navigate("/auth")}
-              className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-8"
+      {/* Hero Section with Video */}
+      <section className="relative pt-20 pb-32 px-4 overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-left"
             >
-              Commencer Maintenant
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => navigate("/marketplace")}
-              className="gap-2"
+              <Logo size="lg" className="mb-8 text-[#9b87f5]" />
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                Votre Carrière, <br/>
+                <span className="text-[#9b87f5]">Notre Mission</span>
+              </h1>
+              <p className="text-xl text-gray-600 mb-8">
+                Trouvez les meilleures opportunités professionnelles grâce à notre plateforme alimentée par l'intelligence artificielle.
+              </p>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Button
+                  size="lg"
+                  onClick={() => navigate("/auth")}
+                  className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-8"
+                >
+                  Commencer Maintenant
+                </Button>
+              </motion.div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="relative rounded-xl overflow-hidden shadow-2xl"
             >
-              Explorer les Missions <ArrowRight className="h-4 w-4" />
-            </Button>
-          </motion.div>
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover rounded-xl"
+              >
+                <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
+              </video>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -79,7 +87,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Pourquoi Choisir Victaure ?
+              Pourquoi Choisir <span className="text-[#9b87f5]">Victaure</span> ?
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Notre plateforme combine technologie avancée et simplicité d'utilisation pour propulser votre carrière.
@@ -92,7 +100,7 @@ export default function Index() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="p-6 bg-gray-50 rounded-xl hover:shadow-lg transition-all duration-300"
+                className="p-6 bg-gray-50 rounded-xl hover:shadow-lg transition-all duration-300 border border-gray-100"
               >
                 <div className="w-12 h-12 bg-[#9b87f5]/10 rounded-lg flex items-center justify-center mb-4">
                   <feature.icon className="h-6 w-6 text-[#9b87f5]" />
@@ -110,13 +118,13 @@ export default function Index() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-[#9b87f5]/5">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-6 rounded-xl shadow-sm"
+              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
               <h3 className="text-3xl font-bold text-[#9b87f5] mb-2">10,000+</h3>
               <p className="text-gray-600">Professionnels Actifs</p>
@@ -125,7 +133,7 @@ export default function Index() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white p-6 rounded-xl shadow-sm"
+              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
               <h3 className="text-3xl font-bold text-[#9b87f5] mb-2">2,500+</h3>
               <p className="text-gray-600">Missions Disponibles</p>
@@ -134,7 +142,7 @@ export default function Index() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white p-6 rounded-xl shadow-sm"
+              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
               <h3 className="text-3xl font-bold text-[#9b87f5] mb-2">95%</h3>
               <p className="text-gray-600">Taux de Satisfaction</p>
@@ -143,7 +151,7 @@ export default function Index() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white p-6 rounded-xl shadow-sm"
+              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"
             >
               <h3 className="text-3xl font-bold text-[#9b87f5] mb-2">24/7</h3>
               <p className="text-gray-600">Support Disponible</p>
