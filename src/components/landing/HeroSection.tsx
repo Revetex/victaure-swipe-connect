@@ -12,22 +12,22 @@ export function HeroSection() {
         <div className="flex justify-center mb-4">
           <Logo size="lg" showText={false} className="scale-150" />
         </div>
-        <h1 className="text-6xl font-bold text-[#9b87f5] dark:text-[#D6BCFA]">VICTAURE</h1>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-[#9b87f5] dark:text-[#D6BCFA]">VICTAURE</h1>
       </div>
 
-      <section className="relative pt-20 pb-32 px-4 overflow-hidden">
+      <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-32 px-4 overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="text-left"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6">
                 Votre Carrière, <br/>
                 <span className="text-[#9b87f5] dark:text-[#D6BCFA]">Notre Mission</span>
               </h1>
-              <p className="text-xl text-muted-foreground mb-8">
+              <p className="text-lg sm:text-xl text-muted-foreground mb-6 sm:mb-8">
                 Trouvez les meilleures opportunités professionnelles grâce à notre plateforme alimentée par l'intelligence artificielle.
               </p>
               <motion.div 
@@ -39,7 +39,7 @@ export function HeroSection() {
                 <Button
                   size="lg"
                   onClick={() => navigate("/auth")}
-                  className="bg-[#9b87f5] hover:bg-[#7E69AB] dark:bg-[#D6BCFA] dark:hover:bg-[#7E69AB] text-white px-8"
+                  className="w-full sm:w-auto bg-[#9b87f5] hover:bg-[#7E69AB] dark:bg-[#D6BCFA] dark:hover:bg-[#7E69AB] text-white px-8"
                 >
                   Commencer Maintenant
                 </Button>
@@ -47,7 +47,7 @@ export function HeroSection() {
                   size="lg"
                   variant="outline"
                   onClick={() => navigate("/auth?mode=signup")}
-                  className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 dark:border-[#D6BCFA] dark:text-[#D6BCFA] dark:hover:bg-[#D6BCFA]/10"
+                  className="w-full sm:w-auto border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10 dark:border-[#D6BCFA] dark:text-[#D6BCFA] dark:hover:bg-[#D6BCFA]/10"
                 >
                   Inscription
                 </Button>
@@ -56,7 +56,7 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="relative rounded-xl overflow-hidden shadow-2xl"
+              className="relative rounded-xl overflow-hidden shadow-2xl mt-8 sm:mt-0"
             >
               <video
                 controls
