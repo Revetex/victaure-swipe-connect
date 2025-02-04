@@ -2,13 +2,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback, useEffect } from "react";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useDebounce } from "use-debounce";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
-import { DashboardHeader } from "./dashboard/DashboardHeader";
-import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
+import { MainLayout } from "./layout/MainLayout";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -19,7 +17,6 @@ export function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showConversation } = useReceiver();
-  const [showFriendsList, setShowFriendsList] = useState(false);
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -58,14 +55,10 @@ export function DashboardLayout() {
       
       if (page === 5) {
         navigate('/dashboard/tools');
-      } else {
-        if (isMobile) {
-          setShowFriendsList(false);
-        }
       }
       setIsEditing(false);
     }
-  }, [lastPageChange, isMobile, navigate]);
+  }, [lastPageChange, navigate]);
 
   const handleRequestChat = useCallback(() => {
     handlePageChange(2);
@@ -91,7 +84,6 @@ export function DashboardLayout() {
   };
 
   const isInConversation = location.pathname.includes('/messages') && showConversation;
-  const isInTools = location.pathname.includes('/tools');
 
   if (isInConversation) {
     return (
@@ -106,83 +98,33 @@ export function DashboardLayout() {
   }
 
   return (
-    <div className="relative min-h-screen bg-background">
-      {isEditing && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-7xl mx-auto">
-              <h1 className="text-center text-sm font-medium text-muted-foreground py-2">
-                Mode édition
-              </h1>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-10' : ''}`}>
-        <div className="max-w-7xl mx-auto">
-          <div className={`fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50 transition-opacity duration-300 ${isEditing && !isInTools ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-            <div className="container mx-auto px-0 sm:px-4">
-              <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col">
-                  <DashboardHeader 
-                    title={getPageTitle(currentPage)}
-                    showFriendsList={showFriendsList}
-                    onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-                    isEditing={isEditing}
-                  />
-                  
-                  <AnimatePresence>
-                    {isMobile && (
-                      <DashboardFriendsList show={showFriendsList} />
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <AnimatePresence mode="wait">
-            <motion.div 
-              variants={itemVariants} 
-              className={`transform transition-all duration-300 w-full min-h-screen ${isEditing && !isInTools ? 'pt-0' : 'pt-16'}`}
-              style={{ 
-                maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '0px' : '0px'})` : 'none',
-                overflowY: isEditing ? 'auto' : 'visible',
-                WebkitOverflowScrolling: 'touch',
-                paddingBottom: isMobile ? '4rem' : '3rem',
-                height: isMobile ? `${viewportHeight}px` : 'auto'
-              }}
-            >
-              <DashboardContent
-                currentPage={currentPage}
-                isEditing={isEditing}
-                viewportHeight={viewportHeight}
-                onEditStateChange={setIsEditing}
-                onRequestChat={handleRequestChat}
-              />
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-      
-      <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
-          (isEditing && currentPage === 4) ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-        }`}
-        style={{ 
-          height: 'auto',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-          paddingTop: '0'
-        }}
-      >
-        <div className="container mx-auto px-4 py-2 h-full flex items-center max-w-7xl">
-          <DashboardNavigation 
+    <MainLayout 
+      title={getPageTitle(currentPage)}
+      currentPage={currentPage}
+      onPageChange={handlePageChange}
+      isEditing={isEditing}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div 
+          variants={itemVariants} 
+          className="transform transition-all duration-300 w-full min-h-screen"
+          style={{ 
+            maxHeight: isEditing ? `calc(${viewportHeight}px - ${isMobile ? '0px' : '0px'})` : 'none',
+            overflowY: isEditing ? 'auto' : 'visible',
+            WebkitOverflowScrolling: 'touch',
+            paddingBottom: isMobile ? '4rem' : '3rem',
+            height: isMobile ? `${viewportHeight}px` : 'auto'
+          }}
+        >
+          <DashboardContent
             currentPage={currentPage}
-            onPageChange={handlePageChange}
+            isEditing={isEditing}
+            viewportHeight={viewportHeight}
+            onEditStateChange={setIsEditing}
+            onRequestChat={handleRequestChat}
           />
-        </div>
-      </nav>
-    </div>
+        </motion.div>
+      </AnimatePresence>
+    </MainLayout>
   );
 }
