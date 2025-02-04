@@ -20,13 +20,22 @@ export function HeroSection() {
             <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Découvrez des opportunités professionnelles uniques et construisez votre avenir avec Victaure.
             </p>
-            <Button
-              size="lg"
-              onClick={() => navigate("/auth?mode=signin")}
-              className="bg-[#9b87f5] hover:bg-[#7E69AB] dark:bg-[#D6BCFA] dark:hover:bg-[#7E69AB] text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Connexion
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                onClick={() => navigate("/auth?mode=signin")}
+                className="bg-[#9b87f5] hover:bg-[#7E69AB] dark:bg-[#D6BCFA] dark:hover:bg-[#7E69AB] text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Connexion
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => navigate("/auth?mode=signup")}
+                className="bg-white/10 hover:bg-white/20 text-primary border border-primary px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Inscription
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>
