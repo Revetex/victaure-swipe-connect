@@ -102,47 +102,65 @@ export const PostActions = ({
 
   return (
     <div className="flex gap-2 items-center py-2">
-      <motion.div whileTap={{ scale: 0.95 }}>
+      <motion.div 
+        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.05 }}
+      >
         <Button
           variant={userReaction === 'like' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => handleReaction('like')}
           className={cn(
-            "flex gap-2 items-center",
-            userReaction === 'like' && "bg-green-500 hover:bg-green-600 text-white"
+            "flex gap-2 items-center transition-all duration-200",
+            userReaction === 'like' && "bg-green-500 hover:bg-green-600 text-white shadow-lg"
           )}
         >
-          <ThumbsUp className="h-4 w-4" />
+          <ThumbsUp className={cn(
+            "h-4 w-4 transition-transform",
+            userReaction === 'like' && "scale-110"
+          )} />
           <span className="font-medium">{likes || 0}</span>
         </Button>
       </motion.div>
 
-      <motion.div whileTap={{ scale: 0.95 }}>
+      <motion.div 
+        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.05 }}
+      >
         <Button
           variant={userReaction === 'dislike' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => handleReaction('dislike')}
           className={cn(
-            "flex gap-2 items-center",
-            userReaction === 'dislike' && "bg-red-500 hover:bg-red-600 text-white"
+            "flex gap-2 items-center transition-all duration-200",
+            userReaction === 'dislike' && "bg-red-500 hover:bg-red-600 text-white shadow-lg"
           )}
         >
-          <ThumbsDown className="h-4 w-4" />
+          <ThumbsDown className={cn(
+            "h-4 w-4 transition-transform",
+            userReaction === 'dislike' && "scale-110"
+          )} />
           <span className="font-medium">{dislikes || 0}</span>
         </Button>
       </motion.div>
 
-      <motion.div whileTap={{ scale: 0.95 }}>
+      <motion.div 
+        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.05 }}
+      >
         <Button
           variant={isExpanded ? 'default' : 'ghost'}
           size="sm"
           onClick={onToggleComments}
           className={cn(
-            "flex gap-2 items-center",
-            isExpanded && "bg-blue-500 hover:bg-blue-600 text-white"
+            "flex gap-2 items-center transition-all duration-200",
+            isExpanded && "bg-blue-500 hover:bg-blue-600 text-white shadow-lg"
           )}
         >
-          <MessageSquare className="h-4 w-4" />
+          <MessageSquare className={cn(
+            "h-4 w-4 transition-transform",
+            isExpanded && "scale-110"
+          )} />
           <span className="font-medium">{commentCount}</span>
         </Button>
       </motion.div>
