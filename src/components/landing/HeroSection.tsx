@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Search, Briefcase, Users } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -9,6 +10,9 @@ export function HeroSection() {
   return (
     <section className="relative py-20 overflow-hidden">
       <div className="container mx-auto px-4">
+        <div className="flex justify-center mb-8">
+          <Logo size="lg" />
+        </div>
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -30,7 +34,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 onClick={() => navigate("/auth?mode=signin")}
-                className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                className="bg-[#8B5CF6] hover:bg-[#8B5CF6]/90 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
               >
                 Commencer maintenant
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
