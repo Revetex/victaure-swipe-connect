@@ -19,7 +19,7 @@
 .gsc-input-box input {
   color: hsl(var(--foreground)) !important;
   font-family: Calibri, system-ui, -apple-system, sans-serif !important;
-  font-size: 0.75rem !important;
+  font-size: 0.675rem !important;
   text-transform: none !important;
   padding: 0.25rem 0.5rem !important;
   background: transparent !important;
@@ -28,11 +28,17 @@
 .gsc-input-box input::placeholder {
   color: hsl(var(--muted-foreground)) !important;
   opacity: 1 !important;
+  font-size: 0.675rem !important;
 }
 
 /* Mobile optimization */
 @media (max-width: 640px) {
   .gsc-input-box {
     width: 100% !important;
+  }
+  
+  .gsc-input-box input {
+    font-size: 0.75rem !important;
+    min-height: 44px !important;
   }
 }

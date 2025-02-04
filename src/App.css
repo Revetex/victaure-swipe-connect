@@ -28,7 +28,7 @@
 .gs-title * {
   color: hsl(var(--primary)) !important;
   font-family: Calibri, system-ui, -apple-system, sans-serif !important;
-  font-size: 0.875rem !important;
+  font-size: 0.675rem !important;
   font-weight: 600 !important;
   text-decoration: none !important;
   line-height: 1.4 !important;
@@ -43,17 +43,16 @@
 .gs-snippet {
   color: hsl(var(--foreground)) !important;
   font-family: Calibri, system-ui, -apple-system, sans-serif !important;
-  font-size: 0.75rem !important;
+  font-size: 0.675rem !important;
   line-height: 1.5 !important;
   margin: 0.5rem 0 !important;
   text-transform: none !important;
 }
 
-.gsc-url-top,
 .gs-visibleUrl {
   color: hsl(var(--primary)/70%) !important;
   font-family: Calibri, system-ui, -apple-system, sans-serif !important;
-  font-size: 0.75rem !important;
+  font-size: 0.625rem !important;
   margin-bottom: 0.25rem !important;
 }
 
@@ -65,7 +64,7 @@
   margin: 0 0.25rem !important;
   border-radius: 0.25rem !important;
   font-family: Calibri, system-ui, -apple-system, sans-serif !important;
-  font-size: 0.75rem !important;
+  font-size: 0.675rem !important;
 }
 
 .gsc-cursor-page:hover {
@@ -100,6 +99,6 @@
 
 /* Input styling */
 .gsc-input-box input {
-  font-size: 0.875rem !important;
+  font-size: 0.675rem !important;
   text-transform: none !important;
 }
