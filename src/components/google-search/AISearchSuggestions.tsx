@@ -34,15 +34,6 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
         return;
       }
 
-      // If no search query, show error
-      if (!searchInput.value.trim()) {
-        toast.error("Veuillez entrer un terme de recherche");
-        searchInput.focus();
-        return;
-      }
-
-      const query = searchInput.value.trim();
-
       // Get the user data first
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -57,6 +48,9 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
         .select('*')
         .eq('id', user.id)
         .single();
+
+      // Use empty string if no query is present
+      const query = searchInput.value.trim() || "emploi";
 
       // Call the edge function with the collected data
       const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
