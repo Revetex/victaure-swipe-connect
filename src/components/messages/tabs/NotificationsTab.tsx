@@ -4,7 +4,6 @@ import { NotificationItem } from "../../notifications/NotificationItem";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -18,6 +17,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { format, isToday, isYesterday, isThisWeek, isThisMonth } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Notification {
   id: string;
@@ -40,6 +41,31 @@ const containerVariants = {
 const itemVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: { opacity: 1, x: 0 }
+};
+
+const groupNotifications = (notifications: Notification[]) => {
+  return notifications.reduce((groups, notification) => {
+    const date = new Date(notification.created_at);
+    let groupKey = "";
+
+    if (isToday(date)) {
+      groupKey = "Aujourd'hui";
+    } else if (isYesterday(date)) {
+      groupKey = "Hier";
+    } else if (isThisWeek(date)) {
+      groupKey = "Cette semaine";
+    } else if (isThisMonth(date)) {
+      groupKey = "Ce mois";
+    } else {
+      groupKey = "Plus ancien";
+    }
+
+    if (!groups[groupKey]) {
+      groups[groupKey] = [];
+    }
+    groups[groupKey].push(notification);
+    return groups;
+  }, {} as Record<string, Notification[]>);
 };
 
 export function NotificationsTab() {
@@ -156,6 +182,9 @@ export function NotificationsTab() {
     );
   }
 
+  const groupedNotifications = groupNotifications(notifications);
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   return (
     <motion.div
       variants={containerVariants}
@@ -168,13 +197,15 @@ export function NotificationsTab() {
           variants={itemVariants}
           className="flex items-center gap-2 text-primary"
         >
-          <Bell className="h-5 w-5" />
+          <div className="relative">
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 h-4 w-4 bg-red-500 rounded-full text-[10px] font-medium text-white flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </div>
           <h2 className="text-lg font-semibold">Notifications</h2>
-          {notifications.length > 0 && (
-            <span className="px-2 py-1 text-xs bg-primary/10 rounded-full">
-              {notifications.length}
-            </span>
-          )}
         </motion.div>
 
         <div className="flex gap-2">
@@ -183,7 +214,7 @@ export function NotificationsTab() {
               variant="outline"
               size="sm"
               onClick={markAllAsRead}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 hover:bg-primary/10"
             >
               <Check className="h-4 w-4" />
               <span className="hidden sm:inline">Tout marquer comme lu</span>
@@ -196,7 +227,7 @@ export function NotificationsTab() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-1 text-destructive hover:text-destructive"
+                  className="flex items-center gap-1 text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />
                   <span className="hidden sm:inline">Tout supprimer</span>
@@ -224,20 +255,31 @@ export function NotificationsTab() {
       <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
         <AnimatePresence mode="popLayout">
           {notifications.length > 0 ? (
-            <motion.div className="space-y-2">
-              {notifications.map((notification) => (
+            <motion.div className="space-y-6">
+              {Object.entries(groupedNotifications).map(([group, groupNotifications]) => (
                 <motion.div
-                  key={notification.id}
+                  key={group}
                   variants={itemVariants}
                   initial="hidden"
                   animate="visible"
                   exit={{ opacity: 0, x: -20 }}
                   layout
                 >
-                  <NotificationItem
-                    {...notification}
-                    onDelete={deleteNotification}
-                  />
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">{group}</h3>
+                  <div className="space-y-2">
+                    {groupNotifications.map((notification) => (
+                      <motion.div
+                        key={notification.id}
+                        variants={itemVariants}
+                        layout
+                      >
+                        <NotificationItem
+                          {...notification}
+                          onDelete={deleteNotification}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
