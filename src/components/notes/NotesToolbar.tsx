@@ -19,14 +19,20 @@ export function NotesToolbar({
 }: NotesToolbarProps) {
   const navigate = useNavigate();
 
+  const handleReturn = () => {
+    navigate("/");
+    console.log("Navigating to dashboard...");
+  };
+
   return (
     <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center gap-2">
         <Button 
           variant="outline" 
           size="icon"
-          onClick={() => navigate("/dashboard")}
+          onClick={handleReturn}
           className="h-9 w-9"
+          title="Return to Dashboard"
         >
           <LayoutDashboard className="h-4 w-4" />
         </Button>
