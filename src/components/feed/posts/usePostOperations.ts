@@ -1,18 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export const usePostOperations = () => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const handleReaction = async (postId: string, userId: string | undefined, type: 'like' | 'dislike') => {
     if (!userId) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez être connecté pour réagir aux publications",
-        variant: "destructive"
-      });
+      toast("Vous devez être connecté pour réagir aux publications");
       return;
     }
 
@@ -51,11 +46,7 @@ export const usePostOperations = () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
       console.error('Error handling reaction:', error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue",
-        variant: "destructive"
-      });
+      toast("Une erreur est survenue");
     }
   };
 
@@ -72,31 +63,33 @@ export const usePostOperations = () => {
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      toast({
-        title: "Succès",
-        description: "Publication supprimée"
-      });
+      toast("Publication supprimée");
     } catch (error) {
       console.error('Error deleting post:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de supprimer la publication",
-        variant: "destructive"
-      });
+      toast("Impossible de supprimer la publication");
     }
   };
 
   const handleHide = async (postId: string, userId: string | undefined) => {
     if (!userId) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez être connecté pour masquer des publications",
-        variant: "destructive"
-      });
+      toast("Vous devez être connecté pour masquer des publications");
       return;
     }
 
     try {
+      // First check if the post is already hidden
+      const { data: existingHide } = await supabase
+        .from('hidden_posts')
+        .select('*')
+        .eq('post_id', postId)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (existingHide) {
+        toast("Cette publication est déjà masquée");
+        return;
+      }
+
       const { error } = await supabase
         .from('hidden_posts')
         .insert({
@@ -107,17 +100,10 @@ export const usePostOperations = () => {
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      toast({
-        title: "Succès",
-        description: "Publication masquée"
-      });
+      toast("Publication masquée");
     } catch (error) {
       console.error('Error hiding post:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de masquer la publication",
-        variant: "destructive"
-      });
+      toast("Impossible de masquer la publication");
     }
   };
 
