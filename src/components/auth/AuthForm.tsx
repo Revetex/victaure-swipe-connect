@@ -1,25 +1,64 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { KeyRound } from "lucide-react";
+import { KeyRound, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { ThemeSelector } from "./ThemeSelector";
+import { z } from "zod";
 
-export const AuthForm = () => {
+const authSchema = z.object({
+  email: z.string().email("Email invalide"),
+  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+  fullName: z.string().min(2, "Le nom doit contenir au moins 2 caractères").optional(),
+  phone: z.string().regex(/^\+?[0-9]{10,}$/, "Numéro de téléphone invalide").optional(),
+});
+
+interface AuthFormProps {
+  rememberMe: boolean;
+}
+
+export const AuthForm = ({ rememberMe }: AuthFormProps) => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     fullName: "",
     phone: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    try {
+      const dataToValidate = isSignUp ? formData : {
+        email: formData.email,
+        password: formData.password,
+      };
+      authSchema.parse(dataToValidate);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path) {
+            newErrors[err.path[0]] = err.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    
     setLoading(true);
 
     try {
@@ -114,7 +153,11 @@ export const AuthForm = () => {
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Votre nom complet"
                 required
+                className={errors.fullName ? "border-destructive" : ""}
               />
+              {errors.fullName && (
+                <p className="text-xs text-destructive">{errors.fullName}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label htmlFor="phone" className="text-sm font-medium text-foreground">
@@ -127,7 +170,11 @@ export const AuthForm = () => {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="Votre numéro de téléphone"
                 required
+                className={errors.phone ? "border-destructive" : ""}
               />
+              {errors.phone && (
+                <p className="text-xs text-destructive">{errors.phone}</p>
+              )}
             </div>
           </>
         )}
@@ -142,20 +189,41 @@ export const AuthForm = () => {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="Votre adresse email"
             required
+            className={errors.email ? "border-destructive" : ""}
           />
+          {errors.email && (
+            <p className="text-xs text-destructive">{errors.email}</p>
+          )}
         </div>
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-medium text-foreground">
             Mot de passe
           </label>
-          <Input
-            id="password"
-            type="password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            placeholder="Votre mot de passe"
-            required
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              placeholder="Votre mot de passe"
+              required
+              className={errors.password ? "border-destructive pr-10" : "pr-10"}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-xs text-destructive">{errors.password}</p>
+          )}
         </div>
 
         {!isSignUp && (
@@ -192,4 +260,4 @@ export const AuthForm = () => {
       </button>
     </div>
   );
-};
+}

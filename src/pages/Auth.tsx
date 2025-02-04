@@ -10,6 +10,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Loader } from "@/components/ui/loader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DownloadApp } from "@/components/dashboard/DownloadApp";
+import { RateLimiter } from "@/utils/RateLimiter";
+
+// Create a rate limiter instance
+const loginAttemptLimiter = new RateLimiter(5, 300000); // 5 attempts per 5 minutes
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -17,7 +21,6 @@ export default function Auth() {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
-    // Check current session
     const checkSession = async () => {
       try {
         setIsLoading(true);
@@ -44,8 +47,6 @@ export default function Auth() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
-      
       if (event === 'SIGNED_IN' && session) {
         toast.success("Connexion réussie");
         navigate("/dashboard", { replace: true });
@@ -73,19 +74,21 @@ export default function Auth() {
       {/* Main Content */}
       <div className="relative w-full py-8 px-4">
         <div className="container max-w-sm mx-auto space-y-8">
-          {/* Header */}
-          <div className="flex flex-col items-center space-y-2 text-center">
-            <Logo size="lg" className="text-4xl font-bold mb-4" />
-            <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
-            <p className="text-sm text-muted-foreground">
-              Connectez-vous ou créez un compte pour continuer
-            </p>
+          {/* Header with Logo above Title */}
+          <div className="flex flex-col items-center space-y-4 text-center">
+            <Logo size="lg" className="scale-150 mb-2" />
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
+              <p className="text-sm text-muted-foreground">
+                Connectez-vous ou créez un compte pour continuer
+              </p>
+            </div>
           </div>
 
           {/* Auth Card */}
           <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
             <BiometricAuth />
-            <AuthForm />
+            <AuthForm rememberMe={rememberMe} />
             <div className="flex items-center justify-center space-x-2">
               <Checkbox 
                 id="rememberMe" 
