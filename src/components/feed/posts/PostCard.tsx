@@ -9,6 +9,18 @@ import { PostActions } from "../PostActions";
 import { CommentManager } from "../comments/CommentManager";
 import { PostImageGrid } from "./PostImageGrid";
 
+interface Comment {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  profiles: {
+    id: string;
+    full_name: string;
+    avatar_url?: string;  // Made optional to match database schema
+  };
+}
+
 interface PostCardProps {
   post: Post;
   currentUserId?: string;
@@ -88,7 +100,7 @@ export function PostCard({
               postAuthorId={post.user_id}
               currentUserId={currentUserId}
               userEmail={userEmail}
-              comments={post.comments}
+              comments={post.comments as Comment[]}
               onCommentAdded={onCommentAdded}
             />
           )}

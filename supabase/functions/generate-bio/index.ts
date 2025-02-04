@@ -7,21 +7,21 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { skills, experiences, education, certifications } = await req.json()
+    const { skills, experiences, education, certifications, options } = await req.json()
     
-    console.log('Received profile data:', { skills, experiences, education, certifications })
+    console.log('Received profile data:', { skills, experiences, education, certifications, options })
 
     const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY')
     if (!huggingFaceApiKey) {
       throw new Error('Hugging Face API key not configured')
     }
 
-    // Construct a more detailed prompt with all available information
     const prompt = `Tu es un expert en rédaction de profils professionnels québécois. Génère une bio professionnelle percutante basée sur ces informations:
 
 ${skills && skills.length > 0 ? `Compétences principales: ${skills.join(', ')}` : ''}
@@ -41,16 +41,19 @@ ${certifications.map(cert =>
   `- ${cert.title} (${cert.issuer})`
 ).join('\n')}` : ''}
 
-Directives pour la bio:
+Style souhaité: ${options?.style || 'professionnel'}
+Longueur maximale: ${options?.maxLength || 500} caractères
+Format: ${options?.format || 'paragraphes'}
+Ton: ${options?.tone || 'confiant'}
+
+Directives:
 - Longueur: 2-3 phrases maximum
 - Ton: professionnel mais chaleureux
 - Style: première personne du singulier
 - Mettre en avant: expertise principale et réalisations clés
 - Inclure: une touche personnelle qui reflète la passion pour le domaine
 - Adapter: au contexte québécois
-- Éviter: les clichés et le jargon trop technique
-
-Génère une bio qui capture l'essence du profil tout en restant concise et engageante.`
+- Éviter: les clichés et le jargon trop technique`
 
     console.log('Sending prompt to Hugging Face:', prompt)
 
@@ -64,7 +67,7 @@ Génère une bio qui capture l'essence du profil tout en restant concise et enga
         inputs: prompt,
         parameters: {
           max_new_tokens: 200,
-          temperature: 0.7,
+          temperature: options?.creativity || 0.7,
           top_p: 0.95,
           return_full_text: false,
           do_sample: true,
