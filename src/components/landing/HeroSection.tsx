@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { motion } from "framer-motion";
-import { Footer } from "@/components/landing/Footer";
 
 export function HeroSection() {
   return (
@@ -10,7 +9,7 @@ export function HeroSection() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center py-20 overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center py-20 overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-b from-background to-background/50 backdrop-blur-sm" />
       <div className="relative z-10 container mx-auto px-4">
@@ -33,7 +32,7 @@ export function HeroSection() {
             transition={{ delay: 0.5, duration: 0.5 }}
             className="h-1 w-32 bg-gradient-to-r from-primary to-primary/50 mx-auto rounded-full mb-8"
           />
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 font-montserrat">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 font-montserrat leading-relaxed">
             Trouvez les meilleurs talents ou opportunités professionnelles. 
             Offrez ou recherchez des services de qualité, tous domaines confondus.
           </p>
@@ -62,7 +61,6 @@ export function HeroSection() {
           </motion.div>
         </motion.div>
       </div>
-      <Footer />
     </motion.section>
   );
 }
