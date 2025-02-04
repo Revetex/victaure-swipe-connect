@@ -112,7 +112,7 @@ export function Features() {
             <p className="text-muted-foreground mb-6 font-montserrat">
               Rejoignez des milliers de professionnels qui font confiance à Victaure pour leur développement professionnel
             </p>
-            <button className="bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/90 transition-colors font-semibold">
+            <button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8 py-3 rounded-full transition-colors font-semibold">
               Commencer Maintenant
             </button>
           </div>
