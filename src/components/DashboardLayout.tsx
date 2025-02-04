@@ -10,6 +10,7 @@ import { useNavigation } from "@/hooks/useNavigation";
 export function DashboardLayout() {
   const isMobile = useIsMobile();
   const [isEditing, setIsEditing] = useState(false);
+  const [showFriendsList, setShowFriendsList] = useState(false);
   const location = useLocation();
   const { showConversation } = useReceiver();
   const viewportHeight = useViewport();
@@ -58,6 +59,8 @@ export function DashboardLayout() {
       currentPage={currentPage}
       onPageChange={handlePageChange}
       isEditing={isEditing}
+      showFriendsList={showFriendsList}
+      onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
     >
       <DashboardContent
         currentPage={currentPage}

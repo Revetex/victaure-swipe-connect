@@ -37,7 +37,8 @@ export function DashboardHeader({
           variant="ghost"
           size="icon"
           onClick={onToggleFriendsList}
-          className="relative"
+          className="relative hover:bg-accent/50"
+          title={showFriendsList ? "Masquer les amis" : "Afficher les amis"}
         >
           {showFriendsList ? (
             <ChevronUp className="h-5 w-5" />

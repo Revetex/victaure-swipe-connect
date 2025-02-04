@@ -4,7 +4,6 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -12,6 +11,8 @@ interface MainLayoutProps {
   currentPage?: number;
   onPageChange?: (page: number) => void;
   isEditing?: boolean;
+  showFriendsList?: boolean;
+  onToggleFriendsList?: () => void;
 }
 
 export function MainLayout({ 
@@ -19,10 +20,11 @@ export function MainLayout({
   title = "", 
   currentPage = 1,
   onPageChange = () => {},
-  isEditing = false
+  isEditing = false,
+  showFriendsList = false,
+  onToggleFriendsList = () => {}
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
-  const [showFriendsList, setShowFriendsList] = useState(false);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -31,12 +33,12 @@ export function MainLayout({
           <DashboardHeader 
             title={title}
             showFriendsList={showFriendsList}
-            onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+            onToggleFriendsList={onToggleFriendsList}
             isEditing={isEditing}
           />
           
           <AnimatePresence>
-            {isMobile && (
+            {showFriendsList && (
               <DashboardFriendsList show={showFriendsList} />
             )}
           </AnimatePresence>
@@ -54,6 +56,7 @@ export function MainLayout({
           <DashboardNavigation 
             currentPage={currentPage}
             onPageChange={onPageChange}
+            isEditing={isEditing}
           />
         </div>
       </nav>
