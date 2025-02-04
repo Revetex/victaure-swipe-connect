@@ -39,6 +39,14 @@ export function MessagesWrapper() {
     setShowConversation(false);
   };
 
+  const handleSelectConversation = (type: "assistant" | "user", receiver?: any) => {
+    if (type === "assistant") {
+      setShowConversation(true);
+    } else if (receiver) {
+      setShowConversation(true);
+    }
+  };
+
   if (showConversation && receiver) {
     return (
       <div className="fixed inset-0 z-50 bg-background">
@@ -71,14 +79,7 @@ export function MessagesWrapper() {
       <ConversationList
         messages={messages}
         chatMessages={messages}
-        onSelectConversation={(type: "assistant" | "user", receiver?: any) => {
-          if (type === "assistant") {
-            setShowConversation(true);
-          } else if (receiver) {
-            // Handle user conversation selection
-            setShowConversation(true);
-          }
-        }}
+        onSelectConversation={handleSelectConversation}
       />
     </div>
   );

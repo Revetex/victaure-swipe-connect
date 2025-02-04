@@ -1,5 +1,4 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SearchHeader } from "../conversation/SearchHeader";
 import { UserMessage } from "../conversation/UserMessage";
 import { Message } from "@/types/chat/messageTypes";
 import { useNavigate } from "react-router-dom";
@@ -27,16 +26,15 @@ export function ConversationList({
 
   return (
     <div className="h-full flex flex-col">
-      <SearchHeader 
-        onNewConversation={handleNewConversation}
-      />
-      
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
           {/* AI Assistant Section - Pinned at top */}
           <div>
             <h3 className="font-semibold text-sm text-muted-foreground mb-2 px-2">Assistant IA</h3>
-            <div onClick={() => onSelectConversation("assistant")}>
+            <div 
+              onClick={() => onSelectConversation("assistant")}
+              className="cursor-pointer transition-all duration-200 hover:scale-[1.02]"
+            >
               <AssistantMessage
                 chatMessages={chatMessages}
                 onSelectConversation={onSelectConversation}
