@@ -13,11 +13,6 @@ serve(async (req) => {
   }
 
   try {
-    const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY');
-    if (!huggingFaceApiKey) {
-      throw new Error('Missing Hugging Face API key');
-    }
-
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -25,6 +20,7 @@ serve(async (req) => {
 
     // Get user ID from request
     const { user_id } = await req.json();
+    
     if (!user_id) {
       throw new Error('User ID is required');
     }
@@ -32,97 +28,89 @@ serve(async (req) => {
     // Fetch user profile
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('skills, role, city, state, country')
+      .select('skills, role, city, state')
       .eq('id', user_id)
       .single();
 
     if (profileError) {
-      console.error('Error fetching profile:', profileError);
       throw profileError;
     }
 
-    // Create context for AI
-    const context = `Generate 5 relevant job search suggestions in French for a ${profile.role} professional.
-    Their skills include: ${profile.skills?.join(', ') || 'various construction skills'}.
-    Location: ${[profile.city, profile.state, profile.country].filter(Boolean).join(', ') || 'Canada'}.
-    The suggestions should be job search queries that would be useful for finding relevant positions.
-    Format: Return only an array of strings, each being a search suggestion.`;
+    // Generate search suggestions based on profile
+    const suggestions = [];
+    const possibleFormats = [
+      // Location-based formats
+      (role: string, location: string) => `emplois ${role} ${location}`,
+      (role: string, location: string) => `recrutement ${role} ${location}`,
+      (role: string, location: string) => `offres d'emploi ${role} ${location}`,
+      
+      // Skills-based formats
+      (skills: string[]) => `emplois ${skills.join(' ')} Québec`,
+      (skills: string[]) => `offres ${skills.join(' ')} Montréal`,
+      (skills: string[]) => `recrutement ${skills.join(' ')} Canada`,
+      
+      // Role-based formats
+      (role: string) => `${role} temps plein`,
+      (role: string) => `${role} urgent`,
+      (role: string) => `${role} débutant`,
+      (role: string) => `${role} expérimenté`,
+    ];
 
-    console.log('Sending request to Hugging Face with context:', context);
-
-    // Call Hugging Face API with proper error handling
-    try {
-      const response = await fetch(
-        "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
-        {
-          headers: {
-            Authorization: `Bearer ${huggingFaceApiKey}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            inputs: context,
-            parameters: {
-              max_new_tokens: 256,
-              temperature: 0.7,
-              top_p: 0.95,
-              return_full_text: false,
-            },
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Hugging Face API error:', errorData);
-        throw new Error(`Hugging Face API error: ${errorData.error || 'Unknown error'}`);
-      }
-
-      const result = await response.json();
-      console.log('Hugging Face response:', result);
-
-      // Parse the response to extract suggestions
-      let suggestions: string[] = [];
-      try {
-        // The model should return a text that we can parse as an array
-        const text = result[0].generated_text;
-        // Extract suggestions using regex
-        suggestions = text.match(/["'](.+?)["']/g)?.map(s => s.replace(/["']/g, '')) || [];
-        // Ensure we have at least some suggestions
-        if (suggestions.length === 0) {
-          suggestions = text.split('\n')
-            .map(line => line.trim())
-            .filter(line => line.length > 0 && !line.includes('[') && !line.includes(']'))
-            .slice(0, 5);
-        }
-        // Limit to 5 suggestions
-        suggestions = suggestions.slice(0, 5);
-      } catch (error) {
-        console.error('Error parsing suggestions:', error);
-        // Fallback suggestions
-        suggestions = [
-          `${profile.role} ${profile.city || 'Québec'}`,
-          `emplois construction ${profile.state || 'Québec'}`,
-          `offres d'emploi ${profile.skills?.[0] || 'construction'}`,
-          `recrutement ${profile.role} expérimenté`,
-          `${profile.role} temps plein`
-        ];
-      }
-
-      return new Response(
-        JSON.stringify({ suggestions }),
-        { 
-          headers: { 
-            ...corsHeaders,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-    } catch (huggingFaceError) {
-      console.error('Hugging Face API error:', huggingFaceError);
-      throw new Error(`Hugging Face API error: ${huggingFaceError.message}`);
+    // Add location-based suggestions
+    if (profile.city || profile.state) {
+      const location = [profile.city, profile.state].filter(Boolean).join(', ');
+      const randomLocationFormats = possibleFormats
+        .slice(0, 3)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2);
+      
+      randomLocationFormats.forEach(format => {
+        suggestions.push(format(profile.role || 'construction', location));
+      });
     }
+
+    // Add skills-based suggestions
+    if (profile.skills?.length > 0) {
+      const randomSkills = [...profile.skills]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2);
+      
+      const randomSkillsFormat = possibleFormats
+        .slice(3, 6)
+        .sort(() => Math.random() - 0.5)[0];
+      
+      suggestions.push(randomSkillsFormat(randomSkills));
+    }
+
+    // Add role-based suggestions
+    if (profile.role) {
+      const randomRoleFormats = possibleFormats
+        .slice(6)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2);
+      
+      randomRoleFormats.forEach(format => {
+        suggestions.push(format(profile.role));
+      });
+    }
+
+    // Always add a general construction suggestion as fallback
+    suggestions.push('emplois construction Québec');
+
+    // Shuffle final array
+    const shuffledSuggestions = suggestions
+      .filter(Boolean)
+      .sort(() => Math.random() - 0.5);
+
+    return new Response(
+      JSON.stringify({ suggestions: shuffledSuggestions }),
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
   } catch (error) {
     console.error('Error in generate-search-suggestions:', error);

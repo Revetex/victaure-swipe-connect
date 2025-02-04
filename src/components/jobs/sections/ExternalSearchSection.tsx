@@ -1,107 +1,151 @@
 import { useEffect, useState } from "react";
 import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
-import { toast } from "sonner";
-import { SearchSuggestions } from "./SearchSuggestions";
-import { SearchResultsStyle } from "./SearchResultsStyle";
 
-interface ExternalSearchSectionProps {
-  isLoading?: boolean;
-  hasError?: boolean;
-  errorMessage?: string;
-}
-
-export function ExternalSearchSection({ 
-  isLoading = false, 
-  hasError = false, 
-  errorMessage 
-}: ExternalSearchSectionProps) {
+export function ExternalSearchSection() {
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
-  const [usedSuggestions] = useState(new Set<string>());
-
-  const fetchSuggestions = async () => {
-    try {
-      setIsRefreshing(true);
-      setIsFetchingSuggestions(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour voir les suggestions");
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
-        body: { user_id: user.id }
-      });
-
-      if (error) throw error;
-      if (data?.suggestions) {
-        const newSuggestions = data.suggestions.filter(
-          (suggestion: string) => !usedSuggestions.has(suggestion)
-        );
-        setSuggestions(newSuggestions);
-        setShowSuggestions(true);
-        toast.success("Nouvelles suggestions générées!");
-      }
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-      toast.error("Erreur lors de la génération des suggestions");
-    } finally {
-      setIsRefreshing(false);
-      setIsFetchingSuggestions(false);
-    }
-  };
 
   useEffect(() => {
-    fetchSuggestions();
-  }, []);
-
-  const handleSuggestionClick = (suggestion: string) => {
-    const searchInput = document.querySelector('.gsc-input') as HTMLInputElement;
-    if (searchInput) {
-      searchInput.value = suggestion;
-      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Search box styling */
+      .gsc-input-box {
+        background: transparent !important;
+        border: 1px solid hsl(var(--border)) !important;
+        border-radius: 0.5rem !important;
+      }
       
-      usedSuggestions.add(suggestion);
-      setSuggestions(prevSuggestions => 
-        prevSuggestions.filter(s => s !== suggestion)
-      );
+      .gsc-input {
+        background: transparent !important;
+        color: hsl(var(--foreground)) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 0.875rem !important;
+      }
 
-      setTimeout(() => {
-        const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
-        if (searchButton) {
-          searchButton.click();
-        }
-      }, 100);
-    }
-  };
+      .gsc-search-button {
+        background-color: hsl(var(--primary)) !important;
+        border: none !important;
+        border-radius: 0.5rem !important;
+        padding: 8px 16px !important;
+      }
+
+      .gsc-search-button:hover {
+        background-color: hsl(var(--primary)/0.9) !important;
+      }
+
+      /* Results styling */
+      .gsc-result {
+        background: transparent !important;
+        border: 1px solid hsl(var(--border)) !important;
+        border-radius: 0.5rem !important;
+        margin: 8px 0 !important;
+        padding: 12px !important;
+      }
+
+      .gsc-result:hover {
+        background-color: hsl(var(--accent)/0.1) !important;
+      }
+
+      .gsc-result .gs-title {
+        color: hsl(var(--primary)) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 1rem !important;
+      }
+
+      .gsc-result .gs-snippet {
+        color: hsl(var(--muted-foreground)) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 0.875rem !important;
+      }
+
+      /* Suggestions styling */
+      .gsc-completion-container {
+        background: transparent !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid hsl(var(--border)) !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+        font-family: var(--font-sans) !important;
+      }
+
+      .gsc-completion-container table {
+        background: transparent !important;
+      }
+
+      .gsc-completion-container tr {
+        background: transparent !important;
+      }
+
+      .gsc-completion-container td {
+        background: transparent !important;
+        color: hsl(var(--foreground)) !important;
+        font-family: var(--font-sans) !important;
+        font-size: 0.875rem !important;
+        line-height: 1.5 !important;
+        padding: 8px 12px !important;
+      }
+
+      .gsc-completion-container tr:hover td {
+        background-color: hsl(var(--accent)/0.1) !important;
+      }
+
+      /* Remove any remaining white backgrounds */
+      .gsc-control-cse,
+      .gsc-control-wrapper-cse,
+      .gsc-results-wrapper-nooverlay,
+      .gsc-results-wrapper-visible,
+      .gsc-results-wrapper-overlay,
+      .gsc-results-inner-overlay,
+      .gsc-results-inner-visible,
+      .gsc-orderby-container,
+      .gsc-webResult,
+      .gsc-result {
+        background: transparent !important;
+      }
+
+      /* Additional transparency fixes */
+      .gsc-results .gsc-cursor-box {
+        background: transparent !important;
+        margin: 12px 0 !important;
+      }
+
+      .gsc-cursor-page {
+        color: hsl(var(--foreground)) !important;
+        background: transparent !important;
+        padding: 8px 12px !important;
+        border-radius: 0.25rem !important;
+      }
+
+      .gsc-cursor-page:hover,
+      .gsc-cursor-current-page {
+        background-color: hsl(var(--accent)/0.1) !important;
+      }
+
+      .gsc-above-wrapper-area,
+      .gsc-refinementsArea {
+        background: transparent !important;
+        border: none !important;
+      }
+    `;
+
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   return (
     <div className="w-full space-y-4">
-      <Card className="p-4 bg-background/60 backdrop-blur-sm border border-border/50">
-        <SearchSuggestions
-          showSuggestions={showSuggestions}
-          setShowSuggestions={setShowSuggestions}
-          suggestions={suggestions}
-          isRefreshing={isRefreshing}
-          isFetchingSuggestions={isFetchingSuggestions}
-          onRefresh={fetchSuggestions}
-          onSuggestionClick={handleSuggestionClick}
-        />
-
+      <div className="relative">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent relative"
+          className="w-full [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent"
         >
           <GoogleSearchBox />
-          <SearchResultsStyle />
         </motion.div>
-      </Card>
+      </div>
     </div>
   );
 }
