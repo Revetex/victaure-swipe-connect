@@ -41,7 +41,6 @@ export const AuthVideo = () => {
   };
 
   const handlePause = () => {
-    // Ne mettons pas à jour isPlaying si la pause est due au seeking
     if (videoRef.current && !videoRef.current.seeking) {
       setIsPlaying(false);
     }
@@ -81,7 +80,6 @@ export const AuthVideo = () => {
             Votre navigateur ne supporte pas la lecture de vidéos.
           </video>
           
-          {/* Video Overlay - Now shown when not playing */}
           <div 
             className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >

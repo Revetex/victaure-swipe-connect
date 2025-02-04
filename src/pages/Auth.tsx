@@ -5,15 +5,9 @@ import { toast } from "sonner";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Logo } from "@/components/Logo";
-import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DownloadApp } from "@/components/dashboard/DownloadApp";
-import { RateLimiter } from "@/utils/RateLimiter";
-
-// Create a rate limiter instance
-const loginAttemptLimiter = new RateLimiter(5, 300000); // 5 attempts per 5 minutes
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -45,7 +39,6 @@ export default function Auth() {
 
     checkSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         toast.success("Connexion réussie");
@@ -103,16 +96,6 @@ export default function Auth() {
                 Rester connecté
               </label>
             </div>
-          </div>
-
-          {/* Video Section */}
-          <div className="w-full">
-            <AuthVideo />
-          </div>
-
-          {/* Download App Section */}
-          <div className="w-full">
-            <DownloadApp />
           </div>
 
           {/* Legal Links - Centered */}
