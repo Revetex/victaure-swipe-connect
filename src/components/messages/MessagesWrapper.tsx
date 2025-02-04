@@ -1,121 +1,62 @@
-import { Message, Receiver } from "@/types/messages";
+import { useState } from "react";
 import { MessagesContent } from "./MessagesContent";
-import { MessagesList } from "./conversation/MessagesList";
-import { useMessages } from "@/hooks/useMessages";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { MessagesTabs } from "./MessagesTabs";
+import { useReceiver } from "@/hooks/useReceiver";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "../ui/button";
 
-interface MessagesWrapperProps {
-  chatMessages: Message[];
-  inputMessage: string;
-  isListening: boolean;
-  isThinking: boolean;
-  showConversation: boolean;
-  setShowConversation: (show: boolean) => void;
-  handleSendMessage: (message: string) => Promise<void>;
-  handleVoiceInput: () => void;
-  setInputMessage: (message: string) => void;
-  clearChat: () => void;
-  selectedReceiver: Receiver | null;
-  setSelectedReceiver: (receiver: Receiver | null) => void;
-}
-
-export function MessagesWrapper({
-  chatMessages,
-  inputMessage,
-  isListening,
-  isThinking,
-  showConversation,
-  setShowConversation,
-  handleSendMessage,
-  handleVoiceInput,
-  setInputMessage,
-  clearChat,
-  selectedReceiver,
-  setSelectedReceiver
-}: MessagesWrapperProps) {
-  const { messages = [], markAsRead } = useMessages();
-  const navigate = useNavigate();
-  const { user } = useAuth();
+export function MessagesWrapper() {
+  const { showConversation, setShowConversation, receiver } = useReceiver();
+  const [activeTab, setActiveTab] = useState<"messages" | "notifications">("messages");
 
   const handleBack = () => {
     setShowConversation(false);
-    setSelectedReceiver(null);
-    navigate('/dashboard/messages');
-  };
-
-  const handleSelectConversation = async (type: "assistant" | "user", receiver?: Receiver) => {
-    try {
-      if (type === "assistant") {
-        setSelectedReceiver({
-          id: 'assistant',
-          full_name: 'M. Victaure',
-          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-          online_status: true,
-          last_seen: new Date().toISOString()
-        });
-        setShowConversation(true);
-      } else if (type === "user" && receiver) {
-        // Prevent self-conversation
-        if (receiver.id === user?.id) {
-          toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
-          return;
-        }
-
-        const unreadMessages = messages.filter(
-          m => {
-            const senderId = typeof m.sender === 'string' ? m.sender : m.sender.id;
-            return senderId === receiver.id && !m.read;
-          }
-        );
-        
-        for (const message of unreadMessages) {
-          await markAsRead.mutateAsync(message.id);
-        }
-
-        setSelectedReceiver(receiver);
-        setShowConversation(true);
-        navigate(`/dashboard/messages/${receiver.id}`);
-      }
-    } catch (error) {
-      console.error("Error selecting conversation:", error);
-      toast.error("Erreur lors de la sélection de la conversation");
-    }
-  };
-
-  const handleClearConversation = () => {
-    try {
-      clearChat();
-      toast.success("Conversation effacée avec succès");
-    } catch (error) {
-      console.error("Error clearing chat:", error);
-      toast.error("Erreur lors de l'effacement de la conversation");
-    }
   };
 
   return (
-    <div className="h-[calc(100dvh-4rem)] flex flex-col overflow-hidden bg-background">
+    <AnimatePresence mode="wait">
       {showConversation ? (
-        <MessagesContent
-          messages={messages}
-          inputMessage={inputMessage}
-          isListening={isListening}
-          isThinking={isThinking}
-          onSendMessage={handleSendMessage}
-          onVoiceInput={handleVoiceInput}
-          setInputMessage={setInputMessage}
-          onClearChat={handleClearConversation}
-          onBack={handleBack}
-          receiver={selectedReceiver}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="fixed inset-0 z-50 bg-background"
+        >
+          <div className="flex h-full flex-col">
+            <div className="border-b">
+              <div className="flex items-center gap-2 p-4">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={handleBack}
+                  className="shrink-0"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <span className="text-lg font-medium">
+                  {receiver?.full_name || "Chat"}
+                </span>
+              </div>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <MessagesContent />
+            </div>
+          </div>
+        </motion.div>
       ) : (
-        <MessagesList
-          messages={messages}
-          chatMessages={chatMessages}
-          onSelectConversation={handleSelectConversation}
-        />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="h-full"
+        >
+          <MessagesTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        </motion.div>
       )}
-    </div>
+    </AnimatePresence>
   );
 }

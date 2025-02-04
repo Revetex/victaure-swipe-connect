@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
 import { useState, useCallback } from "react";
 import { DashboardNavigation } from "./DashboardNavigation";
-import { DashboardContainer } from "./DashboardContainer";
 import { DashboardContent } from "./DashboardContent";
 import { useDebounce } from "use-debounce";
+import { useReceiver } from "@/hooks/useReceiver";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -13,6 +13,7 @@ export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const { showConversation } = useReceiver();
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -31,7 +32,6 @@ export function DashboardLayout() {
     if (now - lastPageChange >= THROTTLE_DELAY) {
       setCurrentPage(page);
       setLastPageChange(now);
-      // Reset editing state for all pages except Notes/Tasks
       if (page !== 4) {
         setIsEditing(false);
       }
@@ -69,22 +69,24 @@ export function DashboardLayout() {
         </div>
       </div>
       
-      <nav 
-        className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300 ${
-          isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
-        }`}
-        style={{ 
-          height: '4rem',
-          paddingBottom: 'env(safe-area-inset-bottom)'
-        }}
-      >
-        <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
-          <DashboardNavigation 
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      </nav>
+      {!showConversation && (
+        <nav 
+          className={`fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-40 lg:border-none lg:bg-transparent transition-all duration-300 ${
+            isEditing && currentPage === 4 ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+          }`}
+          style={{ 
+            height: '4rem',
+            paddingBottom: 'env(safe-area-inset-bottom)'
+          }}
+        >
+          <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+            <DashboardNavigation 
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        </nav>
+      )}
     </div>
   );
 }
