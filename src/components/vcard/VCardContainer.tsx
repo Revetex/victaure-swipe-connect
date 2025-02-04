@@ -1,44 +1,37 @@
-import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 import { motion } from "framer-motion";
 
 interface VCardContainerProps {
-  children: React.ReactNode;
-  className?: string;
-  isEditing?: boolean;
+  children: ReactNode;
+  isEditing: boolean;
+  customStyles?: {
+    font?: string | null;
+    background?: string | null;
+    textColor?: string | null;
+  };
 }
 
-export function VCardContainer({ children, className, isEditing }: VCardContainerProps) {
+export function VCardContainer({ children, isEditing, customStyles }: VCardContainerProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        "relative rounded-xl overflow-hidden",
-        "before:absolute before:inset-0 before:bg-gradient-to-br",
-        "before:from-purple-500/10 before:via-blue-500/5 before:to-purple-600/10",
-        "before:animate-gradient-shift",
-        isEditing && "border-2 border-primary/50",
-        className
-      )}
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="relative w-full min-h-screen transition-all duration-300 text-foreground text-sm sm:text-base bg-transparent px-0"
+      style={{
+        fontFamily: customStyles?.font || 'inherit',
+        backgroundColor: 'transparent',
+        color: customStyles?.textColor || 'inherit'
+      }}
     >
-      <motion.div
-        className="absolute inset-0 opacity-30"
-        animate={{
-          background: [
-            "radial-gradient(circle at 0% 0%, #9b87f5 0%, transparent 50%)",
-            "radial-gradient(circle at 100% 100%, #1EA5E9 0%, transparent 50%)",
-            "radial-gradient(circle at 0% 100%, #9b87f5 0%, transparent 50%)",
-            "radial-gradient(circle at 100% 0%, #1EA5E9 0%, transparent 50%)",
-            "radial-gradient(circle at 0% 0%, #9b87f5 0%, transparent 50%)",
-          ],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
-      {children}
+      <div className="relative z-10 w-full mx-auto py-4 sm:py-6 lg:py-8">
+        <div className={`space-y-4 sm:space-y-6 ${
+          isEditing 
+            ? 'p-0 sm:p-6 shadow-lg border border-border/20 rounded-xl dark:bg-black/20 dark:border-white/5' 
+            : ''
+        }`}>
+          {children}
+        </div>
+      </div>
     </motion.div>
   );
 }

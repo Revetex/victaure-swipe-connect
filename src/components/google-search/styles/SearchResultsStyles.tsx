@@ -1,30 +1,85 @@
 export const SearchResultsStyles = `
-  .results-container {
-    @apply w-full max-w-3xl mx-auto mt-4 space-y-6 p-4 
-    bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60
-    border border-border/50 rounded-lg;
+  .gsc-control-cse {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
   }
 
-  .result-item {
-    @apply p-4 rounded-lg 
-    bg-white/5 dark:bg-gray-800/50
-    hover:bg-white/10 dark:hover:bg-gray-800/60
-    transition-colors duration-200
-    backdrop-blur-sm
-    border border-border/50;
+  .gsc-result {
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    padding: 1rem !important;
+    background: transparent !important;
   }
 
-  .result-title {
-    @apply text-lg font-medium mb-2
-    text-primary hover:text-primary/90
-    cursor-pointer;
+  .gsc-result:hover {
+    transform: translateY(-2px);
   }
 
-  .result-url {
-    @apply text-sm text-muted-foreground mb-2;
+  .gs-title {
+    color: hsl(var(--primary)) !important;
+    text-decoration: none !important;
+    font-size: 1.1rem !important;
+    line-height: 1.5 !important;
   }
 
-  .result-description {
-    @apply text-foreground/90 line-clamp-3;
+  .gs-title:hover {
+    text-decoration: underline !important;
+  }
+
+  .gs-snippet {
+    color: hsl(var(--foreground)) !important;
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
+    background: transparent !important;
+  }
+
+  .gsc-url-top {
+    color: hsl(var(--muted-foreground)) !important;
+    font-size: 0.8rem !important;
+  }
+
+  .gsc-cursor-page {
+    color: hsl(var(--foreground)) !important;
+    background: transparent !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.25rem !important;
+  }
+
+  .gsc-cursor-page:hover {
+    background: hsl(var(--accent)) !important;
+  }
+
+  .gsc-cursor-current-page {
+    color: hsl(var(--primary)) !important;
+    background: hsl(var(--accent)) !important;
+  }
+
+  .gcsc-find-more-on-google {
+    display: none !important;
+  }
+
+  .gcsc-find-more-on-google-root {
+    display: none !important;
+  }
+
+  .gsc-results {
+    background: transparent !important;
+  }
+
+  .gsc-webResult {
+    background: transparent !important;
+  }
+
+  .gsc-webResult.gsc-result {
+    background: transparent !important;
+  }
+
+  .gsc-results .gsc-cursor-box {
+    background: transparent !important;
+  }
+
+  .gsc-above-wrapper-area {
+    background: transparent !important;
   }
 `;

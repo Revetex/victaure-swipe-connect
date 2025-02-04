@@ -4,27 +4,22 @@ import { SearchResultsStyles } from './styles/SearchResultsStyles';
 
 export function useGoogleSearchStyles() {
   useEffect(() => {
-    // Create a style element
-    const styleEl = document.createElement('style');
-    styleEl.setAttribute('id', 'google-search-styles');
-    
-    // Combine all styles
-    const styles = `
+    const style = document.createElement('style');
+    style.textContent = `
+      .gsc-control-cse {
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+      }
+
       ${SearchBarStyles}
       ${SearchResultsStyles}
     `;
-    
-    styleEl.textContent = styles;
-    
-    // Add styles to document head
-    document.head.appendChild(styleEl);
-    
-    // Cleanup on unmount
+
+    document.head.appendChild(style);
+
     return () => {
-      const existingStyle = document.getElementById('google-search-styles');
-      if (existingStyle) {
-        existingStyle.remove();
-      }
+      document.head.removeChild(style);
     };
   }, []);
 }

@@ -5,8 +5,6 @@ import type { PendingRequest as PendingRequestType } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
-import { motion } from "framer-motion";
-import { toast } from "sonner";
 
 interface PendingRequestProps {
   request: PendingRequestType;
@@ -17,44 +15,7 @@ interface PendingRequestProps {
 
 export function PendingRequest({ request, onAccept, onReject, onCancel }: PendingRequestProps) {
   const [showProfile, setShowProfile] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const profile = request.type === 'incoming' ? request.sender : request.receiver;
-
-  const handleAccept = async () => {
-    try {
-      setIsProcessing(true);
-      await onAccept(request.id, request.sender.id, request.sender.full_name);
-      toast.success(`Vous êtes maintenant ami avec ${request.sender.full_name}`);
-    } catch (error) {
-      toast.error("Une erreur est survenue");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleReject = async () => {
-    try {
-      setIsProcessing(true);
-      await onReject(request.id, request.sender.full_name);
-      toast.success(`Demande d'ami de ${request.sender.full_name} rejetée`);
-    } catch (error) {
-      toast.error("Une erreur est survenue");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleCancel = async () => {
-    try {
-      setIsProcessing(true);
-      await onCancel(request.id, request.receiver.full_name);
-      toast.success(`Demande d'ami à ${request.receiver.full_name} annulée`);
-    } catch (error) {
-      toast.error("Une erreur est survenue");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   // Create a complete UserProfile object from the partial profile data
   const userProfile: UserProfile = {
@@ -75,14 +36,9 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
 
   return (
     <>
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg"
-      >
+      <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg animate-pulse">
         <Avatar 
-          className="h-10 w-10 border-2 border-primary/10 cursor-pointer hover:border-primary/30 transition-colors"
+          className="h-10 w-10 border-2 border-primary/10 cursor-pointer"
           onClick={() => setShowProfile(true)}
         >
           <AvatarImage 
@@ -94,7 +50,7 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
           </AvatarFallback>
         </Avatar>
         <div 
-          className="flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+          className="flex-1 min-w-0 cursor-pointer"
           onClick={() => setShowProfile(true)}
         >
           <p className="font-medium truncate">
@@ -113,8 +69,7 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
                 size="sm"
                 variant="default"
                 className="h-8 px-3"
-                onClick={handleAccept}
-                disabled={isProcessing}
+                onClick={() => onAccept(request.id, request.sender.id, request.sender.full_name)}
               >
                 <Check className="h-4 w-4" />
               </Button>
@@ -122,8 +77,7 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
                 size="sm"
                 variant="outline"
                 className="h-8 px-3"
-                onClick={handleReject}
-                disabled={isProcessing}
+                onClick={() => onReject(request.id, request.sender.full_name)}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -133,14 +87,13 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
               size="sm"
               variant="outline"
               className="h-8 px-3"
-              onClick={handleCancel}
-              disabled={isProcessing}
+              onClick={() => onCancel(request.id, request.receiver.full_name)}
             >
               <Clock className="h-4 w-4" />
             </Button>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {showProfile && (
         <ProfilePreview

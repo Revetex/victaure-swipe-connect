@@ -1,60 +1,76 @@
-import { cn } from "@/lib/utils";
-
-export const searchBarContainerStyles = cn(
-  "w-full max-w-3xl mx-auto",
-  "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-  "rounded-lg border border-border/50",
-  "shadow-xl"
-);
-
-export const searchInputContainerStyles = cn(
-  "relative flex items-center",
-  "px-4 py-3"
-);
-
-export const searchInputStyles = cn(
-  "w-full bg-transparent",
-  "text-foreground placeholder:text-muted-foreground",
-  "focus:outline-none focus:ring-0",
-  "text-base md:text-lg"
-);
-
-export const searchButtonStyles = cn(
-  "ml-2 p-2 rounded-full",
-  "bg-primary/10 hover:bg-primary/20",
-  "text-primary",
-  "transition-colors duration-200"
-);
-
-export const searchOptionsContainerStyles = cn(
-  "flex flex-wrap gap-2 px-4 pb-3",
-  "animate-in fade-in-50 slide-in-from-top-2"
-);
-
-export const searchOptionStyles = cn(
-  "px-3 py-1 rounded-full",
-  "bg-muted/50 hover:bg-muted",
-  "cursor-pointer transition-colors"
-);
-
-// Export all styles as a single string for the GoogleSearchStyles component
 export const SearchBarStyles = `
-  .search-bar-container {
-    ${searchBarContainerStyles}
+  .gsc-control-cse {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
   }
-  .search-input-container {
-    ${searchInputContainerStyles}
+
+  .gsc-search-box {
+    margin: 0 !important;
+    background: transparent !important;
   }
-  .search-input {
-    ${searchInputStyles}
+
+  .gsc-input-box {
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 0.5rem !important;
+    background: hsl(var(--background)) !important;
+    padding: 0.5rem !important;
   }
-  .search-button {
-    ${searchButtonStyles}
+
+  .gsc-input {
+    padding: 0 !important;
+    width: 100% !important;
+    font-family: inherit !important;
+    text-transform: none !important;
   }
-  .search-options-container {
-    ${searchOptionsContainerStyles}
+
+  .gsc-completion-container {
+    font-family: inherit !important;
+    text-transform: none !important;
+    background: hsl(var(--background)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    margin-top: 4px !important;
   }
-  .search-option {
-    ${searchOptionStyles}
+
+  .gsc-completion-selected {
+    background: hsl(var(--accent)) !important;
+  }
+
+  .gsc-search-button {
+    display: none !important;
+  }
+
+  .gsc-results-wrapper-overlay {
+    background: hsl(var(--background)) !important;
+  }
+
+  .gsc-webResult.gsc-result {
+    border: none !important;
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+    background: transparent !important;
+  }
+
+  .gs-title {
+    color: hsl(var(--primary)) !important;
+    text-decoration: none !important;
+  }
+
+  .gs-snippet {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .gsc-url-top {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  .gsc-cursor-page {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .gsc-loading-fade {
+    background: hsl(var(--background)) !important;
   }
 `;
