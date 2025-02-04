@@ -1,35 +1,43 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { useEffect, useRef } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 export function GoogleSearchBox() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
-  const handleSearch = () => {
-    if (!searchTerm.trim()) return;
-    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`;
-    window.open(searchUrl, "_blank");
-  };
+  useEffect(() => {
+    if (!searchContainerRef.current) return;
 
-  return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Input
-            type="text"
-            placeholder="Rechercher sur Google..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="w-full pl-10 bg-background/50 backdrop-blur-sm border-primary/20"
-          />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        </div>
-        <Button onClick={handleSearch} className="bg-primary/90 hover:bg-primary">
-          Rechercher
-        </Button>
-      </div>
-    </div>
-  );
+    const script = document.createElement('script');
+    script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
+    script.async = true;
+    scriptRef.current = script;
+
+    const searchDiv = document.createElement('div');
+    searchDiv.className = 'gcse-search';
+    searchContainerRef.current.innerHTML = '';
+    searchContainerRef.current.appendChild(searchDiv);
+
+    document.head.appendChild(script);
+
+    script.onerror = () => {
+      toast({
+        variant: "destructive",
+        title: "Erreur de chargement",
+        description: "Impossible de charger le moteur de recherche. Veuillez réessayer."
+      });
+    };
+
+    return () => {
+      if (scriptRef.current && document.head.contains(scriptRef.current)) {
+        document.head.removeChild(scriptRef.current);
+      }
+      if (searchContainerRef.current) {
+        searchContainerRef.current.innerHTML = '';
+      }
+    };
+  }, [toast]);
+
+  return <div ref={searchContainerRef} className="w-full" />;
 }
