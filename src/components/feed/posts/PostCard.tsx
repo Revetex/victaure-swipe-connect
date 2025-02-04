@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { PostContent } from "./PostContent";
 import { PostHeader } from "../PostHeader";
-import { PostComments } from "../PostComments";
 import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { PostActions } from "../PostActions";
+import { CommentManager } from "../comments/CommentManager";
 
 interface PostCardProps {
   post: Post;
@@ -30,6 +31,14 @@ export function PostCard({
   const [showComments, setShowComments] = useState(false);
   const isMobile = useIsMobile();
 
+  const handleReaction = (type: 'like' | 'dislike') => {
+    onReaction?.(post.id, type);
+  };
+
+  const handleToggleComments = () => {
+    setShowComments(!showComments);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -48,29 +57,51 @@ export function PostCard({
           created_at={post.created_at}
           privacy_level={post.privacy_level}
         />
-        <PostContent 
-          content={post.content}
-          images={post.images}
-          currentUserId={currentUserId}
-          userEmail={userEmail}
-          likes={post.likes}
-          dislikes={post.dislikes}
-          commentCount={post.comments?.length || 0}
-          userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type}
-          comments={post.comments}
-          onReaction={(type) => onReaction?.(post.id, type)}
-          onCommentAdded={onCommentAdded!}
-          onDelete={onDelete}
-          onHide={() => onHide?.(post.id)}
-          postUserId={post.user_id}
-        />
-        {showComments && post.comments && (
-          <PostComments 
-            comments={post.comments}
+
+        <div className="space-y-4">
+          <div className="text-sm text-gray-600 dark:text-gray-300">
+            {post.content}
+          </div>
+          
+          {post.images && post.images.length > 0 && (
+            <div className="grid grid-cols-2 gap-2">
+              {post.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`Post image ${index + 1}`}
+                  className="rounded-lg object-cover w-full h-48"
+                />
+              ))}
+            </div>
+          )}
+
+          <PostActions
+            likes={post.likes}
+            dislikes={post.dislikes}
+            commentCount={post.comments?.length || 0}
+            userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type}
+            isExpanded={showComments}
+            postId={post.id}
+            postAuthorId={post.user_id}
             currentUserId={currentUserId}
-            onDeleteComment={() => onCommentAdded?.()}
+            userEmail={userEmail}
+            onLike={() => handleReaction('like')}
+            onDislike={() => handleReaction('dislike')}
+            onToggleComments={handleToggleComments}
           />
-        )}
+
+          {showComments && (
+            <CommentManager
+              postId={post.id}
+              postAuthorId={post.user_id}
+              currentUserId={currentUserId}
+              userEmail={userEmail}
+              comments={post.comments}
+              onCommentAdded={onCommentAdded}
+            />
+          )}
+        </div>
       </Card>
     </motion.div>
   );

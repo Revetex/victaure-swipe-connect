@@ -14,7 +14,6 @@ import {
 import { useState } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 
 interface PostListProps {
@@ -26,7 +25,6 @@ export function PostList({ onPostDeleted }: PostListProps) {
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const { handleReaction, handleDelete, handleHide } = usePostOperations();
-  const isMobile = useIsMobile();
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
