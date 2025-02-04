@@ -15,7 +15,6 @@ import { useState } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PostListProps {
   onPostDeleted: () => void;
@@ -81,23 +80,21 @@ export function PostList({ onPostDeleted }: PostListProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <ScrollArea className={isMobile ? "h-[calc(100dvh-10rem)]" : "h-auto"}>
-        <div className="space-y-4 pr-1">
-          {posts?.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              currentUserId={user?.id}
-              userEmail={user?.email}
-              onDelete={() => setPostToDelete(post.id)}
-              onHide={(postId) => handleHide(postId, user?.id)}
-              onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
-              onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
-            />
-          ))}
-        </div>
-      </ScrollArea>
+    <div className="h-full overflow-y-auto">
+      <div className="space-y-4 pb-safe">
+        {posts?.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            currentUserId={user?.id}
+            userEmail={user?.email}
+            onDelete={() => setPostToDelete(post.id)}
+            onHide={(postId) => handleHide(postId, user?.id)}
+            onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
+            onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
+          />
+        ))}
+      </div>
 
       <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
         <AlertDialogContent>
