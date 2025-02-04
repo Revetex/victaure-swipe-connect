@@ -5,10 +5,20 @@ import { useReceiver } from "@/hooks/useReceiver";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../ui/button";
+import { useChat } from "@/hooks/useChat";
 
 export function MessagesWrapper() {
   const { showConversation, setShowConversation, receiver } = useReceiver();
   const [activeTab, setActiveTab] = useState<"messages" | "notifications">("messages");
+  const {
+    messages: chatMessages,
+    inputMessage,
+    isListening,
+    isThinking,
+    setInputMessage,
+    handleSendMessage,
+    handleVoiceInput
+  } = useChat();
 
   const handleBack = () => {
     setShowConversation(false);
@@ -40,7 +50,17 @@ export function MessagesWrapper() {
               </div>
             </div>
             <div className="flex-1 overflow-hidden">
-              <MessagesContent />
+              <MessagesContent
+                messages={chatMessages}
+                inputMessage={inputMessage}
+                isThinking={isThinking}
+                isListening={isListening}
+                onSendMessage={handleSendMessage}
+                onVoiceInput={handleVoiceInput}
+                setInputMessage={setInputMessage}
+                onBack={handleBack}
+                receiver={receiver}
+              />
             </div>
           </div>
         </motion.div>
