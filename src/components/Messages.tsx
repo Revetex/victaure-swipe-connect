@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { Message, Receiver } from "@/types/messages";
 import { formatChatMessages, filterMessages } from "@/utils/messageUtils";
+import { motion } from "framer-motion";
 
 const queryClient = new QueryClient();
 
@@ -94,25 +95,46 @@ function MessagesWithQuery({
   const currentMessages = selectedReceiver?.id === 'assistant' ? formattedChatMessages : messages;
   const filteredMessages = filterMessages(currentMessages || [], selectedReceiver);
 
-  return showConversation ? (
-    <MessagesContent
-      messages={filteredMessages}
-      inputMessage={inputMessage || ""}
-      isListening={isListening}
-      isThinking={isThinking}
-      onSendMessage={handleSendMessage}
-      onVoiceInput={handleVoiceInput}
-      setInputMessage={setInputMessage}
-      onClearChat={handleClearConversation}
-      onBack={handleBack}
-      receiver={selectedReceiver}
-    />
-  ) : (
-    <MessagesList
-      messages={messages || []}
-      chatMessages={formattedChatMessages}
-      onSelectConversation={handleSelectConversation}
-    />
+  return (
+    <div className="relative h-full">
+      {/* Animated background */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: [0.02, 0.05, 0.02],
+          scale: [1, 1.02, 1],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+      </motion.div>
+
+      {showConversation ? (
+        <MessagesContent
+          messages={filteredMessages}
+          inputMessage={inputMessage || ""}
+          isListening={isListening}
+          isThinking={isThinking}
+          onSendMessage={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
+          setInputMessage={setInputMessage}
+          onClearChat={handleClearConversation}
+          onBack={handleBack}
+          receiver={selectedReceiver}
+        />
+      ) : (
+        <MessagesList
+          messages={messages || []}
+          chatMessages={formattedChatMessages}
+          onSelectConversation={handleSelectConversation}
+        />
+      )}
+    </div>
   );
 }
 

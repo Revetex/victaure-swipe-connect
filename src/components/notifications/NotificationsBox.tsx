@@ -89,11 +89,18 @@ export function NotificationsBox() {
         onClick={() => setIsOpen(!isOpen)}
       >
         <Bell className="h-5 w-5" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
-            {unreadCount}
-          </span>
-        )}
+        <AnimatePresence>
+          {unreadCount > 0 && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center"
+            >
+              {unreadCount}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </Button>
 
       <AnimatePresence>
@@ -122,22 +129,51 @@ export function NotificationsBox() {
               />
               
               <ScrollArea className="h-[400px] mt-4">
-                <div className="space-y-2">
-                  {notifications.length > 0 ? (
-                    notifications.map((notification) => (
-                      <NotificationItem
-                        key={notification.id}
-                        {...notification}
-                        onDelete={deleteNotification}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center text-muted-foreground py-8">
-                      <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>Aucune notification</p>
-                    </div>
-                  )}
-                </div>
+                <AnimatePresence mode="popLayout">
+                  <motion.div 
+                    className="space-y-2"
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: {
+                        opacity: 1,
+                        transition: {
+                          staggerChildren: 0.05
+                        }
+                      }
+                    }}
+                  >
+                    {notifications.length > 0 ? (
+                      notifications.map((notification) => (
+                        <motion.div
+                          key={notification.id}
+                          variants={{
+                            hidden: { opacity: 0, x: -20 },
+                            visible: { opacity: 1, x: 0 }
+                          }}
+                          exit={{ opacity: 0, x: -20 }}
+                        >
+                          <NotificationItem
+                            {...notification}
+                            onDelete={deleteNotification}
+                          />
+                        </motion.div>
+                      ))
+                    ) : (
+                      <motion.div 
+                        variants={{
+                          hidden: { opacity: 0, y: 20 },
+                          visible: { opacity: 1, y: 0 }
+                        }}
+                        className="text-center text-muted-foreground py-8"
+                      >
+                        <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p>Aucune notification</p>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </ScrollArea>
             </motion.div>
           </>
