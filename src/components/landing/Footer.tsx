@@ -9,9 +9,9 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Support</h3>
             <p className="text-muted-foreground">
               Email: <br />
-              <a href="mailto:admin@victaure.com" className="text-[#9b87f5] hover:underline">admin@victaure.com</a>
+              <a href="mailto:admin@victaure.com" className="text-primary hover:underline">admin@victaure.com</a>
               <br />
-              <a href="mailto:tblanchet3909@hotmail.com" className="text-[#9b87f5] hover:underline">tblanchet3909@hotmail.com</a>
+              <a href="mailto:tblanchet3909@hotmail.com" className="text-primary hover:underline">tblanchet3909@hotmail.com</a>
             </p>
           </div>
           <div>
@@ -24,7 +24,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Politique de Confidentialité</h3>
             <Dialog>
-              <DialogTrigger className="text-[#9b87f5] hover:underline text-sm">
+              <DialogTrigger className="text-primary hover:underline text-sm">
                 Lire notre politique de confidentialité
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -66,7 +66,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Conditions d'Utilisation</h3>
             <Dialog>
-              <DialogTrigger className="text-[#9b87f5] hover:underline text-sm">
+              <DialogTrigger className="text-primary hover:underline text-sm">
                 Voir les conditions d'utilisation
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">

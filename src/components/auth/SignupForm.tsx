@@ -114,7 +114,7 @@ export function SignupForm({
       <Button
         onClick={onSubmit}
         disabled={loading || !email || !password || !fullName}
-        className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] transition-all duration-300 text-white font-medium shadow-sm hover:shadow-md hover:scale-[1.02]"
+        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
