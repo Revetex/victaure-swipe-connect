@@ -1,4 +1,4 @@
-import { Calculator, Languages, ListTodo, Plus, Ruler, ChessKnight } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NotesToolSelectorProps {
@@ -60,7 +60,7 @@ export function NotesToolSelector({ selectedTool, onToolSelect }: NotesToolSelec
         onClick={() => onToolSelect("chess")}
         className="whitespace-nowrap"
       >
-        <ChessKnight className="h-4 w-4 mr-2" />
+        <Sword className="h-4 w-4 mr-2" />
         Échecs
       </Button>
     </div>
