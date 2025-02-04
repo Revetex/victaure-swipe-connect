@@ -65,6 +65,14 @@ export const CommentManager = ({
 
       // Create notification for post author
       if (postAuthorId !== currentUserId) {
+        // Get author's push token
+        const { data: authorProfile } = await supabase
+          .from('profiles')
+          .select('push_token, push_notifications_enabled')
+          .eq('id', postAuthorId)
+          .single();
+
+        // Create notification in database
         const { error: notificationError } = await supabase
           .from('notifications')
           .insert({
@@ -75,6 +83,26 @@ export const CommentManager = ({
 
         if (notificationError) {
           console.error('Error creating notification:', notificationError);
+        }
+
+        // Send push notification if enabled
+        if (authorProfile?.push_notifications_enabled && authorProfile?.push_token) {
+          try {
+            const subscription = JSON.parse(authorProfile.push_token);
+            await fetch('/api/push-notification', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                subscription,
+                title: 'Nouveau commentaire',
+                message: `${userEmail} a commenté votre publication`
+              })
+            });
+          } catch (error) {
+            console.error('Error sending push notification:', error);
+          }
         }
       }
 
