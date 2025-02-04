@@ -16,7 +16,7 @@
   background: transparent !important;
 }
 
-.gsc-input-box input {
+.gsc-input-box input.gsc-input {
   color: hsl(var(--foreground)) !important;
   font-family: Calibri, system-ui, -apple-system, sans-serif !important;
   font-size: 0.675rem !important;
@@ -25,10 +25,11 @@
   background: transparent !important;
 }
 
-.gsc-input-box input::placeholder {
+.gsc-input-box input.gsc-input::placeholder {
   color: hsl(var(--muted-foreground)) !important;
   opacity: 1 !important;
   font-size: 0.675rem !important;
+  text-transform: none !important;
 }
 
 /* Mobile optimization */
@@ -37,7 +38,7 @@
     width: 100% !important;
   }
   
-  .gsc-input-box input {
+  .gsc-input-box input.gsc-input {
     font-size: 0.75rem !important;
     min-height: 44px !important;
   }

@@ -8,7 +8,7 @@
   padding: 0.25rem !important;
 }
 
-.gsc-completion-title {
+.gsc-completion-container .gsc-completion-title {
   color: hsl(var(--foreground)) !important;
   padding: 0.5rem !important;
   font-size: 0.675rem !important;
@@ -17,7 +17,7 @@
   background: transparent !important;
 }
 
-.gsc-completion-selected {
+.gsc-completion-container .gsc-completion-selected {
   background: hsl(var(--accent)/0.1) !important;
   border-radius: 0.25rem !important;
 }
@@ -29,7 +29,7 @@
     left: 0 !important;
   }
   
-  .gsc-completion-title {
+  .gsc-completion-container .gsc-completion-title {
     font-size: 0.75rem !important;
   }
 }
