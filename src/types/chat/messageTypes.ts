@@ -5,7 +5,7 @@ export interface Message {
   content: string;
   sender: string | MessageSender;
   thinking?: boolean;
-  timestamp: Date;
+  timestamp: string;
   created_at: string;
   updated_at?: string;
   sender_id: string;

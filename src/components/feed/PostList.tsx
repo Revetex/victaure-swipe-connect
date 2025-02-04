@@ -39,6 +39,7 @@ export function PostList({ onPostDeleted }: PostListProps) {
             avatar_url
           ),
           reactions:post_reactions(
+            id,
             reaction_type,
             user_id
           ),
@@ -60,7 +61,11 @@ export function PostList({ onPostDeleted }: PostListProps) {
 
       return data?.map(post => ({
         ...post,
-        privacy_level: post.privacy_level as "public" | "connections"
+        privacy_level: post.privacy_level as "public" | "connections",
+        reactions: post.reactions?.map(reaction => ({
+          ...reaction,
+          reaction_type: reaction.reaction_type as "like" | "dislike"
+        }))
       }));
     }
   });
