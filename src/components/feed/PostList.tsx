@@ -15,6 +15,7 @@ import { useState } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
 
 interface PostListProps {
   onPostDeleted: () => void;
@@ -67,8 +68,19 @@ export function PostList({ onPostDeleted }: PostListProps) {
   });
 
   const handleDeletePost = async (postId: string, userId: string | undefined) => {
-    await handleDelete(postId, userId);
-    onPostDeleted();
+    if (userId !== user?.id) {
+      toast.error("Vous ne pouvez supprimer que vos propres publications");
+      return;
+    }
+    
+    try {
+      await handleDelete(postId, userId);
+      onPostDeleted();
+      toast.success("Publication supprimée avec succès");
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast.error("Erreur lors de la suppression de la publication");
+    }
   };
 
   if (isLoading) {
@@ -80,14 +92,14 @@ export function PostList({ onPostDeleted }: PostListProps) {
   }
 
   return (
-    <div className="space-y-4 pb-safe">
+    <div className="space-y-6">
       {posts?.map((post) => (
         <PostCard
           key={post.id}
           post={post}
           currentUserId={user?.id}
           userEmail={user?.email}
-          onDelete={() => setPostToDelete(post.id)}
+          onDelete={() => post.user_id === user?.id && setPostToDelete(post.id)}
           onHide={(postId) => handleHide(postId, user?.id)}
           onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
           onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}

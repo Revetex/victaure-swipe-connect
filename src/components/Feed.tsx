@@ -22,22 +22,23 @@ export function Feed() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full h-[100dvh] flex flex-col bg-background"
+      className="w-full min-h-[100dvh] flex flex-col bg-background relative"
     >
-      <div className="flex-1 max-w-3xl w-full mx-auto px-3 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="h-full flex flex-col">
+      <div className="flex-1 max-w-3xl w-full mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex flex-col">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className={cn(
-              "z-10 bg-background/95 backdrop-blur-sm",
-              isMobile ? "sticky top-0 pt-2 pb-3 -mx-3 px-3 border-b" : "pt-4 sm:pt-6"
+              "sticky top-0 z-50 bg-background/95 backdrop-blur-sm py-4",
+              isMobile && "border-b"
             )}
           >
             <CreatePost onPostCreated={handlePostCreated} />
           </motion.div>
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          
+          <div className="flex-1 py-4">
             <PostList onPostDeleted={handlePostDeleted} />
           </div>
         </div>
