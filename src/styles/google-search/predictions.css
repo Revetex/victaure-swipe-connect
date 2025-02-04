@@ -12,6 +12,8 @@
   color: hsl(var(--foreground)) !important;
   padding: 0.5rem !important;
   font-size: 0.875rem !important;
+  text-transform: none !important;
+  font-family: Calibri, system-ui, -apple-system, sans-serif !important;
 }
 
 .gsc-completion-selected {

@@ -13,16 +13,20 @@
 
 .dark .gs-title {
   color: #8ab4f8 !important;
+  font-size: 0.875rem !important;
+  text-transform: none !important;
 }
 
 .dark .gs-snippet {
   color: hsl(var(--foreground)) !important;
   opacity: 0.85 !important;
+  font-size: 0.75rem !important;
 }
 
 .dark .gs-visibleUrl {
   color: #0cbc8b !important;
   opacity: 0.9 !important;
+  font-size: 0.75rem !important;
 }
 
 .dark .gsc-input-box {
@@ -42,6 +46,8 @@
 
 .dark .gsc-completion-title {
   color: hsl(var(--foreground)) !important;
+  font-size: 0.875rem !important;
+  text-transform: none !important;
 }
 
 .dark .gsc-completion-selected {
