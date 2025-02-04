@@ -5,6 +5,7 @@ import type { PendingRequest as PendingRequestType } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
+import { cn } from "@/lib/utils";
 
 interface PendingRequestProps {
   request: PendingRequestType;
@@ -17,13 +18,12 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
   const [showProfile, setShowProfile] = useState(false);
   const profile = request.type === 'incoming' ? request.sender : request.receiver;
 
-  // Create a complete UserProfile object from the partial profile data
   const userProfile: UserProfile = {
     id: profile.id,
-    email: '',  // Required by UserProfile type but not needed for display
+    email: '',
     full_name: profile.full_name,
     avatar_url: profile.avatar_url,
-    role: '',   // Required by UserProfile type but not needed for display
+    role: '',
     bio: null,
     phone: null,
     city: null,
@@ -36,9 +36,13 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
 
   return (
     <>
-      <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-lg animate-pulse">
+      <div className={cn(
+        "flex items-center gap-3 p-3 rounded-lg",
+        "bg-primary/5 border border-primary/10",
+        "animate-pulse transition-all duration-200"
+      )}>
         <Avatar 
-          className="h-10 w-10 border-2 border-primary/10 cursor-pointer"
+          className="h-10 w-10 border-2 border-primary/10 cursor-pointer hover:border-primary/20 transition-colors"
           onClick={() => setShowProfile(true)}
         >
           <AvatarImage 

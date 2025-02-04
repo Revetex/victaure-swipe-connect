@@ -6,6 +6,7 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface FriendItemProps {
   friend: FriendPreview;
@@ -41,14 +42,12 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // First, remove from friends if they are friends
       await supabase
         .from('friend_requests')
         .delete()
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .or(`sender_id.eq.${friend.id},receiver_id.eq.${friend.id}`);
 
-      // Then add to blocked users
       const { error } = await supabase
         .from('blocked_users')
         .insert({
@@ -67,7 +66,10 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
   return (
     <>
       <div 
-        className="flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors group relative cursor-pointer"
+        className={cn(
+          "flex items-center gap-3 p-3 rounded-lg transition-all duration-200",
+          "hover:bg-muted/50 group relative cursor-pointer"
+        )}
         onClick={() => setShowProfile(true)}
       >
         <Avatar className="h-10 w-10 border-2 border-primary/10">
@@ -79,11 +81,17 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
         <div className="flex-1 min-w-0">
           <p className="font-medium truncate">{friend.full_name}</p>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <CircleDot className={`h-2 w-2 ${friend.online_status ? "text-green-500" : "text-gray-300"}`} />
+            <CircleDot className={cn(
+              "h-2 w-2",
+              friend.online_status ? "text-green-500" : "text-gray-300"
+            )} />
             {friend.online_status ? "En ligne" : "Hors ligne"}
           </p>
         </div>
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className={cn(
+          "flex gap-1 opacity-0 group-hover:opacity-100",
+          "transition-opacity duration-200"
+        )}>
           <Button
             variant="ghost"
             size="icon"

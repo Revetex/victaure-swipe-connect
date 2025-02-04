@@ -10,8 +10,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
@@ -19,11 +20,13 @@ export function FriendsContent() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-4">
+      <div className="relative">
         <ProfileSearch 
           onSelect={setSelectedProfile}
           placeholder="Rechercher quelqu'un..."
+          className="w-full"
         />
+        <UserPlus className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
       </div>
 
       <div className="space-y-6">
@@ -33,17 +36,26 @@ export function FriendsContent() {
           className="space-y-2"
         >
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-full flex justify-between">
-              <span>Demandes en attente</span>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={cn(
+                "w-full flex justify-between hover:bg-muted/50",
+                "transition-colors duration-200"
+              )}
+            >
+              <span className="font-medium">Demandes en attente</span>
               {isRequestsOpen ? (
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp className="h-4 w-4 text-muted-foreground" />
               ) : (
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               )}
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-2">
-            <FriendRequestsSection />
+            <div className="pl-2 animate-accordion-down">
+              <FriendRequestsSection />
+            </div>
           </CollapsibleContent>
         </Collapsible>
         
