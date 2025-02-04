@@ -22,7 +22,7 @@ async function registerServiceWorker() {
       applicationServerKey: process.env.VITE_VAPID_PUBLIC_KEY
     });
 
-    const { user } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (user?.id) {
       await supabase
         .from("profiles")

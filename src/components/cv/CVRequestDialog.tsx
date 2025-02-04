@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { FileText, Send } from "lucide-react";
+import { sendPushNotification } from "@/utils/pushNotifications";
 
 interface CVRequestDialogProps {
   isOpen: boolean;
