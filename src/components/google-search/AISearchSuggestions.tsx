@@ -27,14 +27,21 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   const generateSuggestion = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Get the search query
+      // Focus the search input first
       const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
-      const query = searchInput?.value;
-
-      if (!query) {
-        toast.error("Veuillez entrer un terme de recherche");
+      if (!searchInput) {
+        toast.error("Impossible de trouver la barre de recherche");
         return;
       }
+
+      // If no search query, show error
+      if (!searchInput.value.trim()) {
+        toast.error("Veuillez entrer un terme de recherche");
+        searchInput.focus();
+        return;
+      }
+
+      const query = searchInput.value.trim();
 
       // Get the user data first
       const { data: { user } } = await supabase.auth.getUser();
