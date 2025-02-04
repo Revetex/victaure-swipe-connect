@@ -131,7 +131,8 @@ export const CommentManager = ({
       const { error } = await supabase
         .from('post_comments')
         .delete()
-        .eq('id', commentId);
+        .eq('id', commentId)
+        .eq('user_id', currentUserId);
 
       if (error) throw error;
 

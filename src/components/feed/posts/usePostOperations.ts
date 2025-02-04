@@ -9,8 +9,8 @@ export const usePostOperations = () => {
   const handleReaction = async (postId: string, userId: string | undefined, type: 'like' | 'dislike') => {
     if (!userId) {
       toast({
-        title: "Error",
-        description: "You must be logged in to react to posts",
+        title: "Erreur",
+        description: "Vous devez être connecté pour réagir aux publications",
         variant: "destructive"
       });
       return;
@@ -52,8 +52,8 @@ export const usePostOperations = () => {
     } catch (error) {
       console.error('Error handling reaction:', error);
       toast({
-        title: "Error",
-        description: "An unexpected error occurred",
+        title: "Erreur",
+        description: "Une erreur est survenue",
         variant: "destructive"
       });
     }
@@ -62,22 +62,26 @@ export const usePostOperations = () => {
   const handleDelete = async (postId: string, userId: string | undefined) => {
     if (!userId) return;
 
-    const { error } = await supabase
-      .from('posts')
-      .delete()
-      .eq('id', postId);
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId)
+        .eq('user_id', userId);
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete post",
-        variant: "destructive"
-      });
-    } else {
+      if (error) throw error;
+
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       toast({
-        title: "Success",
-        description: "Post deleted successfully"
+        title: "Succès",
+        description: "Publication supprimée"
+      });
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la publication",
+        variant: "destructive"
       });
     }
   };
@@ -85,32 +89,34 @@ export const usePostOperations = () => {
   const handleHide = async (postId: string, userId: string | undefined) => {
     if (!userId) {
       toast({
-        title: "Error",
-        description: "You must be logged in to hide posts",
+        title: "Erreur",
+        description: "Vous devez être connecté pour masquer des publications",
         variant: "destructive"
       });
       return;
     }
 
-    const { error } = await supabase
-      .from('hidden_posts')
-      .insert({
-        post_id: postId,
-        user_id: userId
-      });
+    try {
+      const { error } = await supabase
+        .from('hidden_posts')
+        .insert({
+          post_id: postId,
+          user_id: userId
+        });
 
-    if (error) {
-      console.error('Hide post error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to hide post",
-        variant: "destructive"
-      });
-    } else {
+      if (error) throw error;
+
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       toast({
-        title: "Success",
-        description: "Post hidden successfully"
+        title: "Succès",
+        description: "Publication masquée"
+      });
+    } catch (error) {
+      console.error('Error hiding post:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de masquer la publication",
+        variant: "destructive"
       });
     }
   };
