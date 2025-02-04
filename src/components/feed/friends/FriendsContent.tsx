@@ -18,7 +18,7 @@ export function FriendsContent() {
   const [isRequestsOpen, setIsRequestsOpen] = useState(true);
 
   return (
-    <div className="sticky top-4">
+    <div className="space-y-6">
       <div className="mb-4">
         <ProfileSearch 
           onSelect={setSelectedProfile}
