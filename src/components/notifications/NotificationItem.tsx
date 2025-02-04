@@ -105,20 +105,32 @@ export function NotificationItem({
       const requesterId = message.match(/ID:(\S+)/)?.[1];
       if (!requesterId) return;
 
-      const { error: notifError } = await supabase
+      // Notification pour l'accès au CV
+      const { error: cvNotifError } = await supabase
         .from('notifications')
         .insert({
           user_id: requesterId,
           title: 'Accès au CV accordé',
-          message: 'Votre demande d\'accès au CV a été acceptée. Vous pouvez maintenant voir le profil complet.',
+          message: 'Votre demande d\'accès au CV a été acceptée. Vous pouvez maintenant voir le CV.',
         });
 
-      if (notifError) throw notifError;
+      if (cvNotifError) throw cvNotifError;
+
+      // Notification pour l'accès au profil
+      const { error: profileNotifError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: requesterId,
+          title: 'Accès au profil accordé',
+          message: 'Votre demande d\'accès au profil a été acceptée. Vous pouvez maintenant voir le profil complet.',
+        });
+
+      if (profileNotifError) throw profileNotifError;
 
       onDelete(id);
       toast.success("Accès accordé avec succès");
     } catch (error) {
-      console.error('Error accepting CV request:', error);
+      console.error('Error accepting request:', error);
       toast.error("Erreur lors de l'acceptation de la demande");
     }
   };
@@ -133,14 +145,14 @@ export function NotificationItem({
         .from('notifications')
         .insert({
           user_id: requesterId,
-          title: 'Accès au CV refusé',
-          message: 'Votre demande d\'accès au CV a été refusée.',
+          title: 'Accès refusé',
+          message: 'Votre demande d\'accès a été refusée.',
         });
 
       onDelete(id);
       toast.success("Demande refusée");
     } catch (error) {
-      console.error('Error rejecting CV request:', error);
+      console.error('Error rejecting request:', error);
       toast.error("Erreur lors du refus de la demande");
     }
   };
