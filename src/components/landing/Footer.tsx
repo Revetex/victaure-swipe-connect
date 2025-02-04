@@ -40,24 +40,41 @@ export function Footer() {
                       <li>Adresse e-mail</li>
                       <li>Numéro de téléphone</li>
                       <li>Informations professionnelles</li>
+                      <li>Données de localisation (si activées)</li>
+                      <li>Préférences de communication</li>
                     </ul>
                   </section>
                   <section>
                     <h3 className="font-semibold text-foreground">2. Utilisation des informations</h3>
                     <p>Les informations collectées sont utilisées pour :</p>
                     <ul className="list-disc pl-5 mt-2">
-                      <li>Personnaliser l'expérience utilisateur</li>
+                      <li>Personnaliser votre expérience utilisateur</li>
                       <li>Améliorer notre service</li>
                       <li>Communiquer avec vous concernant votre compte</li>
+                      <li>Vous proposer des offres d'emploi pertinentes</li>
+                      <li>Analyser et améliorer nos services</li>
                     </ul>
                   </section>
                   <section>
                     <h3 className="font-semibold text-foreground">3. Protection des informations</h3>
-                    <p>Nous mettons en œuvre une variété de mesures de sécurité pour préserver la sécurité de vos informations personnelles.</p>
+                    <p>Nous mettons en œuvre des mesures de sécurité robustes pour protéger vos données :</p>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>Chiffrement SSL/TLS</li>
+                      <li>Authentification à deux facteurs (2FA)</li>
+                      <li>Stockage sécurisé des données</li>
+                      <li>Accès restreint aux données personnelles</li>
+                    </ul>
                   </section>
                   <section>
-                    <h3 className="font-semibold text-foreground">4. Cookies</h3>
-                    <p>Nous utilisons des cookies pour améliorer l'expérience utilisateur et analyser notre trafic.</p>
+                    <h3 className="font-semibold text-foreground">4. Vos droits</h3>
+                    <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>Droit d'accès à vos données</li>
+                      <li>Droit de rectification</li>
+                      <li>Droit à l'effacement</li>
+                      <li>Droit à la portabilité</li>
+                      <li>Droit d'opposition</li>
+                    </ul>
                   </section>
                 </div>
               </DialogContent>
@@ -76,23 +93,32 @@ export function Footer() {
                 <div className="space-y-4 text-sm text-muted-foreground">
                   <section>
                     <h3 className="font-semibold text-foreground">1. Acceptation des conditions</h3>
-                    <p>En accédant à ce site, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables.</p>
+                    <p>En utilisant Victaure, vous acceptez les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser nos services.</p>
                   </section>
                   <section>
-                    <h3 className="font-semibold text-foreground">2. Licence d'utilisation</h3>
-                    <p>Une licence limitée, non exclusive et non transférable vous est accordée pour accéder et utiliser le site.</p>
+                    <h3 className="font-semibold text-foreground">2. Utilisation du service</h3>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>Vous devez avoir au moins 18 ans pour utiliser nos services</li>
+                      <li>Vous êtes responsable de maintenir la confidentialité de votre compte</li>
+                      <li>Vous acceptez de ne pas utiliser le service à des fins illégales</li>
+                      <li>Vous acceptez de ne pas créer de faux profils ou de fausses informations</li>
+                    </ul>
                   </section>
                   <section>
-                    <h3 className="font-semibold text-foreground">3. Compte utilisateur</h3>
-                    <p>Vous êtes responsable du maintien de la confidentialité de votre compte et de votre mot de passe.</p>
+                    <h3 className="font-semibold text-foreground">3. Propriété intellectuelle</h3>
+                    <p>Tous les contenus présents sur Victaure (logos, textes, fonctionnalités) sont la propriété exclusive de Victaure ou de ses partenaires.</p>
                   </section>
                   <section>
-                    <h3 className="font-semibold text-foreground">4. Limitations de responsabilité</h3>
-                    <p>Nous ne serons pas tenus responsables des dommages directs, indirects, accessoires ou consécutifs.</p>
+                    <h3 className="font-semibold text-foreground">4. Protection des données</h3>
+                    <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité et au RGPD.</p>
                   </section>
                   <section>
-                    <h3 className="font-semibold text-foreground">5. Modifications du service</h3>
-                    <p>Nous nous réservons le droit de modifier ou d'interrompre le service sans préavis.</p>
+                    <h3 className="font-semibold text-foreground">5. Résiliation</h3>
+                    <p>Nous nous réservons le droit de suspendre ou de résilier votre compte en cas de violation de ces conditions.</p>
+                  </section>
+                  <section>
+                    <h3 className="font-semibold text-foreground">6. Modifications</h3>
+                    <p>Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications seront effectives dès leur publication.</p>
                   </section>
                 </div>
               </DialogContent>
