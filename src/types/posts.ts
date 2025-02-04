@@ -16,38 +16,54 @@ export interface Post {
     reaction_type: string;
     user_id: string;
   }[];
-  comments?: {
+  comments?: Comment[];
+}
+
+export interface Comment {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  profiles: {
     id: string;
-    content: string;
-    created_at: string;
-    user_id: string;
-    profiles: {
-      id: string;
-      full_name: string;
-      avatar_url?: string;
-    };
-  }[];
+    full_name: string;
+    avatar_url?: string;
+  };
 }
 
 export interface PostHeaderProps {
-  post: Post;
+  profile: {
+    id: string;
+    full_name: string;
+    avatar_url?: string;
+  };
+  created_at: string;
+  privacy_level: "public" | "connections";
 }
 
 export interface PostContentProps {
-  post: Post;
-}
-
-export interface PostActionsProps {
+  content: string;
+  postId: string;
+  currentUserId?: string;
+  userEmail?: string;
   likes: number;
   dislikes: number;
   commentCount: number;
   userReaction?: string;
-  isExpanded: boolean;
-  onLike: () => void;
-  onDislike: () => void;
-  onToggleComments: () => void;
+  comments?: Comment[];
+  onReaction?: (postId: string, type: 'like' | 'dislike') => void;
+  onCommentAdded?: () => void;
+}
+
+export interface PostActionsProps {
+  currentUserId?: string;
+  postUserId: string;
+  onDelete?: () => void;
+  onHide?: () => void;
 }
 
 export interface PostCommentsProps {
-  postId: string;
+  comments: Comment[];
+  currentUserId?: string;
+  onDeleteComment?: () => void;
 }

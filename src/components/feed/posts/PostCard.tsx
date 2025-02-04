@@ -82,7 +82,7 @@ export function PostCard({
           commentCount={post.comments?.length || 0}
           userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type}
           comments={post.comments}
-          onReaction={onReaction}
+          onReaction={(type) => onReaction?.(post.id, type)}
           onCommentAdded={onCommentAdded}
         />
         <PostActions
