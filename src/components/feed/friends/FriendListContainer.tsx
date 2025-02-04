@@ -42,7 +42,11 @@ export function FriendListContainer() {
         </div>
       )}
       
-      <div className={`${isMobile ? (isExpanded ? 'block' : 'hidden') : 'block'} p-4`}>
+      <div 
+        className={`${
+          isMobile ? (isExpanded ? 'block' : 'hidden') : 'block'
+        } p-4 max-h-[calc(100vh-6rem)] overflow-y-auto`}
+      >
         <FriendsContent />
       </div>
     </Card>
