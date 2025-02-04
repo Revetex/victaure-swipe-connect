@@ -28,36 +28,36 @@ export function MrVictaureWelcome({ onDismiss, onStartChat }: MrVictaureWelcomeP
           </motion.div>
           <div>
             <h2 className="text-2xl font-bold">M. Victaure</h2>
-            <p className="text-muted-foreground">Votre conseiller personnel</p>
+            <p className="text-muted-foreground">Assistant IA personnel</p>
           </div>
         </div>
 
         <div className="space-y-6 mb-6">
           <p className="text-lg">
-            Bonjour! Je suis M. Victaure, votre conseiller personnel. Je suis là pour vous accompagner dans tous vos projets et répondre à vos questions. Mon objectif est de vous aider à atteindre vos objectifs en vous offrant des conseils personnalisés et un soutien adapté à vos besoins.
+            Bonjour! Je suis M. Victaure, votre assistant IA personnel propulsé par Hugging Face. Je suis là pour vous aider dans votre parcours professionnel en vous offrant des conseils personnalisés et un soutien adapté à vos besoins. Contrairement à la messagerie entre utilisateurs, je suis un assistant virtuel spécialisé dans l'orientation professionnelle au Québec.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
               {
                 icon: UserCog,
-                title: "Accompagnement Personnalisé",
-                description: "Des conseils adaptés à vos besoins spécifiques"
+                title: "IA Spécialisée",
+                description: "Conseils professionnels basés sur l'intelligence artificielle"
               },
               {
                 icon: MessageSquare,
-                title: "Écoute Active",
-                description: "Une approche chaleureuse et attentive"
+                title: "Dialogue Intelligent",
+                description: "Conversations naturelles et personnalisées"
               },
               {
                 icon: BrainCircuit,
-                title: "Solutions Concrètes",
-                description: "Des réponses pratiques à vos questions"
+                title: "Analyse Avancée",
+                description: "Recommandations basées sur vos besoins"
               },
               {
                 icon: Sparkles,
-                title: "Développement Personnel",
-                description: "Un soutien pour votre réussite"
+                title: "Support Continu",
+                description: "Disponible 24/7 pour vous accompagner"
               }
             ].map((feature, index) => (
               <motion.div 
