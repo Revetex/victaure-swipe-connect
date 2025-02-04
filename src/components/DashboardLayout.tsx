@@ -1,69 +1,25 @@
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useDashboardAnimations } from "@/hooks/useDashboardAnimations";
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { useDebounce } from "use-debounce";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
 import { MainLayout } from "./layout/MainLayout";
 import { DashboardContainer } from "./layout/DashboardContainer";
 import { DashboardNavigation } from "./layout/DashboardNavigation";
+import { useViewport } from "@/hooks/useViewport";
+import { useNavigation } from "@/hooks/useNavigation";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
-  const { itemVariants } = useDashboardAnimations();
-  const [currentPage, setCurrentPage] = useState(3);
   const [isEditing, setIsEditing] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const location = useLocation();
-  const navigate = useNavigate();
   const { showConversation } = useReceiver();
-  
-  const [debouncedSetViewportHeight] = useDebounce(
-    (height: number) => setViewportHeight(height),
-    100
-  );
+  const viewportHeight = useViewport();
+  const { currentPage, handlePageChange } = useNavigation();
 
-  const [lastPageChange, setLastPageChange] = useState(Date.now());
-  const THROTTLE_DELAY = 300;
-
-  useEffect(() => {
-    const meta = document.createElement('meta');
-    meta.name = 'viewport';
-    meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
-    document.getElementsByTagName('head')[0].appendChild(meta);
-
-    const handleResize = () => {
-      debouncedSetViewportHeight(window.innerHeight);
-    };
-
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleResize);
-
-    handleResize();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
-    };
-  }, [debouncedSetViewportHeight]);
-
-  const handlePageChange = useCallback((page: number) => {
-    const now = Date.now();
-    if (now - lastPageChange >= THROTTLE_DELAY) {
-      setCurrentPage(page);
-      setLastPageChange(now);
-      
-      if (page === 5) {
-        navigate('/dashboard/tools');
-      }
-      setIsEditing(false);
-    }
-  }, [lastPageChange, navigate]);
-
-  const handleRequestChat = useCallback(() => {
+  const handleRequestChat = () => {
     handlePageChange(2);
-  }, [handlePageChange]);
+  };
 
   const getPageTitle = (page: number) => {
     switch (page) {

@@ -1,16 +1,10 @@
 import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
-import { useProfile } from "@/hooks/useProfile";
-import { useVCardStyle } from "@/components/vcard/VCardStyleContext";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Settings } from "@/components/Settings";
 import { NotesMap } from "@/components/notes/NotesMap";
-import { useTodoList } from "@/hooks/useTodoList";
-import { useNotes } from "@/hooks/useNotes";
 import { Feed } from "@/components/Feed";
-import { TodoSection } from "@/components/todo/TodoSection";
-import { ListTodo } from "lucide-react";
 import { useEffect } from "react";
 
 interface DashboardContentProps {
@@ -28,24 +22,6 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {
-  const { profile, setProfile } = useProfile();
-  const { selectedStyle } = useVCardStyle();
-  
-  const {
-    todos,
-    newTodo,
-    selectedDate,
-    selectedTime,
-    allDay,
-    setNewTodo,
-    setSelectedDate,
-    setSelectedTime,
-    setAllDay,
-    addTodo,
-    toggleTodo,
-    deleteTodo
-  } = useTodoList();
-
   // Auto-open board when accessing notes section
   useEffect(() => {
     if (currentPage === 5) {
