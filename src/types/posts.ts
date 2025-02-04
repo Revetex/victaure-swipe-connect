@@ -51,7 +51,7 @@ export interface PostContentProps {
   commentCount: number;
   userReaction?: string;
   comments?: Comment[];
-  onReaction?: (postId: string, type: 'like' | 'dislike') => void;
+  onReaction?: (type: 'like' | 'dislike') => void;
   onCommentAdded?: () => void;
 }
 
