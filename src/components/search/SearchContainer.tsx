@@ -43,7 +43,7 @@ export function SearchContainer() {
         className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent [&_.gsc-search-button]:!bg-primary"
       >
         <div className="relative max-w-3xl mx-auto">
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-50">
+          <div className="mb-4">
             <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
           </div>
           <GoogleSearchBox />
