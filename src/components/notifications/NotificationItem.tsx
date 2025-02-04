@@ -1,4 +1,4 @@
-import { X, UserPlus, UserMinus, FileText } from "lucide-react";
+import { X, UserPlus, UserMinus, FileText, Upload, Eye } from "lucide-react";
 import { formatTime } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { VCard } from "@/components/VCard";
 
 interface NotificationItemProps {
   id: string;
@@ -25,8 +28,10 @@ export function NotificationItem({
   onDelete,
 }: NotificationItemProps) {
   const navigate = useNavigate();
+  const [showProfile, setShowProfile] = useState(false);
   const isFriendRequest = title.toLowerCase().includes("demande d'ami");
   const isCVRequest = title.toLowerCase().includes("demande de cv");
+  const isAccessGranted = title.toLowerCase().includes("accès au cv accordé");
 
   const handleAcceptCV = async () => {
     try {
@@ -122,93 +127,164 @@ export function NotificationItem({
     }
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const requesterId = message.match(/ID:(\S+)/)?.[1];
+      if (!requesterId) return;
+
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('vcards')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { error: notifError } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: requesterId,
+          title: 'CV reçu',
+          message: `Un CV a été joint à votre demande. URL:${filePath}`,
+        });
+
+      if (notifError) throw notifError;
+
+      toast.success("CV envoyé avec succès");
+    } catch (error) {
+      console.error('Error uploading CV:', error);
+      toast.error("Erreur lors de l'envoi du CV");
+    }
+  };
+
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className={cn(
-        "p-4 rounded-lg relative group transition-all duration-200",
-        "hover:shadow-md dark:hover:shadow-none",
-        read
-          ? "bg-muted/50 dark:bg-muted/25"
-          : "bg-primary/10 border-l-2 border-primary",
-        "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
-      )}
-    >
-      <button
-        onClick={() => onDelete(id)}
+    <>
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
         className={cn(
-          "absolute right-2 top-2 opacity-0 group-hover:opacity-100",
-          "transition-opacity duration-200",
-          "hover:text-destructive focus:opacity-100",
-          "focus:outline-none focus:ring-2 focus:ring-ring rounded-full p-1"
+          "p-4 rounded-lg relative group transition-all duration-200",
+          "hover:shadow-md dark:hover:shadow-none",
+          read
+            ? "bg-muted/50 dark:bg-muted/25"
+            : "bg-primary/10 border-l-2 border-primary",
+          "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
         )}
-        aria-label="Supprimer la notification"
       >
-        <X className="h-4 w-4" />
-      </button>
+        <button
+          onClick={() => onDelete(id)}
+          className={cn(
+            "absolute right-2 top-2 opacity-0 group-hover:opacity-100",
+            "transition-opacity duration-200",
+            "hover:text-destructive focus:opacity-100",
+            "focus:outline-none focus:ring-2 focus:ring-ring rounded-full p-1"
+          )}
+          aria-label="Supprimer la notification"
+        >
+          <X className="h-4 w-4" />
+        </button>
 
-      <div className="flex justify-between items-start pr-6">
-        <h3 className="font-medium text-sm">{title}</h3>
-        <span className="text-xs text-muted-foreground">
-          {formatTime(created_at)}
-        </span>
-      </div>
-
-      <p className={cn(
-        "text-sm text-muted-foreground mt-1",
-        "line-clamp-2 group-hover:line-clamp-none transition-all duration-200"
-      )}>
-        {message}
-      </p>
-
-      {isFriendRequest && (
-        <div className="flex gap-2 mt-3">
-          <Button
-            size="sm"
-            variant="default"
-            className="flex items-center gap-1"
-            onClick={handleAcceptFriend}
-          >
-            <UserPlus className="h-4 w-4" />
-            Accepter
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="flex items-center gap-1"
-            onClick={handleRejectFriend}
-          >
-            <UserMinus className="h-4 w-4" />
-            Refuser
-          </Button>
+        <div className="flex justify-between items-start pr-6">
+          <h3 className="font-medium text-sm">{title}</h3>
+          <span className="text-xs text-muted-foreground">
+            {formatTime(created_at)}
+          </span>
         </div>
-      )}
 
-      {isCVRequest && (
-        <div className="flex gap-2 mt-3">
-          <Button
-            size="sm"
-            variant="default"
-            className="flex items-center gap-1"
-            onClick={handleAcceptCV}
-          >
-            <FileText className="h-4 w-4" />
-            Accepter
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="flex items-center gap-1"
-            onClick={handleRejectCV}
-          >
-            <X className="h-4 w-4" />
-            Refuser
-          </Button>
-        </div>
-      )}
-    </motion.div>
+        <p className={cn(
+          "text-sm text-muted-foreground mt-1",
+          "line-clamp-2 group-hover:line-clamp-none transition-all duration-200"
+        )}>
+          {message}
+        </p>
+
+        {isFriendRequest && (
+          <div className="flex gap-2 mt-3">
+            <Button
+              size="sm"
+              variant="default"
+              className="flex items-center gap-1"
+              onClick={handleAcceptFriend}
+            >
+              <UserPlus className="h-4 w-4" />
+              Accepter
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex items-center gap-1"
+              onClick={handleRejectFriend}
+            >
+              <UserMinus className="h-4 w-4" />
+              Refuser
+            </Button>
+          </div>
+        )}
+
+        {isCVRequest && (
+          <div className="flex gap-2 mt-3">
+            <Button
+              size="sm"
+              variant="default"
+              className="flex items-center gap-1"
+              onClick={handleAcceptCV}
+            >
+              <FileText className="h-4 w-4" />
+              Accepter
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex items-center gap-1"
+              onClick={handleRejectCV}
+            >
+              <X className="h-4 w-4" />
+              Refuser
+            </Button>
+          </div>
+        )}
+
+        {isAccessGranted && (
+          <div className="flex gap-2 mt-3">
+            <Button
+              size="sm"
+              variant="default"
+              className="flex items-center gap-1"
+              onClick={() => setShowProfile(true)}
+            >
+              <Eye className="h-4 w-4" />
+              Voir le profil
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex items-center gap-1"
+              component="label"
+            >
+              <input
+                type="file"
+                hidden
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileUpload}
+              />
+              <Upload className="h-4 w-4" />
+              Joindre CV
+            </Button>
+          </div>
+        )}
+      </motion.div>
+
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
+          <VCard />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
