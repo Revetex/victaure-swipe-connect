@@ -67,9 +67,11 @@ export function DashboardLayout() {
         setIsEditing(true);
         if (isMobile) {
           // On mobile, ensure the screen is in the right orientation
-          if (window.screen && window.screen.orientation) {
+          if (window.screen && window.screen.orientation && 'lock' in window.screen.orientation) {
             try {
-              window.screen.orientation.lock('landscape');
+              window.screen.orientation.lock('landscape').catch(() => {
+                console.log('Orientation lock not supported or permission denied');
+              });
             } catch (err) {
               console.log('Orientation lock not supported');
             }
