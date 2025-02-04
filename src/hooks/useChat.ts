@@ -22,7 +22,7 @@ export function useChat() {
         id: messageId,
         user_id: user.id,
         content,
-        sender: user.id
+        sender: 'user'  // Explicitly set to 'user'
       })
       .select()
       .single();
@@ -59,7 +59,7 @@ export function useChat() {
             id: messageId,
             user_id: session.user.id,
             content: aiResponse.message,
-            sender: 'assistant'
+            sender: 'assistant'  // Explicitly set to 'assistant'
           });
 
         if (insertError) throw insertError;
