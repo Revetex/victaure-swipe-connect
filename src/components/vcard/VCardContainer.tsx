@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 interface VCardContainerProps {
   children: React.ReactNode;
   className?: string;
+  isEditing?: boolean;
 }
 
-export function VCardContainer({ children, className }: VCardContainerProps) {
+export function VCardContainer({ children, className, isEditing }: VCardContainerProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -16,6 +17,7 @@ export function VCardContainer({ children, className }: VCardContainerProps) {
         "before:absolute before:inset-0 before:bg-gradient-to-br",
         "before:from-purple-500/10 before:via-blue-500/5 before:to-purple-600/10",
         "before:animate-gradient-shift",
+        isEditing && "border-2 border-primary/50",
         className
       )}
     >
