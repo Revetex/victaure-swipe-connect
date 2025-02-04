@@ -36,17 +36,17 @@ export function SearchContainer() {
   }, []);
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-4 mt-4">
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent [&_.gsc-search-button]:!bg-primary"
       >
         <div className="relative max-w-3xl mx-auto">
-          <div className="mb-4">
+          <GoogleSearchBox />
+          <div className="absolute top-0 left-2 z-10">
             <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
           </div>
-          <GoogleSearchBox />
         </div>
       </motion.div>
     </div>

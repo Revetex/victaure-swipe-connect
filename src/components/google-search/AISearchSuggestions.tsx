@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Search } from "lucide-react";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,16 +82,23 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
 
   return (
     <div className="flex items-center gap-2">
-      <div className="relative flex items-center w-full">
+      <div className="relative flex items-center">
         <Button
           variant="outline"
           size="sm"
           onClick={generateSuggestion}
           disabled={isLoading}
-          className="absolute left-2 z-10"
+          className="mr-2"
         >
           <Sparkles className="h-4 w-4 mr-2" />
           <span>IA</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSearch}
+        >
+          <Search className="h-4 w-4" />
         </Button>
       </div>
     </div>
