@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Message } from "@/types/messages";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { UserProfile } from "@/types/profile";
@@ -32,28 +32,7 @@ export function ConversationView({
   onBack,
   onDeleteConversation
 }: ConversationViewProps) {
-  const [showScrollButton, setShowScrollButton] = useState(false);
-  const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  const handleScroll = () => {
-    const element = document.querySelector('.overflow-y-auto');
-    if (!element) return;
-    
-    const { scrollTop, scrollHeight, clientHeight } = element;
-    const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-    
-    setShowScrollButton(!isNearBottom);
-    setIsAutoScrollEnabled(isNearBottom);
-  };
-
-  const handleScrollToBottom = () => {
-    const element = document.querySelector('.overflow-y-auto');
-    if (!element) return;
-    
-    setIsAutoScrollEnabled(true);
-    element.scrollTop = element.scrollHeight;
-  };
 
   const handleDelete = () => {
     if (onDeleteConversation) {
@@ -64,22 +43,21 @@ export function ConversationView({
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col bg-background">
+    <div className="flex flex-col h-full">
       <ConversationHeader
         profile={profile}
         onBack={onBack || (() => {})}
         onDeleteConversation={() => setShowDeleteDialog(true)}
       />
 
-      <ConversationMessages
-        messages={messages}
-        isThinking={isThinking}
-        showScrollButton={showScrollButton}
-        onScroll={handleScroll}
-        onScrollToBottom={handleScrollToBottom}
-      />
+      <div className="flex-1 overflow-y-auto">
+        <ConversationMessages
+          messages={messages}
+          isThinking={isThinking}
+        />
+      </div>
 
-      <div className="sticky bottom-0 shrink-0 border-t bg-background/95 backdrop-blur-sm p-4">
+      <div className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}

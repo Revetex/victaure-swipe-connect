@@ -36,7 +36,6 @@ export function MessagesContent({
     try {
       if (!receiver) return;
 
-      // If it's the AI assistant, use the ai_chat_messages table
       if (receiver.id === 'assistant') {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("User not authenticated");
@@ -48,7 +47,6 @@ export function MessagesContent({
 
         if (error) throw error;
       } else {
-        // For regular users, use the messages table
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("User not authenticated");
 
@@ -69,7 +67,6 @@ export function MessagesContent({
     }
   };
 
-  // Convert Receiver to UserProfile format
   const profileFromReceiver: UserProfile | null = receiver ? {
     id: receiver.id,
     email: '',
@@ -89,7 +86,7 @@ export function MessagesContent({
   } : null;
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col h-full">
       <ConversationView
         messages={messages}
         profile={profileFromReceiver}

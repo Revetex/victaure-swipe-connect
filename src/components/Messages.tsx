@@ -96,24 +96,7 @@ function MessagesWithQuery({
   const filteredMessages = filterMessages(currentMessages || [], selectedReceiver);
 
   return (
-    <div className="relative h-[calc(100dvh-4rem)] overflow-hidden">
-      {/* Animated background */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ 
-          opacity: [0.02, 0.05, 0.02],
-          scale: [1, 1.02, 1],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "linear"
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
-      </motion.div>
-
+    <div className="h-[calc(100dvh-4rem)] flex flex-col overflow-hidden bg-background">
       {showConversation ? (
         <MessagesContent
           messages={filteredMessages}
