@@ -17,7 +17,8 @@ export function MessagesWrapper() {
     isThinking,
     setInputMessage,
     handleSendMessage,
-    handleVoiceInput
+    handleVoiceInput,
+    clearChat
   } = useChat();
 
   const handleBack = () => {
@@ -58,6 +59,7 @@ export function MessagesWrapper() {
                 onSendMessage={handleSendMessage}
                 onVoiceInput={handleVoiceInput}
                 setInputMessage={setInputMessage}
+                onClearChat={clearChat}
                 onBack={handleBack}
                 receiver={receiver}
               />
