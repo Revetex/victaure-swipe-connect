@@ -34,6 +34,21 @@ export function AuthForm() {
       theme="default"
       providers={["google"]}
       redirectTo={`${window.location.origin}/auth/callback`}
+      magicLink={false}
+      showLinks={true}
+      view="sign_in"
+      localization={{
+        variables: {
+          sign_in: {
+            email_label: 'Email',
+            password_label: 'Password',
+          },
+          sign_up: {
+            email_label: 'Email',
+            password_label: 'Password',
+          },
+        },
+      }}
     />
   );
 }
