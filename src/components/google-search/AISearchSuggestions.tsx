@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles, Search } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,6 +10,7 @@ interface AISearchSuggestionsProps {
 
 export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleSearch = useCallback(() => {
     try {
@@ -34,6 +35,14 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
 
   const generateSuggestion = useCallback(async () => {
     if (isLoading) return;
+    
+    // Cancel any previous ongoing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
     
     setIsLoading(true);
     try {
@@ -71,7 +80,8 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
             diversity: true,
             maxSuggestions: 10
           }
-        }
+        },
+        signal: abortControllerRef.current.signal,
       });
 
       if (functionError) throw functionError;
@@ -87,13 +97,33 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
       onSuggestionClick(suggestion);
       searchInput.focus();
 
+      // Recursively generate next suggestion after a short delay
+      setTimeout(() => {
+        if (!abortControllerRef.current?.signal.aborted) {
+          generateSuggestion();
+        }
+      }, 3000); // Generate a new suggestion every 3 seconds
+
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        // Ignore abort errors
+        return;
+      }
       console.error('Error generating suggestion:', error);
       toast.error(error instanceof Error ? error.message : "Erreur lors de la génération de la suggestion");
     } finally {
       setIsLoading(false);
     }
   }, [isLoading, onSuggestionClick]);
+
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return (
     <div className="flex items-center gap-2">

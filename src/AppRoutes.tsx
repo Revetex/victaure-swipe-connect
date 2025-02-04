@@ -10,6 +10,10 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/legal/*" element={<Index />} />
+      <Route path="/about" element={<Index />} />
+      <Route path="/contact" element={<Index />} />
+      <Route path="/faq" element={<Index />} />
       <Route
         path="/dashboard/*"
         element={
@@ -26,7 +30,7 @@ export function AppRoutes() {
           </PrivateRoute>
         }
       />
-      {/* Catch all route - redirect to dashboard if authenticated, otherwise to auth */}
+      {/* Catch all route - redirect to auth if not authenticated */}
       <Route path="*" element={<Navigate to="/auth" replace />} />
     </Routes>
   );

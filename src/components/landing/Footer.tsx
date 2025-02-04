@@ -27,22 +27,22 @@ export function Footer() {
             <h3 className="font-semibold">Légal</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link to="/terms" className="hover:text-primary transition-colors">
+                <Link to="/legal/terms" className="hover:text-primary transition-colors">
                   Conditions d'utilisation
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="hover:text-primary transition-colors">
+                <Link to="/legal/privacy" className="hover:text-primary transition-colors">
                   Politique de confidentialité
                 </Link>
               </li>
               <li>
-                <Link to="/cookies" className="hover:text-primary transition-colors">
+                <Link to="/legal/cookies" className="hover:text-primary transition-colors">
                   Politique des cookies
                 </Link>
               </li>
               <li>
-                <Link to="/legal" className="hover:text-primary transition-colors">
+                <Link to="/legal/mentions" className="hover:text-primary transition-colors">
                   Mentions légales
                 </Link>
               </li>
