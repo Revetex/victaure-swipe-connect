@@ -221,7 +221,12 @@ export function PostList() {
     }
 
     try {
-      const { error } = await supabase
+      // Find the post author's ID
+      const post = posts?.find(p => p.id === postId);
+      if (!post) throw new Error("Post not found");
+
+      // Add the comment
+      const { error: commentError } = await supabase
         .from('post_comments')
         .insert({
           post_id: postId,
@@ -229,7 +234,22 @@ export function PostList() {
           content: comment.trim()
         });
 
-      if (error) throw error;
+      if (commentError) throw commentError;
+
+      // Create notification for post author
+      if (post.user_id !== user.id) { // Don't notify if commenting on own post
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: post.user_id,
+            title: 'Nouveau commentaire',
+            message: `${user.email} a commenté votre publication: "${comment.substring(0, 50)}${comment.length > 50 ? '...' : ''}"`,
+          });
+
+        if (notificationError) {
+          console.error('Error creating notification:', notificationError);
+        }
+      }
 
       setNewComments(prev => ({
         ...prev,
