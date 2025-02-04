@@ -58,6 +58,15 @@ export function ExternalSearchSection() {
         font-size: 0.875rem !important;
       }
 
+      /* Remove highlighting of search terms */
+      .gs-title b,
+      .gs-snippet b,
+      .gsc-result b {
+        color: inherit !important;
+        font-weight: inherit !important;
+        background: none !important;
+      }
+
       /* Suggestions styling */
       .gsc-completion-container {
         background: transparent !important;
