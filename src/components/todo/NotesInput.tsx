@@ -39,7 +39,7 @@ export function NotesInput({
         onKeyPress={handleKeyPress}
       />
       <div className="flex gap-2 sm:w-auto w-full">
-        <Select onValueChange={onColorChange} defaultValue={selectedColor}>
+        <Select onValueChange={onColorChange} value={selectedColor}>
           <SelectTrigger className={cn(
             "w-[120px] bg-background/50",
             `sticky-note-${selectedColor}`
@@ -52,10 +52,19 @@ export function NotesInput({
                 key={color.value} 
                 value={color.value}
                 className={cn(
-                  "sticky-note-preview",
+                  "flex items-center gap-2",
                   `sticky-note-${color.value}`
                 )}
               >
+                <div className={cn(
+                  "w-4 h-4 rounded-full",
+                  color.value === "yellow" && "bg-[#FEF7CD]",
+                  color.value === "blue" && "bg-[#D3E4FD]",
+                  color.value === "green" && "bg-[#F2FCE2]",
+                  color.value === "pink" && "bg-[#FFDEE2]",
+                  color.value === "purple" && "bg-[#E5DEFF]",
+                  color.value === "orange" && "bg-[#FEC6A1]"
+                )} />
                 {color.label}
               </SelectItem>
             ))}

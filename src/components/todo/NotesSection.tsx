@@ -40,15 +40,8 @@ export function NotesSection({
         />
       </div>
 
-      <ScrollArea className="flex-1">
-        <motion.div 
-          className={cn(
-            "grid gap-4 p-4",
-            "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
-            "min-h-[300px]"
-          )}
-          layout
-        >
+      <ScrollArea className="flex-1 relative">
+        <div className="min-h-[600px] relative p-4">
           <AnimatePresence mode="popLayout">
             {notes.map((note) => (
               <StickyNote
@@ -63,8 +56,9 @@ export function NotesSection({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className={cn(
-                  "text-center text-muted-foreground py-12 col-span-full",
-                  "bg-muted/30 rounded-lg backdrop-blur-sm",
+                  "text-center text-muted-foreground py-12",
+                  "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                  "bg-muted/30 rounded-lg backdrop-blur-sm w-64",
                   "border border-border/50"
                 )}
               >
@@ -76,7 +70,7 @@ export function NotesSection({
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.div>
+        </div>
       </ScrollArea>
     </div>
   );
