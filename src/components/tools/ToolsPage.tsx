@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { StickyNote, Calculator, Languages, ArrowsUpDown } from "lucide-react";
+import { StickyNote, Calculator, Languages, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ToolsPage() {
@@ -26,7 +26,7 @@ export function ToolsPage() {
     },
     {
       name: "Convertisseur",
-      icon: ArrowsUpDown,
+      icon: ArrowUpDown,
       path: "/dashboard/tools/converter",
       description: "Convertissez des unités facilement"
     }
