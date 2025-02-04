@@ -62,16 +62,16 @@ export function DashboardLayout() {
       setCurrentPage(page);
       setLastPageChange(now);
       
-      // Automatically enter edit mode when switching to notes (page 5)
       if (page === 5) {
         setIsEditing(true);
-        if (isMobile) {
-          // On mobile, ensure the screen is in the right orientation
-          if (window.screen?.orientation && typeof window.screen.orientation.lock === 'function') {
+        if (isMobile && window.screen?.orientation) {
+          try {
             window.screen.orientation.lock('landscape')
-              .catch(() => {
-                console.log('Orientation lock not supported or permission denied');
+              .catch((error: Error) => {
+                console.log('Orientation lock failed:', error.message);
               });
+          } catch (error) {
+            console.log('Orientation lock not supported');
           }
         }
       } else {
