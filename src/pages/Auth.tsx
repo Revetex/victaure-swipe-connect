@@ -6,9 +6,8 @@ import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Logo } from "@/components/Logo";
+import { Features } from "@/components/Features";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Loader } from "@/components/ui/loader";
-import { Shield, Star, Heart } from "lucide-react";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -54,7 +53,7 @@ export default function Auth() {
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-background">
-        <Loader className="w-8 h-8" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -79,36 +78,7 @@ export default function Auth() {
           {/* Left Column - Video and Features */}
           <div className="space-y-8">
             <AuthVideo />
-            
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold tracking-tight text-center">Pourquoi choisir Victaure ?</h2>
-              
-              <div className="grid gap-4">
-                <div className="flex items-start space-x-4 p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/5">
-                  <Star className="w-6 h-6 text-primary shrink-0" />
-                  <div>
-                    <h3 className="font-semibold mb-1">Opportunités Uniques</h3>
-                    <p className="text-sm text-muted-foreground">Accédez à des offres exclusives et des missions passionnantes dans votre domaine.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4 p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/5">
-                  <Heart className="w-6 h-6 text-primary shrink-0" />
-                  <div>
-                    <h3 className="font-semibold mb-1">Communauté Engagée</h3>
-                    <p className="text-sm text-muted-foreground">Rejoignez un réseau de professionnels partageant vos valeurs et ambitions.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4 p-4 rounded-lg bg-card/50 backdrop-blur-sm border border-border/5">
-                  <Shield className="w-6 h-6 text-primary shrink-0" />
-                  <div>
-                    <h3 className="font-semibold mb-1">Sécurité Garantie</h3>
-                    <p className="text-sm text-muted-foreground">Vos données sont protégées avec les plus hauts standards de sécurité.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Features />
           </div>
 
           {/* Right Column - Auth Form */}
