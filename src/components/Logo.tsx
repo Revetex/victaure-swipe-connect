@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   showText?: boolean;
 }
 
@@ -11,12 +11,14 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
     sm: "h-6",
     md: "h-8",
     lg: "h-10",
+    xl: "h-16",
   };
 
   const textSizes = {
     sm: "text-xl",
     md: "text-2xl",
     lg: "text-3xl",
+    xl: "text-5xl",
   };
 
   return (
