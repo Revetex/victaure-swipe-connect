@@ -3,18 +3,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
-
-interface Comment {
-  id: string;
-  content: string;
-  created_at: string;
-  user_id: string;
-  profiles: {
-    id: string;
-    full_name: string;
-    avatar_url?: string;  // Made optional to match database schema
-  };
-}
+import { Comment } from "@/types/posts";
 
 interface PostCommentsProps {
   comments: Comment[];

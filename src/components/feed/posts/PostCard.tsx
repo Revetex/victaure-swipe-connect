@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { PostHeader } from "../PostHeader";
-import { Post, Comment } from "@/types/posts";  // Import Comment type
+import { Post, Comment } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
