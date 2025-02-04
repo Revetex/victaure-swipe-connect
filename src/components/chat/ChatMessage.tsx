@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Bot } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChatMessageProps {
   content: string;
@@ -13,31 +14,46 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
   const isAssistant = sender === "assistant";
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       className={cn(
         "flex w-full gap-4 p-4",
         isAssistant ? "bg-muted/50" : "bg-background"
       )}
     >
-      <Avatar className="h-8 w-8">
+      <Avatar className={cn(
+        "h-10 w-10 ring-2 transition-shadow",
+        isAssistant ? "ring-primary/20" : "ring-muted"
+      )}>
         {isAssistant ? (
-          <Bot className="h-5 w-5 text-primary" />
+          <div className="h-full w-full rounded-full bg-primary/10 flex items-center justify-center">
+            <Bot className="h-6 w-6 text-primary" />
+          </div>
         ) : (
           avatar_url && (
             <img
               src={avatar_url}
               alt="User avatar"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover rounded-full"
             />
           )
         )}
       </Avatar>
-      <Card className={cn(
-        "flex-1 p-4 shadow-sm",
-        isAssistant ? "bg-background" : "bg-primary/5"
-      )}>
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
-      </Card>
-    </div>
+      <div className="flex-1 space-y-1.5">
+        <p className={cn(
+          "text-sm font-medium",
+          isAssistant && "text-primary"
+        )}>
+          {isAssistant ? "M. Victaure" : "Vous"}
+        </p>
+        <Card className={cn(
+          "p-4 shadow-sm",
+          isAssistant ? "bg-card border-primary/10" : "bg-muted/50 border-muted"
+        )}>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
+        </Card>
+      </div>
+    </motion.div>
   );
 }
