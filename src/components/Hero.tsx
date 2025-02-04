@@ -55,7 +55,7 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair"
+            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground font-playfair"
           >
             Votre Assistant IA
           </motion.h1>
@@ -64,7 +64,7 @@ export function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-montserrat leading-relaxed"
+            className="text-lg md:text-xl text-foreground/80 max-w-2xl mx-auto font-montserrat leading-relaxed"
           >
             Découvrez la puissance de l'intelligence artificielle pour votre recherche d'emploi. Notre assistant IA vous aide à trouver les meilleures opportunités.
           </motion.p>
@@ -78,15 +78,9 @@ export function HeroSection() {
             <Link to="/auth">
               <Button 
                 size="lg" 
-                className="font-montserrat group relative overflow-hidden bg-[#9b87f5] hover:bg-[#8B5CF6]"
+                className="font-montserrat group relative overflow-hidden bg-primary hover:bg-primary/90"
               >
                 <span className="relative z-10">Commencer maintenant</span>
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#7E69AB]"
-                  initial={{ x: "100%" }}
-                  whileHover={{ x: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
