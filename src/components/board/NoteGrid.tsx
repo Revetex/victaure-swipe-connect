@@ -11,37 +11,49 @@ interface NoteGridProps {
 
 export function NoteGrid({ notes, onDeleteNote }: NoteGridProps) {
   return (
-    <motion.div 
-      layout 
-      className={cn(
-        "grid gap-4 max-w-5xl mx-auto",
-        "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-        "auto-rows-max"
-      )}
-    >
+    <div className="w-full p-4">
       <AnimatePresence mode="popLayout">
-        {notes?.map((note) => (
-          <StickyNote
-            key={note.id}
-            note={note}
-            colorClass={`sticky-note-${note.color}`}
-            onDelete={onDeleteNote}
-          />
-        ))}
-        {(!notes || notes.length === 0) && (
+        {notes && notes.length > 0 ? (
+          <motion.div 
+            layout
+            className={cn(
+              "grid gap-6",
+              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+              "auto-rows-max"
+            )}
+          >
+            {notes.map((note) => (
+              <motion.div
+                key={note.id}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+                className="h-fit"
+              >
+                <StickyNote
+                  note={note}
+                  colorClass={`sticky-note-${note.color}`}
+                  onDelete={onDeleteNote}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center text-muted-foreground py-12 col-span-full"
+            className="flex flex-col items-center justify-center min-h-[200px] text-center"
           >
-            <StickyNoteIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">Aucune note</p>
-            <p className="text-sm mt-2">
-              Créez votre première note
+            <StickyNoteIcon className="h-12 w-12 text-muted-foreground opacity-50 mb-4" />
+            <p className="text-lg font-medium text-muted-foreground">Aucune note</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Créez votre première note en utilisant le formulaire ci-dessus
             </p>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

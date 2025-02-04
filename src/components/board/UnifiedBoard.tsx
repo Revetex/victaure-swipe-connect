@@ -7,6 +7,7 @@ import { TodoToolbar } from "./TodoToolbar";
 import { NoteToolbar } from "./NoteToolbar";
 import { TodoList } from "./TodoList";
 import { NoteGrid } from "./NoteGrid";
+import { toast } from "sonner";
 
 interface UnifiedBoardProps {
   todos: Todo[];
@@ -49,6 +50,22 @@ export function UnifiedBoard({
 }: UnifiedBoardProps) {
   const [activeTab, setActiveTab] = useState<"todos" | "notes">("todos");
 
+  const handleAddTodo = () => {
+    if (!newTodo.trim()) {
+      toast.error("La tâche ne peut pas être vide");
+      return;
+    }
+    onAddTodo();
+  };
+
+  const handleAddNote = () => {
+    if (!newNote.trim()) {
+      toast.error("La note ne peut pas être vide");
+      return;
+    }
+    onAddNote();
+  };
+
   return (
     <div className="h-full bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
       <Tabs 
@@ -73,7 +90,7 @@ export function UnifiedBoard({
               <TodoToolbar
                 newTodo={newTodo}
                 onTodoChange={onTodoChange}
-                onAddTodo={onAddTodo}
+                onAddTodo={handleAddTodo}
               />
             ) : (
               <NoteToolbar
@@ -82,7 +99,7 @@ export function UnifiedBoard({
                 colors={colors}
                 onNoteChange={onNoteChange}
                 onColorChange={onColorChange}
-                onAddNote={onAddNote}
+                onAddNote={handleAddNote}
               />
             )}
           </div>
@@ -91,24 +108,20 @@ export function UnifiedBoard({
         <div className="flex-1 overflow-hidden">
           <TabsContent value="todos" className="h-full m-0">
             <ScrollArea className="h-full">
-              <div className="p-4">
-                <TodoList
-                  todos={todos}
-                  onToggleTodo={onToggleTodo}
-                  onDeleteTodo={onDeleteTodo}
-                />
-              </div>
+              <TodoList
+                todos={todos}
+                onToggleTodo={onToggleTodo}
+                onDeleteTodo={onDeleteTodo}
+              />
             </ScrollArea>
           </TabsContent>
 
           <TabsContent value="notes" className="h-full m-0">
             <ScrollArea className="h-full">
-              <div className="p-4">
-                <NoteGrid
-                  notes={notes}
-                  onDeleteNote={onDeleteNote}
-                />
-              </div>
+              <NoteGrid
+                notes={notes}
+                onDeleteNote={onDeleteNote}
+              />
             </ScrollArea>
           </TabsContent>
         </div>

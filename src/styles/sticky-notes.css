@@ -1,8 +1,8 @@
 @layer components {
   .sticky-note {
-    @apply p-4 rounded-lg shadow-sm transition-all duration-200 
+    @apply p-6 rounded-lg shadow-sm transition-all duration-200 
            hover:shadow-md hover:-translate-y-0.5
-           backdrop-blur-sm
+           backdrop-blur-sm relative
            sm:touch-none
            active:shadow-lg
            active:scale-[0.98];
@@ -40,13 +40,5 @@
   .sticky-note-orange {
     @apply bg-[#FEC6A1]/90 hover:bg-[#FEC6A1];
     box-shadow: 0 2px 4px rgba(251, 146, 60, 0.1);
-  }
-
-  .board {
-    @apply bg-gray-50 dark:bg-gray-900/50;
-  }
-
-  .board-container {
-    @apply min-h-[600px] relative p-4 bg-background/95 backdrop-blur-sm;
   }
 }
