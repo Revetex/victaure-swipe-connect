@@ -6,6 +6,7 @@ import { PostComments } from "../PostComments";
 import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PostCardProps {
   post: Post;
@@ -27,6 +28,7 @@ export function PostCard({
   onCommentAdded 
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <motion.div
@@ -38,7 +40,8 @@ export function PostCard({
       <Card className={cn(
         "border shadow-sm transition-all duration-200",
         "p-3 sm:p-4 hover:shadow-md hover:border-primary/20",
-        "touch-friendly"
+        isMobile ? "active:scale-[0.995] touch-none" : "hover:scale-[1.002]",
+        "touch-pan-y"
       )}>
         <PostHeader 
           profile={post.profiles}

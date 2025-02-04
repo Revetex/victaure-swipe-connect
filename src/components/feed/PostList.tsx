@@ -14,6 +14,8 @@ import {
 import { useState } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PostListProps {
   onPostDeleted: () => void;
@@ -24,8 +26,9 @@ export function PostList({ onPostDeleted }: PostListProps) {
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const { handleReaction, handleDelete, handleHide } = usePostOperations();
+  const isMobile = useIsMobile();
 
-  const { data: posts } = useQuery({
+  const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -69,20 +72,32 @@ export function PostList({ onPostDeleted }: PostListProps) {
     onPostDeleted();
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {posts?.map((post) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          currentUserId={user?.id}
-          userEmail={user?.email}
-          onDelete={() => setPostToDelete(post.id)}
-          onHide={(postId) => handleHide(postId, user?.id)}
-          onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
-          onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
-        />
-      ))}
+      <ScrollArea className={isMobile ? "h-[calc(100dvh-10rem)]" : "h-auto"}>
+        <div className="space-y-4 pr-1">
+          {posts?.map((post) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              currentUserId={user?.id}
+              userEmail={user?.email}
+              onDelete={() => setPostToDelete(post.id)}
+              onHide={(postId) => handleHide(postId, user?.id)}
+              onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
+              onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
+            />
+          ))}
+        </div>
+      </ScrollArea>
 
       <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
         <AlertDialogContent>
