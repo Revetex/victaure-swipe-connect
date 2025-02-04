@@ -40,7 +40,7 @@ export function ConversationMessages({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4 h-full" onScroll={onScroll}>
+    <div className="flex-1 overflow-y-auto p-4 space-y-4 h-[calc(100vh-12rem)]" onScroll={onScroll}>
       <AnimatePresence initial={false}>
         {messages.map((message) => {
           const isUserMessage = typeof message.sender === 'string' 

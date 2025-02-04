@@ -44,11 +44,13 @@ export function ConversationView({
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <ConversationHeader
-        profile={profile}
-        onBack={onBack || (() => {})}
-        onDeleteConversation={() => setShowDeleteDialog(true)}
-      />
+      <div className="sticky top-0 z-50 shrink-0">
+        <ConversationHeader
+          profile={profile}
+          onBack={onBack || (() => {})}
+          onDeleteConversation={() => setShowDeleteDialog(true)}
+        />
+      </div>
 
       <div className="flex-1 overflow-hidden">
         <ConversationMessages
@@ -57,7 +59,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="sticky bottom-0 shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
