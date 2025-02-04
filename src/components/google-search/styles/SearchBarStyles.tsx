@@ -11,10 +11,11 @@ export const SearchBarStyles = `
   }
 
   .gsc-input-box {
-    border: 1px solid hsl(var(--border)) !important;
+    border: 2px solid hsl(var(--border)) !important;
     border-radius: 0.5rem !important;
     background: hsl(var(--background)) !important;
     padding: 0.5rem !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   }
 
   .gsc-input {
@@ -40,37 +41,5 @@ export const SearchBarStyles = `
 
   .gsc-search-button {
     display: none !important;
-  }
-
-  .gsc-results-wrapper-overlay {
-    background: hsl(var(--background)) !important;
-  }
-
-  .gsc-webResult.gsc-result {
-    border: none !important;
-    padding: 1rem !important;
-    margin-bottom: 1rem !important;
-    background: transparent !important;
-  }
-
-  .gs-title {
-    color: hsl(var(--primary)) !important;
-    text-decoration: none !important;
-  }
-
-  .gs-snippet {
-    color: hsl(var(--foreground)) !important;
-  }
-
-  .gsc-url-top {
-    color: hsl(var(--muted-foreground)) !important;
-  }
-
-  .gsc-cursor-page {
-    color: hsl(var(--foreground)) !important;
-  }
-
-  .gsc-loading-fade {
-    background: hsl(var(--background)) !important;
   }
 `;

@@ -27,13 +27,23 @@
     box-shadow: 0 2px 4px rgba(34, 197, 94, 0.1);
   }
 
-  .sticky-note-red {
-    @apply bg-[#FFE5E5]/90 hover:bg-[#FFE5E5];
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+  .sticky-note-pink {
+    @apply bg-[#FFDEE2]/90 hover:bg-[#FFDEE2];
+    box-shadow: 0 2px 4px rgba(244, 114, 182, 0.1);
   }
 
   .sticky-note-purple {
     @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF];
     box-shadow: 0 2px 4px rgba(168, 85, 247, 0.1);
+  }
+
+  .sticky-note-orange {
+    @apply bg-[#FEC6A1]/90 hover:bg-[#FEC6A1];
+    box-shadow: 0 2px 4px rgba(251, 146, 60, 0.1);
+  }
+
+  .sticky-note-peach {
+    @apply bg-[#FDE1D3]/90 hover:bg-[#FDE1D3];
+    box-shadow: 0 2px 4px rgba(251, 146, 60, 0.1);
   }
 }
