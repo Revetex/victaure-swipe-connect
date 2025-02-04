@@ -5,10 +5,16 @@ import { useState, useCallback, useEffect } from "react";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardContainer } from "@/components/dashboard/DashboardContainer";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { useDebounce } from "use-debounce";
+import { Logo } from "@/components/Logo";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useReceiver } from "@/hooks/useReceiver";
-import { DashboardTopSection } from "@/components/dashboard/DashboardTopSection";
+import { toast } from "sonner";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { Connections } from "@/components/Connections";
 
 export function DashboardLayout() {
   const isMobile = useIsMobile();
@@ -19,7 +25,6 @@ export function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showConversation } = useReceiver();
-  const [isConnectionsOpen, setIsConnectionsOpen] = useState(true);
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -96,10 +101,6 @@ export function DashboardLayout() {
     );
   }
 
-  const toggleConnections = () => {
-    setIsConnectionsOpen(!isConnectionsOpen);
-  };
-
   return (
     <div className="relative min-h-screen bg-background">
       {isEditing && (
@@ -116,12 +117,36 @@ export function DashboardLayout() {
       
       <div className={`container mx-auto px-0 sm:px-4 ${isEditing ? 'pt-10' : ''}`}>
         <div className="max-w-7xl mx-auto">
-          <DashboardTopSection 
-            getPageTitle={getPageTitle}
-            currentPage={currentPage}
-            isConnectionsOpen={isConnectionsOpen}
-            onConnectionsToggle={toggleConnections}
-          />
+          <div className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50">
+            <div className="container mx-auto px-0 sm:px-4">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-between py-3 px-4">
+                    <div className="flex items-center gap-4">
+                      <Logo size="sm" />
+                      <div className="h-6 w-px bg-border mx-2" />
+                      <h2 className="text-lg font-semibold text-foreground">
+                        {getPageTitle(currentPage)}
+                      </h2>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <NotificationsBox />
+                    </div>
+                  </div>
+                  
+                  {/* Always show Connections section */}
+                  <div className="border-t border-border/50 bg-background/95 backdrop-blur-sm">
+                    <div className="p-4">
+                      <div className="space-y-4">
+                        <Connections />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           
           <AnimatePresence mode="wait">
             <motion.div 
@@ -133,7 +158,7 @@ export function DashboardLayout() {
                 WebkitOverflowScrolling: 'touch',
                 paddingBottom: isMobile ? '4rem' : '3rem',
                 height: isMobile ? `${viewportHeight}px` : 'auto',
-                marginTop: '300px'
+                marginTop: '300px' // Add margin to account for the fixed Connections section
               }}
             >
               <DashboardContent
