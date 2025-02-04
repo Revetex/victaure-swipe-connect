@@ -67,7 +67,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
             className="absolute top-12 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border rounded-lg shadow-lg p-4"
           >
             <div className="space-y-2">
-              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-4 w-3/4" />
             </div>
           </motion.div>
         )}
