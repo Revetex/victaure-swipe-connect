@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { UserPlus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FriendListHeader } from "./FriendListHeader";
 import { PendingRequest } from "./PendingRequest";
 import { toast } from "sonner";
 
@@ -109,24 +107,18 @@ export function FriendRequestsSection() {
   };
 
   return (
-    <div className="mb-6">
-      <FriendListHeader 
-        icon={<UserPlus className="h-5 w-5 text-primary" />}
-        title="Demandes en attente"
-      />
-      <ScrollArea className="h-[200px] pr-4">
-        <div className="space-y-3">
-          {pendingRequests.map((request) => (
-            <PendingRequest
-              key={request.id}
-              request={request}
-              onAccept={handleAcceptRequest}
-              onReject={handleRejectRequest}
-              onCancel={handleCancelRequest}
-            />
-          ))}
-        </div>
-      </ScrollArea>
-    </div>
+    <ScrollArea className="h-[200px] pr-4">
+      <div className="space-y-3">
+        {pendingRequests.map((request) => (
+          <PendingRequest
+            key={request.id}
+            request={request}
+            onAccept={handleAcceptRequest}
+            onReject={handleRejectRequest}
+            onCancel={handleCancelRequest}
+          />
+        ))}
+      </div>
+    </ScrollArea>
   );
 }

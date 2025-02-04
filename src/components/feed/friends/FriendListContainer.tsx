@@ -45,7 +45,7 @@ export function FriendListContainer() {
       <div 
         className={`${
           isMobile ? (isExpanded ? 'block' : 'hidden') : 'block'
-        } p-4 max-h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/10 hover:scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent`}
+        } p-4`}
       >
         <FriendsContent />
       </div>
