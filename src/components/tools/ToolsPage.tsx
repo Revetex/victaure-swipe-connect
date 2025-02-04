@@ -1,55 +1,31 @@
-import { useNavigate } from "react-router-dom";
-import { StickyNote, Calculator, Languages, ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
+import { NotesPage } from "./NotesPage";
+import { TasksPage } from "./TasksPage";
+import { CalculatorPage } from "./CalculatorPage";
+import { TranslatorPage } from "./TranslatorPage";
+import { ConverterPage } from "./ConverterPage";
+import { ChessPage } from "./ChessPage";
 
 export function ToolsPage() {
-  const navigate = useNavigate();
-
-  const tools = [
-    {
-      name: "Notes",
-      icon: StickyNote,
-      path: "/dashboard/tools/notes",
-      description: "Organisez vos idées avec des notes interactives"
-    },
-    {
-      name: "Calculatrice",
-      icon: Calculator,
-      path: "/dashboard/tools/calculator",
-      description: "Effectuez des calculs rapidement"
-    },
-    {
-      name: "Traducteur",
-      icon: Languages,
-      path: "/dashboard/tools/translator",
-      description: "Traduisez du texte en plusieurs langues"
-    },
-    {
-      name: "Convertisseur",
-      icon: ArrowUpDown,
-      path: "/dashboard/tools/converter",
-      description: "Convertissez des unités facilement"
-    }
-  ];
+  const [selectedTool, setSelectedTool] = useState("notes");
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">Outils</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {tools.map((tool) => (
-          <Button
-            key={tool.name}
-            variant="outline"
-            className="h-auto p-6 flex flex-col items-center gap-4 hover:bg-accent"
-            onClick={() => navigate(tool.path)}
-          >
-            <tool.icon className="h-8 w-8" />
-            <div className="text-center">
-              <h3 className="font-semibold mb-2">{tool.name}</h3>
-              <p className="text-sm text-muted-foreground">{tool.description}</p>
-            </div>
-          </Button>
-        ))}
+    <div className="h-full flex flex-col">
+      <div className="p-4 border-b">
+        <NotesToolSelector
+          selectedTool={selectedTool}
+          onToolSelect={setSelectedTool}
+        />
+      </div>
+
+      <div className="flex-1 overflow-auto">
+        {selectedTool === "notes" && <NotesPage />}
+        {selectedTool === "tasks" && <TasksPage />}
+        {selectedTool === "calculator" && <CalculatorPage />}
+        {selectedTool === "translator" && <TranslatorPage />}
+        {selectedTool === "converter" && <ConverterPage />}
+        {selectedTool === "chess" && <ChessPage />}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Calculator, Languages, ListTodo, Plus, Ruler } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, ChessKnight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NotesToolSelectorProps {
@@ -13,6 +13,7 @@ export function NotesToolSelector({ selectedTool, onToolSelect }: NotesToolSelec
         variant={selectedTool === "notes" ? "default" : "outline"}
         size="sm"
         onClick={() => onToolSelect("notes")}
+        className="whitespace-nowrap"
       >
         <Plus className="h-4 w-4 mr-2" />
         Notes
@@ -21,6 +22,7 @@ export function NotesToolSelector({ selectedTool, onToolSelect }: NotesToolSelec
         variant={selectedTool === "tasks" ? "default" : "outline"}
         size="sm"
         onClick={() => onToolSelect("tasks")}
+        className="whitespace-nowrap"
       >
         <ListTodo className="h-4 w-4 mr-2" />
         Tâches
@@ -29,6 +31,7 @@ export function NotesToolSelector({ selectedTool, onToolSelect }: NotesToolSelec
         variant={selectedTool === "calculator" ? "default" : "outline"}
         size="sm"
         onClick={() => onToolSelect("calculator")}
+        className="whitespace-nowrap"
       >
         <Calculator className="h-4 w-4 mr-2" />
         Calculatrice
@@ -37,6 +40,7 @@ export function NotesToolSelector({ selectedTool, onToolSelect }: NotesToolSelec
         variant={selectedTool === "translator" ? "default" : "outline"}
         size="sm"
         onClick={() => onToolSelect("translator")}
+        className="whitespace-nowrap"
       >
         <Languages className="h-4 w-4 mr-2" />
         Traducteur
@@ -45,9 +49,19 @@ export function NotesToolSelector({ selectedTool, onToolSelect }: NotesToolSelec
         variant={selectedTool === "converter" ? "default" : "outline"}
         size="sm"
         onClick={() => onToolSelect("converter")}
+        className="whitespace-nowrap"
       >
         <Ruler className="h-4 w-4 mr-2" />
         Convertisseur
+      </Button>
+      <Button 
+        variant={selectedTool === "chess" ? "default" : "outline"}
+        size="sm"
+        onClick={() => onToolSelect("chess")}
+        className="whitespace-nowrap"
+      >
+        <ChessKnight className="h-4 w-4 mr-2" />
+        Échecs
       </Button>
     </div>
   );
