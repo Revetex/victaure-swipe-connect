@@ -44,7 +44,7 @@ export function ConversationMessages({
         ) : (
           <AssistantMessage 
             key={message.id} 
-            chatMessage={message}
+            chatMessages={[message]}
             onSelectConversation={() => {}}
           />
         );
