@@ -11,12 +11,20 @@ interface AISearchSuggestionsProps {
 export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    // Find and store the search input reference when component mounts
+    const input = document.querySelector('input[type="search"]') as HTMLInputElement;
+    if (input) {
+      searchInputRef.current = input;
+    }
+  }, []);
 
   const handleSearch = useCallback(() => {
     try {
-      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
-      if (searchInput) {
-        searchInput.focus();
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
       }
     } catch (error) {
       console.error('Error focusing search input:', error);
@@ -39,11 +47,21 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Utilisateur non authentifié");
 
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+      if (!profileData) throw new Error("Profil non trouvé");
+
       const { data: functionData, error: functionError } = await supabase.functions.invoke(
         'generate-search-suggestions',
         {
           body: {
             userId: user.id,
+            userRole: profileData.role,
             context: {
               userPreferences: {
                 language: 'fr',
@@ -68,12 +86,11 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
       const suggestion = functionData?.suggestion;
       if (!suggestion) throw new Error("Aucune suggestion générée");
 
-      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
-      if (!searchInput) throw new Error("Champ de recherche non trouvé");
-
-      searchInput.value = suggestion;
-      onSuggestionClick(suggestion);
-      searchInput.focus();
+      if (searchInputRef.current) {
+        searchInputRef.current.value = suggestion;
+        searchInputRef.current.focus();
+        onSuggestionClick(suggestion);
+      }
 
       // Recursively generate next suggestion after a short delay
       setTimeout(() => {

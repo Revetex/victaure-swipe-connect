@@ -50,6 +50,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const isInConversation = location.pathname.includes('/messages') && showConversation;
+  const isInTools = location.pathname.includes('/tools');
 
   if (isInConversation) {
     return (
@@ -71,7 +72,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       isEditing={isEditing}
       showFriendsList={showFriendsList}
       onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-      onToolReturn={handleToolReturn}
+      onToolReturn={isInTools ? handleToolReturn : undefined}
     >
       {children || (
         <DashboardContent
