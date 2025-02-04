@@ -32,8 +32,11 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/50 dark:from-background dark:to-background/50">
-      {/* Main Title */}
-      <div className="text-center py-8">
+      {/* Logo and Title */}
+      <div className="text-center pt-8">
+        <div className="flex justify-center mb-4">
+          <Logo size="lg" showText={false} />
+        </div>
         <h1 className="text-6xl font-bold text-[#9b87f5] dark:text-[#D6BCFA]">VICTAURE</h1>
       </div>
 
@@ -160,7 +163,10 @@ export default function Index() {
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <p className="text-muted-foreground">
-                Email: <a href="mailto:tblanchet3909@hotmail.com" className="text-[#9b87f5] hover:underline">tblanchet3909@hotmail.com</a>
+                Email: <br />
+                <a href="mailto:admin@victaure.com" className="text-[#9b87f5] hover:underline">admin@victaure.com</a>
+                <br />
+                <a href="mailto:tblanchet3909@hotmail.com" className="text-[#9b87f5] hover:underline">tblanchet3909@hotmail.com</a>
               </p>
             </div>
             <div>
