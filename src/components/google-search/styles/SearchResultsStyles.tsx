@@ -58,11 +58,11 @@ export function useSearchResultsStyles() {
     }
 
     .gcsc-find-more-on-google {
-      color: hsl(var(--muted-foreground)) !important;
+      display: none !important;
     }
 
     .gcsc-find-more-on-google-root {
-      color: hsl(var(--muted-foreground)) !important;
+      display: none !important;
     }
 
     .gsc-results {
