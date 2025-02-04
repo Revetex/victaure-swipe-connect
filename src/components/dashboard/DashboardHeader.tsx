@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserCircle } from "lucide-react";
+import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 
 export function DashboardHeader() {
   const { profile } = useProfile();
@@ -12,7 +13,7 @@ export function DashboardHeader() {
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-8 p-6 rounded-2xl bg-card shadow-lg border border-border/50"
+      className="mb-8 p-6 rounded-2xl bg-card shadow-lg border border-border/50 space-y-4"
     >
       <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16 ring-2 ring-primary/10">
@@ -30,6 +31,7 @@ export function DashboardHeader() {
           </p>
         </div>
       </div>
+      <GoogleSearchBox />
     </motion.div>
   );
 }
