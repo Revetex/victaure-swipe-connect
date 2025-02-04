@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
-import { useNavigate, useEffect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
