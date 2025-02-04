@@ -9,31 +9,35 @@ import {
 } from "lucide-react";
 
 export function DashboardStats() {
-  const { stats, isLoading } = useDashboardStats();
+  const { data: stats, isLoading } = useDashboardStats();
 
   const statCards = [
     {
       title: "Offres d'emploi",
-      value: stats?.jobs || 0,
+      value: stats?.activeJobs || 0,
       icon: Briefcase,
       color: "from-purple-500/10 to-purple-600/10 dark:from-purple-400/10 dark:to-purple-500/10",
       textColor: "text-purple-700 dark:text-purple-400"
     },
     {
       title: "Connexions",
-      value: stats?.connections || 0,
+      value: stats?.unreadMessages || 0,
       icon: Users,
       color: "from-blue-500/10 to-blue-600/10 dark:from-blue-400/10 dark:to-blue-500/10",
       textColor: "text-blue-700 dark:text-blue-400"
     },
     {
       title: "Messages",
-      value: stats?.messages || 0,
+      value: stats?.pendingPayments || "0",
       icon: MessageSquare,
       color: "from-emerald-500/10 to-emerald-600/10 dark:from-emerald-400/10 dark:to-emerald-500/10",
       textColor: "text-emerald-700 dark:text-emerald-400"
     }
   ];
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -53,7 +57,7 @@ export function DashboardStats() {
                     {stat.title}
                   </p>
                   <h3 className={`mt-2 text-3xl font-bold ${stat.textColor}`}>
-                    {isLoading ? "-" : stat.value}
+                    {stat.value}
                   </h3>
                 </div>
                 <div className={`p-3 rounded-full bg-white/10 ${stat.textColor}`}>
