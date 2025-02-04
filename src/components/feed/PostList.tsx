@@ -1,10 +1,11 @@
 import { Card } from "@/components/ui/card";
-import { UserCircle, ThumbsUp, ThumbsDown, MessageSquare, Trash2, EyeOff, Globe, Lock } from "lucide-react";
+import { UserCircle, ThumbsUp, ThumbsDown, MessageSquare, Trash2, EyeOff, Globe, Lock, Send } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,8 +39,10 @@ interface Post {
     id: string;
     content: string;
     created_at: string;
+    user_id: string;
     profiles: {
       full_name: string;
+      avatar_url: string;
     };
   }[];
 }
@@ -50,6 +53,7 @@ export function PostList() {
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const [expandedComments, setExpandedComments] = useState<string[]>([]);
+  const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
 
   const { data: posts } = useQuery({
     queryKey: ["posts"],
@@ -70,7 +74,12 @@ export function PostList() {
             id,
             content,
             created_at,
-            profiles(full_name)
+            user_id,
+            profiles(
+              id,
+              full_name,
+              avatar_url
+            )
           )
         `)
         .order("created_at", { ascending: false });
@@ -91,7 +100,6 @@ export function PostList() {
     }
 
     try {
-      // First, check if a reaction already exists
       const { data: existingReaction } = await supabase
         .from('post_reactions')
         .select('*')
@@ -99,7 +107,6 @@ export function PostList() {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // Get post details to check if it's the user's own post
       const { data: post } = await supabase
         .from('posts')
         .select('user_id')
@@ -107,7 +114,6 @@ export function PostList() {
         .single();
 
       if (existingReaction) {
-        // If reaction exists and it's the same type, delete it
         if (existingReaction.reaction_type === type) {
           const { error } = await supabase
             .from('post_reactions')
@@ -117,7 +123,6 @@ export function PostList() {
 
           if (error) throw error;
         } else {
-          // If reaction exists but different type, update it
           const { error } = await supabase
             .from('post_reactions')
             .update({ reaction_type: type })
@@ -126,7 +131,6 @@ export function PostList() {
 
           if (error) throw error;
 
-          // If it's the user's own post, create a notification
           if (post && post.user_id === user.id) {
             const { error: notifError } = await supabase
               .from('notifications')
@@ -142,7 +146,6 @@ export function PostList() {
           }
         }
       } else {
-        // If no reaction exists, insert new one
         const { error } = await supabase
           .from('post_reactions')
           .insert({
@@ -153,7 +156,6 @@ export function PostList() {
 
         if (error) throw error;
 
-        // If it's the user's own post, create a notification
         if (post && post.user_id === user.id) {
           const { error: notifError } = await supabase
             .from('notifications')
@@ -233,6 +235,83 @@ export function PostList() {
       toast({
         title: "Success",
         description: "Post hidden successfully"
+      });
+    }
+  };
+
+  const addComment = async (postId: string) => {
+    if (!user) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez être connecté pour commenter",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const comment = newComments[postId];
+    if (!comment?.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le commentaire ne peut pas être vide",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          content: comment.trim()
+        });
+
+      if (error) throw error;
+
+      setNewComments(prev => ({
+        ...prev,
+        [postId]: ''
+      }));
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      toast({
+        title: "Succès",
+        description: "Commentaire ajouté"
+      });
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'ajouter le commentaire",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteComment = async (commentId: string) => {
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+      toast({
+        title: "Succès",
+        description: "Commentaire supprimé"
+      });
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le commentaire",
+        variant: "destructive"
       });
     }
   };
@@ -335,7 +414,7 @@ export function PostList() {
                 ))}
               </div>
             )}
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center mb-4">
               <Button
                 variant={userReaction === 'like' ? 'default' : 'ghost'}
                 size="sm"
@@ -365,19 +444,69 @@ export function PostList() {
               </Button>
             </div>
 
-            {isExpanded && post.comments && post.comments.length > 0 && (
-              <div className="mt-4 space-y-3 pl-4 border-l-2 border-muted">
-                {post.comments.map((comment) => (
-                  <div key={comment.id} className="group relative bg-muted/50 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{comment.profiles.full_name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(comment.created_at), "d MMM 'à' HH:mm", { locale: fr })}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm">{comment.content}</p>
+            {isExpanded && (
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Ajouter un commentaire..."
+                    value={newComments[post.id] || ''}
+                    onChange={(e) => setNewComments(prev => ({
+                      ...prev,
+                      [post.id]: e.target.value
+                    }))}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        addComment(post.id);
+                      }
+                    }}
+                  />
+                  <Button
+                    size="icon"
+                    onClick={() => addComment(post.id)}
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {post.comments && post.comments.length > 0 && (
+                  <div className="space-y-3 pl-4 border-l-2 border-muted">
+                    {post.comments.map((comment) => (
+                      <div key={comment.id} className="group relative bg-muted/50 rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                            {comment.profiles.avatar_url ? (
+                              <img
+                                src={comment.profiles.avatar_url}
+                                alt={comment.profiles.full_name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <UserCircle className="w-5 h-5 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div>
+                            <span className="font-medium text-sm">{comment.profiles.full_name}</span>
+                            <span className="text-xs text-muted-foreground ml-2">
+                              {format(new Date(comment.created_at), "d MMM 'à' HH:mm", { locale: fr })}
+                            </span>
+                          </div>
+                          {comment.user_id === user?.id && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => deleteComment(comment.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <p className="text-sm">{comment.content}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
             )}
           </Card>
