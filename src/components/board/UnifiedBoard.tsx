@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ListTodo, StickyNote, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { TodoItem } from "../todo/TodoItem";
-import { StickyNote as StickyNoteComponent } from "../todo/StickyNote";
+import { ListTodo, StickyNote } from "lucide-react";
 import { Todo, StickyNote as StickyNoteType, ColorOption } from "@/types/todo";
+import { TodoToolbar } from "./TodoToolbar";
+import { NoteToolbar } from "./NoteToolbar";
+import { TodoList } from "./TodoList";
+import { NoteGrid } from "./NoteGrid";
 
 interface UnifiedBoardProps {
   todos: Todo[];
@@ -39,16 +36,10 @@ export function UnifiedBoard({
   notes = [],
   newTodo = "",
   newNote = "",
-  selectedDate,
-  selectedTime,
-  allDay,
   selectedColor = "yellow",
   colors = [],
   onTodoChange,
   onNoteChange,
-  onDateChange,
-  onTimeChange,
-  onAllDayChange,
   onColorChange,
   onAddTodo,
   onAddNote,
@@ -79,47 +70,20 @@ export function UnifiedBoard({
           
           <div className="p-3">
             {activeTab === "todos" ? (
-              <div className="flex gap-2">
-                <Input
-                  value={newTodo}
-                  onChange={(e) => onTodoChange(e.target.value)}
-                  placeholder="Nouvelle tâche..."
-                  className="flex-1"
-                  onKeyPress={(e) => e.key === 'Enter' && onAddTodo()}
-                />
-                <Button onClick={onAddTodo} size="icon" variant="ghost">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              <TodoToolbar
+                newTodo={newTodo}
+                onTodoChange={onTodoChange}
+                onAddTodo={onAddTodo}
+              />
             ) : (
-              <div className="flex gap-2">
-                <Input
-                  value={newNote}
-                  onChange={(e) => onNoteChange(e.target.value)}
-                  placeholder="Nouvelle note..."
-                  className="flex-1"
-                  onKeyPress={(e) => e.key === 'Enter' && onAddNote()}
-                />
-                <Select onValueChange={onColorChange} defaultValue={selectedColor}>
-                  <SelectTrigger className="w-[100px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {colors.map((color) => (
-                      <SelectItem 
-                        key={color.value} 
-                        value={color.value}
-                        className={`sticky-note-${color.value}`}
-                      >
-                        {color.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button onClick={onAddNote} size="icon" variant="ghost">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              <NoteToolbar
+                newNote={newNote}
+                selectedColor={selectedColor}
+                colors={colors}
+                onNoteChange={onNoteChange}
+                onColorChange={onColorChange}
+                onAddNote={onAddNote}
+              />
             )}
           </div>
         </div>
@@ -128,31 +92,11 @@ export function UnifiedBoard({
           <TabsContent value="todos" className="h-full m-0">
             <ScrollArea className="h-full">
               <div className="p-4">
-                <motion.div layout className="space-y-3 max-w-3xl mx-auto">
-                  <AnimatePresence mode="popLayout">
-                    {todos?.map((todo) => (
-                      <TodoItem
-                        key={todo.id}
-                        todo={todo}
-                        onToggle={onToggleTodo}
-                        onDelete={onDeleteTodo}
-                      />
-                    ))}
-                    {(!todos || todos.length === 0) && (
-                      <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-center text-muted-foreground py-12"
-                      >
-                        <ListTodo className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p className="text-lg">Aucune tâche</p>
-                        <p className="text-sm mt-2">
-                          Ajoutez votre première tâche
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                <TodoList
+                  todos={todos}
+                  onToggleTodo={onToggleTodo}
+                  onDeleteTodo={onDeleteTodo}
+                />
               </div>
             </ScrollArea>
           </TabsContent>
@@ -160,38 +104,10 @@ export function UnifiedBoard({
           <TabsContent value="notes" className="h-full m-0">
             <ScrollArea className="h-full">
               <div className="p-4">
-                <motion.div 
-                  layout 
-                  className={cn(
-                    "grid gap-4 max-w-5xl mx-auto",
-                    "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-                    "auto-rows-max"
-                  )}
-                >
-                  <AnimatePresence mode="popLayout">
-                    {notes?.map((note) => (
-                      <StickyNoteComponent
-                        key={note.id}
-                        note={note}
-                        colorClass={`sticky-note-${note.color}`}
-                        onDelete={onDeleteNote}
-                      />
-                    ))}
-                    {(!notes || notes.length === 0) && (
-                      <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-center text-muted-foreground py-12 col-span-full"
-                      >
-                        <StickyNote className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p className="text-lg">Aucune note</p>
-                        <p className="text-sm mt-2">
-                          Créez votre première note
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                <NoteGrid
+                  notes={notes}
+                  onDeleteNote={onDeleteNote}
+                />
               </div>
             </ScrollArea>
           </TabsContent>
