@@ -34,17 +34,15 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   }, []);
 
   const generateSuggestion = useCallback(async () => {
-    if (isLoading) return; // Prevent multiple simultaneous requests
+    if (isLoading) return;
     
     setIsLoading(true);
     try {
-      // Focus the search input first
       const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
       if (!searchInput) {
         throw new Error("Impossible de trouver la barre de recherche");
       }
 
-      // Get the user data first
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError) throw authError;
@@ -53,7 +51,6 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
         throw new Error("Vous devez être connecté pour utiliser cette fonctionnalité");
       }
 
-      // Get the user's profile
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -62,22 +59,18 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
 
       if (profileError) throw profileError;
 
-      // Use empty string if no query is present
       const query = searchInput.value.trim() || "emploi";
 
-      // Prevent duplicate suggestions
-      if (previousSuggestions.includes(query)) {
-        throw new Error("Cette suggestion a déjà été utilisée");
-      }
+      // Keep only the last 5 suggestions in history
+      const recentSuggestions = previousSuggestions.slice(-5);
 
-      // Call the edge function with the collected data
       const { data, error: functionError } = await supabase.functions.invoke('generate-search-suggestions', {
         body: {
           query,
           user_id: user.id,
           context: {
             profile,
-            previousSuggestions
+            previousSuggestions: recentSuggestions
           }
         }
       });
@@ -89,10 +82,9 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
       }
 
       const suggestion = data.suggestions[0];
-      setPreviousSuggestions(prev => [...prev, suggestion]);
+      setPreviousSuggestions(prev => [...prev.slice(-4), suggestion]); // Keep only last 5
       onSuggestionClick(suggestion);
       
-      // Focus the search input after suggestion
       searchInput.focus();
 
     } catch (error) {
