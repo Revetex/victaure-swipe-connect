@@ -73,10 +73,17 @@ export function MessagesList({ messages, chatMessages, onSelectConversation }: M
         <AnimatePresence>
           {messages.map((message, index) => {
             const sender = typeof message.sender === 'string' ? { id: message.sender } : message.sender;
-            const receiver = typeof message.receiver === 'string' ? { id: message.receiver } : message.receiver;
-            const otherUser = sender.id === 'assistant' ? receiver : sender;
+            const otherUserId = sender.id === 'assistant' ? message.receiver_id : sender.id;
 
-            if (!otherUser) return null;
+            if (!otherUserId) return null;
+
+            const otherUser = {
+              id: otherUserId,
+              full_name: typeof message.sender === 'string' ? message.sender : message.sender.full_name,
+              avatar_url: typeof message.sender === 'string' ? undefined : message.sender.avatar_url,
+              online_status: typeof message.sender === 'string' ? undefined : message.sender.online_status,
+              last_seen: typeof message.sender === 'string' ? undefined : message.sender.last_seen
+            };
 
             return (
               <motion.div
