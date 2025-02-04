@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { PostHeader } from "../PostHeader";
-import { Post, Comment } from "@/types/posts";
+import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -39,6 +39,15 @@ export function PostCard({
     setShowComments(!showComments);
   };
 
+  // Ensure avatar_url is always defined with a default value
+  const postWithDefaultAvatar = {
+    ...post,
+    profiles: {
+      ...post.profiles,
+      avatar_url: post.profiles.avatar_url || '/user-icon.svg'
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -53,7 +62,7 @@ export function PostCard({
         "touch-pan-y"
       )}>
         <PostHeader 
-          profile={post.profiles}
+          profile={postWithDefaultAvatar.profiles}
           created_at={post.created_at}
           privacy_level={post.privacy_level}
         />
@@ -88,7 +97,7 @@ export function PostCard({
               postAuthorId={post.user_id}
               currentUserId={currentUserId}
               userEmail={userEmail}
-              comments={post.comments as Comment[]}
+              comments={post.comments || []}
               onCommentAdded={onCommentAdded}
             />
           )}
