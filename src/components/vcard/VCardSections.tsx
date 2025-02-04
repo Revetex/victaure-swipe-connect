@@ -1,17 +1,14 @@
 import { UserProfile } from "@/types/profile";
-import { VCardBio } from "../VCardBio";
-import { VCardContent } from "./VCardContent";
-import { VCardEducation } from "../VCardEducation";
-import { VCardExperiences } from "./VCardExperiences";
 import { StyleOption } from "./types";
+import { VCardBioSection } from "./sections/VCardBioSection";
+import { VCardSkillsSection } from "./sections/VCardSkillsSection";
+import { VCardEducationSection } from "./sections/VCardEducationSection";
+import { VCardExperienceSection } from "./sections/VCardExperienceSection";
 
 interface VCardSectionsProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
-  newSkill: string;
-  setNewSkill: (skill: string) => void;
-  handleAddSkill: () => void;
   handleRemoveSkill: (skill: string) => void;
   selectedStyle: StyleOption;
   sectionsOrder: string[];
@@ -31,7 +28,7 @@ export function VCardSections({
     switch (sectionId) {
       case 'bio':
         return (
-          <VCardBio
+          <VCardBioSection
             key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
@@ -40,7 +37,7 @@ export function VCardSections({
         );
       case 'skills':
         return (
-          <VCardContent
+          <VCardSkillsSection
             key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
@@ -51,7 +48,7 @@ export function VCardSections({
         );
       case 'education':
         return (
-          <VCardEducation
+          <VCardEducationSection
             key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
@@ -60,7 +57,7 @@ export function VCardSections({
         );
       case 'experience':
         return (
-          <VCardExperiences
+          <VCardExperienceSection
             key={uniqueKey}
             profile={profile}
             isEditing={isEditing}
