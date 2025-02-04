@@ -14,11 +14,23 @@ import { useAuth } from "@/hooks/useAuth";
 
 interface PostCardProps {
   post: Post;
+  currentUserId?: string;
+  userEmail?: string;
   onDelete?: () => void;
   onHide?: (postId: string) => void;
+  onReaction?: (postId: string, type: 'like' | 'dislike') => void;
+  onCommentAdded?: () => void;
 }
 
-export function PostCard({ post, onDelete, onHide }: PostCardProps) {
+export function PostCard({ 
+  post, 
+  currentUserId,
+  userEmail,
+  onDelete, 
+  onHide,
+  onReaction,
+  onCommentAdded 
+}: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const { handleDelete, handleHide, handleReaction } = usePostOperations();
   const { user } = useAuth();
@@ -38,16 +50,16 @@ export function PostCard({ post, onDelete, onHide }: PostCardProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => handleHide(post.id, user?.id)}
+            onClick={() => onHide?.(post.id)}
             className="h-8 w-8 hover:bg-destructive/10"
           >
             <EyeOff className="h-4 w-4" />
           </Button>
-          {post.user_id === user?.id && (
+          {post.user_id === currentUserId && (
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleDelete(post.id, user?.id)}
+              onClick={onDelete}
               className="h-8 w-8 hover:bg-destructive/10"
             >
               <Trash2 className="h-4 w-4" />
@@ -55,19 +67,37 @@ export function PostCard({ post, onDelete, onHide }: PostCardProps) {
           )}
         </div>
 
-        <PostHeader post={post} />
-        <PostContent post={post} />
-        <PostActions
+        <PostHeader 
+          profile={post.profiles!}
+          created_at={post.created_at}
+          privacy_level={post.privacy_level}
+        />
+        <PostContent 
+          content={post.content}
+          postId={post.id}
+          currentUserId={currentUserId}
+          userEmail={userEmail}
           likes={post.likes}
           dislikes={post.dislikes}
           commentCount={post.comments?.length || 0}
-          userReaction={post.reactions?.find(r => r.user_id === user?.id)?.reaction_type}
-          isExpanded={showComments}
-          onLike={() => handleReaction(post.id, user?.id, 'like')}
-          onDislike={() => handleReaction(post.id, user?.id, 'dislike')}
-          onToggleComments={() => setShowComments(!showComments)}
+          userReaction={post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type}
+          comments={post.comments}
+          onReaction={onReaction}
+          onCommentAdded={onCommentAdded}
         />
-        {showComments && <PostComments postId={post.id} />}
+        <PostActions
+          currentUserId={currentUserId}
+          postUserId={post.user_id}
+          onDelete={onDelete}
+          onHide={() => onHide?.(post.id)}
+        />
+        {showComments && (
+          <PostComments 
+            comments={post.comments || []}
+            currentUserId={currentUserId}
+            onDeleteComment={() => onCommentAdded?.()}
+          />
+        )}
       </Card>
     </motion.div>
   );
