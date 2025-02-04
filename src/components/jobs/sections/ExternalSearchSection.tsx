@@ -58,6 +58,18 @@ export function ExternalSearchSection() {
         font-size: 0.875rem !important;
       }
 
+      /* Remove search term highlighting */
+      .gs-result .gs-title b,
+      .gs-result .gs-snippet b,
+      .gsc-result .gs-title em,
+      .gsc-result .gs-snippet em {
+        color: inherit !important;
+        background: none !important;
+        font-weight: inherit !important;
+        font-style: inherit !important;
+        text-decoration: inherit !important;
+      }
+
       /* Suggestions styling */
       .gsc-completion-container {
         background: transparent !important;
