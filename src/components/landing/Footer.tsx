@@ -16,8 +16,8 @@ export function Footer() {
               <li>
                 <p>
                   Siège social:<br />
-                  1300 Rue Notre Dame Centre<br />
-                  Trois-Rivières, QC G9A 4X3
+                  3141 Chemin Langevin<br />
+                  Trois-Rivières, QC G8W 2L8
                 </p>
               </li>
             </ul>
