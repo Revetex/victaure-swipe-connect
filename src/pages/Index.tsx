@@ -1,5 +1,4 @@
 import { HeroSection } from "@/components/landing/HeroSection";
-import { Footer } from "@/components/landing/Footer";
 import { DownloadApp } from "@/components/dashboard/DownloadApp";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -27,45 +26,24 @@ export default function Index() {
         <section className="py-20 bg-primary/5">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <p className="text-4xl font-bold text-primary mb-2">50K+</p>
-                <p className="text-sm text-muted-foreground">Offres d'emploi</p>
-              </motion.div>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-center"
-              >
-                <p className="text-4xl font-bold text-primary mb-2">10K+</p>
-                <p className="text-sm text-muted-foreground">Entreprises</p>
-              </motion.div>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="text-center"
-              >
-                <p className="text-4xl font-bold text-primary mb-2">95%</p>
-                <p className="text-sm text-muted-foreground">Taux de satisfaction</p>
-              </motion.div>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
-                className="text-center"
-              >
-                <p className="text-4xl font-bold text-primary mb-2">24/7</p>
-                <p className="text-sm text-muted-foreground">Support client</p>
-              </motion.div>
+              {[
+                { value: "50K+", label: "Offres d'emploi" },
+                { value: "10K+", label: "Entreprises" },
+                { value: "95%", label: "Taux de satisfaction" },
+                { value: "24/7", label: "Support client" }
+              ].map((stat, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-center p-6 rounded-xl bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300"
+                >
+                  <p className="text-4xl font-bold text-primary mb-2">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground">{stat.label}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
@@ -78,7 +56,7 @@ export default function Index() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl md:text-4xl font-bold mb-4"
+                className="text-3xl md:text-4xl font-bold mb-4 font-playfair"
               >
                 Pourquoi choisir Victaure ?
               </motion.h2>
@@ -87,7 +65,7 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-muted-foreground max-w-2xl mx-auto"
+                className="text-muted-foreground max-w-2xl mx-auto font-montserrat"
               >
                 La plateforme qui révolutionne la recherche d'emploi et de services professionnels au Québec
               </motion.p>
@@ -117,11 +95,11 @@ export default function Index() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="p-6 rounded-xl bg-card hover:shadow-lg transition-shadow"
+                  className="p-6 rounded-xl bg-card hover:shadow-lg transition-all duration-300 border border-border/50"
                 >
                   <feature.icon className="h-12 w-12 text-primary mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
+                  <h3 className="text-xl font-semibold mb-2 font-playfair">{feature.title}</h3>
+                  <p className="text-muted-foreground font-montserrat">{feature.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -136,7 +114,7 @@ export default function Index() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl md:text-4xl font-bold mb-4"
+                className="text-3xl md:text-4xl font-bold mb-4 font-playfair"
               >
                 Les avantages Victaure
               </motion.h2>
@@ -171,12 +149,12 @@ export default function Index() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-start gap-4 p-6 rounded-xl bg-card hover:shadow-lg transition-shadow"
+                  className="flex items-start gap-4 p-6 rounded-xl bg-card hover:shadow-lg transition-all duration-300 border border-border/50"
                 >
                   <benefit.icon className="h-8 w-8 text-primary shrink-0" />
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-                    <p className="text-muted-foreground">{benefit.description}</p>
+                    <h3 className="text-xl font-semibold mb-2 font-playfair">{benefit.title}</h3>
+                    <p className="text-muted-foreground font-montserrat">{benefit.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -193,7 +171,7 @@ export default function Index() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="text-3xl font-bold mb-4"
+                  className="text-3xl font-bold mb-4 font-playfair"
                 >
                   Ils nous font confiance
                 </motion.h2>
@@ -212,10 +190,10 @@ export default function Index() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center gap-3"
+                    className="flex items-center gap-3 p-4 rounded-lg bg-card/50 backdrop-blur-sm"
                   >
                     <CheckCircle2 className="h-6 w-6 text-primary shrink-0" />
-                    <span className="text-lg">{item}</span>
+                    <span className="text-lg font-montserrat">{item}</span>
                   </motion.div>
                 ))}
               </div>
@@ -231,7 +209,6 @@ export default function Index() {
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </div>
   );
