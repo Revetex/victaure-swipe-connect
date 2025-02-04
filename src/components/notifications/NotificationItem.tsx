@@ -8,6 +8,17 @@ import { CVUploadNotification } from "./types/CVUploadNotification";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface NotificationItemProps {
   id: string;
@@ -78,15 +89,35 @@ export function NotificationItem({
             <Bell className="h-4 w-4" />
           </Button>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDelete(id)}
-          className="h-8 w-8 hover:text-destructive focus:opacity-100"
-        >
-          <span className="sr-only">Supprimer la notification</span>
-          <X className="h-4 w-4" />
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:text-destructive focus:opacity-100"
+            >
+              <span className="sr-only">Supprimer la notification</span>
+              <X className="h-4 w-4" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Supprimer la notification</AlertDialogTitle>
+              <AlertDialogDescription>
+                Êtes-vous sûr de vouloir supprimer cette notification ? Cette action est irréversible.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={() => onDelete(id)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <div className="flex items-start gap-4 pr-16">

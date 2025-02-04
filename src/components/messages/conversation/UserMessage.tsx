@@ -1,54 +1,61 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Message } from "@/types/messages";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { User } from "lucide-react";
-import { motion } from "framer-motion";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface UserMessageProps {
-  message: any;
-  onClick: () => void;
+  message: Message;
+  onDelete?: () => void;
 }
 
-export function UserMessage({ message, onClick }: UserMessageProps) {
-  const sender = typeof message.sender === 'string' ? { full_name: message.sender } : message.sender;
-  const formattedDate = message.timestamp ? format(new Date(message.timestamp), "d MMM", { locale: fr }) : "";
-  const formattedTime = message.timestamp ? format(new Date(message.timestamp), "HH:mm", { locale: fr }) : "";
-
+export function UserMessage({ message, onDelete }: UserMessageProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className={cn(
-        "flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors",
-        !message.read && "bg-muted/30"
-      )}
-      onClick={onClick}
-    >
-      <Avatar className="h-10 w-10">
-        <AvatarImage src={sender.avatar_url} alt={sender.full_name} />
-        <AvatarFallback>
-          <User className="h-5 w-5" />
-        </AvatarFallback>
-      </Avatar>
-      
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between">
-          <p className="font-medium truncate">{sender.full_name}</p>
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {formattedTime}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-muted-foreground truncate">
-            {message.content}
-          </p>
-          {!message.read && (
-            <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
-          )}
+    <div className="flex flex-col items-end space-y-2">
+      <div className="flex items-start gap-2 max-w-[80%]">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Supprimer le message</AlertDialogTitle>
+              <AlertDialogDescription>
+                Êtes-vous sûr de vouloir supprimer ce message ? Cette action est irréversible.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <div className="bg-primary text-primary-foreground p-3 rounded-lg">
+          <p className="text-sm">{message.content}</p>
         </div>
       </div>
-    </motion.div>
+      <span className="text-xs text-muted-foreground">
+        {format(new Date(message.created_at), "HH:mm", { locale: fr })}
+      </span>
+    </div>
   );
 }

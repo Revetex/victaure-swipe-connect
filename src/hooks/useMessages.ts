@@ -55,9 +55,29 @@ export function useMessages() {
     }
   });
 
+  const deleteMessage = useMutation({
+    mutationFn: async (messageId: string) => {
+      const { error } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", messageId);
+
+      if (error) {
+        console.error("Error deleting message:", error);
+        toast.error("Erreur lors de la suppression du message");
+        throw error;
+      }
+      toast.success("Message supprimé avec succès");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    }
+  });
+
   return {
     messages,
     isLoading,
-    markAsRead
+    markAsRead,
+    deleteMessage
   };
 }

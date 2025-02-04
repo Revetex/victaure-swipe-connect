@@ -1,9 +1,10 @@
 import { Message } from "@/types/messages";
-import { ChatMessage } from "@/components/chat/ChatMessage";
-import { AnimatePresence, motion } from "framer-motion";
+import { UserMessage } from "./UserMessage";
+import { AssistantMessage } from "./AssistantMessage";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
-import { useRef } from "react";
+import { ChevronDown } from "lucide-react";
+import { useMessages } from "@/hooks/useMessages";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ConversationMessagesProps {
   messages: Message[];
@@ -18,58 +19,50 @@ export function ConversationMessages({
   isThinking,
   showScrollButton,
   onScroll,
-  onScrollToBottom,
+  onScrollToBottom
 }: ConversationMessagesProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const { deleteMessage } = useMessages();
+
+  const handleDelete = async (messageId: string) => {
+    await deleteMessage.mutateAsync(messageId);
+  };
 
   return (
-    <div
-      className="flex-1 overflow-y-auto relative"
-      onScroll={onScroll}
-    >
-      <div className="px-4 py-4 space-y-4">
-        <AnimatePresence mode="popLayout">
-          {messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              content={message.content}
-              sender={typeof message.sender === 'string' ? message.sender : message.sender.id}
-              thinking={message.thinking}
-              showTimestamp={true}
-              timestamp={message.created_at}
-            />
-          ))}
-        </AnimatePresence>
-        {isThinking && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-          >
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" />
-              <div
-                className="w-2 h-2 rounded-full bg-primary/60 animate-bounce"
-                style={{ animationDelay: "0.2s" }}
-              />
-              <div
-                className="w-2 h-2 rounded-full bg-primary/60 animate-bounce"
-                style={{ animationDelay: "0.4s" }}
-              />
-            </div>
-          </motion.div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+    <div className="flex-1 overflow-y-auto p-4 space-y-4" onScroll={onScroll}>
+      {messages.map((message) => {
+        const isUserMessage = typeof message.sender === 'string' 
+          ? message.sender_id === user?.id 
+          : message.sender.id === user?.id;
 
+        return isUserMessage ? (
+          <UserMessage 
+            key={message.id} 
+            message={message} 
+            onDelete={() => handleDelete(message.id)}
+          />
+        ) : (
+          <AssistantMessage 
+            key={message.id} 
+            message={message} 
+          />
+        );
+      })}
+      {isThinking && (
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100" />
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200" />
+        </div>
+      )}
       {showScrollButton && (
         <Button
           variant="outline"
           size="icon"
-          className="fixed bottom-24 right-4 rounded-full shadow-lg"
+          className="fixed bottom-24 right-8 rounded-full shadow-lg"
           onClick={onScrollToBottom}
         >
-          <ArrowDown className="h-4 w-4" />
+          <ChevronDown className="h-4 w-4" />
         </Button>
       )}
     </div>
