@@ -1,10 +1,23 @@
-import { Bell } from "lucide-react";
+import { Bell, Trash2, Check, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { NotificationItem } from "../../notifications/NotificationItem";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Notification {
   id: string;
@@ -32,6 +45,7 @@ const itemVariants = {
 export function NotificationsTab() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedNotification, setSelectedNotification] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -49,6 +63,7 @@ export function NotificationsTab() {
         setNotifications(data || []);
       } catch (error) {
         console.error('Error fetching notifications:', error);
+        toast.error("Erreur lors du chargement des notifications");
       } finally {
         setIsLoading(false);
       }
@@ -86,8 +101,50 @@ export function NotificationsTab() {
       if (error) throw error;
 
       setNotifications(notifications.filter(n => n.id !== id));
+      toast.success("Notification supprimée");
     } catch (error) {
       console.error('Error deleting notification:', error);
+      toast.error("Erreur lors de la suppression");
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setNotifications(notifications.map(n => ({ ...n, read: true })));
+      toast.success("Toutes les notifications ont été marquées comme lues");
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+      toast.error("Une erreur est survenue");
+    }
+  };
+
+  const deleteAllNotifications = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setNotifications([]);
+      toast.success("Toutes les notifications ont été supprimées");
+    } catch (error) {
+      console.error('Error deleting all notifications:', error);
+      toast.error("Une erreur est survenue");
     }
   };
 
@@ -106,16 +163,63 @@ export function NotificationsTab() {
       animate="visible"
       className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
-      <motion.div 
-        variants={itemVariants}
-        className={cn(
-          "flex items-center gap-2 text-primary mb-4",
-          "border-b pb-2"
-        )}
-      >
-        <Bell className="h-5 w-5" />
-        <h2 className="text-lg font-semibold">Notifications</h2>
-      </motion.div>
+      <div className="flex items-center justify-between mb-6">
+        <motion.div 
+          variants={itemVariants}
+          className="flex items-center gap-2 text-primary"
+        >
+          <Bell className="h-5 w-5" />
+          <h2 className="text-lg font-semibold">Notifications</h2>
+          {notifications.length > 0 && (
+            <span className="px-2 py-1 text-xs bg-primary/10 rounded-full">
+              {notifications.length}
+            </span>
+          )}
+        </motion.div>
+
+        <div className="flex gap-2">
+          {notifications.some(n => !n.read) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={markAllAsRead}
+              className="flex items-center gap-1"
+            >
+              <Check className="h-4 w-4" />
+              <span className="hidden sm:inline">Tout marquer comme lu</span>
+            </Button>
+          )}
+
+          {notifications.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Tout supprimer</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette action supprimera toutes vos notifications. Cette action est irréversible.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={deleteAllNotifications}>
+                    Continuer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+      </div>
 
       <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
         <AnimatePresence mode="popLayout">
