@@ -1,152 +1,89 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="bg-background/80 dark:bg-background/80 py-8 px-4 mt-20 border-t border-border">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
-            <h3 className="font-semibold mb-4">Support</h3>
-            <p className="text-muted-foreground">
-              Email: <br />
-              <a href="mailto:admin@victaure.com" className="text-primary hover:underline">admin@victaure.com</a>
-              <br />
-              <a href="mailto:tblanchet3909@hotmail.com" className="text-primary hover:underline">tblanchet3909@hotmail.com</a>
-            </p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">Mentions Légales</h3>
-            <div className="space-y-2 text-sm">
-              <p className="text-muted-foreground">
-                © 2024 Victaure. Tous droits réservés.
-              </p>
-              <p className="text-muted-foreground">
-                SIRET: 123 456 789 00012
-              </p>
-              <p className="text-muted-foreground">
-                Siège social: Montréal, QC
-              </p>
-            </div>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">Politique de Confidentialité</h3>
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="text-primary hover:underline text-sm">
-                  Lire notre politique de confidentialité
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Politique de Confidentialité</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 text-sm text-muted-foreground">
-                  <section>
-                    <h3 className="font-semibold text-foreground">1. Collecte des informations</h3>
-                    <p>Nous collectons les informations suivantes :</p>
-                    <ul className="list-disc pl-5 mt-2">
-                      <li>Nom et prénom</li>
-                      <li>Adresse e-mail</li>
-                      <li>Numéro de téléphone</li>
-                      <li>Informations professionnelles</li>
-                      <li>Données de localisation (si activées)</li>
-                      <li>Préférences de communication</li>
-                    </ul>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">2. Utilisation des informations</h3>
-                    <p>Les informations collectées sont utilisées pour :</p>
-                    <ul className="list-disc pl-5 mt-2">
-                      <li>Personnaliser votre expérience utilisateur</li>
-                      <li>Améliorer notre service</li>
-                      <li>Communiquer avec vous concernant votre compte</li>
-                      <li>Vous proposer des offres d'emploi pertinentes</li>
-                      <li>Analyser et améliorer nos services</li>
-                    </ul>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">3. Protection des informations</h3>
-                    <p>Nous mettons en œuvre des mesures de sécurité robustes pour protéger vos données :</p>
-                    <ul className="list-disc pl-5 mt-2">
-                      <li>Chiffrement SSL/TLS</li>
-                      <li>Authentification à deux facteurs (2FA)</li>
-                      <li>Stockage sécurisé des données</li>
-                      <li>Accès restreint aux données personnelles</li>
-                    </ul>
-                  </section>
-                  <section>
-                    <h3 className="font-semibold text-foreground">4. Vos droits</h3>
-                    <p>Conformément au RGPD, vous disposez des droits suivants :</p>
-                    <ul className="list-disc pl-5 mt-2">
-                      <li>Droit d'accès à vos données</li>
-                      <li>Droit de rectification</li>
-                      <li>Droit à l'effacement</li>
-                      <li>Droit à la portabilité</li>
-                      <li>Droit d'opposition</li>
-                    </ul>
-                  </section>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold mb-4">Conditions d'Utilisation</h3>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button className="text-primary hover:underline text-sm">
-                    Voir les conditions d'utilisation
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Conditions d'Utilisation</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4 text-sm text-muted-foreground">
-                    <section>
-                      <h3 className="font-semibold text-foreground">1. Acceptation des conditions</h3>
-                      <p>En utilisant Victaure, vous acceptez les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser nos services.</p>
-                    </section>
-                    <section>
-                      <h3 className="font-semibold text-foreground">2. Utilisation du service</h3>
-                      <ul className="list-disc pl-5 mt-2">
-                        <li>Vous devez avoir au moins 18 ans pour utiliser nos services</li>
-                        <li>Vous êtes responsable de maintenir la confidentialité de votre compte</li>
-                        <li>Vous acceptez de ne pas utiliser le service à des fins illégales</li>
-                        <li>Vous acceptez de ne pas créer de faux profils ou de fausses informations</li>
-                      </ul>
-                    </section>
-                    <section>
-                      <h3 className="font-semibold text-foreground">3. Propriété intellectuelle</h3>
-                      <p>Tous les contenus présents sur Victaure (logos, textes, fonctionnalités) sont la propriété exclusive de Victaure ou de ses partenaires.</p>
-                    </section>
-                    <section>
-                      <h3 className="font-semibold text-foreground">4. Protection des données</h3>
-                      <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité et au RGPD.</p>
-                    </section>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Liens Juridiques</h3>
-              <div className="space-y-2">
-                <Link to="/legal/terms" className="block text-primary hover:underline text-sm">
-                  Conditions Générales de Vente
+    <footer className="w-full py-6 bg-background/80 backdrop-blur-sm border-t">
+      <div className="container px-4 mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="space-y-3">
+            <h3 className="font-semibold">À propos</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <Link to="/about" className="hover:text-primary transition-colors">
+                  Notre mission
                 </Link>
-                <Link to="/legal/cookies" className="block text-primary hover:underline text-sm">
-                  Politique des Cookies
-                </Link>
-                <Link to="/legal/gdpr" className="block text-primary hover:underline text-sm">
-                  Conformité RGPD
-                </Link>
-                <Link to="/legal/accessibility" className="block text-primary hover:underline text-sm">
-                  Accessibilité
-                </Link>
-              </div>
-            </div>
+              </li>
+              <li>
+                <p>
+                  Siège social:<br />
+                  1300 Rue Notre Dame Centre<br />
+                  Trois-Rivières, QC G9A 4X3
+                </p>
+              </li>
+            </ul>
           </div>
+          
+          <div className="space-y-3">
+            <h3 className="font-semibold">Légal</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <Link to="/terms" className="hover:text-primary transition-colors">
+                  Conditions d'utilisation
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="hover:text-primary transition-colors">
+                  Politique de confidentialité
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="hover:text-primary transition-colors">
+                  Politique des cookies
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal" className="hover:text-primary transition-colors">
+                  Mentions légales
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-semibold">Support</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <Link to="/contact" className="hover:text-primary transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="hover:text-primary transition-colors">
+                  FAQ
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-semibold">Suivez-nous</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <a href="https://linkedin.com/company/victaure" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  LinkedIn
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com/victaure" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  Twitter
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} Victaure. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
