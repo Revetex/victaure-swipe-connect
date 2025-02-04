@@ -40,42 +40,42 @@ export function Settings() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 p-4 sm:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border border-border/50 shadow-lg h-full overflow-y-auto"
+      className="space-y-6 p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border border-border/50 shadow-lg"
     >
       <div className="space-y-6">
         <motion.div variants={itemVariants}>
           <AppearanceSection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <PrivacySection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <NotificationsSection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <SecuritySection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <SettingsSection title="Utilisateurs bloqués">
-            <div className="p-3 rounded-lg bg-muted/30">
+            <div className="p-4 rounded-lg bg-muted/30">
               <BlockedUsersSection />
             </div>
           </SettingsSection>
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator className="my-6" />
 
         <motion.div variants={itemVariants}>
           <LogoutSection />

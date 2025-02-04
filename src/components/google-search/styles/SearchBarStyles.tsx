@@ -1,45 +1,40 @@
-export const SearchBarStyles = `
-  .gsc-control-cse {
-    padding: 0 !important;
-    border: none !important;
-    background: transparent !important;
-  }
+import { cn } from "@/lib/utils";
 
-  .gsc-search-box {
-    margin: 0 !important;
-    background: transparent !important;
-  }
+export const searchBarContainerStyles = cn(
+  "w-full max-w-3xl mx-auto p-4 space-y-4",
+  "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+  "border border-border/50 rounded-lg shadow-lg"
+);
 
-  .gsc-input-box {
-    border: 2px solid hsl(var(--border)) !important;
-    border-radius: 0.5rem !important;
-    background: hsl(var(--background)) !important;
-    padding: 0.5rem !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  }
+export const searchInputContainerStyles = cn(
+  "flex items-center gap-2 w-full",
+  "bg-white dark:bg-gray-800",
+  "border border-border/50 rounded-lg",
+  "shadow-sm hover:shadow-md transition-shadow",
+  "focus-within:ring-2 focus-within:ring-primary/50"
+);
 
-  .gsc-input {
-    padding: 0 !important;
-    width: 100% !important;
-    font-family: inherit !important;
-    text-transform: none !important;
-  }
+export const searchInputStyles = cn(
+  "flex-1 px-4 py-2",
+  "bg-transparent",
+  "text-foreground placeholder:text-muted-foreground",
+  "focus:outline-none"
+);
 
-  .gsc-completion-container {
-    font-family: inherit !important;
-    text-transform: none !important;
-    background: hsl(var(--background)) !important;
-    border: 1px solid hsl(var(--border)) !important;
-    border-radius: 0.5rem !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-    margin-top: 4px !important;
-  }
+export const searchButtonStyles = cn(
+  "p-2 rounded-r-lg",
+  "bg-primary hover:bg-primary/90",
+  "text-primary-foreground",
+  "transition-colors"
+);
 
-  .gsc-completion-selected {
-    background: hsl(var(--accent)) !important;
-  }
+export const searchOptionsContainerStyles = cn(
+  "flex flex-wrap gap-2",
+  "text-sm text-muted-foreground"
+);
 
-  .gsc-search-button {
-    display: none !important;
-  }
-`;
+export const searchOptionStyles = cn(
+  "px-3 py-1 rounded-full",
+  "bg-muted/50 hover:bg-muted",
+  "cursor-pointer transition-colors"
+);

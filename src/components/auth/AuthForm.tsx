@@ -1,225 +1,116 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Mail, Lock, User, Phone } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 export function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
-  const handleAuth = async (type: 'login' | 'signup') => {
-    try {
-      setLoading(true);
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-      let result;
-      if (type === 'signup') {
-        result = await supabase.auth.signUp({
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            data: {
-              full_name: fullName,
-              phone: phone,
-            },
-            emailRedirectTo: window.location.origin + '/auth/callback'
-          }
         });
+        if (error) throw error;
+        toast.success("Vérifiez votre email pour confirmer votre inscription");
       } else {
-        result = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
-          password
+          password,
         });
+        if (error) throw error;
+        navigate("/dashboard");
       }
-
-      const { error } = result;
-
-      if (error) {
-        if (error.message.includes('Email not confirmed')) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter");
-        } else if (error.message.includes('Invalid login credentials')) {
-          toast.error("Email ou mot de passe incorrect");
-        } else if (error.message.includes('User already registered')) {
-          toast.error("Un compte existe déjà avec cet email");
-        } else {
-          toast.error(error.message);
-        }
-        return;
-      }
-
-      if (type === 'signup') {
-        toast.success("Inscription réussie! Veuillez vérifier votre email");
-      } else {
-        toast.success("Connexion réussie!");
-        navigate('/dashboard');
-      }
-
-    } catch (error) {
-      console.error('Auth error:', error);
-      toast.error("Une erreur est survenue");
+    } catch (error: any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Tabs defaultValue="login" className="w-full space-y-6">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="login">Connexion</TabsTrigger>
-        <TabsTrigger value="signup">Inscription</TabsTrigger>
-      </TabsList>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-md mx-auto p-6 space-y-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border border-border/50 shadow-xl"
+    >
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-bold tracking-tight">
+          {isSignUp ? "Créer un compte" : "Se connecter"}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {isSignUp
+            ? "Entrez vos informations pour créer un compte"
+            : "Entrez vos informations pour vous connecter"}
+        </p>
+      </div>
 
-      <TabsContent value="login" className="space-y-6">
-        <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Connectez-vous à votre compte
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Entrez vos identifiants pour accéder à votre espace
-          </p>
+      <form onSubmit={handleAuth} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="exemple@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="bg-white dark:bg-gray-800"
+          />
         </div>
-
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email-login">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="email-login"
-                placeholder="nom@exemple.com"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                className="pl-10"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="password-login">Mot de passe</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="password-login"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                className="pl-10"
-              />
-            </div>
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Mot de passe</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="bg-white dark:bg-gray-800"
+          />
         </div>
 
         <Button
-          onClick={() => handleAuth('login')}
-          disabled={loading || !email || !password}
-          className="w-full"
+          type="submit"
+          className="w-full bg-primary hover:bg-primary/90"
+          disabled={loading}
         >
           {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            </div>
+          ) : isSignUp ? (
+            "S'inscrire"
           ) : (
             "Se connecter"
           )}
         </Button>
-      </TabsContent>
+      </form>
 
-      <TabsContent value="signup" className="space-y-6">
-        <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Créez votre compte
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Rejoignez-nous en quelques clics
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Nom complet</Label>
-            <div className="relative">
-              <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="fullName"
-                placeholder="Jean Dupont"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                disabled={loading}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Téléphone</Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="phone"
-                placeholder="+1 (555) 555-5555"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                disabled={loading}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email-signup">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="email-signup"
-                placeholder="nom@exemple.com"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                className="pl-10"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="password-signup">Mot de passe</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="password-signup"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                className="pl-10"
-              />
-            </div>
-          </div>
-        </div>
-
+      <div className="text-center">
         <Button
-          onClick={() => handleAuth('signup')}
-          disabled={loading || !email || !password || !fullName}
-          className="w-full"
+          variant="link"
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="text-sm text-muted-foreground hover:text-primary"
         >
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            "Créer un compte"
-          )}
+          {isSignUp
+            ? "Déjà un compte ? Se connecter"
+            : "Pas de compte ? S'inscrire"}
         </Button>
-      </TabsContent>
-    </Tabs>
+      </div>
+    </motion.div>
   );
 }

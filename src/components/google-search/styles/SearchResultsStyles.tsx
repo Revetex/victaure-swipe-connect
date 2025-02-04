@@ -1,91 +1,40 @@
-export const SearchResultsStyles = `
-  .gsc-control-cse {
-    padding: 0 !important;
-    border: none !important;
-    background: transparent !important;
-  }
+import { cn } from "@/lib/utils";
 
-  .gsc-result {
-    border-radius: 0.5rem;
-    transition: all 0.2s ease-in-out;
-    padding: 1rem !important;
-    background: transparent !important;
-    border: none !important;
-  }
+export const resultsContainerStyles = cn(
+  "w-full max-w-3xl mx-auto mt-4 space-y-6 p-4",
+  "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+);
 
-  .gsc-result:hover {
-    transform: translateY(-2px);
-  }
+export const resultItemStyles = cn(
+  "p-4 rounded-lg",
+  "bg-white dark:bg-gray-800/50",
+  "hover:bg-gray-50 dark:hover:bg-gray-800",
+  "transition-colors duration-200",
+  "shadow-sm hover:shadow-md"
+);
 
-  .gs-title {
-    color: hsl(var(--primary)) !important;
-    text-decoration: none !important;
-    font-size: 1.1rem !important;
-    line-height: 1.5 !important;
-  }
+export const resultTitleStyles = cn(
+  "text-lg font-medium mb-2",
+  "text-primary hover:text-primary/90",
+  "cursor-pointer"
+);
 
-  .gs-title:hover {
-    text-decoration: underline !important;
-  }
+export const resultUrlStyles = cn(
+  "text-sm text-muted-foreground",
+  "mb-2"
+);
 
-  .gs-snippet {
-    color: hsl(var(--foreground)) !important;
-    font-size: 0.9rem !important;
-    line-height: 1.6 !important;
-    background: transparent !important;
-  }
+export const resultDescriptionStyles = cn(
+  "text-foreground/90",
+  "line-clamp-3"
+);
 
-  .gsc-url-top {
-    color: hsl(var(--muted-foreground)) !important;
-    font-size: 0.8rem !important;
-  }
+export const loadingContainerStyles = cn(
+  "w-full max-w-3xl mx-auto mt-4 p-4",
+  "animate-pulse space-y-4"
+);
 
-  .gsc-cursor-page {
-    color: hsl(var(--foreground)) !important;
-    background: transparent !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: 0.25rem !important;
-  }
-
-  .gsc-cursor-page:hover {
-    background: hsl(var(--accent)) !important;
-  }
-
-  .gsc-cursor-current-page {
-    color: hsl(var(--primary)) !important;
-    background: hsl(var(--accent)) !important;
-  }
-
-  .gcsc-find-more-on-google {
-    display: none !important;
-  }
-
-  .gcsc-find-more-on-google-root {
-    display: none !important;
-  }
-
-  .gsc-results {
-    background: transparent !important;
-    border: none !important;
-  }
-
-  .gsc-webResult {
-    background: transparent !important;
-    border: none !important;
-  }
-
-  .gsc-webResult.gsc-result {
-    background: transparent !important;
-    border: none !important;
-  }
-
-  .gsc-results .gsc-cursor-box {
-    background: transparent !important;
-    border: none !important;
-  }
-
-  .gsc-above-wrapper-area {
-    background: transparent !important;
-    border: none !important;
-  }
-`;
+export const loadingItemStyles = cn(
+  "h-4 bg-muted rounded",
+  "w-full"
+);
