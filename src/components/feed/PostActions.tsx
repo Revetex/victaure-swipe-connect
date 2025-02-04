@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface PostActionsProps {
   likes: number;
@@ -9,6 +11,10 @@ interface PostActionsProps {
   commentCount: number;
   userReaction?: string;
   isExpanded: boolean;
+  postId: string;
+  postAuthorId: string;
+  currentUserId?: string;
+  userEmail?: string;
   onLike: () => void;
   onDislike: () => void;
   onToggleComments: () => void;
@@ -20,17 +26,70 @@ export const PostActions = ({
   commentCount,
   userReaction,
   isExpanded,
+  postId,
+  postAuthorId,
+  currentUserId,
+  userEmail,
   onLike,
   onDislike,
   onToggleComments,
 }: PostActionsProps) => {
+  const { toast } = useToast();
+
+  const createNotification = async (userId: string, title: string, message: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: userId,
+          title,
+          message,
+        });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error creating notification:', error);
+    }
+  };
+
+  const handleReaction = async (type: 'like' | 'dislike') => {
+    if (!currentUserId) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez être connecté pour réagir",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (type === 'like') {
+      onLike();
+      if (postAuthorId !== currentUserId) {
+        await createNotification(
+          postAuthorId,
+          'Nouveau j\'aime',
+          `${userEmail} a aimé votre publication`
+        );
+      }
+    } else {
+      onDislike();
+      if (postAuthorId !== currentUserId) {
+        await createNotification(
+          postAuthorId,
+          'Nouveau je n\'aime pas',
+          `${userEmail} n'a pas aimé votre publication`
+        );
+      }
+    }
+  };
+
   return (
     <div className="flex gap-2 items-center py-2">
       <motion.div whileTap={{ scale: 0.95 }}>
         <Button
           variant={userReaction === 'like' ? 'default' : 'ghost'}
           size="sm"
-          onClick={onLike}
+          onClick={() => handleReaction('like')}
           className={cn(
             "flex gap-2 items-center",
             userReaction === 'like' && "bg-green-500 hover:bg-green-600 text-white"
@@ -45,7 +104,7 @@ export const PostActions = ({
         <Button
           variant={userReaction === 'dislike' ? 'default' : 'ghost'}
           size="sm"
-          onClick={onDislike}
+          onClick={() => handleReaction('dislike')}
           className={cn(
             "flex gap-2 items-center",
             userReaction === 'dislike' && "bg-red-500 hover:bg-red-600 text-white"

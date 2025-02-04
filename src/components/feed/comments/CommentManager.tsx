@@ -36,6 +36,22 @@ export const CommentManager = ({
   const { toast } = useToast();
   const [newComment, setNewComment] = useState("");
 
+  const createNotification = async (userId: string, title: string, message: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: userId,
+          title,
+          message,
+        });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error creating notification:', error);
+    }
+  };
+
   const addComment = async () => {
     if (!currentUserId) {
       toast({
@@ -68,25 +84,18 @@ export const CommentManager = ({
 
       // Create notification for post author
       if (postAuthorId !== currentUserId) {
+        await createNotification(
+          postAuthorId,
+          'Nouveau commentaire',
+          `${userEmail} a commenté votre publication: "${newComment.substring(0, 50)}${newComment.length > 50 ? '...' : ''}"`,
+        );
+
         // Get author's push token
         const { data: authorProfile } = await supabase
           .from('profiles')
           .select('push_token, push_notifications_enabled')
           .eq('id', postAuthorId)
           .single();
-
-        // Create notification in database
-        const { error: notificationError } = await supabase
-          .from('notifications')
-          .insert({
-            user_id: postAuthorId,
-            title: 'Nouveau commentaire',
-            message: `${userEmail} a commenté votre publication: "${newComment.substring(0, 50)}${newComment.length > 50 ? '...' : ''}"`,
-          });
-
-        if (notificationError) {
-          console.error('Error creating notification:', notificationError);
-        }
 
         // Send push notification if enabled
         if (authorProfile?.push_notifications_enabled && authorProfile?.push_token) {
@@ -111,7 +120,6 @@ export const CommentManager = ({
 
       setNewComment("");
       onCommentAdded();
-
       toast({
         title: "Succès",
         description: "Commentaire ajouté"
@@ -136,8 +144,16 @@ export const CommentManager = ({
 
       if (error) throw error;
 
-      onCommentAdded();
+      // Notify post author about deleted comment
+      if (postAuthorId !== currentUserId) {
+        await createNotification(
+          postAuthorId,
+          'Commentaire supprimé',
+          `Un commentaire a été supprimé de votre publication`
+        );
+      }
 
+      onCommentAdded();
       toast({
         title: "Succès",
         description: "Commentaire supprimé"

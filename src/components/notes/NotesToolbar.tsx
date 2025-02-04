@@ -1,26 +1,22 @@
-import { Grid, Plus, ArrowLeft, ArrowRight, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LayoutDashboard, Plus, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface NotesToolbarProps {
-  showGrid: boolean;
-  onToggleGrid: () => void;
   onAddNote?: () => void;
-  onNavigateLeft?: () => void;
-  onNavigateRight?: () => void;
+  onDeleteSelected?: () => void;
+  hasSelectedNotes: boolean;
 }
 
-export function NotesToolbar({ 
-  showGrid, 
-  onToggleGrid,
+export function NotesToolbar({
   onAddNote,
-  onNavigateLeft,
-  onNavigateRight 
+  onDeleteSelected,
+  hasSelectedNotes
 }: NotesToolbarProps) {
   const navigate = useNavigate();
 
   const handleReturn = () => {
-    navigate("/");
+    navigate("/dashboard");
     console.log("Navigating to dashboard...");
   };
 
@@ -36,39 +32,26 @@ export function NotesToolbar({
         >
           <LayoutDashboard className="h-4 w-4" />
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="icon"
-          onClick={onNavigateLeft}
+          onClick={onAddNote}
           className="h-9 w-9"
         >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="outline" 
-          size="icon"
-          onClick={onNavigateRight}
-          className="h-9 w-9"
-        >
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="outline" 
-          size="icon"
-          onClick={onToggleGrid}
-          className="h-9 w-9"
-        >
-          <Grid className="h-4 w-4" />
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
       
-      <Button
-        onClick={onAddNote}
-        size="icon"
-        className="h-9 w-9 bg-primary hover:bg-primary/90"
-      >
-        <Plus className="h-4 w-4 text-primary-foreground" />
-      </Button>
+      {hasSelectedNotes && (
+        <Button
+          variant="destructive"
+          size="icon"
+          onClick={onDeleteSelected}
+          className="h-9 w-9"
+        >
+          <Trash className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 }
