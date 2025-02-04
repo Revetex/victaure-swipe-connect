@@ -1,6 +1,6 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-export async function handleProfileAnalysis(profile: any, supabase: SupabaseClient) {
+export async function handleProfileAnalysis(profile: any, supabase: any) {
   const analysis = await analyzeUserProfile(profile, supabase);
   
   return {
@@ -16,7 +16,7 @@ export async function handleProfileAnalysis(profile: any, supabase: SupabaseClie
   };
 }
 
-async function analyzeUserProfile(profile: any, supabase: SupabaseClient) {
+async function analyzeUserProfile(profile: any, supabase: any) {
   const recommendations = {
     skills: [] as string[],
     certifications: [] as string[],

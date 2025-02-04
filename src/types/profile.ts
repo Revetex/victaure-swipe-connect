@@ -69,6 +69,9 @@ export interface Experience {
 export interface Friend {
   id: string;
   full_name: string;
+  avatar_url?: string;
+  online_status?: boolean;
+  last_seen?: string;
 }
 
 export type FriendPreview = UserProfile & {
