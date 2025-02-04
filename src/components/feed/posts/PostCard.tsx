@@ -48,6 +48,15 @@ export function PostCard({
     }
   };
 
+  // Process comments to ensure avatar_url is always defined
+  const commentsWithDefaultAvatar = post.comments?.map(comment => ({
+    ...comment,
+    profiles: {
+      ...comment.profiles,
+      avatar_url: comment.profiles.avatar_url || '/user-icon.svg'
+    }
+  })) || [];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -97,7 +106,7 @@ export function PostCard({
               postAuthorId={post.user_id}
               currentUserId={currentUserId}
               userEmail={userEmail}
-              comments={post.comments || []}
+              comments={commentsWithDefaultAvatar}
               onCommentAdded={onCommentAdded}
             />
           )}
