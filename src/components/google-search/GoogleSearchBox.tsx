@@ -1,43 +1,61 @@
-import { useEffect, useRef } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import { useState } from "react";
+import { Search, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SearchSuggestions } from "./SearchSuggestions";
 
 export function GoogleSearchBox() {
-  const { toast } = useToast();
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  useEffect(() => {
-    if (!searchContainerRef.current) return;
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    
+    const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`;
+    window.open(searchUrl, "_blank");
+  };
 
-    const script = document.createElement('script');
-    script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
-    script.async = true;
-    scriptRef.current = script;
+  const handleSuggestionSelect = (suggestion: string) => {
+    setSearchTerm(suggestion);
+    setShowSuggestions(false);
+  };
 
-    const searchDiv = document.createElement('div');
-    searchDiv.className = 'gcse-search';
-    searchContainerRef.current.innerHTML = '';
-    searchContainerRef.current.appendChild(searchDiv);
+  return (
+    <div className="relative w-full max-w-2xl mx-auto">
+      <form onSubmit={handleSearch} className="relative flex items-center gap-2">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Rechercher sur Google..."
+            className="w-full h-10 pl-10 pr-4 rounded-lg bg-background border border-input focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+          />
+        </div>
+        
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => setShowSuggestions(true)}
+          className="shrink-0"
+        >
+          <Sparkles className="h-4 w-4" />
+        </Button>
+        
+        <Button type="submit" className="shrink-0">
+          Rechercher
+        </Button>
+      </form>
 
-    document.head.appendChild(script);
-
-    script.onerror = () => {
-      toast({
-        variant: "destructive",
-        title: "Erreur de chargement",
-        description: "Impossible de charger le moteur de recherche. Veuillez réessayer."
-      });
-    };
-
-    return () => {
-      if (scriptRef.current && document.head.contains(scriptRef.current)) {
-        document.head.removeChild(scriptRef.current);
-      }
-      if (searchContainerRef.current) {
-        searchContainerRef.current.innerHTML = '';
-      }
-    };
-  }, [toast]);
-
-  return <div ref={searchContainerRef} className="w-full" />;
+      <SearchSuggestions
+        isOpen={showSuggestions}
+        onSelect={handleSuggestionSelect}
+        onClose={() => setShowSuggestions(false)}
+      />
+    </div>
+  );
 }
