@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -172,7 +172,6 @@
   }
 }
 
-/* Nouvelles classes utilitaires pour le contraste et le cadrage */
 @layer utilities {
   .glass-effect {
     @apply backdrop-blur-lg bg-background/80 dark:bg-background/40 border border-border/50 shadow-lg;
@@ -209,5 +208,14 @@
 
   .mobile-touch-target {
     @apply min-h-[44px] min-w-[44px];
+  }
+
+  .bg-grid-white\/10 {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  }
+
+  .bg-grid-16 {
+    background-size: 4rem 4rem;
   }
 }

@@ -1,15 +1,48 @@
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Search, Briefcase, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative py-20 overflow-hidden">
-      <div className="container mx-auto px-4">
+    <section className="relative min-h-screen py-20 overflow-hidden bg-gradient-to-b from-background via-purple-900/10 to-background">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 5, repeat: Infinity }}
+          className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
+        />
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ 
+              opacity: 0,
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight
+            }}
+            animate={{ 
+              opacity: [0, 1, 0],
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight
+            }}
+            transition={{
+              duration: Math.random() * 5 + 5,
+              repeat: Infinity,
+              delay: Math.random() * 5
+            }}
+            className="absolute w-1 h-1 bg-purple-500 rounded-full"
+          />
+        ))}
+      </div>
+
+      <div className="container relative z-10 mx-auto px-4">
         <div className="flex justify-center mb-8">
           <Logo size="lg" />
         </div>
@@ -20,15 +53,33 @@ export function HeroSection() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Trouvez votre emploi idéal
-              </span>
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600 bg-clip-text text-transparent"
+              >
+                Propulsez Votre Carrière
+              </motion.span>
               <br />
-              <span className="text-foreground">au Québec</span>
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-foreground"
+              >
+                avec l'Intelligence Artificielle
+              </motion.span>
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              La première plateforme d'emploi qui met en relation les talents et les entreprises de manière intelligente
-            </p>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+            >
+              Découvrez une nouvelle ère du recrutement où l'IA rencontre le talent humain. 
+              Trouvez votre prochain défi professionnel avec une précision inégalée.
+            </motion.p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
@@ -50,33 +101,31 @@ export function HeroSection() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="flex items-center gap-3 justify-center"
-              >
-                <Search className="h-6 w-6 text-primary" />
-                <span className="text-muted-foreground">Recherche intelligente</span>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex items-center gap-3 justify-center"
-              >
-                <Briefcase className="h-6 w-6 text-primary" />
-                <span className="text-muted-foreground">Offres vérifiées</span>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center gap-3 justify-center"
-              >
-                <Users className="h-6 w-6 text-primary" />
-                <span className="text-muted-foreground">Communauté active</span>
-              </motion.div>
+              {[
+                {
+                  icon: Search,
+                  text: "IA Prédictive"
+                },
+                {
+                  icon: Briefcase,
+                  text: "Matching Intelligent"
+                },
+                {
+                  icon: Users,
+                  text: "Réseau Dynamique"
+                }
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 + index * 0.1 }}
+                  className="flex items-center gap-3 justify-center"
+                >
+                  <feature.icon className="h-6 w-6 text-[#8B5CF6]" />
+                  <span className="text-muted-foreground">{feature.text}</span>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
         </div>
