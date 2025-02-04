@@ -54,7 +54,7 @@ export function DashboardContent({
         );
       case 4:
         return (
-          <div className="h-full">
+          <div className="w-full p-4 overflow-y-auto">
             <Feed />
           </div>
         );
