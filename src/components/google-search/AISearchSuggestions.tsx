@@ -59,10 +59,7 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
 
       if (profileError) throw profileError;
 
-      const query = searchInput.value.trim() || "emploi";
-
-      // Keep only the last 5 suggestions in history
-      const recentSuggestions = previousSuggestions.slice(-5);
+      const query = searchInput.value.trim() || "emploi construction";
 
       const { data, error: functionError } = await supabase.functions.invoke('generate-search-suggestions', {
         body: {
@@ -70,7 +67,8 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
           user_id: user.id,
           context: {
             profile,
-            previousSuggestions: recentSuggestions
+            previousSuggestions,
+            useHuggingFace: true
           }
         }
       });
@@ -81,8 +79,12 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
         throw new Error("Aucune suggestion disponible");
       }
 
-      const suggestion = data.suggestions[0];
-      setPreviousSuggestions(prev => [...prev.slice(-4), suggestion]); // Keep only last 5
+      // Get a random suggestion from the array
+      const randomIndex = Math.floor(Math.random() * data.suggestions.length);
+      const suggestion = data.suggestions[randomIndex];
+      
+      // Add to previous suggestions
+      setPreviousSuggestions(prev => [...prev, suggestion]);
       onSuggestionClick(suggestion);
       
       searchInput.focus();

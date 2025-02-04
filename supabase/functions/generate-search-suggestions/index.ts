@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,58 +13,60 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
     const { query, user_id, context } = await req.json();
-    
-    if (!query || !user_id) {
-      throw new Error('Query and user ID are required');
+    const { profile, previousSuggestions = [] } = context;
+
+    // Initialize HuggingFace
+    const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'));
+
+    // Generate base context for the model
+    const baseContext = `
+      Génère 5 suggestions de recherche différentes en français pour un professionnel de la construction.
+      Context: L'utilisateur est ${profile.role} et cherche: "${query}"
+      Suggestions précédentes: ${previousSuggestions.join(', ')}
+      Les suggestions doivent être:
+      - Pertinentes pour le secteur de la construction
+      - Différentes des suggestions précédentes
+      - Spécifiques et détaillées
+      - En français
+      Format: Une suggestion par ligne
+    `;
+
+    // Use text generation to get suggestions
+    const response = await hf.textGeneration({
+      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+      inputs: baseContext,
+      parameters: {
+        max_new_tokens: 200,
+        temperature: 0.8,
+        top_p: 0.95,
+        repetition_penalty: 1.2
+      }
+    });
+
+    // Parse the response into an array of suggestions
+    const suggestions = response.generated_text
+      .split('\n')
+      .filter(line => line.trim())
+      .filter(line => !previousSuggestions.includes(line))
+      .slice(0, 5);
+
+    if (!suggestions.length) {
+      throw new Error("Aucune suggestion générée");
     }
 
-    const { profile, previousSuggestions = [] } = context || {};
-
-    // Generate base suggestions based on the user's profile and search query
-    const baseSuggestions = [
-      `${query} ${profile?.city || 'Québec'}`,
-      `${query} emploi ${profile?.role || 'construction'}`,
-      `${query} formation ${profile?.skills?.[0] || ''}`,
-      `${query} certification ${profile?.industry || 'construction'}`,
-      `${query} opportunités ${profile?.state || 'Québec'}`,
-    ].filter(Boolean);
-
-    // Filter out any previously used suggestions
-    const newSuggestions = baseSuggestions.filter(
-      suggestion => !previousSuggestions.includes(suggestion)
-    );
-
-    // Get one random suggestion that hasn't been used before
-    const suggestion = newSuggestions.length > 0 
-      ? [newSuggestions[Math.floor(Math.random() * newSuggestions.length)]]
-      : [];
-
     return new Response(
-      JSON.stringify({ suggestions: suggestion }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
-      }
+      JSON.stringify({ suggestions }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in generate-search-suggestions:', error);
+    console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        status: 400,
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500 
       }
     );
   }
