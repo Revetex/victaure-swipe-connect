@@ -3,10 +3,8 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 
 export function NotesPage() {
   return (
-    <DashboardLayout>
-      <div className="h-[calc(100dvh-8rem)] w-full">
-        <NotesMap />
-      </div>
-    </DashboardLayout>
+    <div className="h-[calc(100dvh-8rem)] w-full">
+      <NotesMap />
+    </div>
   );
 }

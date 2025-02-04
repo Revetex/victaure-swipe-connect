@@ -7,7 +7,11 @@ import { MainLayout } from "./layout/MainLayout";
 import { useViewport } from "@/hooks/useViewport";
 import { useNavigation } from "@/hooks/useNavigation";
 
-export function DashboardLayout() {
+interface DashboardLayoutProps {
+  children?: React.ReactNode;
+}
+
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   const isMobile = useIsMobile();
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -62,13 +66,15 @@ export function DashboardLayout() {
       showFriendsList={showFriendsList}
       onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
     >
-      <DashboardContent
-        currentPage={currentPage}
-        isEditing={isEditing}
-        viewportHeight={viewportHeight}
-        onEditStateChange={setIsEditing}
-        onRequestChat={handleRequestChat}
-      />
+      {children || (
+        <DashboardContent
+          currentPage={currentPage}
+          isEditing={isEditing}
+          viewportHeight={viewportHeight}
+          onEditStateChange={setIsEditing}
+          onRequestChat={handleRequestChat}
+        />
+      )}
     </MainLayout>
   );
 }
