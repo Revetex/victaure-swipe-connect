@@ -7,7 +7,8 @@ import {
   MessageSquare, 
   Network, 
   Rocket,
-  Users2
+  Users2,
+  Sparkles
 } from "lucide-react";
 
 const container = {
@@ -37,7 +38,7 @@ export function Features() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600 bg-clip-text text-transparent font-playfair">
             Une Solution Complète pour Votre Carrière
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-montserrat">
@@ -52,53 +53,61 @@ export function Features() {
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
         >
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <Brain className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">IA Avancée</h3>
-            <p className="text-muted-foreground">Assistant intelligent spécialisé dans le domaine de la construction</p>
-          </motion.div>
-
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <FileSearch className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Recherche Intelligente</h3>
-            <p className="text-muted-foreground">Trouvez les meilleures opportunités adaptées à votre profil</p>
-          </motion.div>
-
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <MessageSquare className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Chat en Direct</h3>
-            <p className="text-muted-foreground">Communiquez directement avec les employeurs potentiels</p>
-          </motion.div>
-
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <Network className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Réseau Professionnel</h3>
-            <p className="text-muted-foreground">Développez votre réseau dans l'industrie de la construction</p>
-          </motion.div>
-
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <Building2 className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Projets Exclusifs</h3>
-            <p className="text-muted-foreground">Accédez à des opportunités uniques dans la construction</p>
-          </motion.div>
-
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <Users2 className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Communauté Active</h3>
-            <p className="text-muted-foreground">Échangez avec d'autres professionnels du secteur</p>
-          </motion.div>
-
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <Briefcase className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Gestion de Carrière</h3>
-            <p className="text-muted-foreground">Outils complets pour gérer votre progression professionnelle</p>
-          </motion.div>
-
-          <motion.div variants={item} className="glass-card p-6 rounded-xl">
-            <Rocket className="w-12 h-12 text-primary mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Innovation Continue</h3>
-            <p className="text-muted-foreground">Restez à la pointe des nouvelles opportunités du secteur</p>
-          </motion.div>
+          {[
+            {
+              icon: Brain,
+              title: "IA Avancée",
+              description: "Assistant intelligent spécialisé dans le domaine de la construction"
+            },
+            {
+              icon: FileSearch,
+              title: "Recherche Intelligente",
+              description: "Trouvez les meilleures opportunités adaptées à votre profil"
+            },
+            {
+              icon: MessageSquare,
+              title: "Chat en Direct",
+              description: "Communiquez directement avec les employeurs potentiels"
+            },
+            {
+              icon: Network,
+              title: "Réseau Professionnel",
+              description: "Développez votre réseau dans l'industrie de la construction"
+            },
+            {
+              icon: Building2,
+              title: "Projets Exclusifs",
+              description: "Accédez à des opportunités uniques dans la construction"
+            },
+            {
+              icon: Users2,
+              title: "Communauté Active",
+              description: "Échangez avec d'autres professionnels du secteur"
+            },
+            {
+              icon: Briefcase,
+              title: "Gestion de Carrière",
+              description: "Outils complets pour gérer votre progression professionnelle"
+            },
+            {
+              icon: Rocket,
+              title: "Innovation Continue",
+              description: "Restez à la pointe des nouvelles opportunités du secteur"
+            }
+          ].map((feature, index) => (
+            <motion.div 
+              key={index}
+              variants={item}
+              className="glass-card p-6 rounded-xl hover:scale-105 transition-transform duration-300"
+              whileHover={{
+                boxShadow: "0 8px 32px rgba(139, 92, 246, 0.2)",
+              }}
+            >
+              <feature.icon className="w-12 h-12 text-purple-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-muted-foreground">{feature.description}</p>
+            </motion.div>
+          ))}
         </motion.div>
 
         <motion.div 
@@ -107,14 +116,21 @@ export function Features() {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <div className="glass-card p-8 rounded-xl max-w-3xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4 font-playfair">Prêt à Transformer Votre Carrière?</h3>
+          <div className="glass-card p-8 rounded-xl max-w-3xl mx-auto transform hover:scale-105 transition-transform duration-300">
+            <h3 className="text-2xl font-bold mb-4 font-playfair flex items-center justify-center gap-2">
+              Prêt à Transformer Votre Carrière?
+              <Sparkles className="h-6 w-6 text-purple-500 animate-pulse" />
+            </h3>
             <p className="text-muted-foreground mb-6 font-montserrat">
               Rejoignez des milliers de professionnels qui font confiance à Victaure pour leur développement professionnel
             </p>
-            <button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8 py-3 rounded-full transition-colors font-semibold">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8 py-3 rounded-full transition-colors font-semibold"
+            >
               Commencer Maintenant
-            </button>
+            </motion.button>
           </div>
         </motion.div>
       </div>
