@@ -1,29 +1,43 @@
-import { useState, useCallback } from "react";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { useEffect, useRef } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 export function GoogleSearchBox() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
-  const handleSearch = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      window.open(`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}`, '_blank');
-    }
-  }, [searchTerm]);
+  useEffect(() => {
+    if (!searchContainerRef.current) return;
 
-  return (
-    <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-        <Input
-          type="search"
-          placeholder="Rechercher sur Google..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4"
-        />
-      </div>
-    </form>
-  );
+    const script = document.createElement('script');
+    script.src = 'https://cse.google.com/cse.js?cx=1262c5460a0314a80';
+    script.async = true;
+    scriptRef.current = script;
+
+    const searchDiv = document.createElement('div');
+    searchDiv.className = 'gcse-search';
+    searchContainerRef.current.innerHTML = '';
+    searchContainerRef.current.appendChild(searchDiv);
+
+    document.head.appendChild(script);
+
+    script.onerror = () => {
+      toast({
+        variant: "destructive",
+        title: "Erreur de chargement",
+        description: "Impossible de charger le moteur de recherche. Veuillez réessayer."
+      });
+    };
+
+    return () => {
+      if (scriptRef.current && document.head.contains(scriptRef.current)) {
+        document.head.removeChild(scriptRef.current);
+      }
+      if (searchContainerRef.current) {
+        searchContainerRef.current.innerHTML = '';
+      }
+    };
+  }, [toast]);
+
+  return <div ref={searchContainerRef} className="w-full" />;
 }
