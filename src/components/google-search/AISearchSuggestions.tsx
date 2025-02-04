@@ -43,13 +43,14 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   return (
     <>
       <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 bg-background hover:bg-accent/80 transition-colors"
+        variant="outline"
+        size="sm"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center gap-2 px-4"
         onClick={fetchAndApplySuggestion}
         disabled={isLoading}
       >
-        <Sparkles className="h-4 w-4 text-primary" />
+        <Sparkles className="h-4 w-4" />
+        <span>Suggestion IA pour vous</span>
       </Button>
 
       <AnimatePresence>
