@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ColorOption } from "@/types/todo";
+import { cn } from "@/lib/utils";
 
 interface NotesInputProps {
   newNote: string;
@@ -39,7 +40,10 @@ export function NotesInput({
       />
       <div className="flex gap-2 sm:w-auto w-full">
         <Select onValueChange={onColorChange} defaultValue={selectedColor}>
-          <SelectTrigger className="w-[120px] bg-background/50">
+          <SelectTrigger className={cn(
+            "w-[120px] bg-background/50",
+            `sticky-note-${selectedColor}`
+          )}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -47,7 +51,10 @@ export function NotesInput({
               <SelectItem 
                 key={color.value} 
                 value={color.value}
-                className={`sticky-note-${color.value}`}
+                className={cn(
+                  "sticky-note-preview",
+                  `sticky-note-${color.value}`
+                )}
               >
                 {color.label}
               </SelectItem>

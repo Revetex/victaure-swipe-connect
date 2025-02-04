@@ -8,6 +8,10 @@
            active:scale-[0.98];
   }
 
+  .sticky-note-preview {
+    @apply transition-colors duration-200;
+  }
+
   .sticky-note-yellow {
     @apply bg-[#FEF7CD]/90 hover:bg-[#FEF7CD];
     box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.1), 0 2px 4px -1px rgba(251, 191, 36, 0.06);
