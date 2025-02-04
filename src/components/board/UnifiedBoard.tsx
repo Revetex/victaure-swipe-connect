@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ListTodo, StickyNote } from "lucide-react";
+import { ListTodo, StickyNote, Calculator, Languages, Ruler } from "lucide-react";
 import { Todo, StickyNote as StickyNoteType, ColorOption } from "@/types/todo";
 import { TodoToolbar } from "./TodoToolbar";
 import { NoteToolbar } from "./NoteToolbar";
@@ -42,7 +42,7 @@ export function UnifiedBoard({
   onDeleteTodo,
   onDeleteNote,
 }: UnifiedBoardProps) {
-  const [activeTab, setActiveTab] = useState<"todos" | "notes">("todos");
+  const [activeTab, setActiveTab] = useState<"todos" | "notes" | "calculator" | "translator" | "converter">("todos");
 
   const handleAddTodo = () => {
     if (!newTodo.trim()) {
@@ -64,18 +64,30 @@ export function UnifiedBoard({
     <div className="h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border">
       <Tabs 
         value={activeTab} 
-        onValueChange={(value) => setActiveTab(value as "todos" | "notes")}
+        onValueChange={(value) => setActiveTab(value as typeof activeTab)}
         className="h-full flex flex-col"
       >
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <TabsList className="grid w-full grid-cols-2 h-12">
-            <TabsTrigger value="todos" className="flex items-center gap-2 text-base">
+          <TabsList className="grid w-full grid-cols-5 h-12">
+            <TabsTrigger value="todos" className="flex items-center gap-2">
               <ListTodo className="h-4 w-4" />
-              <span>Tâches</span>
+              <span className="hidden sm:inline">Tâches</span>
             </TabsTrigger>
-            <TabsTrigger value="notes" className="flex items-center gap-2 text-base">
+            <TabsTrigger value="notes" className="flex items-center gap-2">
               <StickyNote className="h-4 w-4" />
-              <span>Notes</span>
+              <span className="hidden sm:inline">Notes</span>
+            </TabsTrigger>
+            <TabsTrigger value="calculator" className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              <span className="hidden sm:inline">Calculatrice</span>
+            </TabsTrigger>
+            <TabsTrigger value="translator" className="flex items-center gap-2">
+              <Languages className="h-4 w-4" />
+              <span className="hidden sm:inline">Traducteur</span>
+            </TabsTrigger>
+            <TabsTrigger value="converter" className="flex items-center gap-2">
+              <Ruler className="h-4 w-4" />
+              <span className="hidden sm:inline">Convertisseur</span>
             </TabsTrigger>
           </TabsList>
           
@@ -85,7 +97,7 @@ export function UnifiedBoard({
               onTodoChange={onTodoChange}
               onAddTodo={handleAddTodo}
             />
-          ) : (
+          ) : activeTab === "notes" ? (
             <NoteToolbar
               newNote={newNote}
               selectedColor={selectedColor}
@@ -94,7 +106,7 @@ export function UnifiedBoard({
               onColorChange={onColorChange}
               onAddNote={handleAddNote}
             />
-          )}
+          ) : null}
         </div>
 
         <div className="flex-1 overflow-hidden">
@@ -115,6 +127,24 @@ export function UnifiedBoard({
                 onDeleteNote={onDeleteNote}
               />
             </ScrollArea>
+          </TabsContent>
+
+          <TabsContent value="calculator" className="h-full m-0">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              Calculatrice (Bientôt disponible)
+            </div>
+          </TabsContent>
+
+          <TabsContent value="translator" className="h-full m-0">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              Traducteur (Bientôt disponible)
+            </div>
+          </TabsContent>
+
+          <TabsContent value="converter" className="h-full m-0">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              Convertisseur (Bientôt disponible)
+            </div>
           </TabsContent>
         </div>
       </Tabs>

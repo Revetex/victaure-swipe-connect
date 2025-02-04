@@ -119,7 +119,7 @@ export function ToolsPage() {
         }}
       >
         <div className="container mx-auto px-4 h-full flex items-center">
-          <DashboardNavigation currentPage={4} onPageChange={() => {}} />
+          <DashboardNavigation currentPage={5} onPageChange={() => {}} />
         </div>
       </motion.nav>
     </div>
