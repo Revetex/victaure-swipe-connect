@@ -83,6 +83,8 @@ export function useSearchResultsStyles() {
       border-radius: 0.75rem !important;
       padding: 0.5rem !important;
       margin-top: 0.5rem !important;
+      font-family: inherit !important;
+      text-transform: none !important;
     }
 
     .gsc-completion-selected {

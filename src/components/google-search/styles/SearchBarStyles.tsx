@@ -21,6 +21,8 @@ export function useSearchBarStyles() {
       font-size: 0.95rem !important;
       color: hsl(var(--foreground)) !important;
       width: 100% !important;
+      font-family: inherit !important;
+      text-transform: none !important;
     }
 
     .gsc-search-button {
