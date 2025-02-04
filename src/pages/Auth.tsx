@@ -16,10 +16,10 @@ export default function Auth() {
           <div className="text-center space-y-6 animate-fade-in">
             <Logo size="xl" className="mx-auto" />
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent animate-scale-in font-playfair">
-              Trouvez votre prochain emploi
+              Votre Assistant IA
             </h1>
             <p className="text-sm text-muted-foreground max-w-md mx-auto font-montserrat">
-              Rejoignez des milliers de professionnels qui ont déjà trouvé leur emploi idéal sur Victaure
+              Découvrez la puissance de l'intelligence artificielle pour votre recherche d'emploi
             </p>
           </div>
 
