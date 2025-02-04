@@ -10,13 +10,13 @@ export function HeroSection() {
       {/* Enhanced animated background grid */}
       <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)] pointer-events-none" />
       
-      {/* Enhanced animated gradient orbs */}
+      {/* Enhanced animated gradient orbs with AI-representative colors */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 5, repeat: Infinity }}
-          className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-100px,#8B5CF6,transparent)]"
+          className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-100px,#9b87f5,transparent)]"
         />
         {Array.from({ length: 30 }).map((_, i) => (
           <motion.div
@@ -38,7 +38,7 @@ export function HeroSection() {
               repeat: Infinity,
               delay: Math.random() * 5
             }}
-            className="absolute w-1 h-1 bg-purple-500 rounded-full"
+            className="absolute w-1 h-1 bg-[#9b87f5] rounded-full"
           />
         ))}
       </div>
@@ -63,9 +63,9 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.7 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600 bg-clip-text text-transparent font-playfair"
+            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-[#9b87f5] via-[#8B5CF6] to-[#D6BCFA] bg-clip-text text-transparent font-playfair"
           >
-            Votre Carrière, Notre Mission
+            L'IA qui Propulse Votre Carrière
           </motion.h1>
           
           <motion.p 
@@ -74,9 +74,9 @@ export function HeroSection() {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-montserrat leading-relaxed"
           >
-            Découvrez la puissance de l'intelligence artificielle pour votre recherche d'emploi. 
-            Notre assistant IA révolutionne votre parcours professionnel avec des opportunités 
-            sur mesure et un accompagnement personnalisé.
+            Découvrez une nouvelle ère de recherche d'emploi avec notre assistant IA de pointe. 
+            Analyses personnalisées, correspondances précises et conseils stratégiques pour 
+            faire décoller votre carrière.
           </motion.p>
           
           <motion.div 
@@ -107,33 +107,42 @@ export function HeroSection() {
               <Button 
                 variant="outline"
                 size="lg" 
-                className="font-montserrat group relative overflow-hidden border-purple-400 text-primary hover:text-primary/90 px-8 py-6 text-lg"
+                className="font-montserrat group relative overflow-hidden border-[#9b87f5] text-primary hover:text-primary/90 px-8 py-6 text-lg"
               >
-                Découvrir les offres
+                Explorer les opportunités
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </motion.div>
 
-          {/* Trust Indicators */}
+          {/* Enhanced Trust Indicators */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.5 }}
             className="flex flex-wrap justify-center gap-8 mt-12"
           >
-            <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-purple-500" />
-              <span className="text-muted-foreground">Protection des données</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-purple-500" />
-              <span className="text-muted-foreground">+10,000 utilisateurs satisfaits</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-500" />
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm"
+            >
+              <Shield className="h-5 w-5 text-[#9b87f5]" />
+              <span className="text-muted-foreground">Protection des données avancée</span>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm"
+            >
+              <Star className="h-5 w-5 text-[#9b87f5]" />
+              <span className="text-muted-foreground">+10,000 carrières transformées</span>
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm"
+            >
+              <Sparkles className="h-5 w-5 text-[#9b87f5]" />
               <span className="text-muted-foreground">IA de dernière génération</span>
-            </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>
@@ -149,7 +158,7 @@ export function HeroSection() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/20 rounded-full filter blur-3xl"
+        className="absolute top-0 -left-4 w-96 h-96 bg-[#9b87f5]/20 rounded-full filter blur-3xl"
       />
       <motion.div 
         animate={{ 
@@ -161,7 +170,7 @@ export function HeroSection() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute bottom-0 -right-4 w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl"
+        className="absolute bottom-0 -right-4 w-96 h-96 bg-[#D6BCFA]/20 rounded-full filter blur-3xl"
       />
     </section>
   );
