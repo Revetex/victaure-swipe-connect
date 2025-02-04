@@ -39,13 +39,13 @@ serve(async (req) => {
       suggestion => !previousSuggestions.includes(suggestion)
     );
 
-    // Shuffle the suggestions array
-    const shuffledSuggestions = newSuggestions
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3); // Get up to 3 random suggestions
+    // Get one random suggestion that hasn't been used before
+    const suggestion = newSuggestions.length > 0 
+      ? [newSuggestions[Math.floor(Math.random() * newSuggestions.length)]]
+      : [];
 
     return new Response(
-      JSON.stringify({ suggestions: shuffledSuggestions }),
+      JSON.stringify({ suggestions: suggestion }),
       { 
         headers: { 
           ...corsHeaders,

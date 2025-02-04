@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AISearchSuggestionsProps {
   onSuggestionClick: (suggestion: string) => void;
 }
 
 export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsProps) {
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentQuery, setCurrentQuery] = useState("");
+  const [previousSuggestions, setPreviousSuggestions] = useState<string[]>([]);
 
   const handleSearch = useCallback(() => {
     const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
@@ -24,47 +24,68 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
     }
   }, []);
 
-  const handleSuggestionClick = useCallback((suggestion: string) => {
-    setCurrentQuery(suggestion);
-    onSuggestionClick(suggestion);
-  }, [onSuggestionClick]);
+  const generateSuggestion = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
+      const query = searchInput?.value || '';
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+      const { data, error } = await supabase.functions.invoke('generate-search-suggestions', {
+        body: {
+          query,
+          user_id: (await supabase.auth.getUser()).data.user?.id,
+          context: {
+            profile,
+            previousSuggestions
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.suggestions?.length > 0) {
+        const suggestion = data.suggestions[0];
+        setPreviousSuggestions(prev => [...prev, suggestion]);
+        onSuggestionClick(suggestion);
+      } else {
+        toast.error("Aucune suggestion disponible");
+      }
+    } catch (error) {
+      console.error('Error generating suggestion:', error);
+      toast.error("Erreur lors de la génération de la suggestion");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [onSuggestionClick, previousSuggestions]);
 
   return (
-    <div className="flex items-center gap-2 mb-4">
-      <div className="flex flex-wrap gap-2">
+    <div className="flex items-center gap-2">
+      <div className="relative flex items-center w-full">
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleSuggestionClick("Emplois technologie Montréal")}
-          className="text-sm"
+          onClick={generateSuggestion}
+          disabled={isLoading}
+          className="absolute left-2 z-10"
         >
-          Emplois technologie Montréal
+          <Sparkles className="h-4 w-4 mr-2" />
+          <span>IA</span>
         </Button>
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
-          onClick={() => handleSuggestionClick("Offres d'emploi développeur")}
-          className="text-sm"
+          onClick={handleSearch}
+          className="absolute right-2 z-10"
         >
-          Offres d'emploi développeur
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handleSuggestionClick("Carrières informatique Québec")}
-          className="text-sm"
-        >
-          Carrières informatique Québec
+          <Search className="h-4 w-4" />
         </Button>
       </div>
-      <Button
-        variant="default"
-        size="sm"
-        onClick={handleSearch}
-        className="ml-2"
-      >
-        <Search className="h-4 w-4" />
-      </Button>
     </div>
   );
 }
