@@ -4,9 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { AuthVideo } from "@/components/auth/AuthVideo";
 import { Logo } from "@/components/Logo";
-import { Features } from "@/components/Features";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Auth() {
@@ -74,34 +72,17 @@ export default function Auth() {
 
       {/* Main Content */}
       <main className="flex-1 w-full py-8 px-4">
-        <div className="container max-w-6xl mx-auto grid gap-12 md:grid-cols-2 items-start">
-          {/* Left Column - Video and Features */}
-          <div className="space-y-8">
-            <div className="text-center space-y-4 mb-8">
-              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Bienvenue sur Victaure
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                La plateforme qui révolutionne le travail indépendant
-              </p>
-            </div>
-            <AuthVideo />
-            <Features />
+        <div className="container max-w-md mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight">Rejoignez la communauté</h1>
+            <p className="text-sm text-muted-foreground">
+              Créez votre profil professionnel en quelques clics
+            </p>
           </div>
 
-          {/* Right Column - Auth Form */}
-          <div className="space-y-8">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold tracking-tight">Rejoignez la communauté</h2>
-              <p className="text-sm text-muted-foreground">
-                Créez votre profil professionnel en quelques clics
-              </p>
-            </div>
-
-            <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
-              <BiometricAuth />
-              <AuthForm />
-            </div>
+          <div className="glass-card w-full space-y-6 rounded-xl border bg-card/50 p-6 shadow-sm backdrop-blur-sm">
+            <BiometricAuth />
+            <AuthForm />
           </div>
         </div>
       </main>
