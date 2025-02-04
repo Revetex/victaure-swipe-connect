@@ -10,6 +10,7 @@ import { StickyNote } from "@/components/todo/StickyNote";
 import { ColorOption } from "@/types/todo";
 import { toast } from "sonner";
 import { NotesGrid } from "./NotesGrid";
+import { NotesToolbar } from "./NotesToolbar";
 
 const colors: ColorOption[] = [
   { value: "yellow", label: "Jaune", class: "bg-yellow-200" },
@@ -38,51 +39,69 @@ export function NotesMap() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleAddNote = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleAddNote = (e?: React.MouseEvent<HTMLDivElement>) => {
     if (!newNote.trim()) {
       toast.error("Le contenu de la note ne peut pas être vide");
       return;
     }
 
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const x = (e.clientX - rect.left) / scale;
-    const y = (e.clientY - rect.top) / scale;
+    if (e && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / scale;
+      const y = (e.clientY - rect.top) / scale;
+      setPosition({ x, y });
+    }
 
     addNote();
-    setPosition({ x, y });
+  };
+
+  const handleNavigateLeft = () => {
+    // Add navigation logic here
+    console.log("Navigate left");
+  };
+
+  const handleNavigateRight = () => {
+    // Add navigation logic here
+    console.log("Navigate right");
   };
 
   return (
     <div className="h-full flex flex-col bg-background/95 backdrop-blur-sm rounded-lg border border-border/50">
-      <div className="flex-none p-4 space-y-4 border-b border-border/50">
-        <div className="flex gap-2">
-          <Input
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Nouvelle note..."
-            className="flex-1"
-          />
-          <Select onValueChange={setSelectedColor} defaultValue={selectedColor}>
-            <SelectTrigger className="w-[100px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {colors.map((color) => (
-                <SelectItem 
-                  key={color.value} 
-                  value={color.value}
-                  className={`sticky-note-${color.value}`}
-                >
-                  {color.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button onClick={() => setShowGrid(!showGrid)} size="icon" variant="ghost">
-            <Grid className="h-4 w-4" />
-          </Button>
+      <div className="flex-none">
+        <NotesToolbar 
+          showGrid={showGrid}
+          onToggleGrid={() => setShowGrid(!showGrid)}
+          onAddNote={() => handleAddNote()}
+          onNavigateLeft={handleNavigateLeft}
+          onNavigateRight={handleNavigateRight}
+        />
+        
+        <div className="p-4 border-b">
+          <div className="flex gap-2">
+            <Input
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Nouvelle note..."
+              className="flex-1"
+              onKeyPress={(e) => e.key === 'Enter' && handleAddNote()}
+            />
+            <Select onValueChange={setSelectedColor} defaultValue={selectedColor}>
+              <SelectTrigger className="w-[100px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {colors.map((color) => (
+                  <SelectItem 
+                    key={color.value} 
+                    value={color.value}
+                    className={`sticky-note-${color.value}`}
+                  >
+                    {color.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

@@ -1,30 +1,56 @@
-import { Grid, Minus, MoveIcon, Plus } from "lucide-react";
+import { Grid, Plus, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NotesToolbarProps {
   showGrid: boolean;
   onToggleGrid: () => void;
+  onAddNote?: () => void;
+  onNavigateLeft?: () => void;
+  onNavigateRight?: () => void;
 }
 
-export function NotesToolbar({ showGrid, onToggleGrid }: NotesToolbarProps) {
+export function NotesToolbar({ 
+  showGrid, 
+  onToggleGrid,
+  onAddNote,
+  onNavigateLeft,
+  onNavigateRight 
+}: NotesToolbarProps) {
   return (
-    <div className="flex gap-2">
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="h-8 w-8" 
-        onClick={onToggleGrid}
+    <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex items-center gap-2">
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={onNavigateLeft}
+          className="h-9 w-9"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={onNavigateRight}
+          className="h-9 w-9"
+        >
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={onToggleGrid}
+          className="h-9 w-9"
+        >
+          <Grid className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <Button
+        onClick={onAddNote}
+        size="icon"
+        className="h-9 w-9 bg-primary hover:bg-primary/90"
       >
-        <Grid className="h-4 w-4" />
-      </Button>
-      <Button variant="outline" size="icon" className="h-8 w-8">
-        <Minus className="h-4 w-4" />
-      </Button>
-      <Button variant="outline" size="icon" className="h-8 w-8">
-        <MoveIcon className="h-4 w-4" />
-      </Button>
-      <Button variant="outline" size="icon" className="h-8 w-8">
-        <Plus className="h-4 w-4" />
+        <Plus className="h-4 w-4 text-primary-foreground" />
       </Button>
     </div>
   );
