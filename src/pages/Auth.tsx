@@ -65,7 +65,7 @@ export default function Auth() {
           <Logo className="h-8 w-auto" />
           <nav className="flex items-center gap-4">
             <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Accueil
+              Retour
             </a>
           </nav>
         </div>
@@ -76,7 +76,6 @@ export default function Auth() {
         <div className="container max-w-sm mx-auto space-y-8">
           {/* Header with Logo above Title */}
           <div className="flex flex-col items-center space-y-4 text-center">
-            <Logo size="lg" className="scale-150 mb-2" />
             <div className="space-y-2">
               <h1 className="text-2xl font-bold tracking-tight">Bienvenue sur Victaure</h1>
               <p className="text-sm text-muted-foreground">
@@ -90,9 +89,13 @@ export default function Auth() {
             <BiometricAuth />
             <AuthForm />
           </div>
+        </div>
+      </main>
 
-          {/* Legal Links - Centered */}
-          <div className="text-center text-sm pb-8 space-y-4">
+      {/* Footer */}
+      <footer className="w-full py-6 px-4 border-t border-border/5 backdrop-blur-sm">
+        <div className="container max-w-7xl mx-auto">
+          <div className="flex flex-col items-center space-y-4">
             <div className="flex justify-center space-x-4">
               <Dialog>
                 <DialogTrigger className="text-muted-foreground hover:text-foreground/80 transition-colors">
@@ -155,17 +158,13 @@ export default function Auth() {
                 </DialogContent>
               </Dialog>
             </div>
-            <div className="text-muted-foreground">
+            <div className="text-muted-foreground text-sm">
               © {new Date().getFullYear()} Victaure. Tous droits réservés.
             </div>
+            <div className="text-muted-foreground text-sm">
+              Propulsé par Victaure Technologies Inc.
+            </div>
           </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="w-full py-6 px-4 border-t border-border/5 backdrop-blur-sm">
-        <div className="container max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Propulsé par Victaure Technologies Inc.</p>
         </div>
       </footer>
     </div>
