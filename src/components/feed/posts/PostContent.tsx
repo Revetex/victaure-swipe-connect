@@ -3,6 +3,7 @@ import { PostActions as PostInteractions } from "../PostActions";
 import { Button } from "@/components/ui/button";
 import { EyeOff, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { Comment } from "@/types/posts";
 
 interface PostContentProps {
   content: string;
@@ -13,17 +14,7 @@ interface PostContentProps {
   dislikes: number;
   commentCount: number;
   userReaction?: string;
-  comments?: {
-    id: string;
-    content: string;
-    created_at: string;
-    user_id: string;
-    profiles: {
-      id: string;
-      full_name: string;
-      avatar_url?: string;
-    };
-  }[];
+  comments?: Comment[];
   onReaction: (type: 'like' | 'dislike') => void;
   onCommentAdded: () => void;
   onDelete?: () => void;

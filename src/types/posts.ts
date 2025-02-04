@@ -27,7 +27,7 @@ export interface Comment {
   profiles: {
     id: string;
     full_name: string;
-    avatar_url?: string;  // Changed from required to optional
+    avatar_url?: string;  // Made optional to match the actual data structure
   };
 }
 
