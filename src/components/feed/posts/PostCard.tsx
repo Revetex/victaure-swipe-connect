@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { PostContent } from "./PostContent";
 import { PostHeader } from "../PostHeader";
 import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
@@ -8,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { PostActions } from "../PostActions";
 import { CommentManager } from "../comments/CommentManager";
+import { PostImageGrid } from "./PostImageGrid";
 
 interface PostCardProps {
   post: Post;
@@ -64,16 +64,7 @@ export function PostCard({
           </div>
           
           {post.images && post.images.length > 0 && (
-            <div className="grid grid-cols-2 gap-2">
-              {post.images.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`Post image ${index + 1}`}
-                  className="rounded-lg object-cover w-full h-48"
-                />
-              ))}
-            </div>
+            <PostImageGrid images={post.images} />
           )}
 
           <PostActions
