@@ -7,6 +7,7 @@ import { NotificationsSection } from "./settings/NotificationsSection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
+import { SettingsSection } from "./settings/SettingsSection";
 
 const containerVariants = {
   hidden: { opacity: 0 },
