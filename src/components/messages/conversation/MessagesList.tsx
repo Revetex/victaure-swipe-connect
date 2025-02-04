@@ -1,24 +1,23 @@
-import { Message } from "@/types/messages";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Message, Receiver } from "@/types/messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UserCircle, MessageCircle, Bot } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bot, MessageCircle, UserCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { formatTimestamp } from "@/utils/dateUtils";
+import { ChatScroll } from "@/components/chat/ChatScroll";
 
 interface MessagesListProps {
   messages: Message[];
   chatMessages: Message[];
-  onSelectConversation: (type: "assistant" | "user", receiver?: any) => void;
+  onSelectConversation: (type: "assistant" | "user", receiver?: Receiver) => void;
 }
 
-export function MessagesList({ messages, chatMessages, onSelectConversation }: MessagesListProps) {
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return format(date, "HH:mm", { locale: fr });
-  };
-
+export function MessagesList({
+  messages,
+  chatMessages,
+  onSelectConversation
+}: MessagesListProps) {
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -35,12 +34,12 @@ export function MessagesList({ messages, chatMessages, onSelectConversation }: M
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] px-4">
+    <ChatScroll>
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="space-y-4 py-4"
+        className="space-y-4 p-4"
       >
         <motion.div
           variants={item}
@@ -59,17 +58,19 @@ export function MessagesList({ messages, chatMessages, onSelectConversation }: M
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg text-foreground">M. Victaure</h3>
-                <span className="text-xs text-muted-foreground">Assistant IA</span>
+              <h3 className="font-semibold text-foreground mb-1">
+                M. Victaure
+              </h3>
+              <div className="flex items-center gap-2">
+                <MessageCircle className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Assistant IA
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground truncate">
-                Votre assistant personnel
-              </p>
             </div>
           </div>
         </motion.div>
       </motion.div>
-    </ScrollArea>
+    </ChatScroll>
   );
 }

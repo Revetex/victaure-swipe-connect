@@ -1,100 +1,72 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { PostContent } from "./PostContent";
 import { PostHeader } from "../PostHeader";
 import { PostActions } from "./PostActions";
-import { PostContent } from "./PostContent";
-import { PostImageGrid } from "./PostImageGrid";
+import { PostComments } from "../PostComments";
+import { Post } from "@/types/posts";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { EyeOff, Trash2 } from "lucide-react";
+import { usePostOperations } from "./usePostOperations";
 
 interface PostCardProps {
-  post: {
-    id: string;
-    content: string;
-    images: string[];
-    created_at: string;
-    user_id: string;
-    privacy_level: "public" | "connections";
-    profiles: {
-      id: string;
-      full_name: string;
-      avatar_url: string;
-    };
-    reactions?: {
-      reaction_type: string;
-      user_id: string;
-    }[];
-    comments?: {
-      id: string;
-      content: string;
-      created_at: string;
-      user_id: string;
-      profiles: {
-        id: string;
-        full_name: string;
-        avatar_url: string;
-      };
-    }[];
-  };
-  currentUserId?: string;
-  userEmail?: string;
-  onDelete: (postId: string) => void;
-  onHide: (postId: string) => void;
-  onReaction: (postId: string, type: 'like' | 'dislike') => void;
-  onCommentAdded: () => void;
+  post: Post;
+  onDelete?: () => void;
+  onHide?: () => void;
 }
 
-export const PostCard = ({
-  post,
-  currentUserId,
-  userEmail,
-  onDelete,
-  onHide,
-  onReaction,
-  onCommentAdded
-}: PostCardProps) => {
-  const likes = post.reactions?.filter(r => r.reaction_type === 'like').length || 0;
-  const dislikes = post.reactions?.filter(r => r.reaction_type === 'dislike').length || 0;
-  const userReaction = post.reactions?.find(r => r.user_id === currentUserId)?.reaction_type;
-  const commentCount = post.comments?.length || 0;
+export function PostCard({ post, onDelete, onHide }: PostCardProps) {
+  const [showComments, setShowComments] = useState(false);
+  const { handleDelete, handleHide } = usePostOperations();
 
   return (
-    <Card className="p-4">
-      <div className="space-y-4">
-        <PostHeader
-          profile={post.profiles}
-          created_at={post.created_at}
-          privacy_level={post.privacy_level}
-        />
-        
-        <PostActions
-          currentUserId={currentUserId}
-          postUserId={post.user_id}
-          onDelete={() => onDelete(post.id)}
-          onHide={() => onHide(post.id)}
-        />
-
-        <div className="space-y-4">
-          <p className="text-foreground whitespace-pre-wrap">{post.content}</p>
-          
-          {post.images && post.images.length > 0 && (
-            <PostImageGrid images={post.images} />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="relative group"
+    >
+      <Card className={cn(
+        "border shadow-sm transition-all duration-200",
+        "hover:shadow-md hover:border-primary/20"
+      )}>
+        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleHide(post.id)}
+            className="h-8 w-8 hover:bg-destructive/10"
+          >
+            <EyeOff className="h-4 w-4" />
+          </Button>
+          {post.user_id === user?.id && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDelete(post.id)}
+              className="h-8 w-8 hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           )}
         </div>
 
-        <div className="pt-4 border-t border-border">
-          <PostContent
-            content=""
-            postId={post.id}
-            currentUserId={currentUserId}
-            userEmail={userEmail}
-            likes={likes}
-            dislikes={dislikes}
-            commentCount={commentCount}
-            userReaction={userReaction}
-            comments={post.comments}
-            onReaction={(type) => onReaction(post.id, type)}
-            onCommentAdded={onCommentAdded}
-          />
-        </div>
-      </div>
-    </Card>
+        <PostHeader post={post} />
+        <PostContent post={post} />
+        <PostActions
+          likes={post.likes}
+          dislikes={post.dislikes}
+          commentCount={post.comments?.length || 0}
+          userReaction={post.userReaction}
+          isExpanded={showComments}
+          onLike={() => handleReaction(post.id, 'like')}
+          onDislike={() => handleReaction(post.id, 'dislike')}
+          onToggleComments={() => setShowComments(!showComments)}
+        />
+        {showComments && <PostComments postId={post.id} />}
+      </Card>
+    </motion.div>
   );
-};
+}
