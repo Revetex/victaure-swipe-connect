@@ -24,7 +24,7 @@ export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
       className={cn(
         "fixed inset-x-0 bg-background/95 backdrop-blur-sm will-change-[height,opacity]",
         isMobile ? "top-[4rem] h-[calc(100vh-4rem)]" : "top-16 h-[calc(100vh-4rem)]",
-        "z-[100] overflow-hidden"
+        "z-[200] overflow-hidden" // Increased z-index to appear above bottom nav
       )}
       style={{
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
