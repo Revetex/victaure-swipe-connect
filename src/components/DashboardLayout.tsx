@@ -1,5 +1,5 @@
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState, Suspense, memo } from "react";
+import { useState, Suspense, memo, useEffect } from "react";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -60,6 +60,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { showConversation } = useReceiver();
   const viewportHeight = useViewport();
   const { currentPage, handlePageChange } = useNavigation();
+
+  // Fermer le menu amis quand on change de page
+  useEffect(() => {
+    setShowFriendsList(false);
+  }, [currentPage, location.pathname]);
 
   const handleRequestChat = () => {
     handlePageChange(2);
