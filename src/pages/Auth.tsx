@@ -49,12 +49,13 @@ export default function Auth() {
           }}
         />
         
-        {/* AI-themed animated elements */}
+        {/* Enhanced AI-themed animated elements */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
+          {/* Small stars */}
+          {[...Array(30)].map((_, i) => (
             <motion.div
-              key={i}
-              className="absolute h-px w-px bg-primary/30"
+              key={`star-sm-${i}`}
+              className="absolute h-1 w-1 rounded-full bg-primary/40"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -65,6 +66,79 @@ export default function Auth() {
               }}
               transition={{
                 duration: 2 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+
+          {/* Medium stars */}
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={`star-md-${i}`}
+              className="absolute h-1.5 w-1.5 rounded-full bg-primary/30"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                scale: [0, 1.2, 0],
+                opacity: [0, 0.8, 0],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+
+          {/* Large stars with glow effect */}
+          {[...Array(10)].map((_, i) => (
+            <motion.div
+              key={`star-lg-${i}`}
+              className="absolute h-2 w-2 rounded-full bg-primary/20 shadow-lg shadow-primary/20"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                scale: [0, 1.5, 0],
+                opacity: [0, 0.6, 0],
+                boxShadow: [
+                  "0 0 0 0 rgba(var(--primary), 0)",
+                  "0 0 20px 2px rgba(var(--primary), 0.3)",
+                  "0 0 0 0 rgba(var(--primary), 0)",
+                ],
+              }}
+              transition={{
+                duration: 4 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 4,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+
+          {/* Connecting lines */}
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={`line-${i}`}
+              className="absolute h-px bg-primary/20"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 100 + 50}px`,
+                transform: `rotate(${Math.random() * 360}deg)`,
+              }}
+              animate={{
+                opacity: [0, 0.3, 0],
+                scale: [0.5, 1, 0.5],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
                 repeat: Infinity,
                 delay: Math.random() * 2,
                 ease: "easeInOut",
