@@ -1,8 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Sparkles, Search } from "lucide-react";
-import { useState, useCallback, useRef, useEffect } from "react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface AISearchSuggestionsProps {
   onSuggestionClick: (suggestion: string) => void;
@@ -20,16 +18,6 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
     }
   }, []);
 
-  const handleSearch = useCallback(() => {
-    try {
-      if (searchInputRef.current) {
-        searchInputRef.current.focus();
-      }
-    } catch (error) {
-      console.error('Error focusing search input:', error);
-    }
-  }, []);
-
   const generateSuggestion = useCallback(async () => {
     if (isLoading) return;
     
@@ -40,34 +28,49 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
     abortControllerRef.current = new AbortController();
     
     setIsLoading(true);
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Utilisateur non authentifié");
+      const { data: { secret } } = await supabase
+        .from('get_secret')
+        .select('secret')
+        .eq('name', 'HUGGING_FACE_API_KEY')
+        .single();
 
-      const { data, error } = await supabase.functions.invoke(
-        'generate-search-suggestions',
+      const response = await fetch(
+        'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
         {
-          body: { userId: user.id }
+          headers: { Authorization: `Bearer ${secret}` },
+          method: 'POST',
+          body: JSON.stringify({
+            inputs: searchInputRef.current?.value || '',
+            parameters: { max_length: 100, min_length: 30, do_sample: true }
+          }),
+          signal: abortControllerRef.current.signal
         }
       );
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error('Failed to generate suggestion');
+      }
 
-      const suggestion = data?.suggestion;
-      if (!suggestion) throw new Error("Aucune suggestion générée");
-
-      if (searchInputRef.current) {
-        searchInputRef.current.value = suggestion;
-        searchInputRef.current.focus();
+      const suggestion = await response.text();
+      
+      if (suggestion && !abortControllerRef.current?.signal.aborted) {
         onSuggestionClick(suggestion);
       }
+
+      setTimeout(() => {
+        if (!abortControllerRef.current?.signal.aborted) {
+          generateSuggestion();
+        }
+      }, 3000);
 
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         return;
       }
       console.error('Error generating suggestion:', error);
-      toast.error(error instanceof Error ? error.message : "Erreur lors de la génération de la suggestion");
+      toast.error('Failed to generate suggestion');
     } finally {
       setIsLoading(false);
     }
@@ -83,25 +86,13 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-2"
+      <button
         onClick={generateSuggestion}
         disabled={isLoading}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
       >
-        <Sparkles className="h-4 w-4" />
-        Suggestion IA
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="gap-2"
-        onClick={handleSearch}
-      >
-        <Search className="h-4 w-4" />
-        Rechercher
-      </Button>
+        {isLoading ? 'Generating...' : 'Get AI Suggestions'}
+      </button>
     </div>
   );
 }

@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { NotesPage } from "./NotesPage";
-import { TasksPage } from "./TasksPage";
-import { CalculatorPage } from "./CalculatorPage";
-import { TranslatorPage } from "./TranslatorPage";
-import { ConverterPage } from "./ConverterPage";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DashboardNavigation } from "../dashboard/DashboardNavigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { NotesSection } from "./sections/NotesSection";
+import { TasksSection } from "./sections/TasksSection";
+import { CalculatorSection } from "./sections/CalculatorSection";
+import { TranslatorSection } from "./sections/TranslatorSection";
+import { ConverterSection } from "./sections/ConverterSection";
+import { ToolsNavigation } from "./navigation/ToolsNavigation";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -35,7 +35,12 @@ export function ToolsPage() {
       </div>
 
       <div className="flex-1 overflow-auto p-4">
-        <Tabs defaultValue="notes" value={selectedTool} onValueChange={setSelectedTool} className="w-full">
+        <Tabs 
+          defaultValue="notes" 
+          value={selectedTool} 
+          onValueChange={setSelectedTool} 
+          className="w-full"
+        >
           <TabsList className="w-full justify-start mb-4 overflow-x-auto scrollbar-hide">
             <TabsTrigger 
               value="notes"
@@ -88,40 +93,28 @@ export function ToolsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            className="h-[calc(100vh-16rem)]"
           >
-            <TabsContent value="notes">
-              <NotesPage />
+            <TabsContent value="notes" className="h-full m-0">
+              <NotesSection />
             </TabsContent>
-            <TabsContent value="tasks">
-              <TasksPage />
+            <TabsContent value="tasks" className="h-full m-0">
+              <TasksSection />
             </TabsContent>
-            <TabsContent value="calculator">
-              <CalculatorPage />
+            <TabsContent value="calculator" className="h-full m-0">
+              <CalculatorSection />
             </TabsContent>
-            <TabsContent value="translator">
-              <TranslatorPage />
+            <TabsContent value="translator" className="h-full m-0">
+              <TranslatorSection />
             </TabsContent>
-            <TabsContent value="converter">
-              <ConverterPage />
+            <TabsContent value="converter" className="h-full m-0">
+              <ConverterSection />
             </TabsContent>
           </motion.div>
         </Tabs>
       </div>
       
-      <motion.nav 
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
-        style={{ 
-          height: '4rem',
-          paddingBottom: 'env(safe-area-inset-bottom)'
-        }}
-      >
-        <div className="container mx-auto px-4 h-full flex items-center">
-          <DashboardNavigation currentPage={5} onPageChange={() => {}} />
-        </div>
-      </motion.nav>
+      <ToolsNavigation />
     </div>
   );
 }
