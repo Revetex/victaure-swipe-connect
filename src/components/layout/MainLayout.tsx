@@ -30,8 +30,8 @@ export function MainLayout({
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="sticky top-0 z-[9998] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="min-h-screen bg-background flex flex-col relative">
+      <header className="sticky top-0 z-[99] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -50,7 +50,7 @@ export function MainLayout({
       </header>
 
       <main className={cn(
-        "flex-1 container mx-auto px-4",
+        "flex-1 container mx-auto px-4 relative z-0",
         showFriendsList && "overflow-hidden h-[calc(100vh-4rem)]"
       )}>
         <div className="max-w-7xl mx-auto py-4">
@@ -59,7 +59,7 @@ export function MainLayout({
       </main>
 
       <nav className={cn(
-        "sticky bottom-0 left-0 right-0 z-[9997] bg-background/95 backdrop-blur border-t",
+        "sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t",
         showFriendsList && "relative"
       )}>
         <div className="container mx-auto py-2">
