@@ -1,7 +1,7 @@
 import { useState, useMemo, memo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ListTodo, StickyNote, Calculator, Languages, Ruler } from "lucide-react";
+import { ListTodo, StickyNote, Calculator, Languages, Ruler, ChessKnight } from "lucide-react";
 import { Todo, StickyNote as StickyNoteType, ColorOption } from "@/types/todo";
 import { TodoToolbar } from "./TodoToolbar";
 import { NoteToolbar } from "./NoteToolbar";
@@ -76,7 +76,7 @@ export function UnifiedBoard({
   onDeleteTodo,
   onDeleteNote,
 }: UnifiedBoardProps) {
-  const [activeTab, setActiveTab] = useState<"todos" | "notes" | "calculator" | "translator" | "converter">("todos");
+  const [activeTab, setActiveTab] = useState<"todos" | "notes" | "calculator" | "translator" | "converter" | "chess">("todos");
 
   // Memoize handlers to prevent unnecessary re-renders
   const handleAddTodo = useMemo(() => {
@@ -107,7 +107,7 @@ export function UnifiedBoard({
         className="h-full flex flex-col"
       >
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <TabsList className="grid w-full grid-cols-5 h-12">
+          <TabsList className="grid w-full grid-cols-6 h-12">
             <TabsTrigger value="todos" className="flex items-center gap-2">
               <ListTodo className="h-4 w-4" />
               <span className="hidden sm:inline">Tâches</span>
@@ -127,6 +127,10 @@ export function UnifiedBoard({
             <TabsTrigger value="converter" className="flex items-center gap-2">
               <Ruler className="h-4 w-4" />
               <span className="hidden sm:inline">Convertisseur</span>
+            </TabsTrigger>
+            <TabsTrigger value="chess" className="flex items-center gap-2">
+              <ChessKnight className="h-4 w-4" />
+              <span className="hidden sm:inline">Échecs</span>
             </TabsTrigger>
           </TabsList>
           
@@ -186,6 +190,12 @@ export function UnifiedBoard({
             <TabsContent value="converter" className="h-full m-0">
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 Convertisseur (Bientôt disponible)
+              </div>
+            </TabsContent>
+
+            <TabsContent value="chess" className="h-full m-0">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                Échecs (Bientôt disponible)
               </div>
             </TabsContent>
           </ErrorBoundary>
