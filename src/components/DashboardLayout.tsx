@@ -116,32 +116,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   };
 
-  if (isInConversation) {
-    return (
-      <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Suspense fallback={<LoadingFallback />}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              className="min-h-screen bg-background"
-            >
-              <MemoizedDashboardContent
-                currentPage={currentPage}
-                isEditing={isEditing}
-                viewportHeight={viewportHeight}
-                onEditStateChange={setIsEditing}
-                onRequestChat={handleRequestChat}
-              />
-            </motion.div>
-          </AnimatePresence>
-        </Suspense>
-      </ErrorBoundary>
-    );
-  }
-
   return (
     <MainLayout 
       title={getPageTitle(currentPage)}
