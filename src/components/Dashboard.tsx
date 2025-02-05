@@ -1,6 +1,6 @@
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardAuth } from "./dashboard/core/DashboardAuth";
-import { DashboardLayout } from "./dashboard/core/DashboardLayout";
+import { DashboardLayout } from "./DashboardLayout";
 import { VCardCreationForm } from "./VCardCreationForm";
 
 export function Dashboard() {
