@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { VCardActions } from "@/components/VCardActions";
 import { VCardAvatar } from "./VCardAvatar";
 import { VCardInfo } from "./VCardInfo";
-import { VCardQR } from "@/components/vcard/header/VCardQR";
+import { VCardQR } from "@/components/vcard/VCardQR";
 
 interface VCardHeaderProps {
   profile: UserProfile;
