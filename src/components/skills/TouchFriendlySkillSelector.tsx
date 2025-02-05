@@ -10,9 +10,14 @@ import { useState } from "react";
 interface TouchFriendlySkillSelectorProps {
   onSkillSelect: (skill: string) => void;
   existingSkills: string[];
+  availableSkills?: string[];
 }
 
-export function TouchFriendlySkillSelector({ onSkillSelect, existingSkills }: TouchFriendlySkillSelectorProps) {
+export function TouchFriendlySkillSelector({ 
+  onSkillSelect, 
+  existingSkills,
+  availableSkills = Object.values(skillCategories).flat()
+}: TouchFriendlySkillSelectorProps) {
   const [customSkill, setCustomSkill] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
-import { VCardActions } from "../../../VCardActions";
+import { VCardActions } from "@/components/VCardActions";
 import { VCardAvatar } from "./VCardAvatar";
 import { VCardInfo } from "./VCardInfo";
-import { VCardQR } from "./VCardQR";
+import { VCardQR } from "@/components/vcard/header/VCardQR";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -48,6 +48,7 @@ export function VCardHeader({
         <VCardAvatar 
           profile={profile}
           isEditing={isEditing}
+          setProfile={setProfile}
         />
 
         <div className="flex-1 min-w-0">
