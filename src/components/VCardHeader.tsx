@@ -85,7 +85,7 @@ export function VCardHeader({
         </div>
 
         <div className="flex items-center gap-4">
-          {!isEditing && <VCardQR isQRDialogOpen={isQRDialogOpen} setIsQRDialogOpen={setIsQRDialogOpen} />}
+          {!isEditing && <VCardQR isQRDialogOpen={isQRDialogOpen} setIsQRDialogOpen={setIsQRDialogOpen} profileId={profile.id} />}
           
           <div className="shrink-0">
             <VCardActions

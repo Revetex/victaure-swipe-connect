@@ -27,7 +27,16 @@ export function PublicProfile() {
           .from('profiles')
           .select(`
             *,
-            certifications (*),
+            certifications (
+              id,
+              title,
+              institution,
+              year,
+              description,
+              credential_url,
+              created_at,
+              updated_at
+            ),
             education (*),
             experiences (*)
           `)
@@ -47,7 +56,26 @@ export function PublicProfile() {
           return;
         }
 
-        setProfile(data);
+        // Transform certifications to match the Certification type
+        const transformedProfile = {
+          ...data,
+          certifications: data.certifications?.map((cert: any) => ({
+            id: cert.id,
+            profile_id: cert.profile_id,
+            title: cert.title,
+            institution: cert.issuer || cert.institution,
+            year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
+            created_at: cert.created_at,
+            updated_at: cert.updated_at,
+            credential_url: cert.credential_url,
+            description: cert.description,
+            issuer: cert.issuer,
+            issue_date: cert.issue_date,
+            expiry_date: cert.expiry_date
+          }))
+        };
+
+        setProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Could not load profile");
@@ -106,7 +134,7 @@ export function PublicProfile() {
 
   return (
     <div className="container mx-auto py-8">
-      <VCard profile={profile} isPublicView />
+      <VCard onEditStateChange={undefined} onRequestChat={undefined} />
       {profile && (
         <ProfilePreview
           profile={profile}
