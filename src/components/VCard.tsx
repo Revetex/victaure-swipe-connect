@@ -1,6 +1,7 @@
 import { UserProfile } from "@/types/profile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { VCardHeader } from "./vcard/sections/VCardHeader";
 import { VCardContact } from "./vcard/sections/VCardContact";
 import { VCardSkills } from "./vcard/sections/VCardSkills";
@@ -16,6 +17,9 @@ interface VCardProps {
 }
 
 export function VCard({ profile, isPublicView = false, onEditStateChange, onRequestChat }: VCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempProfile, setTempProfile] = useState<UserProfile>(profile);
+
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
@@ -24,18 +28,59 @@ export function VCard({ profile, isPublicView = false, onEditStateChange, onRequ
     );
   }
 
+  const handleEditToggle = () => {
+    const newEditingState = !isEditing;
+    setIsEditing(newEditingState);
+    if (onEditStateChange) {
+      onEditStateChange(newEditingState);
+    }
+  };
+
+  const handleProfileUpdate = (updatedProfile: UserProfile) => {
+    setTempProfile(updatedProfile);
+  };
+
   return (
     <div className={cn(
       "vcard space-y-8 p-6 rounded-xl bg-background/95 backdrop-blur-sm border border-border/50",
       "shadow-lg hover:shadow-xl transition-all duration-300",
       isPublicView ? 'public' : 'private'
     )}>
-      <VCardHeader profile={profile} />
-      <VCardContact profile={profile} />
-      <VCardSkills profile={profile} />
-      <VCardCertifications profile={profile} />
-      <VCardEducation profile={profile} />
-      <VCardExperience profile={profile} />
+      <VCardHeader 
+        profile={tempProfile}
+        isEditing={isEditing}
+        setProfile={handleProfileUpdate}
+        onEditToggle={handleEditToggle}
+      />
+      <VCardContact 
+        profile={tempProfile}
+        isEditing={isEditing}
+        setProfile={handleProfileUpdate}
+      />
+      <VCardSkills 
+        profile={tempProfile}
+        isEditing={isEditing}
+        setProfile={handleProfileUpdate}
+        handleRemoveSkill={(skill) => {
+          const updatedSkills = tempProfile.skills?.filter(s => s !== skill) || [];
+          handleProfileUpdate({ ...tempProfile, skills: updatedSkills });
+        }}
+      />
+      <VCardCertifications 
+        profile={tempProfile}
+        isEditing={isEditing}
+        setProfile={handleProfileUpdate}
+      />
+      <VCardEducation 
+        profile={tempProfile}
+        isEditing={isEditing}
+        setProfile={handleProfileUpdate}
+      />
+      <VCardExperience 
+        profile={tempProfile}
+        isEditing={isEditing}
+        setProfile={handleProfileUpdate}
+      />
     </div>
   );
 }
