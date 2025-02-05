@@ -1,5 +1,5 @@
 import { UserProfile } from "@/types/profile";
-import { VCardSection } from "@/components/VCardSection";
+import { VCardSection } from "./VCardSection";
 import { Mail, Phone, Globe } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
@@ -19,6 +19,11 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
 
   const handleInputChange = (field: string, value: string) => {
     setProfile({ ...profile, [field]: value });
+  };
+
+  // Helper function to check if location fields have content
+  const hasLocationInfo = () => {
+    return Boolean(profile.city || profile.state || profile.country);
   };
 
   return (
@@ -87,33 +92,39 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
         <div className="relative z-10 space-y-4">
           {shouldShowPrivateInfo && (
             <>
-              <ContactField
-                icon={<Mail className="h-4 w-4" />}
-                value={profile.email}
-                onChange={(value) => handleInputChange("email", value)}
-                isEditing={isEditing}
-                placeholder="Votre email"
-                delay={0.1}
-              />
+              {(isEditing || profile.email) && (
+                <ContactField
+                  icon={<Mail className="h-4 w-4" />}
+                  value={profile.email}
+                  onChange={(value) => handleInputChange("email", value)}
+                  isEditing={isEditing}
+                  placeholder="Votre email"
+                  delay={0.1}
+                />
+              )}
 
-              <ContactField
-                icon={<Phone className="h-4 w-4" />}
-                value={profile.phone}
-                onChange={(value) => handleInputChange("phone", value)}
-                isEditing={isEditing}
-                placeholder="Votre téléphone"
-                delay={0.2}
-              />
+              {(isEditing || profile.phone) && (
+                <ContactField
+                  icon={<Phone className="h-4 w-4" />}
+                  value={profile.phone}
+                  onChange={(value) => handleInputChange("phone", value)}
+                  isEditing={isEditing}
+                  placeholder="Votre téléphone"
+                  delay={0.2}
+                />
+              )}
             </>
           )}
 
-          <LocationFields
-            city={profile.city}
-            state={profile.state}
-            country={profile.country}
-            isEditing={isEditing}
-            onChange={handleInputChange}
-          />
+          {(isEditing || hasLocationInfo()) && (
+            <LocationFields
+              city={profile.city}
+              state={profile.state}
+              country={profile.country}
+              isEditing={isEditing}
+              onChange={handleInputChange}
+            />
+          )}
 
           {shouldShowPrivateInfo && profile.website && (
             <ContactField
