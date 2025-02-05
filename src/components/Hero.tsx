@@ -5,6 +5,18 @@ import { HeroDecorations } from "./hero/HeroDecorations";
 import { getViewportHeight } from "@/utils/viewport";
 import { useEffect, useState } from "react";
 
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: "easeOut"
+    }
+  }
+};
+
 export function HeroSection() {
   const [viewportHeight, setViewportHeight] = useState(getViewportHeight());
 
@@ -23,7 +35,10 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section 
+    <motion.section 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
       className="relative flex flex-col items-center justify-center overflow-hidden safari-fix"
       style={{ minHeight: `${viewportHeight}px` }}
     >
@@ -32,6 +47,6 @@ export function HeroSection() {
         <HeroContent />
         <HeroDecorations />
       </div>
-    </section>
+    </motion.section>
   );
 }

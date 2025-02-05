@@ -7,10 +7,8 @@ export function HeroBackground() {
   const [particleCount, setParticleCount] = useState(50);
 
   useEffect(() => {
-    // Adjust particle count based on device/browser
     setParticleCount(isSafari() ? 25 : 50);
     
-    // Check for reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setIsReducedMotion(mediaQuery.matches);
 
@@ -21,34 +19,26 @@ export function HeroBackground() {
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <div 
-        className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)]" 
-        style={{ 
-          WebkitMaskImage: 'radial-gradient(white, transparent 85%)',
-          maskImage: 'radial-gradient(white, transparent 85%)'
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: [0.2, 0.4, 0.2],
+          scale: [1, 1.1, 1]
+        }}
+        transition={{ 
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute inset-0 bg-[radial-gradient(circle_1000px_at_50%_-100px,#9b87f5,transparent)]"
+        style={{
+          willChange: 'transform',
+          backfaceVisibility: 'hidden'
         }}
       />
 
       {!isReducedMotion && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ 
-              opacity: [0.2, 0.4, 0.2],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{ 
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="absolute inset-0 bg-[radial-gradient(circle_1000px_at_50%_-100px,#9b87f5,transparent)]"
-            style={{
-              willChange: 'transform',
-              backfaceVisibility: 'hidden'
-            }}
-          />
-
+        <div className="absolute inset-0">
           {Array.from({ length: particleCount }).map((_, i) => (
             <motion.div
               key={i}
@@ -81,7 +71,7 @@ export function HeroBackground() {
               }}
             />
           ))}
-        </>
+        </div>
       )}
     </div>
   );
