@@ -15,7 +15,7 @@ const LoadingFallback = () => (
 
 export default function Index() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-purple-900/10 to-background font-montserrat">
+    <div className="min-h-screen bg-gradient-to-b from-background via-purple-900/10 to-background font-montserrat overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

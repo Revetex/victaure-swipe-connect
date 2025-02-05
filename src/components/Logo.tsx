@@ -15,7 +15,7 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
   };
 
   return (
-    <div className={cn("flex items-center justify-center mt-8 sm:mt-12 md:mt-16", className)}>
+    <div className={cn("flex items-center justify-center", className)}>
       <div className={cn("font-bold text-primary tracking-wider", textSizes[size])}>
         VICTAURE
       </div>
