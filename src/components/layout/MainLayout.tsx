@@ -30,7 +30,7 @@ export function MainLayout({
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-[99] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -42,19 +42,22 @@ export function MainLayout({
           
           <AnimatePresence>
             {showFriendsList && (
-              <DashboardFriendsList show={showFriendsList} />
+              <DashboardFriendsList 
+                show={showFriendsList} 
+                onClose={onToggleFriendsList}
+              />
             )}
           </AnimatePresence>
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4">
+      <main className="flex-1 container mx-auto px-4 relative z-0">
         <div className="max-w-7xl mx-auto py-4">
           {children}
         </div>
       </main>
 
-      <nav className="sticky bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t">
+      <nav className="sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
         <div className="container mx-auto py-2">
           <DashboardNavigation 
             currentPage={currentPage}
