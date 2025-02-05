@@ -35,7 +35,7 @@ export function ToolsPage() {
       </div>
 
       <div className="flex-1 overflow-auto p-4">
-        <Tabs defaultValue="notes" className="w-full">
+        <Tabs defaultValue="notes" value={selectedTool} onValueChange={setSelectedTool} className="w-full">
           <TabsList className="w-full justify-start mb-4 overflow-x-auto scrollbar-hide">
             <TabsTrigger 
               value="notes"

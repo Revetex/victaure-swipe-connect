@@ -23,6 +23,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const handleRequestChat = () => {
     handlePageChange(2);
+    navigate('/messages');
   };
 
   const handleToolReturn = () => {

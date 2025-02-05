@@ -14,7 +14,6 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    // Find and store the search input reference when component mounts
     const input = document.querySelector('input[type="search"]') as HTMLInputElement;
     if (input) {
       searchInputRef.current = input;
@@ -34,12 +33,10 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
   const generateSuggestion = useCallback(async () => {
     if (isLoading) return;
     
-    // Cancel any previous ongoing request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
     
-    // Create new abort controller for this request
     abortControllerRef.current = new AbortController();
     
     setIsLoading(true);
@@ -65,16 +62,8 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
         onSuggestionClick(suggestion);
       }
 
-      // Recursively generate next suggestion after a short delay
-      setTimeout(() => {
-        if (!abortControllerRef.current?.signal.aborted) {
-          generateSuggestion();
-        }
-      }, 3000); // Generate a new suggestion every 3 seconds
-
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        // Ignore abort errors
         return;
       }
       console.error('Error generating suggestion:', error);
@@ -84,7 +73,6 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
     }
   }, [isLoading, onSuggestionClick]);
 
-  // Cleanup abort controller on unmount
   useEffect(() => {
     return () => {
       if (abortControllerRef.current) {
