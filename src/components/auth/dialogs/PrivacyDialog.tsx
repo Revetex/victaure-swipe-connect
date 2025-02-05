@@ -1,12 +1,14 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function PrivacyDialog() {
+interface PrivacyDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function PrivacyDialog({ open, onOpenChange }: PrivacyDialogProps) {
   return (
-    <Dialog>
-      <DialogTrigger className="text-primary hover:underline">
-        politique de confidentialité
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Politique de confidentialité</DialogTitle>

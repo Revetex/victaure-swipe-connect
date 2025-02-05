@@ -1,12 +1,14 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function TermsDialog() {
+interface TermsDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function TermsDialog({ open, onOpenChange }: TermsDialogProps) {
   return (
-    <Dialog>
-      <DialogTrigger className="text-primary hover:underline">
-        conditions générales d'utilisation
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Conditions générales d'utilisation</DialogTitle>
