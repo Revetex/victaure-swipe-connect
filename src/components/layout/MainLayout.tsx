@@ -31,7 +31,7 @@ export function MainLayout({
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-[9998] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -59,8 +59,8 @@ export function MainLayout({
       </main>
 
       <nav className={cn(
-        "sticky bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t",
-        showFriendsList && "relative z-[90]"
+        "sticky bottom-0 left-0 right-0 z-[9997] bg-background/95 backdrop-blur border-t",
+        showFriendsList && "relative"
       )}>
         <div className="container mx-auto py-2">
           <DashboardNavigation 
