@@ -15,8 +15,10 @@ export function ProfilePreviewBio({ profile }: ProfilePreviewBioProps) {
       transition={{ delay: 0.1 }}
       className="space-y-2"
     >
-      <h3 className="text-sm font-medium">Bio</h3>
-      <p className="text-sm text-muted-foreground">{profile.bio}</p>
+      <h3 className="text-sm font-medium">À propos</h3>
+      <p className="text-sm text-muted-foreground leading-relaxed">
+        {profile.bio}
+      </p>
     </motion.div>
   );
 }

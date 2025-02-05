@@ -1,6 +1,5 @@
 import { UserProfile } from "@/types/profile";
-import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { MapPin, Globe, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ProfilePreviewContactProps {
@@ -8,9 +7,22 @@ interface ProfilePreviewContactProps {
 }
 
 export function ProfilePreviewContact({ profile }: ProfilePreviewContactProps) {
-  const hasContactInfo = profile.email || profile.phone || (profile.city && profile.country);
-  
-  if (!hasContactInfo) return null;
+  const contactInfo = [
+    profile.city && {
+      icon: <MapPin className="w-4 h-4" />,
+      text: `${profile.city}${profile.country ? `, ${profile.country}` : ''}`
+    },
+    profile.website && {
+      icon: <Globe className="w-4 h-4" />,
+      text: profile.website
+    },
+    profile.company_name && {
+      icon: <Building2 className="w-4 h-4" />,
+      text: profile.company_name
+    }
+  ].filter(Boolean);
+
+  if (!contactInfo.length) return null;
 
   return (
     <motion.div
@@ -21,43 +33,18 @@ export function ProfilePreviewContact({ profile }: ProfilePreviewContactProps) {
     >
       <h3 className="text-sm font-medium">Contact</h3>
       <div className="space-y-2">
-        {profile.email && (
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 h-auto py-2"
-            asChild
+        {contactInfo.map((info, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 * index }}
+            className="flex items-center gap-2 text-sm text-muted-foreground"
           >
-            <a href={`mailto:${profile.email}`}>
-              <Mail className="h-4 w-4" />
-              <span className="text-sm">{profile.email}</span>
-            </a>
-          </Button>
-        )}
-        
-        {profile.phone && (
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 h-auto py-2"
-            asChild
-          >
-            <a href={`tel:${profile.phone}`}>
-              <Phone className="h-4 w-4" />
-              <span className="text-sm">{profile.phone}</span>
-            </a>
-          </Button>
-        )}
-        
-        {profile.city && profile.country && (
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2 h-auto py-2"
-          >
-            <MapPin className="h-4 w-4" />
-            <span className="text-sm">
-              {profile.city}, {profile.country}
-            </span>
-          </Button>
-        )}
+            {info.icon}
+            <span>{info.text}</span>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   );

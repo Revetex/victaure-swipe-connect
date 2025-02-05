@@ -19,9 +19,19 @@ export function ProfilePreviewSkills({ profile }: ProfilePreviewSkillsProps) {
       <h3 className="text-sm font-medium">Compétences</h3>
       <div className="flex flex-wrap gap-2">
         {profile.skills.map((skill, index) => (
-          <Badge key={index} variant="secondary">
-            {skill}
-          </Badge>
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 * index }}
+          >
+            <Badge 
+              variant="secondary"
+              className="bg-primary/10 hover:bg-primary/20 transition-colors"
+            >
+              {skill}
+            </Badge>
+          </motion.div>
         ))}
       </div>
     </motion.div>
