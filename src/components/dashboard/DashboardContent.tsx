@@ -8,6 +8,7 @@ import { Feed } from "@/components/Feed";
 import { useEffect, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -34,6 +35,7 @@ export function DashboardContent({
   onRequestChat
 }: DashboardContentProps) {
   const { toast } = useToast();
+  const { profile } = useProfile();
 
   useEffect(() => {
     if (currentPage === 5) {
@@ -56,7 +58,11 @@ export function DashboardContent({
         case 1:
           return (
             <Suspense fallback={<LoadingSkeleton />}>
-              <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+              <VCard 
+                profile={profile} 
+                onEditStateChange={onEditStateChange} 
+                onRequestChat={onRequestChat} 
+              />
             </Suspense>
           );
         case 2:

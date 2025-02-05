@@ -6,6 +6,7 @@ import { Settings } from "@/components/Settings";
 import { NotesMap } from "@/components/notes/NotesMap";
 import { Feed } from "@/components/Feed";
 import { useEffect } from "react";
+import { useProfile } from "@/hooks/useProfile";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -22,6 +23,8 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {
+  const { profile } = useProfile();
+
   useEffect(() => {
     if (currentPage === 5) {
       onEditStateChange(true);
@@ -31,7 +34,13 @@ export function DashboardContent({
   const renderContent = () => {
     switch (currentPage) {
       case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        return (
+          <VCard 
+            profile={profile} 
+            onEditStateChange={onEditStateChange} 
+            onRequestChat={onRequestChat} 
+          />
+        );
       case 2:
         return <Messages />;
       case 3:
