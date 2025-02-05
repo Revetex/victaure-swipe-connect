@@ -175,7 +175,10 @@ export function ProfilePreview({ profile, isOpen, onClose }: ProfilePreviewProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] gap-4 overflow-y-auto max-h-[90vh]">
+      <DialogContent 
+        className="sm:max-w-[425px] gap-4 overflow-y-auto max-h-[90vh]"
+        style={{ position: 'relative', zIndex: 101 }} // Added zIndex here
+      >
         <DialogTitle className="sr-only">Profile Preview</DialogTitle>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
