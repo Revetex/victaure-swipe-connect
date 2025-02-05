@@ -21,16 +21,16 @@ export function HeroContent() {
           {...scaleInProps}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-[#9b87f5] via-[#8B5CF6] to-[#D6BCFA] bg-clip-text text-transparent font-playfair"
         >
-          L'IA qui Propulse Votre Carrière
+          L'IA qui Révolutionne le Recrutement
         </motion.h1>
         
         <motion.p 
           {...fadeInUpProps}
           className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-montserrat leading-relaxed"
         >
-          Découvrez une nouvelle ère de recherche d'emploi avec notre assistant IA de pointe. 
-          Analyses personnalisées, correspondances précises et conseils stratégiques pour 
-          faire décoller votre carrière.
+          Victaure transforme le processus de recrutement grâce à l'intelligence artificielle. 
+          Notre technologie de pointe analyse, correspond et connecte les meilleurs talents 
+          aux opportunités parfaites, créant des connexions professionnelles qui durent.
         </motion.p>
         
         <motion.div 
