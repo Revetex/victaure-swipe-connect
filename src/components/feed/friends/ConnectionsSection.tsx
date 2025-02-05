@@ -6,8 +6,19 @@ import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink,
+  PaginationNext,
+} from "@/components/ui/pagination";
 
 export function ConnectionsSection() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const { data: friends } = useQuery({
     queryKey: ["friends"],
     queryFn: async () => {
@@ -46,6 +57,11 @@ export function ConnectionsSection() {
     );
   }
 
+  const totalPages = Math.ceil(friends.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentFriends = friends.slice(startIndex, endIndex);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -54,7 +70,7 @@ export function ConnectionsSection() {
       <ScrollArea className="h-[300px] pr-4">
         <AnimatePresence>
           <div className="space-y-2">
-            {friends.map((friend) => (
+            {currentFriends.map((friend) => (
               <motion.div
                 key={friend.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -97,6 +113,30 @@ export function ConnectionsSection() {
           </div>
         </AnimatePresence>
       </ScrollArea>
+
+      {totalPages > 1 && (
+        <Pagination className="mt-4">
+          <PaginationContent>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            {currentPage < totalPages && (
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }
