@@ -9,7 +9,8 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ErrorBoundary } from "react-error-boundary";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { ReloadIcon, ChevronLeft, ChevronRight } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { Button } from "./ui/button";
 
