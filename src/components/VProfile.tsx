@@ -25,7 +25,7 @@ export function VProfile({ profile, isOpen, onClose }: VProfileProps) {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
             >
-              <VCard />
+              <VCard profile={profile} />
             </motion.div>
           )}
         </AnimatePresence>
