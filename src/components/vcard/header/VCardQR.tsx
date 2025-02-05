@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 interface VCardQRProps {
   isQRDialogOpen: boolean;
   setIsQRDialogOpen: (open: boolean) => void;
+  profileId: string;
 }
 
-export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen }: VCardQRProps) {
+export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen, profileId }: VCardQRProps) {
+  const publicProfileUrl = `${window.location.origin}/profile/${profileId}`;
+
   return (
     <>
       <motion.div 
@@ -20,7 +23,7 @@ export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen }: VCardQRProps) {
       >
         <div className="p-2 sm:p-3 bg-card/5 backdrop-blur-md rounded-xl border border-border/10 shadow-sm">
           <QRCodeSVG
-            value={window.location.href}
+            value={publicProfileUrl}
             size={60}
             level="H"
             includeMargin={false}
@@ -33,7 +36,7 @@ export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen }: VCardQRProps) {
         <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-sm border-none">
           <div className="flex flex-col items-center space-y-4 p-6">
             <QRCodeSVG
-              value={window.location.href}
+              value={publicProfileUrl}
               size={200}
               level="H"
               includeMargin={true}
