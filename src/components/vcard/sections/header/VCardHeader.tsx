@@ -4,6 +4,10 @@ import { VCardAvatar } from "./VCardAvatar";
 import { VCardActions } from "@/components/VCardActions";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useVCardStyle } from "../../VCardStyleContext";
+import { VCardQRCode } from "../../VCardQRCode";
+import { generateCV } from "@/utils/pdf/cv";
+import jsPDF from "jspdf";
 
 interface VCardHeaderProps {
   profile: UserProfile;
@@ -24,9 +28,25 @@ export function VCardHeader({
 }: VCardHeaderProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const { selectedStyle } = useVCardStyle();
 
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
+  };
+
+  const handleDownloadCV = async () => {
+    setIsPdfGenerating(true);
+    try {
+      const doc = new jsPDF();
+      await generateCV(doc, profile, selectedStyle);
+      doc.save(`cv-${profile.full_name?.toLowerCase().replace(/\s+/g, '_') || 'professionnel'}.pdf`);
+      toast.success("CV téléchargé avec succès");
+    } catch (error) {
+      console.error('Error generating CV:', error);
+      toast.error("Erreur lors de la génération du CV");
+    } finally {
+      setIsPdfGenerating(false);
+    }
   };
 
   const handleDownload = async () => {
@@ -44,7 +64,9 @@ export function VCardHeader({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      <VCardQRCode />
+      
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <VCardInfo
@@ -62,6 +84,7 @@ export function VCardHeader({
             setIsEditing={onEditToggle}
             onSave={onSave}
             onDownloadBusinessCard={handleDownload}
+            onDownloadCV={handleDownloadCV}
           />
         </div>
       </div>

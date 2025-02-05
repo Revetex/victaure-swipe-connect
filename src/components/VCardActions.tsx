@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FileText, Pencil, Save, X } from "lucide-react";
+import { Edit, Save, FileText, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VCardActionsProps {
@@ -9,6 +9,7 @@ interface VCardActionsProps {
   setIsEditing: (isEditing: boolean) => void;
   onSave?: () => void;
   onDownloadBusinessCard?: () => Promise<void>;
+  onDownloadCV?: () => Promise<void>;
 }
 
 export function VCardActions({
@@ -18,6 +19,7 @@ export function VCardActions({
   setIsEditing,
   onSave,
   onDownloadBusinessCard,
+  onDownloadCV
 }: VCardActionsProps) {
   if (isEditing) {
     return (
@@ -60,8 +62,9 @@ export function VCardActions({
         className="shrink-0"
         title="Éditer"
       >
-        <Pencil className="h-4 w-4" />
+        <Edit className="h-4 w-4" />
       </Button>
+      
       <Button
         variant="ghost"
         size="icon"
@@ -74,6 +77,20 @@ export function VCardActions({
         title="Télécharger la carte de visite"
       >
         <FileText className="h-4 w-4" />
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onDownloadCV}
+        className={cn(
+          "shrink-0",
+          isPdfGenerating && "opacity-50 pointer-events-none"
+        )}
+        disabled={isPdfGenerating}
+        title="Télécharger le CV"
+      >
+        <Download className="h-4 w-4" />
       </Button>
     </div>
   );
