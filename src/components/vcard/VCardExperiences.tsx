@@ -16,20 +16,21 @@ interface VCardExperiencesProps {
 
 export function VCardExperiences({ profile, isEditing, setProfile }: VCardExperiencesProps) {
   const handleAddExperience = () => {
-    const newExperience = {
-      id: crypto.randomUUID(),
-      company: "",
-      position: "",
-      start_date: null,
-      end_date: null,
-      description: null,
-      created_at: new Date(),
-      updated_at: new Date()
-    };
-
     setProfile({
       ...profile,
-      experiences: [...(profile.experiences || []), newExperience],
+      experiences: [
+        ...(profile.experiences || []),
+        { 
+          id: crypto.randomUUID(), 
+          company: "", 
+          position: "", 
+          start_date: null, 
+          end_date: null, 
+          description: null,
+          created_at: new Date(),
+          updated_at: new Date()
+        }
+      ],
     });
     toast.success("Expérience ajoutée");
   };

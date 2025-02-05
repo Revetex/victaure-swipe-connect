@@ -11,8 +11,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AppRoutes() {
-  const auth = useAuth();
-  const isAuthenticated = auth?.isAuthenticated || false;
+  const { isAuthenticated } = useAuth();
 
   return (
     <Routes>

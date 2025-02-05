@@ -1,47 +1,25 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-
-export interface StyleOption {
-  id: string;
-  name: string;
-  color: string;
-  secondaryColor: string;
-  font: string;
-  bgGradient: string;
-  colors: {
-    primary: string;
-    secondary: string;
-    text: {
-      primary: string;
-      secondary: string;
-      muted: string;
-    };
-    background: {
-      card: string;
-      section: string;
-      button: string;
-    }
-  };
-}
+import { StyleOption } from './types';
 
 const defaultStyle: StyleOption = {
-  id: 'victaure',
-  name: 'Victaure',
-  color: '#9333EA',
-  secondaryColor: '#A855F7',
+  id: 'modern',
+  name: 'Modern',
+  color: '#047857',
+  secondaryColor: '#10B981',
   font: 'Inter, sans-serif',
-  bgGradient: 'bg-gradient-to-br from-purple-50 via-purple-100 to-purple-200',
+  bgGradient: 'bg-gradient-to-br from-emerald-50 via-teal-100 to-emerald-200',
   colors: {
-    primary: '#9333EA',
-    secondary: '#A855F7',
+    primary: '#065F46',
+    secondary: '#10B981',
     text: {
-      primary: '#1F2937',
-      secondary: '#4B5563',
-      muted: '#6B7280',
+      primary: '#064E3B',
+      secondary: '#065F46',
+      muted: '#047857',
     },
     background: {
       card: '#FFFFFF',
       section: '#F9FAFB',
-      button: '#9333EA'
+      button: '#065F46'
     }
   },
 };

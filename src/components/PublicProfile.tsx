@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, Certification, Experience } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 import { VCard } from "./VCard";
 import { toast } from "sonner";
 import { ProfilePreview } from "./ProfilePreview";
@@ -47,30 +47,7 @@ export function PublicProfile() {
           return;
         }
 
-        // Map certifications to include computed fields
-        const mappedCertifications: Certification[] = data.certifications?.map((cert: any) => ({
-          ...cert,
-          institution: cert.issuer,
-          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : ""
-        })) || [];
-
-        // Map experiences to handle date fields
-        const mappedExperiences: Experience[] = data.experiences?.map((exp: any) => ({
-          ...exp,
-          created_at: new Date(exp.created_at),
-          updated_at: new Date(exp.updated_at),
-          start_date: exp.start_date,
-          end_date: exp.end_date
-        })) || [];
-
-        // Create the profile object with properly mapped data
-        const mappedProfile: UserProfile = {
-          ...data,
-          certifications: mappedCertifications,
-          experiences: mappedExperiences
-        };
-
-        setProfile(mappedProfile);
+        setProfile(data);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Could not load profile");
@@ -110,9 +87,26 @@ export function PublicProfile() {
     );
   }
 
+  if (!profile) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center min-h-screen p-4"
+      >
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-semibold text-foreground">Profile not found</h1>
+          <p className="text-muted-foreground">
+            The profile you're looking for doesn't exist or has been removed.
+          </p>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-8">
-      {profile && <VCard profile={profile} isPublicView />}
+      <VCard profile={profile} isPublicView />
       {profile && (
         <ProfilePreview
           profile={profile}

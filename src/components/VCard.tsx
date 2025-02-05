@@ -1,90 +1,165 @@
-import { UserProfile } from "@/types/profile";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import { useState } from "react";
-import { VCardHeader } from "./vcard/sections/header/VCardHeader";
-import { VCardContact } from "./vcard/sections/VCardContact";
-import { VCardSkills } from "./VCardSkills";
-import { VCardCertifications } from "./vcard/sections/VCardCertifications";
-import { VCardEducation } from "./VCardEducation";
-import { VCardExperience } from "./vcard/sections/VCardExperience";
+import { useProfile } from "@/hooks/useProfile";
+import { VCardSkeleton } from "./vcard/VCardSkeleton";
+import { VCardEmpty } from "./vcard/VCardEmpty";
 import { toast } from "sonner";
+import { VCardContainer } from "./vcard/VCardContainer";
+import { VCardHeader } from "./VCardHeader";
+import { useVCardStyle } from "./vcard/VCardStyleContext";
+import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
+import { VCardContact } from "./VCardContact";
+import { motion } from "framer-motion";
+import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
 
 interface VCardProps {
-  profile: UserProfile;
-  isPublicView?: boolean;
   onEditStateChange?: (isEditing: boolean) => void;
   onRequestChat?: () => void;
 }
 
-export function VCard({ profile, isPublicView = false, onEditStateChange, onRequestChat }: VCardProps) {
+export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
+  const { profile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
-  const [tempProfile, setTempProfile] = useState<UserProfile>(profile);
-
-  if (!profile) {
-    return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <p className="text-muted-foreground">Aucune donnée de profil disponible</p>
-      </div>
-    );
-  }
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { selectedStyle } = useVCardStyle();
+  const { handleSave, handleDownloadBusinessCard } = useVCardHandlers({
+    profile,
+    setProfile,
+    setIsEditing,
+    setIsPdfGenerating,
+    onEditStateChange,
+    selectedStyle
+  });
 
   const handleEditToggle = () => {
-    const newEditingState = !isEditing;
-    setIsEditing(newEditingState);
+    if (!profile) {
+      toast.error("Aucun profil à éditer");
+      return;
+    }
+    setIsEditing(!isEditing);
     if (onEditStateChange) {
-      onEditStateChange(newEditingState);
+      onEditStateChange(!isEditing);
     }
   };
 
-  const handleProfileUpdate = (updatedProfile: UserProfile) => {
-    setTempProfile(updatedProfile);
-    toast.success("Profil mis à jour avec succès");
-  };
+  if (isLoading) {
+    return <VCardSkeleton />;
+  }
 
-  const handleRemoveSkill = (skill: string) => {
-    const updatedSkills = tempProfile.skills?.filter(s => s !== skill) || [];
-    handleProfileUpdate({ ...tempProfile, skills: updatedSkills });
-  };
+  if (!profile) {
+    return <VCardEmpty />;
+  }
 
   return (
-    <div className={cn(
-      "vcard space-y-8 p-6 rounded-xl bg-background/95 backdrop-blur-sm border border-border/50",
-      "shadow-lg hover:shadow-xl transition-all duration-300",
-      isPublicView ? 'public' : 'private'
-    )}>
-      <VCardHeader 
-        profile={tempProfile}
-        isEditing={isEditing}
-        setProfile={handleProfileUpdate}
-        onEditToggle={handleEditToggle}
-      />
-      <VCardContact 
-        profile={tempProfile}
-        isEditing={isEditing}
-        setProfile={handleProfileUpdate}
-      />
-      <VCardSkills 
-        profile={tempProfile}
-        isEditing={isEditing}
-        setProfile={handleProfileUpdate}
-        handleRemoveSkill={handleRemoveSkill}
-      />
-      <VCardCertifications 
-        profile={tempProfile}
-        isEditing={isEditing}
-        setProfile={handleProfileUpdate}
-      />
-      <VCardEducation 
-        profile={tempProfile}
-        isEditing={isEditing}
-        setProfile={handleProfileUpdate}
-      />
-      <VCardExperience 
-        profile={tempProfile}
-        isEditing={isEditing}
-        setProfile={handleProfileUpdate}
-      />
-    </div>
+    <VCardContainer isEditing={isEditing}>
+      {/* Circuit Pattern Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.1 }}
+          className="absolute inset-0"
+        >
+          {/* Horizontal Lines */}
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={`h-line-${i}`}
+              className="absolute h-px bg-gradient-to-r from-purple-500/20 via-purple-500/40 to-purple-500/20"
+              style={{ top: `${i * 5}%`, left: 0, right: 0 }}
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ 
+                scaleX: 1, 
+                opacity: 1,
+                transition: { 
+                  delay: i * 0.1,
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }
+              }}
+            />
+          ))}
+          
+          {/* Vertical Lines */}
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={`v-line-${i}`}
+              className="absolute w-px bg-gradient-to-b from-purple-500/20 via-purple-500/40 to-purple-500/20"
+              style={{ left: `${i * 5}%`, top: 0, bottom: 0 }}
+              initial={{ scaleY: 0, opacity: 0 }}
+              animate={{ 
+                scaleY: 1, 
+                opacity: 1,
+                transition: { 
+                  delay: i * 0.1,
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }
+              }}
+            />
+          ))}
+
+          {/* Circuit Nodes */}
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={`node-${i}`}
+              className="absolute w-2 h-2 rounded-full bg-purple-500/30"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`
+              }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{
+                scale: [1, 1.5, 1],
+                opacity: [0.3, 0.7, 0.3],
+                transition: {
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  delay: i * 0.2
+                }
+              }}
+            />
+          ))}
+        </motion.div>
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-3xl mx-auto bg-white/90 dark:bg-gray-900/90 rounded-xl shadow-xl overflow-hidden backdrop-blur-sm relative z-10"
+      >
+        <div className="relative p-6 sm:p-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#9b87f5]/10 to-transparent" />
+          
+          <div className="relative">
+            <VCardHeader 
+              profile={profile}
+              isEditing={isEditing}
+              setProfile={setProfile}
+              isPdfGenerating={isPdfGenerating}
+              isProcessing={isProcessing}
+              onEditToggle={handleEditToggle}
+              onSave={handleSave}
+              onDownloadBusinessCard={handleDownloadBusinessCard}
+            />
+
+            <div className="mt-8 space-y-6">
+              <VCardContact
+                profile={profile}
+                isEditing={isEditing}
+                setProfile={setProfile}
+              />
+              <VCardSectionsManager
+                profile={profile}
+                isEditing={isEditing}
+                setProfile={setProfile}
+                selectedStyle={selectedStyle}
+              />
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </VCardContainer>
   );
 }

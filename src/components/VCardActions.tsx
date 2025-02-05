@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Edit, Save, FileText, Download, X } from "lucide-react";
+import { FileText, Pencil, Save, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VCardActionsProps {
@@ -9,7 +9,6 @@ interface VCardActionsProps {
   setIsEditing: (isEditing: boolean) => void;
   onSave?: () => void;
   onDownloadBusinessCard?: () => Promise<void>;
-  onDownloadCV?: () => Promise<void>;
 }
 
 export function VCardActions({
@@ -19,7 +18,6 @@ export function VCardActions({
   setIsEditing,
   onSave,
   onDownloadBusinessCard,
-  onDownloadCV
 }: VCardActionsProps) {
   if (isEditing) {
     return (
@@ -45,7 +43,6 @@ export function VCardActions({
             isProcessing && "opacity-50 pointer-events-none"
           )}
           title="Sauvegarder"
-          disabled={isProcessing}
         >
           <Save className="h-4 w-4" />
         </Button>
@@ -62,35 +59,16 @@ export function VCardActions({
         className="shrink-0"
         title="Éditer"
       >
-        <Edit className="h-4 w-4" />
+        <Pencil className="h-4 w-4" />
       </Button>
-      
       <Button
         variant="ghost"
         size="icon"
         onClick={onDownloadBusinessCard}
-        className={cn(
-          "shrink-0",
-          isPdfGenerating && "opacity-50 pointer-events-none"
-        )}
-        disabled={isPdfGenerating}
+        className={cn("shrink-0", isPdfGenerating && "opacity-50 pointer-events-none")}
         title="Télécharger la carte de visite"
       >
         <FileText className="h-4 w-4" />
-      </Button>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onDownloadCV}
-        className={cn(
-          "shrink-0",
-          isPdfGenerating && "opacity-50 pointer-events-none"
-        )}
-        disabled={isPdfGenerating}
-        title="Télécharger le CV"
-      >
-        <Download className="h-4 w-4" />
       </Button>
     </div>
   );

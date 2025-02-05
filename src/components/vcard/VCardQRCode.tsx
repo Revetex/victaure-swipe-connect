@@ -3,7 +3,6 @@ import { QRCodeSVG } from "qrcode.react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useVCardStyle } from "./VCardStyleContext";
-import { QrCode } from "lucide-react";
 
 export function VCardQRCode() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +16,13 @@ export function VCardQRCode() {
         whileHover={{ scale: 1.05 }}
         onClick={() => setIsOpen(true)}
       >
-        <QrCode className="w-6 h-6 text-muted-foreground" />
+        <QRCodeSVG
+          value={currentUrl}
+          size={80}
+          level="H"
+          includeMargin={false}
+          className="rounded-lg opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+        />
       </motion.div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -29,8 +34,6 @@ export function VCardQRCode() {
               level="H"
               includeMargin={true}
               className="rounded-lg"
-              fgColor={selectedStyle.colors.text.primary}
-              bgColor="#ffffff"
             />
             <p className="text-sm text-muted-foreground text-center">
               Scannez ce code QR pour accéder à mon profil professionnel
