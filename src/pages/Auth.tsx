@@ -77,7 +77,7 @@ export default function Auth() {
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={`star-md-${i}`}
-              className="absolute h-1.5 w-1.5 rounded-full bg-primary/30"
+              className="absolute h-2 w-2 rounded-full bg-primary/30"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -96,20 +96,20 @@ export default function Auth() {
           ))}
 
           {/* Large stars with glow effect */}
-          {[...Array(10)].map((_, i) => (
+          {[...Array(15)].map((_, i) => (
             <motion.div
               key={`star-lg-${i}`}
-              className="absolute h-2 w-2 rounded-full bg-primary/20 shadow-lg shadow-primary/20"
+              className="absolute h-3 w-3 rounded-full bg-primary/20 shadow-lg shadow-primary/20"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
               }}
               animate={{
-                scale: [0, 1.5, 0],
-                opacity: [0, 0.6, 0],
+                scale: [0, 1.8, 0],
+                opacity: [0, 0.7, 0],
                 boxShadow: [
                   "0 0 0 0 rgba(var(--primary), 0)",
-                  "0 0 20px 2px rgba(var(--primary), 0.3)",
+                  "0 0 30px 4px rgba(var(--primary), 0.4)",
                   "0 0 0 0 rgba(var(--primary), 0)",
                 ],
               }}
@@ -159,11 +159,16 @@ export default function Auth() {
             transition={{ duration: 0.5 }}
           >
             <Logo size="xl" className="mx-auto" />
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
-              Votre Assistant IA
-            </h1>
+            <div className="space-y-2">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent font-playfair">
+                VICTAURE
+              </h1>
+              <p className="text-lg text-muted-foreground font-montserrat">
+                Technologies.inc
+              </p>
+            </div>
             <p className="text-sm text-muted-foreground max-w-md mx-auto font-montserrat">
-              Découvrez la puissance de l'intelligence artificielle pour votre recherche d'emploi
+              L'IA qui révolutionne votre recherche d'emploi
             </p>
           </motion.div>
 
