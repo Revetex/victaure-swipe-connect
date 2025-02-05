@@ -3,6 +3,10 @@ import { Logo } from "@/components/Logo";
 import { HeroFeatures } from "./HeroFeatures";
 import { HeroVideo } from "./HeroVideo";
 import { HeroButtons } from "./HeroButtons";
+import { HeroStars } from "./HeroStars";
+import { HeroTitle } from "./HeroTitle";
+import { HeroDescription } from "./HeroDescription";
+import { HeroTrustIndicators } from "./HeroTrustIndicators";
 
 export function HeroSection() {
   return (
@@ -17,6 +21,7 @@ export function HeroSection() {
           transition={{ duration: 5, repeat: Infinity }}
           className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#8B5CF6,transparent)]"
         />
+        <HeroStars />
       </div>
 
       <div className="container relative z-10 mx-auto px-4">
@@ -30,37 +35,10 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600 bg-clip-text text-transparent"
-              >
-                L'IA au Service de Votre Succès
-              </motion.span>
-              <br />
-              <motion.span 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-foreground"
-              >
-                Premier Écosystème Digital Intelligent
-              </motion.span>
-            </h1>
-
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-            >
-              Découvrez une plateforme révolutionnaire où l'IA optimise chaque aspect de votre activité : 
-              réseaux sociaux, services professionnels et orientation stratégique.
-            </motion.p>
-
+            <HeroTitle />
+            <HeroDescription />
             <HeroButtons />
+            <HeroTrustIndicators />
 
             <div className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <HeroFeatures />
