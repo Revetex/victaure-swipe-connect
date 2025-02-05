@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { VCardInfo } from "./VCardInfo";
 import { VCardAvatar } from "./VCardAvatar";
 import { VCardActions } from "@/components/VCardActions";
-import { useState } from "react";
 import { toast } from "sonner";
 import { useVCardStyle } from "../../VCardStyleContext";
 import { VCardQRCode } from "../../VCardQRCode";
@@ -64,7 +64,7 @@ export function VCardHeader({
   };
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-6 relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6 rounded-xl shadow-xl">
       <VCardQRCode />
       
       <div className="flex justify-between items-start">
