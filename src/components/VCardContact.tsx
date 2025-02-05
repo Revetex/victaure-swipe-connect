@@ -126,7 +126,7 @@ export function VCardContact({ profile, isEditing, setProfile }: VCardContactPro
             />
           )}
 
-          {shouldShowPrivateInfo && profile.website && (
+          {(isEditing || profile.website) && (
             <ContactField
               icon={<Globe className="h-4 w-4" />}
               value={profile.website}
