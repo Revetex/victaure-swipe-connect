@@ -30,16 +30,17 @@ export function AISearchSuggestions({ onSuggestionClick }: AISearchSuggestionsPr
     setIsLoading(true);
     
     try {
-      const { data: { secret } } = await supabase
-        .from('get_secret')
-        .select('secret')
-        .eq('name', 'HUGGING_FACE_API_KEY')
-        .single();
+      const { data, error } = await supabase.rpc('get_secret', {
+        secret_name: 'HUGGING_FACE_API_KEY'
+      });
+
+      if (error) throw error;
+      if (!data?.[0]?.secret) throw new Error('API key not found');
 
       const response = await fetch(
         'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
         {
-          headers: { Authorization: `Bearer ${secret}` },
+          headers: { Authorization: `Bearer ${data[0].secret}` },
           method: 'POST',
           body: JSON.stringify({
             inputs: searchInputRef.current?.value || '',
