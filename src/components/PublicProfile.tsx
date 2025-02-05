@@ -72,10 +72,21 @@ export function PublicProfile() {
             issuer: cert.issuer,
             issue_date: cert.issue_date,
             expiry_date: cert.expiry_date
+          })),
+          // Transform experiences to match the Experience type
+          experiences: data.experiences?.map((exp: any) => ({
+            id: exp.id,
+            company: exp.company,
+            position: exp.position,
+            start_date: exp.start_date,
+            end_date: exp.end_date,
+            description: exp.description,
+            created_at: exp.created_at ? new Date(exp.created_at) : null,
+            updated_at: exp.updated_at ? new Date(exp.updated_at) : null
           }))
         };
 
-        setProfile(transformedProfile);
+        setProfile(transformedProfile as UserProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Could not load profile");
