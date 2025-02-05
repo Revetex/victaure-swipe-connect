@@ -12,7 +12,7 @@ export function HeroTitle() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="bg-gradient-to-r from-violet-300 via-violet-400 to-purple-500 bg-clip-text text-transparent"
+        className="bg-gradient-to-r from-violet-300 via-violet-400 to-purple-500 bg-clip-text text-transparent [text-shadow:0_4px_8px_rgba(124,58,237,0.1)]"
       >
         L'IA au Service de Votre Succès
       </motion.span>
@@ -21,7 +21,7 @@ export function HeroTitle() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="text-foreground"
+        className="text-foreground font-light"
       >
         Premier Écosystème Digital Intelligent
       </motion.span>
