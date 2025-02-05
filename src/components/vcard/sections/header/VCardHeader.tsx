@@ -13,7 +13,7 @@ interface VCardHeaderProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
-  onEditToggle: () => void;
+  onEditToggle?: () => void;
   onSave?: () => void;
   onDownloadBusinessCard?: () => Promise<void>;
 }
