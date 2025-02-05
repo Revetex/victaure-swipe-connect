@@ -9,26 +9,29 @@ import { UserProfile } from "@/types/profile";
 interface VCardHeaderProps {
   profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: UserProfile) => void;
   isProcessing?: boolean;
-  onEditToggle?: () => void;
-  onSave?: () => void;
+  setProfile: (profile: UserProfile) => void;
+  onEditToggle: () => void;
+  onSave?: () => Promise<void>;
   onDownloadBusinessCard?: () => Promise<void>;
 }
 
 export function VCardHeader({ 
   profile, 
   isEditing, 
-  setProfile,
+  setProfile, 
   isProcessing,
   onEditToggle,
   onSave,
-  onDownloadBusinessCard,
+  onDownloadBusinessCard 
 }: VCardHeaderProps) {
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
 
   const handleInputChange = (key: string, value: string) => {
-    setProfile({ ...profile, [key]: value });
+    setProfile({
+      ...profile,
+      [key]: value
+    });
   };
 
   const handleSave = async () => {
@@ -38,7 +41,7 @@ export function VCardHeader({
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="relative"
@@ -49,14 +52,14 @@ export function VCardHeader({
           isEditing={isEditing}
           setProfile={setProfile}
         />
-
+        
         <div className="flex-1 min-w-0">
-          <VCardInfo 
+          <VCardInfo
             profile={profile}
             isEditing={isEditing}
             handleInputChange={handleInputChange}
           />
-
+          
           <div className="mt-4 flex flex-wrap gap-4 justify-center sm:justify-start">
             {!isEditing && profile.email && (
               <span className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400">
@@ -79,13 +82,12 @@ export function VCardHeader({
 
         <div className="flex items-center gap-2">
           {!isEditing && (
-            <VCardQR 
-              isQRDialogOpen={isQRDialogOpen} 
+            <VCardQR
+              isQRDialogOpen={isQRDialogOpen}
               setIsQRDialogOpen={setIsQRDialogOpen}
               profileId={profile.id}
             />
           )}
-          
           <VCardActions
             isEditing={isEditing}
             isProcessing={isProcessing}

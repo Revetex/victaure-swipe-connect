@@ -15,22 +15,21 @@ export function VCardQR({ isQRDialogOpen, setIsQRDialogOpen, profileId }: VCardQ
   return (
     <>
       <Button
-        variant="ghost"
+        variant="outline"
         size="icon"
         onClick={() => setIsQRDialogOpen(true)}
-        className="rounded-full"
+        className="h-9 w-9"
       >
         <QrCode className="h-4 w-4" />
       </Button>
-
       <Dialog open={isQRDialogOpen} onOpenChange={setIsQRDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <div className="flex flex-col items-center justify-center p-4">
-            <QRCode value={qrValue} />
-            <p className="mt-4 text-sm text-muted-foreground">
-              Scannez ce QR code pour accéder au profil
-            </p>
+        <DialogContent className="flex flex-col items-center">
+          <div className="p-4 bg-white rounded-lg">
+            <QRCode value={qrValue} size={200} />
           </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Scannez pour voir le profil
+          </p>
         </DialogContent>
       </Dialog>
     </>

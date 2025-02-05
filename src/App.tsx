@@ -1,14 +1,18 @@
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { supabase } from "@/integrations/supabase/client";
-import { AppRoutes } from './AppRoutes';
-import { Toaster } from 'sonner';
+import { BrowserRouter } from "react-router-dom";
+import { AppRoutes } from "./AppRoutes";
+import { Toaster } from "@/components/ui/toaster";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <SessionContextProvider supabaseClient={supabase}>
-      <AppRoutes />
-      <Toaster position="top-right" expand={true} richColors />
-    </SessionContextProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <AppRoutes />
+        <Toaster />
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 }
 
