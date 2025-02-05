@@ -4,6 +4,7 @@ import { VCardActions } from "@/components/VCardActions";
 import { VCardAvatar } from "./VCardAvatar";
 import { VCardInfo } from "./VCardInfo";
 import { VCardQR } from "@/components/vcard/VCardQR";
+import { UserProfile } from "@/types/profile";
 
 interface VCardHeaderProps {
   profile: UserProfile;

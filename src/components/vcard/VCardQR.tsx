@@ -1,4 +1,4 @@
-import { QRCode } from "react-qr-code";
+import QRCode from "react-qr-code";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { QrCode } from "lucide-react";
