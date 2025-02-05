@@ -14,17 +14,17 @@ export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
 
   return (
     <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: "auto", opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ 
         duration: 0.15,
         ease: "easeInOut"
       }}
       className={cn(
-        "fixed inset-x-0 bg-background/95 backdrop-blur-sm will-change-[height,opacity]",
-        isMobile ? "top-[4rem] bottom-0" : "top-16 bottom-0",
-        "z-[9999] overflow-hidden" // Increased z-index to be above everything
+        "fixed inset-x-0 bg-background/95 backdrop-blur-sm will-change-[opacity]",
+        isMobile ? "top-[4rem]" : "top-16",
+        "bottom-0 z-[9999] overflow-hidden" // Ensure it goes to bottom and stays on top
       )}
       style={{
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
