@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Certification } from "@/types/profile";
 import { VCard } from "./VCard";
 import { toast } from "sonner";
 import { ProfilePreview } from "./ProfilePreview";
@@ -47,7 +47,20 @@ export function PublicProfile() {
           return;
         }
 
-        setProfile(data);
+        // Map certifications to include computed fields
+        const mappedCertifications: Certification[] = data.certifications?.map((cert: any) => ({
+          ...cert,
+          institution: cert.issuer, // Map issuer to institution
+          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : ""
+        })) || [];
+
+        // Create the profile object with properly mapped certifications
+        const mappedProfile: UserProfile = {
+          ...data,
+          certifications: mappedCertifications
+        };
+
+        setProfile(mappedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Could not load profile");

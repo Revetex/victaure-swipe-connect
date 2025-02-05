@@ -34,15 +34,17 @@ export interface Certification {
   id: string;
   profile_id: string;
   title: string;
-  institution: string;
-  year: string;
-  created_at?: string | null;
-  updated_at?: string | null;
-  credential_url?: string | null;
+  issuer: string;
   issue_date?: string | null;
   expiry_date?: string | null;
-  issuer: string;
+  credential_url?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
   description?: string | null;
+  skills?: string[];
+  // These are computed fields that we'll derive from the database fields
+  institution: string;
+  year: string;
 }
 
 export interface Education {
@@ -93,3 +95,4 @@ export type PendingRequest = {
   };
   type: 'incoming' | 'outgoing';
 };
+
