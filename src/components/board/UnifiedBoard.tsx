@@ -1,7 +1,7 @@
 import { useState, useMemo, memo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ListTodo, StickyNote, Calculator, Languages, Ruler, ChessKnight } from "lucide-react";
+import { ListTodo, StickyNote, Calculator, Languages, Ruler, Sword } from "lucide-react";
 import { Todo, StickyNote as StickyNoteType, ColorOption } from "@/types/todo";
 import { TodoToolbar } from "./TodoToolbar";
 import { NoteToolbar } from "./NoteToolbar";
@@ -129,7 +129,7 @@ export function UnifiedBoard({
               <span className="hidden sm:inline">Convertisseur</span>
             </TabsTrigger>
             <TabsTrigger value="chess" className="flex items-center gap-2">
-              <ChessKnight className="h-4 w-4" />
+              <Sword className="h-4 w-4" />
               <span className="hidden sm:inline">Échecs</span>
             </TabsTrigger>
           </TabsList>
