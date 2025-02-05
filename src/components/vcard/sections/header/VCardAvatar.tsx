@@ -1,14 +1,15 @@
-import { Upload, UserRound, Trash2 } from "lucide-react";
+import { UserProfile } from "@/types/profile";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Upload, UserRound, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 interface VCardAvatarProps {
-  profile: any;
+  profile: UserProfile;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
 export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps) {
@@ -27,7 +28,6 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
         return;
       }
 
-      // Delete old avatar if it exists
       if (profile.avatar_url) {
         const oldFileName = profile.avatar_url.split('/').pop();
         if (oldFileName) {
@@ -61,7 +61,6 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
       if (updateError) throw updateError;
 
       setProfile({ ...profile, avatar_url: publicUrl });
-      
       toast.success("Photo de profil mise à jour");
     } catch (error) {
       console.error('Error uploading avatar:', error);
@@ -108,8 +107,8 @@ export function VCardAvatar({ profile, isEditing, setProfile }: VCardAvatarProps
       )}>
         <Avatar className="w-full h-full">
           <AvatarImage 
-            src={profile.avatar_url} 
-            alt={profile.full_name}
+            src={profile.avatar_url || ""} 
+            alt={profile.full_name || ""}
             className="object-cover w-full h-full"
           />
           <AvatarFallback className="bg-muted">

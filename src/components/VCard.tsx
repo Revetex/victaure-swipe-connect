@@ -2,7 +2,7 @@ import { UserProfile } from "@/types/profile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { VCardHeader } from "./vcard/sections/VCardHeader";
+import { VCardHeader } from "./vcard/sections/header/VCardHeader";
 import { VCardContact } from "./vcard/sections/VCardContact";
 import { VCardSkills } from "./vcard/sections/VCardSkills";
 import { VCardCertifications } from "./vcard/sections/VCardCertifications";
