@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { ProfileSearch } from "@/components/feed/ProfileSearch";
+import { UserProfile } from "@/types/profile";
+import { useState } from "react";
 
 interface DashboardFriendsListProps {
   show: boolean;
@@ -9,6 +12,7 @@ interface DashboardFriendsListProps {
 
 export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
   const isMobile = useIsMobile();
+  const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   
   if (!show) return null;
 
@@ -35,6 +39,11 @@ export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
           <div className="max-w-7xl mx-auto">
             <div className="p-4">
               <div className="space-y-4">
+                <ProfileSearch 
+                  onSelect={setSelectedProfile}
+                  placeholder="Rechercher un contact..."
+                  className="w-full"
+                />
                 <FriendsContent />
               </div>
             </div>

@@ -21,14 +21,6 @@ export function FriendsContent() {
 
   return (
     <div className="space-y-6">
-      <div className="relative">
-        <ProfileSearch 
-          onSelect={setSelectedProfile}
-          placeholder="Rechercher un contact..."
-          className="w-full"
-        />
-      </div>
-
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Users className="h-4 w-4" />
