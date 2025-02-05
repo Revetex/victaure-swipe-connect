@@ -16,7 +16,7 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
       className="space-y-4"
     >
       <div className="flex items-center gap-4">
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center ring-2 ring-primary/10">
           {profile.avatar_url ? (
             <img
               src={profile.avatar_url}
