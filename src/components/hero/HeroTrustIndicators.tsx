@@ -1,35 +1,32 @@
 import { motion } from "framer-motion";
-import { Shield, Star, Sparkles } from "lucide-react";
+import { Shield, Star, Users } from "lucide-react";
 
 export function HeroTrustIndicators() {
+  const features = [
+    { icon: Shield, text: "Protection des données" },
+    { icon: Star, text: "Service de qualité" },
+    { icon: Users, text: "Communauté active" }
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.8, duration: 0.5 }}
-      className="flex flex-wrap justify-center gap-8 mt-12"
+      className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
     >
-      <motion.div 
-        whileHover={{ scale: 1.05 }}
-        className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm"
-      >
-        <Shield className="h-5 w-5 text-[#9b87f5]" />
-        <span className="text-muted-foreground">Protection des données avancée</span>
-      </motion.div>
-      <motion.div 
-        whileHover={{ scale: 1.05 }}
-        className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm"
-      >
-        <Star className="h-5 w-5 text-[#9b87f5]" />
-        <span className="text-muted-foreground">+10,000 carrières transformées</span>
-      </motion.div>
-      <motion.div 
-        whileHover={{ scale: 1.05 }}
-        className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm"
-      >
-        <Sparkles className="h-5 w-5 text-[#9b87f5]" />
-        <span className="text-muted-foreground">IA de dernière génération</span>
-      </motion.div>
+      {features.map((feature, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 + index * 0.1 }}
+          className="flex items-center justify-center gap-3 text-blue-100/80"
+        >
+          <feature.icon className="h-5 w-5" />
+          <span>{feature.text}</span>
+        </motion.div>
+      ))}
     </motion.div>
   );
 }

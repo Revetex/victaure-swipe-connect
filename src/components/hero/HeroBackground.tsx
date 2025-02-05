@@ -35,9 +35,6 @@ export function HeroBackground() {
               delay: Math.random() * 5
             }}
             className="absolute w-1 h-1 bg-blue-400 rounded-full shadow-glow"
-            style={{
-              boxShadow: '0 0 10px #60A5FA, 0 0 20px #60A5FA, 0 0 30px #60A5FA'
-            }}
           />
         ))}
       </div>

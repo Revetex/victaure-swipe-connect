@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Shield, Star } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { HeroTrustIndicators } from "./HeroTrustIndicators";
 
 export function HeroContent() {
