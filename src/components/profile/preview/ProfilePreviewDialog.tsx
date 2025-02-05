@@ -18,7 +18,7 @@ export function ProfilePreviewDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="sm:max-w-[425px] gap-4 overflow-y-auto max-h-[90vh] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+        className="sm:max-w-[425px] gap-4 overflow-y-auto max-h-[90vh] bg-background"
         style={{ 
           position: 'fixed',
           zIndex: 9999,
