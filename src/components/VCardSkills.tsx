@@ -4,6 +4,7 @@ import { TouchFriendlySkillSelector } from "./skills/TouchFriendlySkillSelector"
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
+import { skillCategories } from "@/data/skills";
 
 interface VCardSkillsProps {
   profile: UserProfile;
@@ -19,6 +20,7 @@ export function VCardSkills({
   handleRemoveSkill,
 }: VCardSkillsProps) {
   const uniqueSkills = profile.skills ? Array.from(new Set(profile.skills)) : [];
+  const allSkills = Object.values(skillCategories).flat();
 
   return (
     <VCardSection
@@ -75,6 +77,7 @@ export function VCardSkills({
                 }
               }}
               existingSkills={uniqueSkills}
+              availableSkills={allSkills}
             />
           </div>
         )}

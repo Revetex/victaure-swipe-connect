@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { VCardHeader } from "./vcard/sections/header/VCardHeader";
 import { VCardContact } from "./vcard/sections/VCardContact";
-import { VCardSkills } from "./vcard/sections/VCardSkills";
+import { VCardSkills } from "./VCardSkills";
 import { VCardCertifications } from "./vcard/sections/VCardCertifications";
-import { VCardEducation } from "./vcard/sections/VCardEducation";
+import { VCardEducation } from "./VCardEducation";
 import { VCardExperience } from "./vcard/sections/VCardExperience";
+import { toast } from "sonner";
 
 interface VCardProps {
   profile: UserProfile;
@@ -38,6 +39,12 @@ export function VCard({ profile, isPublicView = false, onEditStateChange, onRequ
 
   const handleProfileUpdate = (updatedProfile: UserProfile) => {
     setTempProfile(updatedProfile);
+    toast.success("Profil mis à jour avec succès");
+  };
+
+  const handleRemoveSkill = (skill: string) => {
+    const updatedSkills = tempProfile.skills?.filter(s => s !== skill) || [];
+    handleProfileUpdate({ ...tempProfile, skills: updatedSkills });
   };
 
   return (
@@ -61,10 +68,7 @@ export function VCard({ profile, isPublicView = false, onEditStateChange, onRequ
         profile={tempProfile}
         isEditing={isEditing}
         setProfile={handleProfileUpdate}
-        handleRemoveSkill={(skill) => {
-          const updatedSkills = tempProfile.skills?.filter(s => s !== skill) || [];
-          handleProfileUpdate({ ...tempProfile, skills: updatedSkills });
-        }}
+        handleRemoveSkill={handleRemoveSkill}
       />
       <VCardCertifications 
         profile={tempProfile}

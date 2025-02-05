@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { UserProfile } from "@/types/profile";
-import { VCardInfo } from "./VCardInfo";
+import { motion } from "framer-motion";
+import { VCardActions } from "../../../VCardActions";
 import { VCardAvatar } from "./VCardAvatar";
-import { VCardActions } from "@/components/VCardActions";
-import { VCardQRCode } from "../../VCardQRCode";
+import { VCardInfo } from "./VCardInfo";
+import { VCardQR } from "./VCardQR";
 
 interface VCardHeaderProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
+  isPdfGenerating?: boolean;
   isProcessing?: boolean;
   onEditToggle?: () => void;
   onSave?: () => void;
@@ -15,14 +18,16 @@ interface VCardHeaderProps {
 }
 
 export function VCardHeader({ 
-  profile,
-  isEditing,
+  profile, 
+  isEditing, 
   setProfile,
   isProcessing,
   onEditToggle,
   onSave,
   onDownloadBusinessCard,
 }: VCardHeaderProps) {
+  const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
+
   const handleInputChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value });
   };
@@ -34,12 +39,15 @@ export function VCardHeader({
   };
 
   return (
-    <div className="relative">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative"
+    >
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
         <VCardAvatar 
           profile={profile}
           isEditing={isEditing}
-          setProfile={setProfile}
         />
 
         <div className="flex-1 min-w-0">
@@ -69,20 +77,24 @@ export function VCardHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          {!isEditing && <VCardQRCode />}
-          
-          <div className="shrink-0">
-            <VCardActions
-              isEditing={isEditing}
-              isProcessing={isProcessing}
-              setIsEditing={onEditToggle}
-              onSave={handleSave}
-              onDownloadBusinessCard={onDownloadBusinessCard}
+        <div className="flex items-center gap-2">
+          {!isEditing && (
+            <VCardQR 
+              isQRDialogOpen={isQRDialogOpen} 
+              setIsQRDialogOpen={setIsQRDialogOpen}
+              profileId={profile.id}
             />
-          </div>
+          )}
+          
+          <VCardActions
+            isEditing={isEditing}
+            isProcessing={isProcessing}
+            setIsEditing={onEditToggle}
+            onSave={handleSave}
+            onDownloadBusinessCard={onDownloadBusinessCard}
+          />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
