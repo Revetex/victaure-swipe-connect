@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { QRCode } from "react-qr-code";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 import { VCardActions } from "@/components/VCardActions";
 import { VCardAvatar } from "./VCardAvatar";
@@ -10,7 +9,6 @@ interface VCardHeaderProps {
   profile: UserProfile;
   isEditing: boolean;
   setProfile: (profile: UserProfile) => void;
-  isPdfGenerating?: boolean;
   isProcessing?: boolean;
   onEditToggle?: () => void;
   onSave?: () => void;
