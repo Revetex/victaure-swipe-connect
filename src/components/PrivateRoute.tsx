@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "./ui/loader";
 import { toast } from "sonner";
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second delay between retries
+
 export function PrivateRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -11,6 +14,7 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+    let retryCount = 0;
 
     const checkAuth = async () => {
       try {
@@ -19,6 +23,12 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
         
         if (sessionError) {
           console.error("Session error:", sessionError);
+          if (retryCount < MAX_RETRIES) {
+            retryCount++;
+            console.log(`Retrying auth check (${retryCount}/${MAX_RETRIES})...`);
+            setTimeout(checkAuth, RETRY_DELAY);
+            return;
+          }
           toast.error("Erreur d'authentification");
           setIsAuthenticated(false);
           return;
@@ -55,20 +65,33 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
           }
         }
 
-        // Verify user data
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError || !user) {
-          console.error("User verification error:", userError);
-          toast.error("Erreur de vérification utilisateur");
-          await supabase.auth.signOut();
-          setIsAuthenticated(false);
-          return;
-        }
+        // Verify user data with retry logic
+        const verifyUser = async (attempt = 0): Promise<void> => {
+          try {
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            
+            if (userError || !user) {
+              if (attempt < MAX_RETRIES) {
+                console.log(`Retrying user verification (${attempt + 1}/${MAX_RETRIES})...`);
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                return verifyUser(attempt + 1);
+              }
+              throw userError || new Error("User not found");
+            }
 
-        if (mounted) {
-          setIsAuthenticated(true);
-        }
+            if (mounted) {
+              setIsAuthenticated(true);
+            }
+          } catch (error) {
+            console.error("User verification error:", error);
+            toast.error("Erreur de vérification utilisateur");
+            await supabase.auth.signOut();
+            setIsAuthenticated(false);
+          }
+        };
+
+        await verifyUser();
+
       } catch (error) {
         console.error("Auth check error:", error);
         toast.error("Erreur de vérification de session");
