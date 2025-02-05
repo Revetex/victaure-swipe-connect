@@ -4,8 +4,6 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -58,24 +56,6 @@ export function MainLayout({
 
       <nav className="sticky bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t">
         <div className="container mx-auto py-2">
-          <div className="flex items-center justify-between mb-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onPageChange(currentPage > 1 ? currentPage - 1 : 1)}
-              disabled={currentPage <= 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onPageChange(currentPage < 6 ? currentPage + 1 : 6)}
-              disabled={currentPage >= 6}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
           <DashboardNavigation 
             currentPage={currentPage}
             onPageChange={onPageChange}
