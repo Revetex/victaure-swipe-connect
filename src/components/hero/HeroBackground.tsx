@@ -1,32 +1,19 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { isSafari } from "@/utils/viewport";
 
 export function HeroBackground() {
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
-  const [particleCount, setParticleCount] = useState(50);
-
-  useEffect(() => {
-    setParticleCount(isSafari() ? 25 : 50);
-    
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setIsReducedMotion(mediaQuery.matches);
-
-    const handleChange = () => setIsReducedMotion(mediaQuery.matches);
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <>
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/10 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ 
+        animate={{
           opacity: [0.2, 0.4, 0.2],
-          scale: [1, 1.1, 1]
         }}
-        transition={{ 
-          duration: 8,
+        transition={{
+          duration: 5,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -37,42 +24,69 @@ export function HeroBackground() {
         }}
       />
 
-      {!isReducedMotion && (
-        <div className="absolute inset-0">
-          {Array.from({ length: particleCount }).map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ 
-                opacity: 0,
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                scale: Math.random() * 0.5 + 0.5
-              }}
-              animate={{ 
-                opacity: [0, 1, 0],
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                scale: [
-                  Math.random() * 0.5 + 0.5,
-                  Math.random() * 1 + 1,
-                  Math.random() * 0.5 + 0.5
-                ]
-              }}
-              transition={{
-                duration: Math.random() * 10 + 10,
-                repeat: Infinity,
-                delay: Math.random() * 5,
-                ease: "easeInOut"
-              }}
-              className="absolute w-1 h-1 bg-violet-500/50 rounded-full blur-[2px]"
-              style={{
-                willChange: 'transform',
-                backfaceVisibility: 'hidden'
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+      {/* Galaxy stars effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{
+              opacity: 0,
+              scale: 0.5,
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0.5, 1, 0.5],
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+              ease: "easeInOut"
+            }}
+            className="absolute w-1 h-1 bg-violet-400/50 rounded-full blur-[2px] shadow-lg shadow-violet-500/20"
+            style={{
+              willChange: 'transform',
+              backfaceVisibility: 'hidden'
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Larger stars with glow effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <motion.div
+            key={`large-${i}`}
+            initial={{
+              opacity: 0,
+              scale: 0.2,
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            animate={{
+              opacity: [0, 0.8, 0],
+              scale: [0.2, 1.5, 0.2],
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            transition={{
+              duration: Math.random() * 4 + 3,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+              ease: "easeInOut"
+            }}
+            className="absolute w-2 h-2 bg-violet-300/40 rounded-full blur-[3px] shadow-lg shadow-violet-500/30"
+            style={{
+              willChange: 'transform',
+              backfaceVisibility: 'hidden'
+            }}
+          />
+        ))}
+      </div>
+    </>
   );
 }

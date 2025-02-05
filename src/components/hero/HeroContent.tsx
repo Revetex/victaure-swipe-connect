@@ -54,14 +54,14 @@ export function HeroContent() {
         
         <motion.h1 
           variants={textVariants}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-violet-400 via-violet-500 to-purple-600 bg-clip-text text-transparent font-playfair"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-violet-300 via-violet-400 to-purple-500 bg-clip-text text-transparent font-playfair"
         >
           L'IA qui Révolutionne le Recrutement
         </motion.h1>
         
         <motion.p 
           variants={textVariants}
-          className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-montserrat leading-relaxed"
+          className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-montserrat leading-relaxed tracking-wide"
         >
           Victaure transforme le processus de recrutement grâce à l'intelligence artificielle. 
           Notre technologie de pointe analyse, correspond et connecte les meilleurs talents 
@@ -82,7 +82,7 @@ export function HeroContent() {
                 size="lg" 
                 className="w-full sm:w-auto font-montserrat group relative overflow-hidden bg-violet-600 hover:bg-violet-700 px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-500"
               >
-                <span className="relative z-10 flex items-center whitespace-nowrap">
+                <span className="relative z-10 flex items-center whitespace-nowrap tracking-wide">
                   Commencer maintenant
                   <Sparkles className="ml-2 h-5 w-5" />
                 </span>
@@ -105,9 +105,9 @@ export function HeroContent() {
               <Button 
                 variant="outline"
                 size="lg" 
-                className="w-full sm:w-auto font-montserrat group relative overflow-hidden border-violet-500 text-primary hover:text-primary/90 px-8 py-6 text-lg backdrop-blur-sm bg-white/5"
+                className="w-full sm:w-auto font-montserrat group relative overflow-hidden border-violet-400 text-primary hover:text-primary/90 px-8 py-6 text-lg backdrop-blur-sm bg-white/5"
               >
-                <span className="flex items-center whitespace-nowrap">
+                <span className="flex items-center whitespace-nowrap tracking-wide">
                   Explorer les opportunités
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </span>
