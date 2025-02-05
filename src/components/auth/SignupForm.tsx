@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Loader2, Mail, Lock, User, Phone } from "lucide-react";
-import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { SignupInput } from "./inputs/SignupInput";
-import { TermsDialog } from "./dialogs/TermsDialog";
-import { PrivacyDialog } from "./dialogs/PrivacyDialog";
+import { Loader } from "@/components/ui/loader";
 import { useState } from "react";
+import { PrivacyDialog } from "./dialogs/PrivacyDialog";
+import { TermsDialog } from "./dialogs/TermsDialog";
 
 interface SignupFormProps {
   email: string;
@@ -33,100 +33,108 @@ export function SignupForm({
   onSubmit
 }: SignupFormProps) {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!acceptedTerms) {
+      return;
+    }
+    onSubmit();
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Créez votre compte
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Rejoignez-nous en quelques clics
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <SignupInput
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="fullName">Nom complet</Label>
+        <Input
           id="fullName"
-          label="Nom complet"
-          placeholder="Jean Dupont"
           type="text"
           value={fullName}
-          onChange={onFullNameChange}
-          disabled={loading}
-          Icon={User}
+          onChange={(e) => onFullNameChange(e.target.value)}
+          placeholder="John Doe"
+          required
         />
-
-        <SignupInput
-          id="phone"
-          label="Téléphone"
-          placeholder="+1 (555) 555-5555"
-          type="tel"
-          value={phone}
-          onChange={onPhoneChange}
-          disabled={loading}
-          Icon={Phone}
-        />
-
-        <SignupInput
-          id="email-signup"
-          label="Email"
-          placeholder="nom@exemple.com"
-          type="email"
-          value={email}
-          onChange={onEmailChange}
-          disabled={loading}
-          Icon={Mail}
-        />
-
-        <SignupInput
-          id="password-signup"
-          label="Mot de passe"
-          placeholder=""
-          type="password"
-          value={password}
-          onChange={onPasswordChange}
-          disabled={loading}
-          Icon={Lock}
-        />
-
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="terms" 
-              checked={acceptedTerms}
-              onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
-            />
-            <label
-              htmlFor="terms"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              En créant un compte, j'accepte les{" "}
-              <TermsDialog />
-              {" "}et la{" "}
-              <PrivacyDialog />
-            </label>
-          </div>
-        </div>
       </div>
 
-      <Button
-        onClick={onSubmit}
-        disabled={loading || !email || !password || !fullName || !acceptedTerms}
-        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 font-medium shadow-sm hover:shadow-md"
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => onEmailChange(e.target.value)}
+          placeholder="john@example.com"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="phone">Téléphone</Label>
+        <Input
+          id="phone"
+          type="tel"
+          value={phone}
+          onChange={(e) => onPhoneChange(e.target.value)}
+          placeholder="+1 (555) 000-0000"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="password">Mot de passe</Label>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => onPasswordChange(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="terms"
+          checked={acceptedTerms}
+          onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+          className="data-[state=checked]:bg-primary"
+        />
+        <label
+          htmlFor="terms"
+          className="text-sm text-muted-foreground cursor-pointer"
+        >
+          J'accepte les{" "}
+          <button
+            type="button"
+            onClick={() => setShowTerms(true)}
+            className="text-primary hover:underline"
+          >
+            conditions d'utilisation
+          </button>{" "}
+          et la{" "}
+          <button
+            type="button"
+            onClick={() => setShowPrivacy(true)}
+            className="text-primary hover:underline"
+          >
+            politique de confidentialité
+          </button>
+        </label>
+      </div>
+
+      <Button 
+        type="submit" 
+        className="w-full" 
+        disabled={loading || !acceptedTerms}
       >
         {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          "Créer un compte"
-        )}
+          <Loader className="w-4 h-4 mr-2" />
+        ) : null}
+        S'inscrire
       </Button>
-    </motion.div>
+
+      <TermsDialog open={showTerms} onOpenChange={setShowTerms} />
+      <PrivacyDialog open={showPrivacy} onOpenChange={setShowPrivacy} />
+    </form>
   );
 }
