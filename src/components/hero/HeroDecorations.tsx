@@ -14,7 +14,11 @@ export function HeroDecorations() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute top-0 -left-4 w-96 h-96 bg-[#9b87f5]/20 rounded-full filter blur-3xl"
+        className="absolute top-0 -left-4 w-72 sm:w-96 h-72 sm:h-96 bg-[#9b87f5]/20 rounded-full filter blur-3xl"
+        style={{
+          willChange: 'transform',
+          backfaceVisibility: 'hidden'
+        }}
       />
       <motion.div 
         animate={{ 
@@ -27,7 +31,11 @@ export function HeroDecorations() {
           repeat: Infinity,
           ease: "linear"
         }}
-        className="absolute bottom-0 -right-4 w-96 h-96 bg-[#D6BCFA]/20 rounded-full filter blur-3xl"
+        className="absolute bottom-0 -right-4 w-72 sm:w-96 h-72 sm:h-96 bg-[#D6BCFA]/20 rounded-full filter blur-3xl"
+        style={{
+          willChange: 'transform',
+          backfaceVisibility: 'hidden'
+        }}
       />
     </>
   );
