@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Edit, Save, FileText, Download } from "lucide-react";
+import { Edit, Save, FileText, Download, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VCardActionsProps {
