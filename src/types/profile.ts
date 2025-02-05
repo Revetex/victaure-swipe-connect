@@ -28,6 +28,7 @@ export interface UserProfile {
   friends?: Friend[];
   online_status?: boolean;
   last_seen?: string;
+  created_at?: string;
 }
 
 export interface Certification {
