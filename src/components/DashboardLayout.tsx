@@ -9,8 +9,9 @@ import { useNavigation } from "@/hooks/useNavigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ErrorBoundary } from "react-error-boundary";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon, ChevronLeft, ChevronRight } from "@radix-ui/react-icons";
 import { useToast } from "./ui/use-toast";
+import { Button } from "./ui/button";
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -51,7 +52,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Memoize the main content component
 const MemoizedDashboardContent = memo(DashboardContent);
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -90,6 +90,58 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         return "Paramètres";
       default:
         return "";
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+      switch (currentPage - 1) {
+        case 1:
+          navigate('/dashboard');
+          break;
+        case 2:
+          navigate('/messages');
+          break;
+        case 3:
+          navigate('/jobs');
+          break;
+        case 4:
+          navigate('/feed');
+          break;
+        case 5:
+          navigate('/tools');
+          break;
+        case 6:
+          navigate('/settings');
+          break;
+      }
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < 6) {
+      handlePageChange(currentPage + 1);
+      switch (currentPage + 1) {
+        case 1:
+          navigate('/dashboard');
+          break;
+        case 2:
+          navigate('/messages');
+          break;
+        case 3:
+          navigate('/jobs');
+          break;
+        case 4:
+          navigate('/feed');
+          break;
+        case 5:
+          navigate('/tools');
+          break;
+        case 6:
+          navigate('/settings');
+          break;
+      }
     }
   };
 
@@ -155,6 +207,28 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
       onToolReturn={isInTools ? handleToolReturn : undefined}
     >
+      <div className="flex items-center justify-between mb-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handlePreviousPage}
+          disabled={currentPage <= 1}
+          className="w-10 h-10"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <span className="text-lg font-medium">{getPageTitle(currentPage)}</span>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleNextPage}
+          disabled={currentPage >= 6}
+          className="w-10 h-10"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </Button>
+      </div>
+
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<LoadingFallback />}>
           <AnimatePresence mode="wait">
