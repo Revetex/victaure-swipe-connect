@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search, UserPlus } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
+import { cn } from "@/lib/utils";
 
 interface ProfileSearchProps {
   onSelect: (profile: UserProfile) => void;
@@ -54,25 +55,32 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
   };
 
   return (
-    <div className={`relative ${className}`}>
-      <Command className="rounded-lg border shadow-md">
-        <CommandInput
-          placeholder={placeholder}
-          value={search}
-          onValueChange={setSearch}
-        />
+    <div className={cn("relative w-full", className)}>
+      <Command className="rounded-lg border shadow-md bg-background">
+        <div className="flex items-center border-b px-3">
+          <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+          <CommandInput
+            placeholder={placeholder}
+            value={search}
+            onValueChange={setSearch}
+            className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          />
+        </div>
         <CommandList>
           {debouncedSearch && (
-            <CommandGroup>
+            <CommandGroup heading="Résultats de la recherche">
               {isLoading && (
-                <CommandItem disabled>
+                <CommandItem disabled className="py-6 text-center">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Recherche en cours...
+                  <span>Recherche en cours...</span>
                 </CommandItem>
               )}
               
               {!isLoading && profiles.length === 0 && (
-                <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
+                <CommandEmpty className="py-6 text-center">
+                  <p className="text-sm text-muted-foreground">Aucun résultat trouvé.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Essayez avec un autre terme de recherche.</p>
+                </CommandEmpty>
               )}
 
               {profiles.map((profile) => (
@@ -81,11 +89,32 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
                   onSelect={() => handleProfileClick(profile)}
                   onMouseEnter={() => setHoveredId(profile.id)}
                   onMouseLeave={() => setHoveredId(null)}
-                  className={`cursor-pointer ${
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors",
                     hoveredId === profile.id ? "bg-accent" : ""
-                  }`}
+                  )}
                 >
-                  {profile.full_name || profile.email}
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                    {profile.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name || ""}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <UserPlus className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">
+                      {profile.full_name || profile.email}
+                    </p>
+                    {profile.email && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {profile.email}
+                      </p>
+                    )}
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>
