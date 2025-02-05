@@ -23,7 +23,7 @@ export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
       }}
       className={cn(
         "fixed inset-x-0 bg-background/95 backdrop-blur-sm will-change-[height,opacity]",
-        isMobile ? "top-[4rem] h-[calc(100vh-4rem)]" : "top-16 h-[calc(100vh-4rem)]",
+        isMobile ? "top-[4rem] bottom-0" : "top-16 bottom-0",
         "z-[9999] overflow-hidden" // Increased z-index to be above everything
       )}
       style={{
