@@ -45,7 +45,7 @@ export function ConnectionsSection() {
 
   if (!friends?.length) {
     return (
-      <div className="text-center py-8 space-y-4">
+      <div className="text-center py-8 space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
         <Users2 className="h-12 w-12 mx-auto text-muted-foreground/50" />
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">Aucune connection pour le moment</p>
@@ -63,10 +63,14 @@ export function ConnectionsSection() {
   const currentFriends = friends.slice(startIndex, endIndex);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Mes connections ({friends.length})</h3>
+        <h3 className="text-sm font-medium flex items-center gap-2">
+          <Users2 className="h-4 w-4" />
+          Mes connections ({friends.length})
+        </h3>
       </div>
+      
       <ScrollArea className="h-[300px] pr-4">
         <AnimatePresence>
           <div className="space-y-2">
