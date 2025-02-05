@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { FriendsContent } from "../feed/friends/FriendsContent";
 
 interface DashboardFriendsListProps {
   show: boolean;
@@ -9,30 +8,29 @@ interface DashboardFriendsListProps {
 
 export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
   const isMobile = useIsMobile();
-
+  
   if (!show) return null;
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
       transition={{ 
         duration: 0.15,
         ease: "easeInOut"
       }}
-      className={cn(
-        "fixed inset-x-0 bg-background/95 backdrop-blur-sm",
-        isMobile ? "top-[4rem]" : "top-16",
-        "bottom-16 z-[100] overflow-y-auto", // Increased z-index and kept overflow-y-auto
-      )}
-      style={{
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-      }}
+      className={`overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm will-change-[height,opacity] ${
+        isMobile ? 'fixed inset-x-0 top-[4rem] z-50 max-h-[80vh] overflow-y-auto' : 'relative'
+      }`}
     >
-      <div className="container mx-auto px-4 py-4">
-        <div className="max-w-4xl mx-auto">
-          <FriendsContent />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="p-4">
+            <div className="space-y-4">
+              <FriendsContent />
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>

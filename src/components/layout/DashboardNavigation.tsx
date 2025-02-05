@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
-import { useLocation } from "react-router-dom";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -14,10 +13,7 @@ export function DashboardNavigation({
   onPageChange,
   isEditing 
 }: DashboardNavigationProps) {
-  const location = useLocation();
-  const isInMessages = location.pathname.includes('/messages');
-  
-  if (isEditing || isInMessages) return null;
+  if (isEditing) return null;
 
   return (
     <nav 
