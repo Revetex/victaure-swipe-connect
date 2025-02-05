@@ -54,7 +54,7 @@ export function HeroContent() {
         
         <motion.h1 
           variants={textVariants}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-[#9b87f5] via-[#8B5CF6] to-[#D6BCFA] bg-clip-text text-transparent font-playfair"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-violet-400 via-violet-500 to-purple-600 bg-clip-text text-transparent font-playfair"
         >
           L'IA qui Révolutionne le Recrutement
         </motion.h1>
@@ -80,14 +80,14 @@ export function HeroContent() {
             >
               <Button 
                 size="lg" 
-                className="w-full sm:w-auto font-montserrat group relative overflow-hidden bg-[#9b87f5] hover:bg-[#8B5CF6] px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-500"
+                className="w-full sm:w-auto font-montserrat group relative overflow-hidden bg-violet-600 hover:bg-violet-700 px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-500"
               >
                 <span className="relative z-10 flex items-center whitespace-nowrap">
                   Commencer maintenant
                   <Sparkles className="ml-2 h-5 w-5" />
                 </span>
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#7E69AB]"
+                  className="absolute inset-0 bg-gradient-to-r from-violet-700 to-purple-600"
                   initial={{ x: "100%" }}
                   whileHover={{ x: 0 }}
                   transition={{ duration: 0.4 }}
@@ -105,7 +105,7 @@ export function HeroContent() {
               <Button 
                 variant="outline"
                 size="lg" 
-                className="w-full sm:w-auto font-montserrat group relative overflow-hidden border-[#9b87f5] text-primary hover:text-primary/90 px-8 py-6 text-lg backdrop-blur-sm bg-white/5"
+                className="w-full sm:w-auto font-montserrat group relative overflow-hidden border-violet-500 text-primary hover:text-primary/90 px-8 py-6 text-lg backdrop-blur-sm bg-white/5"
               >
                 <span className="flex items-center whitespace-nowrap">
                   Explorer les opportunités

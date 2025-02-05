@@ -30,7 +30,7 @@ export function HeroBackground() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute inset-0 bg-[radial-gradient(circle_1000px_at_50%_-100px,#9b87f5,transparent)]"
+        className="absolute inset-0 bg-[radial-gradient(circle_1000px_at_50%_-100px,#7c3aed,transparent)]"
         style={{
           willChange: 'transform',
           backfaceVisibility: 'hidden'
@@ -64,7 +64,7 @@ export function HeroBackground() {
                 delay: Math.random() * 5,
                 ease: "easeInOut"
               }}
-              className="absolute w-1 h-1 bg-[#9b87f5] rounded-full blur-[1px]"
+              className="absolute w-1 h-1 bg-violet-500/50 rounded-full blur-[2px]"
               style={{
                 willChange: 'transform',
                 backfaceVisibility: 'hidden'

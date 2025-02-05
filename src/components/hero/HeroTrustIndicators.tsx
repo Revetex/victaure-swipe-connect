@@ -52,9 +52,9 @@ export function HeroTrustIndicators() {
           key={index}
           variants={itemVariants}
           whileHover={{ scale: 1.05 }}
-          className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm border border-white/10 shadow-lg"
+          className="flex items-center gap-2 bg-white/5 p-3 rounded-lg backdrop-blur-sm border border-violet-500/20 shadow-lg hover:shadow-xl transition-all duration-300"
         >
-          <indicator.icon className="h-5 w-5 text-[#9b87f5]" />
+          <indicator.icon className="h-5 w-5 text-violet-400" />
           <span className="text-sm sm:text-base text-muted-foreground whitespace-nowrap">
             {indicator.text}
           </span>

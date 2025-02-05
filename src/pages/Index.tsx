@@ -18,7 +18,7 @@ export default function Index() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-b from-background via-purple-900/10 to-background font-montserrat overflow-hidden"
+      className="min-h-screen bg-gradient-to-b from-background via-violet-900/10 to-background font-montserrat overflow-hidden"
     >
       <div className="relative w-full">
         <Suspense fallback={<LoadingFallback />}>
