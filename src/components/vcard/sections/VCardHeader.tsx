@@ -5,47 +5,86 @@ import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { VCardActions } from "@/components/VCardActions";
 
 interface VCardHeaderProps {
   profile: UserProfile;
+  isEditing: boolean;
+  setProfile: (profile: UserProfile) => void;
+  onEditToggle: () => void;
+  onSave?: () => void;
+  onDownloadBusinessCard?: () => Promise<void>;
 }
 
-export function VCardHeader({ profile }: VCardHeaderProps) {
+export function VCardHeader({ 
+  profile,
+  isEditing,
+  setProfile,
+  onEditToggle,
+  onSave,
+  onDownloadBusinessCard
+}: VCardHeaderProps) {
   const [isQRDialogOpen, setIsQRDialogOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
-  const handleDownloadBusinessCard = async () => {
-    try {
-      // Implement PDF generation logic here
-      toast.success("Carte de visite téléchargée");
-    } catch (error) {
-      toast.error("Échec du téléchargement");
+  const handleDownload = async () => {
+    if (onDownloadBusinessCard) {
+      setIsPdfGenerating(true);
+      try {
+        await onDownloadBusinessCard();
+        toast.success("Carte de visite téléchargée");
+      } catch (error) {
+        toast.error("Échec du téléchargement");
+      } finally {
+        setIsPdfGenerating(false);
+      }
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
-        <h2 className="text-2xl font-bold text-primary tracking-tight">
-          {profile.full_name || 'Profil sans nom'}
-        </h2>
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-primary tracking-tight">
+            {isEditing ? (
+              <input
+                type="text"
+                value={profile.full_name || ''}
+                onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                className="w-full bg-transparent border-none focus:outline-none focus:ring-0"
+                placeholder="Votre nom"
+              />
+            ) : (
+              profile.full_name || 'Profil sans nom'
+            )}
+          </h2>
+          {profile.role && (
+            <p className="text-muted-foreground mt-1">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={profile.role}
+                  onChange={(e) => setProfile({ ...profile, role: e.target.value })}
+                  className="w-full bg-transparent border-none focus:outline-none focus:ring-0"
+                  placeholder="Votre rôle"
+                />
+              ) : (
+                profile.role
+              )}
+            </p>
+          )}
+        </div>
         
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setIsQRDialogOpen(true)}
-            className="rounded-full"
-          >
-            <QrCode className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleDownloadBusinessCard}
-            className="rounded-full"
-          >
-            <Download className="h-4 w-4" />
-          </Button>
+          <VCardActions
+            isEditing={isEditing}
+            isProcessing={isProcessing}
+            isPdfGenerating={isPdfGenerating}
+            setIsEditing={onEditToggle}
+            onSave={onSave}
+            onDownloadBusinessCard={handleDownload}
+          />
         </div>
       </div>
       
@@ -56,7 +95,18 @@ export function VCardHeader({ profile }: VCardHeaderProps) {
           className="w-24 h-24 rounded-full ring-2 ring-primary/20 shadow-md"
         />
         {profile.bio && (
-          <p className="text-muted-foreground leading-relaxed">{profile.bio}</p>
+          <p className="text-muted-foreground leading-relaxed">
+            {isEditing ? (
+              <textarea
+                value={profile.bio}
+                onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                className="w-full bg-transparent border-none focus:outline-none focus:ring-0 min-h-[100px]"
+                placeholder="Votre bio"
+              />
+            ) : (
+              profile.bio
+            )}
+          </p>
         )}
       </div>
 
