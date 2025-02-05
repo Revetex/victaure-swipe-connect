@@ -4,6 +4,7 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -48,13 +49,19 @@ export function MainLayout({
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4">
+      <main className={cn(
+        "flex-1 container mx-auto px-4",
+        showFriendsList && "overflow-hidden h-[calc(100vh-4rem)]"
+      )}>
         <div className="max-w-7xl mx-auto py-4">
           {children}
         </div>
       </main>
 
-      <nav className="sticky bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t">
+      <nav className={cn(
+        "sticky bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t",
+        showFriendsList && "relative z-[90]"
+      )}>
         <div className="container mx-auto py-2">
           <DashboardNavigation 
             currentPage={currentPage}

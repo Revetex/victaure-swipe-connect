@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Loader2, Search, UserPlus } from "lucide-react";
+import { Command, CommandInput, CommandList } from "@/components/ui/command";
+import { Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 import { cn } from "@/lib/utils";
+import { SearchResults } from "./friends/SearchResults";
 
 interface ProfileSearchProps {
   onSelect: (profile: UserProfile) => void;
@@ -67,58 +68,14 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
           />
         </div>
         <CommandList>
-          {debouncedSearch && (
-            <CommandGroup heading="Résultats de la recherche">
-              {isLoading && (
-                <CommandItem disabled className="py-6 text-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  <span>Recherche en cours...</span>
-                </CommandItem>
-              )}
-              
-              {!isLoading && profiles.length === 0 && (
-                <CommandEmpty className="py-6 text-center">
-                  <p className="text-sm text-muted-foreground">Aucun résultat trouvé.</p>
-                  <p className="text-xs text-muted-foreground mt-1">Essayez avec un autre terme de recherche.</p>
-                </CommandEmpty>
-              )}
-
-              {profiles.map((profile) => (
-                <CommandItem
-                  key={profile.id}
-                  onSelect={() => handleProfileClick(profile)}
-                  onMouseEnter={() => setHoveredId(profile.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors",
-                    hoveredId === profile.id ? "bg-accent" : ""
-                  )}
-                >
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                    {profile.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt={profile.full_name || ""}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <UserPlus className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">
-                      {profile.full_name || profile.email}
-                    </p>
-                    {profile.email && (
-                      <p className="text-xs text-muted-foreground truncate">
-                        {profile.email}
-                      </p>
-                    )}
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
+          <SearchResults
+            isLoading={isLoading}
+            profiles={profiles}
+            debouncedSearch={debouncedSearch}
+            hoveredId={hoveredId}
+            onHover={setHoveredId}
+            onSelect={handleProfileClick}
+          />
         </CommandList>
       </Command>
 

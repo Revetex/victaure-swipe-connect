@@ -20,18 +20,22 @@ export function DashboardFriendsList({ show }: DashboardFriendsListProps) {
         duration: 0.15,
         ease: "easeInOut"
       }}
-      className={`overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm will-change-[height,opacity] ${
-        isMobile ? 'fixed inset-x-0 top-[4rem] z-[100] max-h-[80vh] overflow-y-auto' : 'relative'
-      }`}
+      className={cn(
+        "fixed inset-x-0 bg-background/95 backdrop-blur-sm will-change-[height,opacity]",
+        isMobile ? "top-[4rem] h-[calc(100vh-4rem)]" : "top-16 h-[calc(100vh-4rem)]",
+        "z-[100] overflow-hidden"
+      )}
       style={{
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
       }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="p-4">
-            <div className="space-y-4">
-              <FriendsContent />
+      <div className="h-full overflow-y-auto">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="p-4">
+              <div className="space-y-4">
+                <FriendsContent />
+              </div>
             </div>
           </div>
         </div>
