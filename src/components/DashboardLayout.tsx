@@ -6,6 +6,7 @@ import { useReceiver } from "@/hooks/useReceiver";
 import { MainLayout } from "./layout/MainLayout";
 import { useViewport } from "@/hooks/useViewport";
 import { useNavigation } from "@/hooks/useNavigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -53,15 +54,48 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const isInConversation = location.pathname.includes('/messages') && showConversation;
   const isInTools = location.pathname.includes('/tools');
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
   if (isInConversation) {
     return (
-      <DashboardContent
-        currentPage={currentPage}
-        isEditing={isEditing}
-        viewportHeight={viewportHeight}
-        onEditStateChange={setIsEditing}
-        onRequestChat={handleRequestChat}
-      />
+      <AnimatePresence mode="wait">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          className="min-h-screen bg-background"
+        >
+          <DashboardContent
+            currentPage={currentPage}
+            isEditing={isEditing}
+            viewportHeight={viewportHeight}
+            onEditStateChange={setIsEditing}
+            onRequestChat={handleRequestChat}
+          />
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
@@ -75,15 +109,31 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
       onToolReturn={isInTools ? handleToolReturn : undefined}
     >
-      {children || (
-        <DashboardContent
-          currentPage={currentPage}
-          isEditing={isEditing}
-          viewportHeight={viewportHeight}
-          onEditStateChange={setIsEditing}
-          onRequestChat={handleRequestChat}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          className="transform transition-all duration-300"
+          style={{ 
+            maxHeight: isEditing ? viewportHeight : 'none',
+            overflowY: isEditing ? 'auto' : 'visible',
+            WebkitOverflowScrolling: 'touch',
+            paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
+          }}
+        >
+          {children || (
+            <DashboardContent
+              currentPage={currentPage}
+              isEditing={isEditing}
+              viewportHeight={viewportHeight}
+              onEditStateChange={setIsEditing}
+              onRequestChat={handleRequestChat}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </MainLayout>
   );
 }
