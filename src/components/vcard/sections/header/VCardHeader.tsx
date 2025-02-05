@@ -6,8 +6,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useVCardStyle } from "../../VCardStyleContext";
 import { VCardQRCode } from "../../VCardQRCode";
-import { generateCV } from "@/utils/pdf/cv";
 import jsPDF from "jspdf";
+import { generateCV } from "@/utils/pdf/cv";
 
 interface VCardHeaderProps {
   profile: UserProfile;
