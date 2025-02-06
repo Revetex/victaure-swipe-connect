@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { PostHeader } from "../PostHeader";
@@ -11,7 +10,7 @@ import { Edit2, Save, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PostActions } from "../PostActions";
-import { CommentManager } from "../comments/CommentManager";
+import { CommentManager } from "@/components/feed/comments/CommentManager";
 
 interface PostCardProps {
   post: Post;
@@ -35,7 +34,7 @@ export function PostCard({
   onUpdate
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isEditing);
   const [editContent, setEditContent] = useState(post.content);
   const isMobile = useIsMobile();
 
