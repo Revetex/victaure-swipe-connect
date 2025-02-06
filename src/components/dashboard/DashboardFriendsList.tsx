@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Calculator, ListTodo, Sword } from "lucide-react";
+import { Calculator, ListTodo, Settings, Sword, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -9,7 +9,7 @@ import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
 import { useState } from "react";
 
-const tools = [
+const menuItems = [
   {
     id: "tasks",
     name: "Tâches",
@@ -30,23 +30,50 @@ const tools = [
     icon: Sword,
     description: "Jouer aux échecs",
     color: "bg-red-500/10 text-red-500"
+  },
+  {
+    id: "settings",
+    name: "Paramètres",
+    icon: Settings,
+    description: "Configurer votre compte",
+    color: "bg-purple-500/10 text-purple-500"
+  },
+  {
+    id: "profile",
+    name: "Profil",
+    icon: User,
+    description: "Gérer votre profil",
+    color: "bg-orange-500/10 text-orange-500"
   }
 ];
 
-interface DashboardFriendsListProps {
+interface DashboardMenuProps {
   show: boolean;
   onClose: () => void;
 }
 
-export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProps) {
+export function DashboardFriendsList({ show, onClose }: DashboardMenuProps) {
   const navigate = useNavigate();
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
 
-  const handleToolClick = (toolId: string) => {
-    setSelectedTool(toolId);
-    if (toolId === 'chess') {
-      navigate('/dashboard/tools/chess');
-      onClose();
+  const handleItemClick = (itemId: string) => {
+    setSelectedTool(itemId);
+    switch (itemId) {
+      case 'chess':
+        navigate('/dashboard/tools/chess');
+        onClose();
+        break;
+      case 'settings':
+        navigate('/settings');
+        onClose();
+        break;
+      case 'profile':
+        navigate('/dashboard/profile');
+        onClose();
+        break;
+      default:
+        // For tools that open in dialog
+        break;
     }
   };
 
@@ -59,30 +86,30 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
     >
       <div className="container mx-auto py-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {tools.map((tool) => {
-            const Icon = tool.icon;
+          {menuItems.map((item) => {
+            const Icon = item.icon;
             return (
               <Button
-                key={tool.id}
+                key={item.id}
                 variant="ghost"
                 className={cn(
                   "flex flex-col items-center gap-3 p-6 h-auto",
                   "hover:bg-accent/5 transition-all duration-200",
                   "group relative"
                 )}
-                onClick={() => handleToolClick(tool.id)}
+                onClick={() => handleItemClick(item.id)}
               >
                 <div className={cn(
                   "p-4 rounded-lg transition-all duration-200",
                   "group-hover:scale-110",
-                  tool.color
+                  item.color
                 )}>
                   <Icon className="h-6 w-6" />
                 </div>
                 <div className="text-center">
-                  <p className="font-medium">{tool.name}</p>
+                  <p className="font-medium">{item.name}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {tool.description}
+                    {item.description}
                   </p>
                 </div>
               </Button>
