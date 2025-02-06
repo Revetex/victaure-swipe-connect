@@ -22,7 +22,7 @@ export function DashboardHeader({
       <div className="flex items-center justify-between p-4 max-w-[2000px] mx-auto">
         <div className="flex items-center gap-6">
           <Logo size="sm" />
-          <h1 className="font-playfair text-lg font-semibold sm:text-xl md:text-2xl bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">{title}</h1>
+          <h1 className="font-montserrat text-lg font-semibold sm:text-xl md:text-2xl text-foreground/90">{title}</h1>
         </div>
         
         <div className="flex items-center gap-2 sm:gap-4">
