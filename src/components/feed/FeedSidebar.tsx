@@ -17,37 +17,37 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     {
       name: "Notes",
       icon: Plus,
-      path: "/tools",
+      path: "/notes",
       description: "Gérez vos notes"
     },
     {
       name: "Tâches",
       icon: ListTodo,
-      path: "/tools",
+      path: "/tasks",
       description: "Gérez vos tâches"
     },
     {
       name: "Calculatrice",
       icon: Calculator,
-      path: "/tools",
+      path: "/calculator",
       description: "Calculatrice et convertisseur"
     },
     {
       name: "Traducteur",
       icon: Languages,
-      path: "/tools",
+      path: "/translator",
       description: "Traduisez du texte"
     },
     {
       name: "Convertisseur",
       icon: Ruler, 
-      path: "/tools",
+      path: "/converter",
       description: "Convertissez des unités"
     },
     {
       name: "Échecs",
       icon: Sword,
-      path: "/tools",
+      path: "/chess",
       description: "Jouez aux échecs"
     }
   ];

@@ -11,7 +11,11 @@ import { LegalNoticePage } from "@/components/legal/LegalNoticePage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import PublicProfile from "@/components/PublicProfile";
 import { useAuth } from "@/hooks/useAuth";
-import { ToolsPage } from "@/components/tools/ToolsPage";
+import { NotesPage } from "@/components/tools/NotesPage";
+import { TasksPage } from "@/components/tools/TasksPage";
+import { CalculatorPage } from "@/components/tools/CalculatorPage";
+import { TranslatorPage } from "@/components/tools/TranslatorPage";
+import { ChessPage } from "@/components/tools/ChessPage";
 import { Feed } from "@/components/Feed";
 
 export function AppRoutes() {
@@ -61,10 +65,42 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/tools/*"
+        path="/notes"
         element={
           <ProtectedRoute>
-            <ToolsPage />
+            <NotesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <TasksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calculator"
+        element={
+          <ProtectedRoute>
+            <CalculatorPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/translator"
+        element={
+          <ProtectedRoute>
+            <TranslatorPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/chess"
+        element={
+          <ProtectedRoute>
+            <ChessPage />
           </ProtectedRoute>
         }
       />

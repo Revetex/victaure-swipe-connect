@@ -1,4 +1,3 @@
-
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -71,22 +70,6 @@ export const usePostOperations = () => {
     }
   };
 
-  const handleUpdate = async (postId: string, content: string) => {
-    try {
-      const { error } = await supabase
-        .from('posts')
-        .update({ content })
-        .eq('id', postId);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    } catch (error) {
-      console.error('Error updating post:', error);
-      throw error;
-    }
-  };
-
   const handleHide = async (postId: string, userId: string | undefined) => {
     if (!userId) {
       toast("Vous devez être connecté pour masquer des publications");
@@ -120,6 +103,22 @@ export const usePostOperations = () => {
     } catch (error) {
       console.error('Error hiding post:', error);
       toast("Impossible de masquer la publication");
+    }
+  };
+
+  const handleUpdate = async (postId: string, content: string) => {
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ content })
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    } catch (error) {
+      console.error('Error updating post:', error);
+      throw error;
     }
   };
 
