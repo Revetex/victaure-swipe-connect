@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
 
-interface DashboardNavigationProps {
+interface BottomNavigationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   isEditing?: boolean;
@@ -12,11 +12,14 @@ export function BottomNavigation({
   currentPage, 
   onPageChange,
   isEditing 
-}: DashboardNavigationProps) {
+}: BottomNavigationProps) {
   if (isEditing) return null;
 
   return (
-    <nav 
+    <motion.nav 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300"
       style={{ 
         height: '4rem',
@@ -31,7 +34,12 @@ export function BottomNavigation({
               onClick={() => onPageChange(id)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: id * 0.1 }}
+              transition={{ 
+                delay: id * 0.1,
+                type: "spring",
+                stiffness: 100,
+                damping: 15
+              }}
               className={cn(
                 "p-3 rounded-xl transition-all duration-300",
                 "hover:bg-primary/10 active:scale-95",
@@ -45,10 +53,11 @@ export function BottomNavigation({
               aria-label={name}
             >
               <Icon className="h-5 w-5" />
+              <span className="sr-only">{name}</span>
             </motion.button>
           ))}
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
