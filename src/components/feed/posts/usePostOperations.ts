@@ -1,3 +1,4 @@
+
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -77,7 +78,6 @@ export const usePostOperations = () => {
     }
 
     try {
-      // First check if the post is already hidden
       const { data: existingHide } = await supabase
         .from('hidden_posts')
         .select('*')
@@ -107,9 +107,26 @@ export const usePostOperations = () => {
     }
   };
 
+  const handleUpdate = async (postId: string, content: string) => {
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ content })
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    } catch (error) {
+      console.error('Error updating post:', error);
+      throw error;
+    }
+  };
+
   return {
     handleReaction,
     handleDelete,
-    handleHide
+    handleHide,
+    handleUpdate
   };
 };
