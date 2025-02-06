@@ -1,135 +1,96 @@
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useState, Suspense, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useReceiver } from "@/hooks/useReceiver";
-import { MainLayout } from "./layout/MainLayout";
+import { useState, useEffect } from "react";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useViewport } from "@/hooks/useViewport";
-import { useNavigation } from "@/hooks/useNavigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ErrorBoundary } from "react-error-boundary";
-import { DashboardErrorBoundary } from "./dashboard/layout/DashboardErrorBoundary";
-import { DashboardLoading } from "./dashboard/layout/DashboardLoading";
-import { ConversationLayout } from "./dashboard/layout/ConversationLayout";
-import { DashboardContent } from "./dashboard/DashboardContent";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
-interface DashboardLayoutProps {
-  children?: React.ReactNode;
-}
-
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout() {
+  const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
-  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
+  const { viewportHeight } = useViewport();
   const navigate = useNavigate();
-  const { showConversation } = useReceiver();
-  const viewportHeight = useViewport();
-  const { currentPage, handlePageChange } = useNavigation();
 
-  // Fermer le menu amis quand on change de page
   useEffect(() => {
-    setShowFriendsList(false);
-  }, [currentPage, location.pathname]);
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          toast.error("Veuillez vous connecter pour accéder au tableau de bord");
+          navigate("/auth");
+          return;
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Auth check error:", error);
+        toast.error("Erreur lors de la vérification de l'authentification");
+        setIsLoading(false);
+      }
+    };
 
-  const handleRequestChat = () => {
-    handlePageChange(2);
-    navigate('/messages');
-  };
+    checkAuth();
 
-  const handleToolReturn = () => {
-    navigate('/dashboard');
-    handlePageChange(1);
-  };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      }
+    });
 
-  const getPageTitle = (page: number) => {
-    switch (page) {
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  const getPageTitle = () => {
+    switch (currentPage) {
       case 1:
-        return "Profil";
+        return "Tableau de bord";
       case 2:
         return "Messages";
       case 3:
-        return "Emplois";
+        return "Marketplace";
       case 4:
-        return "Actualités";
+        return "Fil d'actualité";
       case 5:
-        return "Outils";
+        return "Notes";
       case 6:
         return "Paramètres";
       default:
-        return "";
+        return "Tableau de bord";
     }
   };
 
-  const isInConversation = location.pathname.includes('/messages') && showConversation;
-  const isInTools = location.pathname.includes('/tools');
-
-  if (isInConversation) {
+  if (isLoading) {
     return (
-      <ErrorBoundary FallbackComponent={DashboardErrorBoundary}>
-        <Suspense fallback={<DashboardLoading />}>
-          <ConversationLayout
-            currentPage={currentPage}
-            isEditing={isEditing}
-            viewportHeight={viewportHeight}
-            onEditStateChange={setIsEditing}
-            onRequestChat={handleRequestChat}
-          />
-        </Suspense>
-      </ErrorBoundary>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-4">
+          <ReloadIcon className="h-8 w-8 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
     );
   }
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    }
-  };
-
   return (
-    <MainLayout 
-      title={getPageTitle(currentPage)}
+    <MainLayout
+      title={getPageTitle()}
       currentPage={currentPage}
-      onPageChange={handlePageChange}
+      onPageChange={setCurrentPage}
       isEditing={isEditing}
       showFriendsList={showFriendsList}
       onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-      onToolReturn={isInTools ? handleToolReturn : undefined}
     >
-      <ErrorBoundary FallbackComponent={DashboardErrorBoundary}>
-        <Suspense fallback={<DashboardLoading />}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              className="transform transition-all duration-300"
-              style={{ 
-                maxHeight: isEditing ? viewportHeight : 'none',
-                overflowY: isEditing ? 'auto' : 'visible',
-                WebkitOverflowScrolling: 'touch',
-                paddingBottom: isEditing ? `${viewportHeight * 0.2}px` : '10rem'
-              }}
-            >
-              {children || (
-                <DashboardContent
-                  currentPage={currentPage}
-                  isEditing={isEditing}
-                  viewportHeight={viewportHeight}
-                  onEditStateChange={setIsEditing}
-                  onRequestChat={handleRequestChat}
-                />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </Suspense>
-      </ErrorBoundary>
+      <DashboardContent
+        currentPage={currentPage}
+        viewportHeight={viewportHeight}
+        isEditing={isEditing}
+        onEditStateChange={setIsEditing}
+        onRequestChat={() => setCurrentPage(2)}
+      />
     </MainLayout>
   );
 }
