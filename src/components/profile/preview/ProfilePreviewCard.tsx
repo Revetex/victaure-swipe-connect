@@ -30,7 +30,8 @@ export function ProfilePreviewCard({
           transition={{ duration: 0.4 }}
           style={{ 
             transformStyle: "preserve-3d",
-            backfaceVisibility: "hidden"
+            backfaceVisibility: "hidden",
+            minHeight: "320px"
           }}
           className="w-full"
         >
@@ -43,7 +44,8 @@ export function ProfilePreviewCard({
           ) : (
             <ProfilePreviewBack 
               profile={profile} 
-              onFlip={handleFlip} 
+              onFlip={handleFlip}
+              onRequestChat={onRequestChat}
             />
           )}
         </motion.div>
