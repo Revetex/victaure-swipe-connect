@@ -45,11 +45,15 @@ export const DashboardLayout: React.FC = () => {
           />
         </DashboardMain>
 
-        <DashboardNavigation
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          isEditing={isEditing}
-        />
+        <nav className="sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
+          <div className="container mx-auto py-2">
+            <DashboardNavigation
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              isEditing={isEditing}
+            />
+          </div>
+        </nav>
       </DashboardContainer>
     </DashboardAuthCheck>
   );

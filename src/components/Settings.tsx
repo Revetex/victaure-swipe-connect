@@ -8,6 +8,7 @@ import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { ScrollArea } from "./ui/scroll-area";
+import { FriendsContent } from "./feed/friends/FriendsContent";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -70,6 +71,17 @@ export function Settings() {
 
         <motion.div variants={itemVariants}>
           <SecuritySection />
+        </motion.div>
+
+        <Separator />
+
+        <motion.div variants={itemVariants}>
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Amis</h3>
+            <div className="p-4 rounded-lg bg-muted/30">
+              <FriendsContent />
+            </div>
+          </div>
         </motion.div>
 
         <Separator />
