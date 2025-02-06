@@ -13,6 +13,7 @@ import { NotesPage } from "@/components/tools/NotesPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
@@ -21,6 +22,7 @@ export function FriendsContent() {
   const [showTasks, setShowTasks] = useState(false);
   const [showTranslator, setShowTranslator] = useState(false);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const tools = [
     {
@@ -85,34 +87,37 @@ export function FriendsContent() {
 
   return (
     <motion.div 
-      className="space-y-6"
+      className="space-y-6 p-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className={cn(
+          "grid gap-4",
+          isMobile ? "grid-cols-2" : "grid-cols-3"
+        )}>
           {tools.map((tool) => (
             <Button
               key={tool.name}
               variant="ghost"
               className={cn(
-                "flex flex-col items-center gap-3 p-6 h-auto",
+                "flex flex-col items-center gap-3 p-4 h-auto",
                 "hover:bg-accent/5 transition-all duration-200",
                 "group relative"
               )}
               onClick={tool.action}
             >
               <div className={cn(
-                "p-4 rounded-lg transition-all duration-200",
+                "p-3 rounded-lg transition-all duration-200",
                 "group-hover:scale-110",
                 tool.color
               )}>
-                <tool.icon className="h-6 w-6" />
+                <tool.icon className="h-5 w-5" />
               </div>
               <div className="text-center">
-                <p className="font-medium">{tool.name}</p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="font-medium text-sm">{tool.name}</p>
+                <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
                   {tool.description}
                 </p>
               </div>

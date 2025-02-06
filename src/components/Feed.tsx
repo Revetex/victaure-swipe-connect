@@ -16,7 +16,6 @@ export function Feed() {
   const isMobile = useIsMobile();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const { viewportHeight } = useViewport();
 
   // Lock screen orientation for mobile
   useEffect(() => {
@@ -88,7 +87,7 @@ export function Feed() {
                 isMobile && "border-b"
               )}
               style={{
-                position: '-webkit-sticky', // For iOS support
+                position: '-webkit-sticky', // Pour le support iOS
                 top: 0
               }}
             >
