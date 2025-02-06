@@ -49,26 +49,36 @@ export function ToolsPage() {
 
   // Set up real-time subscription for tool updates
   useEffect(() => {
-    const channel = supabase.channel('tools-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${supabase.auth.user()?.id}`
-        },
-        (payload) => {
-          if (payload.new.last_used_tool) {
-            setSelectedTool(payload.new.last_used_tool);
-          }
-        }
-      )
-      .subscribe();
+    let mounted = true;
 
-    return () => {
-      supabase.removeChannel(channel);
+    const setupSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const channel = supabase.channel('tools-updates')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`
+          },
+          (payload) => {
+            if (mounted && payload.new.last_used_tool) {
+              setSelectedTool(payload.new.last_used_tool);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        mounted = false;
+        supabase.removeChannel(channel);
+      };
     };
+
+    setupSubscription();
   }, []);
 
   const handleToolChange = async (value: string) => {
