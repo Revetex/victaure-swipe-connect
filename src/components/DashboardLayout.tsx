@@ -66,13 +66,13 @@ export const DashboardLayout: React.FC = () => {
           navigate('/dashboard/messages');
           break;
         case 3:
-          navigate('/dashboard/friends');
+          navigate('/marketplace');
           break;
         case 4:
           navigate('/dashboard/notifications');
           break;
         case 5:
-          navigate('/dashboard/tools');
+          navigate('/tools');
           break;
         case 6:
           navigate('/settings');
@@ -167,4 +167,4 @@ export const DashboardLayout: React.FC = () => {
       </motion.div>
     </DashboardAuthCheck>
   );
-};
+}

@@ -10,6 +10,7 @@ import { LegalNoticePage } from "@/components/legal/LegalNoticePage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import PublicProfile from "@/components/PublicProfile";
 import { useAuth } from "@/hooks/useAuth";
+import { Marketplace } from "@/components/Marketplace";
 import { ToolsPage } from "@/components/tools/ToolsPage";
 
 export function AppRoutes() {
@@ -51,7 +52,15 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/tools/*"
+        path="/marketplace"
+        element={
+          <ProtectedRoute>
+            <Marketplace />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tools"
         element={
           <ProtectedRoute>
             <ToolsPage />
