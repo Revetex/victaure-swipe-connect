@@ -58,6 +58,10 @@ export function MessagesWrapper() {
       return;
     }
 
+    if (!message.trim()) {
+      return;
+    }
+
     try {
       if (receiver.id === 'assistant') {
         if (isThinking) {
@@ -79,10 +83,9 @@ export function MessagesWrapper() {
     
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
+      if (!user) throw new Error("Utilisateur non authentifié");
 
       if (receiver.id === 'assistant') {
-        // Delete AI chat messages
         const { error: aiError } = await supabase
           .from('ai_chat_messages')
           .delete()
@@ -90,8 +93,8 @@ export function MessagesWrapper() {
 
         if (aiError) throw aiError;
         clearAIChat();
+        toast.success("Conversation avec M. Victaure supprimée définitivement");
       } else {
-        // Delete all messages between the two users
         const { error: messagesError } = await supabase
           .from('messages')
           .delete()
@@ -99,17 +102,16 @@ export function MessagesWrapper() {
 
         if (messagesError) throw messagesError;
         clearUserChat(receiver.id);
+        toast.success(`Conversation avec ${receiver.full_name} supprimée définitivement`);
       }
 
-      toast.success("Conversation supprimée définitivement");
       handleBack();
     } catch (error) {
       console.error('Error deleting conversation:', error);
-      toast.error("Erreur lors de la suppression de la conversation");
+      toast.error("Erreur lors de la suppression de la conversation. Veuillez réessayer.");
     }
   };
 
-  // Mark messages as read when conversation is opened
   useEffect(() => {
     const markMessagesAsRead = async () => {
       if (!receiver || receiver.id === 'assistant') return;
@@ -125,15 +127,25 @@ export function MessagesWrapper() {
           .eq('receiver_id', user.id)
           .eq('read', false);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error marking messages as read:', error);
+        }
       } catch (error) {
         console.error('Error marking messages as read:', error);
       }
     };
 
-    if (showConversation) {
-      markMessagesAsRead();
+    let timeoutId: number;
+    if (showConversation && receiver) {
+      // Add a small delay to ensure messages are loaded
+      timeoutId = window.setTimeout(markMessagesAsRead, 500);
     }
+
+    return () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
   }, [showConversation, receiver]);
 
   if (showConversation && receiver) {
