@@ -51,22 +51,20 @@ export function AppHeader({
           transition={{ duration: 0.3 }}
         >
           <NotificationsBox />
-          {!isEditing && (
-            <Button
-              variant="outline"
-              onClick={onToggleFriendsList}
-              className={cn(
-                "flex items-center gap-2 text-sm sm:text-base",
-                "transition-all duration-300",
-                "hover:bg-primary/10 hover:text-primary",
-                showFriendsList ? 'bg-primary/5 text-primary' : ''
-              )}
-              size="sm"
-            >
-              <Menu className="h-4 w-4" />
-              <span className="hidden sm:inline">Amis</span>
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            onClick={onToggleFriendsList}
+            className={cn(
+              "flex items-center gap-2 text-sm sm:text-base",
+              "transition-all duration-300",
+              "hover:bg-primary/10 hover:text-primary",
+              showFriendsList ? 'bg-primary/5 text-primary' : ''
+            )}
+            size="sm"
+          >
+            <Menu className="h-4 w-4" />
+            <span className="hidden sm:inline">Menu</span>
+          </Button>
         </motion.div>
       </div>
     </div>

@@ -10,8 +10,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
-import { SettingsLayout } from "./settings/SettingsLayout";
-import { DashboardNavigation } from "./dashboard/DashboardNavigation";
+import { BottomNavigation } from "./navigation/BottomNavigation";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -86,17 +85,15 @@ export function Settings() {
         </motion.div>
       </ScrollArea>
 
-      <div className="fixed bottom-0 left-0 right-0 z-50">
-        <DashboardNavigation 
-          currentPage={currentPage} 
-          onPageChange={(page) => {
-            if (page !== 5) {
-              navigate('/dashboard');
-            }
-          }}
-          isEditing={false}
-        />
-      </div>
+      <BottomNavigation 
+        currentPage={currentPage} 
+        onPageChange={(page) => {
+          if (page !== 5) {
+            navigate('/dashboard');
+          }
+        }}
+        isEditing={false}
+      />
     </div>
   );
 }
