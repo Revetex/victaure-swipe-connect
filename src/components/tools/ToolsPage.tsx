@@ -9,11 +9,10 @@ import { TranslatorSection } from "./sections/TranslatorSection";
 import { ChessSection } from "./sections/ChessSection";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
+import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 
 export function ToolsPage() {
@@ -59,7 +58,7 @@ export function ToolsPage() {
           className="w-full space-y-6"
         >
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4 border-b">
-            <ScrollArea className="w-full" orientation="horizontal">
+            <ScrollArea className="w-full">
               <TabsList className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-auto min-w-full sm:min-w-fit">
                 {tools.map((tool) => {
                   const Icon = tool.icon;
@@ -114,24 +113,10 @@ export function ToolsPage() {
         </Tabs>
       </div>
 
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button 
-            variant="outline" 
-            size="icon"
-            className="fixed bottom-20 right-4 h-10 w-10 rounded-full shadow-lg"
-          >
-            👥
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="right">
-          <ScrollArea className="h-[calc(100vh-8rem)]">
-            <div className="space-y-4 py-4">
-              {/* Friends list content will be rendered here */}
-            </div>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+      <DashboardFriendsList
+        show={showFriendsList}
+        onClose={() => setShowFriendsList(false)}
+      />
 
       <nav className="sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
         <div className="container mx-auto py-2">
