@@ -155,6 +155,30 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_ai: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_ai?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_ai?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chess_games: {
         Row: {
           ai_difficulty: string | null

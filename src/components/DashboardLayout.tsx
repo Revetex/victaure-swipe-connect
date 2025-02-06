@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, memo, useCallback } from "react";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
@@ -12,6 +13,7 @@ import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { AIAssistant } from "./dashboard/AIAssistant";
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -51,6 +53,7 @@ export const DashboardLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const { viewportHeight } = useViewport();
   const location = useLocation();
 
@@ -66,6 +69,10 @@ export const DashboardLayout: React.FC = () => {
 
   const toggleFriendsList = useCallback(() => {
     setShowFriendsList(prev => !prev);
+  }, []);
+
+  const toggleAIAssistant = useCallback(() => {
+    setShowAIAssistant(prev => !prev);
   }, []);
 
   const handleEditStateChange = useCallback((state: boolean) => {
@@ -118,6 +125,12 @@ export const DashboardLayout: React.FC = () => {
             )}
           </AnimatePresence>
 
+          <AnimatePresence mode="wait">
+            {showAIAssistant && (
+              <AIAssistant onClose={() => setShowAIAssistant(false)} />
+            )}
+          </AnimatePresence>
+
           <DashboardMain>
             <motion.div variants={itemVariants} className="relative z-10">
               <MemoizedDashboardContent
@@ -125,7 +138,7 @@ export const DashboardLayout: React.FC = () => {
                 viewportHeight={viewportHeight}
                 isEditing={isEditing}
                 onEditStateChange={handleEditStateChange}
-                onRequestChat={() => handlePageChange(2)}
+                onRequestChat={() => setShowAIAssistant(true)}
               />
             </motion.div>
           </DashboardMain>
