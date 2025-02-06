@@ -6,18 +6,23 @@ interface DashboardNavigationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   isEditing?: boolean;
+  className?: string;
 }
 
 export function DashboardNavigation({ 
   currentPage, 
   onPageChange,
-  isEditing 
+  isEditing,
+  className 
 }: DashboardNavigationProps) {
   if (isEditing) return null;
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
+      className={cn(
+        "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg",
+        className
+      )}
       style={{ 
         height: '4rem',
         paddingBottom: 'env(safe-area-inset-bottom)'

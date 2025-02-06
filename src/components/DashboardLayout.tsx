@@ -10,6 +10,7 @@ import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -54,8 +55,9 @@ export const DashboardLayout: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const { viewportHeight } = useViewport();
+  const location = useLocation();
+  const isFriendsPage = location.pathname.includes('/friends');
 
-  // Memoize handlers
   const handlePageChange = useCallback((page: number) => {
     try {
       setCurrentPage(page);
@@ -134,13 +136,15 @@ export const DashboardLayout: React.FC = () => {
             </motion.div>
           </DashboardMain>
 
-          <motion.div variants={itemVariants} className="relative z-20">
-            <MemoizedDashboardNavigation
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-              isEditing={isEditing}
-            />
-          </motion.div>
+          {!isFriendsPage && (
+            <motion.div variants={itemVariants} className="relative z-20">
+              <MemoizedDashboardNavigation
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                isEditing={isEditing}
+              />
+            </motion.div>
+          )}
         </DashboardContainer>
       </motion.div>
     </DashboardAuthCheck>
