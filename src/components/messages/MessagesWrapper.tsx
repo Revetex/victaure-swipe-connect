@@ -31,6 +31,30 @@ export function MessagesWrapper() {
     clearChat: clearUserChat,
   } = useUserChat();
 
+  useEffect(() => {
+    // Supprimer automatiquement les conversations avec soi-même au chargement
+    const deleteSelfConversations = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const { error } = await supabase
+          .from('messages')
+          .delete()
+          .match({ 
+            sender_id: user.id,
+            receiver_id: user.id 
+          });
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error deleting self conversations:', error);
+      }
+    };
+
+    deleteSelfConversations();
+  }, []);
+
   const handleBack = () => {
     setShowConversation(false);
     setReceiver(null);
@@ -53,7 +77,6 @@ export function MessagesWrapper() {
 
       // Pour les autres utilisateurs, empêcher uniquement la conversation avec soi-même
       if (selectedReceiver.id === user.id) {
-        await handleDeleteSelfConversation(user.id);
         toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
         return;
       }
@@ -64,25 +87,6 @@ export function MessagesWrapper() {
     } catch (error) {
       console.error('Error selecting conversation:', error);
       toast.error("Une erreur est survenue lors de la sélection de la conversation");
-    }
-  };
-
-  const handleDeleteSelfConversation = async (userId: string) => {
-    try {
-      const { error } = await supabase
-        .from('messages')
-        .delete()
-        .match({ 
-          sender_id: userId,
-          receiver_id: userId 
-        });
-
-      if (error) throw error;
-      clearUserChat(userId);
-      toast.success("La conversation avec vous-même a été supprimée");
-    } catch (error) {
-      console.error('Error deleting self conversation:', error);
-      toast.error("Erreur lors de la suppression de la conversation");
     }
   };
 
