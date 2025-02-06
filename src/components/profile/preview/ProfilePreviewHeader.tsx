@@ -2,6 +2,7 @@ import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { UserCircle, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useConnectionStatus } from "./hooks/useConnectionStatus";
 
 interface ProfilePreviewHeaderProps {
   profile: UserProfile;
@@ -9,6 +10,8 @@ interface ProfilePreviewHeaderProps {
 }
 
 export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewHeaderProps) {
+  const { isFriend } = useConnectionStatus(profile.id);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -38,9 +41,14 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
           <p className="text-sm text-muted-foreground">
             {profile.role === "professional" ? "Professionnel" : "Employeur"}
           </p>
+          {isFriend && profile.city && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {[profile.city, profile.country].filter(Boolean).join(", ")}
+            </p>
+          )}
         </div>
 
-        {onRequestChat && (
+        {isFriend && onRequestChat && (
           <Button
             onClick={onRequestChat}
             variant="secondary"

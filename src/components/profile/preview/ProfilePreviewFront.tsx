@@ -9,6 +9,7 @@ import { ProfilePreviewBio } from "./ProfilePreviewBio";
 import { ProfilePreviewSkills } from "./ProfilePreviewSkills";
 import { ProfilePreviewContact } from "./ProfilePreviewContact";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
@@ -38,12 +39,23 @@ export function ProfilePreviewFront({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
-        <ProfilePreviewHeader profile={profile} onRequestChat={onRequestChat} />
-        <ProfilePreviewBio profile={profile} />
-        <ProfilePreviewSkills profile={profile} />
-        <ProfilePreviewContact profile={profile} />
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
+      >
+        <div className="p-6">
+          <ProfilePreviewHeader profile={profile} onRequestChat={onRequestChat} />
+          
+          {isFriend && (
+            <>
+              <ProfilePreviewBio profile={profile} />
+              <ProfilePreviewSkills profile={profile} />
+              <ProfilePreviewContact profile={profile} />
+            </>
+          )}
+        </div>
+      </motion.div>
 
       <div className="flex flex-col gap-3 mt-6">
         <div className="grid grid-cols-2 gap-3">

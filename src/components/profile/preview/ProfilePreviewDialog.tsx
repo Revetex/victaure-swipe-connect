@@ -19,8 +19,9 @@ export function ProfilePreviewDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-xl p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ProfilePreviewCard 
-          profile={profile} 
+          profile={profile}
           onRequestChat={onRequestChat}
+          onClose={onClose}
         />
       </DialogContent>
     </Dialog>
