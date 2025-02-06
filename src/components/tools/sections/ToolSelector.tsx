@@ -6,28 +6,20 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-interface Tool {
-  id: string;
-  icon: any;
-  label: string;
-  ariaLabel: string;
-  component?: React.ReactNode;
-}
-
-const tools: Tool[] = [
-  { id: "notes", icon: Plus, label: "Notes", ariaLabel: "Create new note" },
-  { id: "tasks", icon: ListTodo, label: "Tâches", ariaLabel: "Manage tasks" },
-  { id: "calculator", icon: Calculator, label: "Calculatrice", ariaLabel: "Use calculator" },
-  { id: "translator", icon: Languages, label: "Traducteur", ariaLabel: "Translate text" },
-  { id: "chess", icon: Sword, label: "Échecs", ariaLabel: "Play chess" }
-];
-
 interface ToolSelectorProps {
   selectedTool: string;
   onToolChange: (value: string) => void;
   className?: string;
   buttonClassName?: string;
 }
+
+const tools = [
+  { id: "notes", icon: Plus, label: "Notes", ariaLabel: "Create new note" },
+  { id: "tasks", icon: ListTodo, label: "Tâches", ariaLabel: "Manage tasks" },
+  { id: "calculator", icon: Calculator, label: "Calculatrice", ariaLabel: "Use calculator" },
+  { id: "translator", icon: Languages, label: "Traducteur", ariaLabel: "Translate text" },
+  { id: "chess", icon: Sword, label: "Échecs", ariaLabel: "Play chess" }
+];
 
 export function ToolSelector({ 
   selectedTool, 
@@ -46,7 +38,7 @@ export function ToolSelector({
     <>
       <Tabs value={selectedTool} onValueChange={onToolChange} className="w-full">
         <TabsList className={cn(
-          "grid grid-cols-3 sm:grid-cols-5 gap-2 p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-xl w-full max-w-2xl mx-auto shadow-lg",
+          "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-background/95 backdrop-blur rounded-xl w-full max-w-4xl mx-auto",
           className
         )}>
           {tools.map((tool) => {
@@ -64,8 +56,8 @@ export function ToolSelector({
                   aria-label={tool.ariaLabel}
                   title={tool.label}
                   className={cn(
-                    "w-full aspect-square flex flex-col items-center justify-center gap-2 p-2",
-                    "rounded-lg transition-all duration-300",
+                    "w-full aspect-square flex flex-col items-center justify-center gap-3 p-4",
+                    "rounded-xl transition-all duration-300",
                     "bg-background/50 hover:bg-background/80",
                     "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                     "data-[state=active]:shadow-lg data-[state=active]:scale-105",
@@ -76,12 +68,12 @@ export function ToolSelector({
                 >
                   <Icon 
                     className={cn(
-                      "h-6 w-6 transition-all duration-300",
+                      "h-8 w-8 transition-all duration-300",
                       "group-hover:scale-110",
                       "group-data-[state=active]:scale-110"
                     )} 
                   />
-                  <span className="text-xs font-medium">{tool.label}</span>
+                  <span className="text-sm font-medium">{tool.label}</span>
                 </TabsTrigger>
               </motion.div>
             );
@@ -89,8 +81,8 @@ export function ToolSelector({
         </TabsList>
       </Tabs>
 
-      <Dialog open={!!openTool} onOpenChange={() => setOpenTool(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-full flex flex-col">
+      <Dialog open={!!openTool} onOpenChange={() => setOpenTool(null)} modal>
+        <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-0 gap-0 bg-background/95 backdrop-blur-sm">
           <div className="flex items-center justify-between p-4 border-b">
             <h2 className="text-lg font-semibold">
               {tools.find(t => t.id === openTool)?.label}
@@ -105,9 +97,7 @@ export function ToolSelector({
             </Button>
           </div>
           <div className="flex-1 overflow-auto p-4">
-            <div className="text-center text-muted-foreground">
-              {openTool && `Contenu de l'outil ${openTool}`}
-            </div>
+            {openTool && `Contenu de l'outil ${openTool}`}
           </div>
         </DialogContent>
       </Dialog>
