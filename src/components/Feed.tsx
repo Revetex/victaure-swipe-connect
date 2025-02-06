@@ -6,15 +6,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { FeedSidebar } from "./feed/FeedSidebar";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useRef, useState, useEffect } from "react";
 import { ChevronUp, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useViewport } from "@/hooks/useViewport";
 
 export function Feed() {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { viewportHeight } = useViewport();
+
+  // Lock screen orientation for mobile
+  useEffect(() => {
+    if (isMobile && screen.orientation) {
+      try {
+        screen.orientation.lock('portrait');
+      } catch (error) {
+        console.log('Orientation lock not supported');
+      }
+    }
+  }, [isMobile]);
 
   const handlePostCreated = () => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -56,10 +69,16 @@ export function Feed() {
       <div className="flex-1 relative">
         <ScrollArea 
           ref={scrollRef} 
-          className="h-[calc(100vh-4rem)]"
+          className={cn(
+            "h-[calc(100vh-4rem)]",
+            isMobile && "touch-pan-y overscroll-y-contain"
+          )}
           onScroll={handleScroll}
         >
-          <div className="max-w-2xl w-full mx-auto px-3 sm:px-4">
+          <div className={cn(
+            "w-full mx-auto px-3 sm:px-4",
+            isMobile ? "max-w-xl" : "max-w-2xl"
+          )}>
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -68,6 +87,10 @@ export function Feed() {
                 "sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-3",
                 isMobile && "border-b"
               )}
+              style={{
+                position: '-webkit-sticky', // For iOS support
+                top: 0
+              }}
             >
               <CreatePost onPostCreated={handlePostCreated} />
             </motion.div>
@@ -96,9 +119,15 @@ export function Feed() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               onClick={scrollToTop}
-              className="fixed bottom-20 right-4 bg-primary/90 hover:bg-primary text-primary-foreground rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+              className={cn(
+                "fixed right-4 bg-primary/90 hover:bg-primary text-primary-foreground",
+                "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
+                "hover:scale-105 active:scale-95 touch-manipulation",
+                "min-h-[44px] min-w-[44px]",
+                isMobile ? "bottom-24" : "bottom-8"
+              )}
             >
-              <ChevronUp className="h-4 w-4" />
+              <ChevronUp className="h-5 w-5" />
             </motion.button>
           )}
         </AnimatePresence>

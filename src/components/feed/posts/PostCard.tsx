@@ -72,7 +72,7 @@ export function PostCard({
         "border shadow-sm transition-all duration-200",
         "p-3 sm:p-4 hover:shadow-md hover:border-primary/20",
         isMobile ? "active:scale-[0.995] touch-none" : "hover:scale-[1.002]",
-        "touch-pan-y"
+        "touch-pan-y overscroll-y-contain"
       )}>
         <div className="flex justify-between items-start gap-3">
           <PostHeader 
@@ -89,7 +89,10 @@ export function PostCard({
                     variant="ghost"
                     size="icon"
                     onClick={handleSaveEdit}
-                    className="text-primary hover:text-primary/90 hover:bg-primary/10"
+                    className={cn(
+                      "text-primary hover:text-primary/90 hover:bg-primary/10",
+                      "min-h-[44px] min-w-[44px] touch-manipulation"
+                    )}
                   >
                     <Save className="h-4 w-4" />
                   </Button>
@@ -97,7 +100,10 @@ export function PostCard({
                     variant="ghost"
                     size="icon"
                     onClick={handleCancelEdit}
-                    className="text-muted-foreground hover:text-foreground"
+                    className={cn(
+                      "text-muted-foreground hover:text-foreground",
+                      "min-h-[44px] min-w-[44px] touch-manipulation"
+                    )}
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -108,7 +114,10 @@ export function PostCard({
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsEditing(true)}
-                    className="text-primary hover:text-primary/90 hover:bg-primary/10"
+                    className={cn(
+                      "text-primary hover:text-primary/90 hover:bg-primary/10",
+                      "min-h-[44px] min-w-[44px] touch-manipulation"
+                    )}
                   >
                     <Edit2 className="h-4 w-4" />
                   </Button>
@@ -116,7 +125,10 @@ export function PostCard({
                     variant="ghost"
                     size="icon"
                     onClick={onDelete}
-                    className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                    className={cn(
+                      "text-destructive hover:text-destructive/90 hover:bg-destructive/10",
+                      "min-h-[44px] min-w-[44px] touch-manipulation"
+                    )}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -131,7 +143,7 @@ export function PostCard({
             <Textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="min-h-[80px] resize-none"
+              className="min-h-[80px] resize-none mobile-friendly-input"
               placeholder="Que voulez-vous partager ?"
             />
           ) : (
@@ -161,7 +173,7 @@ export function PostCard({
             onToggleComments={handleToggleComments}
           />
 
-          {showComments && (
+          {showComments && post.comments && (
             <CommentManager
               postId={post.id}
               postAuthorId={post.user_id}
