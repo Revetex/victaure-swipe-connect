@@ -14,37 +14,34 @@ serve(async (req) => {
   try {
     const { text, sourceLang, targetLang } = await req.json();
 
-    // Make sure we have the required OpenAI API key
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      throw new Error('OpenAI API key not configured');
+    // Make sure we have the required Hugging Face API key
+    const huggingFaceApiKey = Deno.env.get('HUGGING_FACE_API_KEY');
+    if (!huggingFaceApiKey) {
+      throw new Error('Hugging Face API key not configured');
     }
 
-    // Call OpenAI API for translation
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a translation assistant. Translate from ${sourceLang} to ${targetLang}. Only respond with the translation, nothing else.`
-          },
-          {
-            role: 'user',
-            content: text
-          }
-        ],
-        temperature: 0.3
-      })
-    });
+    // Call Hugging Face API for translation
+    const response = await fetch(
+      'https://api-inference.huggingface.co/models/Helsinki-NLP/opus-mt-' + sourceLang + '-' + targetLang,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${huggingFaceApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          inputs: text,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Translation failed');
+    }
 
     const data = await response.json();
-    const translatedText = data.choices[0].message.content.trim();
+    const translatedText = Array.isArray(data) ? data[0].translation_text : data.translation_text;
     const detectedLanguage = sourceLang; // For now, we trust the source language
 
     // Return the translation
