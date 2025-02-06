@@ -1,10 +1,8 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Calculator as CalcIcon, ArrowRightLeft, RotateCcw } from "lucide-react";
+import { Calculator as CalcIcon, ArrowRightLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalculatorDisplay } from "./calculator/CalculatorDisplay";
-import { CalculatorHistory } from "./calculator/CalculatorHistory";
 import { CalculatorKeypad } from "./calculator/CalculatorKeypad";
 import { Converter } from "./calculator/Converter";
 import { useCalculator } from "./calculator/useCalculator";
@@ -13,12 +11,10 @@ import { useConverter } from "./calculator/useConverter";
 export function CalculatorPage() {
   const {
     display,
-    history,
     handleNumber,
     handleOperation,
     calculate,
     clear,
-    clearHistory
   } = useCalculator();
 
   const {
@@ -54,17 +50,6 @@ export function CalculatorPage() {
           </TabsList>
 
           <TabsContent value="calculator" className="space-y-4">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <CalcIcon className="h-6 w-6" />
-                <h1 className="text-2xl font-bold">Calculatrice</h1>
-              </div>
-              <Button variant="outline" size="icon" onClick={clearHistory}>
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <CalculatorHistory history={history} />
             <CalculatorDisplay value={display} />
             <CalculatorKeypad
               onNumber={handleNumber}
@@ -75,11 +60,6 @@ export function CalculatorPage() {
           </TabsContent>
 
           <TabsContent value="converter" className="space-y-4">
-            <div className="flex items-center gap-2 mb-6">
-              <ArrowRightLeft className="h-6 w-6" />
-              <h1 className="text-2xl font-bold">Convertisseur</h1>
-            </div>
-
             <Converter
               conversionType={conversionType}
               fromUnit={fromUnit}

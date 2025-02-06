@@ -1,6 +1,5 @@
-import React from 'react';
 import { Button } from "@/components/ui/button";
-import { X, Divide, Plus, Minus, Equal } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface CalculatorKeypadProps {
   onNumber: (num: string) => void;
@@ -9,29 +8,37 @@ interface CalculatorKeypadProps {
   onClear: () => void;
 }
 
-export function CalculatorKeypad({ onNumber, onOperation, onCalculate, onClear }: CalculatorKeypadProps) {
+export function CalculatorKeypad({
+  onNumber,
+  onOperation,
+  onCalculate,
+  onClear,
+}: CalculatorKeypadProps) {
+  const buttonClass = "h-12 text-lg font-medium transition-all hover:scale-105 active:scale-95";
+
   return (
     <div className="grid grid-cols-4 gap-2">
-      {[7, 8, 9, "/", 4, 5, 6, "*", 1, 2, 3, "-", "C", 0, "=", "+"].map((btn) => (
-        <Button
-          key={btn}
-          onClick={() => {
-            if (typeof btn === "number") onNumber(btn.toString());
-            else if (btn === "=") onCalculate();
-            else if (btn === "C") onClear();
-            else onOperation(btn);
-          }}
-          variant={typeof btn === "number" ? "outline" : "default"}
-          className="h-12 text-lg font-semibold"
-        >
-          {btn === "*" ? <X className="h-4 w-4" /> :
-           btn === "/" ? <Divide className="h-4 w-4" /> :
-           btn === "+" ? <Plus className="h-4 w-4" /> :
-           btn === "-" ? <Minus className="h-4 w-4" /> :
-           btn === "=" ? <Equal className="h-4 w-4" /> :
-           btn}
-        </Button>
-      ))}
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("7")}>7</Button>
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("8")}>8</Button>
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("9")}>9</Button>
+      <Button variant="outline" className={cn(buttonClass, "bg-muted/50")} onClick={() => onOperation("/")}>÷</Button>
+      
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("4")}>4</Button>
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("5")}>5</Button>
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("6")}>6</Button>
+      <Button variant="outline" className={cn(buttonClass, "bg-muted/50")} onClick={() => onOperation("*")}>×</Button>
+      
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("1")}>1</Button>
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("2")}>2</Button>
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("3")}>3</Button>
+      <Button variant="outline" className={cn(buttonClass, "bg-muted/50")} onClick={() => onOperation("-")}>−</Button>
+      
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber("0")}>0</Button>
+      <Button variant="outline" className={buttonClass} onClick={() => onNumber(".")}>.</Button>
+      <Button variant="outline" className={cn(buttonClass, "bg-primary text-primary-foreground hover:bg-primary/90")} onClick={onCalculate}>=</Button>
+      <Button variant="outline" className={cn(buttonClass, "bg-muted/50")} onClick={() => onOperation("+")}>+</Button>
+      
+      <Button variant="outline" className={cn(buttonClass, "col-span-4 bg-destructive/10 hover:bg-destructive/20")} onClick={onClear}>Clear</Button>
     </div>
   );
 }

@@ -1,10 +1,7 @@
-import React from 'react';
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ArrowRightLeft } from "lucide-react";
-import { toast } from "sonner";
 
 interface ConverterProps {
   conversionType: string;
@@ -62,7 +59,7 @@ export function Converter({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
       <Select value={conversionType} onValueChange={onConversionTypeChange}>
         <SelectTrigger>
           <SelectValue placeholder="Type de conversion" />
@@ -86,7 +83,7 @@ export function Converter({
           </SelectContent>
         </Select>
 
-        <ArrowRightLeft className="h-4 w-4" />
+        <ArrowRightLeft className="h-4 w-4 opacity-50" />
 
         <Select value={toUnit} onValueChange={onToUnitChange}>
           <SelectTrigger>
@@ -113,9 +110,9 @@ export function Converter({
       </Button>
 
       {conversionResult && (
-        <Card className="p-4 text-center">
+        <div className="p-4 text-center bg-background/80 rounded-lg">
           <p className="text-lg font-semibold">{conversionResult}</p>
-        </Card>
+        </div>
       )}
     </div>
   );

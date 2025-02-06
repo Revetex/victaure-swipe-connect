@@ -17,18 +17,27 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8 }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.02, rotate: 1 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
         "sticky-note group",
         colorClass,
-        "touch-manipulation"
+        "touch-manipulation relative overflow-hidden",
+        "before:content-[''] before:absolute before:inset-0",
+        "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
+        "after:content-[''] after:absolute after:bottom-0 after:right-0",
+        "after:w-8 after:h-8 after:bg-gradient-to-br",
+        "after:from-black/0 after:to-black/5 after:rounded-tl-2xl"
       )}
     >
       <Button
         variant="ghost"
         size="icon"
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+        className={cn(
+          "absolute top-2 right-2 opacity-0 group-hover:opacity-100",
+          "focus:opacity-100 transition-opacity",
+          "bg-background/20 hover:bg-background/40"
+        )}
         onClick={() => onDelete(note.id)}
       >
         <Trash2 className="h-4 w-4" />
@@ -36,7 +45,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       </Button>
 
       <div className="pt-2 pb-8 px-2">
-        <p className="whitespace-pre-wrap break-words text-sm">
+        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
           {note.text}
         </p>
       </div>
