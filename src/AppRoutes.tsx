@@ -8,7 +8,7 @@ import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
 import { LegalNoticePage } from "@/components/legal/LegalNoticePage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { PublicProfile } from "@/components/PublicProfile";
+import PublicProfile from "@/components/PublicProfile";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AppRoutes() {
@@ -57,7 +57,6 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      {/* Catch all route - redirect to auth if not authenticated */}
       <Route 
         path="*" 
         element={
