@@ -51,7 +51,11 @@ export function ConversationView({
       </div>
 
       <ScrollArea className="flex-1 px-4">
-        <MessagesList messages={messages} />
+        <MessagesList 
+          messages={messages}
+          chatMessages={[]}
+          onSelectConversation={() => {}}
+        />
       </ScrollArea>
 
       <div className="sticky bottom-16 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">

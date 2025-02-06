@@ -110,6 +110,12 @@ export function MessagesContent({
     last_seen: receiver.last_seen || new Date().toISOString()
   } : null;
 
+  const handleSendWrapper = () => {
+    if (inputMessage.trim()) {
+      onSendMessage(inputMessage);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       <ConversationView
@@ -119,7 +125,7 @@ export function MessagesContent({
         isListening={isListening}
         isThinking={isThinking}
         onInputChange={setInputMessage}
-        onSendMessage={onSendMessage}
+        onSendMessage={handleSendWrapper}
         onVoiceInput={onVoiceInput}
         onBack={onBack}
         onDeleteConversation={handleDelete}
