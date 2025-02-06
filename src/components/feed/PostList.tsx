@@ -76,7 +76,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
       }));
     },
     staleTime: 1000 * 60, // Garde les données fraîches pendant 1 minute
-    cacheTime: 1000 * 60 * 5, // Garde les données en cache pendant 5 minutes
+    gcTime: 1000 * 60 * 5, // Garde les données en cache pendant 5 minutes
   });
 
   const handleDeletePost = async (postId: string, userId: string | undefined) => {
