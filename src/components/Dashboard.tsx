@@ -32,14 +32,7 @@ const pageVariants = {
 };
 
 export function Dashboard() {
-  const { profile, isLoading, error } = useProfile();
-
-  useEffect(() => {
-    if (error) {
-      console.error("Profile loading error:", error);
-      toast.error("Une erreur est survenue lors du chargement de votre profil");
-    }
-  }, [error]);
+  const { profile, isLoading } = useProfile();
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
