@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
@@ -40,13 +40,44 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetError
 }
 
 const LoadingSkeleton = () => (
-  <div className="space-y-4 p-4">
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="space-y-4 p-4"
+  >
     <Skeleton className="h-12 w-full" />
     <Skeleton className="h-32 w-full" />
     <Skeleton className="h-8 w-3/4" />
     <Skeleton className="h-8 w-1/2" />
-  </div>
+  </motion.div>
 );
+
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    x: 20,
+    scale: 0.95
+  },
+  animate: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1]
+    }
+  },
+  exit: {
+    opacity: 0,
+    x: -20,
+    scale: 0.95,
+    transition: {
+      duration: 0.3,
+      ease: [0.4, 0, 1, 1]
+    }
+  }
+};
 
 export function DashboardContent({
   currentPage,
@@ -131,14 +162,17 @@ export function DashboardContent({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="w-full"
-    >
-      {renderContent()}
-    </motion.div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={currentPage}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="w-full"
+      >
+        {renderContent()}
+      </motion.div>
+    </AnimatePresence>
   );
 }

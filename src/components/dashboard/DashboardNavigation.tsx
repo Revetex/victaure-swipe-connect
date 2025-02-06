@@ -1,7 +1,6 @@
 import { UserCircle, MessageSquare, BriefcaseIcon, Settings, Newspaper, Wrench } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
 
 interface DashboardNavigationProps {
   currentPage: number;
@@ -10,8 +9,6 @@ interface DashboardNavigationProps {
 }
 
 export function DashboardNavigation({ currentPage, onPageChange, isEditing }: DashboardNavigationProps) {
-  const navigate = useNavigate();
-
   const navigationItems = [
     { id: 1, icon: UserCircle, name: "Profil" },
     { id: 2, icon: MessageSquare, name: "Messages" },
@@ -20,13 +17,6 @@ export function DashboardNavigation({ currentPage, onPageChange, isEditing }: Da
     { id: 5, icon: Wrench, name: "Outils" },
     { id: 6, icon: Settings, name: "Paramètres" }
   ];
-
-  const handleNavigation = (id: number) => {
-    onPageChange(id);
-    if (id === 5) {
-      navigate('/tools');
-    }
-  };
 
   if (isEditing) return null;
 
@@ -43,13 +33,20 @@ export function DashboardNavigation({ currentPage, onPageChange, isEditing }: Da
           {navigationItems.map(({ id, icon: Icon, name }) => (
             <motion.button
               key={id}
-              onClick={() => handleNavigation(id)}
+              onClick={() => onPageChange(id)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: id * 0.1 }}
+              transition={{ 
+                delay: id * 0.1,
+                type: "spring",
+                stiffness: 500,
+                damping: 30
+              }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
               className={cn(
                 "p-3 rounded-xl transition-all duration-300",
-                "hover:bg-primary/10 active:scale-95",
+                "hover:bg-primary/10",
                 "focus:outline-none focus:ring-2 focus:ring-primary/20",
                 "touch-manipulation min-h-[44px] min-w-[44px]",
                 currentPage === id
