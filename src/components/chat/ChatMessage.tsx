@@ -34,7 +34,7 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
           </div>
         ) : (
           <img
-            src={profile?.avatar_url || "/user-icon.svg"}
+            src={avatar_url || profile?.avatar_url || "/user-icon.svg"}
             alt="Your avatar"
             className="h-full w-full object-cover rounded-full"
           />
