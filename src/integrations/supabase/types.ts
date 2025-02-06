@@ -1177,6 +1177,39 @@ export type Database = {
           },
         ]
       }
+      translations: {
+        Row: {
+          created_at: string
+          detected_lang: string | null
+          id: string
+          source_lang: string
+          source_text: string
+          target_lang: string
+          translated_text: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          detected_lang?: string | null
+          id?: string
+          source_lang: string
+          source_text: string
+          target_lang: string
+          translated_text: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          detected_lang?: string | null
+          id?: string
+          source_lang?: string
+          source_text?: string
+          target_lang?: string
+          translated_text?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
