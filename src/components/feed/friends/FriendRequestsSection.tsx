@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PendingRequest } from "./PendingRequest";
 import { toast } from "sonner";
+import { UserCircle } from "lucide-react";
 
 export function FriendRequestsSection() {
   const { data: pendingRequests = [], refetch: refetchPendingRequests } = useQuery({
@@ -106,8 +107,19 @@ export function FriendRequestsSection() {
     refetchPendingRequests();
   };
 
+  if (!pendingRequests.length) {
+    return (
+      <div className="text-center py-6 space-y-2">
+        <UserCircle className="h-12 w-12 mx-auto text-muted-foreground/50" />
+        <p className="text-sm text-muted-foreground">
+          Aucune demande en attente
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <ScrollArea className="h-[200px] pr-4">
+    <ScrollArea className="h-[300px] pr-4">
       <div className="space-y-3">
         {pendingRequests.map((request) => (
           <PendingRequest

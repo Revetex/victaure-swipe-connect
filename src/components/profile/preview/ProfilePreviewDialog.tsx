@@ -17,20 +17,10 @@ export function ProfilePreviewDialog({
 }: ProfilePreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="sm:max-w-[425px] gap-4 overflow-y-auto max-h-[90vh] bg-background"
-        style={{ 
-          position: 'fixed',
-          zIndex: 9999,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          perspective: '1000px'
-        }}
-      >
+      <DialogContent className="max-w-xl p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <ProfilePreviewCard 
-          profile={profile}
+          profile={profile} 
           onRequestChat={onRequestChat}
-          onClose={onClose}
         />
       </DialogContent>
     </Dialog>

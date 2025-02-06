@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Check, Clock, X } from "lucide-react";
+import { Check, Clock, UserPlus, X } from "lucide-react";
 import type { PendingRequest as PendingRequestType } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { useState } from "react";
@@ -37,12 +37,12 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
   return (
     <>
       <div className={cn(
-        "flex items-center gap-3 p-3 rounded-lg",
-        "bg-primary/5 border border-primary/10",
-        "animate-pulse transition-all duration-200"
+        "flex items-center gap-3 p-4 rounded-lg",
+        "bg-card border border-border",
+        "hover:bg-accent/5 transition-colors duration-200"
       )}>
         <Avatar 
-          className="h-10 w-10 border-2 border-primary/10 cursor-pointer hover:border-primary/20 transition-colors"
+          className="h-10 w-10 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all"
           onClick={() => setShowProfile(true)}
         >
           <AvatarImage 
@@ -60,10 +60,18 @@ export function PendingRequest({ request, onAccept, onReject, onCancel }: Pendin
           <p className="font-medium truncate">
             {profile.full_name}
           </p>
-          <p className="text-xs text-muted-foreground">
-            {request.type === 'incoming' 
-              ? "Souhaite vous ajouter comme ami" 
-              : "Demande envoyée"}
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            {request.type === 'incoming' ? (
+              <>
+                <UserPlus className="h-3 w-3" />
+                Souhaite vous ajouter comme ami
+              </>
+            ) : (
+              <>
+                <Clock className="h-3 w-3" />
+                Demande envoyée
+              </>
+            )}
           </p>
         </div>
         <div className="flex gap-2">
