@@ -8,6 +8,7 @@ import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
 import { LegalNoticePage } from "@/components/legal/LegalNoticePage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { PublicProfile } from "@/components/PublicProfile";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AppRoutes() {
@@ -39,6 +40,7 @@ export function AppRoutes() {
       <Route path="/legal/privacy" element={<PrivacyPage />} />
       <Route path="/legal/cookies" element={<CookiesPage />} />
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
+      <Route path="/profile/:id" element={<PublicProfile />} />
       <Route
         path="/dashboard/*"
         element={

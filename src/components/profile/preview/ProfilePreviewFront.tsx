@@ -9,6 +9,7 @@ import { ProfilePreviewSkills } from "./ProfilePreviewSkills";
 import { ProfilePreviewContact } from "./ProfilePreviewContact";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
@@ -21,6 +22,7 @@ export function ProfilePreviewFront({
   onRequestChat,
   onFlip,
 }: ProfilePreviewFrontProps) {
+  const navigate = useNavigate();
   const {
     isFriend,
     isBlocked,
@@ -35,6 +37,10 @@ export function ProfilePreviewFront({
     handleToggleBlock,
     handleRequestCV,
   } = useConnectionActions(profile.id);
+
+  const handleViewFullProfile = () => {
+    navigate(`/profile/${profile.id}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -73,7 +79,7 @@ export function ProfilePreviewFront({
               <Button
                 variant="default"
                 className="bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-2"
-                onClick={() => window.location.href = `/profile/${profile.id}`}
+                onClick={handleViewFullProfile}
               >
                 <FileText className="w-4 h-4" />
                 Voir profil complet
