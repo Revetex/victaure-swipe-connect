@@ -29,6 +29,7 @@ export interface UserProfile {
   online_status?: boolean;
   last_seen?: string;
   created_at?: string;
+  auto_update_enabled?: boolean;
 }
 
 export interface Certification {
