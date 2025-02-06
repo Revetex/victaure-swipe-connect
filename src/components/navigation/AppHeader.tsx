@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
@@ -20,6 +21,10 @@ export function AppHeader({
   isEditing,
   onToolReturn
 }: AppHeaderProps) {
+  // Hide header if any parent element has z-index 99999 (chat overlay)
+  const overlayElement = document.querySelector('[style*="z-index: 99999"]');
+  if (overlayElement) return null;
+
   return (
     <div className="sticky top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
       <div className="flex items-center justify-between p-4 max-w-[2000px] mx-auto">
