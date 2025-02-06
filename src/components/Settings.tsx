@@ -12,8 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
 import { SettingsLayout } from "./settings/SettingsLayout";
-import { DashboardNavigation } from "./dashboard/DashboardNavigation";
-import { motion as m } from "framer-motion";
+import { DashboardNavigation } from "./layout/DashboardNavigation";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -81,7 +80,7 @@ export function Settings() {
       </AnimatePresence>
 
       <ScrollArea className="h-[calc(100vh-8rem)] overflow-y-auto">
-        <m.div
+        <motion.div
           initial="initial"
           animate="animate"
           exit="exit"
@@ -98,7 +97,7 @@ export function Settings() {
           className="container mx-auto px-4 py-6 space-y-8 max-w-2xl"
         >
           {settingsSections.map(({ id, Component }, index) => (
-            <m.div
+            <motion.div
               key={id}
               variants={sectionVariants}
               initial="initial"
@@ -107,9 +106,9 @@ export function Settings() {
               transition={{ delay: index * 0.1 }}
             >
               <Component />
-            </m.div>
+            </motion.div>
           ))}
-        </m.div>
+        </motion.div>
       </ScrollArea>
 
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
