@@ -1,17 +1,19 @@
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Bot } from "lucide-react";
-import { motion } from "framer-motion";
+import { Bot, Check, CheckCheck } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 
 interface ChatMessageProps {
   content: string;
   sender: "user" | "assistant";
   avatar_url?: string;
+  read?: boolean;
+  timestamp?: string;
 }
 
-export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
+export function ChatMessage({ content, sender, avatar_url, read, timestamp }: ChatMessageProps) {
   const { profile } = useProfile();
   const isAssistant = sender === "assistant";
 
@@ -19,6 +21,7 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
       className={cn(
         "flex w-full gap-4 p-4",
         isAssistant ? "bg-muted/50" : "bg-background"
@@ -41,12 +44,19 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
         )}
       </Avatar>
       <div className="flex-1 space-y-2">
-        <p className={cn(
-          "text-sm font-medium",
-          isAssistant ? "text-primary" : "text-foreground"
-        )}>
-          {isAssistant ? "M. Victaure" : "Vous"}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className={cn(
+            "text-sm font-medium",
+            isAssistant ? "text-primary" : "text-foreground"
+          )}>
+            {isAssistant ? "M. Victaure" : "Vous"}
+          </p>
+          {timestamp && (
+            <span className="text-xs text-muted-foreground">
+              {new Date(timestamp).toLocaleTimeString()}
+            </span>
+          )}
+        </div>
         <Card className={cn(
           "p-4 shadow-sm transition-all duration-200",
           isAssistant 
@@ -55,6 +65,15 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
         )}>
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
         </Card>
+        {!isAssistant && (
+          <div className="flex justify-end">
+            {read ? (
+              <CheckCheck className="h-4 w-4 text-primary" />
+            ) : (
+              <Check className="h-4 w-4 text-muted-foreground" />
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   );
