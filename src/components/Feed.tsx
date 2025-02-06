@@ -1,9 +1,11 @@
+
 import { CreatePost } from "./feed/CreatePost";
 import { PostList } from "./feed/PostList";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { FeedSidebar } from "./feed/FeedSidebar";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -17,28 +19,39 @@ export function Feed() {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
 
+  const handlePostUpdated = () => {
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full flex flex-col bg-background min-h-screen"
+      className="w-full flex bg-background min-h-screen"
     >
-      <div className="max-w-3xl w-full mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className={cn(
-            "sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4",
-            isMobile && "border-b"
-          )}
-        >
-          <CreatePost onPostCreated={handlePostCreated} />
-        </motion.div>
-        
-        <div className="py-4">
-          <PostList onPostDeleted={handlePostDeleted} />
+      {!isMobile && <FeedSidebar />}
+      
+      <div className="flex-1">
+        <div className="max-w-3xl w-full mx-auto px-4 sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className={cn(
+              "sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4",
+              isMobile && "border-b"
+            )}
+          >
+            <CreatePost onPostCreated={handlePostCreated} />
+          </motion.div>
+          
+          <div className="py-4">
+            <PostList 
+              onPostDeleted={handlePostDeleted}
+              onPostUpdated={handlePostUpdated}
+            />
+          </div>
         </div>
       </div>
     </motion.div>

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { PostHeader } from "../PostHeader";
@@ -5,11 +6,12 @@ import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { PostImageGrid } from "./PostImageGrid";
+import { Edit2, Save, Trash2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { PostActions } from "../PostActions";
 import { CommentManager } from "../comments/CommentManager";
-import { PostImageGrid } from "./PostImageGrid";
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface PostCardProps {
   post: Post;
@@ -19,6 +21,7 @@ interface PostCardProps {
   onHide?: (postId: string) => void;
   onReaction?: (postId: string, type: 'like' | 'dislike') => void;
   onCommentAdded?: () => void;
+  onUpdate?: (postId: string, content: string) => void;
 }
 
 export function PostCard({ 
@@ -28,9 +31,12 @@ export function PostCard({
   onDelete, 
   onHide,
   onReaction,
-  onCommentAdded 
+  onCommentAdded,
+  onUpdate
 }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
   const isMobile = useIsMobile();
 
   const handleReaction = (type: 'like' | 'dislike') => {
@@ -39,6 +45,18 @@ export function PostCard({
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
+  };
+
+  const handleSaveEdit = () => {
+    if (editContent.trim() !== post.content) {
+      onUpdate?.(post.id, editContent);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditContent(post.content);
+    setIsEditing(false);
   };
 
   const postWithDefaultAvatar = {
@@ -80,22 +98,64 @@ export function PostCard({
           />
           
           {isOwnPost && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onDelete}
-              className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 -mt-1 -mr-2"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              {isEditing ? (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleSaveEdit}
+                    className="text-primary hover:text-primary/90 hover:bg-primary/10"
+                  >
+                    <Save className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleCancelEdit}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsEditing(true)}
+                    className="text-primary hover:text-primary/90 hover:bg-primary/10"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onDelete}
+                    className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+            </div>
           )}
         </div>
 
         <div className="space-y-4 mt-4">
-          {post.content && (
-            <div className="text-sm text-foreground/80 whitespace-pre-wrap">
-              {post.content}
-            </div>
+          {isEditing ? (
+            <Textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              className="min-h-[100px] resize-none"
+              placeholder="Que voulez-vous partager ?"
+            />
+          ) : (
+            post.content && (
+              <div className="text-sm text-foreground/80 whitespace-pre-wrap">
+                {post.content}
+              </div>
+            )
           )}
           
           {post.images && post.images.length > 0 && (

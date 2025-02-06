@@ -1,3 +1,4 @@
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,16 +17,18 @@ import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { ListTodo } from "lucide-react";
 
 interface PostListProps {
   onPostDeleted: () => void;
+  onPostUpdated: () => void;
 }
 
-export function PostList({ onPostDeleted }: PostListProps) {
+export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const { handleReaction, handleDelete, handleHide } = usePostOperations();
+  const { handleReaction, handleDelete, handleHide, handleUpdate } = usePostOperations();
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["posts"],
@@ -88,6 +91,17 @@ export function PostList({ onPostDeleted }: PostListProps) {
     }
   };
 
+  const handleUpdatePost = async (postId: string, content: string) => {
+    try {
+      await handleUpdate(postId, content);
+      onPostUpdated();
+      toast.success("Publication mise à jour avec succès");
+    } catch (error) {
+      console.error('Error updating post:', error);
+      toast.error("Erreur lors de la mise à jour de la publication");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -96,10 +110,26 @@ export function PostList({ onPostDeleted }: PostListProps) {
     );
   }
 
+  if (!posts?.length) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-center text-muted-foreground py-12"
+      >
+        <ListTodo className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <p className="text-lg">Aucune publication</p>
+        <p className="text-sm mt-2">
+          Soyez le premier à partager quelque chose !
+        </p>
+      </motion.div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <AnimatePresence mode="popLayout">
-        {posts?.map((post) => (
+        {posts.map((post) => (
           <motion.div
             key={post.id}
             initial={{ opacity: 0, y: 20 }}
@@ -115,6 +145,7 @@ export function PostList({ onPostDeleted }: PostListProps) {
               onHide={(postId) => handleHide(postId, user?.id)}
               onReaction={(postId, type) => handleReaction(postId, user?.id, type)}
               onCommentAdded={() => queryClient.invalidateQueries({ queryKey: ["posts"] })}
+              onUpdate={handleUpdatePost}
             />
           </motion.div>
         ))}
