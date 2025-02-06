@@ -45,7 +45,12 @@ export function ConnectionsSection() {
 
   if (!friends?.length) {
     return (
-      <div className="text-center py-8 space-y-4 bg-card rounded-lg shadow-sm p-6">
+      <motion.div 
+        className="text-center py-8 space-y-4 bg-card rounded-lg shadow-sm p-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <Users2 className="h-12 w-12 mx-auto text-muted-foreground/50" />
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">Aucune connection pour le moment</p>
@@ -53,7 +58,7 @@ export function ConnectionsSection() {
             Commencez à ajouter des contacts pour développer votre réseau
           </p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -71,21 +76,23 @@ export function ConnectionsSection() {
         </h3>
       </div>
       
-      <ScrollArea className="h-[300px]">
-        <AnimatePresence>
+      <ScrollArea className="h-[300px] pr-2">
+        <AnimatePresence mode="wait">
           <div className="space-y-2">
-            {currentFriends.map((friend) => (
+            {currentFriends.map((friend, index) => (
               <motion.div
                 key={friend.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ delay: index * 0.1 }}
               >
                 <Button
                   variant="ghost"
                   className={cn(
                     "w-full flex items-center gap-3 h-auto p-3",
-                    "hover:bg-accent/5 transition-colors"
+                    "hover:bg-accent/5 transition-all duration-200",
+                    "group relative"
                   )}
                 >
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden relative">
@@ -99,7 +106,16 @@ export function ConnectionsSection() {
                       <UserCircle className="w-5 h-5 text-muted-foreground" />
                     )}
                     {friend.online_status && (
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background" />
+                      <motion.div 
+                        className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 20
+                        }}
+                      />
                     )}
                   </div>
                   <div className="flex-1 text-left">
@@ -126,6 +142,7 @@ export function ConnectionsSection() {
                 <PaginationLink
                   isActive={currentPage === index + 1}
                   onClick={() => setCurrentPage(index + 1)}
+                  className="transition-colors duration-200"
                 >
                   {index + 1}
                 </PaginationLink>

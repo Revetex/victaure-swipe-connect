@@ -4,6 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PendingRequest } from "./PendingRequest";
 import { toast } from "sonner";
 import { UserCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function FriendRequestsSection() {
   const { data: pendingRequests = [], refetch: refetchPendingRequests } = useQuery({
@@ -109,28 +110,42 @@ export function FriendRequestsSection() {
 
   if (!pendingRequests.length) {
     return (
-      <div className="text-center py-6 space-y-2">
+      <motion.div 
+        className="text-center py-6 space-y-2"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <UserCircle className="h-12 w-12 mx-auto text-muted-foreground/50" />
         <p className="text-sm text-muted-foreground">
           Aucune demande en attente
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <ScrollArea className="h-[300px] pr-4">
-      <div className="space-y-3">
-        {pendingRequests.map((request) => (
-          <PendingRequest
-            key={request.id}
-            request={request}
-            onAccept={handleAcceptRequest}
-            onReject={handleRejectRequest}
-            onCancel={handleCancelRequest}
-          />
-        ))}
-      </div>
+      <AnimatePresence>
+        <div className="space-y-3">
+          {pendingRequests.map((request, index) => (
+            <motion.div
+              key={request.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <PendingRequest
+                request={request}
+                onAccept={handleAcceptRequest}
+                onReject={handleRejectRequest}
+                onCancel={handleCancelRequest}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </AnimatePresence>
     </ScrollArea>
   );
 }
