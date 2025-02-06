@@ -2,7 +2,7 @@ import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { ConnectionsSection } from "./ConnectionsSection";
-import { Calculator, Languages, ListTodo, Sword } from "lucide-react";
+import { Calculator, ListTodo, Sword } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -10,22 +10,22 @@ import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { NotesPage } from "@/components/tools/NotesPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
-import { TranslatorPage } from "@/components/tools/TranslatorPage";
+import { TasksPage } from "@/components/tools/TasksPage";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const [showNotes, setShowNotes] = useState(false);
   const [showCalculator, setShowCalculator] = useState(false);
-  const [showTranslator, setShowTranslator] = useState(false);
+  const [showTasks, setShowTasks] = useState(false);
   const navigate = useNavigate();
 
   const tools = [
     {
-      name: "Notes",
+      name: "Tâches",
       icon: ListTodo,
-      action: () => setShowNotes(true),
+      action: () => setShowTasks(true),
       color: "bg-blue-500/10 text-blue-500",
-      description: "Gérez vos notes et listes"
+      description: "Gérez vos tâches et listes"
     },
     {
       name: "Calculatrice",
@@ -33,13 +33,6 @@ export function FriendsContent() {
       action: () => setShowCalculator(true),
       color: "bg-green-500/10 text-green-500",
       description: "Calculatrice et convertisseur"
-    },
-    {
-      name: "Traducteur",
-      icon: Languages,
-      action: () => setShowTranslator(true),
-      color: "bg-purple-500/10 text-purple-500",
-      description: "Traduisez des textes"
     },
     {
       name: "Échecs",
@@ -81,7 +74,7 @@ export function FriendsContent() {
       animate="visible"
     >
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {tools.map((tool) => (
             <Button
               key={tool.name}
@@ -111,13 +104,8 @@ export function FriendsContent() {
         </div>
       </motion.div>
 
-      <motion.div 
-        className="space-y-6"
-        variants={itemVariants}
-      >
-        <motion.div variants={itemVariants}>
-          <ConnectionsSection />
-        </motion.div>
+      <motion.div variants={itemVariants}>
+        <ConnectionsSection />
       </motion.div>
 
       {selectedProfile && (
@@ -128,9 +116,9 @@ export function FriendsContent() {
         />
       )}
 
-      <Dialog open={showNotes} onOpenChange={setShowNotes}>
+      <Dialog open={showTasks} onOpenChange={setShowTasks}>
         <DialogContent className="max-w-4xl h-[80vh]">
-          <NotesPage />
+          <TasksPage />
         </DialogContent>
       </Dialog>
 
@@ -140,9 +128,9 @@ export function FriendsContent() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showTranslator} onOpenChange={setShowTranslator}>
+      <Dialog open={showNotes} onOpenChange={setShowNotes}>
         <DialogContent className="max-w-4xl h-[80vh]">
-          <TranslatorPage />
+          <NotesPage />
         </DialogContent>
       </Dialog>
     </motion.div>

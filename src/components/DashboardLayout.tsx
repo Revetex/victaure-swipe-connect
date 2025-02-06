@@ -2,8 +2,8 @@ import React, { useState, useEffect, memo, useCallback } from "react";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { DashboardHeader } from "./dashboard/DashboardHeader";
-import { DashboardNavigation } from "./dashboard/DashboardNavigation";
+import { AppHeader } from "./navigation/AppHeader";
+import { BottomNavigation } from "./navigation/BottomNavigation";
 import { useViewport } from "@/hooks/useViewport";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
@@ -44,11 +44,7 @@ const itemVariants = {
   exit: { opacity: 0, y: -20 }
 };
 
-// Memoize child components
-const MemoizedDashboardHeader = memo(DashboardHeader);
 const MemoizedDashboardContent = memo(DashboardContent);
-const MemoizedDashboardNavigation = memo(DashboardNavigation);
-const MemoizedDashboardFriendsList = memo(DashboardFriendsList);
 
 export const DashboardLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,7 +52,6 @@ export const DashboardLayout: React.FC = () => {
   const [showFriendsList, setShowFriendsList] = useState(false);
   const { viewportHeight } = useViewport();
   const location = useLocation();
-  const isFriendsPage = location.pathname.includes('/friends');
 
   const handlePageChange = useCallback((page: number) => {
     try {
@@ -76,12 +71,10 @@ export const DashboardLayout: React.FC = () => {
     setIsEditing(state);
   }, []);
 
-  // Scroll to top on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
-  // Log performance metrics
   useEffect(() => {
     const startTime = performance.now();
     return () => {
@@ -98,16 +91,13 @@ export const DashboardLayout: React.FC = () => {
         animate="animate"
         exit="exit"
         className="min-h-screen bg-background relative overflow-hidden"
-        style={{ willChange: 'transform, opacity' }}
       >
-        {/* Optimized background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" 
-             style={{ willChange: 'opacity' }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
         
         <DashboardContainer>
           <motion.div variants={itemVariants}>
-            <MemoizedDashboardHeader
+            <AppHeader
               title={getPageTitle(currentPage)}
               showFriendsList={showFriendsList}
               onToggleFriendsList={toggleFriendsList}
@@ -117,7 +107,7 @@ export const DashboardLayout: React.FC = () => {
           
           <AnimatePresence mode="wait">
             {showFriendsList && (
-              <MemoizedDashboardFriendsList 
+              <DashboardFriendsList 
                 show={showFriendsList} 
                 onClose={() => setShowFriendsList(false)}
               />
@@ -136,15 +126,11 @@ export const DashboardLayout: React.FC = () => {
             </motion.div>
           </DashboardMain>
 
-          {!isFriendsPage && (
-            <motion.div variants={itemVariants} className="relative z-20">
-              <MemoizedDashboardNavigation
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-                isEditing={isEditing}
-              />
-            </motion.div>
-          )}
+          <BottomNavigation
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            isEditing={isEditing}
+          />
         </DashboardContainer>
       </motion.div>
     </DashboardAuthCheck>
