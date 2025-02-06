@@ -83,6 +83,3 @@ export function AuthCallback() {
     </motion.div>
   );
 }
-
-// Export as default for lazy loading
-export default AuthCallback;

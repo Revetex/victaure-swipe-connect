@@ -22,4 +22,3 @@ export function NoteGrid({ notes, onDeleteNote }: NoteGridProps) {
     </div>
   );
 }
-

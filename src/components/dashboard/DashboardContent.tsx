@@ -1,8 +1,8 @@
-
 import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
+import { Settings } from "@/components/Settings";
 import { Feed } from "@/components/Feed";
 import { useEffect, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -128,6 +128,22 @@ export function DashboardContent({
               </Suspense>
             </ErrorBoundary>
           );
+        case 5:
+          return (
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<LoadingSkeleton />}>
+                <Settings />
+              </Suspense>
+            </ErrorBoundary>
+          );
+        case 6:
+          return (
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<LoadingSkeleton />}>
+                <Settings />
+              </Suspense>
+            </ErrorBoundary>
+          );
         default:
           return null;
       }
@@ -157,4 +173,3 @@ export function DashboardContent({
     </AnimatePresence>
   );
 }
-

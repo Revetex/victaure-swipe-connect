@@ -1,10 +1,10 @@
-
 import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
-import { Feed } from "@/components/Feed";
+import { Settings } from "@/components/Settings";
 import { NotesMap } from "@/components/notes/NotesMap";
+import { Feed } from "@/components/Feed";
 import { useEffect } from "react";
 
 interface DashboardContentProps {
@@ -44,8 +44,10 @@ export function DashboardContent({
             <NotesMap />
           </div>
         );
+      case 6:
+        return <Settings />;
       default:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        return null;
     }
   };
 

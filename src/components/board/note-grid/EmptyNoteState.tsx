@@ -17,4 +17,3 @@ export function EmptyNoteState() {
     </motion.div>
   );
 }
-

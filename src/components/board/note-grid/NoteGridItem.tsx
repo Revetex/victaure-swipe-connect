@@ -31,4 +31,3 @@ export function NoteGridItem({ note, onDelete }: NoteGridItemProps) {
     </motion.div>
   );
 }
-

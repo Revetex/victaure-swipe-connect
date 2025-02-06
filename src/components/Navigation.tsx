@@ -1,5 +1,5 @@
-
-import { MessageSquare, Settings } from "lucide-react";
+import { Menu, MessageSquare, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -9,8 +9,6 @@ import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { SettingsDropdown } from "./settings/SettingsDropdown";
-import { Button } from "@/components/ui/button";
 
 export function Navigation() {
   const isMobile = useIsMobile();
@@ -30,9 +28,16 @@ export function Navigation() {
         <span className="relative z-10">Messages</span>
         <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </Link>
+      <Link 
+        to="/settings" 
+        className="text-foreground/80 hover:text-primary transition-colors relative group flex items-center gap-2"
+      >
+        <Settings className="h-4 w-4" />
+        <span className="relative z-10">Paramètres</span>
+        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </Link>
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
         <NotificationsBox />
-        <SettingsDropdown />
         <ThemeToggle />
       </div>
     </nav>
@@ -40,10 +45,10 @@ export function Navigation() {
 
   return (
     <motion.header 
-      initial={{ y: -100 }}
+      initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-lg border-b border-border/40 z-50"
+      className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border/40 z-50"
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <motion.div 
@@ -58,7 +63,7 @@ export function Navigation() {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
-                <Settings className="h-6 w-6" />
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent className="w-[80vw] sm:w-[380px] bg-background/95 border-border">
