@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { PostActions } from "../PostActions";
+import { PostActions } from "./PostActions";
 import { CommentManager } from "@/components/feed/comments/CommentManager";
 import { PostCardHeader } from "./card/PostCardHeader";
 import { PostCardContent } from "./card/PostCardContent";
