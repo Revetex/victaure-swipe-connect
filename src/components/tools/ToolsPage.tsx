@@ -10,9 +10,11 @@ import { ChessSection } from "./sections/ChessSection";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { toast } from "sonner";
+import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
-import { ListTodo, StickyNote, Calculator, Languages, Sword } from "lucide-react";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -26,11 +28,19 @@ export function ToolsPage() {
       setSelectedTool(value);
       await new Promise(resolve => setTimeout(resolve, 300));
     } catch (error) {
-      toast.error("Erreur lors du changement d'outil");
+      console.error("Error changing tool:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const tools = [
+    { id: "notes", icon: Plus, label: "Notes" },
+    { id: "tasks", icon: ListTodo, label: "Tâches" },
+    { id: "calculator", icon: Calculator, label: "Calculatrice" },
+    { id: "translator", icon: Languages, label: "Traducteur" },
+    { id: "chess", icon: Sword, label: "Échecs" }
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -49,58 +59,26 @@ export function ToolsPage() {
           className="w-full space-y-6"
         >
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4 border-b">
-            <TabsList className="w-full justify-start overflow-x-auto flex p-1 gap-2">
-              <TabsTrigger 
-                value="notes"
-                className={cn(
-                  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                  "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
-                )}
-              >
-                <StickyNote className="h-4 w-4" />
-                <span className="hidden sm:inline">Notes</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="tasks"
-                className={cn(
-                  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                  "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
-                )}
-              >
-                <ListTodo className="h-4 w-4" />
-                <span className="hidden sm:inline">Tâches</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="calculator"
-                className={cn(
-                  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                  "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
-                )}
-              >
-                <Calculator className="h-4 w-4" />
-                <span className="hidden sm:inline">Calculatrice</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="translator"
-                className={cn(
-                  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                  "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
-                )}
-              >
-                <Languages className="h-4 w-4" />
-                <span className="hidden sm:inline">Traducteur</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="chess"
-                className={cn(
-                  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                  "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
-                )}
-              >
-                <Sword className="h-4 w-4" />
-                <span className="hidden sm:inline">Échecs</span>
-              </TabsTrigger>
-            </TabsList>
+            <ScrollArea className="w-full" orientation="horizontal">
+              <TabsList className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-auto min-w-full sm:min-w-fit">
+                {tools.map((tool) => {
+                  const Icon = tool.icon;
+                  return (
+                    <TabsTrigger
+                      key={tool.id}
+                      value={tool.id}
+                      className={cn(
+                        "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2",
+                        "hover:bg-background/60"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="sr-only sm:not-sr-only">{tool.label}</span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </ScrollArea>
           </div>
 
           <motion.div
@@ -135,6 +113,25 @@ export function ToolsPage() {
           </motion.div>
         </Tabs>
       </div>
+
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="fixed bottom-20 right-4 h-10 w-10 rounded-full shadow-lg"
+          >
+            👥
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right">
+          <ScrollArea className="h-[calc(100vh-8rem)]">
+            <div className="space-y-4 py-4">
+              {/* Friends list content will be rendered here */}
+            </div>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
 
       <nav className="sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
         <div className="container mx-auto py-2">
