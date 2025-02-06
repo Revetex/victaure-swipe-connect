@@ -3,12 +3,11 @@ import { MessagesList } from "./MessagesList";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import { Message } from "@/types/messages";
-import { UserProfile } from "@/types/profile";
+import { Message, Receiver } from "@/types/messages";
 
 interface ConversationViewProps {
   messages: Message[];
-  profile: UserProfile | null;
+  profile: Receiver | null;
   inputMessage: string;
   onInputChange: (value: string) => void;
   onSendMessage: () => void;
