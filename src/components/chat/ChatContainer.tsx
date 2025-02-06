@@ -8,9 +8,8 @@ interface ChatContainerProps {
 
 export function ChatContainer({ children }: ChatContainerProps) {
   return (
-    <Card className="flex flex-col h-[calc(100vh-6rem)] mx-auto max-w-2xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <Card className="flex flex-col h-[calc(100vh-6rem)] mx-auto max-w-2xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mb-16">
       {children}
     </Card>
   );
 }
-
