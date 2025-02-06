@@ -12,10 +12,11 @@ import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsLis
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
+import { AnimatePresence } from "framer-motion";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
-  const [showFriendsList, setShowFriendsList] = useState(true);
+  const [showFriendsList, setShowFriendsList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -39,6 +40,15 @@ export function ToolsPage() {
         onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
         isEditing={false}
       />
+
+      <AnimatePresence mode="wait">
+        {showFriendsList && (
+          <DashboardFriendsList 
+            show={showFriendsList} 
+            onClose={() => setShowFriendsList(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="flex-1 container mx-auto px-4 py-4">
         <NotesToolSelector 
@@ -89,12 +99,7 @@ export function ToolsPage() {
         </Tabs>
       </div>
 
-      <DashboardFriendsList
-        show={showFriendsList}
-        onClose={() => setShowFriendsList(false)}
-      />
-
-      <nav className="sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
+      <nav className="fixed bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
         <div className="container mx-auto py-2">
           <DashboardNavigation 
             currentPage={5}
