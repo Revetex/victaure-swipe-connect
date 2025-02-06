@@ -38,17 +38,10 @@ export function MessagesWrapper() {
 
   const handleSelectConversation = (selectedReceiver: Receiver) => {
     if (selectedReceiver.id === 'assistant') {
-      const aiReceiver: Receiver = {
-        id: 'assistant',
-        full_name: 'M. Victaure',
-        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-        online_status: true,
-        last_seen: new Date().toISOString()
-      };
-      setReceiver(aiReceiver);
-    } else {
-      setReceiver(selectedReceiver);
+      toast.error("Pour discuter avec M. Victaure, veuillez utiliser l'assistant dans le tableau de bord");
+      return;
     }
+    setReceiver(selectedReceiver);
     setShowConversation(true);
   };
 
@@ -63,15 +56,7 @@ export function MessagesWrapper() {
     }
 
     try {
-      if (receiver.id === 'assistant') {
-        if (isThinking) {
-          toast.error("M. Victaure est en train de réfléchir. Veuillez patienter.");
-          return;
-        }
-        await handleAISendMessage(message);
-      } else {
-        await handleUserSendMessage(message, receiver);
-      }
+      await handleUserSendMessage(message, receiver);
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
@@ -85,26 +70,14 @@ export function MessagesWrapper() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Utilisateur non authentifié");
 
-      if (receiver.id === 'assistant') {
-        const { error: aiError } = await supabase
-          .from('ai_chat_messages')
-          .delete()
-          .eq('user_id', user.id);
+      const { error: messagesError } = await supabase
+        .from('messages')
+        .delete()
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
 
-        if (aiError) throw aiError;
-        clearAIChat();
-        toast.success("Conversation avec M. Victaure supprimée définitivement");
-      } else {
-        const { error: messagesError } = await supabase
-          .from('messages')
-          .delete()
-          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
-
-        if (messagesError) throw messagesError;
-        clearUserChat(receiver.id);
-        toast.success(`Conversation avec ${receiver.full_name} supprimée définitivement`);
-      }
-
+      if (messagesError) throw messagesError;
+      clearUserChat(receiver.id);
+      toast.success(`Conversation avec ${receiver.full_name} supprimée définitivement`);
       handleBack();
     } catch (error) {
       console.error('Error deleting conversation:', error);
@@ -114,7 +87,7 @@ export function MessagesWrapper() {
 
   useEffect(() => {
     const markMessagesAsRead = async () => {
-      if (!receiver || receiver.id === 'assistant') return;
+      if (!receiver) return;
 
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -137,7 +110,6 @@ export function MessagesWrapper() {
 
     let timeoutId: number;
     if (showConversation && receiver) {
-      // Add a small delay to ensure messages are loaded
       timeoutId = window.setTimeout(markMessagesAsRead, 500);
     }
 
@@ -149,26 +121,22 @@ export function MessagesWrapper() {
   }, [showConversation, receiver]);
 
   if (showConversation && receiver) {
-    const isAIChat = receiver.id === 'assistant';
-    
     return (
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
         <ChatHeader
           onBack={handleBack}
           title={receiver.full_name}
-          subtitle={isAIChat ? "Assistant de Placement Virtuel" : "En ligne"}
+          subtitle="En ligne"
           avatarUrl={receiver.avatar_url}
-          isThinking={isAIChat ? isThinking : false}
         />
         
         <MessagesContent
-          messages={isAIChat ? aiMessages : userMessages}
-          inputMessage={isAIChat ? aiInputMessage : userInputMessage}
-          isThinking={isThinking}
-          isListening={isListening}
+          messages={userMessages}
+          inputMessage={userInputMessage}
+          isThinking={false}
+          isListening={false}
           onSendMessage={handleSendMessage}
-          onVoiceInput={isAIChat ? handleVoiceInput : undefined}
-          setInputMessage={isAIChat ? setAIInputMessage : setUserInputMessage}
+          setInputMessage={setUserInputMessage}
           onBack={handleBack}
           receiver={receiver}
           onClearChat={handleDeleteConversation}
@@ -181,7 +149,7 @@ export function MessagesWrapper() {
     <div className="h-full">
       <ConversationList
         messages={userMessages}
-        chatMessages={aiMessages}
+        chatMessages={[]}
         onSelectConversation={handleSelectConversation}
       />
     </div>
