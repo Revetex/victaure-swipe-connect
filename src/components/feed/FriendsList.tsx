@@ -36,7 +36,10 @@ export function FriendsList() {
 
       return acceptedRequests.map(request => {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend;
+        return {
+          ...friend,
+          last_seen: new Date().toISOString() // Add missing property required by Receiver type
+        };
       });
     }
   });
