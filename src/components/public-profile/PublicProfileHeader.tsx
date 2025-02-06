@@ -23,7 +23,7 @@ export function PublicProfileHeader({ onDownloadVCard, onDownloadBusinessCard }:
       <Button
         variant="ghost"
         size="icon"
-        onClick={onDownloadVCard}
+        onClick={() => navigate(-1)}
         className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
       >
         <X className="h-4 w-4" />
