@@ -38,9 +38,9 @@ export function ToolsPage() {
         }
 
         const { data: profile } = await supabase
-          .from("profiles")
-          .select("tools_order, last_used_tool")
-          .eq("id", user.id)
+          .from('profiles')
+          .select('tools_order, last_used_tool')
+          .eq('id', user.id)
           .single();
 
         if (profile?.tools_order) {
@@ -64,9 +64,9 @@ export function ToolsPage() {
       if (!user) return;
 
       await supabase
-        .from("profiles")
+        .from('profiles')
         .update({ last_used_tool: newActiveTool })
-        .eq("id", user.id);
+        .eq('id', user.id);
     } catch (error) {
       console.error("Error updating user preferences:", error);
     }
