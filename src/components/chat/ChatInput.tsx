@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageSquare, Mic, Send } from "lucide-react";
-import { motion } from "framer-motion";
+import { MessageSquare, Mic, Send, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export interface ChatInputProps {
   value?: string;
@@ -39,29 +39,40 @@ export function ChatInput({
             }
           }}
         />
-        <div className="absolute bottom-2 right-2 flex gap-2">
-          <motion.div whileTap={{ scale: 0.95 }}>
-            <Button
-              size="icon"
-              variant={isListening ? "destructive" : "secondary"}
-              onClick={onVoiceInput}
-              disabled={isThinking}
-              className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
-            >
-              <Mic className="h-4 w-4" />
-            </Button>
+        <AnimatePresence>
+          <motion.div 
+            className="absolute bottom-2 right-2 flex gap-2"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <Button
+                size="icon"
+                variant={isListening ? "destructive" : "secondary"}
+                onClick={onVoiceInput}
+                disabled={isThinking}
+                className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
+              >
+                <Mic className="h-4 w-4" />
+              </Button>
+            </motion.div>
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <Button
+                size="icon"
+                onClick={onSend}
+                disabled={!value.trim() || isThinking}
+                className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
+              >
+                {isThinking ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </motion.div>
           </motion.div>
-          <motion.div whileTap={{ scale: 0.95 }}>
-            <Button
-              size="icon"
-              onClick={onSend}
-              disabled={!value.trim() || isThinking}
-              className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );

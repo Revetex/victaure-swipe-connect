@@ -8,9 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 interface ChatScrollProps {
   children: React.ReactNode;
   className?: string;
+  onScroll?: () => void;
 }
 
-export function ChatScroll({ children, className }: ChatScrollProps) {
+export function ChatScroll({ children, className, onScroll }: ChatScrollProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
@@ -29,6 +30,10 @@ export function ChatScroll({ children, className }: ChatScrollProps) {
     const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
     setShowScrollButton(!isNearBottom);
+    
+    if (onScroll) {
+      onScroll();
+    }
   };
 
   useEffect(() => {
@@ -57,7 +62,7 @@ export function ChatScroll({ children, className }: ChatScrollProps) {
               size="icon"
               variant="secondary"
               onClick={scrollToBottom}
-              className="rounded-full shadow-lg"
+              className="rounded-full shadow-lg hover:shadow-xl transition-all"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>

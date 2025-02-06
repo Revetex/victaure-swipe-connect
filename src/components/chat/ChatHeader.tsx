@@ -9,6 +9,8 @@ interface ChatHeaderProps {
   subtitle?: string;
   avatarUrl?: string;
   isThinking?: boolean;
+  isOnline?: boolean;
+  lastSeen?: string;
 }
 
 export function ChatHeader({
@@ -17,18 +19,20 @@ export function ChatHeader({
   subtitle = "Assistant de Placement Virtuel",
   avatarUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
   isThinking = false,
+  isOnline = true,
+  lastSeen,
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-1.5 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex items-center gap-1.5">
+    <div className="flex items-center justify-between p-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex items-center gap-3">
         {onBack && (
           <Button
             variant="ghost"
             size="icon"
             onClick={onBack}
-            className="h-6 w-6"
+            className="h-8 w-8"
           >
-            <ArrowLeft className="h-3 w-3" />
+            <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
         <motion.div
@@ -36,20 +40,25 @@ export function ChatHeader({
           transition={{ repeat: Infinity, duration: 2 }}
           className="relative"
         >
-          <Avatar className="h-6 w-6 ring-1 ring-primary/10">
+          <Avatar className="h-10 w-10 ring-2 ring-primary/10">
             <AvatarImage src={avatarUrl} alt={title} className="object-cover" />
             <AvatarFallback className="bg-primary/20">
-              <Bot className="h-3 w-3 text-primary" />
+              <Bot className="h-4 w-4 text-primary" />
             </AvatarFallback>
           </Avatar>
-          {isThinking && (
-            <span className="absolute bottom-0 right-0 h-1.5 w-1.5 rounded-full bg-green-500 ring-1 ring-white" />
+          {isOnline && (
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 ring-2 ring-white" />
           )}
         </motion.div>
         <div>
-          <h2 className="text-sm font-semibold leading-none">{title}</h2>
-          <p className="text-[10px] text-muted-foreground">
+          <h2 className="text-base font-semibold leading-none">{title}</h2>
+          <p className="text-sm text-muted-foreground mt-1">
             {isThinking ? "En train de réfléchir..." : subtitle}
+            {!isOnline && lastSeen && (
+              <span className="text-xs ml-1">
+                (Vu {new Date(lastSeen).toLocaleDateString('fr-FR')})
+              </span>
+            )}
           </p>
         </div>
       </div>

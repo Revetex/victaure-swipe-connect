@@ -1,17 +1,21 @@
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Bot } from "lucide-react";
+import { Bot, Check, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface ChatMessageProps {
   content: string;
   sender: "user" | "assistant";
   avatar_url?: string;
+  timestamp?: string;
+  isRead?: boolean;
 }
 
-export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
+export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: ChatMessageProps) {
   const { profile } = useProfile();
   const isAssistant = sender === "assistant";
 
@@ -41,12 +45,29 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
         )}
       </Avatar>
       <div className="flex-1 space-y-2">
-        <p className={cn(
-          "text-sm font-medium",
-          isAssistant ? "text-primary" : "text-foreground"
-        )}>
-          {isAssistant ? "M. Victaure" : "Vous"}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className={cn(
+            "text-sm font-medium",
+            isAssistant ? "text-primary" : "text-foreground"
+          )}>
+            {isAssistant ? "M. Victaure" : "Vous"}
+          </p>
+          {timestamp && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              {format(new Date(timestamp), 'HH:mm', { locale: fr })}
+              {!isAssistant && (
+                <div className="flex items-center">
+                  {isRead ? (
+                    <Check className="h-3 w-3 text-primary" />
+                  ) : (
+                    <Check className="h-3 w-3 text-muted-foreground" />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         <Card className={cn(
           "p-4 shadow-sm transition-all duration-200",
           isAssistant 
