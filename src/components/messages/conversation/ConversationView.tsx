@@ -1,9 +1,11 @@
+
 import { ConversationHeader } from "./ConversationHeader";
 import { MessagesList } from "./MessagesList";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Message, Receiver } from "@/types/messages";
+import { ChatThinking } from "@/components/chat/ChatThinking";
 
 interface ConversationViewProps {
   messages: Message[];
@@ -40,7 +42,7 @@ export function ConversationView({
   });
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full">
       <div className="sticky top-0 z-50 shrink-0">
         <ConversationHeader
           profile={profile}
@@ -50,14 +52,17 @@ export function ConversationView({
       </div>
 
       <ScrollArea className="flex-1">
-        <MessagesList 
-          messages={messages}
-          chatMessages={[]}
-          onSelectConversation={() => {}}
-        />
+        <div className="flex flex-col gap-2 pb-4">
+          <MessagesList 
+            messages={messages}
+            chatMessages={[]}
+            onSelectConversation={() => {}}
+          />
+          {isThinking && <ChatThinking />}
+        </div>
       </ScrollArea>
 
-      <div className="sticky bottom-16 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
+      <div className="sticky bottom-0 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}

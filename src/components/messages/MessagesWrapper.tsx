@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { MessagesContent } from "./MessagesContent";
 import { ConversationList } from "./conversation/ConversationList";
@@ -24,7 +25,6 @@ export function MessagesWrapper() {
   const {
     messages: userMessages,
     inputMessage: userInputMessage,
-    isLoading,
     handleSendMessage: handleUserSendMessage,
     setInputMessage: setUserInputMessage,
     clearChat: clearUserChat,
