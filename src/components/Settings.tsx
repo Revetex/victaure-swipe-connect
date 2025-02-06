@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppearanceSection } from "./settings/AppearanceSection";
@@ -12,6 +13,7 @@ import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
 import { SettingsLayout } from "./settings/SettingsLayout";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
+import { motion as m } from "framer-motion";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -31,6 +33,15 @@ const sectionVariants = {
     transition: { duration: 0.2 }
   }
 };
+
+const settingsSections = [
+  { id: 'appearance', Component: AppearanceSection },
+  { id: 'notifications', Component: NotificationsSection },
+  { id: 'privacy', Component: PrivacySection },
+  { id: 'security', Component: SecuritySection },
+  { id: 'blocked', Component: BlockedUsersSection },
+  { id: 'logout', Component: LogoutSection }
+];
 
 export function Settings() {
   const [mounted, setMounted] = useState(false);
@@ -69,24 +80,39 @@ export function Settings() {
         )}
       </AnimatePresence>
 
-      <ScrollArea className="h-[calc(100vh-8rem)]">
-        <motion.div
-          variants={sectionVariants}
+      <ScrollArea className="h-[calc(100vh-8rem)] overflow-y-auto">
+        <m.div
           initial="initial"
           animate="animate"
           exit="exit"
-          className="container mx-auto px-4 py-6 space-y-8"
+          variants={{
+            initial: { opacity: 0 },
+            animate: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1
+              }
+            },
+            exit: { opacity: 0 }
+          }}
+          className="container mx-auto px-4 py-6 space-y-8 max-w-2xl"
         >
-          <AppearanceSection />
-          <NotificationsSection />
-          <PrivacySection />
-          <SecuritySection />
-          <BlockedUsersSection />
-          <LogoutSection />
-        </motion.div>
+          {settingsSections.map(({ id, Component }, index) => (
+            <m.div
+              key={id}
+              variants={sectionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ delay: index * 0.1 }}
+            >
+              <Component />
+            </m.div>
+          ))}
+        </m.div>
       </ScrollArea>
 
-      <div className="fixed bottom-0 left-0 right-0 z-50">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
         <DashboardNavigation 
           currentPage={currentPage} 
           onPageChange={(page) => {
