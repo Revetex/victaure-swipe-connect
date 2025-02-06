@@ -10,19 +10,34 @@ export const useMessageCleanup = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
         
-        // Supprimer les conversations avec soi-même
-        const { error: selfMessageError } = await supabase
+        // Supprimer les messages
+        const { error: messagesError } = await supabase
           .from('messages')
           .delete()
-          .match({ 
-            sender_id: user.id,
-            receiver_id: user.id 
-          });
+          .eq('sender_id', user.id);
 
-        if (selfMessageError) throw selfMessageError;
+        if (messagesError) throw messagesError;
 
+        // Supprimer les notifications
+        const { error: notificationsError } = await supabase
+          .from('notifications')
+          .delete()
+          .eq('user_id', user.id);
+
+        if (notificationsError) throw notificationsError;
+
+        // Supprimer les conversations AI
+        const { error: aiMessagesError } = await supabase
+          .from('ai_chat_messages')
+          .delete()
+          .eq('user_id', user.id);
+
+        if (aiMessagesError) throw aiMessagesError;
+
+        toast.success("Toutes les données ont été supprimées définitivement");
       } catch (error) {
-        console.error('Error cleaning up messages:', error);
+        console.error('Error cleaning up data:', error);
+        toast.error("Erreur lors de la suppression des données");
       }
     };
 
