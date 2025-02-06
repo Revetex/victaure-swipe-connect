@@ -19,6 +19,14 @@ export const useConversationDelete = (clearUserChat: (receiverId: string) => voi
 
       if (messagesError) throw messagesError;
 
+      // Supprimer les statuts de messages pour cette conversation
+      const { error: messageStatusError } = await supabase
+        .from('message_status')
+        .delete()
+        .or(`user_id.eq.${user.id},user_id.eq.${receiver.id}`);
+
+      if (messageStatusError) throw messageStatusError;
+
       // Supprimer les notifications liées à cette conversation
       const { error: notificationsError } = await supabase
         .from('notifications')
@@ -37,3 +45,4 @@ export const useConversationDelete = (clearUserChat: (receiverId: string) => voi
 
   return { handleDeleteConversation };
 };
+

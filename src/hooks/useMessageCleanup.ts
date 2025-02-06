@@ -26,6 +26,14 @@ export const useMessageCleanup = () => {
 
         if (notificationsError) throw notificationsError;
 
+        // Supprimer les statuts de messages
+        const { error: messageStatusError } = await supabase
+          .from('message_status')
+          .delete()
+          .eq('user_id', user.id);
+
+        if (messageStatusError) throw messageStatusError;
+
         // Supprimer les conversations AI
         const { error: aiMessagesError } = await supabase
           .from('ai_chat_messages')
@@ -44,3 +52,4 @@ export const useMessageCleanup = () => {
     cleanupMessages();
   }, []);
 };
+
