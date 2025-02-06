@@ -1,14 +1,16 @@
+
 import { Message } from "@/types/messages";
 import { MessageItem } from "../MessageItem";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProfile } from "@/hooks/useProfile";
-import { Bot, UserPlus } from "lucide-react";
+import { Bot } from "lucide-react";
 import { FriendSelector } from "./FriendSelector";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Search } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 interface MessagesListProps {
   messages: Message[];
@@ -54,14 +56,11 @@ export function MessagesList({
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          {/* Assistant AI - M. Victaure épinglé en haut */}
+          <div className="mb-4">
             <Button
               variant="outline"
-              className="w-full flex items-center gap-2 h-auto p-4"
+              className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10"
               onClick={() => onSelectConversation("assistant")}
             >
               <Bot className="h-5 w-5 text-primary" />
@@ -75,8 +74,19 @@ export function MessagesList({
                 </span>
               )}
             </Button>
-          </motion.div>
+          </div>
 
+          {/* Séparateur entre l'assistant et les conversations privées */}
+          {filteredMessages.length > 0 && (
+            <div className="relative my-6">
+              <Separator className="my-4" />
+              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
+                Conversations privées
+              </span>
+            </div>
+          )}
+
+          {/* Liste des conversations privées */}
           {filteredMessages.map((message) => (
             <MessageItem
               key={message.id}
@@ -92,6 +102,12 @@ export function MessagesList({
               onMarkAsRead={handleMarkAsRead}
             />
           ))}
+
+          {filteredMessages.length === 0 && searchQuery && (
+            <p className="text-center text-sm text-muted-foreground py-4">
+              Aucune conversation trouvée
+            </p>
+          )}
         </div>
       </ScrollArea>
     </div>
