@@ -5,7 +5,11 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 
 interface ProfileNameButtonProps {
-  profile: Partial<UserProfile> & { id: string; full_name: string | null };
+  profile: Partial<UserProfile> & { 
+    id: string; 
+    full_name: string | null;
+    display_name?: string | null; 
+  };
   className?: string;
 }
 
