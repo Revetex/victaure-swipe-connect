@@ -42,50 +42,82 @@ export function ToolSelector({
     setOpenTool(toolId);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 24
+      }
+    }
+  };
+
   return (
     <>
-      <Tabs value={selectedTool} onValueChange={onToolChange} className="w-full">
+      <Tabs value={selectedTool} onValueChange={onToolChange}>
         <TabsList className={cn(
-          "grid grid-cols-3 sm:grid-cols-5 gap-2 p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-xl w-full max-w-2xl mx-auto shadow-lg",
+          "grid w-full max-w-4xl mx-auto gap-4 p-4",
+          "grid-cols-2 sm:grid-cols-3 md:grid-cols-5",
+          "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+          "rounded-xl shadow-lg border border-border/50",
           className
         )}>
-          {tools.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <motion.div
-                key={tool.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full"
-              >
-                <TabsTrigger
-                  value={tool.id}
-                  onClick={() => handleToolClick(tool.id)}
-                  aria-label={tool.ariaLabel}
-                  title={tool.label}
-                  className={cn(
-                    "w-full aspect-square flex flex-col items-center justify-center gap-2 p-2",
-                    "rounded-lg transition-all duration-300",
-                    "bg-background/50 hover:bg-background/80",
-                    "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                    "data-[state=active]:shadow-lg data-[state=active]:scale-105",
-                    "border border-border/50",
-                    "group",
-                    buttonClassName
-                  )}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="contents"
+          >
+            {tools.map((tool) => {
+              const Icon = tool.icon;
+              return (
+                <motion.div
+                  key={tool.id}
+                  variants={itemVariants}
+                  className="w-full"
                 >
-                  <Icon 
+                  <TabsTrigger
+                    value={tool.id}
+                    onClick={() => handleToolClick(tool.id)}
+                    aria-label={tool.ariaLabel}
+                    title={tool.label}
                     className={cn(
-                      "h-6 w-6 transition-all duration-300",
-                      "group-hover:scale-110",
-                      "group-data-[state=active]:scale-110"
-                    )} 
-                  />
-                  <span className="text-xs font-medium">{tool.label}</span>
-                </TabsTrigger>
-              </motion.div>
-            );
-          })}
+                      "w-full aspect-square flex flex-col items-center justify-center gap-3 p-4",
+                      "rounded-lg transition-all duration-300",
+                      "bg-background/50 hover:bg-background/80",
+                      "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                      "data-[state=active]:shadow-lg data-[state=active]:scale-105",
+                      "border border-border/50",
+                      "group hover:shadow-md",
+                      buttonClassName
+                    )}
+                  >
+                    <Icon 
+                      className={cn(
+                        "h-8 w-8 transition-all duration-300",
+                        "group-hover:scale-110",
+                        "group-data-[state=active]:scale-110"
+                      )} 
+                    />
+                    <span className="text-sm font-medium">{tool.label}</span>
+                  </TabsTrigger>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </TabsList>
       </Tabs>
 
