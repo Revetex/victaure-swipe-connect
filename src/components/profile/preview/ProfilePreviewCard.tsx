@@ -20,7 +20,7 @@ export function ProfilePreviewCard({
   const handleFlip = () => setIsFlipped(!isFlipped);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full max-w-md mx-auto">
       <AnimatePresence mode="wait">
         <motion.div
           key={isFlipped ? "back" : "front"}
@@ -31,7 +31,6 @@ export function ProfilePreviewCard({
           style={{ 
             transformStyle: "preserve-3d",
             backfaceVisibility: "hidden",
-            minHeight: "320px"
           }}
           className="w-full"
         >
