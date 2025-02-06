@@ -3,6 +3,7 @@ import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
+import { cn } from "@/lib/utils"; // Add this import
 
 export interface AppHeaderProps {
   title: string;
