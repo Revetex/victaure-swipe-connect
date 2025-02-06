@@ -84,7 +84,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
 
   return (
     <div className={cn(
-      "w-[280px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem]",
+      "w-[280px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem] z-50",
       "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
       className
     )}>
@@ -124,11 +124,11 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
 
           <Separator className="my-4" />
 
-          {/* Settings Section - Updated Layout */}
+          {/* Settings Section */}
           <div className="space-y-1">
-            <h3 className="text-xs font-medium text-muted-foreground px-2 mb-2">Paramètres</h3>
-            <div className="space-y-2 px-2">
-              <div className="space-y-3 rounded-lg border bg-card/50 p-3">
+            <h3 className="text-xs font-medium text-muted-foreground px-2">Paramètres</h3>
+            <div className="space-y-2">
+              <div className="space-y-3 rounded-lg bg-card/50 p-2">
                 <AppearanceSection />
                 <NotificationsSection />
                 <PrivacySection />
