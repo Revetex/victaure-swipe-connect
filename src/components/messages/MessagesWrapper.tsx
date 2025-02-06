@@ -91,24 +91,50 @@ export function MessagesWrapper() {
         if (aiError) throw aiError;
         clearAIChat();
       } else {
-        // Delete user messages
+        // Delete all messages between the two users
         const { error: messagesError } = await supabase
           .from('messages')
           .delete()
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-          .or(`sender_id.eq.${receiver.id},receiver_id.eq.${receiver.id}`);
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
 
         if (messagesError) throw messagesError;
         clearUserChat(receiver.id);
       }
 
-      toast.success("Conversation supprimée avec succès");
+      toast.success("Conversation supprimée définitivement");
       handleBack();
     } catch (error) {
       console.error('Error deleting conversation:', error);
       toast.error("Erreur lors de la suppression de la conversation");
     }
   };
+
+  // Mark messages as read when conversation is opened
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      if (!receiver || receiver.id === 'assistant') return;
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { error } = await supabase
+          .from('messages')
+          .update({ read: true })
+          .eq('sender_id', receiver.id)
+          .eq('receiver_id', user.id)
+          .eq('read', false);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    };
+
+    if (showConversation) {
+      markMessagesAsRead();
+    }
+  }, [showConversation, receiver]);
 
   if (showConversation && receiver) {
     const isAIChat = receiver.id === 'assistant';
