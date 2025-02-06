@@ -2,22 +2,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useState, memo } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { ListTodo } from "lucide-react";
+import { PostSkeleton } from "./posts/PostSkeleton";
+import { EmptyPostState } from "./posts/EmptyPostState";
+import { DeletePostDialog } from "./posts/DeletePostDialog";
 
 interface PostListProps {
   onPostDeleted: () => void;
@@ -107,48 +99,11 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   };
 
   if (isLoading) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="space-y-4"
-      >
-        {[...Array(3)].map((_, i) => (
-          <div 
-            key={i}
-            className="bg-muted/50 rounded-lg p-6 animate-pulse"
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-muted" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 bg-muted rounded w-1/4" />
-                <div className="h-3 bg-muted rounded w-1/3" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="h-4 bg-muted rounded w-full" />
-              <div className="h-4 bg-muted rounded w-3/4" />
-            </div>
-          </div>
-        ))}
-      </motion.div>
-    );
+    return <PostSkeleton />;
   }
 
   if (!posts?.length) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center text-muted-foreground py-12"
-      >
-        <ListTodo className="h-12 w-12 mx-auto mb-4 opacity-50" />
-        <p className="text-lg">Aucune publication</p>
-        <p className="text-sm mt-2">
-          Soyez le premier à partager quelque chose !
-        </p>
-      </motion.div>
-    );
+    return <EmptyPostState />;
   }
 
   return (
@@ -177,25 +132,11 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
         ))}
       </AnimatePresence>
 
-      <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
-        <AlertDialogContent className="sm:max-w-[425px]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette publication ?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Cette action ne peut pas être annulée. La publication sera définitivement supprimée.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => postToDelete && handleDeletePost(postToDelete, user?.id)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Supprimer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeletePostDialog 
+        isOpen={!!postToDelete}
+        onClose={() => setPostToDelete(null)}
+        onConfirm={() => postToDelete && handleDeletePost(postToDelete, user?.id)}
+      />
     </div>
   );
 }
