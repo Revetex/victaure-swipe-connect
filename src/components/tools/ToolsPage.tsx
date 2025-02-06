@@ -132,9 +132,6 @@ export function ToolsPage() {
                     <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
                       <CalculatorSection />
                     </div>
-                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
-                      <ConverterSection />
-                    </div>
                   </div>
                 </TabsContent>
                 <TabsContent value="translator" className="h-full m-0">
