@@ -8,7 +8,6 @@ export interface DashboardHeaderProps {
   showFriendsList: boolean;
   onToggleFriendsList: () => void;
   isEditing: boolean;
-  onToolReturn?: () => void;
 }
 
 export function DashboardHeader({
