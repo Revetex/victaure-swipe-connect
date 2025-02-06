@@ -6,8 +6,8 @@ import { FriendRequestNotification } from "./types/FriendRequestNotification";
 import { CVNotification } from "./types/CVNotification";
 import { CVUploadNotification } from "./types/CVUploadNotification";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { showToast } from "@/utils/toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,10 +49,9 @@ export function NotificationItem({
         .eq('id', id);
 
       if (error) throw error;
-      toast.success("Notification marquée comme lue");
+      showToast.success("Notification marquée comme lue");
     } catch (error) {
-      console.error('Error marking notification as read:', error);
-      toast.error("Erreur lors du marquage de la notification");
+      showToast.error("Erreur lors du marquage de la notification");
     }
   };
 

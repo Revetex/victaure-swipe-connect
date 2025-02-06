@@ -8,9 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationHeader } from "./NotificationHeader";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { showToast, commonToasts } from "@/utils/toast";
 
 export function NotificationsBox() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,25 +20,27 @@ export function NotificationsBox() {
 
   useEffect(() => {
     if (!user) return;
-
-    const fetchNotifications = async () => {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching notifications:', error);
-        return;
-      }
-
-      setNotifications(data || []);
-      setUnreadCount(data?.filter(n => !n.read).length || 0);
-    };
-
     fetchNotifications();
+    subscribeToNotifications();
+  }, [user]);
 
+  const fetchNotifications = async () => {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user?.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      commonToasts.errorOccurred();
+      return;
+    }
+
+    setNotifications(data || []);
+    setUnreadCount(data?.filter(n => !n.read).length || 0);
+  };
+
+  const subscribeToNotifications = () => {
     const channel = supabase
       .channel('notifications')
       .on(
@@ -47,18 +49,16 @@ export function NotificationsBox() {
           event: '*',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${user.id}`
+          filter: `user_id=eq.${user?.id}`
         },
-        () => {
-          fetchNotifications();
-        }
+        fetchNotifications
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  };
 
   const deleteNotification = async (id: string) => {
     try {
@@ -70,10 +70,9 @@ export function NotificationsBox() {
       if (error) throw error;
 
       setNotifications(notifications.filter(n => n.id !== id));
-      toast.success("Notification supprimée");
+      showToast.success("Notification supprimée");
     } catch (error) {
-      console.error('Error deleting notification:', error);
-      toast.error("Erreur lors de la suppression");
+      commonToasts.actionFailed("de la suppression");
     }
   };
 
@@ -89,10 +88,9 @@ export function NotificationsBox() {
 
       setNotifications(notifications.map(n => ({ ...n, read: true })));
       setUnreadCount(0);
-      toast.success("Toutes les notifications ont été marquées comme lues");
+      showToast.success("Toutes les notifications ont été marquées comme lues");
     } catch (error) {
-      console.error('Error marking all as read:', error);
-      toast.error("Une erreur est survenue");
+      commonToasts.errorOccurred();
     }
   };
 
