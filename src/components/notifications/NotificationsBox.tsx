@@ -1,109 +1,16 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { NotificationItem } from "./NotificationItem";
-import { NotificationHeader } from "./NotificationHeader";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { showToast, commonToasts } from "@/utils/toast";
+import { NotificationHeader } from "./NotificationHeader";
+import { NotificationsList } from "./NotificationsList";
+import { useNotificationsData } from "@/hooks/useNotificationsData";
 
 export function NotificationsBox() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-    fetchNotifications();
-    subscribeToNotifications();
-  }, [user]);
-
-  const fetchNotifications = async () => {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user?.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      commonToasts.errorOccurred();
-      return;
-    }
-
-    setNotifications(data || []);
-    setUnreadCount(data?.filter(n => !n.read).length || 0);
-  };
-
-  const subscribeToNotifications = () => {
-    const channel = supabase
-      .channel('notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user?.id}`
-        },
-        fetchNotifications
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
-
-  const deleteNotification = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setNotifications(notifications.filter(n => n.id !== id));
-      showToast.success("Notification supprimée");
-    } catch (error) {
-      commonToasts.actionFailed("de la suppression");
-    }
-  };
-
-  const handleMarkAllAsRead = async () => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .eq('user_id', user?.id)
-        .eq('read', false);
-
-      if (error) throw error;
-
-      setNotifications(notifications.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-      showToast.success("Toutes les notifications ont été marquées comme lues");
-    } catch (error) {
-      commonToasts.errorOccurred();
-    }
-  };
-
-  const groupNotificationsByDate = (notifications: any[]) => {
-    return notifications.reduce((groups: any, notification) => {
-      const date = format(new Date(notification.created_at), 'EEEE d MMMM', { locale: fr });
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(notification);
-      return groups;
-    }, {});
-  };
+  const { notifications, unreadCount, deleteNotification, handleMarkAllAsRead } = useNotificationsData();
 
   return (
     <div className="relative">
@@ -153,68 +60,10 @@ export function NotificationsBox() {
                 onMarkAllAsRead={handleMarkAllAsRead}
               />
               
-              <ScrollArea className="h-[400px] mt-4">
-                <AnimatePresence mode="popLayout">
-                  <motion.div 
-                    className="space-y-4"
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                      hidden: { opacity: 0 },
-                      visible: {
-                        opacity: 1,
-                        transition: {
-                          staggerChildren: 0.05
-                        }
-                      }
-                    }}
-                  >
-                    {notifications.length > 0 ? (
-                      Object.entries(groupNotificationsByDate(notifications)).map(([date, groupedNotifications]: [string, any[]]) => (
-                        <motion.div
-                          key={date}
-                          variants={{
-                            hidden: { opacity: 0, y: 20 },
-                            visible: { opacity: 1, y: 0 }
-                          }}
-                          className="space-y-2"
-                        >
-                          <h3 className="text-sm font-medium text-muted-foreground first-letter:uppercase">
-                            {date}
-                          </h3>
-                          {groupedNotifications.map((notification: any) => (
-                            <motion.div
-                              key={notification.id}
-                              variants={{
-                                hidden: { opacity: 0, x: -20 },
-                                visible: { opacity: 1, x: 0 }
-                              }}
-                              exit={{ opacity: 0, x: -20 }}
-                              layout
-                            >
-                              <NotificationItem
-                                {...notification}
-                                onDelete={deleteNotification}
-                              />
-                            </motion.div>
-                          ))}
-                        </motion.div>
-                      ))
-                    ) : (
-                      <motion.div 
-                        variants={{
-                          hidden: { opacity: 0, y: 20 },
-                          visible: { opacity: 1, y: 0 }
-                        }}
-                        className="text-center text-muted-foreground py-8"
-                      >
-                        <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                        <p>Aucune notification</p>
-                      </motion.div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </ScrollArea>
+              <NotificationsList 
+                notifications={notifications}
+                onDelete={deleteNotification}
+              />
             </motion.div>
           </>
         )}
