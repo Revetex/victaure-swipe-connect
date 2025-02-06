@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { ConnectionsSection } from "./ConnectionsSection";
-import { Calculator, ListTodo, Sword } from "lucide-react";
+import { Calculator, Languages, ListTodo, Ruler, Sword } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,14 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { NotesPage } from "@/components/tools/NotesPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
+import { TranslatorPage } from "@/components/tools/TranslatorPage";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const [showNotes, setShowNotes] = useState(false);
   const [showCalculator, setShowCalculator] = useState(false);
   const [showTasks, setShowTasks] = useState(false);
+  const [showTranslator, setShowTranslator] = useState(false);
   const navigate = useNavigate();
 
   const tools = [
@@ -33,6 +36,20 @@ export function FriendsContent() {
       action: () => setShowCalculator(true),
       color: "bg-green-500/10 text-green-500",
       description: "Calculatrice et convertisseur"
+    },
+    {
+      name: "Traducteur",
+      icon: Languages,
+      action: () => setShowTranslator(true),
+      color: "bg-indigo-500/10 text-indigo-500",
+      description: "Traduisez du texte"
+    },
+    {
+      name: "Convertisseur",
+      icon: Ruler,
+      action: () => navigate("/tools"),
+      color: "bg-orange-500/10 text-orange-500",
+      description: "Convertissez des unités"
     },
     {
       name: "Échecs",
@@ -125,6 +142,12 @@ export function FriendsContent() {
       <Dialog open={showCalculator} onOpenChange={setShowCalculator}>
         <DialogContent className="max-w-4xl h-[80vh]">
           <CalculatorPage />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showTranslator} onOpenChange={setShowTranslator}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <TranslatorPage />
         </DialogContent>
       </Dialog>
 
