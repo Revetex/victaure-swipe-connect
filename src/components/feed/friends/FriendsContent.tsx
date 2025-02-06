@@ -10,46 +10,49 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { NotesPage } from "@/components/tools/NotesPage";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
+  const [showNotes, setShowNotes] = useState(false);
   const navigate = useNavigate();
 
   const tools = [
     {
-      name: "Tâches",
+      name: "Notes",
       icon: ListTodo,
-      path: "/tools",
+      action: () => setShowNotes(true),
       color: "bg-blue-500/10 text-blue-500"
     },
     {
       name: "Calculatrice",
       icon: Calculator,
-      path: "/tools",
+      action: () => navigate("/tools"),
       color: "bg-green-500/10 text-green-500"
     },
     {
       name: "Traducteur",
       icon: Languages,
-      path: "/tools",
+      action: () => navigate("/tools"),
       color: "bg-purple-500/10 text-purple-500"
     },
     {
       name: "Convertisseur",
       icon: Ruler,
-      path: "/tools",
+      action: () => navigate("/tools"),
       color: "bg-orange-500/10 text-orange-500"
     },
     {
       name: "Échecs",
       icon: Sword,
-      path: "/tools",
+      action: () => navigate("/tools"),
       color: "bg-red-500/10 text-red-500"
     },
     {
       name: "Assistant IA",
       icon: BrainCircuit,
-      path: "/tools",
+      action: () => navigate("/tools"),
       color: "bg-indigo-500/10 text-indigo-500"
     }
   ];
@@ -107,7 +110,7 @@ export function FriendsContent() {
                 "hover:bg-accent/5 transition-all duration-200",
                 "group relative"
               )}
-              onClick={() => navigate(tool.path)}
+              onClick={tool.action}
             >
               <div className={cn(
                 "p-2 rounded-lg",
@@ -146,6 +149,12 @@ export function FriendsContent() {
           onClose={() => setSelectedProfile(null)}
         />
       )}
+
+      <Dialog open={showNotes} onOpenChange={setShowNotes}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <NotesPage />
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
