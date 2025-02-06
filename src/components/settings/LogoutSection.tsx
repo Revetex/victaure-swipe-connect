@@ -1,3 +1,4 @@
+
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -28,14 +29,11 @@ export function LogoutSection() {
       onClick={handleLogout}
       disabled={isLoggingOut}
       className={cn(
-        "w-full flex items-center justify-center gap-2 h-9",
-        "bg-destructive/80 hover:bg-destructive",
-        "text-destructive-foreground font-medium text-sm",
-        "transition-all duration-200",
-        "shadow-sm hover:shadow",
-        "rounded-lg",
+        "w-full flex items-center justify-center gap-2",
+        "bg-destructive hover:bg-destructive/90",
+        "text-destructive-foreground font-medium",
+        "transition-colors duration-200",
         "border border-destructive/20",
-        "focus:ring-2 focus:ring-destructive/30 focus:ring-offset-1",
         isLoggingOut && "opacity-70 cursor-not-allowed"
       )}
     >

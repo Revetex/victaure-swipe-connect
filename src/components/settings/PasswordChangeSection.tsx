@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,7 @@ export function PasswordChangeSection() {
       <Button 
         variant="outline" 
         onClick={() => setShowForm(true)}
-        className="w-full"
+        className="w-full bg-background hover:bg-muted/5"
       >
         <Lock className="h-4 w-4 mr-2" />
         Changer le mot de passe
@@ -59,6 +60,7 @@ export function PasswordChangeSection() {
           onChange={(e) => setNewPassword(e.target.value)}
           placeholder="Nouveau mot de passe"
           required
+          className="bg-background"
         />
       </div>
 
@@ -84,6 +86,7 @@ export function PasswordChangeSection() {
           type="button" 
           variant="outline"
           onClick={() => setShowForm(false)}
+          className="bg-background hover:bg-muted/5"
         >
           Annuler
         </Button>
