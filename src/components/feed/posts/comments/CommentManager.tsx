@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Comment } from "@/types/posts";
 import { PostComments } from "../../PostComments";
@@ -29,7 +30,7 @@ export function CommentManager({
     try {
       setIsSubmitting(true);
       const { error } = await supabase
-        .from('comments')
+        .from('post_comments')
         .delete()
         .eq('id', commentId);
 
@@ -63,13 +64,13 @@ export function CommentManager({
         currentUserId={currentUserId}
         onDeleteComment={handleDeleteComment}
       />
-      {currentUserId && (
+      {currentUserId && userEmail && (
         <CommentInput
           postId={postId}
           postAuthorId={postAuthorId}
           currentUserId={currentUserId}
           userEmail={userEmail}
-          onCommentAdded={onCommentAdded}
+          onCommentAdded={onCommentAdded!}
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
         />
