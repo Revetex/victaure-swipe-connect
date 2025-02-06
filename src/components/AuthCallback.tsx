@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -6,7 +5,7 @@ import { motion } from "framer-motion";
 import { Loader } from "./ui/loader";
 import { supabase } from "@/integrations/supabase/client";
 
-export default function AuthCallback() {
+export function AuthCallback() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
@@ -84,3 +83,6 @@ export default function AuthCallback() {
     </motion.div>
   );
 }
+
+// Export as default for lazy loading
+export default AuthCallback;
