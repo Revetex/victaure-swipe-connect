@@ -25,6 +25,16 @@ export function ChatMessagesList({
       onScrollCapture={onScroll}
     >
       <div className="space-y-4">
+        {messages.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-muted-foreground p-4"
+          >
+            Aucun message pour le moment. Commencez une conversation avec M. Victaure !
+          </motion.div>
+        )}
+        
         <AnimatePresence initial={false}>
           {messages.map((message) => (
             <motion.div
