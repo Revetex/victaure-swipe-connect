@@ -19,9 +19,9 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
       <div 
         className={cn(
           "font-playfair font-bold tracking-wider",
-          "bg-gradient-to-r from-primary via-purple-600 to-violet-600 bg-clip-text text-transparent",
+          "bg-gradient-to-r from-[#9b87f5] via-[#8B5CF6] to-[#D946EF] bg-clip-text text-transparent",
           "transition-all duration-500 hover:scale-105",
-          "hover:from-violet-600 hover:via-purple-600 hover:to-primary",
+          "hover:from-[#D946EF] hover:via-[#8B5CF6] hover:to-[#9b87f5]",
           "drop-shadow-sm",
           textSizes[size]
         )}
