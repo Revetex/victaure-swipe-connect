@@ -34,7 +34,7 @@ export function ChatInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="min-h-[60px] pr-24 resize-none rounded-xl focus:ring-2 focus:ring-primary/20 bg-background/50 backdrop-blur"
+          className="min-h-[60px] pr-24 resize-none rounded-xl focus:ring-2 focus:ring-primary/20 bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();

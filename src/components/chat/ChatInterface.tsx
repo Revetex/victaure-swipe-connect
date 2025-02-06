@@ -56,6 +56,26 @@ export function ChatInterface() {
     };
 
     loadMessages();
+
+    // Set up realtime subscription
+    const channel = supabase
+      .channel('ai_chat_messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ai_chat_messages'
+        },
+        () => {
+          loadMessages();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleSendMessage = async () => {
@@ -124,13 +144,19 @@ export function ChatInterface() {
   };
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-6rem)] mx-auto max-w-2xl bg-background/95 backdrop-blur-sm">
-      <div className="p-4 border-b">
+    <Card className="flex flex-col h-[calc(100vh-6rem)] mx-auto max-w-2xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <motion.div 
+        initial={false}
+        animate={{ 
+          borderColor: isThinking ? "hsl(var(--primary))" : "transparent" 
+        }}
+        className="p-4 border-b transition-colors duration-200"
+      >
         <h2 className="text-xl font-semibold">Chat avec M. Victaure</h2>
         <p className="text-sm text-muted-foreground">
           Votre assistant personnel
         </p>
-      </div>
+      </motion.div>
 
       <ScrollArea 
         className="flex-1 p-4"
@@ -144,6 +170,7 @@ export function ChatInterface() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
               >
                 <ChatMessage
                   content={message.content}
@@ -171,7 +198,7 @@ export function ChatInterface() {
               size="icon"
               variant="secondary"
               onClick={scrollToBottom}
-              className="rounded-full shadow-lg"
+              className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
