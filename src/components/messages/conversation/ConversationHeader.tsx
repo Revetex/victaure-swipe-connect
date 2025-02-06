@@ -1,67 +1,64 @@
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, MoreVertical, UserCircle } from "lucide-react";
-import { UserProfile } from "@/types/profile";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ArrowLeft, MoreVertical, Trash2 } from "lucide-react";
+import { Receiver } from "@/types/messages";
 
 interface ConversationHeaderProps {
-  profile: UserProfile | null;
-  onBack: () => void;
-  onDeleteConversation: () => void;
+  profile: Receiver | null;
+  onBack?: () => void;
+  onDeleteConversation?: () => void;
 }
 
-export function ConversationHeader({ profile, onBack, onDeleteConversation }: ConversationHeaderProps) {
+export function ConversationHeader({
+  profile,
+  onBack,
+  onDeleteConversation
+}: ConversationHeaderProps) {
   return (
-    <header className="sticky top-0 shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 z-50">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="shrink-0"
-          >
+    <div className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex items-center gap-4">
+        {onBack && (
+          <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Avatar className="h-10 w-10">
-            <AvatarImage
-              src={profile?.avatar_url || undefined}
-              alt={profile?.full_name || "Profile"}
-            />
-            <AvatarFallback>
-              <UserCircle className="h-6 w-6" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-medium">
-              {profile?.full_name || "Utilisateur"}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {profile?.email || ""}
-            </span>
+        )}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <span className="text-lg font-medium text-primary">
+                  {profile?.full_name?.charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
+            {profile?.online_status && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+            )}
+          </div>
+          <div>
+            <h3 className="font-medium">{profile?.full_name}</h3>
+            <p className="text-sm text-muted-foreground">
+              {profile?.online_status ? "En ligne" : "Hors ligne"}
+            </p>
           </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem 
-              className="text-destructive focus:text-destructive"
-              onClick={onDeleteConversation}
-            >
-              Supprimer la conversation
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
-    </header>
+
+      {onDeleteConversation && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onDeleteConversation}
+          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <Trash2 className="h-5 w-5" />
+        </Button>
+      )}
+    </div>
   );
 }
