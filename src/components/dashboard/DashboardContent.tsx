@@ -1,8 +1,8 @@
+
 import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
-import { Settings } from "@/components/Settings";
 import { Feed } from "@/components/Feed";
 import { useEffect, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -87,12 +87,6 @@ export function DashboardContent({
 }: DashboardContentProps) {
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (currentPage === 5) {
-      onEditStateChange(true);
-    }
-  }, [currentPage, onEditStateChange]);
-
   const renderContent = () => {
     try {
       switch (currentPage) {
@@ -125,22 +119,6 @@ export function DashboardContent({
             <ErrorBoundary FallbackComponent={ErrorFallback}>
               <Suspense fallback={<LoadingSkeleton />}>
                 <Feed />
-              </Suspense>
-            </ErrorBoundary>
-          );
-        case 5:
-          return (
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Suspense fallback={<LoadingSkeleton />}>
-                <Settings />
-              </Suspense>
-            </ErrorBoundary>
-          );
-        case 6:
-          return (
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Suspense fallback={<LoadingSkeleton />}>
-                <Settings />
               </Suspense>
             </ErrorBoundary>
           );

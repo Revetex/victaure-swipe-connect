@@ -2,9 +2,15 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X, Users } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X, Users, Bell, EyeOff, Lock, LogOut } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import { AppearanceSection } from "@/components/settings/AppearanceSection";
+import { NotificationsSection } from "@/components/settings/NotificationsSection";
+import { PrivacySection } from "@/components/settings/PrivacySection";
+import { SecuritySection } from "@/components/settings/SecuritySection";
+import { BlockedUsersSection } from "@/components/settings/BlockedUsersSection";
+import { LogoutSection } from "@/components/settings/LogoutSection";
 
 interface FeedSidebarProps {
   className?: string;
@@ -78,7 +84,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
 
   return (
     <div className={cn(
-      "w-[250px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem]",
+      "w-[280px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem]",
       "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
       className
     )}>
@@ -95,6 +101,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
               <X className="h-4 w-4" />
             </Button>
           </div>
+
           <div className="space-y-2">
             {tools.map((tool) => (
               <Button
@@ -108,6 +115,17 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
                 <span className="text-sm">{tool.name}</span>
               </Button>
             ))}
+          </div>
+
+          <Separator className="my-4" />
+
+          <div className="space-y-6">
+            <AppearanceSection />
+            <NotificationsSection />
+            <PrivacySection />
+            <SecuritySection />
+            <BlockedUsersSection />
+            <LogoutSection />
           </div>
         </div>
       </ScrollArea>
