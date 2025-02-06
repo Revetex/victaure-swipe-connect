@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
 
 export function useViewport() {
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
   
   const [debouncedSetViewportHeight] = useDebounce(
     (height: number) => setViewportHeight(height),
@@ -30,5 +30,5 @@ export function useViewport() {
     };
   }, [debouncedSetViewportHeight]);
 
-  return viewportHeight;
+  return { viewportHeight };
 }

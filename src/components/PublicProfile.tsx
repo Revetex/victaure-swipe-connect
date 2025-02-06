@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Certification } from "@/types/profile";
 import { VCard } from "./VCard";
 import { toast } from "sonner";
-import { ProfilePreview } from "./ProfilePreview";
 import { Loader } from "./ui/loader";
 import { motion } from "framer-motion";
 
@@ -12,7 +11,6 @@ export function PublicProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showPreview, setShowPreview] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,19 +27,21 @@ export function PublicProfile() {
             *,
             certifications (
               id,
+              profile_id,
               title,
-              institution,
-              year,
-              description,
+              issuer,
+              issue_date,
+              expiry_date,
               credential_url,
               created_at,
-              updated_at
+              updated_at,
+              description
             ),
             education (*),
             experiences (*)
           `)
           .eq('id', id)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
@@ -56,7 +56,16 @@ export function PublicProfile() {
           return;
         }
 
-        setProfile(data as UserProfile);
+        // Transform the data to match UserProfile type
+        const transformedProfile: UserProfile = {
+          ...data,
+          certifications: data.certifications?.map((cert: any) => ({
+            ...cert,
+            institution: cert.issuer // Map issuer to institution for compatibility
+          })) || [],
+        };
+
+        setProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Could not load profile");

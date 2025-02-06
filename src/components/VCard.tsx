@@ -10,20 +10,26 @@ import { VCardSectionsManager } from "./vcard/sections/VCardSectionsManager";
 import { VCardContact } from "./VCardContact";
 import { motion } from "framer-motion";
 import { useVCardHandlers } from "./vcard/handlers/useVCardHandlers";
+import { UserProfile } from "@/types/profile";
 
 interface VCardProps {
+  profile?: UserProfile;
   onEditStateChange?: (isEditing: boolean) => void;
   onRequestChat?: () => void;
+  isPublic?: boolean;
 }
 
-export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
-  const { profile, setProfile, isLoading } = useProfile();
+export function VCard({ profile: providedProfile, onEditStateChange, onRequestChat, isPublic }: VCardProps) {
+  const { profile: fetchedProfile, setProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const { selectedStyle } = useVCardStyle();
+  
+  const activeProfile = providedProfile || fetchedProfile;
+  
   const { handleSave, handleDownloadBusinessCard } = useVCardHandlers({
-    profile,
+    profile: activeProfile,
     setProfile,
     setIsEditing,
     setIsPdfGenerating,
@@ -32,7 +38,7 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
   });
 
   const handleEditToggle = () => {
-    if (!profile) {
+    if (!activeProfile) {
       toast.error("Aucun profil à éditer");
       return;
     }
@@ -42,11 +48,11 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && !providedProfile) {
     return <VCardSkeleton />;
   }
 
-  if (!profile) {
+  if (!activeProfile) {
     return <VCardEmpty />;
   }
 
@@ -134,25 +140,25 @@ export function VCard({ onEditStateChange, onRequestChat }: VCardProps) {
           
           <div className="relative">
             <VCardHeader 
-              profile={profile}
-              isEditing={isEditing}
+              profile={activeProfile}
+              isEditing={isEditing && !isPublic}
               setProfile={setProfile}
               isPdfGenerating={isPdfGenerating}
               isProcessing={isProcessing}
-              onEditToggle={handleEditToggle}
+              onEditToggle={!isPublic ? handleEditToggle : undefined}
               onSave={handleSave}
               onDownloadBusinessCard={handleDownloadBusinessCard}
             />
 
             <div className="mt-8 space-y-6">
               <VCardContact
-                profile={profile}
-                isEditing={isEditing}
+                profile={activeProfile}
+                isEditing={isEditing && !isPublic}
                 setProfile={setProfile}
               />
               <VCardSectionsManager
-                profile={profile}
-                isEditing={isEditing}
+                profile={activeProfile}
+                isEditing={isEditing && !isPublic}
                 setProfile={setProfile}
                 selectedStyle={selectedStyle}
               />
