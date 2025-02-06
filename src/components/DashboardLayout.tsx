@@ -10,7 +10,6 @@ import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
-import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const containerVariants = {
@@ -52,12 +51,12 @@ export const DashboardLayout: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const { viewportHeight } = useViewport();
-  const location = useLocation();
 
   const handlePageChange = useCallback((page: number) => {
     try {
       setCurrentPage(page);
       setIsEditing(false);
+      setShowFriendsList(false); // Close menu when changing pages
     } catch (error) {
       console.error("Error changing page:", error);
       toast.error("Une erreur est survenue lors du changement de page");
@@ -75,14 +74,6 @@ export const DashboardLayout: React.FC = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
-
-  useEffect(() => {
-    const startTime = performance.now();
-    return () => {
-      const endTime = performance.now();
-      console.log(`DashboardLayout render time: ${endTime - startTime}ms`);
-    };
-  }, []);
 
   return (
     <DashboardAuthCheck>
