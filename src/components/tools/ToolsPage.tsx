@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { NotesSection } from "./sections/NotesSection";
 import { TasksSection } from "./sections/TasksSection";
 import { CalculatorSection } from "./sections/CalculatorSection";
@@ -12,7 +12,8 @@ import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsLis
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
-import { AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -20,13 +21,82 @@ export function ToolsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Load user's last used tool from profile
+  useEffect(() => {
+    const loadLastUsedTool = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('last_used_tool, tools_order')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (profile?.last_used_tool) {
+          setSelectedTool(profile.last_used_tool);
+        }
+      } catch (error) {
+        console.error("Error loading tool preferences:", error);
+      }
+    };
+
+    loadLastUsedTool();
+  }, []);
+
+  // Set up real-time subscription for tool updates
+  useEffect(() => {
+    const channel = supabase.channel('tools-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${supabase.auth.user()?.id}`
+        },
+        (payload) => {
+          if (payload.new.last_used_tool) {
+            setSelectedTool(payload.new.last_used_tool);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handleToolChange = async (value: string) => {
     try {
       setIsLoading(true);
       setSelectedTool(value);
+
+      // Update user's last used tool in profile
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            last_used_tool: value,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+
+        if (updateError) {
+          console.error("Error updating tool preference:", updateError);
+          toast.error("Erreur lors de la mise à jour des préférences");
+        }
+      }
+
       await new Promise(resolve => setTimeout(resolve, 300));
     } catch (error) {
       console.error("Error changing tool:", error);
+      toast.error("Erreur lors du changement d'outil");
     } finally {
       setIsLoading(false);
     }
