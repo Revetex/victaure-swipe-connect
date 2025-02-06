@@ -19,14 +19,20 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
       <div 
         className={cn(
           "font-playfair font-bold tracking-wider",
-          "bg-gradient-to-r from-[#222222] via-[#1A4731] to-[#F1F0FB] bg-clip-text text-transparent",
+          "relative",
           "transition-all duration-500 hover:scale-105",
-          "hover:from-[#F1F0FB] hover:via-[#1A4731] hover:to-[#222222]",
-          "drop-shadow-sm",
           textSizes[size]
         )}
       >
-        VICTAURE
+        <span className="absolute inset-0 blur-[1px] text-[#222222]">
+          VICTAURE
+        </span>
+        <span className="relative bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] bg-clip-text text-transparent" style={{
+          WebkitTextStroke: '0.5px #222222',
+          textShadow: '0 0 1px rgba(34, 34, 34, 0.3)'
+        }}>
+          VICTAURE
+        </span>
       </div>
     </div>
   );

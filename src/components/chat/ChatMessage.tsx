@@ -25,7 +25,7 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
       )}
     >
       <Avatar className={cn(
-        "h-10 w-10 ring-2 transition-shadow",
+        "h-10 w-10 ring-2 transition-shadow hover:ring-4",
         isAssistant ? "ring-primary/20" : "ring-muted"
       )}>
         {isAssistant ? (
@@ -40,7 +40,7 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
           />
         )}
       </Avatar>
-      <div className="flex-1 space-y-1.5">
+      <div className="flex-1 space-y-2">
         <p className={cn(
           "text-sm font-medium",
           isAssistant ? "text-primary" : "text-foreground"
@@ -48,10 +48,10 @@ export function ChatMessage({ content, sender, avatar_url }: ChatMessageProps) {
           {isAssistant ? "M. Victaure" : "Vous"}
         </p>
         <Card className={cn(
-          "p-4 shadow-sm",
+          "p-4 shadow-sm transition-all duration-200",
           isAssistant 
-            ? "bg-card border-primary/10" 
-            : "bg-primary text-primary-foreground border-0"
+            ? "bg-card hover:shadow-md border-primary/10" 
+            : "bg-primary text-primary-foreground border-0 hover:bg-primary/90"
         )}>
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
         </Card>
