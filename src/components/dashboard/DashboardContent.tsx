@@ -4,12 +4,20 @@ import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Settings } from "@/components/Settings";
 import { Feed } from "@/components/Feed";
-import { Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { ErrorBoundary } from "react-error-boundary";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ReloadIcon } from "@radix-ui/react-icons";
+
+interface DashboardContentProps {
+  currentPage: number;
+  viewportHeight: number;
+  isEditing?: boolean;
+  onEditStateChange: (isEditing: boolean) => void;
+  onRequestChat: () => void;
+}
 
 function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
   return (

@@ -25,9 +25,16 @@ const tools: Tool[] = [
 interface ToolSelectorProps {
   selectedTool: string;
   onToolChange: (value: string) => void;
+  className?: string;
+  buttonClassName?: string;
 }
 
-export function ToolSelector({ selectedTool, onToolChange }: ToolSelectorProps) {
+export function ToolSelector({ 
+  selectedTool, 
+  onToolChange,
+  className,
+  buttonClassName 
+}: ToolSelectorProps) {
   const [openTool, setOpenTool] = useState<string | null>(null);
 
   const handleToolClick = (toolId: string) => {
@@ -38,7 +45,10 @@ export function ToolSelector({ selectedTool, onToolChange }: ToolSelectorProps) 
   return (
     <>
       <Tabs value={selectedTool} onValueChange={onToolChange} className="w-full">
-        <TabsList className="grid grid-cols-3 sm:grid-cols-5 gap-2 p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-xl w-full max-w-2xl mx-auto shadow-lg">
+        <TabsList className={cn(
+          "grid grid-cols-3 sm:grid-cols-5 gap-2 p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-xl w-full max-w-2xl mx-auto shadow-lg",
+          className
+        )}>
           {tools.map((tool) => {
             const Icon = tool.icon;
             return (
@@ -60,7 +70,8 @@ export function ToolSelector({ selectedTool, onToolChange }: ToolSelectorProps) 
                     "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                     "data-[state=active]:shadow-lg data-[state=active]:scale-105",
                     "border border-border/50",
-                    "group"
+                    "group",
+                    buttonClassName
                   )}
                 >
                   <Icon 
@@ -94,7 +105,6 @@ export function ToolSelector({ selectedTool, onToolChange }: ToolSelectorProps) 
             </Button>
           </div>
           <div className="flex-1 overflow-auto p-4">
-            {/* Tool content will be rendered here */}
             <div className="text-center text-muted-foreground">
               {openTool && `Contenu de l'outil ${openTool}`}
             </div>
