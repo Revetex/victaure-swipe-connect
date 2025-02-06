@@ -4,7 +4,7 @@ import { ConversationView } from "./conversation/ConversationView";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface MessagesContentProps {
   messages: Message[];
@@ -32,6 +32,7 @@ export function MessagesContent({
   receiver
 }: MessagesContentProps) {
   const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!receiver) return;
@@ -48,6 +49,9 @@ export function MessagesContent({
         },
         () => {
           console.log('New message received');
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+          }
         }
       )
       .subscribe();
@@ -56,6 +60,12 @@ export function MessagesContent({
       supabase.removeChannel(channel);
     };
   }, [receiver]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const handleDelete = async () => {
     try {
@@ -83,6 +93,7 @@ export function MessagesContent({
         if (error) throw error;
       }
 
+      onClearChat();
       onBack?.();
       navigate('/dashboard/messages');
       toast.success("Conversation supprimée avec succès");
@@ -111,6 +122,7 @@ export function MessagesContent({
         onVoiceInput={onVoiceInput}
         onBack={onBack}
         onDeleteConversation={handleDelete}
+        messagesEndRef={messagesEndRef}
       />
     </div>
   );

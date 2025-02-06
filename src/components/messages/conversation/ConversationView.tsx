@@ -18,6 +18,7 @@ interface ConversationViewProps {
   onVoiceInput?: () => void;
   onBack?: () => void;
   onDeleteConversation?: () => void;
+  messagesEndRef?: React.RefObject<HTMLDivElement>;
 }
 
 export function ConversationView({
@@ -29,6 +30,7 @@ export function ConversationView({
   isThinking,
   onBack,
   onDeleteConversation,
+  messagesEndRef,
 }: ConversationViewProps) {
   const {
     isListening,
@@ -59,6 +61,7 @@ export function ConversationView({
             onSelectConversation={() => {}}
           />
           {isThinking && <ChatThinking />}
+          <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
 
@@ -72,6 +75,7 @@ export function ConversationView({
           isThinking={isThinking}
           placeholder="Écrivez votre message..."
           className="w-full max-w-3xl mx-auto"
+          disabled={isThinking}
         />
       </div>
     </div>

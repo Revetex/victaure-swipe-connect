@@ -59,6 +59,10 @@ export function MessagesWrapper() {
 
     try {
       if (receiver.id === 'assistant') {
+        if (isThinking) {
+          toast.error("M. Victaure est en train de réfléchir. Veuillez patienter.");
+          return;
+        }
         await handleAISendMessage(message);
       } else {
         await handleUserSendMessage(message, receiver);
