@@ -35,11 +35,14 @@ export function SettingsDropdown() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="relative">
             <Settings className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent 
+          align="end" 
+          className="w-56 bg-background border border-border"
+        >
           <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
             {theme === "dark" ? (
               <Sun className="mr-2 h-4 w-4" />
@@ -90,4 +93,3 @@ export function SettingsDropdown() {
     </>
   );
 }
-
