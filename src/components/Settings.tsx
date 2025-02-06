@@ -9,6 +9,9 @@ import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { ScrollArea } from "./ui/scroll-area";
 import { DashboardNavigation } from "./dashboard/DashboardNavigation";
+import { useNavigate } from "react-router-dom";
+import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
+import { AppHeader } from "./navigation/AppHeader";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -45,10 +48,16 @@ const itemVariants = {
 export function Settings() {
   const [mounted, setMounted] = useState(false);
   const [currentPage, setCurrentPage] = useState(5);
+  const [showFriendsList, setShowFriendsList] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleBackToHome = () => {
+    navigate('/dashboard');
+  };
 
   if (!mounted) {
     return null;
@@ -79,6 +88,21 @@ export function Settings() {
           />
         </div>
       </div>
+
+      <AppHeader 
+        title="Paramètres"
+        showFriendsList={showFriendsList}
+        onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+        isEditing={false}
+        onToolReturn={handleBackToHome}
+      />
+
+      {showFriendsList && (
+        <DashboardFriendsList 
+          show={showFriendsList} 
+          onClose={() => setShowFriendsList(false)}
+        />
+      )}
 
       <ScrollArea className="h-[calc(100vh-8rem)]">
         <motion.div
@@ -157,7 +181,13 @@ export function Settings() {
       <div className="fixed bottom-0 left-0 right-0 z-50">
         <DashboardNavigation 
           currentPage={currentPage} 
-          onPageChange={setCurrentPage}
+          onPageChange={(page) => {
+            setCurrentPage(page);
+            if (page !== 5) {
+              navigate('/dashboard');
+            }
+          }}
+          isEditing={false}
         />
       </div>
     </div>
