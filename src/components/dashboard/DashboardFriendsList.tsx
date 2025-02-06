@@ -3,6 +3,8 @@ import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
+import { ToolSelector } from "@/components/tools/sections/ToolSelector";
+import { Separator } from "../ui/separator";
 
 interface DashboardFriendsListProps {
   show: boolean;
@@ -39,6 +41,10 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
           </Button>
           <div className="p-4">
             <div className="space-y-4">
+              <div className="rounded-lg bg-muted/50 p-4">
+                <ToolSelector />
+              </div>
+              <Separator className="my-4" />
               <FriendsContent />
             </div>
           </div>
