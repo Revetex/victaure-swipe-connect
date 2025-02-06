@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,6 +48,17 @@ export function TranslatorPage() {
       });
 
       if (error) throw error;
+
+      // Save translation to database
+      const { error: dbError } = await supabase.from('translations').insert({
+        source_text: sourceText,
+        translated_text: data.translatedText,
+        source_lang: sourceLang,
+        target_lang: targetLang,
+        detected_lang: data.detectedLanguage
+      });
+
+      if (dbError) throw dbError;
 
       setTranslatedText(data.translatedText);
       if (data.detectedLanguage) {

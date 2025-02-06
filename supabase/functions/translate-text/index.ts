@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -13,11 +14,40 @@ serve(async (req) => {
   try {
     const { text, sourceLang, targetLang } = await req.json();
 
-    // For now, return a mock translation
-    // In a real implementation, you would integrate with a translation API
-    const translatedText = `[${targetLang}] ${text}`;
-    const detectedLanguage = sourceLang;
+    // Make sure we have the required OpenAI API key
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
 
+    // Call OpenAI API for translation
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a translation assistant. Translate from ${sourceLang} to ${targetLang}. Only respond with the translation, nothing else.`
+          },
+          {
+            role: 'user',
+            content: text
+          }
+        ],
+        temperature: 0.3
+      })
+    });
+
+    const data = await response.json();
+    const translatedText = data.choices[0].message.content.trim();
+    const detectedLanguage = sourceLang; // For now, we trust the source language
+
+    // Return the translation
     return new Response(
       JSON.stringify({ 
         translatedText,
