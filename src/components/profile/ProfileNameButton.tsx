@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 
@@ -16,13 +15,15 @@ interface ProfileNameButtonProps {
 export function ProfileNameButton({ profile, className }: ProfileNameButtonProps) {
   const [showPreview, setShowPreview] = useState(false);
 
+  const displayName = profile.display_name || profile.full_name || "Utilisateur";
+
   return (
     <div className="inline-block">
       <span 
         onClick={() => setShowPreview(true)}
         className={`cursor-pointer hover:underline ${className}`}
       >
-        {profile.display_name || profile.full_name || "Utilisateur"}
+        {displayName}
       </span>
 
       {showPreview && (
