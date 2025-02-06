@@ -939,6 +939,7 @@ export type Database = {
           id: string
           industry: string | null
           last_seen: string | null
+          last_used_tool: string | null
           latitude: number | null
           location_enabled: boolean | null
           longitude: number | null
@@ -953,6 +954,7 @@ export type Database = {
           skills: string[] | null
           state: string | null
           style_id: string | null
+          tools_order: string[] | null
           two_factor_enabled: boolean | null
           updated_at: string | null
           website: string | null
@@ -974,6 +976,7 @@ export type Database = {
           id: string
           industry?: string | null
           last_seen?: string | null
+          last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
@@ -988,6 +991,7 @@ export type Database = {
           skills?: string[] | null
           state?: string | null
           style_id?: string | null
+          tools_order?: string[] | null
           two_factor_enabled?: boolean | null
           updated_at?: string | null
           website?: string | null
@@ -1009,6 +1013,7 @@ export type Database = {
           id?: string
           industry?: string | null
           last_seen?: string | null
+          last_used_tool?: string | null
           latitude?: number | null
           location_enabled?: boolean | null
           longitude?: number | null
@@ -1023,6 +1028,7 @@ export type Database = {
           skills?: string[] | null
           state?: string | null
           style_id?: string | null
+          tools_order?: string[] | null
           two_factor_enabled?: boolean | null
           updated_at?: string | null
           website?: string | null

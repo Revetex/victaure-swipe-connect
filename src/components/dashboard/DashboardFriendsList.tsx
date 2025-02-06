@@ -3,7 +3,6 @@ import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { X } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface DashboardFriendsListProps {
