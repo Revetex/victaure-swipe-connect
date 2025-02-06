@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Menu as MenuIcon } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 
@@ -33,12 +33,8 @@ export function DashboardHeader({
             className="flex items-center gap-2 text-sm sm:text-base"
             size="sm"
           >
-            <span className="hidden sm:inline">{showFriendsList ? 'Masquer les amis' : 'Afficher les amis'}</span>
-            {showFriendsList ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
+            <MenuIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Menu</span>
           </Button>
         )}
       </div>
