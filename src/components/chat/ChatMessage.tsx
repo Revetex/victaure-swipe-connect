@@ -1,7 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Bot, Check, Clock } from "lucide-react";
+import { Bot, Check, Clock, CheckCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { format } from "date-fns";
