@@ -1,7 +1,7 @@
 import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess";
+type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
 interface ToolsNavigationProps {
   activeTool: Tool;
