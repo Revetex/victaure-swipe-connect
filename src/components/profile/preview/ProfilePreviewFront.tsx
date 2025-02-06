@@ -42,22 +42,33 @@ export function ProfilePreviewFront({
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
+        className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
       >
-        <div className="p-6">
+        {/* Business Card Style Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent" />
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
+        </div>
+        
+        <div className="relative p-6">
           <ProfilePreviewHeader profile={profile} onRequestChat={onRequestChat} />
           
           {isFriend && (
-            <>
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ duration: 0.3 }}
+              className="mt-6 space-y-6 border-t border-gray-200/10 pt-6"
+            >
               <ProfilePreviewBio profile={profile} />
               <ProfilePreviewSkills profile={profile} />
               <ProfilePreviewContact profile={profile} />
-            </>
+            </motion.div>
           )}
         </div>
       </motion.div>
 
-      <div className="flex flex-col gap-3 mt-6">
+      <div className="flex flex-col gap-3">
         <div className="grid grid-cols-2 gap-3">
           {isFriend ? (
             <>
