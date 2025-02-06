@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
 import { BottomNavigation } from "./navigation/BottomNavigation";
+import { Logo } from "./Logo";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -38,12 +39,17 @@ export function Settings() {
 
   return (
     <div className="min-h-screen bg-background relative">
-      <AppHeader
-        title="Paramètres"
-        showFriendsList={showFriendsList}
-        onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-        isEditing={false}
-      />
+      <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
+          <Logo size="sm" />
+          <AppHeader
+            title="Paramètres"
+            showFriendsList={showFriendsList}
+            onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+            isEditing={false}
+          />
+        </div>
+      </div>
 
       <AnimatePresence mode="wait">
         {showFriendsList && (

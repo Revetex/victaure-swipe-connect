@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Logo } from "./Logo";
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -91,14 +92,19 @@ export const DashboardLayout: React.FC = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
         
         <DashboardContainer>
-          <motion.div variants={itemVariants}>
-            <AppHeader
-              title={getPageTitle(currentPage)}
-              showFriendsList={showFriendsList}
-              onToggleFriendsList={toggleFriendsList}
-              isEditing={isEditing}
-            />
-          </motion.div>
+          <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
+              <Logo size="sm" className="hidden md:block" />
+              <motion.div variants={itemVariants} className="flex-1">
+                <AppHeader
+                  title={getPageTitle(currentPage)}
+                  showFriendsList={showFriendsList}
+                  onToggleFriendsList={toggleFriendsList}
+                  isEditing={isEditing}
+                />
+              </motion.div>
+            </div>
+          </div>
           
           <AnimatePresence mode="wait">
             {showFriendsList && (
