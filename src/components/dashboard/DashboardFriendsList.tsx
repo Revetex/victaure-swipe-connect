@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { X, NotebookPen, Calculator, Languages, ChessKnight, ListTodo } from "lucide-react";
+import { X, NotebookPen, Calculator, Languages, Swords, ListTodo } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,7 @@ const tools = [
   {
     id: "chess",
     name: "Échecs",
-    icon: ChessKnight,
+    icon: Swords,
     description: "Jouer aux échecs"
   }
 ];
