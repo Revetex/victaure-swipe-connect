@@ -6,13 +6,13 @@ import { NotesSection } from "./sections/NotesSection";
 import { TasksSection } from "./sections/TasksSection";
 import { CalculatorSection } from "./sections/CalculatorSection";
 import { TranslatorSection } from "./sections/TranslatorSection";
-import { ConverterSection } from "./sections/ConverterSection";
 import { ChessSection } from "./sections/ChessSection";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { ListTodo, StickyNote, Calculator, Languages, Sword } from "lucide-react";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -24,7 +24,6 @@ export function ToolsPage() {
     try {
       setIsLoading(true);
       setSelectedTool(value);
-      // Simulate loading for smoother transitions
       await new Promise(resolve => setTimeout(resolve, 300));
     } catch (error) {
       toast.error("Erreur lors du changement d'outil");
@@ -54,55 +53,51 @@ export function ToolsPage() {
               value="notes"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200 px-4 py-2 rounded-md"
+                "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
               )}
             >
-              Notes
+              <StickyNote className="h-4 w-4" />
+              <span className="hidden sm:inline">Notes</span>
             </TabsTrigger>
             <TabsTrigger 
               value="tasks"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200 px-4 py-2 rounded-md"
+                "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
               )}
             >
-              Tâches
+              <ListTodo className="h-4 w-4" />
+              <span className="hidden sm:inline">Tâches</span>
             </TabsTrigger>
             <TabsTrigger 
               value="calculator"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200 px-4 py-2 rounded-md"
+                "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
               )}
             >
-              Calculatrice
+              <Calculator className="h-4 w-4" />
+              <span className="hidden sm:inline">Calculatrice & Convertisseur</span>
             </TabsTrigger>
             <TabsTrigger 
               value="translator"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200 px-4 py-2 rounded-md"
+                "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
               )}
             >
-              Traducteur
-            </TabsTrigger>
-            <TabsTrigger 
-              value="converter"
-              className={cn(
-                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200 px-4 py-2 rounded-md"
-              )}
-            >
-              Convertisseur
+              <Languages className="h-4 w-4" />
+              <span className="hidden sm:inline">Traducteur</span>
             </TabsTrigger>
             <TabsTrigger 
               value="chess"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200 px-4 py-2 rounded-md"
+                "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
               )}
             >
-              Échecs
+              <Sword className="h-4 w-4" />
+              <span className="hidden sm:inline">Échecs</span>
             </TabsTrigger>
           </TabsList>
 
@@ -119,19 +114,31 @@ export function ToolsPage() {
             ) : (
               <>
                 <TabsContent value="notes" className="h-full m-0">
-                  <NotesSection />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
+                      <NotesSection />
+                    </div>
+                  </div>
                 </TabsContent>
                 <TabsContent value="tasks" className="h-full m-0">
-                  <TasksSection />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
+                      <TasksSection />
+                    </div>
+                  </div>
                 </TabsContent>
                 <TabsContent value="calculator" className="h-full m-0">
-                  <CalculatorSection />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
+                      <CalculatorSection />
+                    </div>
+                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
+                      <ConverterSection />
+                    </div>
+                  </div>
                 </TabsContent>
                 <TabsContent value="translator" className="h-full m-0">
                   <TranslatorSection />
-                </TabsContent>
-                <TabsContent value="converter" className="h-full m-0">
-                  <ConverterSection />
                 </TabsContent>
                 <TabsContent value="chess" className="h-full m-0">
                   <ChessSection />
