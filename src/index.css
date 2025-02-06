@@ -78,7 +78,6 @@
     @apply w-6 h-6 transition-transform duration-300
            group-hover:scale-110 group-active:scale-90;
   }
-}
 
   /* Amélioration des cibles tactiles */
   button, 
