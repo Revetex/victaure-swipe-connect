@@ -4,7 +4,7 @@ import { AppRoutes } from "./AppRoutes";
 import { Loader } from "@/components/ui/loader";
 
 // Lazy load components that might not be needed immediately
-const AuthCallback = lazy(() => import("@/components/AuthCallback"));
+const AuthCallback = lazy(() => import("@/components/AuthCallback").then(module => ({ default: module.AuthCallback })));
 
 function LoadingFallback() {
   return (

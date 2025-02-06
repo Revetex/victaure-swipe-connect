@@ -8,17 +8,17 @@ import { Loader } from "@/components/ui/loader";
 const Index = lazy(() => import("@/pages/Index"));
 const Auth = lazy(() => import("@/pages/Auth"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Feed = lazy(() => import("@/components/Feed"));
-const TermsPage = lazy(() => import("@/components/legal/TermsPage"));
-const PrivacyPage = lazy(() => import("@/components/legal/PrivacyPage"));
-const CookiesPage = lazy(() => import("@/components/legal/CookiesPage"));
-const LegalNoticePage = lazy(() => import("@/components/legal/LegalNoticePage"));
+const Feed = lazy(() => import("@/components/Feed").then(module => ({ default: module.Feed })));
+const TermsPage = lazy(() => import("@/components/legal/TermsPage").then(module => ({ default: module.TermsPage })));
+const PrivacyPage = lazy(() => import("@/components/legal/PrivacyPage").then(module => ({ default: module.PrivacyPage })));
+const CookiesPage = lazy(() => import("@/components/legal/CookiesPage").then(module => ({ default: module.CookiesPage })));
+const LegalNoticePage = lazy(() => import("@/components/legal/LegalNoticePage").then(module => ({ default: module.LegalNoticePage })));
 const PublicProfile = lazy(() => import("@/components/PublicProfile"));
-const NotesPage = lazy(() => import("@/components/tools/NotesPage"));
-const TasksPage = lazy(() => import("@/components/tools/TasksPage"));
-const CalculatorPage = lazy(() => import("@/components/tools/CalculatorPage"));
-const TranslatorPage = lazy(() => import("@/components/tools/TranslatorPage"));
-const ChessPage = lazy(() => import("@/components/tools/ChessPage"));
+const NotesPage = lazy(() => import("@/components/tools/NotesPage").then(module => ({ default: module.NotesPage })));
+const TasksPage = lazy(() => import("@/components/tools/TasksPage").then(module => ({ default: module.TasksPage })));
+const CalculatorPage = lazy(() => import("@/components/tools/CalculatorPage").then(module => ({ default: module.CalculatorPage })));
+const TranslatorPage = lazy(() => import("@/components/tools/TranslatorPage").then(module => ({ default: module.TranslatorPage })));
+const ChessPage = lazy(() => import("@/components/tools/ChessPage").then(module => ({ default: module.ChessPage })));
 
 function RouteLoadingFallback() {
   return (
