@@ -10,12 +10,24 @@ interface NoteGridProps {
 }
 
 export function NoteGrid({ notes, onDeleteNote }: NoteGridProps) {
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
   return (
     <div className="w-full p-4">
       <AnimatePresence mode="popLayout">
         {notes && notes.length > 0 ? (
           <motion.div 
-            layout
+            variants={container}
+            initial="hidden"
+            animate="show"
             className={cn(
               "grid gap-6",
               "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
@@ -29,7 +41,11 @@ export function NoteGrid({ notes, onDeleteNote }: NoteGridProps) {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20
+                }}
                 className="h-fit"
               >
                 <StickyNote

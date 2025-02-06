@@ -19,6 +19,11 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ scale: 1.02, rotate: 1 }}
       whileTap={{ scale: 0.98 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 20
+      }}
       className={cn(
         "sticky-note group h-full",
         colorClass,
