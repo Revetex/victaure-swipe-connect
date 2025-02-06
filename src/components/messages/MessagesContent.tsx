@@ -3,7 +3,6 @@ import { ConversationView } from "./conversation/ConversationView";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { UserProfile } from "@/types/profile";
 import { useEffect } from "react";
 
 interface MessagesContentProps {
@@ -92,24 +91,6 @@ export function MessagesContent({
     }
   };
 
-  const profileFromReceiver: UserProfile | null = receiver ? {
-    id: receiver.id,
-    email: '',
-    full_name: receiver.full_name || '',
-    avatar_url: receiver.avatar_url || null,
-    role: 'professional',
-    bio: null,
-    phone: null,
-    city: null,
-    state: null,
-    country: 'Canada',
-    skills: null,
-    latitude: null,
-    longitude: null,
-    online_status: receiver.online_status || false,
-    last_seen: receiver.last_seen || new Date().toISOString()
-  } : null;
-
   const handleSendWrapper = () => {
     if (inputMessage.trim()) {
       onSendMessage(inputMessage);
@@ -120,7 +101,7 @@ export function MessagesContent({
     <div className="flex flex-col h-full bg-background">
       <ConversationView
         messages={messages}
-        profile={profileFromReceiver}
+        profile={receiver}
         inputMessage={inputMessage}
         isListening={isListening}
         isThinking={isThinking}
