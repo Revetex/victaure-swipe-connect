@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ArrowRightLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ConverterProps {
   conversionType: string;
@@ -59,9 +60,9 @@ export function Converter({
   };
 
   return (
-    <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+    <div className="space-y-4 p-4 rounded-lg bg-muted/30">
       <Select value={conversionType} onValueChange={onConversionTypeChange}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Type de conversion" />
         </SelectTrigger>
         <SelectContent>
@@ -102,7 +103,10 @@ export function Converter({
         value={conversionValue}
         onChange={(e) => onValueChange(e.target.value)}
         placeholder="Entrez une valeur..."
-        className="text-right"
+        className={cn(
+          "text-right bg-background/95 backdrop-blur",
+          "supports-[backdrop-filter]:bg-background/60"
+        )}
       />
 
       <Button onClick={onConvert} className="w-full">

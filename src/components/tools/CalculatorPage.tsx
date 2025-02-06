@@ -7,6 +7,7 @@ import { useConverter } from "./calculator/useConverter";
 import { CalculatorDisplay } from "./calculator/CalculatorDisplay";
 import { CalculatorKeypad } from "./calculator/CalculatorKeypad";
 import { Converter } from "./calculator/Converter";
+import { cn } from "@/lib/utils";
 
 export function CalculatorPage() {
   const [activeTab, setActiveTab] = useState<"calculator" | "converter">("calculator");
@@ -39,7 +40,10 @@ export function CalculatorPage() {
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger 
                 value="calculator"
-                className="flex items-center gap-2 data-[state=active]:bg-background"
+                className={cn(
+                  "flex items-center gap-2",
+                  "data-[state=active]:bg-background"
+                )}
                 onClick={() => setActiveTab("calculator")}
               >
                 <CalculatorIcon className="h-4 w-4" />
@@ -47,7 +51,10 @@ export function CalculatorPage() {
               </TabsTrigger>
               <TabsTrigger 
                 value="converter"
-                className="flex items-center gap-2 data-[state=active]:bg-background"
+                className={cn(
+                  "flex items-center gap-2",
+                  "data-[state=active]:bg-background"
+                )}
                 onClick={() => setActiveTab("converter")}
               >
                 <ArrowRightLeft className="h-4 w-4" />

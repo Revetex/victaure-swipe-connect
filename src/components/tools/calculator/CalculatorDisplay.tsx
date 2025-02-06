@@ -13,8 +13,9 @@ export function CalculatorDisplay({ value, className }: CalculatorDisplayProps) 
       value={value}
       readOnly
       className={cn(
-        "text-right text-2xl mb-4 font-mono",
-        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "text-right text-2xl font-mono bg-background/95 backdrop-blur",
+        "supports-[backdrop-filter]:bg-background/60",
+        "border-2 focus:ring-2 ring-primary/20",
         className
       )}
     />
