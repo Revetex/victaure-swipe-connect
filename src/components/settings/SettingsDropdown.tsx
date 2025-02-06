@@ -35,13 +35,17 @@ export function SettingsDropdown() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative hover:bg-primary/10"
+          >
             <Settings className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
           align="end" 
-          className="w-56 bg-background border border-border"
+          className="w-56 bg-background border border-border shadow-lg z-50"
         >
           <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
             {theme === "dark" ? (
@@ -77,7 +81,7 @@ export function SettingsDropdown() {
           <DropdownMenuSeparator />
           
           <DropdownMenuItem 
-            className="text-destructive focus:text-destructive" 
+            className="text-destructive focus:text-destructive hover:bg-destructive/10" 
             onClick={handleLogout}
           >
             <LogOut className="mr-2 h-4 w-4" />
