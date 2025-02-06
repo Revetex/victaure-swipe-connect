@@ -3,11 +3,12 @@ import { MessageItem } from "../MessageItem";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProfile } from "@/hooks/useProfile";
-import { Bot, Search, UserPlus } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Bot, UserPlus } from "lucide-react";
 import { FriendSelector } from "./FriendSelector";
 import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { Search } from "lucide-react";
 
 interface MessagesListProps {
   messages: Message[];
