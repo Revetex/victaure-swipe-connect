@@ -1,3 +1,4 @@
+
 @layer components {
   .sticky-note {
     @apply p-6 rounded-lg shadow-lg transition-all duration-300 ease-out

@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { StickyNote as StickyNoteType } from "@/types/todo";

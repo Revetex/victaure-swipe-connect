@@ -1,5 +1,6 @@
+
 import { motion, AnimatePresence } from "framer-motion";
-import { StickyNote as StickyNoteIcon } from "lucide-react";
+import { StickyNoteIcon } from "lucide-react";
 import { StickyNote } from "../todo/StickyNote";
 import { StickyNote as StickyNoteType } from "@/types/todo";
 import { cn } from "@/lib/utils";
