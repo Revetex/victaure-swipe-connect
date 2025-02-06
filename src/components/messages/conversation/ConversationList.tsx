@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AssistantMessage } from "./AssistantMessage";
 import { UserMessage } from "./UserMessage";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { FriendSelector } from "./FriendSelector";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -27,11 +27,7 @@ export function ConversationList({
         animate={{ opacity: 1, y: 0 }}
         className="p-4 border-b"
       >
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-primary" />
-            Messages
-          </h2>
+        <div className="flex items-center justify-end">
           <FriendSelector 
             onSelectFriend={(friendId) => 
               onSelectConversation("user", { id: friendId } as Receiver)
