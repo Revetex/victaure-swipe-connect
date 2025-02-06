@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { filterMessages } from "@/utils/messageUtils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -20,9 +22,16 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  // Get unique conversations by grouping messages by sender/receiver
+  // Filter out self-conversations and group remaining messages by sender/receiver
   const conversations = messages.reduce((acc: any[], message: Message) => {
-    const otherUser = message.sender_id === profile?.id 
+    if (!profile) return acc;
+    
+    // Skip self-conversations
+    if (message.sender_id === message.receiver_id) {
+      return acc;
+    }
+
+    const otherUser = message.sender_id === profile.id 
       ? { id: message.receiver_id, full_name: message.sender?.full_name || 'Unknown' }
       : message.sender;
     
@@ -60,6 +69,39 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
+          {/* M. Victaure - Assistant */}
+          <Button
+            variant="ghost"
+            className="w-full flex items-center gap-2 h-auto p-4"
+            onClick={() => onSelectConversation({
+              id: 'assistant',
+              full_name: 'M. Victaure',
+              avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+              online_status: true,
+              last_seen: new Date().toISOString()
+            })}
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarImage 
+                src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" 
+                alt="M. Victaure" 
+              />
+              <AvatarFallback>MV</AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <div className="flex justify-between">
+                <h3 className="font-medium">M. Victaure</h3>
+                {chatMessages.length > 0 && (
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground">Assistant virtuel</p>
+            </div>
+          </Button>
+
+          {/* Autres conversations */}
           {filteredConversations.map((conv) => (
             <motion.div
               key={conv.user.id}
