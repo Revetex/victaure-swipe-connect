@@ -12,7 +12,6 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 
 export function ToolsPage() {
@@ -58,26 +57,34 @@ export function ToolsPage() {
           className="w-full space-y-6"
         >
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4 border-b">
-            <ScrollArea className="w-full">
-              <TabsList className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-auto min-w-full sm:min-w-fit">
+            <div className="flex justify-center">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-2 bg-muted/50 rounded-lg w-full max-w-3xl">
                 {tools.map((tool) => {
                   const Icon = tool.icon;
                   return (
-                    <TabsTrigger
+                    <motion.div
                       key={tool.id}
-                      value={tool.id}
-                      className={cn(
-                        "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2",
-                        "hover:bg-background/60"
-                      )}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <Icon className="h-4 w-4" />
-                      <span className="sr-only sm:not-sr-only">{tool.label}</span>
-                    </TabsTrigger>
+                      <TabsTrigger
+                        value={tool.id}
+                        className={cn(
+                          "w-full flex items-center justify-center gap-2 px-4 py-2",
+                          "rounded-md transition-all duration-200",
+                          "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                          "data-[state=active]:shadow-lg",
+                          "hover:bg-background/60"
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span className="font-medium">{tool.label}</span>
+                      </TabsTrigger>
+                    </motion.div>
                   );
                 })}
               </TabsList>
-            </ScrollArea>
+            </div>
           </div>
 
           <motion.div
@@ -91,7 +98,11 @@ export function ToolsPage() {
                 <ReloadIcon className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : (
-              <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
                 <TabsContent value="notes" className="m-0">
                   <NotesSection />
                 </TabsContent>
@@ -107,7 +118,7 @@ export function ToolsPage() {
                 <TabsContent value="chess" className="m-0">
                   <ChessSection />
                 </TabsContent>
-              </>
+              </motion.div>
             )}
           </motion.div>
         </Tabs>
