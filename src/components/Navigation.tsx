@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export function Navigation() {
   const isMobile = useIsMobile();
