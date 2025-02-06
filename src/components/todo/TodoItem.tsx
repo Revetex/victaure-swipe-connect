@@ -1,11 +1,11 @@
-import { Trash2, Clock, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { motion } from "framer-motion";
+import { Trash2 } from "lucide-react";
 import { Todo } from "@/types/todo";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface TodoItemProps {
   todo: Todo;
@@ -14,53 +14,58 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
+  const formattedDate = todo.dueDate 
+    ? format(new Date(todo.dueDate), "d MMMM yyyy", { locale: fr })
+    : null;
+
+  const formattedTime = todo.dueTime 
+    ? format(new Date(`2000-01-01T${todo.dueTime}`), "HH:mm")
+    : null;
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      exit={{ opacity: 0, y: -20 }}
       className={cn(
-        "group p-4 rounded-lg",
-        "bg-background/50 dark:bg-gray-800/50",
-        "border border-border/50",
-        "shadow-sm hover:shadow-md transition-all duration-300",
-        "flex items-center gap-3",
-        todo.completed && "opacity-75"
+        "group flex items-start gap-4 rounded-lg border p-4",
+        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "hover:shadow-md transition-all duration-200",
+        "active:scale-[0.98] touch-none",
+        todo.completed && "opacity-60"
       )}
     >
       <Checkbox
         checked={todo.completed}
         onCheckedChange={() => onToggle(todo.id)}
-        className={cn(
-          "data-[state=checked]:bg-primary data-[state=checked]:border-primary",
-          "h-5 w-5"
-        )}
+        className="mt-1"
       />
       
       <div className="flex-1 min-w-0">
         <p className={cn(
-          "text-sm font-medium transition-all",
+          "text-sm font-medium leading-none",
           todo.completed && "line-through text-muted-foreground"
         )}>
           {todo.text}
         </p>
         
-        {(todo.dueDate || todo.dueTime) && (
-          <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-muted-foreground">
-            {todo.dueDate && (
-              <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                <span>
-                  {format(new Date(todo.dueDate), "d MMMM yyyy", { locale: fr })}
-                </span>
-              </div>
+        {(formattedDate || formattedTime) && (
+          <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
+            {formattedDate && (
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1">
+                {formattedDate}
+              </span>
             )}
-            {!todo.allDay && todo.dueTime && (
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                <span>{todo.dueTime}</span>
-              </div>
+            {formattedTime && !todo.allDay && (
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1">
+                {formattedTime}
+              </span>
+            )}
+            {todo.allDay && (
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1">
+                Toute la journée
+              </span>
             )}
           </div>
         )}
@@ -69,16 +74,11 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
       <Button
         variant="ghost"
         size="icon"
+        className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
         onClick={() => onDelete(todo.id)}
-        className={cn(
-          "opacity-0 group-hover:opacity-100",
-          "transition-opacity",
-          "hover:text-destructive",
-          "h-8 w-8",
-          "sm:flex"
-        )}
       >
-        <Trash2 className="h-4 w-4" />
+        <Trash2 className="h-4 w-4 text-muted-foreground" />
+        <span className="sr-only">Supprimer</span>
       </Button>
     </motion.div>
   );

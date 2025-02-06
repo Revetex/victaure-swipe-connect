@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { ErrorBoundary } from "react-error-boundary";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface UnifiedBoardProps {
   todos: Todo[];
@@ -30,8 +32,6 @@ interface UnifiedBoardProps {
 }
 
 function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
-  console.error("Board Error:", error);
-  
   return (
     <Alert variant="destructive" className="m-4">
       <AlertTitle>Une erreur est survenue</AlertTitle>
@@ -54,7 +54,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Memoized components to prevent unnecessary re-renders
 const MemoizedTodoToolbar = memo(TodoToolbar);
 const MemoizedNoteToolbar = memo(NoteToolbar);
 const MemoizedTodoList = memo(TodoList);
@@ -77,8 +76,8 @@ export function UnifiedBoard({
   onDeleteNote,
 }: UnifiedBoardProps) {
   const [activeTab, setActiveTab] = useState<"todos" | "notes" | "calculator" | "translator" | "converter" | "chess">("todos");
+  const isMobile = useIsMobile();
 
-  // Memoize handlers to prevent unnecessary re-renders
   const handleAddTodo = useMemo(() => {
     return () => {
       if (!newTodo.trim()) {
@@ -99,6 +98,12 @@ export function UnifiedBoard({
     };
   }, [newNote, onAddNote]);
 
+  const tabVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 }
+  };
+
   return (
     <div className="h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border">
       <Tabs 
@@ -107,7 +112,7 @@ export function UnifiedBoard({
         className="h-full flex flex-col"
       >
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <TabsList className="grid w-full grid-cols-6 h-12">
+          <TabsList className="w-full grid grid-cols-3 sm:grid-cols-6 h-12">
             <TabsTrigger value="todos" className="flex items-center gap-2">
               <ListTodo className="h-4 w-4" />
               <span className="hidden sm:inline">Tâches</span>
@@ -120,84 +125,140 @@ export function UnifiedBoard({
               <Calculator className="h-4 w-4" />
               <span className="hidden sm:inline">Calculatrice</span>
             </TabsTrigger>
-            <TabsTrigger value="translator" className="flex items-center gap-2">
+            <TabsTrigger value="translator" className="hidden sm:flex items-center gap-2">
               <Languages className="h-4 w-4" />
               <span className="hidden sm:inline">Traducteur</span>
             </TabsTrigger>
-            <TabsTrigger value="converter" className="flex items-center gap-2">
+            <TabsTrigger value="converter" className="hidden sm:flex items-center gap-2">
               <Ruler className="h-4 w-4" />
               <span className="hidden sm:inline">Convertisseur</span>
             </TabsTrigger>
-            <TabsTrigger value="chess" className="flex items-center gap-2">
+            <TabsTrigger value="chess" className="hidden sm:flex items-center gap-2">
               <Sword className="h-4 w-4" />
               <span className="hidden sm:inline">Échecs</span>
             </TabsTrigger>
           </TabsList>
           
           <ErrorBoundary FallbackComponent={ErrorFallback}>
-            {activeTab === "todos" ? (
-              <MemoizedTodoToolbar
-                newTodo={newTodo}
-                onTodoChange={onTodoChange}
-                onAddTodo={handleAddTodo}
-              />
-            ) : activeTab === "notes" ? (
-              <MemoizedNoteToolbar
-                newNote={newNote}
-                selectedColor={selectedColor}
-                colors={colors}
-                onNoteChange={onNoteChange}
-                onColorChange={onColorChange}
-                onAddNote={handleAddNote}
-              />
-            ) : null}
+            <AnimatePresence mode="wait">
+              {activeTab === "todos" ? (
+                <motion.div
+                  key="todos-toolbar"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={tabVariants}
+                >
+                  <MemoizedTodoToolbar
+                    newTodo={newTodo}
+                    onTodoChange={onTodoChange}
+                    onAddTodo={handleAddTodo}
+                  />
+                </motion.div>
+              ) : activeTab === "notes" ? (
+                <motion.div
+                  key="notes-toolbar"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={tabVariants}
+                >
+                  <MemoizedNoteToolbar
+                    newNote={newNote}
+                    selectedColor={selectedColor}
+                    colors={colors}
+                    onNoteChange={onNoteChange}
+                    onColorChange={onColorChange}
+                    onAddNote={handleAddNote}
+                  />
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </ErrorBoundary>
         </div>
 
         <div className="flex-1 overflow-hidden">
           <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <TabsContent value="todos" className="h-full m-0">
-              <ScrollArea className="h-full">
-                <MemoizedTodoList
-                  todos={todos}
-                  onToggleTodo={onToggleTodo}
-                  onDeleteTodo={onDeleteTodo}
-                />
-              </ScrollArea>
-            </TabsContent>
+            <AnimatePresence mode="wait">
+              <TabsContent value="todos" className="h-full m-0">
+                <ScrollArea className="h-full px-4">
+                  <MemoizedTodoList
+                    todos={todos}
+                    onToggleTodo={onToggleTodo}
+                    onDeleteTodo={onDeleteTodo}
+                  />
+                </ScrollArea>
+              </TabsContent>
 
-            <TabsContent value="notes" className="h-full m-0">
-              <ScrollArea className="h-full">
-                <MemoizedNoteGrid
-                  notes={notes}
-                  onDeleteNote={onDeleteNote}
-                />
-              </ScrollArea>
-            </TabsContent>
+              <TabsContent value="notes" className="h-full m-0">
+                <ScrollArea className="h-full">
+                  <MemoizedNoteGrid
+                    notes={notes}
+                    onDeleteNote={onDeleteNote}
+                  />
+                </ScrollArea>
+              </TabsContent>
 
-            <TabsContent value="calculator" className="h-full m-0">
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                Calculatrice (Bientôt disponible)
-              </div>
-            </TabsContent>
+              <TabsContent value="calculator" className="h-full m-0">
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={tabVariants}
+                  className="flex items-center justify-center h-full"
+                >
+                  <div className="text-center space-y-4">
+                    <Calculator className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <p className="text-muted-foreground">Calculatrice (Bientôt disponible)</p>
+                  </div>
+                </motion.div>
+              </TabsContent>
 
-            <TabsContent value="translator" className="h-full m-0">
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                Traducteur (Bientôt disponible)
-              </div>
-            </TabsContent>
+              <TabsContent value="translator" className="h-full m-0">
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={tabVariants}
+                  className="flex items-center justify-center h-full"
+                >
+                  <div className="text-center space-y-4">
+                    <Languages className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <p className="text-muted-foreground">Traducteur (Bientôt disponible)</p>
+                  </div>
+                </motion.div>
+              </TabsContent>
 
-            <TabsContent value="converter" className="h-full m-0">
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                Convertisseur (Bientôt disponible)
-              </div>
-            </TabsContent>
+              <TabsContent value="converter" className="h-full m-0">
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={tabVariants}
+                  className="flex items-center justify-center h-full"
+                >
+                  <div className="text-center space-y-4">
+                    <Ruler className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
+                  </div>
+                </motion.div>
+              </TabsContent>
 
-            <TabsContent value="chess" className="h-full m-0">
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                Échecs (Bientôt disponible)
-              </div>
-            </TabsContent>
+              <TabsContent value="chess" className="h-full m-0">
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={tabVariants}
+                  className="flex items-center justify-center h-full"
+                >
+                  <div className="text-center space-y-4">
+                    <Sword className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <p className="text-muted-foreground">Échecs (Bientôt disponible)</p>
+                  </div>
+                </motion.div>
+              </TabsContent>
+            </AnimatePresence>
           </ErrorBoundary>
         </div>
       </Tabs>

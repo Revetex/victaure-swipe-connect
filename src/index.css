@@ -180,7 +180,7 @@
            sm:touch-none
            active:shadow-lg
            active:scale-[0.98]
-           w-[280px] min-h-[280px];
+           w-full sm:w-[280px] min-h-[280px];
   }
 
   .sticky-note-yellow {
@@ -207,32 +207,30 @@
     @apply bg-[#E5DEFF]/90 hover:bg-[#E5DEFF] border border-purple-200/50;
     box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
   }
+
+  .mobile-friendly-input {
+    @apply min-h-[44px] px-4 py-2 text-base;
+    touch-action: manipulation;
+  }
+
+  .mobile-friendly-button {
+    @apply min-h-[44px] min-w-[44px] px-4;
+    touch-action: manipulation;
+  }
 }
 
 @layer utilities {
-  .animate-gradient {
-    animation: gradient 15s ease infinite;
-    background-size: 400% 400%;
+  .touch-target {
+    @apply p-2;
+    min-height: 44px;
+    min-width: 44px;
   }
 
-  @keyframes gradient {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
-  .bg-grid-white\/10 {
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  }
-
-  .bg-grid-16 {
-    background-size: 4rem 4rem;
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
   }
 }

@@ -1,50 +1,45 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Trash2 } from "lucide-react";
+import { StickyNote as StickyNoteType } from "@/types/todo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { StickyNote as StickyNoteType } from "@/types/todo";
 
 interface StickyNoteProps {
   note: StickyNoteType;
-  colorClass?: string;
-  onDelete?: (id: string) => void;
-  draggable?: boolean;
+  colorClass: string;
+  onDelete: (id: string) => void;
 }
 
-export function StickyNote({ note, colorClass, onDelete, draggable }: StickyNoteProps) {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
+export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
   return (
     <motion.div
-      drag={draggable}
-      dragMomentum={false}
-      onDragEnd={(_, info) => {
-        setPosition({
-          x: position.x + info.offset.x,
-          y: position.y + info.offset.y
-        });
-      }}
-      style={{ x: position.x, y: position.y }}
-      className={cn(
-        "sticky-note group",
-        "hover:shadow-xl transition-shadow duration-200",
-        colorClass
-      )}
+      layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
+      className={cn(
+        "sticky-note group",
+        colorClass,
+        "touch-manipulation"
+      )}
     >
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 text-muted-foreground hover:text-destructive"
-          onClick={() => onDelete?.(note.id)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+        onClick={() => onDelete(note.id)}
+      >
+        <Trash2 className="h-4 w-4" />
+        <span className="sr-only">Supprimer</span>
+      </Button>
+
+      <div className="pt-2 pb-8 px-2">
+        <p className="whitespace-pre-wrap break-words text-sm">
+          {note.text}
+        </p>
       </div>
-      <p className="text-sm whitespace-pre-wrap break-words">{note.text}</p>
     </motion.div>
   );
 }
