@@ -16,8 +16,7 @@ const containerVariants = {
       duration: 0.4,
       type: "spring",
       stiffness: 100,
-      damping: 15,
-      staggerChildren: 0.1
+      damping: 15
     }
   },
   exit: { 
@@ -35,17 +34,13 @@ export function SettingsLayout({ children, className }: SettingsLayoutProps) {
       animate="visible"
       exit="exit"
       className={cn(
-        "min-h-screen bg-background relative overflow-hidden p-4 md:p-6",
+        "min-h-screen bg-background relative overflow-hidden",
         "bg-gradient-to-br from-background via-background/95 to-background/90",
         className
       )}
     >
       <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] z-0" />
-      <div className="max-w-2xl mx-auto space-y-8 relative z-10">
-        <div className="bg-card rounded-xl p-6 shadow-lg border border-border/50">
-          {children}
-        </div>
-      </div>
+      {children}
     </motion.div>
   );
 }

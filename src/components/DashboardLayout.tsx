@@ -10,8 +10,8 @@ import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Logo } from "./Logo";
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -52,12 +52,12 @@ export const DashboardLayout: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const { viewportHeight } = useViewport();
+  const location = useLocation();
 
   const handlePageChange = useCallback((page: number) => {
     try {
       setCurrentPage(page);
       setIsEditing(false);
-      setShowFriendsList(false); // Close menu when changing pages
     } catch (error) {
       console.error("Error changing page:", error);
       toast.error("Une erreur est survenue lors du changement de page");
@@ -76,6 +76,14 @@ export const DashboardLayout: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
+  useEffect(() => {
+    const startTime = performance.now();
+    return () => {
+      const endTime = performance.now();
+      console.log(`DashboardLayout render time: ${endTime - startTime}ms`);
+    };
+  }, []);
+
   return (
     <DashboardAuthCheck>
       <motion.div 
@@ -92,19 +100,14 @@ export const DashboardLayout: React.FC = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
         
         <DashboardContainer>
-          <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
-              <Logo size="sm" className="hidden md:block" />
-              <motion.div variants={itemVariants} className="flex-1">
-                <AppHeader
-                  title={getPageTitle(currentPage)}
-                  showFriendsList={showFriendsList}
-                  onToggleFriendsList={toggleFriendsList}
-                  isEditing={isEditing}
-                />
-              </motion.div>
-            </div>
-          </div>
+          <motion.div variants={itemVariants}>
+            <AppHeader
+              title={getPageTitle(currentPage)}
+              showFriendsList={showFriendsList}
+              onToggleFriendsList={toggleFriendsList}
+              isEditing={isEditing}
+            />
+          </motion.div>
           
           <AnimatePresence mode="wait">
             {showFriendsList && (

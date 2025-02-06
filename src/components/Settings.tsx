@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { ScrollArea } from "./ui/scroll-area";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppearanceSection } from "./settings/AppearanceSection";
 import { NotificationsSection } from "./settings/NotificationsSection";
 import { PrivacySection } from "./settings/PrivacySection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
-import { motion, AnimatePresence } from "framer-motion";
+import { ScrollArea } from "./ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
-import { BottomNavigation } from "./navigation/BottomNavigation";
-import { Logo } from "./Logo";
+import { SettingsLayout } from "./settings/SettingsLayout";
+import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -19,7 +19,7 @@ const sectionVariants = {
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.3,
       type: "spring",
       stiffness: 100,
       damping: 15
@@ -33,23 +33,32 @@ const sectionVariants = {
 };
 
 export function Settings() {
+  const [mounted, setMounted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(5);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const navigate = useNavigate();
-  const currentPage = 5;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleBackToHome = () => {
+    navigate('/dashboard');
+  };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <div className="min-h-screen bg-background relative">
-      <div className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
-          <Logo size="sm" />
-          <AppHeader
-            title="Paramètres"
-            showFriendsList={showFriendsList}
-            onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-            isEditing={false}
-          />
-        </div>
-      </div>
+    <SettingsLayout>
+      <AppHeader 
+        title="Paramètres"
+        showFriendsList={showFriendsList}
+        onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+        isEditing={false}
+        onToolReturn={handleBackToHome}
+      />
 
       <AnimatePresence mode="wait">
         {showFriendsList && (
@@ -60,13 +69,13 @@ export function Settings() {
         )}
       </AnimatePresence>
 
-      <ScrollArea className="h-[calc(100vh-8rem)] container mx-auto px-4 py-6">
+      <ScrollArea className="h-[calc(100vh-8rem)]">
         <motion.div
           variants={sectionVariants}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="space-y-8 max-w-4xl mx-auto"
+          className="container mx-auto px-4 py-6 space-y-8"
         >
           <AppearanceSection />
           <NotificationsSection />
@@ -77,15 +86,17 @@ export function Settings() {
         </motion.div>
       </ScrollArea>
 
-      <BottomNavigation 
-        currentPage={currentPage} 
-        onPageChange={(page) => {
-          if (page !== 5) {
-            navigate('/dashboard');
-          }
-        }}
-        isEditing={false}
-      />
-    </div>
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <DashboardNavigation 
+          currentPage={currentPage} 
+          onPageChange={(page) => {
+            if (page !== 5) {
+              navigate('/dashboard');
+            }
+          }}
+          isEditing={false}
+        />
+      </div>
+    </SettingsLayout>
   );
 }

@@ -1,80 +1,58 @@
 import { motion } from "framer-motion";
+import { FriendsContent } from "@/components/feed/friends/FriendsContent";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { X, NotebookPen, Calculator, Languages, ChessKnight, ListTodo } from "lucide-react";
+import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, ListTodo, Settings, Sword, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { NotesPage } from "@/components/tools/NotesPage";
-import { CalculatorPage } from "@/components/tools/CalculatorPage";
-import { TasksPage } from "@/components/tools/TasksPage";
-import { useState } from "react";
 
-const menuItems = [
+interface DashboardFriendsListProps {
+  show: boolean;
+  onClose: () => void;
+}
+
+const tools = [
+  {
+    id: "notes",
+    name: "Notes",
+    icon: NotebookPen,
+    description: "Gérer vos notes"
+  },
   {
     id: "tasks",
     name: "Tâches",
     icon: ListTodo,
-    description: "Gérer vos tâches",
-    color: "bg-blue-500/10 text-blue-500"
+    description: "Gérer vos tâches"
   },
   {
     id: "calculator",
     name: "Calculatrice",
     icon: Calculator,
-    description: "Calculer et convertir",
-    color: "bg-green-500/10 text-green-500"
+    description: "Calculatrice et convertisseur"
+  },
+  {
+    id: "translator",
+    name: "Traducteur",
+    icon: Languages,
+    description: "Traduire du texte"
   },
   {
     id: "chess",
     name: "Échecs",
-    icon: Sword,
-    description: "Jouer aux échecs",
-    color: "bg-red-500/10 text-red-500"
-  },
-  {
-    id: "settings",
-    name: "Paramètres",
-    icon: Settings,
-    description: "Configurer votre compte",
-    color: "bg-purple-500/10 text-purple-500"
-  },
-  {
-    id: "profile",
-    name: "Profil",
-    icon: User,
-    description: "Gérer votre profil",
-    color: "bg-orange-500/10 text-orange-500"
+    icon: ChessKnight,
+    description: "Jouer aux échecs"
   }
 ];
 
-interface DashboardMenuProps {
-  show: boolean;
-  onClose: () => void;
-}
-
-export function DashboardFriendsList({ show, onClose }: DashboardMenuProps) {
+export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProps) {
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  
+  if (!show) return null;
 
-  const handleItemClick = (itemId: string) => {
-    setSelectedTool(itemId);
-    switch (itemId) {
-      case 'chess':
-        navigate('/dashboard/tools/chess');
-        onClose();
-        break;
-      case 'settings':
-        navigate('/settings');
-        onClose();
-        break;
-      case 'profile':
-        navigate('/dashboard/profile');
-        onClose();
-        break;
-      default:
-        // For tools that open in dialog
-        break;
-    }
+  const handleToolClick = (toolId: string) => {
+    navigate('/dashboard/tools');
+    // We'll let the ToolsPage handle the tool selection
   };
 
   return (
@@ -82,53 +60,54 @@ export function DashboardFriendsList({ show, onClose }: DashboardMenuProps) {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-50"
+      transition={{ duration: 0.2 }}
+      className={cn(
+        "fixed inset-x-0 top-[4rem] z-[100] bg-background/95 backdrop-blur-sm border-b",
+        "overflow-hidden shadow-lg",
+        isMobile ? "h-[calc(100vh-4rem)]" : "h-[70vh]"
+      )}
     >
-      <div className="container mx-auto py-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.id}
-                variant="ghost"
-                className={cn(
-                  "flex flex-col items-center gap-3 p-6 h-auto",
-                  "hover:bg-accent/5 transition-all duration-200",
-                  "group relative"
-                )}
-                onClick={() => handleItemClick(item.id)}
-              >
-                <div className={cn(
-                  "p-4 rounded-lg transition-all duration-200",
-                  "group-hover:scale-110",
-                  item.color
-                )}>
-                  <Icon className="h-6 w-6" />
-                </div>
-                <div className="text-center">
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {item.description}
-                  </p>
-                </div>
-              </Button>
-            );
-          })}
+      <div className="container mx-auto px-4 h-full">
+        <div className="max-w-3xl mx-auto relative h-full py-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="absolute right-0 top-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          
+          <div className="h-full overflow-y-auto space-y-8">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Outils</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {tools.map((tool) => (
+                  <Button
+                    key={tool.id}
+                    variant="outline"
+                    className="flex items-center gap-3 p-4 h-auto"
+                    onClick={() => handleToolClick(tool.id)}
+                  >
+                    <tool.icon className="h-5 w-5" />
+                    <div className="text-left">
+                      <div className="font-medium">{tool.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {tool.description}
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Connexions</h3>
+              <FriendsContent />
+            </div>
+          </div>
         </div>
       </div>
-
-      <Dialog open={selectedTool === 'tasks'} onOpenChange={() => setSelectedTool(null)}>
-        <DialogContent className="max-w-4xl h-[80vh]">
-          <TasksPage />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={selectedTool === 'calculator'} onOpenChange={() => setSelectedTool(null)}>
-        <DialogContent className="max-w-4xl h-[80vh]">
-          <CalculatorPage />
-        </DialogContent>
-      </Dialog>
     </motion.div>
   );
 }
