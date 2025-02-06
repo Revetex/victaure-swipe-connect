@@ -36,7 +36,20 @@ export function MessagesWrapper() {
     setReceiver(null);
   };
 
-  const handleSelectConversation = (selectedReceiver: Receiver) => {
+  const handleSelectConversation = async (selectedReceiver: Receiver) => {
+    // Vérifier si l'utilisateur est connecté
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Vous devez être connecté pour envoyer des messages");
+      return;
+    }
+
+    // Empêcher la sélection d'une conversation avec soi-même
+    if (selectedReceiver.id === user.id) {
+      toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
+      return;
+    }
+
     setReceiver(selectedReceiver);
     setShowConversation(true);
   };
