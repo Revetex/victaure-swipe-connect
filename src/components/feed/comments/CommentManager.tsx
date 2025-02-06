@@ -1,20 +1,10 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { PostComments } from "../PostComments";
 import { CommentInput } from "../CommentInput";
-
-interface Comment {
-  id: string;
-  content: string;
-  created_at: string;
-  user_id: string;
-  profiles: {
-    id: string;
-    full_name: string;
-    avatar_url: string;
-  };
-}
+import { Comment } from "@/types/posts";
 
 interface CommentManagerProps {
   postId: string;
