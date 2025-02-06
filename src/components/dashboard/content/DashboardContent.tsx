@@ -45,7 +45,7 @@ export function DashboardContent({
           </div>
         );
       default:
-        return null;
+        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
     }
   };
 
@@ -61,4 +61,3 @@ export function DashboardContent({
     </motion.div>
   );
 }
-
