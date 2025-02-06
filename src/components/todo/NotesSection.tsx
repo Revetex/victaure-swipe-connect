@@ -29,7 +29,7 @@ export function NotesSection({
 }: NotesSectionProps) {
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)]">
-      <div className="p-4">
+      <div className="p-4 sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <NotesInput
           newNote={newNote}
           selectedColor={selectedColor}
@@ -40,8 +40,8 @@ export function NotesSection({
         />
       </div>
 
-      <ScrollArea className="flex-1 relative">
-        <div className="min-h-[600px] relative p-4">
+      <ScrollArea className="flex-1 relative px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[600px] relative pb-4">
           <AnimatePresence mode="popLayout">
             {notes.map((note) => (
               <StickyNote
@@ -57,9 +57,9 @@ export function NotesSection({
                 animate={{ opacity: 1 }}
                 className={cn(
                   "text-center text-muted-foreground py-12",
-                  "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-                  "bg-muted/30 rounded-lg backdrop-blur-sm w-64",
-                  "border border-border/50"
+                  "col-span-full",
+                  "bg-muted/30 rounded-lg backdrop-blur-sm",
+                  "border border-border/50 mx-auto w-64"
                 )}
               >
                 <StickyNoteIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />

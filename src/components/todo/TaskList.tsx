@@ -3,6 +3,7 @@ import { Todo } from "@/types/todo";
 import { TaskItem } from "./TaskItem";
 import { motion, AnimatePresence } from "framer-motion";
 import { ListTodo } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TaskListProps {
   todos: Todo[];
@@ -28,7 +29,11 @@ export function TaskList({ todos, onToggle, onDelete }: TaskListProps) {
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center text-muted-foreground py-12"
+                className={cn(
+                  "text-center text-muted-foreground py-12",
+                  "bg-muted/30 rounded-lg backdrop-blur-sm",
+                  "border border-border/50"
+                )}
               >
                 <ListTodo className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p className="text-lg">Aucune tâche</p>

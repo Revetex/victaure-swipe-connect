@@ -77,10 +77,13 @@ export function TaskItem({ todo, onToggle, onDelete }: TaskItemProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+        className={cn(
+          "opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity",
+          "text-destructive hover:text-destructive"
+        )}
         onClick={() => onDelete(todo.id)}
       >
-        <Trash2 className="h-4 w-4 text-destructive" />
+        <Trash2 className="h-4 w-4" />
         <span className="sr-only">Supprimer</span>
       </Button>
     </motion.div>

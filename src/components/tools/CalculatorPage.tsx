@@ -33,25 +33,25 @@ export function CalculatorPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-lg">
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden shadow-lg">
         <Tabs defaultValue="calculator" className="w-full">
-          <div className="border-b px-4 py-2">
-            <TabsList className="grid grid-cols-2">
+          <div className="border-b px-4 py-2 bg-muted/50">
+            <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger 
                 value="calculator"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 data-[state=active]:bg-background"
                 onClick={() => setActiveTab("calculator")}
               >
                 <CalculatorIcon className="h-4 w-4" />
-                Calculatrice
+                <span className="hidden sm:inline">Calculatrice</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="converter"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 data-[state=active]:bg-background"
                 onClick={() => setActiveTab("converter")}
               >
                 <ArrowRightLeft className="h-4 w-4" />
-                Convertisseur
+                <span className="hidden sm:inline">Convertisseur</span>
               </TabsTrigger>
             </TabsList>
           </div>

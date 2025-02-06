@@ -20,14 +20,15 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
       whileHover={{ scale: 1.02, rotate: 1 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "sticky-note group",
+        "sticky-note group h-full",
         colorClass,
         "touch-manipulation relative overflow-hidden",
         "before:content-[''] before:absolute before:inset-0",
         "before:bg-gradient-to-br before:from-white/5 before:to-transparent",
         "after:content-[''] after:absolute after:bottom-0 after:right-0",
         "after:w-8 after:h-8 after:bg-gradient-to-br",
-        "after:from-black/0 after:to-black/5 after:rounded-tl-2xl"
+        "after:from-black/0 after:to-black/5 after:rounded-tl-2xl",
+        "shadow-lg hover:shadow-xl transition-shadow"
       )}
     >
       <Button
@@ -44,7 +45,7 @@ export function StickyNote({ note, colorClass, onDelete }: StickyNoteProps) {
         <span className="sr-only">Supprimer</span>
       </Button>
 
-      <div className="pt-2 pb-8 px-2">
+      <div className="pt-2 pb-8 px-4">
         <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
           {note.text}
         </p>
