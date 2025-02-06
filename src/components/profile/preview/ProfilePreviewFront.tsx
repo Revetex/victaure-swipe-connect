@@ -11,6 +11,7 @@ import { ProfilePreviewContact } from "./ProfilePreviewContact";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface ProfilePreviewFrontProps {
   profile: UserProfile;
@@ -129,7 +130,7 @@ export function ProfilePreviewFront({
             onClick={handleToggleBlock}
             className="flex items-center gap-2"
           >
-            <Ban className="w-4 h-4" />
+            <Ban className="w-4 w-4" />
             {isBlocked ? "Débloquer" : "Bloquer"}
           </Button>
 

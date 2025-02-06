@@ -1,3 +1,4 @@
+
 self.addEventListener('push', function(event) {
   const options = {
     body: event.data.text(),
