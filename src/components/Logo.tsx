@@ -2,14 +2,15 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface LogoProps {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
 const textSizes = {
   sm: "text-xl",
   md: "text-2xl",
-  lg: "text-3xl"
+  lg: "text-3xl",
+  xl: "text-4xl"
 };
 
 export function Logo({ size = "md", className }: LogoProps) {
