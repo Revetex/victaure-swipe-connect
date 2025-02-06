@@ -7,7 +7,7 @@ import { NotificationsSection } from "./settings/NotificationsSection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
-import { SettingsSection } from "./settings/SettingsSection";
+import { ScrollArea } from "./ui/scroll-area";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -20,8 +20,8 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: { opacity: 1, x: 0 }
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
 };
 
 export function Settings() {
@@ -36,51 +36,59 @@ export function Settings() {
   }
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6 p-4 sm:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border border-border/50 shadow-lg h-full overflow-y-auto"
-    >
-      <div className="space-y-6">
+    <ScrollArea className="h-[calc(100vh-4rem)]">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="max-w-2xl mx-auto space-y-8 p-6"
+      >
+        <motion.div variants={itemVariants} className="space-y-2">
+          <h2 className="text-2xl font-semibold tracking-tight">Paramètres</h2>
+          <p className="text-muted-foreground">
+            Gérez vos préférences et paramètres de compte
+          </p>
+        </motion.div>
+
         <motion.div variants={itemVariants}>
           <AppearanceSection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <motion.div variants={itemVariants}>
           <PrivacySection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <motion.div variants={itemVariants}>
           <NotificationsSection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <motion.div variants={itemVariants}>
           <SecuritySection />
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <motion.div variants={itemVariants}>
-          <SettingsSection title="Utilisateurs bloqués">
-            <div className="p-3 rounded-lg bg-muted/30">
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Utilisateurs bloqués</h3>
+            <div className="p-4 rounded-lg bg-muted/30">
               <BlockedUsersSection />
             </div>
-          </SettingsSection>
+          </div>
         </motion.div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <motion.div variants={itemVariants}>
           <LogoutSection />
         </motion.div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </ScrollArea>
   );
 }
