@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { FileText, UserPlus, UserMinus, Ban, Download, MessageCircle } from "lucide-react";
@@ -44,9 +43,8 @@ export function ProfilePreviewFront({
         animate={{ opacity: 1, y: 0 }}
         className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
       >
-        {/* Business Card Style Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent" />
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
         </div>
         

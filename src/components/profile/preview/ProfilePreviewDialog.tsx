@@ -1,6 +1,7 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { UserProfile } from "@/types/profile";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProfilePreviewCard } from "./ProfilePreviewCard";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ProfilePreviewDialogProps {
   profile: UserProfile;
@@ -17,8 +18,11 @@ export function ProfilePreviewDialog({
 }: ProfilePreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-xl p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <ProfilePreviewCard 
+      <DialogContent className="max-w-md p-0 overflow-hidden bg-transparent border-none">
+        <VisuallyHidden asChild>
+          <DialogTitle>Profil de {profile.full_name || "Utilisateur"}</DialogTitle>
+        </VisuallyHidden>
+        <ProfilePreviewCard
           profile={profile}
           onRequestChat={onRequestChat}
           onClose={onClose}

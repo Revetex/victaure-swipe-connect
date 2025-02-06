@@ -2,7 +2,7 @@ import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
 import { ProfilePreviewBack } from "./ProfilePreviewBack";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
@@ -20,13 +20,18 @@ export function ProfilePreviewCard({
   const handleFlip = () => setIsFlipped(!isFlipped);
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
-      <div className="relative preserve-3d" style={{ perspective: "1000px" }}>
+    <div className="relative w-full">
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={false}
-          animate={{ rotateY: isFlipped ? 180 : 0 }}
-          transition={{ duration: 0.6 }}
-          style={{ transformStyle: "preserve-3d" }}
+          key={isFlipped ? "back" : "front"}
+          initial={{ opacity: 0, rotateY: isFlipped ? -180 : 0 }}
+          animate={{ opacity: 1, rotateY: isFlipped ? 0 : 0 }}
+          exit={{ opacity: 0, rotateY: isFlipped ? 0 : 180 }}
+          transition={{ duration: 0.4 }}
+          style={{ 
+            transformStyle: "preserve-3d",
+            backfaceVisibility: "hidden"
+          }}
           className="w-full"
         >
           {!isFlipped ? (
@@ -36,10 +41,13 @@ export function ProfilePreviewCard({
               onFlip={handleFlip}
             />
           ) : (
-            <ProfilePreviewBack profile={profile} onFlip={handleFlip} />
+            <ProfilePreviewBack 
+              profile={profile} 
+              onFlip={handleFlip} 
+            />
           )}
         </motion.div>
-      </div>
+      </AnimatePresence>
     </div>
   );
 }
