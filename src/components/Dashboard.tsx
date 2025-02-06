@@ -3,9 +3,11 @@ import { DashboardAuth } from "./dashboard/core/DashboardAuth";
 import { DashboardLayout } from "./DashboardLayout";
 import { VCardCreationForm } from "./VCardCreationForm";
 import { motion, AnimatePresence } from "framer-motion";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { DashboardLoading } from "./dashboard/core/DashboardLoading";
+import { ErrorBoundary } from "react-error-boundary";
+import { DashboardErrorBoundary } from "./dashboard/layout/DashboardErrorBoundary";
 
 const pageVariants = {
   initial: { 
@@ -29,27 +31,8 @@ const pageVariants = {
   }
 };
 
-const loadingVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut"
-    }
-  },
-  exit: { 
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.2
-    }
-  }
-};
-
 export function Dashboard() {
-  const { profile, isLoading: isProfileLoading, error } = useProfile();
+  const { profile, isLoading, error } = useProfile();
 
   useEffect(() => {
     if (error) {
@@ -60,41 +43,33 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated background */}
+      {/* Simplified background for settings page */}
       <div className="absolute inset-0 bg-gradient-to-br from-background to-background/50 z-0" />
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] z-0" />
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
       
       {/* Content */}
-      <AnimatePresence mode="wait">
-        {isProfileLoading ? (
-          <motion.div
-            key="loading"
-            variants={loadingVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="flex flex-col items-center justify-center min-h-screen"
-          >
-            <ReloadIcon className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Chargement de votre profil...</p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key={profile ? 'dashboard' : 'auth'}
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="relative z-10"
-          >
-            {!profile ? (
-              <VCardCreationForm />
-            ) : (
-              <DashboardLayout />
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ErrorBoundary FallbackComponent={DashboardErrorBoundary}>
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <DashboardLoading />
+          ) : (
+            <motion.div
+              key={profile ? 'dashboard' : 'auth'}
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="relative z-10"
+            >
+              {!profile ? (
+                <VCardCreationForm />
+              ) : (
+                <DashboardLayout />
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </ErrorBoundary>
     </div>
   );
 }

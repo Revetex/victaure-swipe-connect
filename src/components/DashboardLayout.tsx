@@ -50,13 +50,13 @@ export const DashboardLayout: React.FC = () => {
   const { viewportHeight } = useViewport();
 
   useEffect(() => {
-    // Reset scroll position on page change
     window.scrollTo(0, 0);
   }, [currentPage]);
 
   const handlePageChange = (page: number) => {
     try {
       setCurrentPage(page);
+      setIsEditing(false); // Reset editing state when changing pages
     } catch (error) {
       console.error("Error changing page:", error);
       toast.error("Une erreur est survenue lors du changement de page");
@@ -72,10 +72,9 @@ export const DashboardLayout: React.FC = () => {
         exit="exit"
         className="min-h-screen bg-background relative overflow-hidden"
       >
-        {/* Animated background elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] z-0" />
-        <div className="absolute inset-0 bg-noise-pattern opacity-5 z-0" />
+        {/* Simplified background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
         
         <DashboardContainer>
           <motion.div variants={itemVariants}>
