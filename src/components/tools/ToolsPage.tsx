@@ -7,12 +7,14 @@ import { TasksSection } from "./sections/TasksSection";
 import { CalculatorSection } from "./sections/CalculatorSection";
 import { TranslatorSection } from "./sections/TranslatorSection";
 import { ChessSection } from "./sections/ChessSection";
+import { NetworkSection } from "./sections/NetworkSection";
+import { MenuSection } from "./sections/MenuSection";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { ListTodo, StickyNote, Calculator, Languages, Sword } from "lucide-react";
+import { ListTodo, StickyNote, Calculator, Languages, Sword, Menu, Network } from "lucide-react";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -77,7 +79,7 @@ export function ToolsPage() {
               )}
             >
               <Calculator className="h-4 w-4" />
-              <span className="hidden sm:inline">Calculatrice & Convertisseur</span>
+              <span className="hidden sm:inline">Calculatrice</span>
             </TabsTrigger>
             <TabsTrigger 
               value="translator"
@@ -99,6 +101,26 @@ export function ToolsPage() {
               <Sword className="h-4 w-4" />
               <span className="hidden sm:inline">Échecs</span>
             </TabsTrigger>
+            <TabsTrigger 
+              value="menu"
+              className={cn(
+                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
+              )}
+            >
+              <Menu className="h-4 w-4" />
+              <span className="hidden sm:inline">Menu</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="network"
+              className={cn(
+                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                "transition-all duration-200 px-4 py-2 rounded-md flex items-center gap-2"
+              )}
+            >
+              <Network className="h-4 w-4" />
+              <span className="hidden sm:inline">Réseau</span>
+            </TabsTrigger>
           </TabsList>
 
           <motion.div
@@ -114,31 +136,25 @@ export function ToolsPage() {
             ) : (
               <>
                 <TabsContent value="notes" className="h-full m-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
-                      <NotesSection />
-                    </div>
-                  </div>
+                  <NotesSection />
                 </TabsContent>
                 <TabsContent value="tasks" className="h-full m-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
-                      <TasksSection />
-                    </div>
-                  </div>
+                  <TasksSection />
                 </TabsContent>
                 <TabsContent value="calculator" className="h-full m-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-                    <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-4">
-                      <CalculatorSection />
-                    </div>
-                  </div>
+                  <CalculatorSection />
                 </TabsContent>
                 <TabsContent value="translator" className="h-full m-0">
                   <TranslatorSection />
                 </TabsContent>
                 <TabsContent value="chess" className="h-full m-0">
                   <ChessSection />
+                </TabsContent>
+                <TabsContent value="menu" className="h-full m-0">
+                  <MenuSection />
+                </TabsContent>
+                <TabsContent value="network" className="h-full m-0">
+                  <NetworkSection />
                 </TabsContent>
               </>
             )}
