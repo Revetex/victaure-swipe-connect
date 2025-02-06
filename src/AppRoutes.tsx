@@ -51,7 +51,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/tools"
+        path="/tools/*"
         element={
           <ProtectedRoute>
             <ToolsPage />

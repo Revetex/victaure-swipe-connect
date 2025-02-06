@@ -12,31 +12,31 @@ export function Connections() {
       name: "Tâches",
       icon: ListTodo,
       description: "Gérez vos tâches et to-do lists",
-      path: "/dashboard/tools/tasks"
+      path: "/tools"
     },
     {
       name: "Calculatrice",
       icon: Calculator,
       description: "Effectuez des calculs rapidement",
-      path: "/dashboard/tools/calculator"
+      path: "/tools"
     },
     {
       name: "Traducteur",
       icon: Languages,
       description: "Traduisez du texte en plusieurs langues",
-      path: "/dashboard/tools/translator"
+      path: "/tools"
     },
     {
       name: "Convertisseur",
       icon: Ruler,
       description: "Convertissez des unités facilement",
-      path: "/dashboard/tools/converter"
+      path: "/tools"
     },
     {
       name: "Échecs",
       icon: Sword,
       description: "Jouez aux échecs contre l'IA",
-      path: "/dashboard/tools/chess"
+      path: "/tools"
     }
   ];
 
