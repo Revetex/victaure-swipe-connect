@@ -2,8 +2,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 
 interface FeedSidebarProps {
   className?: string;
@@ -51,6 +52,11 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     }
   ];
 
+  const handleCloseTool = () => {
+    navigate('/dashboard');
+    toast.success("Outil fermé");
+  };
+
   return (
     <div className={cn(
       "w-[250px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem]",
@@ -59,8 +65,18 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     )}>
       <ScrollArea className="h-full">
         <div className="p-3 space-y-4">
-          <div className="space-y-2">
+          <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-medium">Outils</h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleCloseTool}
+              className="h-6 w-6 rounded-full hover:bg-destructive/10 hover:text-destructive"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="space-y-2">
             {tools.map((tool) => (
               <Button
                 key={tool.name}

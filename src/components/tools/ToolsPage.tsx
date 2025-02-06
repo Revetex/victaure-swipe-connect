@@ -78,6 +78,7 @@ export function ToolsPage() {
 
   const handleClose = () => {
     navigate('/dashboard');
+    toast.success("Outil fermé");
   };
 
   const toolComponents = {
