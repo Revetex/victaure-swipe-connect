@@ -1,6 +1,6 @@
 
 import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Bot, Check, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
@@ -39,12 +39,15 @@ export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: 
             <Bot className="h-6 w-6 text-primary" />
           </div>
         ) : (
-          <img
+          <AvatarImage
             src={profile?.avatar_url || "/user-icon.svg"}
             alt="Your avatar"
-            className="h-full w-full object-cover rounded-full"
+            className="h-full w-full object-cover"
           />
         )}
+        <AvatarFallback>
+          {isAssistant ? "AI" : profile?.full_name?.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
 
       <div className="flex-1 space-y-2">
@@ -62,7 +65,7 @@ export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: 
               {!isAssistant && (
                 <div className="flex items-center">
                   {isRead ? (
-                    <Check className="h-3 w-3 text-primary" />
+                    <CheckCheck className="h-3 w-3 text-primary" />
                   ) : (
                     <Check className="h-3 w-3 text-muted-foreground" />
                   )}
@@ -78,8 +81,8 @@ export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: 
           className={cn(
             "rounded-xl p-4 shadow-sm transition-all duration-200",
             isAssistant 
-              ? "bg-card hover:shadow-md border-primary/10" 
-              : "bg-primary text-primary-foreground hover:bg-primary/90"
+              ? "bg-card hover:shadow-md border-primary/10 rounded-tl-none" 
+              : "bg-primary text-primary-foreground hover:bg-primary/90 rounded-tr-none"
           )}
         >
           <p className="text-sm leading-relaxed whitespace-pre-wrap">
