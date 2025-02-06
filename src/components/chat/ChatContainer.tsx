@@ -13,3 +13,4 @@ export function ChatContainer({ children }: ChatContainerProps) {
     </Card>
   );
 }
+

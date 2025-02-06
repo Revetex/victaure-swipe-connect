@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Message, Receiver } from "@/types/messages";
 import { motion } from "framer-motion";
@@ -11,6 +11,7 @@ import { filterMessages } from "@/utils/messageUtils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { FriendSelector } from "./FriendSelector";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -55,8 +56,8 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b p-4">
-        <div className="relative">
+      <div className="border-b p-4 flex items-center gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Rechercher une conversation..."
@@ -65,6 +66,17 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
             className="pl-10"
           />
         </div>
+        <FriendSelector onSelectFriend={(friendId) => onSelectConversation({
+          id: friendId,
+          full_name: '',
+          avatar_url: '',
+          online_status: false,
+          last_seen: new Date().toISOString()
+        })}>
+          <Button variant="outline" size="icon" className="shrink-0">
+            <Plus className="h-4 w-4" />
+          </Button>
+        </FriendSelector>
       </div>
 
       <ScrollArea className="flex-1">
@@ -145,3 +157,4 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     </div>
   );
 }
+
