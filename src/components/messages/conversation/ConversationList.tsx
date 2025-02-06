@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import { filterMessages } from "@/utils/messageUtils";
 export interface ConversationListProps {
   messages: Message[];
   chatMessages: Message[];
-  onSelectConversation: (type: "assistant" | "user", selectedReceiver?: Receiver) => void;
+  onSelectConversation: (receiver: Receiver) => void;
 }
 
 export function ConversationList({ messages, chatMessages, onSelectConversation }: ConversationListProps) {
@@ -20,7 +21,10 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   
   // Get unique conversations by grouping messages by sender/receiver
   const conversations = messages.reduce((acc: any[], message: Message) => {
-    const otherUser = message.sender_id === profile?.id ? message.receiver : message.sender;
+    const otherUser = message.sender_id === profile?.id 
+      ? { id: message.receiver_id, full_name: message.sender?.full_name || 'Unknown' }
+      : message.sender;
+    
     if (!otherUser) return acc;
     
     const existingConv = acc.find(conv => conv.user.id === otherUser.id);
@@ -38,6 +42,17 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   const filteredConversations = conversations.filter(conv => 
     conv.user.full_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleSelectAssistant = () => {
+    const assistantReceiver: Receiver = {
+      id: 'assistant',
+      full_name: 'M. Victaure',
+      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+      online_status: true,
+      last_seen: new Date().toISOString()
+    };
+    onSelectConversation(assistantReceiver);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -63,7 +78,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
             <Button
               variant="outline"
               className="w-full flex items-center gap-2 h-auto p-4"
-              onClick={() => onSelectConversation("assistant")}
+              onClick={handleSelectAssistant}
             >
               <Bot className="h-5 w-5 text-primary" />
               <div className="flex-1 text-left">
@@ -83,7 +98,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
               <Button
                 variant="ghost"
                 className="w-full flex items-center gap-2 h-auto p-4"
-                onClick={() => onSelectConversation("user", conv.user)}
+                onClick={() => onSelectConversation(conv.user)}
               >
                 <div className="flex-1">
                   <div className="flex justify-between">

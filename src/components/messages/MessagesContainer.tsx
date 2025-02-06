@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
@@ -12,7 +13,7 @@ export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
   const [showConversation, setShowConversation] = useState(false);
   const { messages: userMessages } = useMessages();
-  const { messages: aiMessages, inputMessage, isThinking, isListening, handleSendMessage, handleVoiceInput, setInputMessage } = useAIChat();
+  const { messages: aiMessages, inputMessage, isThinking, isListening, handleSendMessage: handleAISendMessage, handleVoiceInput, setInputMessage } = useAIChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSelectConversation = (selectedReceiver: any) => {
@@ -28,6 +29,13 @@ export function MessagesContainer() {
   const handleDeleteConversation = async () => {
     // Implement delete conversation logic here
     handleBack();
+  };
+
+  // Wrapper function to match the expected signature
+  const handleSendMessage = () => {
+    if (inputMessage.trim()) {
+      handleAISendMessage(inputMessage);
+    }
   };
 
   return (
