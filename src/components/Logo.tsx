@@ -28,8 +28,8 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
           VICTAURE
         </span>
         <span className="relative bg-gradient-to-br from-[#B8860B] via-[#996515] to-[#CD7F32] bg-clip-text text-transparent" style={{
-          WebkitTextStroke: '0.5px #222222',
-          textShadow: '0 0 1px rgba(34, 34, 34, 0.3)'
+          WebkitTextStroke: '1px #222222',
+          textShadow: '0 0 2px rgba(34, 34, 34, 0.5), 0 0 15px rgba(184, 134, 11, 0.5)'
         }}>
           VICTAURE
         </span>
