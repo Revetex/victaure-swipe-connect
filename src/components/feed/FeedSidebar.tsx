@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X, Users, Bell, EyeOff, Lock, LogOut } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X, Users } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { AppearanceSection } from "@/components/settings/AppearanceSection";
@@ -90,8 +90,9 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     )}>
       <ScrollArea className="h-full">
         <div className="p-3 space-y-4">
+          {/* Header with close button */}
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-medium">Outils</h2>
+            <h2 className="text-sm font-medium">Navigation</h2>
             <Button
               variant="ghost"
               size="icon"
@@ -102,30 +103,39 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             </Button>
           </div>
 
-          <div className="space-y-2">
-            {tools.map((tool) => (
-              <Button
-                key={tool.name}
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start gap-2 px-2 h-9"
-                onClick={() => handleToolClick(tool.path, tool.toolId)}
-              >
-                <tool.icon className="h-4 w-4" />
-                <span className="text-sm">{tool.name}</span>
-              </Button>
-            ))}
+          {/* Tools Section */}
+          <div className="space-y-1">
+            <h3 className="text-xs font-medium text-muted-foreground px-2">Outils</h3>
+            <div className="space-y-1">
+              {tools.map((tool) => (
+                <Button
+                  key={tool.name}
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start gap-2 px-2 h-9"
+                  onClick={() => handleToolClick(tool.path, tool.toolId)}
+                >
+                  <tool.icon className="h-4 w-4" />
+                  <span className="text-sm">{tool.name}</span>
+                </Button>
+              ))}
+            </div>
           </div>
 
           <Separator className="my-4" />
 
-          <div className="space-y-6">
-            <AppearanceSection />
-            <NotificationsSection />
-            <PrivacySection />
-            <SecuritySection />
-            <BlockedUsersSection />
-            <LogoutSection />
+          {/* Settings Section */}
+          <div className="space-y-1">
+            <h3 className="text-xs font-medium text-muted-foreground px-2 mb-2">Paramètres</h3>
+            <div className="space-y-6 rounded-lg border bg-card p-4">
+              <AppearanceSection />
+              <NotificationsSection />
+              <PrivacySection />
+              <SecuritySection />
+              <BlockedUsersSection />
+              <Separator className="my-4" />
+              <LogoutSection />
+            </div>
           </div>
         </div>
       </ScrollArea>
