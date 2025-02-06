@@ -27,6 +27,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
   const [privacy, setPrivacy] = useState<"public" | "connections">("public");
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { profile } = useProfile();
   const isMobile = useIsMobile();
 
@@ -81,6 +82,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
 
       setNewPost("");
       setFiles([]);
+      setIsExpanded(false);
       onPostCreated();
       toast.success("Publication créée avec succès");
     } catch (error) {
@@ -92,125 +94,156 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
   };
 
   return (
-    <Card className="p-4 shadow-lg border-primary/10">
-      <div className="space-y-4">
-        <Textarea
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          placeholder="Partagez quelque chose..."
-          className="min-h-[100px] resize-none focus:ring-primary/20"
-        />
-        
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="flex flex-wrap gap-2"
+    <Card 
+      className={cn(
+        "shadow-lg border-primary/10 transition-all duration-200",
+        isExpanded ? "p-4" : "p-2"
+      )}
+    >
+      {!isExpanded ? (
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-muted-foreground h-9 px-2"
+          onClick={() => setIsExpanded(true)}
+        >
+          Partagez quelque chose...
+        </Button>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          className="space-y-4"
+        >
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-medium">Créer une publication</h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setIsExpanded(false)}
             >
-              {files.map((file, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="relative group"
-                >
-                  {file.type.startsWith('image/') ? (
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={file.name}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  ) : (
-                    <div className="h-20 w-20 flex items-center justify-center bg-muted rounded-lg">
-                      <span className="text-xs text-center break-words p-2">
-                        {file.name}
-                      </span>
-                    </div>
-                  )}
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="flex justify-between items-center gap-4">
-          <div className="flex gap-2 items-center">
-            <input
-              type="file"
-              id="file-upload"
-              multiple
-              className="hidden"
-              onChange={handleFileChange}
-              accept="image/*,.pdf,.doc,.docx"
-            />
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className={cn(
-                "h-9 w-9 transition-colors",
-                files.length > 0 && "border-primary/50 text-primary"
-              )}
-              onClick={() => document.getElementById('file-upload')?.click()}
-            >
-              {files.length > 0 ? (
-                <ImagePlus className="h-4 w-4" />
-              ) : (
-                <Image className="h-4 w-4" />
-              )}
+              <X className="h-4 w-4" />
             </Button>
-            
-            <Select value={privacy} onValueChange={(value: "public" | "connections") => setPrivacy(value)}>
-              <SelectTrigger className="w-[180px] h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
-                    <span>Public</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="connections">
-                  <div className="flex items-center gap-2">
-                    <Lock className="h-4 w-4" />
-                    <span>Connexions uniquement</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
           </div>
+          
+          <Textarea
+            value={newPost}
+            onChange={(e) => setNewPost(e.target.value)}
+            placeholder="Partagez quelque chose..."
+            className="min-h-[100px] resize-none focus:ring-primary/20"
+          />
+          
+          <AnimatePresence>
+            {files.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex flex-wrap gap-2"
+              >
+                {files.map((file, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="relative group"
+                  >
+                    {file.type.startsWith('image/') ? (
+                      <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    ) : (
+                      <div className="h-20 w-20 flex items-center justify-center bg-muted rounded-lg">
+                        <span className="text-xs text-center break-words p-2">
+                          {file.name}
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <Button 
-            onClick={handleCreatePost} 
-            disabled={isUploading || (!newPost.trim() && files.length === 0)}
-            size="sm"
-            className={cn(
-              "h-9 px-4 transition-all",
-              (newPost.trim() || files.length > 0) && "bg-primary hover:bg-primary/90"
-            )}
-          >
-            {isUploading ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            ) : (
-              <Send className="h-4 w-4 mr-2" />
-            )}
-            Publier
-          </Button>
-        </div>
-      </div>
+          <div className="flex justify-between items-center gap-4">
+            <div className="flex gap-2 items-center">
+              <input
+                type="file"
+                id="file-upload"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+                accept="image/*,.pdf,.doc,.docx"
+              />
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className={cn(
+                  "h-9 w-9 transition-colors",
+                  files.length > 0 && "border-primary/50 text-primary"
+                )}
+                onClick={() => document.getElementById('file-upload')?.click()}
+              >
+                {files.length > 0 ? (
+                  <ImagePlus className="h-4 w-4" />
+                ) : (
+                  <Image className="h-4 w-4" />
+                )}
+              </Button>
+              
+              <Select value={privacy} onValueChange={(value: "public" | "connections") => setPrivacy(value)}>
+                <SelectTrigger className="w-[180px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="public">
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      <span>Public</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="connections">
+                    <div className="flex items-center gap-2">
+                      <Lock className="h-4 w-4" />
+                      <span>Connexions uniquement</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button 
+              onClick={handleCreatePost} 
+              disabled={isUploading || (!newPost.trim() && files.length === 0)}
+              size="sm"
+              className={cn(
+                "h-9 px-4 transition-all",
+                (newPost.trim() || files.length > 0) && "bg-primary hover:bg-primary/90"
+              )}
+            >
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Send className="h-4 w-4 mr-2" />
+              )}
+              Publier
+            </Button>
+          </div>
+        </motion.div>
+      )}
     </Card>
   );
 }
-
