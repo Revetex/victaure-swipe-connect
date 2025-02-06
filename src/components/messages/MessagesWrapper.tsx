@@ -8,6 +8,7 @@ import { useAIChat } from "@/hooks/useAIChat";
 import { useUserChat } from "@/hooks/useUserChat";
 import { Receiver } from "@/types/messages";
 import { toast } from "sonner";
+import { ChatHeader } from "../chat/ChatHeader";
 
 export function MessagesWrapper() {
   const { showConversation, setShowConversation, receiver, setReceiver } = useReceiver();
@@ -76,15 +77,15 @@ export function MessagesWrapper() {
     console.log("Showing conversation for:", { receiver, isAIChat });
 
     return (
-      <div className="fixed inset-0 z-50 bg-background">
-        <div className="flex h-16 items-center border-b px-4">
-          <Button variant="ghost" size="icon" onClick={handleBack} className="mr-4">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold">{receiver.full_name}</h2>
-          </div>
-        </div>
+      <div className="fixed inset-0 z-50 flex flex-col bg-background">
+        <ChatHeader
+          onBack={handleBack}
+          title={receiver.full_name}
+          subtitle={isAIChat ? "Assistant de Placement Virtuel" : "En ligne"}
+          avatarUrl={receiver.avatar_url}
+          isThinking={isAIChat ? isThinking : false}
+        />
+        
         <MessagesContent
           messages={isAIChat ? aiMessages : userMessages}
           inputMessage={isAIChat ? aiInputMessage : userInputMessage}
