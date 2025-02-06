@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { PostHeader } from "../PostHeader";
 import { Post } from "@/types/posts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { PostImageGrid } from "./PostImageGrid";
 import { Edit2, Save, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { PostActions } from "../PostActions";
-import { CommentManager } from "../comments/CommentManager";
+import { PostHeader } from "./posts/PostHeader";
+import { PostImageGrid } from "./posts/PostImageGrid";
+import { PostActions } from "./posts/PostActions";
+import { CommentManager } from "./posts/comments/CommentManager";
 
 interface PostCardProps {
   post: Post;
