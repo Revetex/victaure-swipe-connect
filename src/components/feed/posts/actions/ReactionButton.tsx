@@ -30,7 +30,7 @@ export function ReactionButton({
         size="sm"
         onClick={onClick}
         className={cn(
-          "flex gap-2 items-center transition-all duration-150",
+          "flex gap-2 items-center transition-all duration-150 min-w-[80px] justify-center",
           isActive && activeClassName
         )}
       >
@@ -38,7 +38,7 @@ export function ReactionButton({
           "h-4 w-4 transition-transform",
           isActive && "scale-110"
         )} />
-        <span className="font-medium">{count}</span>
+        <span className="font-medium text-sm">{count}</span>
       </Button>
     </motion.div>
   );
