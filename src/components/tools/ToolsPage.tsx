@@ -1,189 +1,102 @@
-import { useState, useEffect } from "react";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { motion, AnimatePresence } from "framer-motion";
-import { NotesSection } from "./sections/NotesSection";
-import { TasksSection } from "./sections/TasksSection";
-import { CalculatorSection } from "./sections/CalculatorSection";
-import { TranslatorSection } from "./sections/TranslatorSection";
-import { ChessSection } from "./sections/ChessSection";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
-import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
-import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { NotesPage } from "./NotesPage";
+import { TasksPage } from "./TasksPage";
+import { CalculatorPage } from "./CalculatorPage";
+import { TranslatorPage } from "./TranslatorPage";
+import { ChessPage } from "./ChessPage";
+import { ToolsNavigation } from "./navigation/ToolsNavigation";
+import { useToast } from "@/hooks/use-toast";
 import { toast } from "sonner";
 
-export function ToolsPage() {
-  const [selectedTool, setSelectedTool] = useState("notes");
-  const [showFriendsList, setShowFriendsList] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess";
 
-  // Load user's last used tool from profile
+export function ToolsPage() {
+  const [activeTool, setActiveTool] = useState<Tool>("notes");
+  const [toolsOrder, setToolsOrder] = useState<Tool[]>([
+    "notes",
+    "tasks",
+    "calculator",
+    "translator",
+    "chess",
+  ]);
+
   useEffect(() => {
-    const loadLastUsedTool = async () => {
+    const loadUserPreferences = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          toast.error("Vous devez être connecté pour accéder à vos outils");
+          return;
+        }
 
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('last_used_tool, tools_order')
-          .eq('id', user.id)
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("tools_order, last_used_tool")
+          .eq("id", user.id)
           .single();
 
-        if (error) throw error;
-
+        if (profile?.tools_order) {
+          setToolsOrder(profile.tools_order as Tool[]);
+        }
         if (profile?.last_used_tool) {
-          setSelectedTool(profile.last_used_tool);
+          setActiveTool(profile.last_used_tool as Tool);
         }
       } catch (error) {
-        console.error("Error loading tool preferences:", error);
+        console.error("Error loading user preferences:", error);
+        toast.error("Erreur lors du chargement de vos préférences");
       }
     };
 
-    loadLastUsedTool();
+    loadUserPreferences();
   }, []);
 
-  // Set up real-time subscription for tool updates
-  useEffect(() => {
-    const channel = supabase.channel('tools-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${supabase.auth.user()?.id}`
-        },
-        (payload) => {
-          if (payload.new.last_used_tool) {
-            setSelectedTool(payload.new.last_used_tool);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const handleToolChange = async (value: string) => {
+  const updateUserPreferences = async (newActiveTool: Tool) => {
     try {
-      setIsLoading(true);
-      setSelectedTool(value);
-
-      // Update user's last used tool in profile
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            last_used_tool: value,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user.id);
+      if (!user) return;
 
-        if (updateError) {
-          console.error("Error updating tool preference:", updateError);
-          toast.error("Erreur lors de la mise à jour des préférences");
-        }
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await supabase
+        .from("profiles")
+        .update({ last_used_tool: newActiveTool })
+        .eq("id", user.id);
     } catch (error) {
-      console.error("Error changing tool:", error);
-      toast.error("Erreur lors du changement d'outil");
-    } finally {
-      setIsLoading(false);
+      console.error("Error updating user preferences:", error);
+    }
+  };
+
+  const handleToolChange = (tool: Tool) => {
+    setActiveTool(tool);
+    updateUserPreferences(tool);
+  };
+
+  const renderActiveTool = () => {
+    switch (activeTool) {
+      case "notes":
+        return <NotesPage />;
+      case "tasks":
+        return <TasksPage />;
+      case "calculator":
+        return <CalculatorPage />;
+      case "translator":
+        return <TranslatorPage />;
+      case "chess":
+        return <ChessPage />;
+      default:
+        return <NotesPage />;
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <DashboardHeader 
-        title="Outils"
-        showFriendsList={showFriendsList}
-        onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-        isEditing={false}
+    <div className="flex flex-col h-full">
+      <ToolsNavigation
+        activeTool={activeTool}
+        onToolChange={handleToolChange}
+        toolsOrder={toolsOrder}
       />
-
-      <AnimatePresence mode="wait">
-        {showFriendsList && (
-          <DashboardFriendsList 
-            show={showFriendsList} 
-            onClose={() => setShowFriendsList(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      <div className="flex-1 container mx-auto px-4 py-4">
-        <NotesToolSelector 
-          selectedTool={selectedTool}
-          onToolSelect={handleToolChange}
-        />
-
-        <Tabs 
-          defaultValue="notes" 
-          value={selectedTool} 
-          onValueChange={handleToolChange}
-          className="w-full space-y-6"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex-1 relative"
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center h-[calc(100vh-16rem)]">
-                <ReloadIcon className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <TabsContent value="notes" className="m-0">
-                  <NotesSection />
-                </TabsContent>
-                <TabsContent value="tasks" className="m-0">
-                  <TasksSection />
-                </TabsContent>
-                <TabsContent value="calculator" className="m-0">
-                  <CalculatorSection />
-                </TabsContent>
-                <TabsContent value="translator" className="m-0">
-                  <TranslatorSection />
-                </TabsContent>
-                <TabsContent value="chess" className="m-0">
-                  <ChessSection />
-                </TabsContent>
-              </motion.div>
-            )}
-          </motion.div>
-        </Tabs>
+      <div className="flex-1 overflow-hidden">
+        {renderActiveTool()}
       </div>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
-        <div className="container mx-auto py-2">
-          <DashboardNavigation 
-            currentPage={5}
-            onPageChange={(page) => {
-              if (page === 5) {
-                handleToolChange("notes");
-              } else {
-                navigate('/dashboard');
-              }
-            }}
-            isEditing={false}
-          />
-        </div>
-      </nav>
     </div>
   );
 }
