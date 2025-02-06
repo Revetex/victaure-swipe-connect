@@ -24,7 +24,7 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
     >
       <motion.div 
         className={cn(
-          "font-inter font-bold tracking-tight",
+          "font-sans font-bold tracking-wider",
           "relative",
           "transition-all duration-500",
           textSizes[size]
