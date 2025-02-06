@@ -2,6 +2,7 @@
 import { Lock } from "lucide-react";
 import { SettingsSection } from "./SettingsSection";
 import { PasswordChangeSection } from "./PasswordChangeSection";
+import { cn } from "@/lib/utils";
 
 export function SecuritySection() {
   return (
