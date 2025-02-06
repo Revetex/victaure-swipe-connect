@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { UserProfile } from "@/types/profile";
+import { useEffect } from "react";
 
 interface MessagesContentProps {
   messages: Message[];
@@ -31,6 +32,31 @@ export function MessagesContent({
   receiver
 }: MessagesContentProps) {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!receiver) return;
+
+    // Subscribe to real-time updates for new messages
+    const channel = supabase
+      .channel('messages_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `receiver_id=eq.${receiver.id}`
+        },
+        () => {
+          console.log('New message received');
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [receiver]);
 
   const handleDelete = async () => {
     try {

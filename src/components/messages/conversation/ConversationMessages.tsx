@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ConversationMessagesProps {
   messages: Message[];
@@ -14,7 +15,8 @@ interface ConversationMessagesProps {
   onScrollToBottom?: () => void;
   onDeleteMessage?: (messageId: string) => Promise<void>;
   isAIChat?: boolean;
-  isThinking?: boolean; // Added this prop
+  isThinking?: boolean;
+  isLoading?: boolean;
 }
 
 export function ConversationMessages({
@@ -24,13 +26,30 @@ export function ConversationMessages({
   onScrollToBottom,
   onDeleteMessage,
   isAIChat = false,
-  isThinking = false
+  isThinking = false,
+  isLoading = false
 }: ConversationMessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 p-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex items-start gap-4">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[300px]" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex-1">
