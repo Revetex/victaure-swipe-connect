@@ -36,7 +36,18 @@ export function MessagesWrapper() {
   };
 
   const handleSelectConversation = (selectedReceiver: Receiver) => {
-    setReceiver(selectedReceiver);
+    if (selectedReceiver.id === 'assistant') {
+      const aiReceiver: Receiver = {
+        id: 'assistant',
+        full_name: 'M. Victaure',
+        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+        online_status: true,
+        last_seen: new Date().toISOString()
+      };
+      setReceiver(aiReceiver);
+    } else {
+      setReceiver(selectedReceiver);
+    }
     setShowConversation(true);
   };
 
