@@ -1,8 +1,8 @@
 
 import { useState } from "react";
 import { Comment } from "@/types/posts";
-import { PostComments } from "../../../components/feed/posts/PostComments";
-import { CommentInput } from "../../../components/feed/posts/CommentInput";
+import { PostComments } from "../../posts/PostComments";
+import { CommentInput } from "../../posts/CommentInput";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
