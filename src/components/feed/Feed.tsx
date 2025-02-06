@@ -134,4 +134,3 @@ export function Feed() {
     </motion.div>
   );
 }
-
