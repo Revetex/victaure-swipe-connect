@@ -10,7 +10,7 @@ import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const containerVariants = {
@@ -53,38 +53,16 @@ export const DashboardLayout: React.FC = () => {
   const [showFriendsList, setShowFriendsList] = useState(false);
   const { viewportHeight } = useViewport();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const handlePageChange = useCallback((page: number) => {
     try {
       setCurrentPage(page);
       setIsEditing(false);
-      setShowFriendsList(false);
-
-      switch (page) {
-        case 2:
-          navigate('/dashboard/messages');
-          break;
-        case 3:
-          navigate('/marketplace');
-          break;
-        case 4:
-          navigate('/dashboard/notifications');
-          break;
-        case 5:
-          navigate('/tools');
-          break;
-        case 6:
-          navigate('/settings');
-          break;
-        default:
-          navigate('/dashboard');
-      }
     } catch (error) {
       console.error("Error changing page:", error);
       toast.error("Une erreur est survenue lors du changement de page");
     }
-  }, [navigate]);
+  }, []);
 
   const toggleFriendsList = useCallback(() => {
     setShowFriendsList(prev => !prev);
@@ -93,11 +71,6 @@ export const DashboardLayout: React.FC = () => {
   const handleEditStateChange = useCallback((state: boolean) => {
     setIsEditing(state);
   }, []);
-
-  const handleToolReturn = useCallback(() => {
-    navigate('/dashboard');
-    setCurrentPage(1);
-  }, [navigate]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -133,7 +106,6 @@ export const DashboardLayout: React.FC = () => {
               showFriendsList={showFriendsList}
               onToggleFriendsList={toggleFriendsList}
               isEditing={isEditing}
-              onToolReturn={location.pathname.includes('/tools') ? handleToolReturn : undefined}
             />
           </motion.div>
           
@@ -167,4 +139,4 @@ export const DashboardLayout: React.FC = () => {
       </motion.div>
     </DashboardAuthCheck>
   );
-}
+};

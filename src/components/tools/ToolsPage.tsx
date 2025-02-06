@@ -10,26 +10,16 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ToolSelector } from "./sections/ToolSelector";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const state = location.state as { selectedTool?: string } | null;
-    if (state?.selectedTool) {
-      setSelectedTool(state.selectedTool);
-      // Clear the state to prevent persisting the selection
-      navigate(location.pathname, { replace: true });
-    }
-  }, [location.state, navigate]);
 
   // Load user's last used tool from profile
   useEffect(() => {
@@ -40,7 +30,7 @@ export function ToolsPage() {
 
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('last_used_tool')
+          .select('last_used_tool, tools_order')
           .eq('id', user.id)
           .single();
 
@@ -57,11 +47,36 @@ export function ToolsPage() {
     loadLastUsedTool();
   }, []);
 
+  // Set up real-time subscription for tool updates
+  useEffect(() => {
+    const channel = supabase.channel('tools-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${supabase.auth.user()?.id}`
+        },
+        (payload) => {
+          if (payload.new.last_used_tool) {
+            setSelectedTool(payload.new.last_used_tool);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handleToolChange = async (value: string) => {
     try {
       setIsLoading(true);
       setSelectedTool(value);
 
+      // Update user's last used tool in profile
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { error: updateError } = await supabase
@@ -77,6 +92,8 @@ export function ToolsPage() {
           toast.error("Erreur lors de la mise à jour des préférences");
         }
       }
+
+      await new Promise(resolve => setTimeout(resolve, 300));
     } catch (error) {
       console.error("Error changing tool:", error);
       toast.error("Erreur lors du changement d'outil");
@@ -104,14 +121,17 @@ export function ToolsPage() {
       </AnimatePresence>
 
       <div className="flex-1 container mx-auto px-4 py-4">
+        <NotesToolSelector 
+          selectedTool={selectedTool}
+          onToolSelect={handleToolChange}
+        />
+
         <Tabs 
           defaultValue="notes" 
           value={selectedTool} 
           onValueChange={handleToolChange}
           className="w-full space-y-6"
         >
-          <ToolSelector selectedTool={selectedTool} onToolChange={handleToolChange} />
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -127,21 +147,20 @@ export function ToolsPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="h-[calc(100vh-16rem)] overflow-y-auto"
               >
-                <TabsContent value="notes" className="m-0 h-full">
+                <TabsContent value="notes" className="m-0">
                   <NotesSection />
                 </TabsContent>
-                <TabsContent value="tasks" className="m-0 h-full">
+                <TabsContent value="tasks" className="m-0">
                   <TasksSection />
                 </TabsContent>
-                <TabsContent value="calculator" className="m-0 h-full">
+                <TabsContent value="calculator" className="m-0">
                   <CalculatorSection />
                 </TabsContent>
-                <TabsContent value="translator" className="m-0 h-full">
+                <TabsContent value="translator" className="m-0">
                   <TranslatorSection />
                 </TabsContent>
-                <TabsContent value="chess" className="m-0 h-full">
+                <TabsContent value="chess" className="m-0">
                   <ChessSection />
                 </TabsContent>
               </motion.div>
@@ -155,7 +174,9 @@ export function ToolsPage() {
           <DashboardNavigation 
             currentPage={5}
             onPageChange={(page) => {
-              if (page !== 5) {
+              if (page === 5) {
+                handleToolChange("notes");
+              } else {
                 navigate('/dashboard');
               }
             }}
