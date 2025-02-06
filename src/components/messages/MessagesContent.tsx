@@ -1,4 +1,3 @@
-
 import { Message, Receiver } from "@/types/messages";
 import { ConversationView } from "./conversation/ConversationView";
 import { supabase } from "@/integrations/supabase/client";
@@ -103,24 +102,20 @@ export function MessagesContent({
     }
   };
 
-  const handleSendWrapper = () => {
-    if (inputMessage.trim()) {
-      onSendMessage(inputMessage);
-    }
-  };
+  if (!receiver) return null;
 
   return (
     <div className="flex flex-col h-full bg-background">
       <ConversationView
+        receiver={receiver}
         messages={messages}
-        profile={receiver}
         inputMessage={inputMessage}
         isListening={isListening}
         isThinking={isThinking}
         onInputChange={setInputMessage}
-        onSendMessage={handleSendWrapper}
+        onSendMessage={() => onSendMessage(inputMessage)}
         onVoiceInput={onVoiceInput}
-        onBack={onBack}
+        onBack={onBack || (() => {})}
         onDeleteConversation={handleDelete}
         messagesEndRef={messagesEndRef}
       />
