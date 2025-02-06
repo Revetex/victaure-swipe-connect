@@ -3,22 +3,13 @@ import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
 import { Feed } from "@/components/Feed";
-import { useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { ErrorBoundary } from "react-error-boundary";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ReloadIcon } from "@radix-ui/react-icons";
-
-interface DashboardContentProps {
-  currentPage: number;
-  viewportHeight: number;
-  isEditing?: boolean;
-  onEditStateChange: (isEditing: boolean) => void;
-  onRequestChat: () => void;
-}
 
 function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
   return (
@@ -133,9 +124,7 @@ export function DashboardContent({
           return (
             <ErrorBoundary FallbackComponent={ErrorFallback}>
               <Suspense fallback={<LoadingSkeleton />}>
-                <div className="h-full">
-                  <NotesMap />
-                </div>
+                <Settings />
               </Suspense>
             </ErrorBoundary>
           );

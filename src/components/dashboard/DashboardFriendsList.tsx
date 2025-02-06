@@ -47,6 +47,8 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
                 <ToolSelector 
                   selectedTool={selectedTool}
                   onToolChange={setSelectedTool}
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
+                  buttonClassName="h-10 px-3 py-2 text-sm"
                 />
               </div>
               <Separator className="my-4" />
