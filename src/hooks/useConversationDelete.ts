@@ -17,6 +17,7 @@ export const useConversationDelete = (clearUserChat: (receiverId: string) => voi
         .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
 
       if (messagesError) throw messagesError;
+      
       clearUserChat(receiver.id);
       toast.success(`Conversation avec ${receiver.full_name} supprimée définitivement`);
     } catch (error) {

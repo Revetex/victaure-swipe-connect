@@ -21,15 +21,6 @@ export const useMessageCleanup = () => {
 
         if (selfMessageError) throw selfMessageError;
 
-        // Supprimer les anciens messages de l'IA mal dirigés
-        const { error: aiMessageError } = await supabase
-          .from('messages')
-          .delete()
-          .eq('sender_id', 'assistant')
-          .eq('receiver_id', user.id);
-
-        if (aiMessageError) throw aiMessageError;
-
       } catch (error) {
         console.error('Error cleaning up messages:', error);
       }

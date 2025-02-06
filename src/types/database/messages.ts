@@ -1,3 +1,4 @@
+
 import { Json } from './auth';
 
 export interface MessageTypes {
@@ -11,6 +12,7 @@ export interface MessageTypes {
         read: boolean | null;
         created_at: string | null;
         updated_at: string | null;
+        is_ai_message: boolean | null;
       };
       Insert: {
         id: string;
@@ -20,6 +22,7 @@ export interface MessageTypes {
         read?: boolean | null;
         created_at?: string | null;
         updated_at?: string | null;
+        is_ai_message?: boolean | null;
       };
       Update: {
         id?: string;
@@ -29,6 +32,7 @@ export interface MessageTypes {
         read?: boolean | null;
         created_at?: string | null;
         updated_at?: string | null;
+        is_ai_message?: boolean | null;
       };
     };
   };
