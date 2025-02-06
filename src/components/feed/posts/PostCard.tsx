@@ -41,7 +41,6 @@ export function PostCard({
     setShowComments(!showComments);
   };
 
-  // Ensure avatar_url is always defined with a default value
   const postWithDefaultAvatar = {
     ...post,
     profiles: {
@@ -50,7 +49,6 @@ export function PostCard({
     }
   };
 
-  // Process comments to ensure avatar_url is always defined
   const commentsWithDefaultAvatar = post.comments?.map(comment => ({
     ...comment,
     profiles: {
@@ -70,11 +68,11 @@ export function PostCard({
     >
       <Card className={cn(
         "border shadow-sm transition-all duration-200",
-        "p-3 sm:p-4 hover:shadow-md hover:border-primary/20",
+        "p-4 sm:p-5 hover:shadow-md hover:border-primary/20",
         isMobile ? "active:scale-[0.995] touch-none" : "hover:scale-[1.002]",
         "touch-pan-y"
       )}>
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start gap-4">
           <PostHeader 
             profile={postWithDefaultAvatar.profiles}
             created_at={post.created_at}
@@ -86,17 +84,19 @@ export function PostCard({
               variant="ghost"
               size="icon"
               onClick={onDelete}
-              className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+              className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 -mt-1 -mr-2"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           )}
         </div>
 
-        <div className="space-y-4">
-          <div className="text-sm text-gray-600 dark:text-gray-300">
-            {post.content}
-          </div>
+        <div className="space-y-4 mt-4">
+          {post.content && (
+            <div className="text-sm text-foreground/80 whitespace-pre-wrap">
+              {post.content}
+            </div>
+          )}
           
           {post.images && post.images.length > 0 && (
             <PostImageGrid images={post.images} />

@@ -22,9 +22,9 @@ export function Feed() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full flex flex-col bg-background"
+      className="w-full flex flex-col bg-background min-h-screen"
     >
-      <div className="max-w-3xl w-full mx-auto">
+      <div className="max-w-3xl w-full mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
