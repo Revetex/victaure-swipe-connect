@@ -1,82 +1,77 @@
 import { useState } from "react";
-import { Message } from "@/types/messages";
-import { ChatInput } from "@/components/chat/ChatInput";
-import { UserProfile } from "@/types/profile";
 import { ConversationHeader } from "./ConversationHeader";
-import { ConversationMessages } from "./ConversationMessages";
-import { DeleteDialog } from "./DeleteDialog";
-import { toast } from "sonner";
+import { MessagesList } from "./MessagesList";
+import { ChatInput } from "@/components/chat/ChatInput";
+import { Profile } from "@/types/profile";
+import { Message } from "@/types/messages";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 
 interface ConversationViewProps {
   messages: Message[];
-  profile: UserProfile | null;
-  isThinking?: boolean;
-  isListening?: boolean;
+  profile: Profile | null;
   inputMessage: string;
   onInputChange: (value: string) => void;
-  onSendMessage: (message: string) => void;
-  onVoiceInput?: () => void;
-  onBack?: () => void;
+  onSendMessage: () => void;
+  isThinking?: boolean;
   onDeleteConversation?: () => void;
 }
 
 export function ConversationView({
   messages,
   profile,
-  isThinking,
-  isListening,
   inputMessage,
   onInputChange,
   onSendMessage,
-  onVoiceInput,
-  onBack,
-  onDeleteConversation
+  isThinking,
+  onDeleteConversation,
 }: ConversationViewProps) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const {
+    isListening,
+    startListening,
+    stopListening,
+    hasRecognitionSupport
+  } = useSpeechRecognition({
+    onResult: (transcript) => {
+      onInputChange(inputMessage + transcript);
+    },
+  });
 
-  const handleDelete = () => {
-    if (onDeleteConversation) {
-      onDeleteConversation();
-      toast.success("Conversation supprimée avec succès");
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onSendMessage();
     }
-    setShowDeleteDialog(false);
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
       <div className="sticky top-0 z-50 shrink-0">
         <ConversationHeader
           profile={profile}
-          onBack={onBack || (() => {})}
-          onDeleteConversation={() => setShowDeleteDialog(true)}
+          onDeleteConversation={onDeleteConversation}
         />
       </div>
 
-      <div className="flex-1 overflow-hidden">
-        <ConversationMessages
-          messages={messages}
-          isThinking={isThinking}
-        />
-      </div>
+      <ScrollArea className="flex-1 px-4">
+        <MessagesList messages={messages} />
+      </ScrollArea>
 
-      <div className="sticky bottom-0 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
+      <div className="sticky bottom-16 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
-          onSend={() => onSendMessage(inputMessage)}
-          onVoiceInput={onVoiceInput}
+          onSend={onSendMessage}
+          onKeyPress={handleKeyPress}
+          onStartListening={startListening}
+          onStopListening={stopListening}
+          hasRecognitionSupport={hasRecognitionSupport}
           isListening={isListening}
           isThinking={isThinking}
           placeholder="Écrivez votre message..."
           className="w-full max-w-3xl mx-auto"
         />
       </div>
-
-      <DeleteDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        onConfirm={handleDelete}
-      />
     </div>
   );
 }
