@@ -61,8 +61,6 @@ export const DashboardLayout: React.FC = () => {
       case 4:
         return "Fil d'actualité";
       case 5:
-        return "Notes";
-      case 6:
         return "Paramètres";
       default:
         return "Tableau de bord";
