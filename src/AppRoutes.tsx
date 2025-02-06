@@ -15,7 +15,9 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
+import { ToolsPage } from "@/components/tools/ToolsPage";
 import { Feed } from "@/components/Feed";
+import { FriendListContainer } from "@/components/feed/friends/FriendListContainer";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -26,7 +28,7 @@ export function AppRoutes() {
         path="/" 
         element={
           isAuthenticated ? (
-            <Navigate to="/feed" replace />
+            <Navigate to="/dashboard" replace />
           ) : (
             <Index />
           )
@@ -36,7 +38,7 @@ export function AppRoutes() {
         path="/auth" 
         element={
           isAuthenticated ? (
-            <Navigate to="/feed" replace />
+            <Navigate to="/dashboard" replace />
           ) : (
             <Auth />
           )
@@ -56,10 +58,26 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard/*"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/friends"
+        element={
+          <ProtectedRoute>
+            <FriendListContainer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tools"
+        element={
+          <ProtectedRoute>
+            <ToolsPage />
           </ProtectedRoute>
         }
       />
@@ -107,7 +125,7 @@ export function AppRoutes() {
         path="*" 
         element={
           isAuthenticated ? (
-            <Navigate to="/feed" replace />
+            <Navigate to="/dashboard" replace />
           ) : (
             <Navigate to="/auth" replace />
           )
