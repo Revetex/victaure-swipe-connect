@@ -124,17 +124,19 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
 
           <Separator className="my-4" />
 
-          {/* Settings Section */}
+          {/* Settings Section - Updated Layout */}
           <div className="space-y-1">
             <h3 className="text-xs font-medium text-muted-foreground px-2 mb-2">Paramètres</h3>
-            <div className="space-y-6 rounded-lg border bg-card p-4">
-              <AppearanceSection />
-              <NotificationsSection />
-              <PrivacySection />
-              <SecuritySection />
-              <BlockedUsersSection />
-              <Separator className="my-4" />
-              <LogoutSection />
+            <div className="space-y-2 px-2">
+              <div className="space-y-3 rounded-lg border bg-card/50 p-3">
+                <AppearanceSection />
+                <NotificationsSection />
+                <PrivacySection />
+                <SecuritySection />
+                <BlockedUsersSection />
+                <Separator className="my-2" />
+                <LogoutSection />
+              </div>
             </div>
           </div>
         </div>
