@@ -1,3 +1,4 @@
+
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { FileText, UserPlus, UserMinus, Ban, Download, MessageCircle } from "lucide-react";
@@ -55,7 +56,7 @@ export function ProfilePreviewFront({
         </div>
         
         <div className="relative p-6">
-          <ProfilePreviewHeader profile={profile} onRequestChat={onRequestChat} />
+          <ProfilePreviewHeader profile={profile} />
           
           {isFriend && (
             <motion.div
@@ -143,13 +144,10 @@ export function ProfilePreviewFront({
             </Button>
           )}
 
-          {isFriend && (
+          {isFriend && !onRequestChat && (
             <Button
               variant="outline"
-              className={cn(
-                "flex items-center gap-2",
-                !onRequestChat && "col-span-2"
-              )}
+              className="flex items-center gap-2"
               onClick={handleRequestCV}
             >
               <Download className="w-4 h-4" />
