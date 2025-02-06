@@ -20,7 +20,7 @@ const tools = [
   },
   {
     id: "tasks",
-    name: "Tâches",
+    name: "Tâches", 
     icon: ListTodo,
     description: "Gérer vos tâches"
   },
