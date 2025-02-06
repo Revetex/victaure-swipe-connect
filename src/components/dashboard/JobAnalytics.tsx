@@ -11,15 +11,14 @@ export function JobAnalytics() {
 
   const analyzeJobContent = async (text: string) => {
     try {
-      // For now, we'll use a simple relevancy check
-      // This will be replaced with AI analysis in a future update
-      const isRelevant = !text.toLowerCase().includes("spam") && 
-                        !text.toLowerCase().includes("scam") &&
-                        text.length > 20;
-      
-      return isRelevant;
+      const { data, error } = await supabase.functions.invoke('analyze-job-content', {
+        body: { text }
+      });
+
+      if (error) throw error;
+      return data.isRelevant;
     } catch (error) {
-      console.error("Erreur lors de l'analyse du contenu:", error);
+      console.error("Error analyzing job content:", error);
       return true; // Keep job by default in case of error
     }
   };
@@ -27,28 +26,33 @@ export function JobAnalytics() {
   const cleanupJobs = async () => {
     try {
       setIsProcessing(true);
-      console.log("Début du nettoyage intelligent des emplois...");
+      console.log("Starting intelligent job cleanup...");
 
       const { data: jobs, error: jobsError } = await supabase
         .from('jobs')
-        .select('*');
+        .select('*')
+        .eq('employer_id', (await supabase.auth.getUser()).data.user?.id);
 
       if (jobsError) throw jobsError;
 
-      console.log(`Analyse de ${jobs?.length || 0} emplois...`);
+      console.log(`Analyzing ${jobs?.length || 0} jobs...`);
 
       for (const job of jobs || []) {
-        const shouldKeep = await analyzeJobContent(`${job.title} ${job.description}`);
+        const jobContent = `${job.title} ${job.description}`;
+        const shouldKeep = await analyzeJobContent(jobContent);
         
         if (!shouldKeep) {
-          console.log(`Suppression de l'emploi: ${job.title}`);
+          console.log(`Removing job: ${job.title}`);
           const { error: deleteError } = await supabase
             .from('jobs')
             .delete()
             .eq('id', job.id);
 
           if (deleteError) {
-            console.error(`Erreur lors de la suppression de l'emploi ${job.id}:`, deleteError);
+            console.error(`Error deleting job ${job.id}:`, deleteError);
+            toast.error(`Erreur lors de la suppression de la mission: ${job.title}`);
+          } else {
+            toast.success(`Mission supprimée: ${job.title}`);
           }
         }
       }
@@ -56,10 +60,10 @@ export function JobAnalytics() {
       await queryClient.invalidateQueries({ queryKey: ['jobs'] });
       await queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       
-      toast.success("Nettoyage des emplois terminé !");
+      toast.success("Nettoyage des missions terminé !");
     } catch (error) {
-      console.error("Erreur lors du nettoyage des emplois:", error);
-      toast.error("Une erreur est survenue lors du nettoyage des emplois");
+      console.error("Error during job cleanup:", error);
+      toast.error("Une erreur est survenue lors du nettoyage des missions");
     } finally {
       setIsProcessing(false);
     }
@@ -78,7 +82,7 @@ export function JobAnalytics() {
           Nettoyage...
         </>
       ) : (
-        'Nettoyer les emplois'
+        'Nettoyer les missions'
       )}
     </Button>
   );
