@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X, Users } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
@@ -15,46 +15,65 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
 
   const tools = [
     {
+      name: "Amis",
+      icon: Users,
+      path: "/friends",
+      description: "Gérez vos amis"
+    },
+    {
       name: "Notes",
       icon: Plus,
-      path: "/notes",
+      path: "/tools",
+      toolId: "notes",
       description: "Gérez vos notes"
     },
     {
       name: "Tâches",
       icon: ListTodo,
-      path: "/tasks",
+      path: "/tools",
+      toolId: "tasks",
       description: "Gérez vos tâches"
     },
     {
       name: "Calculatrice",
       icon: Calculator,
-      path: "/calculator",
+      path: "/tools",
+      toolId: "calculator",
       description: "Calculatrice et convertisseur"
     },
     {
       name: "Traducteur",
       icon: Languages,
-      path: "/translator",
+      path: "/tools",
+      toolId: "translator",
       description: "Traduisez du texte"
     },
     {
       name: "Convertisseur",
       icon: Ruler, 
-      path: "/converter",
+      path: "/tools",
+      toolId: "converter",
       description: "Convertissez des unités"
     },
     {
       name: "Échecs",
       icon: Sword,
-      path: "/chess",
+      path: "/tools",
+      toolId: "chess",
       description: "Jouez aux échecs"
     }
   ];
 
-  const handleCloseTool = () => {
+  const handleToolClick = (path: string, toolId?: string) => {
+    if (path === "/tools" && toolId) {
+      navigate(path, { state: { selectedTool: toolId } });
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleCloseSidebar = () => {
     navigate('/dashboard');
-    toast.success("Outil fermé");
   };
 
   return (
@@ -70,7 +89,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleCloseTool}
+              onClick={handleCloseSidebar}
               className="h-6 w-6 rounded-full hover:bg-destructive/10 hover:text-destructive"
             >
               <X className="h-4 w-4" />
@@ -83,7 +102,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start gap-2 px-2 h-9"
-                onClick={() => navigate(tool.path)}
+                onClick={() => handleToolClick(tool.path, tool.toolId)}
               >
                 <tool.icon className="h-4 w-4" />
                 <span className="text-sm">{tool.name}</span>

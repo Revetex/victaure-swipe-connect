@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { NotesPage } from "./NotesPage";
@@ -8,7 +7,7 @@ import { TranslatorPage } from "./TranslatorPage";
 import { ChessPage } from "./ChessPage";
 import { ToolsNavigation } from "./navigation/ToolsNavigation";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,6 +25,14 @@ export function ToolsPage() {
     "converter"
   ]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const selectedTool = location.state?.selectedTool as Tool;
+    if (selectedTool) {
+      setActiveTool(selectedTool);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const loadUserPreferences = async () => {

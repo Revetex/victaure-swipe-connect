@@ -1,3 +1,4 @@
+
 import { X, Bell, MessageSquare, Briefcase, Check } from "lucide-react";
 import { formatTime } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
@@ -7,18 +8,6 @@ import { CVNotification } from "./types/CVNotification";
 import { CVUploadNotification } from "./types/CVUploadNotification";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { showToast } from "@/utils/toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 interface NotificationItemProps {
   id: string;
@@ -43,15 +32,20 @@ export function NotificationItem({
 
   const markAsRead = async () => {
     try {
-      const { error } = await supabase
+      await supabase
         .from('notifications')
         .update({ read: true })
         .eq('id', id);
-
-      if (error) throw error;
-      showToast.success("Notification marquée comme lue");
     } catch (error) {
-      showToast.error("Erreur lors du marquage de la notification");
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await onDelete(id);
+    } catch (error) {
+      console.error("Error deleting notification:", error);
     }
   };
 
@@ -88,35 +82,15 @@ export function NotificationItem({
             <Check className="h-4 w-4" />
           </Button>
         )}
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:text-destructive focus:opacity-100"
-            >
-              <span className="sr-only">Supprimer la notification</span>
-              <X className="h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Supprimer la notification</AlertDialogTitle>
-              <AlertDialogDescription>
-                Êtes-vous sûr de vouloir supprimer cette notification ? Cette action est irréversible.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Annuler</AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={() => onDelete(id)}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Supprimer
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleDelete}
+          className="h-8 w-8 hover:text-destructive focus:opacity-100"
+        >
+          <span className="sr-only">Supprimer la notification</span>
+          <X className="h-4 w-4" />
+        </Button>
       </div>
 
       <div className="flex items-start gap-4 pr-16">
