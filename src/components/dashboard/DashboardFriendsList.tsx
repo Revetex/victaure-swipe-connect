@@ -7,25 +7,29 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { NotesPage } from "@/components/tools/NotesPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
+import { useState } from "react";
 
 const tools = [
   {
     id: "tasks",
     name: "Tâches",
     icon: ListTodo,
-    description: "Gérer vos tâches"
+    description: "Gérer vos tâches",
+    color: "bg-blue-500/10 text-blue-500"
   },
   {
     id: "calculator",
     name: "Calculatrice",
     icon: Calculator,
-    description: "Calculer et convertir"
+    description: "Calculer et convertir",
+    color: "bg-green-500/10 text-green-500"
   },
   {
     id: "chess",
     name: "Échecs",
     icon: Sword,
-    description: "Jouer aux échecs"
+    description: "Jouer aux échecs",
+    color: "bg-red-500/10 text-red-500"
   }
 ];
 
@@ -51,7 +55,7 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b"
+      className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-50"
     >
       <div className="container mx-auto py-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -71,9 +75,7 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
                 <div className={cn(
                   "p-4 rounded-lg transition-all duration-200",
                   "group-hover:scale-110",
-                  tool.id === 'chess' ? 'bg-red-500/10 text-red-500' :
-                  tool.id === 'calculator' ? 'bg-green-500/10 text-green-500' :
-                  'bg-blue-500/10 text-blue-500'
+                  tool.color
                 )}>
                   <Icon className="h-6 w-6" />
                 </div>
