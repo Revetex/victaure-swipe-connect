@@ -6,7 +6,6 @@ import { Button } from "../ui/button";
 import { ToolSelector } from "@/components/tools/sections/ToolSelector";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 
 interface DashboardFriendsListProps {
   show: boolean;
@@ -28,13 +27,9 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
         duration: 0.15,
         ease: "easeInOut"
       }}
-      className={cn(
-        "overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm",
-        "will-change-[height,opacity]",
-        isMobile 
-          ? "fixed inset-x-0 top-[4rem] z-[100] max-h-[80vh] overflow-y-auto" 
-          : "fixed inset-x-0 top-[4rem] z-[100]"
-      )}
+      className={`overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm will-change-[height,opacity] ${
+        isMobile ? 'fixed inset-x-0 top-[4rem] z-[100] max-h-[80vh] overflow-y-auto' : 'fixed inset-x-0 top-[4rem] z-[100]'
+      }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto relative">

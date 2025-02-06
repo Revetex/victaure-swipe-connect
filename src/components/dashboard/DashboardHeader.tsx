@@ -15,8 +15,7 @@ export function DashboardHeader({
   title,
   showFriendsList,
   onToggleFriendsList,
-  isEditing,
-  onToolReturn
+  isEditing
 }: DashboardHeaderProps) {
   return (
     <div className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

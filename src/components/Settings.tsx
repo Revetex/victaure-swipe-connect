@@ -8,8 +8,6 @@ import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { ScrollArea } from "./ui/scroll-area";
-import { Button } from "./ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,16 +26,6 @@ const itemVariants = {
 
 export function Settings() {
   const [mounted, setMounted] = useState(false);
-  const [currentSection, setCurrentSection] = useState(0);
-
-  const sections = [
-    { title: "Apparence", component: AppearanceSection },
-    { title: "Confidentialité", component: PrivacySection },
-    { title: "Notifications", component: NotificationsSection },
-    { title: "Sécurité", component: SecuritySection },
-    { title: "Utilisateurs bloqués", component: BlockedUsersSection },
-    { title: "Déconnexion", component: LogoutSection }
-  ];
 
   useEffect(() => {
     setMounted(true);
@@ -46,16 +34,6 @@ export function Settings() {
   if (!mounted) {
     return null;
   }
-
-  const nextSection = () => {
-    setCurrentSection(prev => Math.min(prev + 1, sections.length - 1));
-  };
-
-  const previousSection = () => {
-    setCurrentSection(prev => Math.max(prev - 1, 0));
-  };
-
-  const CurrentSectionComponent = sections[currentSection].component;
 
   return (
     <ScrollArea className="h-[calc(100vh-4rem)]">
@@ -68,35 +46,47 @@ export function Settings() {
         <motion.div variants={itemVariants} className="space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight">Paramètres</h2>
           <p className="text-muted-foreground">
-            {sections[currentSection].title}
+            Gérez vos préférences et paramètres de compte
           </p>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <CurrentSectionComponent />
+          <AppearanceSection />
         </motion.div>
 
         <Separator />
 
-        <motion.div variants={itemVariants} className="flex justify-between items-center pt-4">
-          <Button
-            variant="outline"
-            onClick={previousSection}
-            disabled={currentSection === 0}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Précédent
-          </Button>
-          <Button
-            variant="outline"
-            onClick={nextSection}
-            disabled={currentSection === sections.length - 1}
-            className="flex items-center gap-2"
-          >
-            Suivant
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+        <motion.div variants={itemVariants}>
+          <PrivacySection />
+        </motion.div>
+
+        <Separator />
+
+        <motion.div variants={itemVariants}>
+          <NotificationsSection />
+        </motion.div>
+
+        <Separator />
+
+        <motion.div variants={itemVariants}>
+          <SecuritySection />
+        </motion.div>
+
+        <Separator />
+
+        <motion.div variants={itemVariants}>
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Utilisateurs bloqués</h3>
+            <div className="p-4 rounded-lg bg-muted/30">
+              <BlockedUsersSection />
+            </div>
+          </div>
+        </motion.div>
+
+        <Separator />
+
+        <motion.div variants={itemVariants}>
+          <LogoutSection />
         </motion.div>
       </motion.div>
     </ScrollArea>
