@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { X, Download } from "lucide-react";
+import { X, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface PublicProfileHeaderProps {
   onDownloadVCard: () => void;
+  onDownloadBusinessCard: () => Promise<void>;
 }
 
-export function PublicProfileHeader({ onDownloadVCard }: PublicProfileHeaderProps) {
+export function PublicProfileHeader({ onDownloadVCard, onDownloadBusinessCard }: PublicProfileHeaderProps) {
   const navigate = useNavigate();
 
   return (
@@ -14,10 +15,10 @@ export function PublicProfileHeader({ onDownloadVCard }: PublicProfileHeaderProp
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate(-1)}
+        onClick={() => onDownloadBusinessCard()}
         className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
       >
-        <X className="h-4 w-4" />
+        <FileText className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"
@@ -25,7 +26,7 @@ export function PublicProfileHeader({ onDownloadVCard }: PublicProfileHeaderProp
         onClick={onDownloadVCard}
         className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
       >
-        <Download className="h-4 w-4" />
+        <X className="h-4 w-4" />
       </Button>
     </div>
   );

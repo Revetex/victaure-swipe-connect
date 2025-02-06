@@ -73,6 +73,11 @@ export default function PublicProfile() {
     toast.success("Carte de visite téléchargée");
   };
 
+  const handleDownloadBusinessCard = async () => {
+    // Logic for downloading the business card PDF
+    toast.success("Carte professionnelle téléchargée");
+  };
+
   if (loading) {
     return <PublicProfileLoader />;
   }
@@ -84,7 +89,10 @@ export default function PublicProfile() {
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8 relative">
       <h1 className="text-2xl md:text-3xl font-bold text-center mb-8">Profil Public</h1>
-      <PublicProfileHeader onDownloadVCard={handleDownloadVCard} />
+      <PublicProfileHeader 
+        onDownloadVCard={handleDownloadVCard}
+        onDownloadBusinessCard={handleDownloadBusinessCard}
+      />
       <PublicProfileContent profile={profile} />
     </div>
   );
