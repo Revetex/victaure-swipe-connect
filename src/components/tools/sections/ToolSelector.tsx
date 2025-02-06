@@ -18,10 +18,15 @@ const tools: Tool[] = [
   { id: "chess", icon: Sword, label: "Échecs", ariaLabel: "Play chess" }
 ];
 
-export function ToolSelector() {
+interface ToolSelectorProps {
+  selectedTool: string;
+  onToolChange: (value: string) => void;
+}
+
+export function ToolSelector({ selectedTool, onToolChange }: ToolSelectorProps) {
   return (
     <div className="flex justify-center px-4">
-      <Tabs defaultValue="notes" className="w-full">
+      <Tabs value={selectedTool} onValueChange={onToolChange} className="w-full">
         <TabsList className="grid grid-cols-2 sm:grid-cols-5 gap-3 p-3 bg-muted/50 rounded-xl w-full max-w-3xl shadow-lg">
           {tools.map((tool) => {
             const Icon = tool.icon;

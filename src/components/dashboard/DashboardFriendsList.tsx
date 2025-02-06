@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { Button } from "../ui/button";
 import { ToolSelector } from "@/components/tools/sections/ToolSelector";
 import { Separator } from "../ui/separator";
+import { useState } from "react";
 
 interface DashboardFriendsListProps {
   show: boolean;
@@ -13,6 +14,7 @@ interface DashboardFriendsListProps {
 
 export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProps) {
   const isMobile = useIsMobile();
+  const [selectedTool, setSelectedTool] = useState("notes");
   
   if (!show) return null;
 
@@ -42,7 +44,10 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
           <div className="p-4">
             <div className="space-y-4">
               <div className="rounded-lg bg-muted/50 p-4">
-                <ToolSelector />
+                <ToolSelector 
+                  selectedTool={selectedTool}
+                  onToolChange={setSelectedTool}
+                />
               </div>
               <Separator className="my-4" />
               <FriendsContent />
