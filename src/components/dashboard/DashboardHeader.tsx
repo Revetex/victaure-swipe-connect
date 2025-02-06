@@ -34,7 +34,7 @@ export function DashboardHeader({
             size="sm"
           >
             <MenuIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">Menu</span>
+            <span className="hidden sm:inline">Amis</span>
           </Button>
         )}
       </div>
