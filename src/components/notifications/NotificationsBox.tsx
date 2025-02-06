@@ -9,6 +9,8 @@ import { NotificationItem } from "./NotificationItem";
 import { NotificationHeader } from "./NotificationHeader";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export function NotificationsBox() {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,9 +77,34 @@ export function NotificationsBox() {
     }
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })));
-    setUnreadCount(0);
+  const handleMarkAllAsRead = async () => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user?.id)
+        .eq('read', false);
+
+      if (error) throw error;
+
+      setNotifications(notifications.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
+      toast.success("Toutes les notifications ont été marquées comme lues");
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      toast.error("Une erreur est survenue");
+    }
+  };
+
+  const groupNotificationsByDate = (notifications: any[]) => {
+    return notifications.reduce((groups: any, notification) => {
+      const date = format(new Date(notification.created_at), 'EEEE d MMMM', { locale: fr });
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(notification);
+      return groups;
+    }, {});
   };
 
   return (
@@ -85,7 +112,7 @@ export function NotificationsBox() {
       <Button
         variant="ghost"
         size="icon"
-        className="relative"
+        className="relative hover:bg-muted/50"
         onClick={() => setIsOpen(!isOpen)}
       >
         <Bell className="h-5 w-5" />
@@ -119,7 +146,7 @@ export function NotificationsBox() {
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
               transition={{ duration: 0.2 }}
               className={cn(
-                "absolute right-0 top-full mt-2 w-80 rounded-lg border bg-card p-4 shadow-lg z-50",
+                "absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-lg border bg-card p-4 shadow-lg z-50",
                 "before:absolute before:-top-2 before:right-4 before:h-4 before:w-4 before:rotate-45 before:border-l before:border-t before:bg-card"
               )}
             >
@@ -131,7 +158,7 @@ export function NotificationsBox() {
               <ScrollArea className="h-[400px] mt-4">
                 <AnimatePresence mode="popLayout">
                   <motion.div 
-                    className="space-y-2"
+                    className="space-y-4"
                     initial="hidden"
                     animate="visible"
                     variants={{
@@ -145,19 +172,34 @@ export function NotificationsBox() {
                     }}
                   >
                     {notifications.length > 0 ? (
-                      notifications.map((notification) => (
+                      Object.entries(groupNotificationsByDate(notifications)).map(([date, groupedNotifications]: [string, any[]]) => (
                         <motion.div
-                          key={notification.id}
+                          key={date}
                           variants={{
-                            hidden: { opacity: 0, x: -20 },
-                            visible: { opacity: 1, x: 0 }
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0 }
                           }}
-                          exit={{ opacity: 0, x: -20 }}
+                          className="space-y-2"
                         >
-                          <NotificationItem
-                            {...notification}
-                            onDelete={deleteNotification}
-                          />
+                          <h3 className="text-sm font-medium text-muted-foreground first-letter:uppercase">
+                            {date}
+                          </h3>
+                          {groupedNotifications.map((notification: any) => (
+                            <motion.div
+                              key={notification.id}
+                              variants={{
+                                hidden: { opacity: 0, x: -20 },
+                                visible: { opacity: 1, x: 0 }
+                              }}
+                              exit={{ opacity: 0, x: -20 }}
+                              layout
+                            >
+                              <NotificationItem
+                                {...notification}
+                                onDelete={deleteNotification}
+                              />
+                            </motion.div>
+                          ))}
                         </motion.div>
                       ))
                     ) : (

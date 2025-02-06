@@ -1,4 +1,4 @@
-import { X, Bell, MessageSquare, Briefcase } from "lucide-react";
+import { X, Bell, MessageSquare, Briefcase, Check } from "lucide-react";
 import { formatTime } from "@/utils/dateUtils";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -86,7 +86,7 @@ export function NotificationItem({
             className="h-8 w-8 hover:text-primary focus:opacity-100"
           >
             <span className="sr-only">Marquer comme lu</span>
-            <Bell className="h-4 w-4" />
+            <Check className="h-4 w-4" />
           </Button>
         )}
         <AlertDialog>
@@ -129,7 +129,7 @@ export function NotificationItem({
             <h3 className="font-medium text-sm text-foreground">
               {title}
             </h3>
-            <span className="text-xs text-muted-foreground ml-2">
+            <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">
               {formatTime(created_at)}
             </span>
           </div>
