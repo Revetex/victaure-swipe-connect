@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { Message, Receiver } from "@/types/messages";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Message, Receiver } from "@/types/messages";
+import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ChatThinking } from "@/components/chat/ChatThinking";
 
 export interface ConversationViewProps {
@@ -33,15 +32,6 @@ export function ConversationView({
   onDeleteConversation,
   messagesEndRef
 }: ConversationViewProps) {
-  const [showScrollButton, setShowScrollButton] = useState(false);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLDivElement;
-    const isNearBottom = 
-      target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-    setShowScrollButton(!isNearBottom);
-  };
-
   return (
     <div className="flex flex-col h-full">
       <ChatHeader
@@ -52,7 +42,7 @@ export function ConversationView({
         onDelete={onDeleteConversation}
       />
 
-      <ScrollArea className="flex-1 p-4" onScroll={handleScroll}>
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message) => (
             <ChatMessage

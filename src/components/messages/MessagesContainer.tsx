@@ -3,10 +3,17 @@ import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
 import { Card } from "../ui/card";
+import { useMessages } from "@/hooks/useMessages";
+import { useUserChat } from "@/hooks/useUserChat";
+import { useAIChat } from "@/hooks/useAIChat";
+import { useRef } from "react";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
   const [showConversation, setShowConversation] = useState(false);
+  const { messages: userMessages } = useMessages();
+  const { messages: aiMessages, inputMessage, isThinking, isListening, handleSendMessage, handleVoiceInput, setInputMessage } = useAIChat();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
@@ -18,15 +25,31 @@ export function MessagesContainer() {
     setReceiver(null);
   };
 
+  const handleDeleteConversation = async () => {
+    // Implement delete conversation logic here
+    handleBack();
+  };
+
   return (
     <Card className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {showConversation && receiver ? (
         <ConversationView
           receiver={receiver}
+          messages={receiver.id === 'assistant' ? aiMessages : userMessages}
+          inputMessage={inputMessage}
+          isThinking={isThinking}
+          isListening={isListening}
+          onInputChange={setInputMessage}
+          onSendMessage={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
           onBack={handleBack}
+          onDeleteConversation={handleDeleteConversation}
+          messagesEndRef={messagesEndRef}
         />
       ) : (
         <ConversationList
+          messages={userMessages}
+          chatMessages={aiMessages}
           onSelectConversation={handleSelectConversation}
         />
       )}

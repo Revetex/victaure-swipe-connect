@@ -1,67 +1,71 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ArrowLeft, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bot } from "lucide-react";
-import { motion } from "framer-motion";
+import { Avatar } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface ChatHeaderProps {
-  onBack?: () => void;
-  title?: string;
+export interface ChatHeaderProps {
+  title: string;
   subtitle?: string;
   avatarUrl?: string;
+  onBack: () => void;
+  onDelete?: () => Promise<void>;
   isThinking?: boolean;
-  isOnline?: boolean;
-  lastSeen?: string;
 }
 
 export function ChatHeader({
+  title,
+  subtitle,
+  avatarUrl,
   onBack,
-  title = "M. Victor",
-  subtitle = "Assistant de Placement Virtuel",
-  avatarUrl = "/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png",
-  isThinking = false,
-  isOnline = true,
-  lastSeen,
+  onDelete,
+  isThinking
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex items-center gap-3">
-        {onBack && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="h-8 w-8"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+    <div className="flex items-center gap-4 p-4 border-b">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onBack}
+        className="shrink-0"
+      >
+        <ArrowLeft className="h-5 w-5" />
+      </Button>
+
+      <Avatar className="h-10 w-10">
+        <img
+          src={avatarUrl || "/user-icon.svg"}
+          alt={title}
+          className="h-full w-full object-cover rounded-full"
+        />
+      </Avatar>
+
+      <div className="flex-1 min-w-0">
+        <h2 className="font-medium truncate">{title}</h2>
+        {subtitle && (
+          <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
         )}
-        <motion.div
-          animate={isThinking ? { scale: [1, 1.05, 1] } : {}}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="relative"
-        >
-          <Avatar className="h-10 w-10 ring-2 ring-primary/10">
-            <AvatarImage src={avatarUrl} alt={title} className="object-cover" />
-            <AvatarFallback className="bg-primary/20">
-              <Bot className="h-4 w-4 text-primary" />
-            </AvatarFallback>
-          </Avatar>
-          {isOnline && (
-            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 ring-2 ring-white" />
-          )}
-        </motion.div>
-        <div>
-          <h2 className="text-base font-semibold leading-none">{title}</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            {isThinking ? "En train de réfléchir..." : subtitle}
-            {!isOnline && lastSeen && (
-              <span className="text-xs ml-1">
-                (Vu {new Date(lastSeen).toLocaleDateString('fr-FR')})
-              </span>
-            )}
-          </p>
-        </div>
       </div>
+
+      {onDelete && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreVertical className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onDelete} className="text-destructive">
+              <Trash2 className="h-4 w-4 mr-2" />
+              Supprimer la conversation
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }

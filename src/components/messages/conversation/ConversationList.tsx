@@ -5,7 +5,8 @@ import { Search, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Message, Receiver } from "@/types/messages";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
+import { useProfile } from "@/hooks/useProfile";
+import { filterMessages } from "@/utils/messageUtils";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -14,8 +15,25 @@ export interface ConversationListProps {
 }
 
 export function ConversationList({ messages, chatMessages, onSelectConversation }: ConversationListProps) {
-  const [conversations, setConversations] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const { profile } = useProfile();
+  
+  // Get unique conversations by grouping messages by sender/receiver
+  const conversations = messages.reduce((acc: any[], message: Message) => {
+    const otherUser = message.sender_id === profile?.id ? message.receiver : message.sender;
+    if (!otherUser) return acc;
+    
+    const existingConv = acc.find(conv => conv.user.id === otherUser.id);
+    if (!existingConv) {
+      acc.push({
+        user: otherUser,
+        lastMessage: message
+      });
+    } else if (new Date(message.created_at) > new Date(existingConv.lastMessage.created_at)) {
+      existingConv.lastMessage = message;
+    }
+    return acc;
+  }, []);
 
   const filteredConversations = conversations.filter(conv => 
     conv.user.full_name.toLowerCase().includes(searchQuery.toLowerCase())
