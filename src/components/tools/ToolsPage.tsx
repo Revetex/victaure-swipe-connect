@@ -10,15 +10,22 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function ToolsPage() {
-  const [selectedTool, setSelectedTool] = useState("notes");
-  const [showFriendsList, setShowFriendsList] = useState(true);
+  const { toolId } = useParams();
+  const [selectedTool, setSelectedTool] = useState(toolId || "notes");
+  const [showFriendsList, setShowFriendsList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (toolId) {
+      setSelectedTool(toolId);
+    }
+  }, [toolId]);
 
   // Load user's last used tool from profile
   useEffect(() => {
@@ -29,14 +36,15 @@ export function ToolsPage() {
 
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('last_used_tool, tools_order')
+          .select('last_used_tool')
           .eq('id', user.id)
           .single();
 
         if (error) throw error;
 
-        if (profile?.last_used_tool) {
+        if (profile?.last_used_tool && !toolId) {
           setSelectedTool(profile.last_used_tool);
+          navigate(`/dashboard/tools/${profile.last_used_tool}`);
         }
       } catch (error) {
         console.error("Error loading tool preferences:", error);
@@ -44,7 +52,7 @@ export function ToolsPage() {
     };
 
     loadLastUsedTool();
-  }, []);
+  }, [navigate, toolId]);
 
   // Set up real-time subscription for tool updates
   useEffect(() => {
@@ -66,6 +74,7 @@ export function ToolsPage() {
           (payload) => {
             if (mounted && payload.new.last_used_tool) {
               setSelectedTool(payload.new.last_used_tool);
+              navigate(`/dashboard/tools/${payload.new.last_used_tool}`);
             }
           }
         )
@@ -78,12 +87,13 @@ export function ToolsPage() {
     };
 
     setupSubscription();
-  }, []);
+  }, [navigate]);
 
   const handleToolChange = async (value: string) => {
     try {
       setIsLoading(true);
       setSelectedTool(value);
+      navigate(`/dashboard/tools/${value}`);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {

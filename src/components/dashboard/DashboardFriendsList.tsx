@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { X, NotebookPen, Calculator, Languages, ChessKing, ListTodo } from "lucide-react";
+import { X, NotebookPen, Calculator, Languages, Settings, ListTodo } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,7 @@ const tools = [
   {
     id: "chess",
     name: "Échecs",
-    icon: ChessKing,
+    icon: Settings,
     description: "Jouer aux échecs"
   }
 ];
@@ -51,8 +51,8 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
   if (!show) return null;
 
   const handleToolClick = (toolId: string) => {
-    navigate('/dashboard/tools');
-    // We'll let the ToolsPage handle the tool selection
+    navigate(`/dashboard/tools/${toolId}`);
+    onClose();
   };
 
   return (
