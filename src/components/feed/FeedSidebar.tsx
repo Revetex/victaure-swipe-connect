@@ -2,8 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Users } from "lucide-react";
-import { ConnectionsSection } from "./friends/ConnectionsSection";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FeedSidebarProps {
@@ -54,40 +53,27 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
 
   return (
     <div className={cn(
-      "w-[300px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem]",
+      "w-[250px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem]",
       "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
       className
     )}>
       <ScrollArea className="h-full">
-        <div className="p-4 space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Amis</h2>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start gap-2"
-              onClick={() => navigate("/friends")}
-            >
-              <Users className="h-4 w-4" />
-              Demandes d'amis
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Outils</h2>
+        <div className="p-3 space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-sm font-medium">Outils</h2>
             {tools.map((tool) => (
               <Button
                 key={tool.name}
-                variant="outline"
-                className="w-full justify-start gap-2"
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start gap-2 px-2 h-9"
                 onClick={() => navigate(tool.path)}
               >
                 <tool.icon className="h-4 w-4" />
-                {tool.name}
+                <span className="text-sm">{tool.name}</span>
               </Button>
             ))}
           </div>
-
-          <ConnectionsSection />
         </div>
       </ScrollArea>
     </div>
