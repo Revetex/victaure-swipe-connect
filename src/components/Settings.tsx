@@ -7,11 +7,11 @@ import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { ScrollArea } from "./ui/scroll-area";
-import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
 import { SettingsLayout } from "./settings/SettingsLayout";
+import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -90,7 +90,6 @@ export function Settings() {
         <DashboardNavigation 
           currentPage={currentPage} 
           onPageChange={(page) => {
-            setCurrentPage(page);
             if (page !== 5) {
               navigate('/dashboard');
             }

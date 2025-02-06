@@ -11,6 +11,7 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
+import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -40,6 +41,11 @@ export function ToolsPage() {
       />
 
       <div className="flex-1 container mx-auto px-4 py-4">
+        <NotesToolSelector 
+          selectedTool={selectedTool}
+          onToolSelect={handleToolChange}
+        />
+
         <Tabs 
           defaultValue="notes" 
           value={selectedTool} 
@@ -69,9 +75,7 @@ export function ToolsPage() {
                   <TasksSection />
                 </TabsContent>
                 <TabsContent value="calculator" className="m-0">
-                  <CalculatorSection />
-                </TabsContent>
-                <TabsContent value="translator" className="m-0">
+                  <CalculatorSection<TabsContent value="translator" className="m-0">
                   <TranslatorSection />
                 </TabsContent>
                 <TabsContent value="chess" className="m-0">
@@ -92,7 +96,13 @@ export function ToolsPage() {
         <div className="container mx-auto py-2">
           <DashboardNavigation 
             currentPage={5}
-            onPageChange={(page) => navigate(page === 5 ? "/tools" : "/")}
+            onPageChange={(page) => {
+              if (page === 5) {
+                handleToolChange("notes");
+              } else {
+                navigate('/dashboard');
+              }
+            }}
             isEditing={false}
           />
         </div>
