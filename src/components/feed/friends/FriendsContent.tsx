@@ -5,17 +5,21 @@ import { UserProfile } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { FriendRequestsSection } from "./FriendRequestsSection";
 import { ConnectionsSection } from "./ConnectionsSection";
-import { UserPlus, Users, Calculator, Languages, ListTodo, Ruler, Sword, BrainCircuit } from "lucide-react";
+import { UserPlus, Calculator, Languages, ListTodo, Ruler, Sword } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { NotesPage } from "@/components/tools/NotesPage";
+import { CalculatorPage } from "@/components/tools/CalculatorPage";
+import { TranslatorPage } from "@/components/tools/TranslatorPage";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
   const [showNotes, setShowNotes] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [showTranslator, setShowTranslator] = useState(false);
   const navigate = useNavigate();
 
   const tools = [
@@ -28,32 +32,20 @@ export function FriendsContent() {
     {
       name: "Calculatrice",
       icon: Calculator,
-      action: () => navigate("/tools"),
+      action: () => setShowCalculator(true),
       color: "bg-green-500/10 text-green-500"
     },
     {
       name: "Traducteur",
       icon: Languages,
-      action: () => navigate("/tools"),
+      action: () => setShowTranslator(true),
       color: "bg-purple-500/10 text-purple-500"
-    },
-    {
-      name: "Convertisseur",
-      icon: Ruler,
-      action: () => navigate("/tools"),
-      color: "bg-orange-500/10 text-orange-500"
     },
     {
       name: "Échecs",
       icon: Sword,
       action: () => navigate("/tools"),
       color: "bg-red-500/10 text-red-500"
-    },
-    {
-      name: "Assistant IA",
-      icon: BrainCircuit,
-      action: () => navigate("/tools"),
-      color: "bg-indigo-500/10 text-indigo-500"
     }
   ];
 
@@ -100,7 +92,7 @@ export function FriendsContent() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-3 gap-2 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
           {tools.map((tool) => (
             <Button
               key={tool.name}
@@ -128,11 +120,6 @@ export function FriendsContent() {
         className="space-y-6"
         variants={itemVariants}
       >
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Users className="h-4 w-4" />
-          <span>Mes connections</span>
-        </div>
-
         <motion.div variants={itemVariants}>
           <ConnectionsSection />
         </motion.div>
@@ -153,6 +140,18 @@ export function FriendsContent() {
       <Dialog open={showNotes} onOpenChange={setShowNotes}>
         <DialogContent className="max-w-4xl h-[80vh]">
           <NotesPage />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showCalculator} onOpenChange={setShowCalculator}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <CalculatorPage />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showTranslator} onOpenChange={setShowTranslator}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <TranslatorPage />
         </DialogContent>
       </Dialog>
     </motion.div>
