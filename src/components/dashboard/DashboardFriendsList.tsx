@@ -52,7 +52,7 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
 
   const handleToolClick = (toolId: string) => {
     navigate('/dashboard/tools');
-    // We'll let the ToolsPage handle the tool selection
+    onClose();
   };
 
   return (
