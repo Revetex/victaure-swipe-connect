@@ -1,19 +1,18 @@
-import { VCard } from "./VCard";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { UserProfile, Certification, Experience } from "@/types/profile";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
-import { Download, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { generateVCardData } from "@/utils/profileActions";
+import { PublicProfileHeader } from "./public-profile/PublicProfileHeader";
+import { PublicProfileContent } from "./public-profile/PublicProfileContent";
+import { PublicProfileLoader } from "./public-profile/PublicProfileLoader";
+import { PublicProfileError } from "./public-profile/PublicProfileError";
 
 export default function PublicProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -31,7 +30,6 @@ export default function PublicProfile() {
 
         if (error) throw error;
 
-        // Transform the data to match UserProfile type
         const transformedData: UserProfile = {
           ...data,
           certifications: data.certifications?.map((cert: any) => ({
@@ -76,46 +74,18 @@ export default function PublicProfile() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <PublicProfileLoader />;
   }
 
   if (!profile) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold mb-4">Profil non trouvé</h1>
-        <p className="text-muted-foreground">Ce profil n'existe pas ou a été supprimé.</p>
-      </div>
-    );
+    return <PublicProfileError />;
   }
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8 relative">
       <h1 className="text-2xl md:text-3xl font-bold text-center mb-8">Profil Public</h1>
-      <div className="absolute top-4 right-4 flex gap-2 z-10">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate(-1)}
-          className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
-        >
-          <X className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleDownloadVCard}
-          className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
-        >
-          <Download className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="w-full max-w-3xl mx-auto">
-        <VCard profile={profile} isPublic />
-      </div>
+      <PublicProfileHeader onDownloadVCard={handleDownloadVCard} />
+      <PublicProfileContent profile={profile} />
     </div>
   );
 }
