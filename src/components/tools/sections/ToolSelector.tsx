@@ -7,14 +7,15 @@ interface Tool {
   id: string;
   icon: any;
   label: string;
+  ariaLabel: string;
 }
 
 const tools: Tool[] = [
-  { id: "notes", icon: Plus, label: "Notes" },
-  { id: "tasks", icon: ListTodo, label: "Tâches" },
-  { id: "calculator", icon: Calculator, label: "Calculatrice" },
-  { id: "translator", icon: Languages, label: "Traducteur" },
-  { id: "chess", icon: Sword, label: "Échecs" }
+  { id: "notes", icon: Plus, label: "Notes", ariaLabel: "Create new note" },
+  { id: "tasks", icon: ListTodo, label: "Tâches", ariaLabel: "Manage tasks" },
+  { id: "calculator", icon: Calculator, label: "Calculatrice", ariaLabel: "Use calculator" },
+  { id: "translator", icon: Languages, label: "Traducteur", ariaLabel: "Translate text" },
+  { id: "chess", icon: Sword, label: "Échecs", ariaLabel: "Play chess" }
 ];
 
 export function ToolSelector() {
@@ -31,17 +32,25 @@ export function ToolSelector() {
             >
               <TabsTrigger
                 value={tool.id}
+                aria-label={tool.ariaLabel}
+                title={tool.label}
                 className={cn(
-                  "w-full flex items-center justify-center gap-2.5 px-4 py-3",
+                  "w-full aspect-square flex items-center justify-center",
                   "rounded-lg transition-all duration-300",
                   "bg-background/50 hover:bg-background/80",
                   "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                   "data-[state=active]:shadow-lg data-[state=active]:scale-105",
-                  "border border-border/50"
+                  "border border-border/50",
+                  "group"
                 )}
               >
-                <Icon className="h-5 w-5" />
-                <span className="font-medium">{tool.label}</span>
+                <Icon 
+                  className={cn(
+                    "h-6 w-6 transition-all duration-300",
+                    "group-hover:scale-110",
+                    "group-data-[state=active]:scale-110"
+                  )} 
+                />
               </TabsTrigger>
             </motion.div>
           );
