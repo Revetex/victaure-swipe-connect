@@ -21,8 +21,6 @@ interface DashboardContentProps {
 }
 
 function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
-  console.error("Content loading error:", error);
-  
   return (
     <Alert variant="destructive" className="m-4">
       <AlertTitle>Une erreur est survenue</AlertTitle>
@@ -44,6 +42,7 @@ const LoadingSkeleton = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
+    transition={{ duration: 0.2 }}
     className="space-y-4 p-4"
   >
     <Skeleton className="h-12 w-full" />
@@ -64,8 +63,10 @@ const pageVariants = {
     x: 0,
     scale: 1,
     transition: {
-      duration: 0.4,
-      ease: [0.4, 0, 0.2, 1]
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+      mass: 0.8
     }
   },
   exit: {
@@ -73,8 +74,7 @@ const pageVariants = {
     x: -20,
     scale: 0.95,
     transition: {
-      duration: 0.3,
-      ease: [0.4, 0, 1, 1]
+      duration: 0.2
     }
   }
 };

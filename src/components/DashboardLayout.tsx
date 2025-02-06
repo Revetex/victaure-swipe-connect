@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { MainLayout } from "@/components/layout/MainLayout";
+import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
+import { DashboardMain } from "./dashboard/layout/DashboardMain";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { DashboardHeader } from "./dashboard/DashboardHeader";
+import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { useViewport } from "@/hooks/useViewport";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { AnimatePresence } from "framer-motion";
+import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 
 export const DashboardLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,21 +81,38 @@ export const DashboardLayout: React.FC = () => {
   }
 
   return (
-    <MainLayout
-      title={getPageTitle()}
-      currentPage={currentPage}
-      onPageChange={setCurrentPage}
-      isEditing={isEditing}
-      showFriendsList={showFriendsList}
-      onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-    >
-      <DashboardContent
-        currentPage={currentPage}
-        viewportHeight={viewportHeight}
+    <DashboardContainer>
+      <DashboardHeader
+        title={getPageTitle()}
+        showFriendsList={showFriendsList}
+        onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
         isEditing={isEditing}
-        onEditStateChange={setIsEditing}
-        onRequestChat={() => setCurrentPage(2)}
       />
-    </MainLayout>
+      
+      <AnimatePresence>
+        {showFriendsList && (
+          <DashboardFriendsList 
+            show={showFriendsList} 
+            onClose={() => setShowFriendsList(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <DashboardMain>
+        <DashboardContent
+          currentPage={currentPage}
+          viewportHeight={viewportHeight}
+          isEditing={isEditing}
+          onEditStateChange={setIsEditing}
+          onRequestChat={() => setCurrentPage(2)}
+        />
+      </DashboardMain>
+
+      <DashboardNavigation
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        isEditing={isEditing}
+      />
+    </DashboardContainer>
   );
 };
