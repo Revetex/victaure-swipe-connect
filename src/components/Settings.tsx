@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { ScrollArea } from "./ui/scroll-area";
 import { AppearanceSection } from "./settings/AppearanceSection";
 import { NotificationsSection } from "./settings/NotificationsSection";
 import { PrivacySection } from "./settings/PrivacySection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
-import { ScrollArea } from "./ui/scroll-area";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
@@ -18,7 +18,7 @@ const sectionVariants = {
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.4,
       type: "spring",
       stiffness: 100,
       damping: 15
@@ -32,31 +32,17 @@ const sectionVariants = {
 };
 
 export function Settings() {
-  const [mounted, setMounted] = useState(false);
-  const [currentPage, setCurrentPage] = useState(5);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleBackToHome = () => {
-    navigate('/dashboard');
-  };
-
-  if (!mounted) {
-    return null;
-  }
+  const currentPage = 5;
 
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader 
+    <div className="min-h-screen bg-background relative">
+      <AppHeader
         title="Paramètres"
         showFriendsList={showFriendsList}
         onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
         isEditing={false}
-        onToolReturn={handleBackToHome}
       />
 
       <AnimatePresence mode="wait">
@@ -68,13 +54,13 @@ export function Settings() {
         )}
       </AnimatePresence>
 
-      <ScrollArea className="h-[calc(100vh-8rem)]">
+      <ScrollArea className="h-[calc(100vh-8rem)] container mx-auto px-4 py-6">
         <motion.div
           variants={sectionVariants}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="container mx-auto px-4 py-6 space-y-8"
+          className="space-y-8 max-w-4xl mx-auto"
         >
           <AppearanceSection />
           <NotificationsSection />
