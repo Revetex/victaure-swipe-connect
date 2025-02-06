@@ -28,7 +28,16 @@ export function useRealtimeChat() {
 
       if (error) throw error;
 
-      setMessages(data || []);
+      // Convert the raw data to match ChatMessage type
+      const typedMessages: ChatMessage[] = data.map(msg => ({
+        id: msg.id,
+        content: msg.content,
+        sender: msg.sender as 'user' | 'assistant',
+        user_id: msg.user_id,
+        created_at: msg.created_at
+      }));
+
+      setMessages(typedMessages);
     } catch (error) {
       console.error('Error loading messages:', error);
       toast.error("Erreur lors du chargement des messages");

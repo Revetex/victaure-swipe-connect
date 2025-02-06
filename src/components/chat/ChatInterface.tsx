@@ -1,17 +1,14 @@
 
 import { useState, useRef } from "react";
-import { Card } from "@/components/ui/card";
-import { ChatInput } from "./ChatInput";
-import { ChatMessage } from "./ChatMessage";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
-import { AIAssistantStatus } from "../dashboard/ai/AIAssistantStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useRealtimeChat } from "@/hooks/chat/useRealtimeChat";
+import { ChatContainer } from "./ChatContainer";
+import { ChatMessagesList } from "./ChatMessagesList";
+import { ChatScrollButton } from "./ChatScrollButton";
+import { ChatInput } from "./ChatInput";
 
 export function ChatInterface() {
   const [input, setInput] = useState("");
@@ -73,7 +70,7 @@ export function ChatInterface() {
   };
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-6rem)] mx-auto max-w-2xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <ChatContainer>
       <motion.div 
         initial={false}
         animate={{ 
@@ -87,53 +84,17 @@ export function ChatInterface() {
         </p>
       </motion.div>
 
-      <ScrollArea 
-        className="flex-1 p-4"
-        onScrollCapture={handleScroll}
-      >
-        <div className="space-y-4">
-          <AnimatePresence initial={false}>
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChatMessage
-                  content={message.content}
-                  sender={message.sender}
-                  timestamp={message.created_at}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          
-          {isThinking && <AIAssistantStatus isThinking={true} />}
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
+      <ChatMessagesList
+        messages={messages}
+        isThinking={isThinking}
+        onScroll={handleScroll}
+        messagesEndRef={messagesEndRef}
+      />
 
-      <AnimatePresence>
-        {showScrollButton && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-20 right-4"
-          >
-            <Button
-              size="icon"
-              variant="secondary"
-              onClick={scrollToBottom}
-              className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
-            >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ChatScrollButton 
+        show={showScrollButton}
+        onClick={scrollToBottom}
+      />
 
       <div className="p-4 border-t">
         <ChatInput
@@ -144,6 +105,6 @@ export function ChatInterface() {
           placeholder="Posez vos questions à M. Victaure..."
         />
       </div>
-    </Card>
+    </ChatContainer>
   );
 }
