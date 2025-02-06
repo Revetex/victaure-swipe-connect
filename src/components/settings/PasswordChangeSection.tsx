@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -40,12 +41,13 @@ export function PasswordChangeSection() {
   if (!showForm) {
     return (
       <Button 
-        variant="outline" 
+        variant="ghost"
+        size="sm"
         onClick={() => setShowForm(true)}
-        className="w-full"
+        className="w-full justify-start gap-2 px-2 h-9"
       >
-        <Lock className="h-4 w-4 mr-2" />
-        Changer le mot de passe
+        <Lock className="h-4 w-4" />
+        <span className="text-sm">Changer le mot de passe</span>
       </Button>
     );
   }
@@ -65,7 +67,7 @@ export function PasswordChangeSection() {
       <div className="flex gap-2">
         <Button 
           type="submit" 
-          className="flex-1"
+          className="flex-1 h-9 px-2"
           disabled={loading}
         >
           {loading ? (
@@ -84,6 +86,7 @@ export function PasswordChangeSection() {
           type="button" 
           variant="outline"
           onClick={() => setShowForm(false)}
+          className="h-9 px-2"
         >
           Annuler
         </Button>

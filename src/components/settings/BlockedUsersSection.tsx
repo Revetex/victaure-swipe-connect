@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -51,13 +52,17 @@ export function BlockedUsersSection() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="w-full justify-start gap-2 px-2 h-9"
+      >
         <UserX className="h-4 w-4" />
-        <h3 className="text-sm font-medium">Utilisateurs bloqués</h3>
-      </div>
+        <span className="text-sm">Utilisateurs bloqués</span>
+      </Button>
 
-      <ScrollArea className="h-[200px]">
-        <div className="space-y-2">
+      <ScrollArea className="h-[200px] rounded-lg border bg-muted/50">
+        <div className="p-4 space-y-2">
           {blockedUsers?.map((item) => (
             <div key={item.blocked.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50">
               <div className="flex items-center gap-2">
@@ -71,6 +76,7 @@ export function BlockedUsersSection() {
                 variant="ghost"
                 size="sm"
                 onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
+                className="h-8 px-2"
               >
                 Débloquer
               </Button>
