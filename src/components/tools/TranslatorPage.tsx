@@ -39,6 +39,12 @@ export function TranslatorPage() {
 
     setIsLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in to translate");
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('translate-text', {
         body: { 
           text: sourceText,
@@ -49,13 +55,14 @@ export function TranslatorPage() {
 
       if (error) throw error;
 
-      // Save translation to database
+      // Save translation to database with user_id
       const { error: dbError } = await supabase.from('translations').insert({
         source_text: sourceText,
         translated_text: data.translatedText,
         source_lang: sourceLang,
         target_lang: targetLang,
-        detected_lang: data.detectedLanguage
+        detected_lang: data.detectedLanguage,
+        user_id: user.id // Add user_id here
       });
 
       if (dbError) throw dbError;
