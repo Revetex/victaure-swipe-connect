@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
@@ -11,6 +12,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import PublicProfile from "@/components/PublicProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { ToolsPage } from "@/components/tools/ToolsPage";
+import { Feed } from "@/components/Feed";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -21,7 +23,7 @@ export function AppRoutes() {
         path="/" 
         element={
           isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/feed" replace />
           ) : (
             <Index />
           )
@@ -31,7 +33,7 @@ export function AppRoutes() {
         path="/auth" 
         element={
           isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/feed" replace />
           ) : (
             <Auth />
           )
@@ -42,6 +44,14 @@ export function AppRoutes() {
       <Route path="/legal/cookies" element={<CookiesPage />} />
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route path="/profile/:id" element={<PublicProfile />} />
+      <Route
+        path="/feed"
+        element={
+          <ProtectedRoute>
+            <Feed />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/dashboard/*"
         element={
@@ -70,7 +80,7 @@ export function AppRoutes() {
         path="*" 
         element={
           isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/feed" replace />
           ) : (
             <Navigate to="/auth" replace />
           )

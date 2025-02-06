@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { FriendRequests } from "lucide-react";
+import { Users } from "lucide-react";
 import { ConnectionsSection } from "./friends/ConnectionsSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -28,7 +28,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
               className="w-full justify-start gap-2"
               onClick={() => navigate("/friends")}
             >
-              <FriendRequests className="h-4 w-4" />
+              <Users className="h-4 w-4" />
               Demandes d'amis
             </Button>
           </div>
