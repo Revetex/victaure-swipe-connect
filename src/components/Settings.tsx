@@ -51,7 +51,7 @@ export function Settings() {
   }
 
   return (
-    <SettingsLayout>
+    <div className="min-h-screen bg-background">
       <AppHeader 
         title="Paramètres"
         showFriendsList={showFriendsList}
@@ -97,6 +97,6 @@ export function Settings() {
           isEditing={false}
         />
       </div>
-    </SettingsLayout>
+    </div>
   );
 }
