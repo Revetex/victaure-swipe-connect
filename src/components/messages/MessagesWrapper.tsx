@@ -37,10 +37,6 @@ export function MessagesWrapper() {
   };
 
   const handleSelectConversation = (selectedReceiver: Receiver) => {
-    if (selectedReceiver.id === 'assistant') {
-      toast.error("Pour discuter avec M. Victaure, veuillez utiliser l'assistant dans le tableau de bord");
-      return;
-    }
     setReceiver(selectedReceiver);
     setShowConversation(true);
   };
