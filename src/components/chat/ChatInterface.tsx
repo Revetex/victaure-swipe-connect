@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { ChatInput } from "./ChatInput";
 import { ChatMessage } from "./ChatMessage";
@@ -11,14 +11,15 @@ import { useProfile } from "@/hooks/useProfile";
 import { AIAssistantStatus } from "../dashboard/ai/AIAssistantStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useRealtimeChat } from "@/hooks/chat/useRealtimeChat";
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { profile } = useProfile();
+  const { messages, addMessage } = useRealtimeChat();
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -33,76 +34,16 @@ export function ChatInterface() {
     setShowScrollButton(!isNearBottom);
   };
 
-  useEffect(() => {
-    const loadMessages = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data, error } = await supabase
-          .from('ai_chat_messages')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: true });
-
-        if (error) throw error;
-
-        setMessages(data || []);
-        scrollToBottom();
-      } catch (error) {
-        console.error('Error loading messages:', error);
-        toast.error("Erreur lors du chargement des messages");
-      }
-    };
-
-    loadMessages();
-
-    // Set up realtime subscription
-    const channel = supabase
-      .channel('ai_chat_messages')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'ai_chat_messages'
-        },
-        () => {
-          loadMessages();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
   const handleSendMessage = async () => {
     if (!input.trim() || isThinking) return;
 
     try {
       setIsThinking(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("Vous devez être connecté pour utiliser le chat");
-        return;
-      }
-
+      
       // Save user message
-      const userMessage = {
-        id: crypto.randomUUID(),
-        content: input,
-        sender: 'user',
-        user_id: user.id,
-        created_at: new Date().toISOString()
-      };
+      const userMessage = await addMessage(input, 'user');
+      if (!userMessage) return;
 
-      await supabase
-        .from('ai_chat_messages')
-        .insert(userMessage);
-
-      setMessages(prev => [...prev, userMessage]);
       setInput("");
       scrollToBottom();
 
@@ -120,19 +61,7 @@ export function ChatInterface() {
       if (error) throw error;
 
       // Save AI response
-      const aiMessage = {
-        id: crypto.randomUUID(),
-        content: data.response,
-        sender: 'assistant',
-        user_id: user.id,
-        created_at: new Date().toISOString()
-      };
-
-      await supabase
-        .from('ai_chat_messages')
-        .insert(aiMessage);
-
-      setMessages(prev => [...prev, aiMessage]);
+      await addMessage(data.response, 'assistant');
       scrollToBottom();
 
     } catch (error) {
@@ -164,7 +93,7 @@ export function ChatInterface() {
       >
         <div className="space-y-4">
           <AnimatePresence initial={false}>
-            {messages.map((message, index) => (
+            {messages.map((message) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: 20 }}
