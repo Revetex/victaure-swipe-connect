@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
