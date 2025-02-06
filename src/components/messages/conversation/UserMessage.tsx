@@ -10,9 +10,10 @@ import { Trash2 } from "lucide-react";
 export interface UserMessageProps {
   message: Message;
   onDelete?: () => Promise<void>;
+  onSelect?: () => void; // Added this prop
 }
 
-export function UserMessage({ message, onDelete }: UserMessageProps) {
+export function UserMessage({ message, onDelete, onSelect }: UserMessageProps) {
   const { profile } = useProfile();
   const isOwnMessage = message.sender_id === profile?.id;
 
@@ -21,9 +22,10 @@ export function UserMessage({ message, onDelete }: UserMessageProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex w-full gap-4 p-4",
+        "flex w-full gap-4 p-4 cursor-pointer",
         isOwnMessage ? "flex-row-reverse" : "flex-row"
       )}
+      onClick={onSelect}
     >
       <Avatar className={cn(
         "h-10 w-10 ring-2",
@@ -58,7 +60,10 @@ export function UserMessage({ message, onDelete }: UserMessageProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={onDelete}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
               className="text-muted-foreground hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />

@@ -14,6 +14,7 @@ interface ConversationMessagesProps {
   onScrollToBottom?: () => void;
   onDeleteMessage?: (messageId: string) => Promise<void>;
   isAIChat?: boolean;
+  isThinking?: boolean; // Added this prop
 }
 
 export function ConversationMessages({
@@ -22,7 +23,8 @@ export function ConversationMessages({
   onScroll,
   onScrollToBottom,
   onDeleteMessage,
-  isAIChat = false
+  isAIChat = false,
+  isThinking = false
 }: ConversationMessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -59,6 +61,18 @@ export function ConversationMessages({
                 )}
               </motion.div>
             ))}
+            {isThinking && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center justify-center p-4"
+              >
+                <div className="animate-pulse text-muted-foreground">
+                  En train de réfléchir...
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
           <div ref={messagesEndRef} />
         </div>
