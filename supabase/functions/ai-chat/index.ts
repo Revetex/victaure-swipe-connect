@@ -62,7 +62,7 @@ serve(async (req) => {
 
     console.log('Sending prompt to Hugging Face:', systemPrompt)
 
-    // Using a more reliable model
+    // Using Mixtral model for better French language support
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -112,6 +112,7 @@ serve(async (req) => {
       }
     }
 
+    // Store conversation in learning data
     const { error: learningError } = await supabase
       .from('ai_learning_data')
       .insert({

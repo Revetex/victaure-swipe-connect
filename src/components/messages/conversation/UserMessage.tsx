@@ -1,50 +1,69 @@
 import { Message } from "@/types/messages";
 import { Avatar } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { useProfile } from "@/hooks/useProfile";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
-interface UserMessageProps {
+export interface UserMessageProps {
   message: Message;
-  onSelect?: () => void;
+  onDelete?: () => Promise<void>;
 }
 
-export function UserMessage({ message, onSelect }: UserMessageProps) {
+export function UserMessage({ message, onDelete }: UserMessageProps) {
+  const { profile } = useProfile();
+  const isOwnMessage = message.sender_id === profile?.id;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-      onClick={onSelect}
-      className="group relative p-4 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] bg-card hover:bg-card/80 border shadow-sm hover:shadow-md"
+      className={cn(
+        "flex w-full gap-4 p-4",
+        isOwnMessage ? "flex-row-reverse" : "flex-row"
+      )}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
-      <div className="relative flex gap-4">
-        <Avatar className="h-12 w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-200 group-hover:ring-primary/20">
-          <img 
-            src={message.sender.avatar_url || "/user-icon.svg"} 
-            alt={message.sender.full_name || "User"} 
-            className="h-full w-full object-cover rounded-full"
-          />
-        </Avatar>
-        <div className="flex-1 min-w-0 space-y-1">
-          <div className="flex justify-between items-center gap-2">
-            <h3 className="font-semibold text-lg">{message.sender.full_name}</h3>
-            <span className="text-xs text-muted-foreground bg-primary/5 px-2 py-1 rounded-full">
-              {message.sender.online_status ? "En ligne" : "Hors ligne"}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground line-clamp-2 text-left">
-            {message.content}
-          </p>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-            <Clock className="h-3 w-3" />
-            <span>
-              {format(new Date(message.created_at), "PPp", { locale: fr })}
-            </span>
-          </div>
+      <Avatar className={cn(
+        "h-10 w-10 ring-2",
+        isOwnMessage ? "ring-primary" : "ring-muted"
+      )}>
+        <img
+          src={message.sender.avatar_url || "/user-icon.svg"}
+          alt="User avatar"
+          className="h-full w-full object-cover rounded-full"
+        />
+      </Avatar>
+      
+      <div className={cn(
+        "flex flex-col gap-1",
+        isOwnMessage ? "items-end" : "items-start"
+      )}>
+        <p className="text-sm font-medium text-muted-foreground">
+          {message.sender.full_name}
+        </p>
+        
+        <div className="flex items-start gap-2">
+          <Card className={cn(
+            "p-4",
+            isOwnMessage 
+              ? "bg-primary text-primary-foreground" 
+              : "bg-muted"
+          )}>
+            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+          </Card>
+          
+          {isOwnMessage && onDelete && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onDelete}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>

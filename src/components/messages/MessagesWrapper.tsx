@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { MessagesContent } from "./MessagesContent";
 import { ConversationList } from "./conversation/ConversationList";
 import { useReceiver } from "@/hooks/useReceiver";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "../ui/button";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useUserChat } from "@/hooks/useUserChat";
 import { Receiver } from "@/types/messages";
