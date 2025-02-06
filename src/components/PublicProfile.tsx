@@ -2,7 +2,7 @@ import { VCard } from "./VCard";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Certification } from "@/types/profile";
 import { toast } from "sonner";
 
 export default function PublicProfile() {
@@ -26,7 +26,17 @@ export default function PublicProfile() {
 
         if (error) throw error;
 
-        setProfile(data);
+        // Transform the data to match UserProfile type
+        const transformedData: UserProfile = {
+          ...data,
+          certifications: data.certifications?.map((cert: any) => ({
+            ...cert,
+            institution: cert.issuer, // Map issuer to institution
+            year: new Date(cert.issue_date).getFullYear().toString() // Add required year field
+          })) as Certification[],
+        };
+
+        setProfile(transformedData);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
