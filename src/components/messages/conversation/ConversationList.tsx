@@ -82,36 +82,51 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
           {/* M. Victaure - Assistant */}
-          <Button
-            variant="ghost"
-            className="w-full flex items-center gap-2 h-auto p-4"
-            onClick={() => onSelectConversation({
-              id: 'assistant',
-              full_name: 'M. Victaure',
-              avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-              online_status: true,
-              last_seen: new Date().toISOString()
-            })}
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage 
-                src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" 
-                alt="M. Victaure" 
-              />
-              <AvatarFallback>MV</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="flex justify-between">
-                <h3 className="font-medium">M. Victaure</h3>
-                {chatMessages.length > 0 && (
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
-                  </span>
-                )}
+          <div className="mb-6">
+            <Button
+              variant="ghost"
+              className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10 transition-all duration-200"
+              onClick={() => onSelectConversation({
+                id: 'assistant',
+                full_name: 'M. Victaure',
+                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                online_status: true,
+                last_seen: new Date().toISOString()
+              })}
+            >
+              <Avatar className="h-12 w-12 ring-2 ring-primary/20">
+                <AvatarImage 
+                  src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" 
+                  alt="M. Victaure" 
+                />
+                <AvatarFallback>MV</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 text-left">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium text-lg text-primary">M. Victaure</h3>
+                  {chatMessages.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">Assistant virtuel</p>
               </div>
-              <p className="text-sm text-muted-foreground">Assistant virtuel</p>
+            </Button>
+          </div>
+
+          {filteredConversations.length > 0 && (
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Conversations privées
+                </span>
+              </div>
             </div>
-          </Button>
+          )}
 
           {/* Autres conversations */}
           {filteredConversations.map((conv) => (
@@ -123,23 +138,23 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
             >
               <Button
                 variant="ghost"
-                className="w-full flex items-center gap-2 h-auto p-4"
+                className="w-full flex items-center gap-2 h-auto p-4 hover:bg-muted/50 transition-all duration-200"
                 onClick={() => onSelectConversation(conv.user)}
               >
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-12 w-12 ring-2 ring-muted">
                   <AvatarImage src={conv.user.avatar_url || undefined} alt={conv.user.full_name || ''} />
                   <AvatarFallback>
                     {conv.user.full_name?.slice(0, 2).toUpperCase() || '??'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="flex justify-between">
-                    <h3 className="font-medium">{conv.user.full_name}</h3>
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium text-base">{conv.user.full_name}</h3>
                     <span className="text-xs text-muted-foreground">
                       {new Date(conv.lastMessage.created_at).toLocaleDateString()}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">
+                  <p className="text-sm text-muted-foreground truncate mt-1">
                     {conv.lastMessage.content}
                   </p>
                 </div>
@@ -147,14 +162,26 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
             </motion.div>
           ))}
 
-          {filteredConversations.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              {searchQuery ? "Aucune conversation trouvée" : "Aucune conversation pour le moment"}
-            </p>
+          {filteredConversations.length === 0 && searchQuery && (
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground">
+                Aucune conversation trouvée
+              </p>
+            </div>
+          )}
+
+          {filteredConversations.length === 0 && !searchQuery && (
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground">
+                Aucune conversation pour le moment
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Commencez une nouvelle conversation en cliquant sur le bouton +
+              </p>
+            </div>
           )}
         </div>
       </ScrollArea>
     </div>
   );
 }
-
