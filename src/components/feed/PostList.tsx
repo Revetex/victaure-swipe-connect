@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { PostCard } from "./posts/PostCard";
 import { usePostOperations } from "./posts/usePostOperations";
 import { toast } from "sonner";
@@ -23,6 +23,9 @@ interface PostListProps {
   onPostDeleted: () => void;
   onPostUpdated: () => void;
 }
+
+// Mémoiser PostCard pour éviter les re-renders inutiles
+const MemoizedPostCard = memo(PostCard);
 
 export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   const { user } = useAuth();
@@ -71,7 +74,9 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
           reaction_type: reaction.reaction_type as "like" | "dislike"
         }))
       }));
-    }
+    },
+    staleTime: 1000 * 60, // Garde les données fraîches pendant 1 minute
+    cacheTime: 1000 * 60 * 5, // Garde les données en cache pendant 5 minutes
   });
 
   const handleDeletePost = async (postId: string, userId: string | undefined) => {
@@ -137,7 +142,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <PostCard
+            <MemoizedPostCard
               post={post}
               currentUserId={user?.id}
               userEmail={user?.email}

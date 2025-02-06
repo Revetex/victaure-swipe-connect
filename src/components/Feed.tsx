@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { FeedSidebar } from "./feed/FeedSidebar";
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -30,7 +32,11 @@ export function Feed() {
       transition={{ duration: 0.3 }}
       className="w-full flex bg-background min-h-screen"
     >
-      {!isMobile && <FeedSidebar />}
+      {!isMobile && (
+        <Suspense fallback={null}>
+          <FeedSidebar />
+        </Suspense>
+      )}
       
       <div className="flex-1">
         <div className="max-w-3xl w-full mx-auto px-4 sm:px-6">
@@ -47,13 +53,22 @@ export function Feed() {
           </motion.div>
           
           <div className="py-4">
-            <PostList 
-              onPostDeleted={handlePostDeleted}
-              onPostUpdated={handlePostUpdated}
-            />
+            <Suspense 
+              fallback={
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              }
+            >
+              <PostList 
+                onPostDeleted={handlePostDeleted}
+                onPostUpdated={handlePostUpdated}
+              />
+            </Suspense>
           </div>
         </div>
       </div>
     </motion.div>
   );
 }
+
