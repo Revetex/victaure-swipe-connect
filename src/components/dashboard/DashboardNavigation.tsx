@@ -8,7 +8,11 @@ interface DashboardNavigationProps {
   isEditing?: boolean;
 }
 
-export function DashboardNavigation({ currentPage, onPageChange, isEditing }: DashboardNavigationProps) {
+export function DashboardNavigation({ 
+  currentPage, 
+  onPageChange,
+  isEditing 
+}: DashboardNavigationProps) {
   if (isEditing) return null;
 
   return (
