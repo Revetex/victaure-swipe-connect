@@ -27,7 +27,7 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
         <span className="absolute inset-0 blur-[1px] text-[#222222]">
           VICTAURE
         </span>
-        <span className="relative bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] bg-clip-text text-transparent" style={{
+        <span className="relative bg-gradient-to-br from-[#B8860B] via-[#996515] to-[#CD7F32] bg-clip-text text-transparent" style={{
           WebkitTextStroke: '0.5px #222222',
           textShadow: '0 0 1px rgba(34, 34, 34, 0.3)'
         }}>
