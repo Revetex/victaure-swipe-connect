@@ -1,9 +1,7 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
-import Settings from "@/pages/Settings";
 import { TermsPage } from "@/components/legal/TermsPage";
 import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
@@ -101,14 +99,6 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <ChessPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Settings />
           </ProtectedRoute>
         }
       />

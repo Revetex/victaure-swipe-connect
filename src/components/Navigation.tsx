@@ -1,5 +1,5 @@
-import { Menu, MessageSquare, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+import { MessageSquare, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { SettingsDropdown } from "./settings/SettingsDropdown";
 
 export function Navigation() {
   const isMobile = useIsMobile();
@@ -28,17 +29,9 @@ export function Navigation() {
         <span className="relative z-10">Messages</span>
         <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
       </Link>
-      <Link 
-        to="/settings" 
-        className="text-foreground/80 hover:text-primary transition-colors relative group flex items-center gap-2"
-      >
-        <Settings className="h-4 w-4" />
-        <span className="relative z-10">Paramètres</span>
-        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
-      </Link>
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
         <NotificationsBox />
-        <ThemeToggle />
+        <SettingsDropdown />
       </div>
     </nav>
   );
@@ -63,7 +56,7 @@ export function Navigation() {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
-                <Menu className="h-6 w-6" />
+                <Settings className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent className="w-[80vw] sm:w-[380px] bg-background/95 border-border">
@@ -79,3 +72,4 @@ export function Navigation() {
     </motion.header>
   );
 }
+
