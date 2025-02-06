@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare, Mic, Send, Loader2 } from "lucide-react";
@@ -12,6 +13,7 @@ export interface ChatInputProps {
   isThinking?: boolean;
   placeholder?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export function ChatInput({
@@ -22,7 +24,8 @@ export function ChatInput({
   isListening = false,
   isThinking = false,
   placeholder = "Écrivez votre message...",
-  className = ""
+  className = "",
+  disabled = false
 }: ChatInputProps) {
   return (
     <div className={`relative flex items-end gap-2 ${className}`}>
@@ -38,6 +41,7 @@ export function ChatInput({
               onSend();
             }
           }}
+          disabled={disabled}
         />
         <AnimatePresence>
           <motion.div 
@@ -51,7 +55,7 @@ export function ChatInput({
                 size="icon"
                 variant={isListening ? "destructive" : "secondary"}
                 onClick={onVoiceInput}
-                disabled={isThinking}
+                disabled={isThinking || disabled}
                 className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
               >
                 <Mic className="h-4 w-4" />
@@ -61,7 +65,7 @@ export function ChatInput({
               <Button
                 size="icon"
                 onClick={onSend}
-                disabled={!value.trim() || isThinking}
+                disabled={!value.trim() || isThinking || disabled}
                 className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
               >
                 {isThinking ? (
