@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -90,7 +91,10 @@ export const DashboardLayout: React.FC = () => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="min-h-screen bg-background relative overflow-hidden"
+        className={cn(
+          "min-h-screen bg-background relative overflow-hidden",
+          "transition-colors duration-200"
+        )}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
