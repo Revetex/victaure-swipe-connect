@@ -1,11 +1,10 @@
+
 import { Eye, EyeOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
-import { SettingsSection } from "./SettingsSection";
 
 export function PrivacySection() {
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
@@ -54,21 +53,22 @@ export function PrivacySection() {
   };
 
   return (
-    <SettingsSection title="Confidentialité">
-      <div className={cn(
-        "flex items-center justify-between p-3 rounded-lg bg-muted/30",
-        "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
-        "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
-      )}>
-        <Label className="text-sm cursor-pointer flex items-center gap-2 text-foreground/80">
+    <Button
+      variant="ghost"
+      size="sm"
+      className="w-full justify-between px-2 h-9"
+      asChild
+    >
+      <div className="flex items-center">
+        <div className="flex items-center gap-2">
           {privacyEnabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          Profil privé
-        </Label>
+          <span className="text-sm">Profil privé</span>
+        </div>
         <Switch 
           checked={privacyEnabled}
           onCheckedChange={handlePrivacyToggle}
         />
       </div>
-    </SettingsSection>
+    </Button>
   );
 }

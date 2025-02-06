@@ -127,8 +127,8 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
           {/* Settings Section */}
           <div className="space-y-1">
             <h3 className="text-xs font-medium text-muted-foreground px-2">Paramètres</h3>
-            <div className="space-y-2">
-              <div className="space-y-3 rounded-lg bg-card/50 p-2">
+            <div className="space-y-1">
+              <div className="rounded-lg">
                 <AppearanceSection />
                 <NotificationsSection />
                 <PrivacySection />
@@ -144,3 +144,4 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     </div>
   );
 }
+
