@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { FileText, Pencil, Save, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface VCardActionsProps {
   isEditing: boolean;
@@ -11,7 +12,7 @@ interface VCardActionsProps {
   onDownloadBusinessCard?: () => Promise<void>;
 }
 
-export function VCardActions({
+export const VCardActions = memo(function VCardActions({
   isEditing,
   isProcessing,
   isPdfGenerating,
@@ -31,7 +32,7 @@ export function VCardActions({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => handleEditToggle()}
+          onClick={handleEditToggle}
           className={cn(
             "shrink-0 hover:bg-purple-100 dark:hover:bg-purple-900/20",
             "text-purple-600 dark:text-purple-400"
@@ -39,6 +40,7 @@ export function VCardActions({
           title="Annuler"
         >
           <X className="h-4 w-4" />
+          <span className="sr-only">Annuler</span>
         </Button>
         <Button
           onClick={onSave}
@@ -49,8 +51,10 @@ export function VCardActions({
             isProcessing && "opacity-50 pointer-events-none"
           )}
           title="Sauvegarder"
+          disabled={isProcessing}
         >
           <Save className="h-4 w-4" />
+          <span className="sr-only">Sauvegarder</span>
         </Button>
       </div>
     );
@@ -61,11 +65,12 @@ export function VCardActions({
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => handleEditToggle()}
+        onClick={handleEditToggle}
         className="shrink-0"
         title="Éditer"
       >
         <Pencil className="h-4 w-4" />
+        <span className="sr-only">Éditer</span>
       </Button>
       <Button
         variant="ghost"
@@ -73,9 +78,11 @@ export function VCardActions({
         onClick={onDownloadBusinessCard}
         className={cn("shrink-0", isPdfGenerating && "opacity-50 pointer-events-none")}
         title="Télécharger la carte de visite"
+        disabled={isPdfGenerating}
       >
         <FileText className="h-4 w-4" />
+        <span className="sr-only">Télécharger la carte de visite</span>
       </Button>
     </div>
   );
-}
+});

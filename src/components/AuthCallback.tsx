@@ -12,12 +12,6 @@ export function AuthCallback() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get the URL hash
-        const hash = window.location.hash;
-        if (!hash) {
-          throw new Error("No hash found in URL");
-        }
-
         // Get session from URL
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -38,11 +32,11 @@ export function AuthCallback() {
           throw new Error("Erreur de vérification utilisateur");
         }
 
-        // Get redirect path
+        // Get redirect path with fallback
         const redirectTo = sessionStorage.getItem('redirectTo') || '/dashboard';
         sessionStorage.removeItem('redirectTo'); // Clean up
 
-        // Success!
+        // Success notification and redirect
         toast.success("Connexion réussie");
         navigate(redirectTo, { replace: true });
       } catch (error) {
@@ -59,15 +53,15 @@ export function AuthCallback() {
   if (error) {
     return (
       <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
-        className="flex flex-col items-center justify-center min-h-screen gap-4"
+        className="flex flex-col items-center justify-center min-h-screen gap-4 p-4"
       >
-        <p className="text-destructive">{error}</p>
+        <p className="text-destructive text-center">{error}</p>
         <button 
           onClick={() => navigate('/auth')}
-          className="text-primary hover:underline"
+          className="text-primary hover:underline transition-colors"
         >
           Retour à la page de connexion
         </button>
@@ -77,13 +71,13 @@ export function AuthCallback() {
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center min-h-screen gap-4"
+      className="flex flex-col items-center justify-center min-h-screen gap-4 p-4"
     >
-      <Loader className="w-8 h-8 text-primary" />
-      <p className="text-muted-foreground animate-pulse">
+      <Loader className="w-8 h-8 text-primary animate-spin" />
+      <p className="text-muted-foreground animate-pulse text-center">
         Redirection en cours...
       </p>
     </motion.div>
