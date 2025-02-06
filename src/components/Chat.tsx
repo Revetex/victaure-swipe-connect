@@ -13,11 +13,11 @@ export function Chat() {
 
   const handleCloseChat = () => {
     setShowChat(false);
-    setShowWelcome(true); // Show welcome screen again when chat is closed
+    setShowWelcome(true);
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       {showWelcome && (
         <MrVictaureWelcome 
           onDismiss={() => setShowWelcome(false)}
