@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -11,30 +8,21 @@ import { CalculatorSection } from "./sections/CalculatorSection";
 import { TranslatorSection } from "./sections/TranslatorSection";
 import { ConverterSection } from "./sections/ConverterSection";
 import { ChessSection } from "./sections/ChessSection";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
-  const navigate = useNavigate();
-
-  const handleReturn = () => {
-    navigate('/dashboard');
-  };
+  const [showFriendsList, setShowFriendsList] = useState(false);
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="p-4 border-b flex items-center justify-between sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={handleReturn}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-          <h1 className="text-xl font-semibold">Outils</h1>
-        </div>
-      </div>
+      <DashboardHeader 
+        title="Outils"
+        showFriendsList={showFriendsList}
+        onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+        isEditing={false}
+      />
 
       <div className="flex-1 overflow-auto p-4">
         <Tabs 
@@ -127,6 +115,16 @@ export function ToolsPage() {
           </motion.div>
         </Tabs>
       </div>
+
+      <nav className="sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
+        <div className="container mx-auto py-2">
+          <DashboardNavigation 
+            currentPage={5}
+            onPageChange={() => {}}
+            isEditing={false}
+          />
+        </div>
+      </nav>
     </div>
   );
 }
