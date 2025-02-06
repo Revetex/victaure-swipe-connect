@@ -21,9 +21,13 @@ export function TasksPage() {
   const { data: tasks, refetch } = useQuery({
     queryKey: ['todos'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
       const { data, error } = await supabase
         .from('todos')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -36,9 +40,18 @@ export function TasksPage() {
     if (!newTask.trim()) return;
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in to add tasks");
+        return;
+      }
+
       const { error } = await supabase
         .from('todos')
-        .insert([{ text: newTask }]);
+        .insert([{ 
+          text: newTask,
+          user_id: user.id 
+        }]);
 
       if (error) throw error;
 
