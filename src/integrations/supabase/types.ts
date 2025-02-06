@@ -155,6 +155,64 @@ export type Database = {
           },
         ]
       }
+      chess_games: {
+        Row: {
+          ai_difficulty: string | null
+          black_player_id: string | null
+          created_at: string
+          game_state: Json
+          id: string
+          status: string | null
+          updated_at: string
+          white_player_id: string
+          winner_id: string | null
+        }
+        Insert: {
+          ai_difficulty?: string | null
+          black_player_id?: string | null
+          created_at?: string
+          game_state?: Json
+          id?: string
+          status?: string | null
+          updated_at?: string
+          white_player_id: string
+          winner_id?: string | null
+        }
+        Update: {
+          ai_difficulty?: string | null
+          black_player_id?: string | null
+          created_at?: string
+          game_state?: Json
+          id?: string
+          status?: string | null
+          updated_at?: string
+          white_player_id?: string
+          winner_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chess_games_black_player_id_fkey"
+            columns: ["black_player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chess_games_white_player_id_fkey"
+            columns: ["white_player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chess_games_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       education: {
         Row: {
           created_at: string | null
