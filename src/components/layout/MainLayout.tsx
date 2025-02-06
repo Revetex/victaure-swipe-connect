@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
+import { BottomNavigation } from "@/components/navigation/BottomNavigation";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence } from "framer-motion";
@@ -61,7 +61,7 @@ export function MainLayout({
       </main>
 
       {!isFriendsPage && (
-        <DashboardNavigation 
+        <BottomNavigation 
           currentPage={currentPage}
           onPageChange={onPageChange}
           isEditing={isEditing}
