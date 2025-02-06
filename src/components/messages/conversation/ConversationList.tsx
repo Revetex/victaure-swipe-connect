@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Search, Bot } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Message, Receiver } from "@/types/messages";
 import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { filterMessages } from "@/utils/messageUtils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -43,17 +44,6 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     conv.user.full_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSelectAssistant = () => {
-    const assistantReceiver: Receiver = {
-      id: 'assistant',
-      full_name: 'M. Victaure',
-      avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-      online_status: true,
-      last_seen: new Date().toISOString()
-    };
-    onSelectConversation(assistantReceiver);
-  };
-
   return (
     <div className="flex flex-col h-full">
       <div className="border-b p-4">
@@ -70,24 +60,6 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Button
-              variant="outline"
-              className="w-full flex items-center gap-2 h-auto p-4"
-              onClick={handleSelectAssistant}
-            >
-              <Bot className="h-5 w-5 text-primary" />
-              <div className="flex-1 text-left">
-                <h3 className="font-medium">M. Victaure</h3>
-                <p className="text-sm text-muted-foreground">Assistant virtuel</p>
-              </div>
-            </Button>
-          </motion.div>
-
           {filteredConversations.map((conv) => (
             <motion.div
               key={conv.user.id}
@@ -100,6 +72,12 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
                 className="w-full flex items-center gap-2 h-auto p-4"
                 onClick={() => onSelectConversation(conv.user)}
               >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={conv.user.avatar_url || undefined} alt={conv.user.full_name || ''} />
+                  <AvatarFallback>
+                    {conv.user.full_name?.slice(0, 2).toUpperCase() || '??'}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex-1">
                   <div className="flex justify-between">
                     <h3 className="font-medium">{conv.user.full_name}</h3>
@@ -114,6 +92,12 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
               </Button>
             </motion.div>
           ))}
+
+          {filteredConversations.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              {searchQuery ? "Aucune conversation trouvée" : "Aucune conversation pour le moment"}
+            </p>
+          )}
         </div>
       </ScrollArea>
     </div>
