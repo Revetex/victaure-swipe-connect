@@ -37,7 +37,7 @@ export function Chat() {
               zIndex: 99999
             }}
           >
-            <div className="h-full w-full flex items-center justify-center p-4">
+            <div className="h-full w-full flex items-center justify-center p-8">
               {showWelcome && (
                 <MrVictaureWelcome 
                   onDismiss={() => setShowWelcome(false)}
@@ -46,7 +46,7 @@ export function Chat() {
               )}
               
               {showChat && (
-                <div className="w-full h-full max-w-4xl mx-auto">
+                <div className="w-full h-full max-w-4xl mx-auto pb-8">
                   <AIAssistant onClose={handleCloseChat} />
                 </div>
               )}
