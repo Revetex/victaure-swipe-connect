@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { NotesSection } from "./sections/NotesSection";
 import { TasksSection } from "./sections/TasksSection";
 import { CalculatorSection } from "./sections/CalculatorSection";
@@ -11,8 +10,8 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ToolSelector } from "./sections/ToolSelector";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -32,14 +31,6 @@ export function ToolsPage() {
     }
   };
 
-  const tools = [
-    { id: "notes", icon: Plus, label: "Notes" },
-    { id: "tasks", icon: ListTodo, label: "Tâches" },
-    { id: "calculator", icon: Calculator, label: "Calculatrice" },
-    { id: "translator", icon: Languages, label: "Traducteur" },
-    { id: "chess", icon: Sword, label: "Échecs" }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <DashboardHeader 
@@ -57,34 +48,7 @@ export function ToolsPage() {
           className="w-full space-y-6"
         >
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4 border-b">
-            <div className="flex justify-center">
-              <TabsList className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-2 bg-muted/50 rounded-lg w-full max-w-3xl">
-                {tools.map((tool) => {
-                  const Icon = tool.icon;
-                  return (
-                    <motion.div
-                      key={tool.id}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <TabsTrigger
-                        value={tool.id}
-                        className={cn(
-                          "w-full flex items-center justify-center gap-2 px-4 py-2",
-                          "rounded-md transition-all duration-200",
-                          "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                          "data-[state=active]:shadow-lg",
-                          "hover:bg-background/60"
-                        )}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span className="font-medium">{tool.label}</span>
-                      </TabsTrigger>
-                    </motion.div>
-                  );
-                })}
-              </TabsList>
-            </div>
+            <ToolSelector />
           </div>
 
           <motion.div

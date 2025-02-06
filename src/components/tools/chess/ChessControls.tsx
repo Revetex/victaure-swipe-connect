@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RefreshCw, Crown } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChessControlsProps {
   isThinking: boolean;
@@ -20,7 +21,11 @@ export function ChessControls({
   onReset,
 }: ChessControlsProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 p-4 bg-muted/50 rounded-xl shadow-md"
+    >
       <div className="flex items-center gap-4 w-full sm:w-auto">
         <Select value={difficulty} onValueChange={onDifficultyChange}>
           <SelectTrigger className="w-[180px]">
@@ -37,24 +42,36 @@ export function ChessControls({
           variant="outline" 
           size="icon"
           onClick={onReset}
-          className="shrink-0"
+          className="shrink-0 h-10 w-10"
         >
           <RefreshCw className="h-4 w-4" />
         </Button>
       </div>
 
-      <div className="flex items-center gap-2 text-sm sm:text-base font-medium">
+      <motion.div 
+        className="flex items-center gap-2 text-sm sm:text-base font-medium"
+        animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+      >
         {gameOver ? (
           <div className="flex items-center gap-2 text-primary">
             <Crown className="h-5 w-5" />
-            {isWhiteTurn ? "Black wins!" : "White wins!"}
+            <span className="font-semibold">
+              {isWhiteTurn ? "Black wins!" : "White wins!"}
+            </span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            {isThinking ? "AI is thinking..." : `${isWhiteTurn ? "White" : "Black"}'s turn`}
+            {isThinking ? (
+              <span className="text-muted-foreground">AI is thinking...</span>
+            ) : (
+              <span className="font-semibold">
+                {isWhiteTurn ? "White" : "Black"}'s turn
+              </span>
+            )}
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
