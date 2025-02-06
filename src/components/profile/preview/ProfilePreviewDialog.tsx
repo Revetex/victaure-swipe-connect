@@ -18,7 +18,13 @@ export function ProfilePreviewDialog({
 }: ProfilePreviewDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-0 overflow-hidden bg-transparent border-none">
+      <DialogContent 
+        className="max-w-md p-0 overflow-hidden bg-transparent border-none relative z-[100]"
+        style={{ 
+          position: 'fixed',
+          zIndex: 100 
+        }}
+      >
         <VisuallyHidden asChild>
           <DialogTitle>Profil de {profile.full_name || "Utilisateur"}</DialogTitle>
         </VisuallyHidden>
