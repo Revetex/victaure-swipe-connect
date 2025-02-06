@@ -1,3 +1,4 @@
+
 import { useState, useMemo, memo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -98,42 +99,89 @@ export function UnifiedBoard({
     };
   }, [newNote, onAddNote]);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
   const tabVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 }
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -20,
+      transition: {
+        duration: 0.2
+      }
+    }
   };
 
   return (
-    <div className="h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border">
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border shadow-lg"
+    >
       <Tabs 
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as typeof activeTab)}
         className="h-full flex flex-col"
       >
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <TabsList className="w-full grid grid-cols-3 sm:grid-cols-6 h-12">
-            <TabsTrigger value="todos" className="flex items-center gap-2">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-t-lg border-b">
+          <TabsList className="w-full grid grid-cols-3 sm:grid-cols-6 h-14 p-1">
+            <TabsTrigger 
+              value="todos" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all"
+            >
               <ListTodo className="h-4 w-4" />
               <span className="hidden sm:inline">Tâches</span>
             </TabsTrigger>
-            <TabsTrigger value="notes" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="notes" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all"
+            >
               <StickyNote className="h-4 w-4" />
               <span className="hidden sm:inline">Notes</span>
             </TabsTrigger>
-            <TabsTrigger value="calculator" className="flex items-center gap-2">
+            <TabsTrigger 
+              value="calculator" 
+              className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all"
+            >
               <Calculator className="h-4 w-4" />
               <span className="hidden sm:inline">Calculatrice</span>
             </TabsTrigger>
-            <TabsTrigger value="translator" className="hidden sm:flex items-center gap-2">
+            <TabsTrigger 
+              value="translator" 
+              className="hidden sm:flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all"
+            >
               <Languages className="h-4 w-4" />
               <span className="hidden sm:inline">Traducteur</span>
             </TabsTrigger>
-            <TabsTrigger value="converter" className="hidden sm:flex items-center gap-2">
+            <TabsTrigger 
+              value="converter" 
+              className="hidden sm:flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all"
+            >
               <Ruler className="h-4 w-4" />
               <span className="hidden sm:inline">Convertisseur</span>
             </TabsTrigger>
-            <TabsTrigger value="chess" className="hidden sm:flex items-center gap-2">
+            <TabsTrigger 
+              value="chess" 
+              className="hidden sm:flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary transition-all"
+            >
               <Sword className="h-4 w-4" />
               <span className="hidden sm:inline">Échecs</span>
             </TabsTrigger>
@@ -144,10 +192,11 @@ export function UnifiedBoard({
               {activeTab === "todos" ? (
                 <motion.div
                   key="todos-toolbar"
+                  variants={tabVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  variants={tabVariants}
+                  className="p-4"
                 >
                   <MemoizedTodoToolbar
                     newTodo={newTodo}
@@ -158,10 +207,11 @@ export function UnifiedBoard({
               ) : activeTab === "notes" ? (
                 <motion.div
                   key="notes-toolbar"
+                  variants={tabVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  variants={tabVariants}
+                  className="p-4"
                 >
                   <MemoizedNoteToolbar
                     newNote={newNote}
@@ -201,11 +251,11 @@ export function UnifiedBoard({
 
               <TabsContent value="calculator" className="h-full m-0">
                 <motion.div
+                  variants={tabVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  variants={tabVariants}
-                  className="flex items-center justify-center h-full"
+                  className="flex items-center justify-center h-full p-4"
                 >
                   <div className="text-center space-y-4">
                     <Calculator className="h-12 w-12 mx-auto text-muted-foreground" />
@@ -216,11 +266,11 @@ export function UnifiedBoard({
 
               <TabsContent value="translator" className="h-full m-0">
                 <motion.div
+                  variants={tabVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  variants={tabVariants}
-                  className="flex items-center justify-center h-full"
+                  className="flex items-center justify-center h-full p-4"
                 >
                   <div className="text-center space-y-4">
                     <Languages className="h-12 w-12 mx-auto text-muted-foreground" />
@@ -231,11 +281,11 @@ export function UnifiedBoard({
 
               <TabsContent value="converter" className="h-full m-0">
                 <motion.div
+                  variants={tabVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  variants={tabVariants}
-                  className="flex items-center justify-center h-full"
+                  className="flex items-center justify-center h-full p-4"
                 >
                   <div className="text-center space-y-4">
                     <Ruler className="h-12 w-12 mx-auto text-muted-foreground" />
@@ -246,11 +296,11 @@ export function UnifiedBoard({
 
               <TabsContent value="chess" className="h-full m-0">
                 <motion.div
+                  variants={tabVariants}
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  variants={tabVariants}
-                  className="flex items-center justify-center h-full"
+                  className="flex items-center justify-center h-full p-4"
                 >
                   <div className="text-center space-y-4">
                     <Sword className="h-12 w-12 mx-auto text-muted-foreground" />
@@ -262,6 +312,6 @@ export function UnifiedBoard({
           </ErrorBoundary>
         </div>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }
