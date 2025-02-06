@@ -35,19 +35,8 @@ export function MessagesWrapper() {
     setReceiver(null);
   };
 
-  const handleSelectConversation = (type: "assistant" | "user", selectedReceiver?: Receiver) => {
-    if (type === "assistant") {
-      const aiReceiver: Receiver = {
-        id: 'assistant',
-        full_name: 'M. Victaure',
-        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-        online_status: true,
-        last_seen: new Date().toISOString()
-      };
-      setReceiver(aiReceiver);
-    } else if (selectedReceiver) {
-      setReceiver(selectedReceiver);
-    }
+  const handleSelectConversation = (selectedReceiver: Receiver) => {
+    setReceiver(selectedReceiver);
     setShowConversation(true);
   };
 
