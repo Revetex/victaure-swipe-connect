@@ -1,3 +1,4 @@
+
 import { useGoogleSearchStyles } from "@/components/google-search/GoogleSearchStyles";
 import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 import { AISearchSuggestions } from "@/components/google-search/AISearchSuggestions";
@@ -44,7 +45,9 @@ export function ExternalSearchSection() {
   return (
     <div className="w-full space-y-4">
       <div className="relative">
-        <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
+        <div className="absolute top-0 left-0 z-10">
+          <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
+        </div>
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
