@@ -1,26 +1,17 @@
 import { motion } from "framer-motion";
-import { FriendsContent } from "@/components/feed/friends/FriendsContent";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { X, NotebookPen, Calculator, Languages, Settings, ListTodo } from "lucide-react";
-import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { Calculator, ListTodo, Sword } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-
-interface DashboardFriendsListProps {
-  show: boolean;
-  onClose: () => void;
-}
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { NotesPage } from "@/components/tools/NotesPage";
+import { CalculatorPage } from "@/components/tools/CalculatorPage";
+import { TasksPage } from "@/components/tools/TasksPage";
 
 const tools = [
   {
-    id: "notes",
-    name: "Notes",
-    icon: NotebookPen,
-    description: "Gérer vos notes"
-  },
-  {
     id: "tasks",
-    name: "Tâches", 
+    name: "Tâches",
     icon: ListTodo,
     description: "Gérer vos tâches"
   },
@@ -28,31 +19,31 @@ const tools = [
     id: "calculator",
     name: "Calculatrice",
     icon: Calculator,
-    description: "Calculatrice et convertisseur"
-  },
-  {
-    id: "translator",
-    name: "Traducteur",
-    icon: Languages,
-    description: "Traduire du texte"
+    description: "Calculer et convertir"
   },
   {
     id: "chess",
     name: "Échecs",
-    icon: Settings,
+    icon: Sword,
     description: "Jouer aux échecs"
   }
 ];
 
+interface DashboardFriendsListProps {
+  show: boolean;
+  onClose: () => void;
+}
+
 export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProps) {
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
-  
-  if (!show) return null;
+  const [selectedTool, setSelectedTool] = useState<string | null>(null);
 
   const handleToolClick = (toolId: string) => {
-    navigate(`/dashboard/tools/${toolId}`);
-    onClose();
+    setSelectedTool(toolId);
+    if (toolId === 'chess') {
+      navigate('/dashboard/tools/chess');
+      onClose();
+    }
   };
 
   return (
@@ -60,54 +51,55 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-      className={cn(
-        "fixed inset-x-0 top-[4rem] z-[100] bg-background/95 backdrop-blur-sm border-b",
-        "overflow-hidden shadow-lg",
-        isMobile ? "h-[calc(100vh-4rem)]" : "h-[70vh]"
-      )}
+      className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b"
     >
-      <div className="container mx-auto px-4 h-full">
-        <div className="max-w-3xl mx-auto relative h-full py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute right-0 top-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-          
-          <div className="h-full overflow-y-auto space-y-8">
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Outils</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {tools.map((tool) => (
-                  <Button
-                    key={tool.id}
-                    variant="outline"
-                    className="flex items-center gap-3 p-4 h-auto"
-                    onClick={() => handleToolClick(tool.id)}
-                  >
-                    <tool.icon className="h-5 w-5" />
-                    <div className="text-left">
-                      <div className="font-medium">{tool.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {tool.description}
-                      </div>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Connexions</h3>
-              <FriendsContent />
-            </div>
-          </div>
+      <div className="container mx-auto py-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {tools.map((tool) => {
+            const Icon = tool.icon;
+            return (
+              <Button
+                key={tool.id}
+                variant="ghost"
+                className={cn(
+                  "flex flex-col items-center gap-3 p-6 h-auto",
+                  "hover:bg-accent/5 transition-all duration-200",
+                  "group relative"
+                )}
+                onClick={() => handleToolClick(tool.id)}
+              >
+                <div className={cn(
+                  "p-4 rounded-lg transition-all duration-200",
+                  "group-hover:scale-110",
+                  tool.id === 'chess' ? 'bg-red-500/10 text-red-500' :
+                  tool.id === 'calculator' ? 'bg-green-500/10 text-green-500' :
+                  'bg-blue-500/10 text-blue-500'
+                )}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div className="text-center">
+                  <p className="font-medium">{tool.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {tool.description}
+                  </p>
+                </div>
+              </Button>
+            );
+          })}
         </div>
       </div>
+
+      <Dialog open={selectedTool === 'tasks'} onOpenChange={() => setSelectedTool(null)}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <TasksPage />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={selectedTool === 'calculator'} onOpenChange={() => setSelectedTool(null)}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <CalculatorPage />
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
