@@ -32,13 +32,14 @@ export function MessagesWrapper() {
   } = useUserChat();
 
   useEffect(() => {
-    // Supprimer automatiquement les conversations avec soi-même au chargement
-    const deleteSelfConversations = async () => {
+    // Supprimer les conversations problématiques au chargement
+    const cleanupMessages = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
         
-        const { error } = await supabase
+        // Supprimer les conversations avec soi-même
+        const { error: selfMessageError } = await supabase
           .from('messages')
           .delete()
           .match({ 
@@ -46,13 +47,23 @@ export function MessagesWrapper() {
             receiver_id: user.id 
           });
 
-        if (error) throw error;
+        if (selfMessageError) throw selfMessageError;
+
+        // Supprimer les anciens messages de l'IA mal dirigés
+        const { error: aiMessageError } = await supabase
+          .from('messages')
+          .delete()
+          .eq('sender_id', 'assistant')
+          .eq('receiver_id', user.id);
+
+        if (aiMessageError) throw aiMessageError;
+
       } catch (error) {
-        console.error('Error deleting self conversations:', error);
+        console.error('Error cleaning up messages:', error);
       }
     };
 
-    deleteSelfConversations();
+    cleanupMessages();
   }, []);
 
   const handleBack = () => {
@@ -200,3 +211,4 @@ export function MessagesWrapper() {
     </div>
   );
 }
+
