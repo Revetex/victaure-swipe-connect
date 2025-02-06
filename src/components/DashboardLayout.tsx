@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { useViewport } from "@/hooks/useViewport";
@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-export function DashboardLayout() {
+export const DashboardLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -93,4 +93,4 @@ export function DashboardLayout() {
       />
     </MainLayout>
   );
-}
+};
