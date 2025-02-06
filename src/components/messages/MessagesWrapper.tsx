@@ -45,11 +45,10 @@ export function MessagesWrapper() {
         last_seen: new Date().toISOString()
       };
       setReceiver(aiReceiver);
-      setShowConversation(true);
     } else if (selectedReceiver) {
       setReceiver(selectedReceiver);
-      setShowConversation(true);
     }
+    setShowConversation(true);
   };
 
   const handleSendMessage = async (message: string) => {
@@ -72,8 +71,7 @@ export function MessagesWrapper() {
 
   if (showConversation && receiver) {
     const isAIChat = receiver.id === 'assistant';
-    console.log("Showing conversation for:", { receiver, isAIChat });
-
+    
     return (
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
         <ChatHeader
