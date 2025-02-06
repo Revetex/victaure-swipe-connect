@@ -1,77 +1,62 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, Calculator, Languages, ListTodo, Plus, Swords } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { FriendsContent } from "@/components/feed/friends/FriendsContent";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { X } from "lucide-react";
+import { Button } from "../ui/button";
+import { ToolSelector } from "@/components/tools/sections/ToolSelector";
+import { Separator } from "../ui/separator";
+import { useState } from "react";
 
 interface DashboardFriendsListProps {
   show: boolean;
   onClose: () => void;
 }
 
-const tools = [
-  { id: "notes", icon: Plus, label: "Notes" },
-  { id: "tasks", icon: ListTodo, label: "Tâches" },
-  { id: "calculator", icon: Calculator, label: "Calculatrice" },
-  { id: "translator", icon: Languages, label: "Traducteur" },
-  { id: "chess", icon: Swords, label: "Échecs" }
-];
-
 export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProps) {
-  const navigate = useNavigate();
-
-  const handleToolClick = (toolId: string) => {
-    navigate('/dashboard/tools', { state: { selectedTool: toolId } });
-    onClose();
-  };
+  const isMobile = useIsMobile();
+  const [selectedTool, setSelectedTool] = useState("notes");
+  
+  if (!show) return null;
 
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ opacity: 0, x: "100%" }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: "100%" }}
-          transition={{ type: "spring", damping: 20 }}
-          className={cn(
-            "fixed top-[4rem] right-0 w-80 h-[calc(100vh-4rem)]",
-            "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-            "border-l border-border/50 shadow-lg z-50"
-          )}
-        >
-          <div className="flex items-center justify-between p-4 border-b border-border/50">
-            <h2 className="text-lg font-semibold">Outils rapides</h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="rounded-full hover:bg-muted"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <ScrollArea className="h-full">
-            <div className="p-4 grid grid-cols-2 gap-4">
-              {tools.map((tool) => {
-                const Icon = tool.icon;
-                return (
-                  <Button
-                    key={tool.id}
-                    variant="outline"
-                    className="flex flex-col items-center gap-2 p-4 h-auto hover:bg-muted"
-                    onClick={() => handleToolClick(tool.id)}
-                  >
-                    <Icon className="h-6 w-6" />
-                    <span className="text-sm">{tool.label}</span>
-                  </Button>
-                );
-              })}
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ 
+        duration: 0.15,
+        ease: "easeInOut"
+      }}
+      className={`overflow-hidden border-t border-border/50 bg-background/95 backdrop-blur-sm will-change-[height,opacity] ${
+        isMobile ? 'fixed inset-x-0 top-[4rem] z-[100] max-h-[80vh] overflow-y-auto' : 'fixed inset-x-0 top-[4rem] z-[100]'
+      }`}
+    >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="absolute right-2 top-2"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          <div className="p-4">
+            <div className="space-y-4">
+              <div className="rounded-lg bg-muted/50 p-4">
+                <ToolSelector 
+                  selectedTool={selectedTool}
+                  onToolChange={setSelectedTool}
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
+                  buttonClassName="h-10 px-3 py-2 text-sm"
+                />
+              </div>
+              <Separator className="my-4" />
+              <FriendsContent />
             </div>
-          </ScrollArea>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 }

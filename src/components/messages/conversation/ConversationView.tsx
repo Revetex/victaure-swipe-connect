@@ -1,6 +1,8 @@
 import { ConversationHeader } from "./ConversationHeader";
-import { ConversationContainer } from "./ConversationContainer";
+import { MessagesList } from "./MessagesList";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { Message } from "@/types/messages";
 import { UserProfile } from "@/types/profile";
 
@@ -24,11 +26,20 @@ export function ConversationView({
   onInputChange,
   onSendMessage,
   isThinking,
-  isListening,
-  onVoiceInput,
   onBack,
   onDeleteConversation,
 }: ConversationViewProps) {
+  const {
+    isListening,
+    startListening,
+    stopListening,
+    hasRecognitionSupport
+  } = useSpeechRecognition({
+    onResult: (transcript) => {
+      onInputChange(inputMessage + transcript);
+    },
+  });
+
   return (
     <div className="flex flex-col h-full relative">
       <div className="sticky top-0 z-50 shrink-0">
@@ -39,17 +50,20 @@ export function ConversationView({
         />
       </div>
 
-      <ConversationContainer 
-        messages={messages}
-        isThinking={isThinking}
-      />
+      <ScrollArea className="flex-1 px-4">
+        <MessagesList 
+          messages={messages}
+          chatMessages={[]}
+          onSelectConversation={() => {}}
+        />
+      </ScrollArea>
 
-      <div className="sticky bottom-0 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
+      <div className="sticky bottom-16 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
           onSend={onSendMessage}
-          onVoiceInput={onVoiceInput}
+          onVoiceInput={hasRecognitionSupport ? (isListening ? stopListening : startListening) : undefined}
           isListening={isListening}
           isThinking={isThinking}
           placeholder="Écrivez votre message..."

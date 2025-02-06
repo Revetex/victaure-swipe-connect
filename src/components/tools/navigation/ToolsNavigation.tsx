@@ -1,4 +1,4 @@
-import { BottomNavigation } from "@/components/navigation/BottomNavigation";
+import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 
 export function ToolsNavigation() {
   return (
@@ -10,7 +10,7 @@ export function ToolsNavigation() {
       }}
     >
       <div className="container mx-auto px-4 h-full flex items-center">
-        <BottomNavigation currentPage={5} onPageChange={() => {}} />
+        <DashboardNavigation currentPage={5} onPageChange={() => {}} />
       </div>
     </nav>
   );

@@ -2,31 +2,24 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
 
-interface BottomNavigationProps {
+interface DashboardNavigationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   isEditing?: boolean;
 }
 
-export function BottomNavigation({ 
-  currentPage, 
-  onPageChange,
-  isEditing 
-}: BottomNavigationProps) {
+export function DashboardNavigation({ currentPage, onPageChange, isEditing }: DashboardNavigationProps) {
   if (isEditing) return null;
 
   return (
-    <motion.nav 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border/50 z-50 lg:border-none lg:bg-transparent transition-all duration-300"
+    <nav 
+      className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
       style={{ 
         height: '4rem',
         paddingBottom: 'env(safe-area-inset-bottom)'
       }}
     >
-      <div className="container mx-auto px-4 h-full flex items-center max-w-7xl">
+      <div className="container mx-auto px-4 h-full flex items-center">
         <div className="flex items-center justify-around w-full max-w-2xl mx-auto">
           {navigationItems.map(({ id, icon: Icon, name }) => (
             <motion.button
@@ -37,12 +30,14 @@ export function BottomNavigation({
               transition={{ 
                 delay: id * 0.1,
                 type: "spring",
-                stiffness: 100,
-                damping: 15
+                stiffness: 500,
+                damping: 30
               }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
               className={cn(
                 "p-3 rounded-xl transition-all duration-300",
-                "hover:bg-primary/10 active:scale-95",
+                "hover:bg-primary/10",
                 "focus:outline-none focus:ring-2 focus:ring-primary/20",
                 "touch-manipulation min-h-[44px] min-w-[44px]",
                 currentPage === id
@@ -53,11 +48,10 @@ export function BottomNavigation({
               aria-label={name}
             >
               <Icon className="h-5 w-5" />
-              <span className="sr-only">{name}</span>
             </motion.button>
           ))}
         </div>
       </div>
-    </motion.nav>
+    </nav>
   );
 }

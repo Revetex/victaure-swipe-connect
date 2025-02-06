@@ -1,10 +1,9 @@
 import { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { BottomNavigation } from "@/components/navigation/BottomNavigation";
+import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence } from "framer-motion";
-import { useLocation } from "react-router-dom";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -28,8 +27,6 @@ export function MainLayout({
   onToolReturn = () => {}
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
-  const location = useLocation();
-  const isFriendsPage = location.pathname.includes('/friends');
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -54,19 +51,21 @@ export function MainLayout({
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4 relative z-0 pb-20">
+      <main className="flex-1 container mx-auto px-4 relative z-0">
         <div className="max-w-7xl mx-auto py-4">
           {children}
         </div>
       </main>
 
-      {!isFriendsPage && (
-        <BottomNavigation 
-          currentPage={currentPage}
-          onPageChange={onPageChange}
-          isEditing={isEditing}
-        />
-      )}
+      <nav className="sticky bottom-0 left-0 right-0 z-[98] bg-background/95 backdrop-blur border-t">
+        <div className="container mx-auto py-2">
+          <DashboardNavigation 
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            isEditing={isEditing}
+          />
+        </div>
+      </nav>
     </div>
   );
 }
