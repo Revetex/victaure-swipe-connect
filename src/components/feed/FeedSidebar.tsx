@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, Settings2, X, Users } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, X, Users } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { AppearanceSection } from "@/components/settings/AppearanceSection";
