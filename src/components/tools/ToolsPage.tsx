@@ -7,7 +7,6 @@ import { CalculatorPage } from "./CalculatorPage";
 import { TranslatorPage } from "./TranslatorPage";
 import { ChessPage } from "./ChessPage";
 import { ToolsNavigation } from "./navigation/ToolsNavigation";
-import { useToast } from "@/hooks/use-toast";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -91,6 +90,9 @@ export function ToolsPage() {
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
           <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
+          <Button variant="ghost" size="icon" onClick={handleClose}>
+            <X className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     )
@@ -117,25 +119,30 @@ export function ToolsPage() {
         </Button>
       </div>
 
-      <motion.div 
-        className="flex-1 overflow-hidden"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-      >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTool}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-            className="h-full"
-          >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTool}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.2 }}
+          className="flex-1 relative"
+        >
+          <div className="absolute top-2 right-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleClose}
+              className="rounded-full hover:bg-muted"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="h-full pt-10">
             <ActiveComponent />
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
