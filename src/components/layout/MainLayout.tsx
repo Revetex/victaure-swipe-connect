@@ -62,9 +62,10 @@ export function MainLayout({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="min-h-screen bg-background flex flex-col"
+      className="min-h-screen bg-background flex flex-col relative"
+      style={{ zIndex: 1 }}
     >
-      <header className="sticky top-0 z-[99] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-[2] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -87,7 +88,7 @@ export function MainLayout({
 
       <motion.main 
         variants={contentVariants}
-        className="flex-1 container mx-auto px-4 relative z-0 pb-20"
+        className="flex-1 container mx-auto px-4 relative z-[1]"
       >
         <div className="max-w-7xl mx-auto py-4">
           {children}
