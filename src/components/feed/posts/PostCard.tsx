@@ -59,22 +59,6 @@ export function PostCard({
     setIsEditing(false);
   };
 
-  const postWithDefaultAvatar = {
-    ...post,
-    profiles: {
-      ...post.profiles,
-      avatar_url: post.profiles.avatar_url || '/user-icon.svg'
-    }
-  };
-
-  const commentsWithDefaultAvatar = post.comments?.map(comment => ({
-    ...comment,
-    profiles: {
-      ...comment.profiles,
-      avatar_url: comment.profiles.avatar_url || '/user-icon.svg'
-    }
-  })) || [];
-
   const isOwnPost = currentUserId === post.user_id;
 
   return (
@@ -86,19 +70,19 @@ export function PostCard({
     >
       <Card className={cn(
         "border shadow-sm transition-all duration-200",
-        "p-4 sm:p-5 hover:shadow-md hover:border-primary/20",
+        "p-3 sm:p-4 hover:shadow-md hover:border-primary/20",
         isMobile ? "active:scale-[0.995] touch-none" : "hover:scale-[1.002]",
         "touch-pan-y"
       )}>
-        <div className="flex justify-between items-start gap-4">
+        <div className="flex justify-between items-start gap-3">
           <PostHeader 
-            profile={postWithDefaultAvatar.profiles}
+            profile={post.profiles}
             created_at={post.created_at}
             privacy_level={post.privacy_level}
           />
           
           {isOwnPost && (
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               {isEditing ? (
                 <>
                   <Button
@@ -142,17 +126,17 @@ export function PostCard({
           )}
         </div>
 
-        <div className="space-y-4 mt-4">
+        <div className="space-y-3 mt-3">
           {isEditing ? (
             <Textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="min-h-[100px] resize-none"
+              className="min-h-[80px] resize-none"
               placeholder="Que voulez-vous partager ?"
             />
           ) : (
             post.content && (
-              <div className="text-sm text-foreground/80 whitespace-pre-wrap">
+              <div className="text-sm text-foreground/90 whitespace-pre-wrap">
                 {post.content}
               </div>
             )
@@ -183,7 +167,7 @@ export function PostCard({
               postAuthorId={post.user_id}
               currentUserId={currentUserId}
               userEmail={userEmail}
-              comments={commentsWithDefaultAvatar}
+              comments={post.comments}
               onCommentAdded={onCommentAdded}
             />
           )}
