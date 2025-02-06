@@ -8,6 +8,7 @@ import { useUserChat } from "@/hooks/useUserChat";
 import { Receiver } from "@/types/messages";
 import { toast } from "sonner";
 import { ChatHeader } from "../chat/ChatHeader";
+import { supabase } from "@/integrations/supabase/client";
 
 export function MessagesWrapper() {
   const { showConversation, setShowConversation, receiver, setReceiver } = useReceiver();
@@ -73,6 +74,42 @@ export function MessagesWrapper() {
     }
   };
 
+  const handleDeleteConversation = async () => {
+    if (!receiver) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      if (receiver.id === 'assistant') {
+        // Delete AI chat messages
+        const { error: aiError } = await supabase
+          .from('ai_chat_messages')
+          .delete()
+          .eq('user_id', user.id);
+
+        if (aiError) throw aiError;
+        clearAIChat();
+      } else {
+        // Delete user messages
+        const { error: messagesError } = await supabase
+          .from('messages')
+          .delete()
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .or(`sender_id.eq.${receiver.id},receiver_id.eq.${receiver.id}`);
+
+        if (messagesError) throw messagesError;
+        clearUserChat(receiver.id);
+      }
+
+      toast.success("Conversation supprimée avec succès");
+      handleBack();
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast.error("Erreur lors de la suppression de la conversation");
+    }
+  };
+
   if (showConversation && receiver) {
     const isAIChat = receiver.id === 'assistant';
     
@@ -96,7 +133,7 @@ export function MessagesWrapper() {
           setInputMessage={isAIChat ? setAIInputMessage : setUserInputMessage}
           onBack={handleBack}
           receiver={receiver}
-          onClearChat={isAIChat ? clearAIChat : () => clearUserChat(receiver.id)}
+          onClearChat={handleDeleteConversation}
         />
       </div>
     );
