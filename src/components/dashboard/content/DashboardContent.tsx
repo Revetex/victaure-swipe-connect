@@ -1,10 +1,10 @@
+
 import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
-import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
 import { Feed } from "@/components/Feed";
+import { NotesMap } from "@/components/notes/NotesMap";
 import { useEffect } from "react";
 
 interface DashboardContentProps {
@@ -44,8 +44,6 @@ export function DashboardContent({
             <NotesMap />
           </div>
         );
-      case 6:
-        return <Settings />;
       default:
         return null;
     }
@@ -63,3 +61,4 @@ export function DashboardContent({
     </motion.div>
   );
 }
+

@@ -10,6 +10,7 @@ import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { SettingsDropdown } from "./settings/SettingsDropdown";
+import { Button } from "@/components/ui/button";
 
 export function Navigation() {
   const isMobile = useIsMobile();
