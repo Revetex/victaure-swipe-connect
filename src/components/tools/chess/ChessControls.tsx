@@ -1,12 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Crown, RotateCcw } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RefreshCw, Crown } from "lucide-react";
 
 interface ChessControlsProps {
   isThinking: boolean;
@@ -26,15 +20,8 @@ export function ChessControls({
   onReset,
 }: ChessControlsProps) {
   return (
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Crown className={`h-5 w-5 ${isWhiteTurn ? 'text-primary' : 'text-muted-foreground'}`} />
-          <span className="font-medium">
-            {isThinking ? "AI is thinking..." : isWhiteTurn ? "Your turn" : "AI's turn"}
-          </span>
-        </div>
-        
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
+      <div className="flex items-center gap-4 w-full sm:w-auto">
         <Select value={difficulty} onValueChange={onDifficultyChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select difficulty" />
@@ -45,11 +32,29 @@ export function ChessControls({
             <SelectItem value="hard">Hard</SelectItem>
           </SelectContent>
         </Select>
+        
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={onReset}
+          className="shrink-0"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
       </div>
 
-      <Button variant="outline" size="icon" onClick={onReset}>
-        <RotateCcw className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-2 text-sm sm:text-base font-medium">
+        {gameOver ? (
+          <div className="flex items-center gap-2 text-primary">
+            <Crown className="h-5 w-5" />
+            {isWhiteTurn ? "Black wins!" : "White wins!"}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            {isThinking ? "AI is thinking..." : `${isWhiteTurn ? "White" : "Black"}'s turn`}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

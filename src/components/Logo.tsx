@@ -18,8 +18,11 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
     <div className={cn("flex items-center justify-center", className)}>
       <div 
         className={cn(
-          "font-playfair font-bold tracking-wider bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent",
-          "transition-all duration-300 hover:scale-105",
+          "font-playfair font-bold tracking-wider",
+          "bg-gradient-to-r from-primary via-purple-600 to-violet-600 bg-clip-text text-transparent",
+          "transition-all duration-500 hover:scale-105",
+          "hover:from-violet-600 hover:via-purple-600 hover:to-primary",
+          "drop-shadow-sm",
           textSizes[size]
         )}
       >
