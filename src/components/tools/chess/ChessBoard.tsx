@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ChessPiece } from "./types";
+import { cn } from "@/lib/utils";
 
 interface ChessBoardProps {
   board: (ChessPiece | null)[][];
@@ -39,9 +40,13 @@ export function ChessBoard({
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-[500px] mx-auto mb-4"
+      className="w-full max-w-[min(500px,90vw)] mx-auto mb-4"
     >
-      <div className="grid grid-cols-8 gap-0.5 border border-border rounded-lg overflow-hidden shadow-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className={cn(
+        "grid grid-cols-8 gap-0.5 border border-border rounded-lg overflow-hidden",
+        "shadow-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "touch-none" // Prevent unwanted touch events
+      )}>
         {board.map((row, rowIndex) => (
           row.map((piece, colIndex) => {
             const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
@@ -55,15 +60,16 @@ export function ChessBoard({
                 whileTap={{ scale: 0.95 }}
                 onClick={() => onSquareClick(rowIndex, colIndex)}
                 disabled={isThinking || (gameOver && !isWhiteTurn)}
-                className={`
-                  aspect-square flex items-center justify-center text-2xl sm:text-3xl relative
-                  ${isLight ? 'bg-light-purple/20' : 'bg-dark-purple/20'}
-                  ${isSelected ? 'ring-2 ring-primary shadow-lg' : ''}
-                  ${isPossibleMove ? 'after:absolute after:inset-2 after:rounded-full after:bg-primary/20 after:animate-pulse' : ''}
-                  hover:bg-primary/20 transition-colors
-                  disabled:opacity-50 disabled:cursor-not-allowed
-                  touch-manipulation
-                `}
+                className={cn(
+                  "aspect-square flex items-center justify-center text-2xl sm:text-3xl relative",
+                  "transition-colors duration-200",
+                  "active:scale-95 touch-manipulation",
+                  isLight ? 'bg-light-purple/20' : 'bg-dark-purple/20',
+                  isSelected ? 'ring-2 ring-primary shadow-lg' : '',
+                  isPossibleMove ? 'after:absolute after:inset-2 after:rounded-full after:bg-primary/20 after:animate-pulse' : '',
+                  'hover:bg-primary/20',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                )}
               >
                 <motion.span
                   initial={false}
