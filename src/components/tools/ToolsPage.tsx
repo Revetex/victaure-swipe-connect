@@ -11,13 +11,12 @@ import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation"
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
-import { NotesToolSelector } from "@/components/notes/NotesToolSelector";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
-  const [showFriendsList, setShowFriendsList] = useState(false);
+  const [showFriendsList, setShowFriendsList] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -86,7 +85,6 @@ export function ToolsPage() {
       setIsLoading(true);
       setSelectedTool(value);
 
-      // Update user's last used tool in profile
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { error: updateError } = await supabase
@@ -118,7 +116,6 @@ export function ToolsPage() {
         title="Outils"
         showFriendsList={showFriendsList}
         onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
-        isEditing={false}
       />
 
       <AnimatePresence mode="wait">
@@ -131,11 +128,6 @@ export function ToolsPage() {
       </AnimatePresence>
 
       <div className="flex-1 container mx-auto px-4 py-4">
-        <NotesToolSelector 
-          selectedTool={selectedTool}
-          onToolSelect={handleToolChange}
-        />
-
         <Tabs 
           defaultValue="notes" 
           value={selectedTool} 
@@ -157,20 +149,21 @@ export function ToolsPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
+                className="h-[calc(100vh-16rem)] overflow-y-auto"
               >
-                <TabsContent value="notes" className="m-0">
+                <TabsContent value="notes" className="m-0 h-full">
                   <NotesSection />
                 </TabsContent>
-                <TabsContent value="tasks" className="m-0">
+                <TabsContent value="tasks" className="m-0 h-full">
                   <TasksSection />
                 </TabsContent>
-                <TabsContent value="calculator" className="m-0">
+                <TabsContent value="calculator" className="m-0 h-full">
                   <CalculatorSection />
                 </TabsContent>
-                <TabsContent value="translator" className="m-0">
+                <TabsContent value="translator" className="m-0 h-full">
                   <TranslatorSection />
                 </TabsContent>
-                <TabsContent value="chess" className="m-0">
+                <TabsContent value="chess" className="m-0 h-full">
                   <ChessSection />
                 </TabsContent>
               </motion.div>
@@ -184,9 +177,7 @@ export function ToolsPage() {
           <DashboardNavigation 
             currentPage={5}
             onPageChange={(page) => {
-              if (page === 5) {
-                handleToolChange("notes");
-              } else {
+              if (page !== 5) {
                 navigate('/dashboard');
               }
             }}
