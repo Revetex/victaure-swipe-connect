@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { NotesPage } from "./NotesPage";
@@ -8,6 +9,9 @@ import { ChessPage } from "./ChessPage";
 import { ToolsNavigation } from "./navigation/ToolsNavigation";
 import { useToast } from "@/hooks/use-toast";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess";
 
@@ -20,6 +24,7 @@ export function ToolsPage() {
     "translator",
     "chess",
   ]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadUserPreferences = async () => {
@@ -70,6 +75,10 @@ export function ToolsPage() {
     updateUserPreferences(tool);
   };
 
+  const handleClose = () => {
+    navigate('/dashboard');
+  };
+
   const renderActiveTool = () => {
     switch (activeTool) {
       case "notes":
@@ -89,11 +98,22 @@ export function ToolsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <ToolsNavigation
-        activeTool={activeTool}
-        onToolChange={handleToolChange}
-        toolsOrder={toolsOrder}
-      />
+      <div className="flex items-center justify-between px-4 py-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <ToolsNavigation
+          activeTool={activeTool}
+          onToolChange={handleToolChange}
+          toolsOrder={toolsOrder}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleClose}
+          className="ml-2"
+          title="Fermer"
+        >
+          <X className="h-5 w-5" />
+        </Button>
+      </div>
       <div className="flex-1 overflow-hidden">
         {renderActiveTool()}
       </div>
