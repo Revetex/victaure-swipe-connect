@@ -10,6 +10,7 @@ import { LegalNoticePage } from "@/components/legal/LegalNoticePage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import PublicProfile from "@/components/PublicProfile";
 import { useAuth } from "@/hooks/useAuth";
+import { ToolsPage } from "@/components/tools/ToolsPage";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -46,6 +47,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tools"
+        element={
+          <ProtectedRoute>
+            <ToolsPage />
           </ProtectedRoute>
         }
       />

@@ -10,7 +10,7 @@ import { TasksSection } from "./sections/TasksSection";
 import { CalculatorSection } from "./sections/CalculatorSection";
 import { TranslatorSection } from "./sections/TranslatorSection";
 import { ConverterSection } from "./sections/ConverterSection";
-import { ToolsNavigation } from "./navigation/ToolsNavigation";
+import { ChessSection } from "./sections/ChessSection";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
@@ -21,17 +21,19 @@ export function ToolsPage() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b flex items-center justify-between bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={handleReturn}
-          className="mr-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Retour
-        </Button>
+    <div className="h-full flex flex-col bg-background">
+      <div className="p-4 border-b flex items-center justify-between sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handleReturn}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Retour
+          </Button>
+          <h1 className="text-xl font-semibold">Outils</h1>
+        </div>
       </div>
 
       <div className="flex-1 overflow-auto p-4">
@@ -41,12 +43,12 @@ export function ToolsPage() {
           onValueChange={setSelectedTool} 
           className="w-full"
         >
-          <TabsList className="w-full justify-start mb-4 overflow-x-auto scrollbar-hide">
+          <TabsList className="w-full justify-start mb-4 overflow-x-auto flex p-1 gap-2">
             <TabsTrigger 
               value="notes"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200"
+                "transition-all duration-200 px-4 py-2 rounded-md"
               )}
             >
               Notes
@@ -55,7 +57,7 @@ export function ToolsPage() {
               value="tasks"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200"
+                "transition-all duration-200 px-4 py-2 rounded-md"
               )}
             >
               Tâches
@@ -64,7 +66,7 @@ export function ToolsPage() {
               value="calculator"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200"
+                "transition-all duration-200 px-4 py-2 rounded-md"
               )}
             >
               Calculatrice
@@ -73,7 +75,7 @@ export function ToolsPage() {
               value="translator"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200"
+                "transition-all duration-200 px-4 py-2 rounded-md"
               )}
             >
               Traducteur
@@ -82,10 +84,19 @@ export function ToolsPage() {
               value="converter"
               className={cn(
                 "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
-                "transition-all duration-200"
+                "transition-all duration-200 px-4 py-2 rounded-md"
               )}
             >
               Convertisseur
+            </TabsTrigger>
+            <TabsTrigger 
+              value="chess"
+              className={cn(
+                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                "transition-all duration-200 px-4 py-2 rounded-md"
+              )}
+            >
+              Échecs
             </TabsTrigger>
           </TabsList>
 
@@ -93,7 +104,7 @@ export function ToolsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="h-[calc(100vh-16rem)]"
+            className="h-[calc(100vh-12rem)]"
           >
             <TabsContent value="notes" className="h-full m-0">
               <NotesSection />
@@ -110,11 +121,12 @@ export function ToolsPage() {
             <TabsContent value="converter" className="h-full m-0">
               <ConverterSection />
             </TabsContent>
+            <TabsContent value="chess" className="h-full m-0">
+              <ChessSection />
+            </TabsContent>
           </motion.div>
         </Tabs>
       </div>
-      
-      <ToolsNavigation />
     </div>
   );
 }
