@@ -19,13 +19,19 @@ export function VCardActions({
   onSave,
   onDownloadBusinessCard,
 }: VCardActionsProps) {
+  const handleEditToggle = () => {
+    if (typeof setIsEditing === 'function') {
+      setIsEditing(!isEditing);
+    }
+  };
+
   if (isEditing) {
     return (
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsEditing(false)}
+          onClick={() => handleEditToggle()}
           className={cn(
             "shrink-0 hover:bg-purple-100 dark:hover:bg-purple-900/20",
             "text-purple-600 dark:text-purple-400"
@@ -55,7 +61,7 @@ export function VCardActions({
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setIsEditing(true)}
+        onClick={() => handleEditToggle()}
         className="shrink-0"
         title="Éditer"
       >
