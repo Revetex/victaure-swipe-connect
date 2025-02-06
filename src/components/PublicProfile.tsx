@@ -93,7 +93,8 @@ export default function PublicProfile() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 relative">
+    <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+      <h1 className="text-2xl md:text-3xl font-bold text-center mb-8">Profil Public</h1>
       <div className="absolute top-4 right-4 flex gap-2 z-10">
         <Button
           variant="ghost"
@@ -112,7 +113,9 @@ export default function PublicProfile() {
           <Download className="h-4 w-4" />
         </Button>
       </div>
-      <VCard profile={profile} isPublic />
+      <div className="w-full max-w-3xl mx-auto">
+        <VCard profile={profile} isPublic />
+      </div>
     </div>
   );
 }
