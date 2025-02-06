@@ -2,29 +2,32 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface LogoProps {
+  size?: "sm" | "md" | "lg";
   className?: string;
-  size?: "sm" | "md" | "lg" | "xl";
-  showText?: boolean;
 }
 
-export function Logo({ className, size = "md", showText = true }: LogoProps) {
-  const textSizes = {
-    sm: "text-xl",
-    md: "text-2xl",
-    lg: "text-3xl",
-    xl: "text-5xl",
-  };
+const textSizes = {
+  sm: "text-xl",
+  md: "text-2xl",
+  lg: "text-3xl"
+};
 
+export function Logo({ size = "md", className }: LogoProps) {
   return (
-    <motion.div 
-      className={cn("flex items-center justify-center", className)}
+    <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
+        mass: 1
+      }}
+      className={cn("select-none", className)}
     >
       <motion.div 
         className={cn(
-          "font-sans font-bold tracking-wider",
+          "font-sans font-bold tracking-wider uppercase",
           "relative",
           "transition-all duration-500",
           textSizes[size]
@@ -32,14 +35,9 @@ export function Logo({ className, size = "md", showText = true }: LogoProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <motion.span 
-          className="relative bg-gradient-to-br from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
+        <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
           VICTAURE
-        </motion.span>
+        </span>
       </motion.div>
     </motion.div>
   );
