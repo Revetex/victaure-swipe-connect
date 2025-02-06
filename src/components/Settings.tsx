@@ -8,6 +8,7 @@ import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { ScrollArea } from "./ui/scroll-area";
+import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,6 +27,7 @@ const itemVariants = {
 
 export function Settings() {
   const [mounted, setMounted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(5); // 5 is the settings page in navigation
 
   useEffect(() => {
     setMounted(true);
@@ -36,59 +38,68 @@ export function Settings() {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)]">
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-2xl mx-auto space-y-8 p-6"
-      >
-        <motion.div variants={itemVariants} className="space-y-2">
-          <h2 className="text-2xl font-semibold tracking-tight">Paramètres</h2>
-          <p className="text-muted-foreground">
-            Gérez vos préférences et paramètres de compte
-          </p>
-        </motion.div>
+    <div className="relative min-h-screen pb-16">
+      <ScrollArea className="h-[calc(100vh-8rem)]">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="max-w-2xl mx-auto space-y-8 p-6"
+        >
+          <motion.div variants={itemVariants} className="space-y-2">
+            <h2 className="text-2xl font-semibold tracking-tight">Paramètres</h2>
+            <p className="text-muted-foreground">
+              Gérez vos préférences et paramètres de compte
+            </p>
+          </motion.div>
 
-        <motion.div variants={itemVariants}>
-          <AppearanceSection />
-        </motion.div>
+          <motion.div variants={itemVariants}>
+            <AppearanceSection />
+          </motion.div>
 
-        <Separator />
+          <Separator />
 
-        <motion.div variants={itemVariants}>
-          <PrivacySection />
-        </motion.div>
+          <motion.div variants={itemVariants}>
+            <PrivacySection />
+          </motion.div>
 
-        <Separator />
+          <Separator />
 
-        <motion.div variants={itemVariants}>
-          <NotificationsSection />
-        </motion.div>
+          <motion.div variants={itemVariants}>
+            <NotificationsSection />
+          </motion.div>
 
-        <Separator />
+          <Separator />
 
-        <motion.div variants={itemVariants}>
-          <SecuritySection />
-        </motion.div>
+          <motion.div variants={itemVariants}>
+            <SecuritySection />
+          </motion.div>
 
-        <Separator />
+          <Separator />
 
-        <motion.div variants={itemVariants}>
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Utilisateurs bloqués</h3>
-            <div className="p-4 rounded-lg bg-muted/30">
-              <BlockedUsersSection />
+          <motion.div variants={itemVariants}>
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Utilisateurs bloqués</h3>
+              <div className="p-4 rounded-lg bg-muted/30">
+                <BlockedUsersSection />
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        <Separator />
+          <Separator />
 
-        <motion.div variants={itemVariants}>
-          <LogoutSection />
+          <motion.div variants={itemVariants}>
+            <LogoutSection />
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </ScrollArea>
+      </ScrollArea>
+
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <DashboardNavigation 
+          currentPage={currentPage} 
+          onPageChange={setCurrentPage}
+        />
+      </div>
+    </div>
   );
 }
