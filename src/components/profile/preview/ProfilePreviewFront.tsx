@@ -44,11 +44,24 @@ export function ProfilePreviewFront({
     navigate(`/profile/${profile.id}`);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
         className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none" />
@@ -83,7 +96,7 @@ export function ProfilePreviewFront({
                 className="bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-2"
                 onClick={handleViewFullProfile}
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="h-4 w-4" />
                 Voir profil complet
               </Button>
               <Button
@@ -91,7 +104,7 @@ export function ProfilePreviewFront({
                 className="flex items-center gap-2"
                 onClick={handleRemoveFriend}
               >
-                <UserMinus className="w-4 h-4" />
+                <UserMinus className="h-4 w-4" />
                 Supprimer
               </Button>
             </>
@@ -101,7 +114,7 @@ export function ProfilePreviewFront({
               className="flex items-center gap-2 col-span-2"
               onClick={handleAcceptFriend}
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus className="h-4 w-4" />
               Accepter la demande
             </Button>
           ) : !isFriendRequestSent ? (
@@ -110,7 +123,7 @@ export function ProfilePreviewFront({
               className="flex items-center gap-2 col-span-2"
               onClick={handleAddFriend}
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus className="h-4 w-4" />
               Se connecter
             </Button>
           ) : (
@@ -130,7 +143,7 @@ export function ProfilePreviewFront({
             onClick={handleToggleBlock}
             className="flex items-center gap-2"
           >
-            <Ban className="w-4 w-4" />
+            <Ban className="h-4 w-4" />
             {isBlocked ? "Débloquer" : "Bloquer"}
           </Button>
 
@@ -140,7 +153,7 @@ export function ProfilePreviewFront({
               className="flex items-center gap-2"
               onClick={onRequestChat}
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="h-4 w-4" />
               Message
             </Button>
           )}
@@ -151,7 +164,7 @@ export function ProfilePreviewFront({
               className="flex items-center gap-2"
               onClick={handleRequestCV}
             >
-              <Download className="w-4 h-4" />
+              <Download className="h-4 w-4" />
               Demander CV
             </Button>
           )}
