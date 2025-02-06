@@ -10,15 +10,26 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ToolSelector } from "./sections/ToolSelector";
 
 export function ToolsPage() {
   const [selectedTool, setSelectedTool] = useState("notes");
-  const [showFriendsList, setShowFriendsList] = useState(true);
+  const [showFriendsList, setShowFriendsList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const state = location.state as { selectedTool?: string } | null;
+    if (state?.selectedTool) {
+      setSelectedTool(state.selectedTool);
+      // Clear the state to prevent persisting the selection
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state, navigate]);
 
   // Load user's last used tool from profile
   useEffect(() => {
@@ -29,7 +40,7 @@ export function ToolsPage() {
 
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('last_used_tool, tools_order')
+          .select('last_used_tool')
           .eq('id', user.id)
           .single();
 
@@ -44,40 +55,6 @@ export function ToolsPage() {
     };
 
     loadLastUsedTool();
-  }, []);
-
-  // Set up real-time subscription for tool updates
-  useEffect(() => {
-    let mounted = true;
-
-    const setupSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const channel = supabase.channel('tools-updates')
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'profiles',
-            filter: `id=eq.${user.id}`
-          },
-          (payload) => {
-            if (mounted && payload.new.last_used_tool) {
-              setSelectedTool(payload.new.last_used_tool);
-            }
-          }
-        )
-        .subscribe();
-
-      return () => {
-        mounted = false;
-        supabase.removeChannel(channel);
-      };
-    };
-
-    setupSubscription();
   }, []);
 
   const handleToolChange = async (value: string) => {
@@ -100,8 +77,6 @@ export function ToolsPage() {
           toast.error("Erreur lors de la mise à jour des préférences");
         }
       }
-
-      await new Promise(resolve => setTimeout(resolve, 300));
     } catch (error) {
       console.error("Error changing tool:", error);
       toast.error("Erreur lors du changement d'outil");
@@ -135,6 +110,8 @@ export function ToolsPage() {
           onValueChange={handleToolChange}
           className="w-full space-y-6"
         >
+          <ToolSelector selectedTool={selectedTool} onToolChange={handleToolChange} />
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
