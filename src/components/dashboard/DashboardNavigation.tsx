@@ -1,7 +1,5 @@
-import { UserCircle, MessageSquare, BriefcaseIcon, Settings, Newspaper } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
 import { navigationItems } from "@/config/navigation";
 
 interface DashboardNavigationProps {
@@ -11,12 +9,6 @@ interface DashboardNavigationProps {
 }
 
 export function DashboardNavigation({ currentPage, onPageChange, isEditing }: DashboardNavigationProps) {
-  const navigate = useNavigate();
-  
-  const handleNavigation = (id: number) => {
-    onPageChange(id);
-  };
-
   if (isEditing) return null;
 
   return (
@@ -32,7 +24,7 @@ export function DashboardNavigation({ currentPage, onPageChange, isEditing }: Da
           {navigationItems.map(({ id, icon: Icon, name }) => (
             <motion.button
               key={id}
-              onClick={() => handleNavigation(id)}
+              onClick={() => onPageChange(id)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 
