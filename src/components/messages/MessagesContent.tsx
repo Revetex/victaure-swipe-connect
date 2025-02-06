@@ -36,7 +36,6 @@ export function MessagesContent({
   useEffect(() => {
     if (!receiver) return;
 
-    // Subscribe to real-time updates for new messages
     const channel = supabase
       .channel('messages_channel')
       .on(
@@ -112,7 +111,7 @@ export function MessagesContent({
   } : null;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-background">
       <ConversationView
         messages={messages}
         profile={profileFromReceiver}

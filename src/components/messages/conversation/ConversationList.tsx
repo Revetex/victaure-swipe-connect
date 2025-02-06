@@ -25,25 +25,26 @@ export function ConversationList({
   return (
     <Card className="h-full flex flex-col">
       <div className="p-4 border-b space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Messages</h2>
-          <div className="flex gap-2">
-            <FriendSelector onSelectFriend={(friendId) => onSelectConversation("user", { id: friendId } as Receiver)} />
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher une conversation..."
+              className="pl-9 w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
+            />
           </div>
-        </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher une conversation..."
-            className="pl-9"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
+          <FriendSelector 
+            onSelectFriend={(friendId) => 
+              onSelectConversation("user", { id: friendId } as Receiver)
+            } 
           />
         </div>
       </div>
 
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-4">
           <AssistantMessage
             chatMessages={chatMessages}
             onSelectConversation={() => onSelectConversation("assistant")}

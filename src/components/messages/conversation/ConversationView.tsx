@@ -43,7 +43,7 @@ export function ConversationView({
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full">
       <div className="sticky top-0 z-50 shrink-0">
         <ConversationHeader
           profile={profile}
@@ -59,7 +59,7 @@ export function ConversationView({
         />
       </div>
 
-      <div className="sticky bottom-0 shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="sticky bottom-0 shrink-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
@@ -68,7 +68,7 @@ export function ConversationView({
           isListening={isListening}
           isThinking={isThinking}
           placeholder="Écrivez votre message..."
-          className="w-full"
+          className="w-full max-w-3xl mx-auto"
         />
       </div>
 
