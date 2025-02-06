@@ -1040,6 +1040,7 @@ export type Database = {
           custom_background: string | null
           custom_font: string | null
           custom_text_color: string | null
+          display_name: string | null
           email: string
           full_name: string | null
           id: string
@@ -1077,6 +1078,7 @@ export type Database = {
           custom_background?: string | null
           custom_font?: string | null
           custom_text_color?: string | null
+          display_name?: string | null
           email: string
           full_name?: string | null
           id: string
@@ -1114,6 +1116,7 @@ export type Database = {
           custom_background?: string | null
           custom_font?: string | null
           custom_text_color?: string | null
+          display_name?: string | null
           email?: string
           full_name?: string | null
           id?: string

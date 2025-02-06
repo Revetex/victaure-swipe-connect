@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ProfilePreview } from "@/components/ProfilePreview";
@@ -12,20 +13,21 @@ export function ProfileNameButton({ profile, className }: ProfileNameButtonProps
   const [showPreview, setShowPreview] = useState(false);
 
   return (
-    <>
-      <Button
-        variant="link"
-        className={className}
+    <div className="inline-block">
+      <span 
         onClick={() => setShowPreview(true)}
+        className={`cursor-pointer hover:underline ${className}`}
       >
-        {profile.full_name || "Utilisateur"}
-      </Button>
+        {profile.display_name || profile.full_name || "Utilisateur"}
+      </span>
 
-      <ProfilePreview
-        profile={profile as UserProfile}
-        isOpen={showPreview}
-        onClose={() => setShowPreview(false)}
-      />
-    </>
+      {showPreview && (
+        <ProfilePreview
+          profile={profile as UserProfile}
+          isOpen={showPreview}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
+    </div>
   );
 }
