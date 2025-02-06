@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useVCardStyle } from "./vcard/VCardStyleContext";
+import { memo } from "react";
 
 interface VCardBadgeProps {
   text: string;
@@ -9,7 +10,7 @@ interface VCardBadgeProps {
   variant?: "default" | "outline" | "secondary";
 }
 
-export function VCardBadge({ 
+export const VCardBadge = memo(function VCardBadge({ 
   text, 
   isEditing, 
   onRemove,
@@ -41,19 +42,20 @@ export function VCardBadge({
         color: selectedStyle.colors.text.primary
       }}
     >
-      {text}
+      <span className="truncate">{text}</span>
       {isEditing && onRemove && (
         <button
           onClick={onRemove}
-          className={`p-0.5 rounded-full transition-colors hover:bg-opacity-20`}
+          className="p-0.5 rounded-full transition-colors hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-offset-2"
           style={{
             backgroundColor: 'transparent',
             color: selectedStyle.colors.text.primary
           }}
+          aria-label="Supprimer"
         >
           <X className="h-3 w-3" />
         </button>
       )}
     </motion.div>
   );
-}
+});

@@ -1,106 +1,102 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Separator } from "./ui/separator";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppearanceSection } from "./settings/AppearanceSection";
-import { PrivacySection } from "./settings/PrivacySection";
 import { NotificationsSection } from "./settings/NotificationsSection";
+import { PrivacySection } from "./settings/PrivacySection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
 import { ScrollArea } from "./ui/scroll-area";
-import { FriendsContent } from "./feed/friends/FriendsContent";
+import { useNavigate } from "react-router-dom";
+import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
+import { AppHeader } from "./navigation/AppHeader";
+import { SettingsLayout } from "./settings/SettingsLayout";
+import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
+const sectionVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
     transition: {
-      staggerChildren: 0.1
+      duration: 0.3,
+      type: "spring",
+      stiffness: 100,
+      damping: 15
     }
+  },
+  exit: { 
+    opacity: 0, 
+    y: -20,
+    transition: { duration: 0.2 }
   }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
 };
 
 export function Settings() {
   const [mounted, setMounted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(5);
+  const [showFriendsList, setShowFriendsList] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleBackToHome = () => {
+    navigate('/dashboard');
+  };
 
   if (!mounted) {
     return null;
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-4rem)]">
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="max-w-2xl mx-auto space-y-8 p-6"
-      >
-        <motion.div variants={itemVariants} className="space-y-2">
-          <h2 className="text-2xl font-semibold tracking-tight">Paramètres</h2>
-          <p className="text-muted-foreground">
-            Gérez vos préférences et paramètres de compte
-          </p>
-        </motion.div>
+    <SettingsLayout>
+      <AppHeader 
+        title="Paramètres"
+        showFriendsList={showFriendsList}
+        onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+        isEditing={false}
+        onToolReturn={handleBackToHome}
+      />
 
-        <motion.div variants={itemVariants}>
+      <AnimatePresence mode="wait">
+        {showFriendsList && (
+          <DashboardFriendsList 
+            show={showFriendsList} 
+            onClose={() => setShowFriendsList(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <ScrollArea className="h-[calc(100vh-8rem)]">
+        <motion.div
+          variants={sectionVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="container mx-auto px-4 py-6 space-y-8"
+        >
           <AppearanceSection />
-        </motion.div>
-
-        <Separator />
-
-        <motion.div variants={itemVariants}>
-          <PrivacySection />
-        </motion.div>
-
-        <Separator />
-
-        <motion.div variants={itemVariants}>
           <NotificationsSection />
-        </motion.div>
-
-        <Separator />
-
-        <motion.div variants={itemVariants}>
+          <PrivacySection />
           <SecuritySection />
-        </motion.div>
-
-        <Separator />
-
-        <motion.div variants={itemVariants}>
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Amis</h3>
-            <div className="p-4 rounded-lg bg-muted/30">
-              <FriendsContent />
-            </div>
-          </div>
-        </motion.div>
-
-        <Separator />
-
-        <motion.div variants={itemVariants}>
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Utilisateurs bloqués</h3>
-            <div className="p-4 rounded-lg bg-muted/30">
-              <BlockedUsersSection />
-            </div>
-          </div>
-        </motion.div>
-
-        <Separator />
-
-        <motion.div variants={itemVariants}>
+          <BlockedUsersSection />
           <LogoutSection />
         </motion.div>
-      </motion.div>
-    </ScrollArea>
+      </ScrollArea>
+
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <DashboardNavigation 
+          currentPage={currentPage} 
+          onPageChange={(page) => {
+            if (page !== 5) {
+              navigate('/dashboard');
+            }
+          }}
+          isEditing={false}
+        />
+      </div>
+    </SettingsLayout>
   );
 }

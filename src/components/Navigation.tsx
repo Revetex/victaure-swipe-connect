@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, MessageSquare, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -7,6 +7,8 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 export function Navigation() {
   const isMobile = useIsMobile();
@@ -18,18 +20,22 @@ export function Navigation() {
 
   const NavLinks = () => (
     <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
-      <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
-        <span className="relative z-10">Trouver un Job</span>
+      <Link 
+        to="/dashboard/messages" 
+        className="text-foreground/80 hover:text-primary transition-colors relative group flex items-center gap-2"
+      >
+        <MessageSquare className="h-4 w-4" />
+        <span className="relative z-10">Messages</span>
         <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
-      </a>
-      <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
-        <span className="relative z-10">Pour les Employeurs</span>
+      </Link>
+      <Link 
+        to="/settings" 
+        className="text-foreground/80 hover:text-primary transition-colors relative group flex items-center gap-2"
+      >
+        <Settings className="h-4 w-4" />
+        <span className="relative z-10">Paramètres</span>
         <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
-      </a>
-      <a href="#" className="text-foreground/80 hover:text-primary transition-colors relative group">
-        <span className="relative z-10">Formation</span>
-        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
-      </a>
+      </Link>
       <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
         <NotificationsBox />
         <ThemeToggle />

@@ -15,9 +15,10 @@ import { useState } from "react";
 
 interface FriendSelectorProps {
   onSelectFriend: (friendId: string) => void;
+  children?: React.ReactNode;
 }
 
-export function FriendSelector({ onSelectFriend }: FriendSelectorProps) {
+export function FriendSelector({ onSelectFriend, children }: FriendSelectorProps) {
   const { profile } = useProfile();
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -30,9 +31,11 @@ export function FriendSelector({ onSelectFriend }: FriendSelectorProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <UserPlus className="h-4 w-4" />
-        </Button>
+        {children || (
+          <Button variant="outline" size="icon">
+            <UserPlus className="h-4 w-4" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>

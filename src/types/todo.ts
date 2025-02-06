@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react";
+
 export interface Todo {
   id: string;
   text: string;
@@ -17,4 +19,12 @@ export interface ColorOption {
   value: string;
   label: string;
   class: string;
+}
+
+export interface Tool {
+  name: string;
+  icon: LucideIcon;
+  description: string;
+  path: string;
+  color: string;
 }

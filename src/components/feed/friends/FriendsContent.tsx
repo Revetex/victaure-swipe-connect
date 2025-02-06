@@ -1,24 +1,47 @@
 import { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { UserProfile } from "@/types/profile";
 import { ProfilePreview } from "@/components/ProfilePreview";
-import { FriendRequestsSection } from "./FriendRequestsSection";
 import { ConnectionsSection } from "./ConnectionsSection";
-import { 
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, UserPlus, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Calculator, ListTodo, Sword } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { NotesPage } from "@/components/tools/NotesPage";
+import { CalculatorPage } from "@/components/tools/CalculatorPage";
+import { TasksPage } from "@/components/tools/TasksPage";
 
 export function FriendsContent() {
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-  const [isRequestsOpen, setIsRequestsOpen] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [showTasks, setShowTasks] = useState(false);
+  const navigate = useNavigate();
+
+  const tools = [
+    {
+      name: "Tâches",
+      icon: ListTodo,
+      action: () => setShowTasks(true),
+      color: "bg-blue-500/10 text-blue-500",
+      description: "Gérez vos tâches et listes"
+    },
+    {
+      name: "Calculatrice",
+      icon: Calculator,
+      action: () => setShowCalculator(true),
+      color: "bg-green-500/10 text-green-500",
+      description: "Calculatrice et convertisseur"
+    },
+    {
+      name: "Échecs",
+      icon: Sword,
+      action: () => navigate("/tools"),
+      color: "bg-red-500/10 text-red-500",
+      description: "Jouez aux échecs"
+    }
+  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -50,69 +73,39 @@ export function FriendsContent() {
       initial="hidden"
       animate="visible"
     >
-      <motion.div 
-        className="relative"
-        variants={itemVariants}
-      >
-        <ProfileSearch 
-          onSelect={setSelectedProfile}
-          placeholder="Rechercher un contact..."
-          className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-        />
-        <UserPlus className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <motion.div variants={itemVariants}>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {tools.map((tool) => (
+            <Button
+              key={tool.name}
+              variant="ghost"
+              className={cn(
+                "flex flex-col items-center gap-3 p-6 h-auto",
+                "hover:bg-accent/5 transition-all duration-200",
+                "group relative"
+              )}
+              onClick={tool.action}
+            >
+              <div className={cn(
+                "p-4 rounded-lg transition-all duration-200",
+                "group-hover:scale-110",
+                tool.color
+              )}>
+                <tool.icon className="h-6 w-6" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium">{tool.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {tool.description}
+                </p>
+              </div>
+            </Button>
+          ))}
+        </div>
       </motion.div>
 
-      <motion.div 
-        className="space-y-6"
-        variants={itemVariants}
-      >
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Users className="h-4 w-4" />
-          <span>Gérez vos connections et demandes d'amis</span>
-        </div>
-
-        <Separator className="bg-border/40" />
-
-        <Collapsible
-          open={isRequestsOpen}
-          onOpenChange={setIsRequestsOpen}
-          className="space-y-2"
-        >
-          <CollapsibleTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={cn(
-                "w-full flex justify-between hover:bg-accent/50",
-                "transition-all duration-200",
-                isRequestsOpen && "bg-accent/50"
-              )}
-            >
-              <span className="font-medium">Demandes en attente</span>
-              <motion.div
-                animate={{ rotate: isRequestsOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              </motion.div>
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2">
-            <motion.div 
-              className="pl-2"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <FriendRequestsSection />
-            </motion.div>
-          </CollapsibleContent>
-        </Collapsible>
-        
-        <motion.div variants={itemVariants}>
-          <ConnectionsSection />
-        </motion.div>
+      <motion.div variants={itemVariants}>
+        <ConnectionsSection />
       </motion.div>
 
       {selectedProfile && (
@@ -122,6 +115,24 @@ export function FriendsContent() {
           onClose={() => setSelectedProfile(null)}
         />
       )}
+
+      <Dialog open={showTasks} onOpenChange={setShowTasks}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <TasksPage />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showCalculator} onOpenChange={setShowCalculator}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <CalculatorPage />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showNotes} onOpenChange={setShowNotes}>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <NotesPage />
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

@@ -8,17 +8,20 @@ import { motion, AnimatePresence } from "framer-motion";
 interface ChatScrollProps {
   children: React.ReactNode;
   className?: string;
+  onScroll?: () => void;
 }
 
-export function ChatScroll({ children, className }: ChatScrollProps) {
+export function ChatScroll({ children, className, onScroll }: ChatScrollProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
     if (scrollRef.current) {
+      const { scrollHeight, clientHeight } = scrollRef.current;
       scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth"
+        top: scrollHeight - clientHeight,
+        behavior
       });
     }
   };
@@ -27,13 +30,20 @@ export function ChatScroll({ children, className }: ChatScrollProps) {
     if (!scrollRef.current) return;
     
     const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    const isNearBottom = distanceFromBottom < 100;
+    
     setShowScrollButton(!isNearBottom);
+    setIsAutoScrolling(isNearBottom);
+    
+    onScroll?.();
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [children]);
+    if (isAutoScrolling) {
+      scrollToBottom("instant");
+    }
+  }, [children, isAutoScrolling]);
 
   return (
     <div className="relative flex-1">
@@ -42,7 +52,9 @@ export function ChatScroll({ children, className }: ChatScrollProps) {
         className={cn("h-full pr-4", className)}
         onScroll={handleScroll}
       >
-        {children}
+        <div className="flex flex-col gap-2">
+          {children}
+        </div>
       </ScrollArea>
 
       <AnimatePresence>
@@ -56,7 +68,10 @@ export function ChatScroll({ children, className }: ChatScrollProps) {
             <Button
               size="icon"
               variant="secondary"
-              onClick={scrollToBottom}
+              onClick={() => {
+                scrollToBottom();
+                setIsAutoScrolling(true);
+              }}
               className="rounded-full shadow-lg"
             >
               <ChevronDown className="h-4 w-4" />
