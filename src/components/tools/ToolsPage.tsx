@@ -116,6 +116,7 @@ export function ToolsPage() {
         title="Outils"
         showFriendsList={showFriendsList}
         onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+        isEditing={false}
       />
 
       <AnimatePresence mode="wait">
