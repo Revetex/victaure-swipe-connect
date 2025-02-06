@@ -75,7 +75,9 @@ export function ToolsPage() {
                   <TasksSection />
                 </TabsContent>
                 <TabsContent value="calculator" className="m-0">
-                  <CalculatorSection<TabsContent value="translator" className="m-0">
+                  <CalculatorSection />
+                </TabsContent>
+                <TabsContent value="translator" className="m-0">
                   <TranslatorSection />
                 </TabsContent>
                 <TabsContent value="chess" className="m-0">
