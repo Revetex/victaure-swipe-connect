@@ -4,9 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserCircle } from "lucide-react";
 import { ProfileNameButton } from "@/components/profile/ProfileNameButton";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 export function FriendsList() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: friends } = useQuery({
     queryKey: ["friends"],
@@ -66,23 +69,33 @@ export function FriendsList() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="flex items-center gap-2"
+              className="flex items-center justify-between gap-2"
             >
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                {friend.avatar_url ? (
-                  <img
-                    src={friend.avatar_url}
-                    alt={friend.full_name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <UserCircle className="w-5 h-5 text-muted-foreground" />
-                )}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  {friend.avatar_url ? (
+                    <img
+                      src={friend.avatar_url}
+                      alt={friend.full_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <UserCircle className="w-5 h-5 text-muted-foreground" />
+                  )}
+                </div>
+                <ProfileNameButton 
+                  profile={friend}
+                  className="p-0 h-auto text-sm hover:underline"
+                />
               </div>
-              <ProfileNameButton 
-                profile={friend}
-                className="p-0 h-auto text-sm hover:underline"
-              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(`/dashboard/messages?receiver=${friend.id}`)}
+                className="ml-auto"
+              >
+                Message
+              </Button>
             </motion.div>
           ))}
         </div>
