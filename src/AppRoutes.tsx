@@ -8,6 +8,7 @@ import { Loader } from "@/components/ui/loader";
 const Index = lazy(() => import("@/pages/Index"));
 const Auth = lazy(() => import("@/pages/Auth"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Settings = lazy(() => import("@/pages/Settings"));
 const Feed = lazy(() => import("@/components/Feed").then(module => ({ default: module.Feed })));
 const TermsPage = lazy(() => import("@/components/legal/TermsPage").then(module => ({ default: module.TermsPage })));
 const PrivacyPage = lazy(() => import("@/components/legal/PrivacyPage").then(module => ({ default: module.PrivacyPage })));
@@ -56,6 +57,7 @@ export function AppRoutes() {
         {/* Protected routes */}
         <Route path="/feed" element={isAuthenticated ? <Feed /> : <Navigate to="/auth" replace />} />
         <Route path="/dashboard/*" element={isAuthenticated ? <Dashboard /> : <Navigate to="/auth" replace />} />
+        <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/auth" replace />} />
         <Route path="/notes" element={isAuthenticated ? <NotesPage /> : <Navigate to="/auth" replace />} />
         <Route path="/tasks" element={isAuthenticated ? <TasksPage /> : <Navigate to="/auth" replace />} />
         <Route path="/calculator" element={isAuthenticated ? <CalculatorPage /> : <Navigate to="/auth" replace />} />

@@ -3,6 +3,9 @@ import { useState } from "react";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { UserProfile } from "@/types/profile";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProfileNameButtonProps {
   profile: Partial<UserProfile> & { 
@@ -15,11 +18,12 @@ interface ProfileNameButtonProps {
 
 export function ProfileNameButton({ profile, className }: ProfileNameButtonProps) {
   const [showPreview, setShowPreview] = useState(false);
+  const navigate = useNavigate();
 
   const displayName = profile.display_name || profile.full_name || "Utilisateur";
 
   return (
-    <div className="inline-block">
+    <div className="inline-flex items-center gap-2">
       <button
         type="button"
         onClick={() => setShowPreview(true)}
@@ -35,6 +39,16 @@ export function ProfileNameButton({ profile, className }: ProfileNameButtonProps
       >
         {displayName}
       </button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => navigate('/settings')}
+        className="text-muted-foreground hover:text-primary"
+        aria-label="Paramètres"
+      >
+        <Settings className="h-4 w-4" />
+      </Button>
 
       {showPreview && (
         <ProfilePreview
