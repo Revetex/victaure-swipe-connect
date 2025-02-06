@@ -17,6 +17,7 @@ export function ChessPage() {
   const [isThinking, setIsThinking] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
+  const [possibleMoves, setPossibleMoves] = useState<{row: number, col: number}[]>([]);
 
   function initializeBoard() {
     const board = Array(8).fill(null).map(() => Array(8).fill(null));
@@ -43,8 +44,7 @@ export function ChessPage() {
     const piece = board[row][col];
 
     if (selectedPiece) {
-      // Move logic
-      if (isValidMove(selectedPiece.row, selectedPiece.col, row, col)) {
+      if (possibleMoves.some(move => move.row === row && move.col === col)) {
         const newBoard = [...board];
         newBoard[row][col] = board[selectedPiece.row][selectedPiece.col];
         newBoard[selectedPiece.row][selectedPiece.col] = null;
@@ -54,6 +54,7 @@ export function ChessPage() {
         
         setBoard(newBoard);
         setSelectedPiece(null);
+        setPossibleMoves([]);
         setIsWhiteTurn(!isWhiteTurn);
 
         // AI's turn
@@ -92,10 +93,27 @@ export function ChessPage() {
       } else {
         toast.error("Invalid move");
         setSelectedPiece(null);
+        setPossibleMoves([]);
       }
     } else if (piece && piece.isWhite === isWhiteTurn) {
       setSelectedPiece({ row, col });
+      const moves = calculatePossibleMoves(row, col, piece);
+      setPossibleMoves(moves);
     }
+  };
+
+  const calculatePossibleMoves = (fromRow: number, fromCol: number, piece: ChessPiece) => {
+    const moves: {row: number, col: number}[] = [];
+    
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        if (isValidMove(fromRow, fromCol, row, col)) {
+          moves.push({ row, col });
+        }
+      }
+    }
+    
+    return moves;
   };
 
   const isValidMove = (fromRow: number, fromCol: number, toRow: number, toCol: number) => {
@@ -154,6 +172,7 @@ export function ChessPage() {
   const resetGame = () => {
     setBoard(initializeBoard());
     setSelectedPiece(null);
+    setPossibleMoves([]);
     setIsWhiteTurn(true);
     setGameOver(false);
     setMoveHistory([]);
@@ -182,6 +201,7 @@ export function ChessPage() {
             {board.map((row, rowIndex) => (
               row.map((piece, colIndex) => {
                 const isSelected = selectedPiece?.row === rowIndex && selectedPiece?.col === colIndex;
+                const isPossibleMove = possibleMoves.some(move => move.row === rowIndex && move.col === colIndex);
                 const isLight = (rowIndex + colIndex) % 2 === 0;
                 
                 return (
@@ -190,9 +210,10 @@ export function ChessPage() {
                     onClick={() => handleSquareClick(rowIndex, colIndex)}
                     disabled={isThinking || (gameOver && !isWhiteTurn)}
                     className={`
-                      aspect-square flex items-center justify-center text-3xl
+                      aspect-square flex items-center justify-center text-3xl relative
                       ${isLight ? 'bg-light-purple/20' : 'bg-dark-purple/20'}
                       ${isSelected ? 'ring-2 ring-primary' : ''}
+                      ${isPossibleMove ? 'after:absolute after:inset-2 after:rounded-full after:bg-primary/20' : ''}
                       hover:bg-primary/20 transition-colors
                       disabled:opacity-50 disabled:cursor-not-allowed
                     `}
