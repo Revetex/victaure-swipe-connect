@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Separator } from "./ui/separator";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppearanceSection } from "./settings/AppearanceSection";
-import { PrivacySection } from "./settings/PrivacySection";
 import { NotificationsSection } from "./settings/NotificationsSection";
+import { PrivacySection } from "./settings/PrivacySection";
 import { SecuritySection } from "./settings/SecuritySection";
 import { BlockedUsersSection } from "./settings/BlockedUsersSection";
 import { LogoutSection } from "./settings/LogoutSection";
@@ -12,36 +11,24 @@ import { DashboardNavigation } from "./dashboard/DashboardNavigation";
 import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { AppHeader } from "./navigation/AppHeader";
+import { SettingsLayout } from "./settings/SettingsLayout";
 
-const containerVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.6, -0.05, 0.01, 0.99],
-      staggerChildren: 0.1
-    }
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.4
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
+const sectionVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { 
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.6,
-      ease: [0.6, -0.05, 0.01, 0.99]
+      duration: 0.3,
+      type: "spring",
+      stiffness: 100,
+      damping: 15
     }
+  },
+  exit: { 
+    opacity: 0, 
+    y: -20,
+    transition: { duration: 0.2 }
   }
 };
 
@@ -64,31 +51,7 @@ export function Settings() {
   }
 
   return (
-    <div className="relative min-h-screen pb-16 overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background to-background/90" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f12_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f12_1px,transparent_1px)] bg-[size:24px_24px]" />
-        <div className="absolute inset-0">
-          <motion.div
-            className="absolute inset-0 opacity-20"
-            animate={{
-              background: [
-                "radial-gradient(circle at 0% 0%, #4f4f4f 0%, transparent 50%)",
-                "radial-gradient(circle at 100% 100%, #4f4f4f 0%, transparent 50%)",
-                "radial-gradient(circle at 0% 100%, #4f4f4f 0%, transparent 50%)",
-                "radial-gradient(circle at 100% 0%, #4f4f4f 0%, transparent 50%)",
-              ],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-          />
-        </div>
-      </div>
-
+    <SettingsLayout>
       <AppHeader 
         title="Paramètres"
         showFriendsList={showFriendsList}
@@ -97,84 +60,29 @@ export function Settings() {
         onToolReturn={handleBackToHome}
       />
 
-      {showFriendsList && (
-        <DashboardFriendsList 
-          show={showFriendsList} 
-          onClose={() => setShowFriendsList(false)}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {showFriendsList && (
+          <DashboardFriendsList 
+            show={showFriendsList} 
+            onClose={() => setShowFriendsList(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <ScrollArea className="h-[calc(100vh-8rem)]">
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+          variants={sectionVariants}
+          initial="initial"
+          animate="animate"
           exit="exit"
-          className="max-w-2xl mx-auto space-y-8 p-6"
+          className="container mx-auto px-4 py-6 space-y-8"
         >
-          <motion.div 
-            variants={itemVariants} 
-            className="space-y-2 bg-background/40 backdrop-blur-lg rounded-lg p-6 shadow-lg"
-          >
-            <h2 className="text-2xl font-semibold tracking-tight">Paramètres</h2>
-            <p className="text-muted-foreground">
-              Gérez vos préférences et paramètres de compte
-            </p>
-          </motion.div>
-
-          <motion.div 
-            variants={itemVariants}
-            className="bg-background/40 backdrop-blur-lg rounded-lg p-6 shadow-lg"
-          >
-            <AppearanceSection />
-          </motion.div>
-
-          <Separator className="bg-foreground/10" />
-
-          <motion.div 
-            variants={itemVariants}
-            className="bg-background/40 backdrop-blur-lg rounded-lg p-6 shadow-lg"
-          >
-            <PrivacySection />
-          </motion.div>
-
-          <Separator className="bg-foreground/10" />
-
-          <motion.div 
-            variants={itemVariants}
-            className="bg-background/40 backdrop-blur-lg rounded-lg p-6 shadow-lg"
-          >
-            <NotificationsSection />
-          </motion.div>
-
-          <Separator className="bg-foreground/10" />
-
-          <motion.div 
-            variants={itemVariants}
-            className="bg-background/40 backdrop-blur-lg rounded-lg p-6 shadow-lg"
-          >
-            <SecuritySection />
-          </motion.div>
-
-          <Separator className="bg-foreground/10" />
-
-          <motion.div variants={itemVariants}>
-            <div className="space-y-4 bg-background/40 backdrop-blur-lg rounded-lg p-6 shadow-lg">
-              <h3 className="text-lg font-medium">Utilisateurs bloqués</h3>
-              <div className="p-4 rounded-lg bg-muted/30">
-                <BlockedUsersSection />
-              </div>
-            </div>
-          </motion.div>
-
-          <Separator className="bg-foreground/10" />
-
-          <motion.div 
-            variants={itemVariants}
-            className="bg-background/40 backdrop-blur-lg rounded-lg p-6 shadow-lg"
-          >
-            <LogoutSection />
-          </motion.div>
+          <AppearanceSection />
+          <NotificationsSection />
+          <PrivacySection />
+          <SecuritySection />
+          <BlockedUsersSection />
+          <LogoutSection />
         </motion.div>
       </ScrollArea>
 
@@ -190,6 +98,6 @@ export function Settings() {
           isEditing={false}
         />
       </div>
-    </div>
+    </SettingsLayout>
   );
 }
