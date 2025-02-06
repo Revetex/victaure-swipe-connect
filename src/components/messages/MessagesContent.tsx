@@ -1,3 +1,4 @@
+
 import { Message, Receiver } from "@/types/messages";
 import { ConversationView } from "./conversation/ConversationView";
 import { supabase } from "@/integrations/supabase/client";

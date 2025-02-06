@@ -5,7 +5,6 @@ import { useReceiver } from "@/hooks/useReceiver";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useUserChat } from "@/hooks/useUserChat";
 import { toast } from "sonner";
-import { ChatHeader } from "../chat/ChatHeader";
 import { useMessageCleanup } from "@/hooks/useMessageCleanup";
 import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
@@ -59,13 +58,6 @@ export function MessagesWrapper() {
   if (showConversation && receiver) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
-        <ChatHeader
-          onBack={handleBack}
-          title={receiver.full_name}
-          subtitle="En ligne"
-          avatarUrl={receiver.avatar_url}
-        />
-        
         <MessagesContent
           messages={userMessages}
           inputMessage={userInputMessage}
