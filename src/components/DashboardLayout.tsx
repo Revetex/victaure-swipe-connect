@@ -61,10 +61,15 @@ export const DashboardLayout: React.FC = () => {
       setIsEditing(false);
       setShowFriendsList(false);
 
-      // Handle navigation based on page number
       switch (page) {
         case 2:
           navigate('/dashboard/messages');
+          break;
+        case 3:
+          navigate('/dashboard/friends');
+          break;
+        case 4:
+          navigate('/dashboard/notifications');
           break;
         case 5:
           navigate('/dashboard/tools');
