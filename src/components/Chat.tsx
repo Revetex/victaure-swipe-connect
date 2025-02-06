@@ -13,6 +13,7 @@ export function Chat() {
 
   const handleCloseChat = () => {
     setShowChat(false);
+    setShowWelcome(true); // Show welcome screen again when chat is closed
   };
 
   return (
