@@ -1,3 +1,5 @@
+
+import { motion } from "framer-motion";
 import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -9,63 +11,45 @@ interface ToolsNavigationProps {
   toolsOrder: Tool[];
 }
 
+const tools = [
+  { id: "notes", icon: Plus, label: "Notes" },
+  { id: "tasks", icon: ListTodo, label: "Tâches" },
+  { id: "calculator", icon: Calculator, label: "Calculatrice" },
+  { id: "translator", icon: Languages, label: "Traducteur" },
+  { id: "converter", icon: Ruler, label: "Convertisseur" },
+  { id: "chess", icon: Sword, label: "Échecs" }
+];
+
 export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsNavigationProps) {
+  const orderedTools = toolsOrder.map(toolId => 
+    tools.find(t => t.id === toolId)
+  ).filter(Boolean);
+
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-      <Button 
-        variant={activeTool === "notes" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onToolChange("notes")}
-        className="whitespace-nowrap"
-      >
-        <Plus className="h-4 w-4 mr-2" />
-        Notes
-      </Button>
-      <Button 
-        variant={activeTool === "tasks" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onToolChange("tasks")}
-        className="whitespace-nowrap"
-      >
-        <ListTodo className="h-4 w-4 mr-2" />
-        Tâches
-      </Button>
-      <Button 
-        variant={activeTool === "calculator" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onToolChange("calculator")}
-        className="whitespace-nowrap"
-      >
-        <Calculator className="h-4 w-4 mr-2" />
-        Calculatrice
-      </Button>
-      <Button 
-        variant={activeTool === "translator" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onToolChange("translator")}
-        className="whitespace-nowrap"
-      >
-        <Languages className="h-4 w-4 mr-2" />
-        Traducteur
-      </Button>
-      <Button 
-        variant={activeTool === "converter" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onToolChange("converter")}
-        className="whitespace-nowrap"
-      >
-        <Ruler className="h-4 w-4 mr-2" />
-        Convertisseur
-      </Button>
-      <Button 
-        variant={activeTool === "chess" ? "default" : "outline"}
-        size="sm"
-        onClick={() => onToolChange("chess")}
-        className="whitespace-nowrap"
-      >
-        <Sword className="h-4 w-4 mr-2" />
-        Échecs
-      </Button>
+    <div className="flex-1 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      {orderedTools.map((tool, index) => {
+        if (!tool) return null;
+        const Icon = tool.icon;
+        
+        return (
+          <motion.div
+            key={tool.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Button 
+              variant={activeTool === tool.id ? "default" : "outline"}
+              size="sm"
+              onClick={() => onToolChange(tool.id as Tool)}
+              className="whitespace-nowrap min-w-[120px] transition-all duration-300 hover:scale-105"
+            >
+              <Icon className="h-4 w-4 mr-2" />
+              {tool.label}
+            </Button>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

@@ -12,8 +12,9 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess";
+type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
 export function ToolsPage() {
   const [activeTool, setActiveTool] = useState<Tool>("notes");
@@ -23,6 +24,7 @@ export function ToolsPage() {
     "calculator",
     "translator",
     "chess",
+    "converter"
   ]);
   const navigate = useNavigate();
 
@@ -79,26 +81,26 @@ export function ToolsPage() {
     navigate('/dashboard');
   };
 
-  const renderActiveTool = () => {
-    switch (activeTool) {
-      case "notes":
-        return <NotesPage />;
-      case "tasks":
-        return <TasksPage />;
-      case "calculator":
-        return <CalculatorPage />;
-      case "translator":
-        return <TranslatorPage />;
-      case "chess":
-        return <ChessPage />;
-      default:
-        return <NotesPage />;
-    }
+  const toolComponents = {
+    notes: NotesPage,
+    tasks: TasksPage,
+    calculator: CalculatorPage,
+    translator: TranslatorPage,
+    chess: ChessPage,
+    converter: () => (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
+        </div>
+      </div>
+    )
   };
 
+  const ActiveComponent = toolComponents[activeTool];
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="flex flex-col h-screen bg-background">
+      <div className="flex items-center justify-between px-4 py-2 border-b">
         <ToolsNavigation
           activeTool={activeTool}
           onToolChange={handleToolChange}
@@ -114,9 +116,26 @@ export function ToolsPage() {
           <X className="h-5 w-5" />
         </Button>
       </div>
-      <div className="flex-1 overflow-hidden">
-        {renderActiveTool()}
-      </div>
+
+      <motion.div 
+        className="flex-1 overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTool}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="h-full"
+          >
+            <ActiveComponent />
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }
