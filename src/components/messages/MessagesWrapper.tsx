@@ -10,7 +10,7 @@ import { Receiver } from "@/types/messages";
 import { toast } from "sonner";
 
 export function MessagesWrapper() {
-  const { showConversation, setShowConversation, receiver } = useReceiver();
+  const { showConversation, setShowConversation, receiver, setReceiver } = useReceiver();
   const {
     messages: aiMessages,
     inputMessage: aiInputMessage,
@@ -33,11 +33,10 @@ export function MessagesWrapper() {
 
   const handleBack = () => {
     setShowConversation(false);
+    setReceiver(null);
   };
 
   const handleSelectConversation = (type: "assistant" | "user", selectedReceiver?: Receiver) => {
-    console.log("Selecting conversation:", { type, selectedReceiver });
-    
     if (type === "assistant") {
       const aiReceiver: Receiver = {
         id: 'assistant',
@@ -46,19 +45,29 @@ export function MessagesWrapper() {
         online_status: true,
         last_seen: new Date().toISOString()
       };
+      setReceiver(aiReceiver);
       setShowConversation(true);
     } else if (selectedReceiver) {
+      setReceiver(selectedReceiver);
       setShowConversation(true);
     }
   };
 
   const handleSendMessage = async (message: string) => {
-    if (!receiver) return;
+    if (!receiver) {
+      toast.error("Aucun destinataire sélectionné");
+      return;
+    }
 
-    if (receiver.id === 'assistant') {
-      await handleAISendMessage(message);
-    } else {
-      await handleUserSendMessage(message, receiver);
+    try {
+      if (receiver.id === 'assistant') {
+        await handleAISendMessage(message);
+      } else {
+        await handleUserSendMessage(message, receiver);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error("Une erreur est survenue lors de l'envoi du message");
     }
   };
 
