@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
@@ -43,25 +43,50 @@ const itemVariants = {
   exit: { opacity: 0, y: -20 }
 };
 
+// Memoize child components
+const MemoizedDashboardHeader = memo(DashboardHeader);
+const MemoizedDashboardContent = memo(DashboardContent);
+const MemoizedDashboardNavigation = memo(DashboardNavigation);
+const MemoizedDashboardFriendsList = memo(DashboardFriendsList);
+
 export const DashboardLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const { viewportHeight } = useViewport();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [currentPage]);
-
-  const handlePageChange = (page: number) => {
+  // Memoize handlers
+  const handlePageChange = useCallback((page: number) => {
     try {
       setCurrentPage(page);
-      setIsEditing(false); // Reset editing state when changing pages
+      setIsEditing(false);
     } catch (error) {
       console.error("Error changing page:", error);
       toast.error("Une erreur est survenue lors du changement de page");
     }
-  };
+  }, []);
+
+  const toggleFriendsList = useCallback(() => {
+    setShowFriendsList(prev => !prev);
+  }, []);
+
+  const handleEditStateChange = useCallback((state: boolean) => {
+    setIsEditing(state);
+  }, []);
+
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
+  // Log performance metrics
+  useEffect(() => {
+    const startTime = performance.now();
+    return () => {
+      const endTime = performance.now();
+      console.log(`DashboardLayout render time: ${endTime - startTime}ms`);
+    };
+  }, []);
 
   return (
     <DashboardAuthCheck>
@@ -71,24 +96,26 @@ export const DashboardLayout: React.FC = () => {
         animate="animate"
         exit="exit"
         className="min-h-screen bg-background relative overflow-hidden"
+        style={{ willChange: 'transform, opacity' }}
       >
-        {/* Simplified background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
+        {/* Optimized background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" 
+             style={{ willChange: 'opacity' }} />
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
         
         <DashboardContainer>
           <motion.div variants={itemVariants}>
-            <DashboardHeader
+            <MemoizedDashboardHeader
               title={getPageTitle(currentPage)}
               showFriendsList={showFriendsList}
-              onToggleFriendsList={() => setShowFriendsList(!showFriendsList)}
+              onToggleFriendsList={toggleFriendsList}
               isEditing={isEditing}
             />
           </motion.div>
           
           <AnimatePresence mode="wait">
             {showFriendsList && (
-              <DashboardFriendsList 
+              <MemoizedDashboardFriendsList 
                 show={showFriendsList} 
                 onClose={() => setShowFriendsList(false)}
               />
@@ -97,18 +124,18 @@ export const DashboardLayout: React.FC = () => {
 
           <DashboardMain>
             <motion.div variants={itemVariants} className="relative z-10">
-              <DashboardContent
+              <MemoizedDashboardContent
                 currentPage={currentPage}
                 viewportHeight={viewportHeight}
                 isEditing={isEditing}
-                onEditStateChange={setIsEditing}
+                onEditStateChange={handleEditStateChange}
                 onRequestChat={() => handlePageChange(2)}
               />
             </motion.div>
           </DashboardMain>
 
           <motion.div variants={itemVariants} className="relative z-20">
-            <DashboardNavigation
+            <MemoizedDashboardNavigation
               currentPage={currentPage}
               onPageChange={handlePageChange}
               isEditing={isEditing}
