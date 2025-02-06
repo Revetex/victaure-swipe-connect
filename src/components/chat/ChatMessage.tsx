@@ -1,6 +1,6 @@
+
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
 import { Bot, Check, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
@@ -25,11 +25,13 @@ export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: 
       animate={{ opacity: 1, y: 0 }}
       className={cn(
         "flex w-full gap-4 p-4",
-        isAssistant ? "bg-muted/50" : "bg-background"
+        isAssistant 
+          ? "bg-muted/30 hover:bg-muted/50 transition-colors" 
+          : "bg-background"
       )}
     >
       <Avatar className={cn(
-        "h-10 w-10 ring-2 transition-shadow hover:ring-4",
+        "h-10 w-10 ring-2 transition-shadow",
         isAssistant ? "ring-primary/20" : "ring-muted"
       )}>
         {isAssistant ? (
@@ -44,6 +46,7 @@ export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: 
           />
         )}
       </Avatar>
+
       <div className="flex-1 space-y-2">
         <div className="flex items-center justify-between">
           <p className={cn(
@@ -68,14 +71,21 @@ export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: 
             </div>
           )}
         </div>
-        <Card className={cn(
-          "p-4 shadow-sm transition-all duration-200",
-          isAssistant 
-            ? "bg-card hover:shadow-md border-primary/10" 
-            : "bg-primary text-primary-foreground border-0 hover:bg-primary/90"
-        )}>
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
-        </Card>
+
+        <motion.div
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          className={cn(
+            "rounded-xl p-4 shadow-sm transition-all duration-200",
+            isAssistant 
+              ? "bg-card hover:shadow-md border-primary/10" 
+              : "bg-primary text-primary-foreground hover:bg-primary/90"
+          )}
+        >
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {content}
+          </p>
+        </motion.div>
       </div>
     </motion.div>
   );
