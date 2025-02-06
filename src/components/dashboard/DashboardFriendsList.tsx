@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { ToolSelector } from "@/components/tools/sections/ToolSelector";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface DashboardFriendsListProps {
   show: boolean;
