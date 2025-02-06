@@ -1,19 +1,21 @@
-import { useState } from "react";
 import { ConversationHeader } from "./ConversationHeader";
 import { MessagesList } from "./MessagesList";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { Profile } from "@/types/profile";
-import { Message } from "@/types/messages";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { Message } from "@/types/messages";
+import { UserProfile } from "@/types/profile";
 
 interface ConversationViewProps {
   messages: Message[];
-  profile: Profile | null;
+  profile: UserProfile | null;
   inputMessage: string;
   onInputChange: (value: string) => void;
   onSendMessage: () => void;
   isThinking?: boolean;
+  isListening?: boolean;
+  onVoiceInput?: () => void;
+  onBack?: () => void;
   onDeleteConversation?: () => void;
 }
 
@@ -24,6 +26,7 @@ export function ConversationView({
   onInputChange,
   onSendMessage,
   isThinking,
+  onBack,
   onDeleteConversation,
 }: ConversationViewProps) {
   const {
@@ -37,18 +40,12 @@ export function ConversationView({
     },
   });
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      onSendMessage();
-    }
-  };
-
   return (
     <div className="flex flex-col h-full relative">
       <div className="sticky top-0 z-50 shrink-0">
         <ConversationHeader
           profile={profile}
+          onBack={onBack}
           onDeleteConversation={onDeleteConversation}
         />
       </div>
@@ -62,10 +59,7 @@ export function ConversationView({
           value={inputMessage}
           onChange={onInputChange}
           onSend={onSendMessage}
-          onKeyPress={handleKeyPress}
-          onStartListening={startListening}
-          onStopListening={stopListening}
-          hasRecognitionSupport={hasRecognitionSupport}
+          onVoiceInput={hasRecognitionSupport ? (isListening ? stopListening : startListening) : undefined}
           isListening={isListening}
           isThinking={isThinking}
           placeholder="Écrivez votre message..."
