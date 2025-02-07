@@ -1,15 +1,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { NotesPage } from "./NotesPage";
-import { TasksPage } from "./TasksPage";
-import { CalculatorPage } from "./CalculatorPage";
-import { TranslatorPage } from "./TranslatorPage";
-import { ChessPage } from "./ChessPage";
 import { ToolsNavigation } from "./navigation/ToolsNavigation";
-import { toast } from "sonner";
-import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
 
 type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
@@ -24,9 +16,6 @@ export function ToolsPage() {
     "converter"
   ]);
   
-  const navigate = useNavigate();
-  const location = useLocation();
-
   const handleToolChange = (tool: Tool) => {
     setActiveTool(tool);
     updateUserPreferences(tool);
