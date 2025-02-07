@@ -50,24 +50,30 @@ const tools = [
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
     <div className="grid grid-cols-2 gap-1.5">
-      {tools.map((tool) => (
-        <Button
+      {tools.map((tool, index) => (
+        <motion.div
           key={tool.name}
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-auto py-3 flex-col items-center justify-center gap-2",
-            "bg-gradient-to-br transition-all duration-300",
-            "hover:shadow-md hover:-translate-y-0.5 active:translate-y-0",
-            "group rounded-lg",
-            tool.gradient
-          )}
-          onClick={() => onToolClick(tool.name)}
-          title={tool.description}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.05 }}
         >
-          <tool.icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-          <span className="text-xs font-medium">{tool.name}</span>
-        </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "h-auto py-3 flex-col items-center justify-center gap-2",
+              "bg-gradient-to-br transition-all duration-300",
+              "hover:shadow-md hover:-translate-y-0.5 active:translate-y-0",
+              "group rounded-lg w-full",
+              tool.gradient
+            )}
+            onClick={() => onToolClick(tool.name)}
+            title={tool.description}
+          >
+            <tool.icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+            <span className="text-xs font-medium">{tool.name}</span>
+          </Button>
+        </motion.div>
       ))}
     </div>
   );
