@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -34,11 +33,25 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
       return acc;
     }
 
-    // Determine the other user in the conversation
+    // Get the other user's ID depending on whether we're sender or receiver
     const otherUserId = message.sender_id === profile.id ? message.receiver_id : message.sender_id;
+    
+    // Get the other user's information
     const otherUser = message.sender_id === profile.id 
-      ? { id: message.receiver_id }
-      : message.sender;
+      ? {
+          id: message.receiver_id,
+          full_name: message.receiver_id === 'assistant' ? 'M. Victaure' : 'Utilisateur',
+          avatar_url: message.receiver_id === 'assistant' ? '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png' : undefined,
+          online_status: false,
+          last_seen: new Date().toISOString()
+        }
+      : {
+          id: message.sender.id,
+          full_name: message.sender.full_name,
+          avatar_url: message.sender.avatar_url,
+          online_status: message.sender.online_status,
+          last_seen: message.sender.last_seen
+        };
     
     if (!otherUser) return acc;
     
@@ -46,13 +59,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     const existingConv = acc.find((conv: any) => conv.user.id === otherUserId);
     if (!existingConv) {
       acc.push({
-        user: {
-          id: otherUserId,
-          full_name: message.sender?.full_name || 'Utilisateur',
-          avatar_url: message.sender?.avatar_url,
-          online_status: message.sender?.online_status || false,
-          last_seen: message.sender?.last_seen || new Date().toISOString()
-        },
+        user: otherUser,
         lastMessage: message
       });
     } else if (new Date(message.created_at) > new Date(existingConv.lastMessage.created_at)) {
