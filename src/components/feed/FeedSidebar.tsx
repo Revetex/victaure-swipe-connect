@@ -19,10 +19,34 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
+import { motion } from "framer-motion";
 
 interface FeedSidebarProps {
   className?: string;
 }
+
+const containerVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.3,
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.3
+    }
+  }
+};
 
 export function FeedSidebar({ className }: FeedSidebarProps) {
   const navigate = useNavigate();
@@ -33,30 +57,35 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       name: "Notes",
       icon: Plus,
       component: NotesPage,
-      description: "Gérez vos notes"
+      description: "Gérez vos notes",
+      gradient: "from-yellow-500/10 to-orange-500/10"
     },
     {
       name: "Tâches",
       icon: ListTodo,
       component: TasksPage,
-      description: "Gérez vos tâches"
+      description: "Gérez vos tâches",
+      gradient: "from-blue-500/10 to-indigo-500/10"
     },
     {
       name: "Calculatrice",
       icon: Calculator,
       component: CalculatorPage,
-      description: "Calculatrice et convertisseur"
+      description: "Calculatrice et convertisseur",
+      gradient: "from-purple-500/10 to-pink-500/10"
     },
     {
       name: "Traducteur",
       icon: Languages,
       component: TranslatorPage,
-      description: "Traduisez du texte"
+      description: "Traduisez du texte",
+      gradient: "from-green-500/10 to-emerald-500/10"
     },
     {
       name: "Convertisseur",
       icon: Ruler,
       description: "Convertissez des unités",
+      gradient: "from-red-500/10 to-pink-500/10",
       component: () => (
         <div className="flex items-center justify-center h-full">
           <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
@@ -67,7 +96,8 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       name: "Échecs",
       icon: Sword,
       component: ChessPage,
-      description: "Jouez aux échecs"
+      description: "Jouez aux échecs",
+      gradient: "from-slate-500/10 to-gray-500/10"
     }
   ];
 
@@ -91,33 +121,46 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       <div className={cn(
         "w-[280px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem] z-50",
         "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "transition-all duration-300 ease-in-out",
         className
       )}>
         <ScrollArea className="h-full">
-          <div className="p-3 space-y-4">
-            {/* Header with close button */}
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-medium">Navigation</h2>
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="p-3 space-y-4"
+          >
+            {/* Header avec bouton de fermeture */}
+            <motion.div 
+              variants={itemVariants}
+              className="flex items-center justify-between mb-2"
+            >
+              <h2 className="text-sm font-medium bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Navigation
+              </h2>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleCloseSidebar}
-                className="h-6 w-6 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                className="h-6 w-6 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors duration-300"
               >
                 <X className="h-4 w-4" />
               </Button>
-            </div>
+            </motion.div>
 
-            {/* Friends Section */}
-            <div className="space-y-1">
+            {/* Section Connections */}
+            <motion.div variants={itemVariants} className="space-y-1">
               <h3 className="text-xs font-medium text-muted-foreground px-2">Connections</h3>
-              <ConnectionsSection />
-            </div>
+              <div className="rounded-lg bg-background/50 p-2">
+                <ConnectionsSection />
+              </div>
+            </motion.div>
 
             <Separator className="my-4" />
 
-            {/* Tools Section */}
-            <div className="space-y-1">
+            {/* Section Outils */}
+            <motion.div variants={itemVariants} className="space-y-1">
               <h3 className="text-xs font-medium text-muted-foreground px-2">Outils</h3>
               <div className="space-y-1">
                 {tools.map((tool) => (
@@ -125,23 +168,28 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
                     key={tool.name}
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start gap-2 px-2 h-9"
+                    className={cn(
+                      "w-full justify-start gap-2 px-2 h-12",
+                      "bg-gradient-to-r hover:opacity-80",
+                      "transition-all duration-300 group",
+                      tool.gradient
+                    )}
                     onClick={() => handleToolClick(tool.name)}
                   >
-                    <tool.icon className="h-4 w-4" />
-                    <span className="text-sm">{tool.name}</span>
+                    <tool.icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                    <span className="text-sm font-medium">{tool.name}</span>
                   </Button>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             <Separator className="my-4" />
 
-            {/* Settings Section */}
-            <div className="space-y-1">
+            {/* Section Paramètres */}
+            <motion.div variants={itemVariants} className="space-y-1">
               <h3 className="text-xs font-medium text-muted-foreground px-2">Paramètres</h3>
               <div className="space-y-1">
-                <div className="rounded-lg">
+                <div className="rounded-lg bg-background/50 p-2">
                   <AppearanceSection />
                   <NotificationsSection />
                   <PrivacySection />
@@ -151,23 +199,28 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
                   <LogoutSection />
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </ScrollArea>
       </div>
 
       <Dialog open={!!activeTool} onOpenChange={handleCloseDialog}>
-        <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-0">
-          <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold">
+        <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-0 bg-background/95 backdrop-blur-xl border-none">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="flex flex-col h-full"
+          >
+            <div className="flex items-center justify-between p-4 border-b bg-background/50">
+              <h2 className="text-lg font-semibold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 {activeTool_?.name}
               </h2>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleCloseDialog}
-                className="rounded-full hover:bg-muted"
+                className="rounded-full hover:bg-muted transition-colors duration-300"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -175,7 +228,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             <div className="flex-1 overflow-auto p-4">
               {ActiveComponent && <ActiveComponent />}
             </div>
-          </div>
+          </motion.div>
         </DialogContent>
       </Dialog>
     </>
