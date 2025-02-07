@@ -56,7 +56,7 @@ export function ConversationView({
   }, [messages]);
 
   return (
-    <div className="relative flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-[calc(100vh-8rem)] bg-background">
       <div className="sticky top-0 z-20 bg-background border-b">
         <ChatHeader
           title={receiver.full_name}
