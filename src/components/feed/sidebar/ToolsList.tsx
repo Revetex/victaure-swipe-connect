@@ -43,19 +43,20 @@ const tools = [
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <div className="grid grid-cols-2 gap-2 p-2">
+    <div className="grid grid-cols-2 gap-1.5">
       {tools.map((tool, index) => (
         <motion.div
           key={tool.name}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.05 }}
+          className="w-full"
         >
           <Button
             variant="ghost"
             size="sm"
             className={cn(
-              "h-auto w-full py-3 flex-col items-center justify-center gap-2",
+              "h-auto w-full py-2 flex-col items-center justify-center gap-1.5",
               "bg-gradient-to-br transition-all duration-300",
               "hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
               "group rounded-xl",
@@ -64,7 +65,7 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
             onClick={() => onToolClick(tool.name)}
             title={tool.description}
           >
-            <tool.icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+            <tool.icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
             <span className="text-xs font-medium">{tool.name}</span>
           </Button>
         </motion.div>
