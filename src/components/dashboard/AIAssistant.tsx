@@ -1,3 +1,4 @@
+
 import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -73,9 +74,12 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
         return;
       }
 
-      setMessages(prev => [...prev, { type: 'user', content: input }]);
+      // Add user message to the conversation
+      const userMessage = { type: 'user', content: { message: input } };
+      setMessages(prev => [...prev, userMessage]);
       setIsTyping(true);
       
+      // Call AI assistant function
       const { data, error } = await supabase.functions.invoke('ai-career-assistant', {
         body: { 
           message: input,
@@ -89,6 +93,18 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
 
       if (error) throw error;
 
+      // Store the interaction in ai_learning_data
+      await supabase.from('ai_learning_data').insert({
+        user_id: user.id,
+        question: input,
+        response: data.message,
+        context: {
+          profile: profile,
+          previousMessages: messages.slice(-5)
+        }
+      });
+
+      // Add AI response to the conversation
       setMessages(prev => [...prev, { 
         type: 'assistant', 
         content: {

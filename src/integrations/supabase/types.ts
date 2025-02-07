@@ -42,30 +42,33 @@ export type Database = {
           created_at: string | null
           feedback_score: number | null
           id: string
+          metadata: Json | null
           question: string
           response: string
           tags: string[] | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           context?: Json | null
           created_at?: string | null
           feedback_score?: number | null
           id?: string
+          metadata?: Json | null
           question: string
           response: string
           tags?: string[] | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           context?: Json | null
           created_at?: string | null
           feedback_score?: number | null
           id?: string
+          metadata?: Json | null
           question?: string
           response?: string
           tags?: string[] | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
