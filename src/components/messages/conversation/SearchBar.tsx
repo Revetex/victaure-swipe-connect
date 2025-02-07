@@ -13,7 +13,7 @@ interface SearchBarProps {
 
 export function SearchBar({ searchQuery, onSearchChange, onSelectFriend }: SearchBarProps) {
   return (
-    <div className="border-b p-4 flex items-center gap-2">
+    <div className="sticky top-0 z-[100] bg-background/95 backdrop-blur-sm border-b p-4 flex items-center gap-2">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
