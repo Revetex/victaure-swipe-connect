@@ -39,7 +39,7 @@ export function useMessages() {
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
           .eq('message_type', 'user');
       } else {
-        // Quand aucun destinataire n'est sélectionné, récupérer toutes les conversations
+        // Quand aucun destinataire n'est sélectionné, récupérer uniquement les conversations entre utilisateurs
         query = query
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
           .eq('message_type', 'user');
