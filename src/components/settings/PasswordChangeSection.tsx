@@ -44,30 +44,30 @@ export function PasswordChangeSection() {
         variant="ghost"
         size="sm"
         onClick={() => setShowForm(true)}
-        className="w-full justify-start gap-2 px-2 h-9"
+        className="w-full justify-start gap-2 h-8 px-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <Lock className="h-4 w-4" />
-        <span className="text-sm">Changer le mot de passe</span>
+        Changer le mot de passe
       </Button>
     );
   }
 
   return (
-    <form onSubmit={handlePasswordChange} className="space-y-4">
-      <div className="space-y-2">
-        <Input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="Nouveau mot de passe"
-          required
-        />
-      </div>
+    <form onSubmit={handlePasswordChange} className="space-y-3">
+      <Input
+        type="password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        placeholder="Nouveau mot de passe"
+        className="h-8 text-sm"
+        required
+      />
 
       <div className="flex gap-2">
         <Button 
           type="submit" 
-          className="flex-1 h-9 px-2"
+          size="sm"
+          className="flex-1 h-8"
           disabled={loading}
         >
           {loading ? (
@@ -85,8 +85,9 @@ export function PasswordChangeSection() {
         <Button 
           type="button" 
           variant="outline"
+          size="sm"
           onClick={() => setShowForm(false)}
-          className="h-9 px-2"
+          className="h-8"
         >
           Annuler
         </Button>

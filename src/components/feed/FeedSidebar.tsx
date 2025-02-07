@@ -62,7 +62,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   return (
     <>
       <div className={cn(
-        "w-[280px] border-r h-[calc(100vh-4rem)]",
+        "w-[300px] border-r h-[calc(100vh-4rem)]",
         "bg-background/95 backdrop-blur-sm fixed left-0 top-[4rem] z-40",
         "shadow-lg shadow-background/5",
         className
@@ -90,8 +90,8 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             <Separator className="my-3" />
 
             <motion.div variants={itemVariants}>
-              <div className="space-y-1">
-                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2 mb-2">
+              <div className="space-y-2">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2 mb-1">
                   Outils
                 </h3>
                 <ToolsList onToolClick={handleToolClick} />
@@ -101,11 +101,11 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             <Separator className="my-3" />
 
             <motion.div variants={itemVariants}>
-              <div className="space-y-1">
-                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2 mb-2">
+              <div className="space-y-2">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2 mb-1">
                   Paramètres
                 </h3>
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   <AppearanceSection />
                   <NotificationsSection />
                   <PrivacySection />

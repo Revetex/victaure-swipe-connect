@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { UserX } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SettingsSection } from "./SettingsSection";
+import { Separator } from "@/components/ui/separator";
 
 export function BlockedUsersSection() {
   const { data: blockedUsers, refetch } = useQuery({
@@ -51,44 +53,45 @@ export function BlockedUsersSection() {
   };
 
   return (
-    <div className="space-y-4">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="w-full justify-start gap-2 px-2 h-9"
-      >
-        <UserX className="h-4 w-4" />
-        <span className="text-sm">Utilisateurs bloqués</span>
-      </Button>
-
-      <ScrollArea className="h-[200px] rounded-lg border bg-muted/50">
-        <div className="p-4 space-y-2">
-          {blockedUsers?.map((item) => (
-            <div key={item.blocked.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={item.blocked.avatar_url || ''} />
-                  <AvatarFallback>{item.blocked.full_name?.[0]}</AvatarFallback>
-                </Avatar>
-                <span className="text-sm">{item.blocked.full_name}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
-                className="h-8 px-2"
-              >
-                Débloquer
-              </Button>
-            </div>
-          ))}
-          {(!blockedUsers || blockedUsers.length === 0) && (
-            <p className="text-center text-sm text-muted-foreground py-4">
-              Aucun utilisateur bloqué
-            </p>
-          )}
+    <SettingsSection>
+      <div className="w-full space-y-1">
+        <div className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground">
+          <UserX className="h-4 w-4" />
+          <span className="text-sm font-medium">Utilisateurs bloqués</span>
         </div>
-      </ScrollArea>
-    </div>
+        
+        <ScrollArea className="h-[180px] w-full rounded-md border border-border/50 bg-muted/30">
+          <div className="p-2 space-y-1">
+            {blockedUsers?.map((item) => (
+              <div 
+                key={item.blocked.id} 
+                className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50"
+              >
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={item.blocked.avatar_url || ''} />
+                    <AvatarFallback>{item.blocked.full_name?.[0]}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm text-muted-foreground">{item.blocked.full_name}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
+                  className="h-7 px-2 text-xs"
+                >
+                  Débloquer
+                </Button>
+              </div>
+            ))}
+            {(!blockedUsers || blockedUsers.length === 0) && (
+              <p className="text-center text-sm text-muted-foreground py-4">
+                Aucun utilisateur bloqué
+              </p>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    </SettingsSection>
   );
 }
