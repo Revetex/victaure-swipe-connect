@@ -39,21 +39,23 @@ export function MessagesContainer() {
   };
 
   return (
-    <Card className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <Card className="h-screen overflow-hidden flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {showConversation && receiver ? (
-        <ConversationView
-          receiver={receiver}
-          messages={receiver.id === 'assistant' ? aiMessages : userMessages}
-          inputMessage={inputMessage}
-          isThinking={isThinking}
-          isListening={isListening}
-          onInputChange={setInputMessage}
-          onSendMessage={handleSendMessage}
-          onVoiceInput={handleVoiceInput}
-          onBack={handleBack}
-          onDeleteConversation={handleDeleteConversation}
-          messagesEndRef={messagesEndRef}
-        />
+        <div className="flex-1 overflow-hidden">
+          <ConversationView
+            receiver={receiver}
+            messages={receiver.id === 'assistant' ? aiMessages : userMessages}
+            inputMessage={inputMessage}
+            isThinking={isThinking}
+            isListening={isListening}
+            onInputChange={setInputMessage}
+            onSendMessage={handleSendMessage}
+            onVoiceInput={handleVoiceInput}
+            onBack={handleBack}
+            onDeleteConversation={handleDeleteConversation}
+            messagesEndRef={messagesEndRef}
+          />
+        </div>
       ) : (
         <ConversationList
           messages={userMessages}
