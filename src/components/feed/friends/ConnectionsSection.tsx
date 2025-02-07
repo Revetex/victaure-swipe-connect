@@ -49,17 +49,21 @@ export function ConnectionsSection() {
   if (!friends?.length) {
     return (
       <motion.div 
-        className="text-center py-6 space-y-3 bg-muted/30 rounded-xl shadow-sm backdrop-blur-sm"
+        className="text-center py-8 space-y-4 bg-muted/20 rounded-xl shadow-sm backdrop-blur-sm border border-border/50"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ 
+          type: "spring",
+          stiffness: 260,
+          damping: 20 
+        }}
       >
-        <Users2 className="h-10 w-10 mx-auto text-muted-foreground/50" />
-        <div className="space-y-1.5">
-          <p className="text-sm font-medium bg-gradient-to-r from-foreground/80 to-foreground bg-clip-text text-transparent">
+        <Users2 className="h-12 w-12 mx-auto text-muted-foreground/40" />
+        <div className="space-y-2">
+          <p className="text-sm font-medium bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
             Aucune connection
           </p>
-          <p className="text-xs text-muted-foreground leading-relaxed px-4">
+          <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto">
             Commencez à ajouter des contacts pour développer votre réseau
           </p>
         </div>
@@ -75,7 +79,7 @@ export function ConnectionsSection() {
   return (
     <div className="space-y-3">
       <motion.div 
-        className="bg-muted/30 rounded-xl shadow-sm backdrop-blur-sm overflow-hidden"
+        className="bg-muted/20 rounded-xl shadow-sm backdrop-blur-sm overflow-hidden border border-border/50"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -88,7 +92,7 @@ export function ConnectionsSection() {
           )}
           onClick={() => setShowPendingRequests(!showPendingRequests)}
         >
-          <span className="text-sm bg-gradient-to-r from-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+          <span className="text-sm bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
             Demandes en attente
           </span>
           {showPendingRequests ? (
@@ -115,13 +119,13 @@ export function ConnectionsSection() {
       </motion.div>
 
       <motion.div 
-        className="bg-muted/30 rounded-xl shadow-sm backdrop-blur-sm p-4"
+        className="bg-muted/20 rounded-xl shadow-sm backdrop-blur-sm p-4 border border-border/50"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium flex items-center gap-2 bg-gradient-to-r from-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+          <h3 className="text-sm font-medium flex items-center gap-2 bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground/70 bg-clip-text text-transparent">
             <Users2 className="h-4 w-4" />
             Mes connections ({friends.length})
           </h3>
@@ -129,14 +133,19 @@ export function ConnectionsSection() {
         
         <ScrollArea className="h-[300px] pr-2">
           <AnimatePresence mode="wait">
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               {currentFriends.map((friend, index) => (
                 <motion.div
                   key={friend.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ 
+                    delay: index * 0.05,
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20 
+                  }}
                 >
                   <Button
                     variant="ghost"
@@ -158,7 +167,7 @@ export function ConnectionsSection() {
                       )}
                       {friend.online_status && (
                         <motion.div 
-                          className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background"
+                          className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{
