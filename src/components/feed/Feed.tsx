@@ -9,8 +9,8 @@ import { FeedSidebar } from "./FeedSidebar";
 import { Suspense, useRef, useState, useEffect } from "react";
 import { ChevronUp, Menu } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export function Feed() {
   const queryClient = useQueryClient();
