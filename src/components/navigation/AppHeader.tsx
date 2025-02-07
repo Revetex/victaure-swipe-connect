@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
-import { Menu, ArrowLeft } from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AppHeaderProps {
@@ -34,18 +34,7 @@ export function AppHeader({
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          {onToolReturn ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToolReturn}
-              className="mr-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          ) : (
-            <Logo size="lg" />
-          )}
+          <Logo size="lg" />
           <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
         </motion.div>
         
