@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ToolsNavigation } from "./navigation/ToolsNavigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useViewport } from "@/hooks/useViewport";
 
 type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
@@ -15,6 +17,8 @@ export function ToolsPage() {
     "chess",
     "converter"
   ]);
+  
+  const { viewportHeight } = useViewport();
   
   const handleToolChange = (tool: Tool) => {
     setActiveTool(tool);
@@ -36,12 +40,19 @@ export function ToolsPage() {
   };
 
   return (
-    <div className="p-4">
-      <ToolsNavigation
-        activeTool={activeTool}
-        onToolChange={handleToolChange}
-        toolsOrder={toolsOrder}
-      />
+    <div className="relative h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <ScrollArea 
+        className="h-[calc(100vh-4rem)]"
+        style={{ height: `${viewportHeight - 64}px` }}
+      >
+        <div className="p-4 space-y-4">
+          <ToolsNavigation
+            activeTool={activeTool}
+            onToolChange={handleToolChange}
+            toolsOrder={toolsOrder}
+          />
+        </div>
+      </ScrollArea>
     </div>
   );
 }

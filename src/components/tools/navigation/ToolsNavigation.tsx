@@ -9,6 +9,8 @@ import { TasksPage } from "../TasksPage";
 import { CalculatorPage } from "../CalculatorPage";
 import { TranslatorPage } from "../TranslatorPage";
 import { ChessPage } from "../ChessPage";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
@@ -24,28 +26,32 @@ const tools = [
     icon: Plus, 
     label: "Notes",
     description: "Créer et gérer vos notes",
-    component: NotesPage
+    component: NotesPage,
+    gradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20"
   },
   { 
     id: "tasks", 
     icon: ListTodo, 
     label: "Tâches",
     description: "Gérer votre liste de tâches",
-    component: TasksPage
+    component: TasksPage,
+    gradient: "from-blue-500/20 via-indigo-500/20 to-violet-500/20"
   },
   { 
     id: "calculator", 
     icon: Calculator, 
     label: "Calculatrice",
     description: "Effectuer des calculs",
-    component: CalculatorPage
+    component: CalculatorPage,
+    gradient: "from-green-500/20 via-emerald-500/20 to-teal-500/20"
   },
   { 
     id: "translator", 
     icon: Languages, 
     label: "Traducteur",
     description: "Traduire du texte",
-    component: TranslatorPage
+    component: TranslatorPage,
+    gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20"
   },
   { 
     id: "converter", 
@@ -56,19 +62,22 @@ const tools = [
       <div className="flex items-center justify-center h-full">
         <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
       </div>
-    )
+    ),
+    gradient: "from-cyan-500/20 via-sky-500/20 to-blue-500/20"
   },
   { 
     id: "chess", 
     icon: Sword, 
     label: "Échecs",
     description: "Jouer aux échecs",
-    component: ChessPage
+    component: ChessPage,
+    gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20"
   }
 ];
 
 export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsNavigationProps) {
   const [openTool, setOpenTool] = useState<Tool | null>(null);
+  const isMobile = useIsMobile();
   
   const orderedTools = toolsOrder.map(toolId => 
     tools.find(t => t.id === toolId)
@@ -86,9 +95,38 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
   const activeTool_ = tools.find(tool => tool.id === openTool);
   const ActiveComponent = activeTool_?.component;
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 24
+      }
+    }
+  };
+
   return (
     <>
-      <div className="flex-1 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className={cn(
+          "grid gap-4",
+          isMobile ? "grid-cols-2" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+        )}
+      >
         {orderedTools.map((tool, index) => {
           if (!tool) return null;
           const Icon = tool.icon;
@@ -97,31 +135,40 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
           return (
             <motion.div
               key={tool.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full"
             >
               <Button 
                 variant={isActive ? "default" : "outline"}
-                size="sm"
                 onClick={() => handleToolClick(tool.id as Tool)}
-                className="whitespace-nowrap min-w-[120px] transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/20"
+                className={cn(
+                  "w-full h-28 flex flex-col items-center justify-center gap-3 p-4",
+                  "transition-all duration-300",
+                  "hover:shadow-lg hover:border-primary/20",
+                  "bg-gradient-to-br",
+                  tool.gradient,
+                  isActive && "ring-2 ring-primary/20"
+                )}
                 aria-label={tool.description}
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`${tool.id}-panel`}
-                title={tool.description}
               >
-                <Icon className="h-4 w-4 mr-2 shrink-0" 
-                  aria-hidden="true"
-                  role="presentation"
-                />
-                <span className="truncate">{tool.label}</span>
+                <Icon className={cn(
+                  "h-6 w-6 transition-transform duration-300",
+                  "group-hover:scale-110",
+                  isActive && "text-primary"
+                )} />
+                <span className="text-sm font-medium text-center line-clamp-2">
+                  {tool.label}
+                </span>
               </Button>
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       <Dialog open={!!openTool} onOpenChange={() => setOpenTool(null)}>
         <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-0">
