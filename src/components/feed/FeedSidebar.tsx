@@ -62,7 +62,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   return (
     <>
       <div className={cn(
-        "w-[240px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem] z-50",
+        "w-[220px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem] z-50",
         "bg-background",
         "transition-all duration-300 ease-in-out",
         className
