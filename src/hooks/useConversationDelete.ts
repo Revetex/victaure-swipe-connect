@@ -15,12 +15,14 @@ export const useConversationDelete = () => {
       if (!user) throw new Error("Utilisateur non authentifié");
 
       // Vérifier si l'autre utilisateur a déjà supprimé la conversation
-      const { data: existingDeletion } = await supabase
+      const { data: existingDeletion, error: fetchError } = await supabase
         .from('deleted_conversations')
         .select('*')
         .eq('user_id', receiver.id)
         .eq('conversation_partner_id', user.id)
-        .single();
+        .maybeSingle(); // Changed from .single() to .maybeSingle()
+
+      if (fetchError) throw fetchError;
 
       if (existingDeletion) {
         // L'autre utilisateur a déjà supprimé la conversation, supprimer définitivement
