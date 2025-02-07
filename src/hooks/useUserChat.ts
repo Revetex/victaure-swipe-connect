@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { Message, Receiver } from '@/types/messages';
 import { useProfile } from './useProfile';
@@ -111,6 +110,8 @@ export function useUserChat(): UserChat {
         const formattedMessage: Message = {
           ...messageData,
           timestamp: messageData.created_at,
+          status: 'sent',
+          message_type: 'user',
           sender: messageData.sender || {
             id: profile.id,
             full_name: profile.full_name,

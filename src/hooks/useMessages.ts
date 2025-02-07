@@ -66,7 +66,7 @@ export function useMessages() {
       return messages.map(msg => ({
         ...msg,
         timestamp: msg.created_at,
-        status: msg.status || 'sent',
+        status: msg.read ? 'read' : 'delivered',
         message_type: msg.message_type || 'user'
       })) as Message[];
     },
