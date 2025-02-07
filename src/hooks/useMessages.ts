@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -66,7 +65,9 @@ export function useMessages() {
 
       return messages.map(msg => ({
         ...msg,
-        timestamp: msg.created_at
+        timestamp: msg.created_at,
+        status: msg.status || 'sent',
+        message_type: msg.message_type || 'user'
       })) as Message[];
     },
     enabled: true
