@@ -9,11 +9,9 @@ import { useMessageCleanup } from "@/hooks/useMessageCleanup";
 import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { useMessageReadStatus } from "@/hooks/useMessageReadStatus";
-import { useProfile } from "@/hooks/useProfile";
 
 export function MessagesWrapper() {
   const { showConversation, receiver } = useReceiver();
-  const { profile } = useProfile();
   const {
     messages: aiMessages,
     inputMessage: aiInputMessage,
@@ -77,6 +75,7 @@ export function MessagesWrapper() {
           onBack={handleBack}
           receiver={receiver}
           onClearChat={() => handleDeleteConversation(receiver)}
+          onVoiceInput={handleVoiceInput}
         />
       </div>
     );

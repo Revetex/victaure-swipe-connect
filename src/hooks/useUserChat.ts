@@ -20,14 +20,6 @@ export function useUserChat(): UserChat {
   const [isLoading, setIsLoading] = useState(false);
   const { profile } = useProfile();
 
-  const defaultSender: MessageSender = {
-    id: profile?.id || '',
-    full_name: profile?.full_name || 'User',
-    avatar_url: profile?.avatar_url || '',
-    online_status: true,
-    last_seen: new Date().toISOString()
-  };
-
   const handleSendMessage = useCallback(async (message: string, receiver: Receiver) => {
     if (!message.trim()) return;
     if (!profile) {
@@ -41,7 +33,7 @@ export function useUserChat(): UserChat {
         content: message,
         sender_id: profile.id,
         receiver_id: receiver.id,
-        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
+        message_type: 'user',
         read: false
       };
 
@@ -49,15 +41,20 @@ export function useUserChat(): UserChat {
       const { data: messageData, error: messageError } = await supabase
         .from('messages')
         .insert(newMessage)
-        .select('*, sender:profiles!messages_sender_id_fkey(*)');
+        .select(`
+          *,
+          sender:profiles!messages_sender_id_fkey(*),
+          receiver:profiles!messages_receiver_id_fkey(*)
+        `);
 
       if (messageError) throw messageError;
 
-      // Créer une notification pour le destinataire
+      // Créer une notification
       const notification = {
         user_id: receiver.id,
         title: "Nouveau message",
         message: `${profile.full_name} vous a envoyé un message: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+        type: 'message'
       };
 
       const { error: notificationError } = await supabase
@@ -71,11 +68,20 @@ export function useUserChat(): UserChat {
       setInputMessage('');
       
       if (messageData && messageData[0]) {
-        setMessages(prev => [...prev, {
+        const formattedMessage: Message = {
           ...messageData[0],
-          sender: messageData[0].sender || defaultSender,
-          timestamp: messageData[0].created_at
-        }]);
+          timestamp: messageData[0].created_at,
+          sender: messageData[0].sender || {
+            id: profile.id,
+            full_name: profile.full_name,
+            avatar_url: profile.avatar_url || '',
+            online_status: true,
+            last_seen: new Date().toISOString()
+          },
+          receiver: messageData[0].receiver || receiver
+        };
+        
+        setMessages(prev => [...prev, formattedMessage]);
       }
 
     } catch (error) {
@@ -84,7 +90,7 @@ export function useUserChat(): UserChat {
     } finally {
       setIsLoading(false);
     }
-  }, [profile, defaultSender]);
+  }, [profile]);
 
   const clearChat = useCallback(async (receiverId: string) => {
     if (!profile) return;
