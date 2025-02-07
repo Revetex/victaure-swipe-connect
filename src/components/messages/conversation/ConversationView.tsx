@@ -60,10 +60,12 @@ export function ConversationView({
       <div className="sticky top-0 z-20 bg-background border-b">
         <ChatHeader
           title={receiver.full_name}
-          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : "En ligne"}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
           avatarUrl={receiver.avatar_url}
           onBack={onBack}
           onDelete={onDeleteConversation}
+          isOnline={receiver.online_status}
+          lastSeen={receiver.last_seen}
         />
       </div>
 
