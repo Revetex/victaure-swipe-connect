@@ -16,6 +16,8 @@ export interface ChatHeaderProps {
   onBack: () => void;
   onDelete?: () => Promise<void>;
   isThinking?: boolean;
+  isOnline?: boolean;
+  lastSeen?: string;
 }
 
 export function ChatHeader({
@@ -24,7 +26,9 @@ export function ChatHeader({
   avatarUrl,
   onBack,
   onDelete,
-  isThinking
+  isThinking,
+  isOnline,
+  lastSeen
 }: ChatHeaderProps) {
   return (
     <div className="h-16 flex items-center gap-4 p-4 border-b bg-background">
@@ -37,13 +41,18 @@ export function ChatHeader({
         <ArrowLeft className="h-5 w-5" />
       </Button>
 
-      <Avatar className="h-10 w-10">
-        <img
-          src={avatarUrl || "/user-icon.svg"}
-          alt={title}
-          className="h-full w-full object-cover rounded-full"
-        />
-      </Avatar>
+      <div className="relative">
+        <Avatar className="h-10 w-10">
+          <img
+            src={avatarUrl || "/user-icon.svg"}
+            alt={title}
+            className="h-full w-full object-cover rounded-full"
+          />
+        </Avatar>
+        {isOnline && (
+          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+        )}
+      </div>
 
       <div className="flex-1 min-w-0">
         <h2 className="font-medium truncate">{title}</h2>
