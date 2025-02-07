@@ -45,7 +45,8 @@ export function useUserChat(): UserChat {
           *,
           sender:profiles!messages_sender_id_fkey(*),
           receiver:profiles!messages_receiver_id_fkey(*)
-        `);
+        `)
+        .single();
 
       if (messageError) throw messageError;
 
@@ -67,18 +68,18 @@ export function useUserChat(): UserChat {
 
       setInputMessage('');
       
-      if (messageData && messageData[0]) {
+      if (messageData) {
         const formattedMessage: Message = {
-          ...messageData[0],
-          timestamp: messageData[0].created_at,
-          sender: messageData[0].sender || {
+          ...messageData,
+          timestamp: messageData.created_at,
+          sender: messageData.sender || {
             id: profile.id,
             full_name: profile.full_name,
             avatar_url: profile.avatar_url || '/placeholder.svg',
             online_status: true,
             last_seen: new Date().toISOString()
           },
-          receiver: messageData[0].receiver || {
+          receiver: messageData.receiver || {
             id: receiver.id,
             full_name: receiver.full_name,
             avatar_url: receiver.avatar_url || '/placeholder.svg',

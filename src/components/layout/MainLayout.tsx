@@ -65,7 +65,7 @@ export function MainLayout({
       exit="exit"
       className="min-h-screen bg-background flex flex-col"
     >
-      <header className="fixed top-0 left-0 right-0 z-50">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -88,7 +88,13 @@ export function MainLayout({
 
       <motion.main 
         variants={contentVariants}
-        className="flex-1 container mx-auto px-4 mt-16 mb-16"
+        className="flex-1 container mx-auto px-4"
+        style={{ 
+          marginTop: '4rem', // Add top margin to account for fixed header
+          marginBottom: !isFriendsPage ? '4rem' : '0', // Add bottom margin when nav is present
+          minHeight: '100vh',
+          paddingBottom: 'env(safe-area-inset-bottom)'
+        }}
       >
         <div className="max-w-7xl mx-auto">
           {children}
@@ -97,7 +103,7 @@ export function MainLayout({
 
       {!isFriendsPage && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border/50 z-40 shadow-lg"
           style={{ 
             paddingBottom: 'env(safe-area-inset-bottom)'
           }}

@@ -58,14 +58,14 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
             variant="ghost"
             onClick={() => onToolClick(tool.name)}
             className={cn(
-              "h-auto py-2 px-3 flex flex-col items-center justify-center gap-1",
+              "h-10 py-1 px-2 flex items-center justify-start gap-2",
               "bg-gradient-to-br hover:shadow-md transition-all duration-200",
-              "group relative w-full",
+              "group relative w-full text-sm",
               tool.gradient
             )}
           >
-            <Icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-            <span className="text-xs font-medium">{tool.name}</span>
+            <Icon className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
+            <span className="font-medium truncate">{tool.name}</span>
           </Button>
         );
       })}
