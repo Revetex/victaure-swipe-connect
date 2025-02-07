@@ -45,23 +45,36 @@ export function useUserChat(): UserChat {
         read: false
       };
 
-      const { data, error } = await supabase
+      // Enregistrer le message
+      const { data: messageData, error: messageError } = await supabase
         .from('messages')
         .insert(newMessage)
         .select('*, sender:profiles!messages_sender_id_fkey(*)');
 
-      if (error) {
-        console.error('Error inserting message:', error);
-        throw error;
+      if (messageError) throw messageError;
+
+      // Créer une notification pour le destinataire
+      const notification = {
+        user_id: receiver.id,
+        title: "Nouveau message",
+        message: `${profile.full_name} vous a envoyé un message: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+      };
+
+      const { error: notificationError } = await supabase
+        .from('notifications')
+        .insert(notification);
+
+      if (notificationError) {
+        console.error('Error creating notification:', notificationError);
       }
 
       setInputMessage('');
       
-      if (data && data[0]) {
+      if (messageData && messageData[0]) {
         setMessages(prev => [...prev, {
-          ...data[0],
-          sender: data[0].sender || defaultSender,
-          timestamp: data[0].created_at
+          ...messageData[0],
+          sender: messageData[0].sender || defaultSender,
+          timestamp: messageData[0].created_at
         }]);
       }
 
@@ -80,7 +93,7 @@ export function useUserChat(): UserChat {
       const { error } = await supabase
         .from('messages')
         .delete()
-        .or(`and(sender_id.eq.${profile.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${profile.id})`);
+        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`);
 
       if (error) throw error;
 

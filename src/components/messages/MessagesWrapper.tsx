@@ -9,9 +9,11 @@ import { useMessageCleanup } from "@/hooks/useMessageCleanup";
 import { useConversationHandler } from "@/hooks/useConversationHandler";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { useMessageReadStatus } from "@/hooks/useMessageReadStatus";
+import { useProfile } from "@/hooks/useProfile";
 
 export function MessagesWrapper() {
   const { showConversation, receiver } = useReceiver();
+  const { profile } = useProfile();
   const {
     messages: aiMessages,
     inputMessage: aiInputMessage,
@@ -48,7 +50,11 @@ export function MessagesWrapper() {
     }
 
     try {
-      await handleUserSendMessage(message, receiver);
+      if (receiver.id === 'assistant') {
+        await handleAISendMessage(message);
+      } else {
+        await handleUserSendMessage(message, receiver);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
@@ -56,18 +62,23 @@ export function MessagesWrapper() {
   };
 
   if (showConversation && receiver) {
+    const currentMessages = receiver.id === 'assistant' ? aiMessages : userMessages;
+    const currentInputMessage = receiver.id === 'assistant' ? aiInputMessage : userInputMessage;
+    const setCurrentInputMessage = receiver.id === 'assistant' ? setAIInputMessage : setUserInputMessage;
+
     return (
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
         <MessagesContent
-          messages={userMessages}
-          inputMessage={userInputMessage}
-          isThinking={false}
-          isListening={false}
+          messages={currentMessages}
+          inputMessage={currentInputMessage}
+          isThinking={isThinking}
+          isListening={isListening}
           onSendMessage={handleSendMessage}
-          setInputMessage={setUserInputMessage}
+          setInputMessage={setCurrentInputMessage}
           onBack={handleBack}
           receiver={receiver}
           onClearChat={() => handleDeleteConversation(receiver)}
+          messagesEndRef={null}
         />
       </div>
     );
@@ -77,7 +88,7 @@ export function MessagesWrapper() {
     <div className="h-full">
       <ConversationList
         messages={userMessages}
-        chatMessages={[]}
+        chatMessages={aiMessages}
         onSelectConversation={handleSelectConversation}
       />
     </div>

@@ -24,7 +24,6 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  // Filter out self-conversations and group remaining messages by sender/receiver
   const conversations = messages.reduce((acc: any[], message: Message) => {
     if (!profile) return acc;
     
@@ -36,24 +35,22 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     // Get the other user's ID depending on whether we're sender or receiver
     const otherUserId = message.sender_id === profile.id ? message.receiver_id : message.sender_id;
     
-    // Get the other user's information
+    // Get the other user's information (receiver if we're the sender, sender if we're the receiver)
     const otherUser = message.sender_id === profile.id 
       ? {
           id: message.receiver_id,
-          full_name: message.receiver_id === 'assistant' ? 'M. Victaure' : 'Utilisateur',
-          avatar_url: message.receiver_id === 'assistant' ? '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png' : undefined,
-          online_status: false,
-          last_seen: new Date().toISOString()
+          full_name: message.receiver_id === 'assistant' ? 'M. Victaure' : message.receiver?.full_name || 'Utilisateur',
+          avatar_url: message.receiver_id === 'assistant' ? '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png' : message.receiver?.avatar_url,
+          online_status: message.receiver_id === 'assistant' ? true : message.receiver?.online_status || false,
+          last_seen: message.receiver?.last_seen || new Date().toISOString()
         }
       : {
-          id: message.sender.id,
-          full_name: message.sender.full_name,
-          avatar_url: message.sender.avatar_url,
-          online_status: message.sender.online_status,
-          last_seen: message.sender.last_seen
+          id: message.sender_id,
+          full_name: message.sender?.full_name || 'Utilisateur',
+          avatar_url: message.sender?.avatar_url,
+          online_status: message.sender?.online_status || false,
+          last_seen: message.sender?.last_seen || new Date().toISOString()
         };
-    
-    if (!otherUser) return acc;
     
     // Find or create conversation entry
     const existingConv = acc.find((conv: any) => conv.user.id === otherUserId);
