@@ -42,17 +42,18 @@ export function NotificationsBox() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 sm:hidden"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ duration: 0.2 }}
               className={cn(
-                "absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-lg border bg-card p-4 shadow-lg z-50",
-                "before:absolute before:-top-2 before:right-4 before:h-4 before:w-4 before:rotate-45 before:border-l before:border-t before:bg-card"
+                "fixed right-4 top-16 w-[calc(100vw-2rem)] sm:w-96 rounded-lg border bg-card shadow-lg z-50",
+                "sm:absolute sm:right-0 sm:top-full sm:mt-2",
+                "max-h-[80vh] sm:max-h-[600px] flex flex-col"
               )}
             >
               <NotificationHeader 

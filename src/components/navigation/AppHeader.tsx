@@ -28,7 +28,7 @@ export function AppHeader({
   if (overlayElement) return null;
 
   return (
-    <div className="w-full border-b bg-background/95 backdrop-blur z-50">
+    <div className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur z-50 border-b">
       <div className="flex items-center justify-between h-14 px-4 max-w-[2000px] mx-auto">
         <motion.div 
           className="flex items-center gap-4"
@@ -46,7 +46,9 @@ export function AppHeader({
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <NotificationsBox />
+          <div className="relative">
+            <NotificationsBox />
+          </div>
           {isMobile && (
             <Sheet>
               <SheetTrigger asChild>
@@ -62,7 +64,7 @@ export function AppHeader({
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[85vw] sm:w-[380px] p-0">
+              <SheetContent side="right" className="w-[85vw] sm:w-[380px] p-0 pt-14">
                 <FeedSidebar className="border-none" />
               </SheetContent>
             </Sheet>
