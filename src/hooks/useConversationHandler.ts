@@ -20,14 +20,32 @@ export const useConversationHandler = () => {
         return;
       }
 
-      // Check if this is Mr. Victaure, allow conversation
+      // Check if this is Mr. Victaure, allow conversation with special handling
       if (selectedReceiver.id === 'assistant') {
+        // Get or create AI conversation thread
+        const { data: existingMessages } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('receiver_id', user.id)
+          .eq('is_ai_message', true)
+          .order('created_at', { ascending: true });
+
+        if (!existingMessages || existingMessages.length === 0) {
+          // Create initial welcome message if no conversation exists
+          await supabase.from('messages').insert({
+            content: "Bonjour ! Je suis M. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ?",
+            sender_id: 'assistant',
+            receiver_id: user.id,
+            is_ai_message: true
+          });
+        }
+
         setReceiver(selectedReceiver);
         setShowConversation(true);
         return;
       }
 
-      // For other users, only prevent conversation with yourself
+      // For other users, prevent conversation with yourself
       if (selectedReceiver.id === user.id) {
         toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
         return;
