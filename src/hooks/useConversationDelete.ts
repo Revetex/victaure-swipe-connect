@@ -11,13 +11,25 @@ export const useConversationDelete = (clearUserChat: (receiverId: string) => voi
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Utilisateur non authentifié");
 
-      // Supprimer les messages de la conversation
-      const { error: messagesError } = await supabase
-        .from('messages')
-        .delete()
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
+      if (receiver.id === 'assistant') {
+        // Pour les messages AI
+        const { error: aiMessagesError } = await supabase
+          .from('messages')
+          .delete()
+          .eq('receiver_id', user.id)
+          .eq('message_type', 'ai');
 
-      if (messagesError) throw messagesError;
+        if (aiMessagesError) throw aiMessagesError;
+      } else {
+        // Pour les messages entre utilisateurs
+        const { error: userMessagesError } = await supabase
+          .from('messages')
+          .delete()
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
+          .eq('message_type', 'user');
+
+        if (userMessagesError) throw userMessagesError;
+      }
 
       // Supprimer les statuts de messages pour cette conversation
       const { error: messageStatusError } = await supabase
@@ -45,4 +57,3 @@ export const useConversationDelete = (clearUserChat: (receiverId: string) => voi
 
   return { handleDeleteConversation };
 };
-
