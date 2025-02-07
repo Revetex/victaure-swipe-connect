@@ -1143,6 +1143,7 @@ export type Database = {
           push_notifications_enabled: boolean | null
           push_token: string | null
           role: string
+          search_enabled: boolean | null
           sections_order: string[] | null
           skills: string[] | null
           state: string | null
@@ -1181,6 +1182,7 @@ export type Database = {
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role: string
+          search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
@@ -1219,6 +1221,7 @@ export type Database = {
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role?: string
+          search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
