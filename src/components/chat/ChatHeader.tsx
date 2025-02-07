@@ -1,3 +1,4 @@
+
 import { ArrowLeft, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -26,46 +27,49 @@ export function ChatHeader({
   isThinking
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center gap-4 p-4 border-b">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onBack}
-        className="shrink-0"
-      >
-        <ArrowLeft className="h-5 w-5" />
-      </Button>
+    <div className="flex flex-col">
+      <div className="flex-1" /> {/* Spacer pour pousser le header vers le bas */}
+      <div className="flex items-center gap-4 p-4 border-b">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBack}
+          className="shrink-0"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
 
-      <Avatar className="h-10 w-10">
-        <img
-          src={avatarUrl || "/user-icon.svg"}
-          alt={title}
-          className="h-full w-full object-cover rounded-full"
-        />
-      </Avatar>
+        <Avatar className="h-10 w-10">
+          <img
+            src={avatarUrl || "/user-icon.svg"}
+            alt={title}
+            className="h-full w-full object-cover rounded-full"
+          />
+        </Avatar>
 
-      <div className="flex-1 min-w-0">
-        <h2 className="font-medium truncate">{title}</h2>
-        {subtitle && (
-          <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
+        <div className="flex-1 min-w-0">
+          <h2 className="font-medium truncate">{title}</h2>
+          {subtitle && (
+            <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
+          )}
+        </div>
+
+        {onDelete && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onDelete} className="text-destructive">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Supprimer la conversation
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
-
-      {onDelete && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onDelete} className="text-destructive">
-              <Trash2 className="h-4 w-4 mr-2" />
-              Supprimer la conversation
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
     </div>
   );
 }
