@@ -120,7 +120,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     <>
       <div className={cn(
         "w-[280px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem] z-50",
-        "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "bg-background",
         "transition-all duration-300 ease-in-out",
         className
       )}>
@@ -129,12 +129,12 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="p-3 space-y-4"
+            className="space-y-4"
           >
             {/* Header avec bouton de fermeture */}
             <motion.div 
               variants={itemVariants}
-              className="flex items-center justify-between mb-2"
+              className="flex items-center justify-between px-2 py-3"
             >
               <h2 className="text-sm font-medium bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Navigation
@@ -152,7 +152,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             {/* Section Connections */}
             <motion.div variants={itemVariants} className="space-y-1">
               <h3 className="text-xs font-medium text-muted-foreground px-2">Connections</h3>
-              <div className="rounded-lg bg-background/50 p-2">
+              <div className="bg-background/50">
                 <ConnectionsSection />
               </div>
             </motion.div>
@@ -189,7 +189,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             <motion.div variants={itemVariants} className="space-y-1">
               <h3 className="text-xs font-medium text-muted-foreground px-2">Paramètres</h3>
               <div className="space-y-1">
-                <div className="rounded-lg bg-background/50 p-2">
+                <div className="bg-background/50">
                   <AppearanceSection />
                   <NotificationsSection />
                   <PrivacySection />
