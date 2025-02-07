@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -50,10 +49,6 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   const [activeTool, setActiveTool] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>("connections");
 
-  const handleCloseSidebar = () => {
-    navigate('/dashboard');
-  };
-
   const handleToolClick = (toolName: string) => {
     setActiveTool(toolName);
   };
@@ -79,10 +74,10 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
         animate="visible"
         variants={containerVariants}
       >
-        <ScrollArea className="h-full px-2">
-          <motion.div className="space-y-4 py-4" variants={containerVariants}>
+        <ScrollArea className="h-full">
+          <motion.div className="space-y-6 py-4" variants={containerVariants}>
             <motion.div variants={itemVariants}>
-              <SidebarHeader onClose={handleCloseSidebar} />
+              <SidebarHeader />
             </motion.div>
 
             <AnimatePresence mode="wait">
@@ -91,7 +86,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
                 onClick={() => toggleSection('connections')}
                 className="cursor-pointer"
               >
-                <div className="px-2">
+                <div className="px-4">
                   <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase mb-2 hover:text-primary transition-colors">
                     Connexions
                   </h3>
@@ -109,10 +104,10 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
               </motion.div>
             </AnimatePresence>
 
-            <Separator className="my-2" />
+            <Separator className="mx-4" />
 
             <motion.div variants={itemVariants}>
-              <div className="px-2">
+              <div className="px-4">
                 <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase mb-2">
                   Outils
                 </h3>
@@ -120,7 +115,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
               </div>
             </motion.div>
 
-            <Separator className="my-2" />
+            <Separator className="mx-4" />
 
             <AnimatePresence mode="wait">
               <motion.div 
@@ -128,7 +123,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
                 onClick={() => toggleSection('settings')}
                 className="cursor-pointer"
               >
-                <div className="px-2">
+                <div className="px-4">
                   <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase mb-2 hover:text-primary transition-colors">
                     Paramètres
                   </h3>

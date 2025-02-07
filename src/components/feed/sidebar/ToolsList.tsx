@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ToolsListProps {
@@ -34,12 +34,6 @@ const tools = [
     gradient: "from-green-500/20 to-emerald-500/20"
   },
   {
-    name: "Convertisseur",
-    icon: Ruler,
-    description: "Convertissez des unités",
-    gradient: "from-red-500/20 to-pink-500/20"
-  },
-  {
     name: "Échecs",
     icon: Sword,
     description: "Jouez aux échecs",
@@ -49,7 +43,7 @@ const tools = [
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <div className="grid grid-cols-2 gap-1.5">
+    <div className="grid grid-cols-2 gap-2 p-2">
       {tools.map((tool, index) => (
         <motion.div
           key={tool.name}
@@ -61,10 +55,10 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
             variant="ghost"
             size="sm"
             className={cn(
-              "h-auto py-3 flex-col items-center justify-center gap-2",
+              "h-auto w-full py-3 flex-col items-center justify-center gap-2",
               "bg-gradient-to-br transition-all duration-300",
-              "hover:shadow-md hover:-translate-y-0.5 active:translate-y-0",
-              "group rounded-lg w-full",
+              "hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
+              "group rounded-xl",
               tool.gradient
             )}
             onClick={() => onToolClick(tool.name)}
