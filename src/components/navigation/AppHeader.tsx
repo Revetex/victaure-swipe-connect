@@ -22,7 +22,7 @@ export function AppHeader({
   if (overlayElement) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
+    <div className="fixed top-0 left-0 right-0 w-full border-b bg-background z-50">
       <div className="flex items-center justify-between p-4 max-w-[2000px] mx-auto">
         <motion.div 
           className="flex items-center gap-6"
