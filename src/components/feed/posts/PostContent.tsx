@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { EyeOff, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Comment } from "@/types/posts";
-import { PostImageGrid } from "../PostImageGrid";
+import { PostImageGrid } from "./PostImageGrid";
 
 interface PostContentProps {
   content: string;
