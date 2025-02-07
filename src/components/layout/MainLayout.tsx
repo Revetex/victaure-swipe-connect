@@ -88,7 +88,7 @@ export function MainLayout({
 
       <motion.main 
         variants={contentVariants}
-        className="flex-1 container mx-auto px-4 py-2 relative z-[1] mt-14"
+        className="flex-1 container mx-auto px-4 py-2 relative z-[1] mt-14 mb-16"
       >
         <div className="max-w-7xl mx-auto">
           {children}
@@ -97,9 +97,8 @@ export function MainLayout({
 
       {!isFriendsPage && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg h-16"
           style={{ 
-            height: '4rem',
             paddingBottom: 'env(safe-area-inset-bottom)'
           }}
         >
