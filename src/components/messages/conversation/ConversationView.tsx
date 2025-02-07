@@ -1,5 +1,5 @@
 
-import { Message, Receiver } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -151,3 +151,4 @@ export function ConversationView({
     </div>
   );
 }
+
