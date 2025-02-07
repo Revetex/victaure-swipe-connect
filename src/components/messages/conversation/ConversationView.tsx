@@ -56,8 +56,8 @@ export function ConversationView({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="sticky top-0 z-20 bg-background border-b">
+    <div className="flex flex-col h-full bg-background relative">
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
         <ChatHeader
           title={receiver.full_name}
           subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -70,7 +70,7 @@ export function ConversationView({
       </div>
 
       <ScrollArea 
-        className="flex-1 p-4 overflow-y-auto"
+        className="flex-1 p-4"
         onScrollCapture={handleScroll}
       >
         <div className="space-y-4 max-w-3xl mx-auto">
@@ -127,7 +127,7 @@ export function ConversationView({
         )}
       </AnimatePresence>
 
-      <div className="sticky bottom-0 z-20 p-4 bg-background/80 backdrop-blur-sm border-t">
+      <div className="sticky bottom-0 z-50 p-4 bg-background/95 backdrop-blur-sm border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
