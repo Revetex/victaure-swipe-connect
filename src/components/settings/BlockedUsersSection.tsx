@@ -7,9 +7,10 @@ import { UserX } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SettingsSection } from "./SettingsSection";
-import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
 export function BlockedUsersSection() {
+  const [isExpanded, setIsExpanded] = useState(false);
   const { data: blockedUsers, refetch } = useQuery({
     queryKey: ["blocked-users"],
     queryFn: async () => {
@@ -53,45 +54,56 @@ export function BlockedUsersSection() {
   };
 
   return (
-    <SettingsSection>
-      <div className="w-full space-y-1">
-        <div className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground">
+    <SettingsSection title="Utilisateurs bloqués">
+      <div className="w-full">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full justify-start gap-2 h-8 px-2 text-sm text-muted-foreground hover:text-foreground"
+        >
           <UserX className="h-4 w-4" />
-          <span className="text-sm font-medium">Utilisateurs bloqués</span>
-        </div>
-        
-        <ScrollArea className="h-[180px] w-full rounded-md border border-border/50 bg-muted/30">
-          <div className="p-2 space-y-1">
-            {blockedUsers?.map((item) => (
-              <div 
-                key={item.blocked.id} 
-                className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50"
-              >
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={item.blocked.avatar_url || ''} />
-                    <AvatarFallback>{item.blocked.full_name?.[0]}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm text-muted-foreground">{item.blocked.full_name}</span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
-                  className="h-7 px-2 text-xs"
+          <span className="flex-1 text-left">Utilisateurs bloqués</span>
+          <span className="text-xs text-muted-foreground">
+            {blockedUsers?.length || 0}
+          </span>
+        </Button>
+
+        {isExpanded && (
+          <ScrollArea className="h-[180px] w-full mt-2 rounded-md border border-border/50 bg-muted/30">
+            <div className="p-2 space-y-1">
+              {blockedUsers?.map((item) => (
+                <div 
+                  key={item.blocked.id} 
+                  className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50"
                 >
-                  Débloquer
-                </Button>
-              </div>
-            ))}
-            {(!blockedUsers || blockedUsers.length === 0) && (
-              <p className="text-center text-sm text-muted-foreground py-4">
-                Aucun utilisateur bloqué
-              </p>
-            )}
-          </div>
-        </ScrollArea>
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={item.blocked.avatar_url || ''} />
+                      <AvatarFallback>{item.blocked.full_name?.[0]}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm text-muted-foreground">{item.blocked.full_name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
+                    className="h-7 px-2 text-xs"
+                  >
+                    Débloquer
+                  </Button>
+                </div>
+              ))}
+              {(!blockedUsers || blockedUsers.length === 0) && (
+                <p className="text-center text-sm text-muted-foreground py-4">
+                  Aucun utilisateur bloqué
+                </p>
+              )}
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </SettingsSection>
   );
 }
+
