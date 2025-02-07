@@ -28,15 +28,14 @@ export function useMessages() {
           )
         `);
 
-      // Handle AI messages differently
       if (receiver?.id === 'assistant') {
         query = query
           .eq('receiver_id', user.id)
-          .eq('is_ai_message', true);
-      } else {
-        // For user-to-user conversations
+          .eq('is_ai_message', true)
+          .or(`sender_id.eq.${user.id},sender_id.eq.assistant`);
+      } else if (receiver) {
         query = query
-          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver?.id}),and(sender_id.eq.${receiver?.id},receiver_id.eq.${user.id})`)
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
           .eq('is_ai_message', false);
       }
 

@@ -37,21 +37,18 @@ export function useUserChat(): UserChat {
     
     setIsLoading(true);
     try {
-      const isAiMessage = receiver.id === 'assistant';
       const newMessage = {
-        id: crypto.randomUUID(),
         content: message,
         sender_id: profile.id,
         receiver_id: receiver.id,
-        is_ai_message: isAiMessage,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        is_ai_message: receiver.id === 'assistant',
         read: false
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
-        .insert(newMessage);
+        .insert(newMessage)
+        .select('*, sender:profiles!messages_sender_id_fkey(*)');
 
       if (error) {
         console.error('Error inserting message:', error);
@@ -60,12 +57,14 @@ export function useUserChat(): UserChat {
 
       setInputMessage('');
       
-      // Update local messages state
-      setMessages(prev => [...prev, {
-        ...newMessage,
-        sender: defaultSender,
-        timestamp: newMessage.created_at
-      }]);
+      if (data && data[0]) {
+        // Update local messages state with the returned message including sender info
+        setMessages(prev => [...prev, {
+          ...data[0],
+          sender: data[0].sender || defaultSender,
+          timestamp: data[0].created_at
+        }]);
+      }
 
     } catch (error) {
       console.error('Error sending message:', error);

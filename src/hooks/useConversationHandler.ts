@@ -22,13 +22,16 @@ export const useConversationHandler = () => {
 
       // Check if this is Mr. Victaure, allow conversation with special handling
       if (selectedReceiver.id === 'assistant') {
+        setReceiver(selectedReceiver);
+        setShowConversation(true);
+
         // Get or create AI conversation thread
         const { data: existingMessages, error: msgError } = await supabase
           .from('messages')
           .select('*')
           .eq('receiver_id', user.id)
           .eq('is_ai_message', true)
-          .order('created_at', { ascending: true });
+          .limit(1);
 
         if (msgError) {
           console.error("Error fetching AI messages:", msgError);
@@ -51,9 +54,6 @@ export const useConversationHandler = () => {
             return;
           }
         }
-
-        setReceiver(selectedReceiver);
-        setShowConversation(true);
         return;
       }
 
