@@ -29,10 +29,12 @@ export function useMessages() {
         `);
 
       if (receiver?.id === 'assistant') {
+        // For AI messages, only filter by message_type and receiver_id
         query = query
           .eq('receiver_id', user.id)
           .eq('message_type', 'ai');
       } else if (receiver) {
+        // For user messages, filter by sender_id and receiver_id
         query = query
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
           .eq('message_type', 'user');
