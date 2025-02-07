@@ -34,12 +34,15 @@ export function useMessages() {
           .eq('receiver_id', user.id)
           .eq('is_ai_message', true);
       } else {
+        // For user-to-user conversations, get messages where:
+        // (current user is sender AND selected user is receiver) OR
+        // (selected user is sender AND current user is receiver)
         query = query
-          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver?.id}),and(sender_id.eq.${receiver?.id},receiver_id.eq.${user.id})`)
-          .eq('is_ai_message', false);
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver?.id}),and(sender_id.eq.${receiver?.id},receiver_id.eq.${user.id})`);
       }
 
-      const { data: messages, error } = await query.order("created_at", { ascending: true });
+      const { data: messages, error } = await query
+        .order("created_at", { ascending: true });
 
       if (error) {
         console.error("Error fetching messages:", error);

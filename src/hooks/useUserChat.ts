@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { Message, MessageSender, Receiver } from '@/types/messages';
 import { useProfile } from './useProfile';
@@ -27,42 +28,40 @@ export function useUserChat(): UserChat {
     last_seen: new Date().toISOString()
   };
 
-  const addMessage = useCallback((content: string, receiver: Receiver, sender: MessageSender = defaultSender) => {
-    console.log("Adding user message:", { content, receiver, sender });
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      content,
-      sender_id: sender.id,
-      receiver_id: receiver.id,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      read: false,
-      sender,
-      timestamp: new Date().toISOString()
-    };
-
-    setMessages(prev => [...prev, newMessage]);
-    return newMessage;
-  }, [defaultSender]);
-
   const handleSendMessage = useCallback(async (message: string, receiver: Receiver) => {
     if (!message.trim()) return;
+    if (!profile) {
+      toast.error("Vous devez être connecté pour envoyer des messages");
+      return;
+    }
     
     setIsLoading(true);
     try {
-      const newMessage = addMessage(message, receiver);
-      setInputMessage('');
+      const newMessage = {
+        id: crypto.randomUUID(),
+        content: message,
+        sender_id: profile.id,
+        receiver_id: receiver.id,
+        is_ai_message: receiver.id === 'assistant',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        read: false
+      };
 
       const { error } = await supabase
         .from('messages')
-        .insert({
-          id: newMessage.id,
-          sender_id: defaultSender.id,
-          receiver_id: receiver.id,
-          content: message,
-        });
+        .insert(newMessage);
 
       if (error) throw error;
+
+      setInputMessage('');
+      
+      // Update local messages state
+      setMessages(prev => [...prev, {
+        ...newMessage,
+        sender: defaultSender,
+        timestamp: newMessage.created_at
+      }]);
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -70,15 +69,16 @@ export function useUserChat(): UserChat {
     } finally {
       setIsLoading(false);
     }
-  }, [addMessage, defaultSender]);
+  }, [profile, defaultSender]);
 
   const clearChat = useCallback(async (receiverId: string) => {
+    if (!profile) return;
+    
     try {
       const { error } = await supabase
         .from('messages')
         .delete()
-        .or(`sender_id.eq.${defaultSender.id},receiver_id.eq.${defaultSender.id}`)
-        .or(`sender_id.eq.${receiverId},receiver_id.eq.${receiverId}`);
+        .or(`and(sender_id.eq.${profile.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${profile.id})`);
 
       if (error) throw error;
 
@@ -88,7 +88,7 @@ export function useUserChat(): UserChat {
       console.error('Error clearing chat:', error);
       toast.error("Erreur lors de l'effacement de la conversation");
     }
-  }, [defaultSender.id]);
+  }, [profile]);
 
   return {
     messages,
