@@ -11,6 +11,7 @@ import { PrivacySection } from "@/components/settings/PrivacySection";
 import { SecuritySection } from "@/components/settings/SecuritySection";
 import { BlockedUsersSection } from "@/components/settings/BlockedUsersSection";
 import { LogoutSection } from "@/components/settings/LogoutSection";
+import { ConnectionsSection } from "@/components/feed/friends/ConnectionsSection";
 
 interface FeedSidebarProps {
   className?: string;
@@ -20,12 +21,6 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   const navigate = useNavigate();
 
   const tools = [
-    {
-      name: "Amis",
-      icon: Users,
-      path: "/friends",
-      description: "Gérez vos amis"
-    },
     {
       name: "Notes",
       icon: Plus,
@@ -103,6 +98,14 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             </Button>
           </div>
 
+          {/* Friends Section */}
+          <div className="space-y-1">
+            <h3 className="text-xs font-medium text-muted-foreground px-2">Connections</h3>
+            <ConnectionsSection />
+          </div>
+
+          <Separator className="my-4" />
+
           {/* Tools Section */}
           <div className="space-y-1">
             <h3 className="text-xs font-medium text-muted-foreground px-2">Outils</h3>
@@ -144,4 +147,3 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     </div>
   );
 }
-
