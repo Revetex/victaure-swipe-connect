@@ -1,8 +1,12 @@
+
 import { Button } from "@/components/ui/button";
 import { Menu as MenuIcon } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { FeedSidebar } from "../feed/FeedSidebar";
+import { Suspense } from "react";
 
 export interface DashboardHeaderProps {
   title: string;
@@ -27,6 +31,18 @@ export function DashboardHeader({
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MenuIcon className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[280px] sm:w-[350px] p-0">
+              <Suspense fallback={null}>
+                <FeedSidebar />
+              </Suspense>
+            </SheetContent>
+          </Sheet>
           <Logo size="lg" />
           <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
         </motion.div>
