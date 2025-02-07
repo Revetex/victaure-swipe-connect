@@ -8,7 +8,8 @@ import { useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { FeedSidebar } from "../feed/FeedSidebar";
+import { Navigation } from "@/components/Navigation";
+import { cn } from "@/lib/utils";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -75,7 +76,7 @@ export function MainLayout({
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[280px] p-0">
-                  <FeedSidebar />
+                  <Navigation />
                 </SheetContent>
               </Sheet>
             ) : null}
@@ -102,7 +103,7 @@ export function MainLayout({
       <div className="flex flex-1 pt-16">
         {!isMobile && (
           <aside className="w-[280px] lg:w-[320px] hidden md:block border-r bg-card/50 backdrop-blur-sm fixed left-0 h-[calc(100vh-4rem)] top-16">
-            <FeedSidebar />
+            <Navigation />
           </aside>
         )}
         
@@ -129,7 +130,7 @@ export function MainLayout({
           }}
         >
           <div className="container mx-auto px-4 h-16">
-            {/* Garde la navigation existante */}
+            {/* Navigation content */}
           </div>
         </nav>
       )}
