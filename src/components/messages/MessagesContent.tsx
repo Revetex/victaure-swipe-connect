@@ -95,7 +95,7 @@ export function MessagesContent({
   if (!receiver) return null;
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm">
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[9999]">
       <div 
         className="h-full flex flex-col"
         style={{ 
@@ -131,4 +131,3 @@ export function MessagesContent({
     </div>
   );
 }
-

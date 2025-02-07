@@ -37,7 +37,7 @@ export function useUserChat(): UserChat {
         read: false
       };
 
-      // Enregistrer le message
+      // Save the message
       const { data: messageData, error: messageError } = await supabase
         .from('messages')
         .insert(newMessage)
@@ -50,7 +50,7 @@ export function useUserChat(): UserChat {
 
       if (messageError) throw messageError;
 
-      // Créer une notification
+      // Create notification
       const notification = {
         user_id: receiver.id,
         title: "Nouveau message",
