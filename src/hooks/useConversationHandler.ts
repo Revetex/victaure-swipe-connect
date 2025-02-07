@@ -20,22 +20,38 @@ export const useConversationHandler = () => {
         return;
       }
 
-      // Si c'est M. Victaure, autoriser la conversation
+      // Check if this is Mr. Victaure, allow conversation
       if (selectedReceiver.id === 'assistant') {
         setReceiver(selectedReceiver);
         setShowConversation(true);
         return;
       }
 
-      // Pour les autres utilisateurs, empêcher uniquement la conversation avec soi-même
+      // For other users, only prevent conversation with yourself
       if (selectedReceiver.id === user.id) {
         toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
         return;
       }
 
-      // Autoriser la conversation avec d'autres utilisateurs
+      // Check if they are friends
+      const { data: friendRequest } = await supabase
+        .from('friend_requests')
+        .select('*')
+        .eq('status', 'accepted')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .or(`sender_id.eq.${selectedReceiver.id},receiver_id.eq.${selectedReceiver.id}`)
+        .single();
+
+      if (!friendRequest) {
+        toast.error("Vous devez être amis pour démarrer une conversation");
+        return;
+      }
+
+      // Allow conversation between friends
       setReceiver(selectedReceiver);
       setShowConversation(true);
+      console.log("Starting conversation with:", selectedReceiver);
+
     } catch (error) {
       console.error('Error selecting conversation:', error);
       toast.error("Une erreur est survenue lors de la sélection de la conversation");
