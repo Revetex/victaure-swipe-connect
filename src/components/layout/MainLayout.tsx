@@ -65,7 +65,7 @@ export function MainLayout({
       exit="exit"
       className="min-h-screen bg-background flex flex-col"
     >
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="fixed top-0 left-0 right-0 z-[60] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -90,8 +90,8 @@ export function MainLayout({
         variants={contentVariants}
         className="flex-1 container mx-auto px-4"
         style={{ 
-          marginTop: '4rem', // Add top margin to account for fixed header
-          marginBottom: !isFriendsPage ? '4rem' : '0', // Add bottom margin when nav is present
+          marginTop: '5rem', // Increased top margin to prevent header overlap
+          marginBottom: !isFriendsPage ? '4rem' : '0',
           minHeight: '100vh',
           paddingBottom: 'env(safe-area-inset-bottom)'
         }}

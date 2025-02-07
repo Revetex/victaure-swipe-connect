@@ -98,7 +98,7 @@ export function Feed() {
         )}>
           <ScrollArea 
             ref={scrollRef} 
-            className="h-[calc(100vh-1rem)]"
+            className="h-[calc(100vh-5rem)]" // Adjusted to account for header height
             onScroll={handleScroll}
           >
             <div className="max-w-2xl mx-auto py-4">
@@ -106,7 +106,7 @@ export function Feed() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-3"
+                className="sticky top-0 z-[55] bg-background/95 backdrop-blur-sm py-3 mt-4" // Added mt-4 for spacing
               >
                 <CreatePost onPostCreated={handlePostCreated} />
               </motion.div>
