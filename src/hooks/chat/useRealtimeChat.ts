@@ -28,7 +28,6 @@ export function useRealtimeChat() {
 
       if (error) throw error;
 
-      // Convert the raw data to match ChatMessage type
       const typedMessages: ChatMessage[] = data.map(msg => ({
         id: msg.id,
         content: msg.content,
@@ -56,7 +55,8 @@ export function useRealtimeChat() {
           schema: 'public',
           table: 'ai_chat_messages'
         },
-        () => {
+        (payload) => {
+          console.log('New message received:', payload);
           loadMessages();
         }
       )
@@ -83,20 +83,20 @@ export function useRealtimeChat() {
       }
 
       const message = {
-        id: crypto.randomUUID(),
         content,
         sender,
         user_id: user.id,
-        created_at: new Date().toISOString()
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('ai_chat_messages')
-        .insert(message);
+        .insert(message)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      return message;
+      return data;
     } catch (error) {
       console.error('Error adding message:', error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
