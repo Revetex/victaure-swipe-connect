@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { Message, MessageSender, Receiver } from '@/types/messages';
+import { Message, Receiver } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,7 +37,6 @@ export function useUserChat(): UserChat {
         read: false
       };
 
-      // Save the message
       const { data: messageData, error: messageError } = await supabase
         .from('messages')
         .insert(newMessage)
@@ -50,7 +49,6 @@ export function useUserChat(): UserChat {
 
       if (messageError) throw messageError;
 
-      // Create notification
       const notification = {
         user_id: receiver.id,
         title: "Nouveau message",
