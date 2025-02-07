@@ -27,9 +27,9 @@ export function ChatHeader({
   isThinking
 }: ChatHeaderProps) {
   return (
-    <div className="flex flex-col">
-      <div className="flex-1" /> {/* Spacer pour pousser le header vers le bas */}
-      <div className="flex items-center gap-4 p-4 border-b">
+    <div className="flex flex-col relative z-[60]">
+      <div className="flex-1" />
+      <div className="flex items-center gap-4 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <Button
           variant="ghost"
           size="icon"
