@@ -74,11 +74,17 @@ export function useUserChat(): UserChat {
           sender: messageData[0].sender || {
             id: profile.id,
             full_name: profile.full_name,
-            avatar_url: profile.avatar_url || '',
+            avatar_url: profile.avatar_url || '/placeholder.svg',
             online_status: true,
             last_seen: new Date().toISOString()
           },
-          receiver: messageData[0].receiver || receiver
+          receiver: messageData[0].receiver || {
+            id: receiver.id,
+            full_name: receiver.full_name,
+            avatar_url: receiver.avatar_url || '/placeholder.svg',
+            online_status: receiver.online_status,
+            last_seen: receiver.last_seen
+          }
         };
         
         setMessages(prev => [...prev, formattedMessage]);

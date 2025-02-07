@@ -24,7 +24,7 @@ export interface Message {
 export interface Receiver {
   id: string;
   full_name: string;
-  avatar_url?: string;
+  avatar_url: string;  // Changed from optional to required to match MessageSender
   online_status: boolean;
   last_seen: string;
 }
