@@ -12,12 +12,42 @@ interface ToolsNavigationProps {
 }
 
 const tools = [
-  { id: "notes", icon: Plus, label: "Notes" },
-  { id: "tasks", icon: ListTodo, label: "Tâches" },
-  { id: "calculator", icon: Calculator, label: "Calculatrice" },
-  { id: "translator", icon: Languages, label: "Traducteur" },
-  { id: "converter", icon: Ruler, label: "Convertisseur" },
-  { id: "chess", icon: Sword, label: "Échecs" }
+  { 
+    id: "notes", 
+    icon: Plus, 
+    label: "Notes",
+    description: "Créer et gérer vos notes" 
+  },
+  { 
+    id: "tasks", 
+    icon: ListTodo, 
+    label: "Tâches",
+    description: "Gérer votre liste de tâches" 
+  },
+  { 
+    id: "calculator", 
+    icon: Calculator, 
+    label: "Calculatrice",
+    description: "Effectuer des calculs" 
+  },
+  { 
+    id: "translator", 
+    icon: Languages, 
+    label: "Traducteur",
+    description: "Traduire du texte" 
+  },
+  { 
+    id: "converter", 
+    icon: Ruler, 
+    label: "Convertisseur",
+    description: "Convertir des unités" 
+  },
+  { 
+    id: "chess", 
+    icon: Sword, 
+    label: "Échecs",
+    description: "Jouer aux échecs" 
+  }
 ];
 
 export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsNavigationProps) {
@@ -30,6 +60,7 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
       {orderedTools.map((tool, index) => {
         if (!tool) return null;
         const Icon = tool.icon;
+        const isActive = activeTool === tool.id;
         
         return (
           <motion.div
@@ -39,13 +70,21 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
             transition={{ delay: index * 0.1 }}
           >
             <Button 
-              variant={activeTool === tool.id ? "default" : "outline"}
+              variant={isActive ? "default" : "outline"}
               size="sm"
               onClick={() => onToolChange(tool.id as Tool)}
-              className="whitespace-nowrap min-w-[120px] transition-all duration-300 hover:scale-105"
+              className="whitespace-nowrap min-w-[120px] transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-primary/20"
+              aria-label={tool.description}
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`${tool.id}-panel`}
+              title={tool.description}
             >
-              <Icon className="h-4 w-4 mr-2" />
-              {tool.label}
+              <Icon className="h-4 w-4 mr-2 shrink-0" 
+                aria-hidden="true"
+                role="presentation"
+              />
+              <span className="truncate">{tool.label}</span>
             </Button>
           </motion.div>
         );
@@ -53,3 +92,4 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
     </div>
   );
 }
+
