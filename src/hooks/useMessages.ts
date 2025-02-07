@@ -29,14 +29,19 @@ export function useMessages() {
         `);
 
       if (receiver?.id === 'assistant') {
-        // For AI messages, only filter by message_type and receiver_id
+        // Pour les messages de l'assistant
         query = query
           .eq('receiver_id', user.id)
           .eq('message_type', 'ai');
       } else if (receiver) {
-        // For user messages, filter by sender_id and receiver_id
+        // Pour les messages entre utilisateurs
         query = query
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
+          .eq('message_type', 'user');
+      } else {
+        // Quand aucun destinataire n'est sélectionné, récupérer toutes les conversations
+        query = query
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
           .eq('message_type', 'user');
       }
 
@@ -54,7 +59,7 @@ export function useMessages() {
         timestamp: msg.created_at
       })) as Message[];
     },
-    enabled: !!receiver
+    enabled: true // Always fetch messages to show conversations list
   });
 
   const markAsRead = useMutation({
