@@ -62,9 +62,9 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   return (
     <>
       <div className={cn(
-        "w-[220px] flex-shrink-0 border-r h-[calc(100vh-4rem)]",
-        "bg-background fixed left-0 top-[4rem] z-40",
-        "transition-all duration-300 ease-in-out",
+        "w-[280px] border-r h-[calc(100vh-4rem)]",
+        "bg-card/50 backdrop-blur-sm fixed left-0 top-[4rem] z-40",
+        "shadow-lg shadow-background/5",
         className
       )}>
         <ScrollArea className="h-full">
@@ -72,32 +72,44 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-2 py-2"
+            className="p-4 space-y-6"
           >
             <motion.div variants={itemVariants}>
               <SidebarHeader onClose={handleCloseSidebar} />
             </motion.div>
 
-            <motion.div variants={itemVariants} className="px-2 space-y-1">
-              <h3 className="text-[10px] font-medium text-muted-foreground ml-2 mb-1">Connections</h3>
-              <div className="bg-background/50">
-                <ConnectionsSection />
+            <motion.div variants={itemVariants}>
+              <div className="space-y-2">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2">
+                  Connections
+                </h3>
+                <div className="bg-card/50 rounded-lg p-2">
+                  <ConnectionsSection />
+                </div>
               </div>
             </motion.div>
 
-            <Separator className="my-2" />
+            <Separator className="my-4" />
 
-            <motion.div variants={itemVariants} className="px-2 space-y-1">
-              <h3 className="text-[10px] font-medium text-muted-foreground ml-2 mb-1">Outils</h3>
-              <ToolsList onToolClick={handleToolClick} />
+            <motion.div variants={itemVariants}>
+              <div className="space-y-2">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2">
+                  Outils
+                </h3>
+                <div className="bg-card/50 rounded-lg p-2">
+                  <ToolsList onToolClick={handleToolClick} />
+                </div>
+              </div>
             </motion.div>
 
-            <Separator className="my-2" />
+            <Separator className="my-4" />
 
-            <motion.div variants={itemVariants} className="px-2 space-y-1">
-              <h3 className="text-[10px] font-medium text-muted-foreground ml-2 mb-1">Paramètres</h3>
-              <div className="space-y-0.5">
-                <div className="bg-background/50">
+            <motion.div variants={itemVariants}>
+              <div className="space-y-2">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2">
+                  Paramètres
+                </h3>
+                <div className="space-y-1 bg-card/50 rounded-lg p-2">
                   <AppearanceSection />
                   <NotificationsSection />
                   <PrivacySection />
