@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { Message, Receiver } from '@/types/messages';
 import { useProfile } from './useProfile';
@@ -112,6 +113,7 @@ export function useUserChat(): UserChat {
           timestamp: messageData.created_at,
           status: 'sent',
           message_type: 'user',
+          metadata: messageData.metadata as Record<string, any> || {},
           sender: messageData.sender || {
             id: profile.id,
             full_name: profile.full_name,
