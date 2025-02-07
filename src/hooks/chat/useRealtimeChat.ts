@@ -83,6 +83,7 @@ export function useRealtimeChat() {
       }
 
       const message = {
+        id: crypto.randomUUID(),
         content,
         sender,
         user_id: user.id,
