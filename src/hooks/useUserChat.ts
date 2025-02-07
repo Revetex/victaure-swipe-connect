@@ -37,12 +37,13 @@ export function useUserChat(): UserChat {
     
     setIsLoading(true);
     try {
+      const isAiMessage = receiver.id === 'assistant';
       const newMessage = {
         id: crypto.randomUUID(),
         content: message,
         sender_id: profile.id,
         receiver_id: receiver.id,
-        is_ai_message: receiver.id === 'assistant',
+        is_ai_message: isAiMessage,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         read: false
@@ -52,7 +53,10 @@ export function useUserChat(): UserChat {
         .from('messages')
         .insert(newMessage);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting message:', error);
+        throw error;
+      }
 
       setInputMessage('');
       
