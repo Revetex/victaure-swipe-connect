@@ -1375,6 +1375,14 @@ export type Database = {
           secret: string
         }[]
       }
+      handle_post_reaction: {
+        Args: {
+          p_post_id: string
+          p_user_id: string
+          p_reaction_type: string
+        }
+        Returns: undefined
+      }
       latitude: {
         Args: {
           "": unknown
