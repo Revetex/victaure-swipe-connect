@@ -34,7 +34,7 @@ export function Chat() {
               left: 0,
               right: 0,
               bottom: 0,
-              zIndex: 99999
+              zIndex: 999999 // Augmenté pour être sûr d'être au dessus de tout
             }}
           >
             <div className="h-full w-full flex items-center justify-center p-8">
