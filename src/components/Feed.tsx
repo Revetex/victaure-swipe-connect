@@ -61,13 +61,13 @@ export function Feed() {
     >
       {!isMobile && (
         <Suspense fallback={null}>
-          <div className="sticky top-[4rem] left-0 h-full">
+          <div className="sticky top-[4rem] left-0 h-full z-30">
             <FeedSidebar />
           </div>
         </Suspense>
       )}
       
-      <div className="flex-1 relative pl-4">
+      <div className="flex-1 relative pl-4 z-20">
         <ScrollArea 
           ref={scrollRef} 
           className={cn(
