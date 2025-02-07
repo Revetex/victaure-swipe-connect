@@ -3,14 +3,21 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Tool, ToolInfo } from "./types";
+import { Loader2 } from "lucide-react";
 
 interface ToolGridItemProps {
   tool: ToolInfo;
   isActive: boolean;
   onClick: (tool: Tool) => void;
+  isLoading?: boolean;
 }
 
-export function ToolGridItem({ tool, isActive, onClick }: ToolGridItemProps) {
+export function ToolGridItem({ 
+  tool, 
+  isActive, 
+  onClick,
+  isLoading 
+}: ToolGridItemProps) {
   const Icon = tool.icon;
   
   return (
@@ -31,21 +38,29 @@ export function ToolGridItem({ tool, isActive, onClick }: ToolGridItemProps) {
           isActive && "ring-2 ring-primary/20",
           tool.comingSoon && "opacity-50 cursor-not-allowed"
         )}
-        disabled={tool.comingSoon}
+        disabled={tool.comingSoon || isLoading}
         aria-label={tool.description}
-        role="tab"
         aria-selected={isActive}
+        aria-disabled={tool.comingSoon}
+        role="tab"
         aria-controls={`${tool.id}-panel`}
       >
-        <Icon className={cn(
-          "h-6 w-6 transition-transform duration-300",
-          "group-hover:scale-110",
-          isActive && "text-primary"
-        )} />
+        {isLoading ? (
+          <Loader2 className="h-6 w-6 animate-spin" />
+        ) : (
+          <Icon className={cn(
+            "h-6 w-6 transition-transform duration-300",
+            "group-hover:scale-110",
+            isActive && "text-primary"
+          )} />
+        )}
         <span className="text-sm font-medium text-center line-clamp-2">
           {tool.label}
           {tool.comingSoon && (
-            <span className="block text-xs text-muted-foreground">
+            <span 
+              className="block text-xs text-muted-foreground"
+              aria-label="Fonctionnalité à venir"
+            >
               Bientôt disponible
             </span>
           )}

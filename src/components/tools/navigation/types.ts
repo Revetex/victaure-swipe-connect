@@ -8,7 +8,7 @@ export interface ToolInfo {
   icon: any;
   label: string;
   description: string;
-  component: ComponentType<any>;
+  component: ComponentType<{ onLoad?: () => void }>;
   gradient: string;
   comingSoon?: boolean;
 }

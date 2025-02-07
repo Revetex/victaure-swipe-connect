@@ -13,7 +13,10 @@ export const tools: ToolInfo[] = [
     icon: Plus, 
     label: "Notes",
     description: "Créer et gérer vos notes",
-    component: NotesPage,
+    component: ({ onLoad }) => {
+      onLoad?.();
+      return <NotesPage />;
+    },
     gradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20"
   },
   { 
@@ -21,7 +24,10 @@ export const tools: ToolInfo[] = [
     icon: ListTodo, 
     label: "Tâches",
     description: "Gérer votre liste de tâches",
-    component: TasksPage,
+    component: ({ onLoad }) => {
+      onLoad?.();
+      return <TasksPage />;
+    },
     gradient: "from-blue-500/20 via-indigo-500/20 to-violet-500/20"
   },
   { 
@@ -29,7 +35,10 @@ export const tools: ToolInfo[] = [
     icon: Calculator, 
     label: "Calculatrice",
     description: "Effectuer des calculs",
-    component: CalculatorPage,
+    component: ({ onLoad }) => {
+      onLoad?.();
+      return <CalculatorPage />;
+    },
     gradient: "from-green-500/20 via-emerald-500/20 to-teal-500/20"
   },
   { 
@@ -37,7 +46,10 @@ export const tools: ToolInfo[] = [
     icon: Languages, 
     label: "Traducteur",
     description: "Traduire du texte",
-    component: TranslatorPage,
+    component: ({ onLoad }) => {
+      onLoad?.();
+      return <TranslatorPage />;
+    },
     gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20"
   },
   { 
@@ -45,11 +57,14 @@ export const tools: ToolInfo[] = [
     icon: Ruler, 
     label: "Convertisseur",
     description: "Convertir des unités",
-    component: () => (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
-      </div>
-    ),
+    component: ({ onLoad }) => {
+      onLoad?.();
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
+        </div>
+      );
+    },
     gradient: "from-cyan-500/20 via-sky-500/20 to-blue-500/20",
     comingSoon: true
   },
@@ -58,7 +73,10 @@ export const tools: ToolInfo[] = [
     icon: Sword, 
     label: "Échecs",
     description: "Jouer aux échecs",
-    component: ChessPage,
+    component: ({ onLoad }) => {
+      onLoad?.();
+      return <ChessPage />;
+    },
     gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20"
   }
 ];
