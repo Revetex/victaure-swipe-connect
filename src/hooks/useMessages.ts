@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Message } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
 import { useReceiver } from "./useReceiver";
 
 export function useMessages() {
@@ -93,10 +93,38 @@ export function useMessages() {
     }
   });
 
+  const handleSendMessage = async (content: string, receiver: Receiver) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const newMessage = {
+        content,
+        sender_id: user.id,
+        receiver_id: receiver.id,
+        is_ai_message: false,
+        read: false
+      };
+
+      const { error } = await supabase
+        .from("messages")
+        .insert(newMessage);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["messages", receiver.id] });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message");
+      throw error;
+    }
+  };
+
   return {
     messages,
     isLoading,
     markAsRead,
-    deleteMessage
+    deleteMessage,
+    handleSendMessage
   };
 }
