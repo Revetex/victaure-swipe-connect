@@ -20,17 +20,20 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   const conversations = messages.reduce((acc: any[], message: Message) => {
     if (!profile) return acc;
     
+    // Skip self-messages
     if (message.sender_id === message.receiver_id) {
       return acc;
     }
 
     const otherUserId = message.sender_id === profile.id ? message.receiver_id : message.sender_id;
+    const otherUser = message.sender_id === profile.id ? message.receiver : message.sender;
+
+    // Skip if we don't have valid user information
+    if (!otherUser || !otherUserId) {
+      return acc;
+    }
     
-    const otherUser = message.sender_id === profile.id 
-      ? message.receiver
-      : message.sender;
-    
-    const existingConv = acc.find((conv: any) => conv.user.id === otherUserId);
+    const existingConv = acc.find((conv: any) => conv.user?.id === otherUserId);
     if (!existingConv) {
       acc.push({
         user: otherUser,
@@ -43,7 +46,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   }, []);
 
   const filteredConversations = conversations.filter(conv => 
-    conv.user.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+    conv.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -118,3 +121,4 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     </div>
   );
 }
+
