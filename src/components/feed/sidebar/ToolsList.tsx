@@ -43,7 +43,7 @@ const tools = [
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <div className="grid grid-cols-2 gap-1">
+    <div className="grid grid-cols-2 gap-2 p-2">
       {tools.map((tool, index) => (
         <motion.div
           key={tool.name}
@@ -61,7 +61,7 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
             variant="ghost"
             size="sm"
             className={cn(
-              "w-full h-16 flex flex-col items-center justify-center gap-1",
+              "w-full h-20 flex flex-col items-center justify-center gap-2",
               "bg-gradient-to-br transition-all duration-300",
               "hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
               "group rounded-xl",
@@ -70,8 +70,8 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
             onClick={() => onToolClick(tool.name)}
             title={tool.description}
           >
-            <tool.icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-            <span className="text-xs font-medium bg-gradient-to-br from-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+            <tool.icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+            <span className="text-sm font-medium bg-gradient-to-br from-foreground/90 to-foreground/70 bg-clip-text text-transparent">
               {tool.name}
             </span>
           </Button>
@@ -82,4 +82,3 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
 }
 
 export { tools };
-

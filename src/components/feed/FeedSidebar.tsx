@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AppearanceSection } from "@/components/settings/AppearanceSection";
 import { NotificationsSection } from "@/components/settings/NotificationsSection";
 import { PrivacySection } from "@/components/settings/PrivacySection";
@@ -20,34 +22,10 @@ interface FeedSidebarProps {
   className?: string;
 }
 
-const containerVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.3,
-      staggerChildren: 0.05
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -10 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      type: "spring",
-      stiffness: 120,
-      damping: 12
-    }
-  }
-};
-
 export function FeedSidebar({ className }: FeedSidebarProps) {
   const navigate = useNavigate();
   const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>("connections");
 
   const handleToolClick = (toolName: string) => {
@@ -62,93 +40,122 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     setExpandedSection(expandedSection === section ? null : section);
   };
 
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   return (
     <>
       <motion.div 
         className={cn(
-          "w-[280px] border-r h-[calc(100vh-4rem)]",
-          "bg-background/95 backdrop-blur-sm fixed left-0 top-[4rem] z-40",
+          "fixed left-0 top-[4rem] z-40 h-[calc(100vh-4rem)]",
+          "bg-background/95 backdrop-blur-sm border-r",
           "shadow-lg shadow-background/5",
+          isCollapsed ? "w-16" : "w-[320px]",
           className
         )}
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
+        initial={false}
+        animate={{ width: isCollapsed ? 64 : 320 }}
+        transition={{ duration: 0.2 }}
       >
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute -right-4 top-4 z-50 rounded-full bg-background border shadow-md"
+          onClick={toggleSidebar}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </Button>
+
         <ScrollArea className="h-full">
-          <motion.div className="space-y-6 py-4" variants={containerVariants}>
-            <motion.div variants={itemVariants}>
-              <SidebarHeader />
-            </motion.div>
+          <AnimatePresence mode="wait">
+            <div className="space-y-6 p-4">
+              {!isCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <SidebarHeader />
+                </motion.div>
+              )}
 
-            <AnimatePresence mode="wait">
-              <motion.div 
-                variants={itemVariants}
-                onClick={() => toggleSection('connections')}
-                className="cursor-pointer"
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-4"
               >
-                <div className="px-4">
-                  <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase mb-2 hover:text-primary transition-colors">
-                    Connexions
-                  </h3>
-                  {expandedSection === 'connections' && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                {!isCollapsed && (
+                  <>
+                    <div
+                      onClick={() => toggleSection('connections')}
+                      className="cursor-pointer"
                     >
-                      <ConnectionsSection />
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                      <h3 className="text-sm font-medium text-muted-foreground tracking-wider uppercase mb-2 hover:text-primary transition-colors">
+                        Connexions
+                      </h3>
+                      {expandedSection === 'connections' && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ConnectionsSection />
+                        </motion.div>
+                      )}
+                    </div>
 
-            <Separator className="mx-4" />
+                    <Separator />
+                  </>
+                )}
 
-            <motion.div variants={itemVariants}>
-              <div className="px-4">
-                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase mb-2">
-                  Outils
-                </h3>
-                <ToolsList onToolClick={handleToolClick} />
-              </div>
-            </motion.div>
-
-            <Separator className="mx-4" />
-
-            <AnimatePresence mode="wait">
-              <motion.div 
-                variants={itemVariants}
-                onClick={() => toggleSection('settings')}
-                className="cursor-pointer"
-              >
-                <div className="px-4">
-                  <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase mb-2 hover:text-primary transition-colors">
-                    Paramètres
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground tracking-wider uppercase mb-2">
+                    Outils
                   </h3>
-                  {expandedSection === 'settings' && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="space-y-1"
-                    >
-                      <AppearanceSection />
-                      <NotificationsSection />
-                      <PrivacySection />
-                      <SecuritySection />
-                      <BlockedUsersSection />
-                      <Separator className="my-2" />
-                      <LogoutSection />
-                    </motion.div>
-                  )}
+                  <ToolsList onToolClick={handleToolClick} />
                 </div>
+
+                {!isCollapsed && (
+                  <>
+                    <Separator />
+
+                    <div
+                      onClick={() => toggleSection('settings')}
+                      className="cursor-pointer"
+                    >
+                      <h3 className="text-sm font-medium text-muted-foreground tracking-wider uppercase mb-2 hover:text-primary transition-colors">
+                        Paramètres
+                      </h3>
+                      {expandedSection === 'settings' && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="space-y-2"
+                        >
+                          <AppearanceSection />
+                          <NotificationsSection />
+                          <PrivacySection />
+                          <SecuritySection />
+                          <BlockedUsersSection />
+                          <Separator className="my-2" />
+                          <LogoutSection />
+                        </motion.div>
+                      )}
+                    </div>
+                  </>
+                )}
               </motion.div>
-            </AnimatePresence>
-          </motion.div>
+            </div>
+          </AnimatePresence>
         </ScrollArea>
       </motion.div>
 
@@ -159,4 +166,3 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     </>
   );
 }
-

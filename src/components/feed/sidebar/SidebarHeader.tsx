@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export function SidebarHeader() {
   return (
     <motion.div 
-      className="relative py-4"
+      className="relative py-2"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
@@ -21,4 +21,3 @@ export function SidebarHeader() {
     </motion.div>
   );
 }
-
