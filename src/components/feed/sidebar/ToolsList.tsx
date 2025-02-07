@@ -13,57 +13,59 @@ const tools = [
     name: "Notes",
     icon: Plus,
     description: "Gérez vos notes",
-    gradient: "from-yellow-500/10 to-orange-500/10"
+    gradient: "from-yellow-500/20 to-orange-500/20"
   },
   {
     name: "Tâches",
     icon: ListTodo,
     description: "Gérez vos tâches",
-    gradient: "from-blue-500/10 to-indigo-500/10"
+    gradient: "from-blue-500/20 to-indigo-500/20"
   },
   {
     name: "Calculatrice",
     icon: Calculator,
     description: "Calculatrice et convertisseur",
-    gradient: "from-purple-500/10 to-pink-500/10"
+    gradient: "from-purple-500/20 to-pink-500/20"
   },
   {
     name: "Traducteur",
     icon: Languages,
     description: "Traduisez du texte",
-    gradient: "from-green-500/10 to-emerald-500/10"
+    gradient: "from-green-500/20 to-emerald-500/20"
   },
   {
     name: "Convertisseur",
     icon: Ruler,
     description: "Convertissez des unités",
-    gradient: "from-red-500/10 to-pink-500/10"
+    gradient: "from-red-500/20 to-pink-500/20"
   },
   {
     name: "Échecs",
     icon: Sword,
     description: "Jouez aux échecs",
-    gradient: "from-slate-500/10 to-gray-500/10"
+    gradient: "from-slate-500/20 to-gray-500/20"
   }
 ];
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <div className="space-y-0.5">
+    <div className="grid grid-cols-2 gap-1.5">
       {tools.map((tool) => (
         <Button
           key={tool.name}
           variant="ghost"
           size="sm"
           className={cn(
-            "w-full justify-start gap-2 px-2 h-9",
-            "bg-gradient-to-r hover:opacity-80",
-            "transition-all duration-300 group",
+            "h-auto py-3 flex-col items-center justify-center gap-2",
+            "bg-gradient-to-br transition-all duration-300",
+            "hover:shadow-md hover:-translate-y-0.5 active:translate-y-0",
+            "group rounded-lg",
             tool.gradient
           )}
           onClick={() => onToolClick(tool.name)}
+          title={tool.description}
         >
-          <tool.icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+          <tool.icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
           <span className="text-xs font-medium">{tool.name}</span>
         </Button>
       ))}

@@ -63,7 +63,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     <>
       <div className={cn(
         "w-[280px] border-r h-[calc(100vh-4rem)]",
-        "bg-card/50 backdrop-blur-sm fixed left-0 top-[4rem] z-40",
+        "bg-background/95 backdrop-blur-sm fixed left-0 top-[4rem] z-40",
         "shadow-lg shadow-background/5",
         className
       )}>
@@ -72,44 +72,40 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="p-4 space-y-6"
+            className="p-3 space-y-4"
           >
             <motion.div variants={itemVariants}>
               <SidebarHeader onClose={handleCloseSidebar} />
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <div className="space-y-2">
-                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2">
-                  Connections
+              <div className="space-y-1">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2 mb-2">
+                  Connexions
                 </h3>
-                <div className="bg-card/50 rounded-lg p-2">
-                  <ConnectionsSection />
-                </div>
+                <ConnectionsSection />
               </div>
             </motion.div>
 
-            <Separator className="my-4" />
+            <Separator className="my-3" />
 
             <motion.div variants={itemVariants}>
-              <div className="space-y-2">
-                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2">
+              <div className="space-y-1">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2 mb-2">
                   Outils
                 </h3>
-                <div className="bg-card/50 rounded-lg p-2">
-                  <ToolsList onToolClick={handleToolClick} />
-                </div>
+                <ToolsList onToolClick={handleToolClick} />
               </div>
             </motion.div>
 
-            <Separator className="my-4" />
+            <Separator className="my-3" />
 
             <motion.div variants={itemVariants}>
-              <div className="space-y-2">
-                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2">
+              <div className="space-y-1">
+                <h3 className="text-xs font-medium text-muted-foreground tracking-wider uppercase pl-2 mb-2">
                   Paramètres
                 </h3>
-                <div className="space-y-1 bg-card/50 rounded-lg p-2">
+                <div className="space-y-0.5">
                   <AppearanceSection />
                   <NotificationsSection />
                   <PrivacySection />
