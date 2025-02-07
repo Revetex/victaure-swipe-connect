@@ -33,7 +33,6 @@ export function MessagesWrapper() {
     clearChat: clearUserChat,
   } = useUserChat();
 
-  // Utilisation des nouveaux hooks
   useMessageCleanup();
   const { handleBack, handleSelectConversation } = useConversationHandler();
   const { handleDeleteConversation } = useConversationDelete(clearUserChat);
@@ -78,7 +77,6 @@ export function MessagesWrapper() {
           onBack={handleBack}
           receiver={receiver}
           onClearChat={() => handleDeleteConversation(receiver)}
-          messagesEndRef={null}
         />
       </div>
     );

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface MessagesContentProps {
+export interface MessagesContentProps {
   messages: Message[];
   inputMessage: string;
   isThinking?: boolean;

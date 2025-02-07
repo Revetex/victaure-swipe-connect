@@ -1,3 +1,4 @@
+
 export interface MessageSender {
   id: string;
   full_name: string;
@@ -15,6 +16,7 @@ export interface Message {
   updated_at: string;
   read: boolean;
   sender: MessageSender;
+  receiver?: MessageSender;  // Made receiver optional since it might not always be present
   timestamp: string;
   thinking?: boolean;
 }
