@@ -56,7 +56,7 @@ export function ConversationView({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full bg-background relative">
+    <div className="flex flex-col h-full">
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
         <ChatHeader
           title={receiver.full_name}
@@ -70,10 +70,20 @@ export function ConversationView({
       </div>
 
       <ScrollArea 
-        className="flex-1 p-4"
+        className="flex-1 px-4 py-6"
         onScrollCapture={handleScroll}
       >
         <div className="space-y-4 max-w-3xl mx-auto">
+          {messages.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-muted-foreground p-4"
+            >
+              Commencez une conversation avec {receiver.full_name}
+            </motion.div>
+          )}
+
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -135,7 +145,7 @@ export function ConversationView({
           isThinking={isThinking}
           isListening={isListening}
           onVoiceInput={onVoiceInput}
-          placeholder="Écrivez votre message..."
+          placeholder={`Écrivez votre message à ${receiver.full_name}...`}
         />
       </div>
     </div>

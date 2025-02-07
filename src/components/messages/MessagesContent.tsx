@@ -95,46 +95,39 @@ export function MessagesContent({
   if (!receiver) return null;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed inset-0 flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      style={{ 
-        top: 'env(safe-area-inset-top, 0px)',
-        bottom: 'env(safe-area-inset-bottom, 0px)',
-        paddingTop: '4rem', // Space for header
-        paddingBottom: '4rem', // Space for bottom nav
-        height: '100vh',
-        maxHeight: '100vh',
-        zIndex: 50 
-      }}
-    >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key="conversation"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="flex-1 relative overflow-hidden"
-        >
-          <ConversationView
-            receiver={receiver}
-            messages={messages}
-            inputMessage={inputMessage}
-            isListening={isListening}
-            isThinking={isThinking}
-            onInputChange={setInputMessage}
-            onSendMessage={() => onSendMessage(inputMessage)}
-            onVoiceInput={onVoiceInput}
-            onBack={onBack || (() => {})}
-            onDeleteConversation={handleDelete}
-            messagesEndRef={messagesEndRef}
-          />
-        </motion.div>
-      </AnimatePresence>
-    </motion.div>
+    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm">
+      <div 
+        className="h-full flex flex-col"
+        style={{ 
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+        }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="conversation"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="flex-1 relative"
+          >
+            <ConversationView
+              receiver={receiver}
+              messages={messages}
+              inputMessage={inputMessage}
+              isListening={isListening}
+              isThinking={isThinking}
+              onInputChange={setInputMessage}
+              onSendMessage={() => onSendMessage(inputMessage)}
+              onVoiceInput={onVoiceInput}
+              onBack={onBack || (() => {})}
+              onDeleteConversation={handleDelete}
+              messagesEndRef={messagesEndRef}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }
