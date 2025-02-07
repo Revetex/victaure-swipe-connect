@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface MessagesContentProps {
   messages: Message[];
@@ -94,20 +95,37 @@ export function MessagesContent({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <ConversationView
-        receiver={receiver}
-        messages={messages}
-        inputMessage={inputMessage}
-        isListening={isListening}
-        isThinking={isThinking}
-        onInputChange={setInputMessage}
-        onSendMessage={() => onSendMessage(inputMessage)}
-        onVoiceInput={onVoiceInput}
-        onBack={onBack || (() => {})}
-        onDeleteConversation={handleDelete}
-        messagesEndRef={messagesEndRef}
-      />
-    </div>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="conversation"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1"
+        >
+          <ConversationView
+            receiver={receiver}
+            messages={messages}
+            inputMessage={inputMessage}
+            isListening={isListening}
+            isThinking={isThinking}
+            onInputChange={setInputMessage}
+            onSendMessage={() => onSendMessage(inputMessage)}
+            onVoiceInput={onVoiceInput}
+            onBack={onBack || (() => {})}
+            onDeleteConversation={handleDelete}
+            messagesEndRef={messagesEndRef}
+          />
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
   );
 }
