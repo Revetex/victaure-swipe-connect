@@ -47,8 +47,8 @@ export function MessagesContent({
           table: 'messages',
           filter: `receiver_id=eq.${receiver.id}`
         },
-        () => {
-          console.log('New message received');
+        (payload) => {
+          console.log('New message received:', payload);
           if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
           }
@@ -71,27 +71,15 @@ export function MessagesContent({
     try {
       if (!receiver) return;
 
-      if (receiver.id === 'assistant') {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("User not authenticated");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
 
-        const { error } = await supabase
-          .from('ai_chat_messages')
-          .delete()
-          .eq('user_id', user.id);
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-        if (error) throw error;
-      } else {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("User not authenticated");
-
-        const { error } = await supabase
-          .from('messages')
-          .delete()
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
-
-        if (error) throw error;
-      }
+      if (error) throw error;
 
       onClearChat();
       onBack?.();
