@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Message, Receiver } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
@@ -20,6 +20,42 @@ export function useUserChat(): UserChat {
   const [isLoading, setIsLoading] = useState(false);
   const { profile } = useProfile();
 
+  // Configuration du canal en temps réel
+  useEffect(() => {
+    if (!profile) return;
+
+    const channel = supabase
+      .channel('messages_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+          filter: `receiver_id=eq.${profile.id}`
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newMessage = payload.new as Message;
+            setMessages(prev => [...prev, newMessage]);
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedMessage = payload.new as Message;
+            setMessages(prev => 
+              prev.map(msg => msg.id === updatedMessage.id ? updatedMessage : msg)
+            );
+          } else if (payload.eventType === 'DELETE') {
+            const deletedMessage = payload.old as Message;
+            setMessages(prev => prev.filter(msg => msg.id !== deletedMessage.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile]);
+
   const handleSendMessage = useCallback(async (message: string, receiver: Receiver) => {
     if (!message.trim()) return;
     if (!profile) {
@@ -34,7 +70,12 @@ export function useUserChat(): UserChat {
         sender_id: profile.id,
         receiver_id: receiver.id,
         message_type: 'user',
-        read: false
+        read: false,
+        status: 'sent',
+        metadata: {
+          device: 'web',
+          timestamp: new Date().toISOString()
+        }
       };
 
       const { data: messageData, error: messageError } = await supabase
@@ -52,7 +93,7 @@ export function useUserChat(): UserChat {
       const notification = {
         user_id: receiver.id,
         title: "Nouveau message",
-        message: `${profile.full_name} vous a envoyé un message: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+        message: `${profile.full_name} vous a envoyé : ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
         type: 'message'
       };
 
@@ -61,7 +102,7 @@ export function useUserChat(): UserChat {
         .insert(notification);
 
       if (notificationError) {
-        console.error('Erreur lors de la création de la notification:', notificationError);
+        console.error('Erreur notification:', notificationError);
       }
 
       setInputMessage('');
@@ -77,20 +118,14 @@ export function useUserChat(): UserChat {
             online_status: true,
             last_seen: new Date().toISOString()
           },
-          receiver: messageData.receiver || {
-            id: receiver.id,
-            full_name: receiver.full_name,
-            avatar_url: receiver.avatar_url || '/placeholder.svg',
-            online_status: receiver.online_status,
-            last_seen: receiver.last_seen
-          }
+          receiver: messageData.receiver || receiver
         };
         
         setMessages(prev => [...prev, formattedMessage]);
       }
 
     } catch (error) {
-      console.error('Erreur lors de l\'envoi du message:', error);
+      console.error('Erreur envoi message:', error);
       toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
@@ -109,10 +144,10 @@ export function useUserChat(): UserChat {
       if (error) throw error;
 
       setMessages([]);
-      toast.success("Conversation effacée avec succès");
+      toast.success("Conversation effacée");
     } catch (error) {
-      console.error('Erreur lors de l\'effacement de la conversation:', error);
-      toast.error("Erreur lors de l'effacement de la conversation");
+      console.error('Erreur effacement conversation:', error);
+      toast.error("Erreur lors de l'effacement");
     }
   }, [profile]);
 

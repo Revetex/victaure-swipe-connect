@@ -1,6 +1,6 @@
 
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,13 +18,20 @@ export function ChatInterface() {
   const { profile } = useProfile();
   const { messages, handleSendMessage: sendMessage } = useUserChat();
 
+  // Scroll automatique aux nouveaux messages
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
     const isNearBottom = 
       target.scrollHeight - target.scrollTop - target.clientHeight < 100;
@@ -78,10 +85,14 @@ export function ChatInterface() {
         messagesEndRef={messagesEndRef}
       />
 
-      <ChatScrollButton 
-        show={showScrollButton}
-        onClick={scrollToBottom}
-      />
+      <AnimatePresence>
+        {showScrollButton && (
+          <ChatScrollButton 
+            show={showScrollButton}
+            onClick={scrollToBottom}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="p-4 border-t">
         <ChatInput

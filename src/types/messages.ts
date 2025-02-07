@@ -16,15 +16,18 @@ export interface Message {
   updated_at: string;
   read: boolean;
   sender: MessageSender;
-  receiver?: MessageSender;  // Made receiver optional since it might not always be present
+  receiver?: MessageSender;
   timestamp: string;
   thinking?: boolean;
+  message_type: 'user' | 'ai';
+  status: 'sent' | 'delivered' | 'read';
+  metadata?: Record<string, any>;
 }
 
 export interface Receiver {
   id: string;
   full_name: string;
-  avatar_url: string;  // Changed from optional to required to match MessageSender
+  avatar_url: string;
   online_status: boolean;
   last_seen: string;
 }
