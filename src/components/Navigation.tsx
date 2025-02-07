@@ -1,3 +1,4 @@
+
 import { Menu, MessageSquare, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -9,6 +10,7 @@ import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { FeedSidebar } from "./feed/FeedSidebar";
 
 export function Navigation() {
   const isMobile = useIsMobile();
@@ -48,7 +50,7 @@ export function Navigation() {
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border/40 z-50"
+      className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-b border-border/40 z-50"
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <motion.div 
@@ -69,11 +71,24 @@ export function Navigation() {
             <SheetContent className="w-[80vw] sm:w-[380px] bg-background/95 border-border">
               <div className="flex flex-col gap-6 mt-8">
                 <NavLinks />
+                <FeedSidebar />
               </div>
             </SheetContent>
           </Sheet>
         ) : (
-          <NavLinks />
+          <div className="flex items-center gap-4">
+            <NavLinks />
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[380px] bg-background/95 border-border">
+                <FeedSidebar />
+              </SheetContent>
+            </Sheet>
+          </div>
         )}
       </div>
     </motion.header>
