@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -48,15 +49,17 @@ export function ConnectionsSection() {
   if (!friends?.length) {
     return (
       <motion.div 
-        className="text-center py-8 space-y-4 bg-card rounded-lg shadow-sm p-6"
+        className="text-center py-6 space-y-3 bg-muted/30 rounded-xl shadow-sm backdrop-blur-sm"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Users2 className="h-12 w-12 mx-auto text-muted-foreground/50" />
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Aucune connection pour le moment</p>
-          <p className="text-xs text-muted-foreground/70">
+        <Users2 className="h-10 w-10 mx-auto text-muted-foreground/50" />
+        <div className="space-y-1.5">
+          <p className="text-sm font-medium bg-gradient-to-r from-foreground/80 to-foreground bg-clip-text text-transparent">
+            Aucune connection
+          </p>
+          <p className="text-xs text-muted-foreground leading-relaxed px-4">
             Commencez à ajouter des contacts pour développer votre réseau
           </p>
         </div>
@@ -70,18 +73,28 @@ export function ConnectionsSection() {
   const currentFriends = friends.slice(startIndex, endIndex);
 
   return (
-    <div className="space-y-4">
-      <div className="bg-card rounded-lg shadow-sm">
+    <div className="space-y-3">
+      <motion.div 
+        className="bg-muted/30 rounded-xl shadow-sm backdrop-blur-sm overflow-hidden"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
         <Button
           variant="ghost"
-          className="w-full flex items-center justify-between p-4 hover:bg-accent/5"
+          className={cn(
+            "w-full flex items-center justify-between p-3",
+            "hover:bg-accent/5 transition-colors duration-300",
+            "font-medium tracking-tight"
+          )}
           onClick={() => setShowPendingRequests(!showPendingRequests)}
         >
-          <span className="text-sm font-medium">Demandes en attente</span>
+          <span className="text-sm bg-gradient-to-r from-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+            Demandes en attente
+          </span>
           {showPendingRequests ? (
-            <ChevronUp className="h-4 w-4" />
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
           ) : (
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           )}
         </Button>
         <AnimatePresence>
@@ -93,37 +106,42 @@ export function ConnectionsSection() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="p-4 pt-0">
+              <div className="p-3 pt-0">
                 <FriendRequestsSection />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
-      <div className="bg-card rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium flex items-center gap-2">
+      <motion.div 
+        className="bg-muted/30 rounded-xl shadow-sm backdrop-blur-sm p-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium flex items-center gap-2 bg-gradient-to-r from-foreground/90 to-foreground/70 bg-clip-text text-transparent">
             <Users2 className="h-4 w-4" />
             Mes connections ({friends.length})
           </h3>
         </div>
         
-        <ScrollArea className="h-[300px] pr-2 mt-4">
+        <ScrollArea className="h-[300px] pr-2">
           <AnimatePresence mode="wait">
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {currentFriends.map((friend, index) => (
                 <motion.div
                   key={friend.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                 >
                   <Button
                     variant="ghost"
                     className={cn(
-                      "w-full flex items-center gap-3 h-auto p-3",
+                      "w-full flex items-center gap-3 h-auto p-2.5",
                       "hover:bg-accent/5 transition-all duration-200",
                       "group relative"
                     )}
@@ -151,12 +169,12 @@ export function ConnectionsSection() {
                         />
                       )}
                     </div>
-                    <div className="flex-1 text-left">
+                    <div className="flex-1 text-left min-w-0">
                       <ProfileNameButton 
                         profile={friend}
-                        className="p-0 h-auto text-sm font-medium hover:underline"
+                        className="p-0 h-auto text-sm font-medium group-hover:text-primary transition-colors duration-200"
                       />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground truncate">
                         {friend.online_status ? 'En ligne' : 'Hors ligne'}
                       </p>
                     </div>
@@ -168,14 +186,17 @@ export function ConnectionsSection() {
         </ScrollArea>
 
         {totalPages > 1 && (
-          <Pagination>
+          <Pagination className="mt-3">
             <PaginationContent>
               {Array.from({ length: totalPages }).map((_, index) => (
                 <PaginationItem key={index}>
                   <PaginationLink
+                    className={cn(
+                      "transition-colors duration-200",
+                      currentPage === index + 1 && "bg-accent/50"
+                    )}
                     isActive={currentPage === index + 1}
                     onClick={() => setCurrentPage(index + 1)}
-                    className="transition-colors duration-200"
                   >
                     {index + 1}
                   </PaginationLink>
@@ -191,7 +212,7 @@ export function ConnectionsSection() {
             </PaginationContent>
           </Pagination>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
