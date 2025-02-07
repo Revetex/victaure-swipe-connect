@@ -61,11 +61,13 @@ export function Feed() {
     >
       {!isMobile && (
         <Suspense fallback={null}>
-          <FeedSidebar />
+          <div className="sticky top-[4rem] left-0 h-full">
+            <FeedSidebar />
+          </div>
         </Suspense>
       )}
       
-      <div className="flex-1 relative">
+      <div className="flex-1 relative pl-4">
         <ScrollArea 
           ref={scrollRef} 
           className={cn(
@@ -87,7 +89,7 @@ export function Feed() {
                 isMobile && "border-b"
               )}
               style={{
-                position: '-webkit-sticky', // Pour le support iOS
+                position: '-webkit-sticky',
                 top: 0
               }}
             >
