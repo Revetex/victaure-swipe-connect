@@ -27,7 +27,7 @@ export function ChatHeader({
   isThinking
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center gap-4 p-4 border-b bg-background">
+    <div className="sticky top-[4rem] left-0 right-0 flex items-center gap-4 p-4 border-b bg-background z-10">
       <Button
         variant="ghost"
         size="icon"

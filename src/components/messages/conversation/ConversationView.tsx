@@ -55,7 +55,7 @@ export function ConversationView({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
+    <div className="flex flex-col h-[calc(100vh-8rem)] bg-background">
       <ChatHeader
         title={receiver.full_name}
         subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : "En ligne"}
@@ -113,7 +113,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="p-4 border-t">
+      <div className="sticky bottom-[4rem] left-0 right-0 p-4 border-t bg-background">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
