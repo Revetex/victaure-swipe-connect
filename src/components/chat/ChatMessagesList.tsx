@@ -4,10 +4,10 @@ import { AIAssistantStatus } from "../dashboard/ai/AIAssistantStatus";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRef } from "react";
-import { ChatMessage as ChatMessageType } from "@/hooks/chat/useRealtimeChat";
+import { Message } from "@/types/messages";
 
 interface ChatMessagesListProps {
-  messages: ChatMessageType[];
+  messages: Message[];
   isThinking: boolean;
   onScroll: (event: any) => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
@@ -46,7 +46,7 @@ export function ChatMessagesList({
             >
               <ChatMessage
                 content={message.content}
-                sender={message.sender}
+                sender={message.sender_id === 'assistant' ? 'assistant' : 'user'}
                 timestamp={message.created_at}
               />
             </motion.div>

@@ -61,7 +61,7 @@ export function useUserChat(): UserChat {
         .insert(notification);
 
       if (notificationError) {
-        console.error('Error creating notification:', notificationError);
+        console.error('Erreur lors de la création de la notification:', notificationError);
       }
 
       setInputMessage('');
@@ -90,7 +90,7 @@ export function useUserChat(): UserChat {
       }
 
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Erreur lors de l\'envoi du message:', error);
       toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
@@ -111,7 +111,7 @@ export function useUserChat(): UserChat {
       setMessages([]);
       toast.success("Conversation effacée avec succès");
     } catch (error) {
-      console.error('Error clearing chat:', error);
+      console.error('Erreur lors de l\'effacement de la conversation:', error);
       toast.error("Erreur lors de l'effacement de la conversation");
     }
   }, [profile]);

@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useRealtimeChat } from "@/hooks/chat/useRealtimeChat";
 import { ChatContainer } from "./ChatContainer";
 import { ChatMessagesList } from "./ChatMessagesList";
 import { ChatScrollButton } from "./ChatScrollButton";
 import { ChatInput } from "./ChatInput";
+import { useUserChat } from "@/hooks/useUserChat";
 
 export function ChatInterface() {
   const [input, setInput] = useState("");
@@ -16,7 +16,7 @@ export function ChatInterface() {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { profile } = useProfile();
-  const { messages, addMessage } = useRealtimeChat();
+  const { messages, handleSendMessage: sendMessage } = useUserChat();
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -37,32 +37,19 @@ export function ChatInterface() {
     try {
       setIsThinking(true);
       
-      // Save user message
-      const userMessage = await addMessage(input, 'user');
-      if (!userMessage) return;
+      await sendMessage(input, {
+        id: 'assistant',
+        full_name: 'M. Victaure',
+        avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+        online_status: true,
+        last_seen: new Date().toISOString()
+      });
 
       setInput("");
       scrollToBottom();
 
-      // Get AI response
-      const { data, error } = await supabase.functions.invoke('ai-chat', {
-        body: { 
-          message: input,
-          context: {
-            previousMessages: messages.slice(-5),
-            userProfile: profile
-          }
-        }
-      });
-
-      if (error) throw error;
-
-      // Save AI response
-      await addMessage(data.response, 'assistant');
-      scrollToBottom();
-
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Erreur:', error);
       toast.error("Une erreur est survenue");
     } finally {
       setIsThinking(false);
