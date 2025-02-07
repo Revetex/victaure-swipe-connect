@@ -41,7 +41,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       "h-full flex flex-col bg-background/95 backdrop-blur-sm",
       className
     )}>
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 h-[calc(100vh-4rem)]">
         <div className="p-4 space-y-6">
           <div>
             <h3 className={labelClasses}>Recherche</h3>

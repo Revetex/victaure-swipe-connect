@@ -5,17 +5,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { FeedSidebar } from "./feed/FeedSidebar";
-import { Suspense, useRef, useState } from "react";
 import { ChevronUp } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Suspense, useRef, useState } from "react";
+import { FeedSidebar } from "./feed/FeedSidebar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 export function Feed() {
   const queryClient = useQueryClient();
-  const isMobile = useIsMobile();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  const isMobile = useIsMobile();
 
   const handlePostCreated = () => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
@@ -45,37 +47,38 @@ export function Feed() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full min-h-screen bg-background relative mt-16"
+      className="w-full min-h-screen bg-background relative"
     >
-      <div className="flex">
-        {!isMobile && sidebarOpen && (
-          <motion.div
-            initial={{ x: -280, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -280, opacity: 0 }}
-            className="w-[280px] lg:w-[350px] fixed left-0 top-16 h-[calc(100vh-4rem)] flex-shrink-0 bg-card/50 backdrop-blur-sm border-r z-50"
-          >
-            <Suspense fallback={
-              <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            }>
-              <FeedSidebar />
-            </Suspense>
-          </motion.div>
+      <div className="flex relative">
+        {!isMobile ? (
+          <aside className="w-[280px] lg:w-[350px] hidden md:block sticky top-16 h-[calc(100vh-4rem)]">
+            <FeedSidebar />
+          </aside>
+        ) : (
+          <div className="fixed top-4 right-4 z-50">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-screen sm:w-[350px] p-0">
+                <FeedSidebar />
+              </SheetContent>
+            </Sheet>
+          </div>
         )}
 
         <main className={cn(
           "flex-1 transition-all duration-300",
-          isMobile ? "px-4" : "px-8",
-          sidebarOpen ? "ml-[280px] lg:ml-[350px]" : "ml-0"
+          !isMobile && "md:ml-[280px] lg:ml-[350px]"
         )}>
           <ScrollArea 
             ref={scrollRef} 
             className="h-[calc(100vh-4rem)]"
             onScroll={handleScroll}
           >
-            <div className="max-w-2xl mx-auto py-4">
+            <div className="max-w-3xl mx-auto px-4 py-4">
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -85,7 +88,7 @@ export function Feed() {
                 <CreatePost onPostCreated={handlePostCreated} />
               </motion.div>
               
-              <div className="py-3 space-y-4">
+              <div className="py-3">
                 <Suspense 
                   fallback={
                     <div className="flex items-center justify-center py-6">
@@ -118,7 +121,7 @@ export function Feed() {
                 )}
                 aria-label="Retourner en haut"
               >
-                <ChevronUp className="h-5 w-4" />
+                <ChevronUp className="h-5 w-5" />
               </motion.button>
             )}
           </AnimatePresence>
