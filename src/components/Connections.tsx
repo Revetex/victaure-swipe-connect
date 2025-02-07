@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,42 +16,42 @@ export function Connections() {
       icon: ListTodo,
       description: "Gérez vos tâches et to-do lists efficacement",
       path: "/tools",
-      color: "bg-blue-500/10 text-blue-500"
+      color: "bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-500"
     },
     {
       name: "Calculatrice",
       icon: Calculator,
       description: "Effectuez des calculs complexes rapidement",
       path: "/tools",
-      color: "bg-green-500/10 text-green-500"
+      color: "bg-gradient-to-br from-green-500/10 to-emerald-500/10 text-green-500"
     },
     {
       name: "Traducteur",
       icon: Languages,
       description: "Traduisez du texte en plusieurs langues",
       path: "/tools",
-      color: "bg-purple-500/10 text-purple-500"
+      color: "bg-gradient-to-br from-purple-500/10 to-violet-500/10 text-purple-500"
     },
     {
       name: "Convertisseur",
       icon: Ruler,
       description: "Convertissez des unités facilement",
       path: "/tools",
-      color: "bg-orange-500/10 text-orange-500"
+      color: "bg-gradient-to-br from-orange-500/10 to-amber-500/10 text-orange-500"
     },
     {
       name: "Échecs",
       icon: Sword,
       description: "Jouez aux échecs contre l'IA",
       path: "/tools",
-      color: "bg-red-500/10 text-red-500"
+      color: "bg-gradient-to-br from-red-500/10 to-pink-500/10 text-red-500"
     },
     {
       name: "Assistant IA",
       icon: BrainCircuit,
       description: "Obtenez de l'aide avec l'IA",
       path: "/tools",
-      color: "bg-indigo-500/10 text-indigo-500"
+      color: "bg-gradient-to-br from-indigo-500/10 to-purple-500/10 text-indigo-500"
     }
   ];
 
@@ -83,7 +84,9 @@ export function Connections() {
   return (
     <div className="p-4 space-y-6">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-2xl font-bold">Outils</h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+          Outils
+        </h2>
         <Button
           variant="ghost"
           size="icon"
