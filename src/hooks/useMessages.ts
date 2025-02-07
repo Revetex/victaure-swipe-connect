@@ -39,9 +39,10 @@ export function useMessages() {
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
           .eq('message_type', 'user');
       } else {
-        // Quand aucun destinataire n'est sélectionné, récupérer uniquement les conversations entre utilisateurs
+        // Quand aucun destinataire n'est sélectionné, récupérer uniquement les conversations
+        // où on est soit l'émetteur SOIT le destinataire, mais pas les deux en même temps
         query = query
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .or(`and(sender_id.eq.${user.id},receiver_id.neq.${user.id}),and(receiver_id.eq.${user.id},sender_id.neq.${user.id})`)
           .eq('message_type', 'user');
       }
 
@@ -59,7 +60,7 @@ export function useMessages() {
         timestamp: msg.created_at
       })) as Message[];
     },
-    enabled: true // Always fetch messages to show conversations list
+    enabled: true
   });
 
   const markAsRead = useMutation({
