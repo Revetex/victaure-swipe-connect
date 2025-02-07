@@ -49,14 +49,14 @@ const tools = [
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-0.5">
       {tools.map((tool) => (
         <Button
           key={tool.name}
           variant="ghost"
           size="sm"
           className={cn(
-            "w-full justify-start gap-2 px-2 h-12",
+            "w-full justify-start gap-2 px-2 h-9",
             "bg-gradient-to-r hover:opacity-80",
             "transition-all duration-300 group",
             tool.gradient
@@ -64,7 +64,7 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
           onClick={() => onToolClick(tool.name)}
         >
           <tool.icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-          <span className="text-sm font-medium">{tool.name}</span>
+          <span className="text-xs font-medium">{tool.name}</span>
         </Button>
       ))}
     </div>

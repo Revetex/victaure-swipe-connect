@@ -62,7 +62,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   return (
     <>
       <div className={cn(
-        "w-[280px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem] z-50",
+        "w-[240px] flex-shrink-0 border-r h-[calc(100vh-4rem)] sticky top-[4rem] z-50",
         "bg-background",
         "transition-all duration-300 ease-in-out",
         className
@@ -72,31 +72,31 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-4"
+            className="space-y-2 py-2"
           >
             <motion.div variants={itemVariants}>
               <SidebarHeader onClose={handleCloseSidebar} />
             </motion.div>
 
-            <motion.div variants={itemVariants} className="space-y-1">
-              <h3 className="text-xs font-medium text-muted-foreground px-2">Connections</h3>
+            <motion.div variants={itemVariants} className="px-2 space-y-1">
+              <h3 className="text-[10px] font-medium text-muted-foreground ml-2 mb-1">Connections</h3>
               <div className="bg-background/50">
                 <ConnectionsSection />
               </div>
             </motion.div>
 
-            <Separator className="my-4" />
+            <Separator className="my-2" />
 
-            <motion.div variants={itemVariants} className="space-y-1">
-              <h3 className="text-xs font-medium text-muted-foreground px-2">Outils</h3>
+            <motion.div variants={itemVariants} className="px-2 space-y-1">
+              <h3 className="text-[10px] font-medium text-muted-foreground ml-2 mb-1">Outils</h3>
               <ToolsList onToolClick={handleToolClick} />
             </motion.div>
 
-            <Separator className="my-4" />
+            <Separator className="my-2" />
 
-            <motion.div variants={itemVariants} className="space-y-1">
-              <h3 className="text-xs font-medium text-muted-foreground px-2">Paramètres</h3>
-              <div className="space-y-1">
+            <motion.div variants={itemVariants} className="px-2 space-y-1">
+              <h3 className="text-[10px] font-medium text-muted-foreground ml-2 mb-1">Paramètres</h3>
+              <div className="space-y-0.5">
                 <div className="bg-background/50">
                   <AppearanceSection />
                   <NotificationsSection />
