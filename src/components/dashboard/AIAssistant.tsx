@@ -94,14 +94,19 @@ export function AIAssistant({ onClose }: AIAssistantProps) {
       if (error) throw error;
 
       // Store the interaction in ai_learning_data
+      const serializedContext = {
+        profile: profile ? JSON.parse(JSON.stringify(profile)) : null,
+        previousMessages: messages.slice(-5).map(m => ({
+          type: m.type,
+          content: m.content
+        }))
+      };
+
       await supabase.from('ai_learning_data').insert({
         user_id: user.id,
         question: input,
         response: data.message,
-        context: {
-          profile: profile,
-          previousMessages: messages.slice(-5)
-        }
+        context: serializedContext
       });
 
       // Add AI response to the conversation
