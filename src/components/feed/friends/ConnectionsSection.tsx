@@ -8,6 +8,7 @@ import { EmptyConnectionsState } from "./EmptyConnectionsState";
 import { FriendList } from "./FriendList";
 import { ConnectionsPagination } from "./ConnectionsPagination";
 import { PendingRequestsSection } from "./PendingRequestsSection";
+import { UserProfile } from "@/types/profile";
 
 export function ConnectionsSection() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,8 +24,40 @@ export function ConnectionsSection() {
       const { data: acceptedRequests } = await supabase
         .from("friend_requests")
         .select(`
-          sender:profiles!friend_requests_sender_id_fkey(id, full_name, avatar_url, online_status, last_seen),
-          receiver:profiles!friend_requests_receiver_id_fkey(id, full_name, avatar_url, online_status, last_seen)
+          sender:profiles!friend_requests_sender_id_fkey(
+            id, 
+            full_name, 
+            avatar_url, 
+            online_status, 
+            last_seen,
+            email,
+            role,
+            bio,
+            phone,
+            city,
+            state,
+            country,
+            skills,
+            latitude,
+            longitude
+          ),
+          receiver:profiles!friend_requests_receiver_id_fkey(
+            id, 
+            full_name, 
+            avatar_url, 
+            online_status, 
+            last_seen,
+            email,
+            role,
+            bio,
+            phone,
+            city,
+            state,
+            country,
+            skills,
+            latitude,
+            longitude
+          )
         `)
         .eq("status", "accepted")
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
@@ -33,7 +66,15 @@ export function ConnectionsSection() {
 
       return acceptedRequests.map(request => {
         const friend = request.sender.id === user.id ? request.receiver : request.sender;
-        return friend;
+        return {
+          ...friend,
+          country: friend.country || "Canada", // Provide default values for required fields
+          role: friend.role || "professional",
+          email: friend.email || "",
+          skills: friend.skills || [],
+          online_status: friend.online_status || false,
+          last_seen: friend.last_seen || new Date().toISOString()
+        } as UserProfile;
       });
     }
   });
