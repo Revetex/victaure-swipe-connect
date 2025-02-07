@@ -28,10 +28,10 @@ export function AppHeader({
   if (overlayElement) return null;
 
   return (
-    <div className="sticky top-0 left-0 right-0 w-full border-b bg-background z-50">
-      <div className="flex items-center justify-between px-4 h-16 max-w-[2000px] mx-auto">
+    <div className="w-full border-b bg-background/95 backdrop-blur z-50">
+      <div className="flex items-center justify-between h-14 px-4 max-w-[2000px] mx-auto">
         <motion.div 
-          className="flex items-center gap-6"
+          className="flex items-center gap-4"
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -41,7 +41,7 @@ export function AppHeader({
         </motion.div>
         
         <motion.div 
-          className="flex items-center gap-2 sm:gap-4"
+          className="flex items-center gap-2"
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -59,7 +59,7 @@ export function AppHeader({
                     "active:scale-95 touch-none"
                   )}
                 >
-                  <Menu className="h-6 w-6" />
+                  <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[85vw] sm:w-[380px] p-0">
