@@ -18,12 +18,12 @@ export function MessageItem({ message, isOwnMessage }: MessageItemProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex gap-3 w-full",
+        "flex gap-3 w-full px-4 py-2",
         isOwnMessage ? "flex-row-reverse" : "flex-row"
       )}
     >
       <Avatar className={cn(
-        "h-8 w-8 ring-2 transition-shadow",
+        "h-8 w-8 ring-2 flex-shrink-0",
         isOwnMessage ? "ring-primary/20" : "ring-muted"
       )}>
         <AvatarImage

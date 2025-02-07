@@ -29,7 +29,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     const otherUser = message.sender_id === profile.id ? message.receiver : message.sender;
 
     // Skip if we don't have valid user information
-    if (!otherUser || !otherUserId) {
+    if (!otherUser || !otherUserId || !otherUser.id) {
       return acc;
     }
     
@@ -121,4 +121,3 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     </div>
   );
 }
-
