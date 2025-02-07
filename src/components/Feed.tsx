@@ -1,11 +1,11 @@
 
-import { CreatePost } from "./CreatePost";
-import { PostList } from "./PostList";
+import { CreatePost } from "./feed/CreatePost";
+import { PostList } from "./feed/PostList";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { FeedSidebar } from "./FeedSidebar";
+import { FeedSidebar } from "./feed/FeedSidebar";
 import { Suspense, useRef, useState } from "react";
 import { ChevronUp } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
