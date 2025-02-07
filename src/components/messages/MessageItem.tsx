@@ -54,7 +54,7 @@ export function MessageItem({
       </Avatar>
 
       <div className={cn(
-        "flex flex-col gap-1 max-w-[70%]",
+        "flex flex-col gap-1.5 max-w-[70%]",
         isOwnMessage ? "items-end" : "items-start"
       )}>
         <span className="text-xs font-medium text-muted-foreground">

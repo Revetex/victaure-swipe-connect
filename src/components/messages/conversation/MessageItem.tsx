@@ -35,10 +35,13 @@ export function MessageItem({ message, isOwnMessage }: MessageItemProps) {
       </Avatar>
 
       <div className={cn(
-        "flex flex-col gap-1 max-w-[70%]",
+        "flex flex-col gap-1.5 max-w-[70%]",
         isOwnMessage ? "items-end" : "items-start"
       )}>
-        <div className="flex items-center gap-2 px-1">
+        <div className={cn(
+          "flex items-center gap-2",
+          isOwnMessage ? "flex-row-reverse" : "flex-row"
+        )}>
           <span className="text-xs font-medium text-muted-foreground">
             {message.sender.full_name}
           </span>
@@ -55,7 +58,10 @@ export function MessageItem({ message, isOwnMessage }: MessageItemProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-1">
+        <div className={cn(
+          "flex items-center gap-2 px-1",
+          isOwnMessage ? "flex-row-reverse" : "flex-row"
+        )}>
           <span className="text-xs text-muted-foreground">
             {format(new Date(message.created_at), "HH:mm", { locale: fr })}
           </span>
