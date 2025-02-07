@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
-import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AppHeaderProps {
@@ -16,10 +15,7 @@ export interface AppHeaderProps {
 
 export function AppHeader({
   title,
-  showFriendsList,
-  onToggleFriendsList,
   isEditing,
-  onToolReturn
 }: AppHeaderProps) {
   // Hide header if any parent element has z-index 99999 (chat overlay)
   const overlayElement = document.querySelector('[style*="z-index: 99999"]');
@@ -45,22 +41,6 @@ export function AppHeader({
           transition={{ duration: 0.3 }}
         >
           <NotificationsBox />
-          {!isEditing && (
-            <Button
-              variant="outline"
-              onClick={onToggleFriendsList}
-              className={cn(
-                "flex items-center gap-2 text-sm sm:text-base",
-                "transition-all duration-300",
-                "hover:bg-primary/10 hover:text-primary",
-                showFriendsList ? 'bg-primary/5 text-primary' : ''
-              )}
-              size="sm"
-            >
-              <Menu className="h-4 w-4" />
-              <span className="hidden sm:inline">Amis</span>
-            </Button>
-          )}
         </motion.div>
       </div>
     </div>
