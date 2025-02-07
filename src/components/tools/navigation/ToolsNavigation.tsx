@@ -1,5 +1,5 @@
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -11,6 +11,7 @@ import { TranslatorPage } from "../TranslatorPage";
 import { ChessPage } from "../ChessPage";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
@@ -18,9 +19,21 @@ interface ToolsNavigationProps {
   activeTool: Tool;
   onToolChange: (tool: Tool) => void;
   toolsOrder: Tool[];
+  onReorderTools?: (newOrder: Tool[]) => void;
+  isLoading?: boolean;
 }
 
-const tools = [
+interface ToolInfo {
+  id: Tool;
+  icon: any;
+  label: string;
+  description: string;
+  component: React.ComponentType<any>;
+  gradient: string;
+  comingSoon?: boolean;
+}
+
+const tools: ToolInfo[] = [
   { 
     id: "notes", 
     icon: Plus, 
@@ -63,7 +76,8 @@ const tools = [
         <p className="text-muted-foreground">Convertisseur (Bientôt disponible)</p>
       </div>
     ),
-    gradient: "from-cyan-500/20 via-sky-500/20 to-blue-500/20"
+    gradient: "from-cyan-500/20 via-sky-500/20 to-blue-500/20",
+    comingSoon: true
   },
   { 
     id: "chess", 
@@ -75,15 +89,22 @@ const tools = [
   }
 ];
 
-export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsNavigationProps) {
+export function ToolsNavigation({ 
+  activeTool, 
+  onToolChange, 
+  toolsOrder,
+  onReorderTools,
+  isLoading 
+}: ToolsNavigationProps) {
   const [openTool, setOpenTool] = useState<Tool | null>(null);
   const isMobile = useIsMobile();
-  
-  const orderedTools = toolsOrder.map(toolId => 
-    tools.find(t => t.id === toolId)
-  ).filter(Boolean);
+
+  const orderedTools = toolsOrder
+    .map(toolId => tools.find(t => t.id === toolId))
+    .filter(Boolean) as ToolInfo[];
 
   const handleToolClick = (toolId: Tool) => {
+    if (isLoading) return;
     setOpenTool(toolId);
     onToolChange(toolId);
   };
@@ -99,7 +120,10 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: { 
+        staggerChildren: 0.1,
+        when: "beforeChildren"
+      }
     }
   };
 
@@ -115,6 +139,19 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
       }
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className={cn(
+        "grid gap-4",
+        isMobile ? "grid-cols-2" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+      )}>
+        {[...Array(6)].map((_, i) => (
+          <Skeleton key={i} className="w-full h-28" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -142,15 +179,17 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
             >
               <Button 
                 variant={isActive ? "default" : "outline"}
-                onClick={() => handleToolClick(tool.id as Tool)}
+                onClick={() => handleToolClick(tool.id)}
                 className={cn(
                   "w-full h-28 flex flex-col items-center justify-center gap-3 p-4",
                   "transition-all duration-300",
                   "hover:shadow-lg hover:border-primary/20",
                   "bg-gradient-to-br",
                   tool.gradient,
-                  isActive && "ring-2 ring-primary/20"
+                  isActive && "ring-2 ring-primary/20",
+                  tool.comingSoon && "opacity-50 cursor-not-allowed"
                 )}
+                disabled={tool.comingSoon}
                 aria-label={tool.description}
                 role="tab"
                 aria-selected={isActive}
@@ -163,6 +202,11 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
                 )} />
                 <span className="text-sm font-medium text-center line-clamp-2">
                   {tool.label}
+                  {tool.comingSoon && (
+                    <span className="block text-xs text-muted-foreground">
+                      Bientôt disponible
+                    </span>
+                  )}
                 </span>
               </Button>
             </motion.div>
@@ -173,7 +217,7 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
       <Dialog open={!!openTool} onOpenChange={() => setOpenTool(null)}>
         <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-0">
           <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b">
+            <div className="sticky top-0 z-50 flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <h2 className="text-lg font-semibold">
                 {activeTool_?.label}
               </h2>
@@ -186,7 +230,7 @@ export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsN
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <div className="flex-1 overflow-auto p-4">
+            <div className="flex-1 overflow-auto">
               {ActiveComponent && <ActiveComponent />}
             </div>
           </div>

@@ -100,7 +100,8 @@ export function MessagesContent({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50"
+      className="fixed inset-0 flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      style={{ zIndex: 50 }}
     >
       <AnimatePresence mode="wait">
         <motion.div
