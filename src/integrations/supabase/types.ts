@@ -693,6 +693,41 @@ export type Database = {
           },
         ]
       }
+      message_deliveries: {
+        Row: {
+          created_at: string | null
+          delivered_at: string | null
+          id: string
+          message_id: string
+          read_at: string | null
+          recipient_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          message_id: string
+          read_at?: string | null
+          recipient_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          message_id?: string
+          read_at?: string | null
+          recipient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_deliveries_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_status: {
         Row: {
           created_at: string
@@ -729,9 +764,12 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          deleted_at: string | null
+          edited_at: string | null
           id: string
           is_ai_message: boolean | null
           message_type: string | null
+          metadata: Json | null
           read: boolean | null
           receiver_id: string
           sender_id: string
@@ -740,9 +778,12 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string | null
+          deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
           message_type?: string | null
+          metadata?: Json | null
           read?: boolean | null
           receiver_id: string
           sender_id: string
@@ -751,9 +792,12 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string | null
+          deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
           message_type?: string | null
+          metadata?: Json | null
           read?: boolean | null
           receiver_id?: string
           sender_id?: string
@@ -1433,6 +1477,12 @@ export type Database = {
           "": unknown
         }
         Returns: number
+      }
+      mark_messages_as_read: {
+        Args: {
+          p_conversation_id: string
+        }
+        Returns: undefined
       }
       sec_to_gc: {
         Args: {
