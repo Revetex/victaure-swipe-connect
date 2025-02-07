@@ -49,7 +49,7 @@ const itemVariants = {
 
 const MemoizedDashboardContent = memo(DashboardContent);
 
-export const DashboardLayout: React.FC = () => {
+export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -152,4 +152,4 @@ export const DashboardLayout: React.FC = () => {
       </motion.div>
     </DashboardAuthCheck>
   );
-};
+}
