@@ -15,6 +15,14 @@ export function useMessages() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
+      // Récupérer les conversations supprimées
+      const { data: deletedConversations } = await supabase
+        .from('deleted_conversations')
+        .select('conversation_partner_id')
+        .eq('user_id', user.id);
+
+      const deletedPartnerIds = deletedConversations?.map(d => d.conversation_partner_id) || [];
+
       let query = supabase
         .from("messages")
         .select(`
@@ -39,11 +47,12 @@ export function useMessages() {
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
           .eq('message_type', 'user');
       } else {
-        // Quand aucun destinataire n'est sélectionné, récupérer uniquement les conversations
-        // où on est soit l'émetteur SOIT le destinataire, mais pas les deux en même temps
+        // Quand aucun destinataire n'est sélectionné, filtrer les conversations supprimées
         query = query
           .or(`and(sender_id.eq.${user.id},receiver_id.neq.${user.id}),and(receiver_id.eq.${user.id},sender_id.neq.${user.id})`)
-          .eq('message_type', 'user');
+          .eq('message_type', 'user')
+          .not('sender_id', 'in', `(${deletedPartnerIds.join(',')})`)
+          .not('receiver_id', 'in', `(${deletedPartnerIds.join(',')})`);
       }
 
       const { data: messages, error } = await query

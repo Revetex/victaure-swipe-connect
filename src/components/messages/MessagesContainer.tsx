@@ -8,6 +8,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { useUserChat } from "@/hooks/useUserChat";
 import { useAIChat } from "@/hooks/useAIChat";
 import { toast } from "sonner";
+import { useConversationDelete } from "@/hooks/useConversationDelete";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
@@ -27,6 +28,7 @@ export function MessagesContainer() {
     setInputMessage 
   } = useAIChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { handleDeleteConversation } = useConversationDelete();
 
   const handleSelectConversation = (selectedReceiver: any) => {
     try {
@@ -45,16 +47,6 @@ export function MessagesContainer() {
     } catch (error) {
       console.error("Erreur lors du retour à la liste:", error);
       toast.error("Impossible de revenir à la liste des conversations");
-    }
-  };
-
-  const handleDeleteConversation = async () => {
-    try {
-      handleBack();
-      toast.success("Conversation supprimée avec succès");
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-      toast.error("Impossible de supprimer la conversation");
     }
   };
 
@@ -100,7 +92,7 @@ export function MessagesContainer() {
             onSendMessage={handleSendMessage}
             onVoiceInput={handleVoiceInput}
             onBack={handleBack}
-            onDeleteConversation={handleDeleteConversation}
+            onDeleteConversation={() => handleDeleteConversation(receiver)}
             messagesEndRef={messagesEndRef}
           />
         </div>

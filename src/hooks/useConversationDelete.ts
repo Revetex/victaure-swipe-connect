@@ -2,8 +2,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Receiver } from "@/types/messages";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
-export const useConversationDelete = (clearUserChat: (receiverId: string) => void) => {
+export const useConversationDelete = () => {
+  const queryClient = useQueryClient();
+
   const handleDeleteConversation = async (receiver: Receiver | null) => {
     if (!receiver) return;
     
@@ -11,44 +14,58 @@ export const useConversationDelete = (clearUserChat: (receiverId: string) => voi
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Utilisateur non authentifié");
 
-      if (receiver.id === 'assistant') {
-        // Pour les messages AI
-        const { error: aiMessagesError } = await supabase
-          .from('messages')
-          .delete()
-          .eq('receiver_id', user.id)
-          .eq('message_type', 'ai');
+      // Vérifier si l'autre utilisateur a déjà supprimé la conversation
+      const { data: existingDeletion } = await supabase
+        .from('deleted_conversations')
+        .select('*')
+        .eq('user_id', receiver.id)
+        .eq('conversation_partner_id', user.id)
+        .single();
 
-        if (aiMessagesError) throw aiMessagesError;
+      if (existingDeletion) {
+        // L'autre utilisateur a déjà supprimé la conversation, supprimer définitivement
+        if (receiver.id === 'assistant') {
+          const { error: aiMessagesError } = await supabase
+            .from('messages')
+            .delete()
+            .eq('receiver_id', user.id)
+            .eq('message_type', 'ai');
+
+          if (aiMessagesError) throw aiMessagesError;
+        } else {
+          const { error: messagesError } = await supabase
+            .from('messages')
+            .delete()
+            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`);
+
+          if (messagesError) throw messagesError;
+        }
+
+        // Supprimer les entrées de deleted_conversations
+        const { error: deleteError } = await supabase
+          .from('deleted_conversations')
+          .delete()
+          .or(`and(user_id.eq.${user.id},conversation_partner_id.eq.${receiver.id}),and(user_id.eq.${receiver.id},conversation_partner_id.eq.${user.id})`);
+
+        if (deleteError) throw deleteError;
+
+        toast.success("Conversation définitivement supprimée");
       } else {
-        // Pour les messages entre utilisateurs
-        const { error: userMessagesError } = await supabase
-          .from('messages')
-          .delete()
-          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
-          .eq('message_type', 'user');
+        // Marquer la conversation comme supprimée pour l'utilisateur actuel
+        const { error: insertError } = await supabase
+          .from('deleted_conversations')
+          .insert({
+            user_id: user.id,
+            conversation_partner_id: receiver.id
+          });
 
-        if (userMessagesError) throw userMessagesError;
+        if (insertError) throw insertError;
+
+        toast.success("Conversation supprimée de votre liste");
       }
 
-      // Supprimer les statuts de messages pour cette conversation
-      const { error: messageStatusError } = await supabase
-        .from('message_status')
-        .delete()
-        .or(`user_id.eq.${user.id},user_id.eq.${receiver.id}`);
-
-      if (messageStatusError) throw messageStatusError;
-
-      // Supprimer les notifications liées à cette conversation
-      const { error: notificationsError } = await supabase
-        .from('notifications')
-        .delete()
-        .or(`message.ilike.%${receiver.id}%,message.ilike.%${user.id}%`);
-
-      if (notificationsError) throw notificationsError;
-      
-      clearUserChat(receiver.id);
-      toast.success(`Conversation avec ${receiver.full_name} supprimée définitivement`);
+      // Rafraîchir la liste des conversations
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     } catch (error) {
       console.error('Error deleting conversation:', error);
       toast.error("Erreur lors de la suppression de la conversation");

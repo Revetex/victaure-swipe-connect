@@ -240,6 +240,27 @@ export type Database = {
           },
         ]
       }
+      deleted_conversations: {
+        Row: {
+          conversation_partner_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          conversation_partner_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          conversation_partner_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       education: {
         Row: {
           created_at: string | null
