@@ -1,3 +1,4 @@
+
 import { CreatePost } from "./feed/posts/CreatePost";
 import { PostList } from "./feed/posts/PostList";
 import { useQueryClient } from "@tanstack/react-query";
@@ -52,9 +53,13 @@ export function Feed() {
             initial={{ x: -280, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -280, opacity: 0 }}
-            className="w-[280px] lg:w-[350px] fixed left-0 top-16 h-[calc(100vh-4rem)] flex-shrink-0 bg-card/50 backdrop-blur-sm border-r overflow-y-auto"
+            className="w-[280px] lg:w-[350px] fixed left-0 top-16 h-[calc(100vh-4rem)] flex-shrink-0 bg-card/50 backdrop-blur-sm border-r z-50"
           >
-            <Suspense fallback={null}>
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            }>
               <FeedSidebar />
             </Suspense>
           </motion.div>
@@ -80,7 +85,7 @@ export function Feed() {
                 <CreatePost onPostCreated={handlePostCreated} />
               </motion.div>
               
-              <div className="py-3">
+              <div className="py-3 space-y-4">
                 <Suspense 
                   fallback={
                     <div className="flex items-center justify-center py-6">
@@ -108,7 +113,7 @@ export function Feed() {
                   "fixed right-4 bg-primary/90 hover:bg-primary text-primary-foreground",
                   "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
                   "hover:scale-105 active:scale-95",
-                  "min-h-[44px] min-w-[44px]",
+                  "min-h-[44px] min-w-[44px] z-50",
                   isMobile ? "bottom-24" : "bottom-8"
                 )}
                 aria-label="Retourner en haut"
