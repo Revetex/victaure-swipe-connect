@@ -38,7 +38,8 @@ export function MainLayout({
       opacity: 1,
       transition: {
         duration: 0.3,
-        when: "beforeChildren"
+        when: "beforeChildren",
+        staggerChildren: 0.1
       }
     },
     exit: { opacity: 0 }
@@ -63,9 +64,8 @@ export function MainLayout({
       animate="visible"
       exit="exit"
       className="min-h-screen bg-background flex flex-col relative"
-      style={{ zIndex: 1 }}
     >
-      <header className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-50">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -88,7 +88,7 @@ export function MainLayout({
 
       <motion.main 
         variants={contentVariants}
-        className="flex-1 container mx-auto px-4 py-2 relative z-[1] mt-14 mb-16"
+        className="flex-1 container mx-auto px-4 py-2 mt-16 mb-16"
       >
         <div className="max-w-7xl mx-auto">
           {children}
