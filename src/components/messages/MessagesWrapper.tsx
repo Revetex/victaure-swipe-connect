@@ -33,7 +33,7 @@ export function MessagesWrapper() {
 
   useMessageCleanup();
   const { handleBack, handleSelectConversation } = useConversationHandler();
-  const { handleDeleteConversation } = useConversationDelete(clearUserChat);
+  const { handleDeleteConversation } = useConversationDelete();
   useMessageReadStatus(showConversation, receiver);
 
   const handleSendMessage = async (message: string) => {
