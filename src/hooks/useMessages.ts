@@ -37,8 +37,10 @@ export function useMessages() {
         // For user-to-user conversations, get messages where:
         // (current user is sender AND selected user is receiver) OR
         // (selected user is sender AND current user is receiver)
+        // AND messages are not AI messages
         query = query
-          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver?.id}),and(sender_id.eq.${receiver?.id},receiver_id.eq.${user.id})`);
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver?.id}),and(sender_id.eq.${receiver?.id},receiver_id.eq.${user.id})`)
+          .eq('is_ai_message', false);
       }
 
       const { data: messages, error } = await query
