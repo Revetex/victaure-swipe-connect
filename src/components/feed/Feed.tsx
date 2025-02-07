@@ -94,11 +94,12 @@ export function Feed() {
         {/* Main Content */}
         <main className={cn(
           "flex-1 transition-all duration-300",
-          isMobile ? "px-4" : "px-8"
+          isMobile ? "px-4" : "px-8",
+          sidebarOpen ? "ml-[280px] lg:ml-[350px]" : "ml-0"
         )}>
           <ScrollArea 
             ref={scrollRef} 
-            className="h-[calc(100vh-5rem)]" // Adjusted to account for header height
+            className="h-[calc(100vh-5rem)]"
             onScroll={handleScroll}
           >
             <div className="max-w-2xl mx-auto py-4">
@@ -106,7 +107,7 @@ export function Feed() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="sticky top-0 z-[55] bg-background/95 backdrop-blur-sm py-3 mt-4" // Added mt-4 for spacing
+                className="sticky top-0 z-[55] bg-background/95 backdrop-blur-sm py-3 mt-4"
               >
                 <CreatePost onPostCreated={handlePostCreated} />
               </motion.div>

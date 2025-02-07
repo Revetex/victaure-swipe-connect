@@ -13,6 +13,8 @@ import { LogoutSection } from "@/components/settings/LogoutSection";
 import { ConnectionsSection } from "@/components/feed/friends/ConnectionsSection";
 import { motion } from "framer-motion";
 import { ToolsList } from "./sidebar/ToolsList";
+import { ProfileSearch } from "@/components/feed/ProfileSearch";
+import { UserProfile } from "@/types/profile";
 
 interface FeedSidebarProps {
   className?: string;
@@ -27,6 +29,10 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     navigate('/tools');
   };
 
+  const handleProfileSelect = (profile: UserProfile) => {
+    navigate(`/profile/${profile.id}`);
+  };
+
   const sectionClasses = "px-4 py-3 hover:bg-accent/5 transition-colors rounded-lg cursor-pointer";
   const labelClasses = "text-sm font-medium text-muted-foreground tracking-tight uppercase mb-2";
 
@@ -37,6 +43,15 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     )}>
       <ScrollArea className="flex-1 pt-16">
         <div className="p-4 space-y-6">
+          <div>
+            <h3 className={labelClasses}>Search</h3>
+            <ProfileSearch 
+              onSelect={handleProfileSelect}
+              placeholder="Search profiles..."
+              className="w-full"
+            />
+          </div>
+
           <div>
             <h3 className={labelClasses}>Outils</h3>
             <div className="grid grid-cols-2 gap-2">
