@@ -10,12 +10,11 @@ import { fr } from "date-fns/locale";
 interface ChatMessageProps {
   content: string;
   sender: "user" | "assistant";
-  avatar_url?: string;
   timestamp?: string;
   isRead?: boolean;
 }
 
-export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: ChatMessageProps) {
+export function ChatMessage({ content, sender, timestamp, isRead }: ChatMessageProps) {
   const { profile } = useProfile();
   const isAssistant = sender === "assistant";
 

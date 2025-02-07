@@ -55,16 +55,18 @@ export function ConversationView({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] bg-background">
-      <ChatHeader
-        title={receiver.full_name}
-        subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : "En ligne"}
-        avatarUrl={receiver.avatar_url}
-        onBack={onBack}
-        onDelete={onDeleteConversation}
-      />
+    <div className="flex flex-col h-screen">
+      <div className="fixed top-16 left-0 right-0 z-10">
+        <ChatHeader
+          title={receiver.full_name}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : "En ligne"}
+          avatarUrl={receiver.avatar_url}
+          onBack={onBack}
+          onDelete={onDeleteConversation}
+        />
+      </div>
 
-      <div className="relative flex-1 min-h-0">
+      <div className="flex-1 overflow-hidden mt-16 mb-[4.5rem]">
         <ScrollArea 
           className="h-full px-4"
           onScrollCapture={handleScroll}
@@ -77,6 +79,10 @@ export function ConversationView({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
+                  transition={{ 
+                    duration: 0.3,
+                    ease: "easeOut"
+                  }}
                 >
                   <ChatMessage
                     content={message.content}
@@ -98,7 +104,7 @@ export function ConversationView({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-4 right-4"
+              className="fixed bottom-24 right-4 z-10"
             >
               <Button
                 size="icon"
@@ -113,7 +119,7 @@ export function ConversationView({
         </AnimatePresence>
       </div>
 
-      <div className="sticky bottom-[4rem] left-0 right-0 p-4 border-t bg-background">
+      <div className="fixed bottom-16 left-0 right-0 p-4 border-t bg-background">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
