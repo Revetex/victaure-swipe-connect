@@ -4,7 +4,7 @@ import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { AppHeader } from "./navigation/AppHeader";
-import { BottomNavigation } from "./navigation/BottomNavigation";
+import { DashboardNavigation } from "./layout/DashboardNavigation";
 import { useViewport } from "@/hooks/useViewport";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
@@ -143,11 +143,24 @@ export function DashboardLayout() {
             </motion.div>
           </DashboardMain>
 
-          <BottomNavigation
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            isEditing={isEditing}
-          />
+          <nav 
+            className={cn(
+              "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
+            )}
+            style={{ 
+              height: '4rem',
+              paddingBottom: 'env(safe-area-inset-bottom)'
+            }}
+          >
+            <div className="container mx-auto px-4 h-full flex items-center">
+              <DashboardNavigation 
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                isEditing={isEditing}
+              />
+            </div>
+          </nav>
+
         </DashboardContainer>
       </motion.div>
     </DashboardAuthCheck>
