@@ -31,8 +31,7 @@ export function useMessages() {
       if (receiver?.id === 'assistant') {
         query = query
           .eq('receiver_id', user.id)
-          .eq('message_type', 'ai')
-          .or(`sender_id.eq.${user.id}`);
+          .eq('message_type', 'ai');
       } else if (receiver) {
         query = query
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
