@@ -1,5 +1,4 @@
 
-```tsx
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CircleDot, MessageCircle, UserMinus, UserX } from "lucide-react";
@@ -132,4 +131,3 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
     </>
   );
 }
-```
