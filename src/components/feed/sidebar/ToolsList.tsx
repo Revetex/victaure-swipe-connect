@@ -82,3 +82,4 @@ export function ToolsList({ onToolClick }: ToolsListProps) {
 }
 
 export { tools };
+
