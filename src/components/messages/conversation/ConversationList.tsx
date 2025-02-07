@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { FriendSelector } from "./FriendSelector";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -33,7 +35,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     }
 
     const otherUser = message.sender_id === profile.id 
-      ? { id: message.receiver_id, full_name: message.sender?.full_name || 'Unknown' }
+      ? { id: message.receiver_id, full_name: message.sender?.full_name || 'Utilisateur', avatar_url: message.sender?.avatar_url }
       : message.sender;
     
     if (!otherUser) return acc;
@@ -85,7 +87,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
           <div className="mb-6">
             <Button
               variant="ghost"
-              className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10 transition-all duration-200"
+              className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10"
               onClick={() => onSelectConversation({
                 id: 'assistant',
                 full_name: 'M. Victaure',
@@ -106,7 +108,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
                   <h3 className="font-medium text-lg text-primary">M. Victaure</h3>
                   {chatMessages.length > 0 && (
                     <span className="text-xs text-muted-foreground">
-                      {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
+                      {format(new Date(chatMessages[chatMessages.length - 1].created_at), 'PP', { locale: fr })}
                     </span>
                   )}
                 </div>
@@ -128,7 +130,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
             </div>
           )}
 
-          {/* Autres conversations */}
+          {/* Conversations avec d'autres utilisateurs */}
           {filteredConversations.map((conv) => (
             <motion.div
               key={conv.user.id}
@@ -138,11 +140,11 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
             >
               <Button
                 variant="ghost"
-                className="w-full flex items-center gap-2 h-auto p-4 hover:bg-muted/50 transition-all duration-200"
+                className="w-full flex items-center gap-2 h-auto p-4 hover:bg-muted/50"
                 onClick={() => onSelectConversation(conv.user)}
               >
                 <Avatar className="h-12 w-12 ring-2 ring-muted">
-                  <AvatarImage src={conv.user.avatar_url || undefined} alt={conv.user.full_name || ''} />
+                  <AvatarImage src={conv.user.avatar_url || undefined} alt={conv.user.full_name} />
                   <AvatarFallback>
                     {conv.user.full_name?.slice(0, 2).toUpperCase() || '??'}
                   </AvatarFallback>
@@ -151,7 +153,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium text-base">{conv.user.full_name}</h3>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(conv.lastMessage.created_at).toLocaleDateString()}
+                      {format(new Date(conv.lastMessage.created_at), 'PP', { locale: fr })}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground truncate mt-1">
