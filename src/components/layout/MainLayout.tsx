@@ -75,7 +75,7 @@ export function MainLayout({
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[280px] p-0">
+                <SheetContent side="left" className="w-screen sm:w-[350px] p-0">
                   <Navigation />
                 </SheetContent>
               </Sheet>
