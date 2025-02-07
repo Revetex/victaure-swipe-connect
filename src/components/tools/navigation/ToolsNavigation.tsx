@@ -12,6 +12,7 @@ import { ChessPage } from "../ChessPage";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
@@ -216,7 +217,12 @@ export function ToolsNavigation({
 
       <Dialog open={!!openTool} onOpenChange={() => setOpenTool(null)}>
         <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] p-0">
-          <div className="flex flex-col h-full">
+          <motion.div 
+            className="flex flex-col h-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
             <div className="sticky top-0 z-50 flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <h2 className="text-lg font-semibold">
                 {activeTool_?.label}
@@ -230,10 +236,12 @@ export function ToolsNavigation({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <div className="flex-1 overflow-auto">
-              {ActiveComponent && <ActiveComponent />}
-            </div>
-          </div>
+            <ScrollArea className="flex-1">
+              <div className="p-4">
+                {ActiveComponent && <ActiveComponent />}
+              </div>
+            </ScrollArea>
+          </motion.div>
         </DialogContent>
       </Dialog>
     </>
