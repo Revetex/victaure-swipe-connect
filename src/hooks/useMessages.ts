@@ -31,12 +31,12 @@ export function useMessages() {
       if (receiver?.id === 'assistant') {
         query = query
           .eq('receiver_id', user.id)
-          .eq('is_ai_message', true)
-          .or(`sender_id.eq.${user.id},sender_id.eq.assistant`);
+          .eq('message_type', 'ai')
+          .or(`sender_id.eq.${user.id}`);
       } else if (receiver) {
         query = query
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
-          .eq('is_ai_message', false);
+          .eq('message_type', 'user');
       }
 
       const { data: messages, error } = await query
@@ -102,7 +102,7 @@ export function useMessages() {
         content,
         sender_id: user.id,
         receiver_id: receiver.id,
-        is_ai_message: false,
+        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
         read: false
       };
 

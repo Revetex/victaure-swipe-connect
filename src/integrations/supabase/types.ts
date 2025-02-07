@@ -695,6 +695,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_ai_message: boolean | null
+          message_type: string | null
           read: boolean | null
           receiver_id: string
           sender_id: string
@@ -705,6 +706,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          message_type?: string | null
           read?: boolean | null
           receiver_id: string
           sender_id: string
@@ -715,6 +717,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          message_type?: string | null
           read?: boolean | null
           receiver_id?: string
           sender_id?: string
