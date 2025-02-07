@@ -4,6 +4,11 @@ import { Calculator, Languages, ListTodo, Plus, Ruler, Sword, X } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
+import { NotesPage } from "../NotesPage";
+import { TasksPage } from "../TasksPage";
+import { CalculatorPage } from "../CalculatorPage";
+import { TranslatorPage } from "../TranslatorPage";
+import { ChessPage } from "../ChessPage";
 
 type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
