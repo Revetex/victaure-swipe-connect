@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ToolsListProps {
@@ -34,50 +34,42 @@ const tools = [
     gradient: "from-emerald-500/20 via-teal-500/20 to-cyan-500/20"
   },
   {
+    name: "Convertisseur",
+    icon: Ruler,
+    description: "Convertissez des unités",
+    gradient: "from-orange-500/20 via-amber-500/20 to-yellow-500/20"
+  },
+  {
     name: "Échecs",
     icon: Sword,
     description: "Jouez aux échecs",
-    gradient: "from-slate-500/20 via-gray-500/20 to-zinc-500/20"
+    gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20"
   }
 ];
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <div className="grid grid-cols-2 gap-2 p-2">
-      {tools.map((tool, index) => (
-        <motion.div
-          key={tool.name}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            delay: index * 0.1,
-            type: "spring",
-            stiffness: 260,
-            damping: 20 
-          }}
-          className="w-full"
-        >
+    <>
+      {tools.map((tool) => {
+        const Icon = tool.icon;
+        return (
           <Button
+            key={tool.name}
             variant="ghost"
-            size="sm"
+            onClick={() => onToolClick(tool.name)}
             className={cn(
-              "w-full h-20 flex flex-col items-center justify-center gap-2",
-              "bg-gradient-to-br transition-all duration-300",
-              "hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
-              "group rounded-xl",
+              "h-auto py-2 px-3 flex flex-col items-center justify-center gap-1",
+              "bg-gradient-to-br hover:shadow-md transition-all duration-200",
+              "group relative w-full",
               tool.gradient
             )}
-            onClick={() => onToolClick(tool.name)}
-            title={tool.description}
           >
-            <tool.icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-            <span className="text-sm font-medium bg-gradient-to-br from-foreground/90 to-foreground/70 bg-clip-text text-transparent">
-              {tool.name}
-            </span>
+            <Icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+            <span className="text-xs font-medium">{tool.name}</span>
           </Button>
-        </motion.div>
-      ))}
-    </div>
+        );
+      })}
+    </>
   );
 }
 

@@ -28,18 +28,20 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   };
 
   const sectionClasses = "px-4 py-3 hover:bg-accent/5 transition-colors rounded-lg cursor-pointer";
-  const labelClasses = "text-sm font-medium text-muted-foreground tracking-wider uppercase";
+  const labelClasses = "text-sm font-medium text-muted-foreground tracking-tight uppercase mb-2";
 
   return (
     <div className={cn(
       "h-full flex flex-col bg-background/95 backdrop-blur-sm",
       className
     )}>
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 pt-16">
         <div className="p-4 space-y-6">
           <div>
-            <h3 className={cn(labelClasses, "px-4 mb-2")}>Outils</h3>
-            <ToolsList onToolClick={handleToolClick} />
+            <h3 className={labelClasses}>Outils</h3>
+            <div className="grid grid-cols-2 gap-2">
+              <ToolsList onToolClick={handleToolClick} />
+            </div>
           </div>
 
           <Separator />
@@ -50,15 +52,15 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             className="space-y-6"
           >
             <div className="space-y-3">
-              <h3 className={cn(labelClasses, "px-4")}>Connexions</h3>
+              <h3 className={labelClasses}>Connexions</h3>
               <ConnectionsSection />
             </div>
 
             <Separator />
 
             <div className="space-y-4">
-              <h3 className={cn(labelClasses, "px-4")}>Paramètres</h3>
-              <div className="space-y-2 px-4">
+              <h3 className={labelClasses}>Paramètres</h3>
+              <div className="space-y-2">
                 <AppearanceSection />
                 <NotificationsSection />
                 <PrivacySection />

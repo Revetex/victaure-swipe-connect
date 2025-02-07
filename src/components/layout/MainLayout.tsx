@@ -63,9 +63,9 @@ export function MainLayout({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="min-h-screen bg-background flex flex-col relative"
+      className="min-h-screen bg-background flex flex-col"
     >
-      <header className="fixed top-0 left-0 right-0 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-50">
+      <header className="fixed top-0 left-0 right-0 z-50">
         <div className="container mx-auto">
           <DashboardHeader 
             title={title}
@@ -88,7 +88,7 @@ export function MainLayout({
 
       <motion.main 
         variants={contentVariants}
-        className="flex-1 container mx-auto px-4 py-2 mt-16 mb-16"
+        className="flex-1 container mx-auto px-4 mt-16 mb-16"
       >
         <div className="max-w-7xl mx-auto">
           {children}
@@ -97,12 +97,12 @@ export function MainLayout({
 
       {!isFriendsPage && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg h-16"
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
           style={{ 
             paddingBottom: 'env(safe-area-inset-bottom)'
           }}
         >
-          <div className="container mx-auto px-4 h-full flex items-center">
+          <div className="container mx-auto px-4 h-16">
             <DashboardNavigation 
               currentPage={currentPage}
               onPageChange={onPageChange}
