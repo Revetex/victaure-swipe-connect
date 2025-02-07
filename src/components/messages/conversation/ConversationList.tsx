@@ -34,16 +34,25 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
       return acc;
     }
 
+    // Determine the other user in the conversation
+    const otherUserId = message.sender_id === profile.id ? message.receiver_id : message.sender_id;
     const otherUser = message.sender_id === profile.id 
-      ? { id: message.receiver_id, full_name: message.sender?.full_name || 'Utilisateur', avatar_url: message.sender?.avatar_url }
+      ? { id: message.receiver_id }
       : message.sender;
     
     if (!otherUser) return acc;
     
-    const existingConv = acc.find(conv => conv.user.id === otherUser.id);
+    // Find or create conversation entry
+    const existingConv = acc.find((conv: any) => conv.user.id === otherUserId);
     if (!existingConv) {
       acc.push({
-        user: otherUser,
+        user: {
+          id: otherUserId,
+          full_name: message.sender?.full_name || 'Utilisateur',
+          avatar_url: message.sender?.avatar_url,
+          online_status: message.sender?.online_status || false,
+          last_seen: message.sender?.last_seen || new Date().toISOString()
+        },
         lastMessage: message
       });
     } else if (new Date(message.created_at) > new Date(existingConv.lastMessage.created_at)) {

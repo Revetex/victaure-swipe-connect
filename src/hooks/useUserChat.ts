@@ -41,7 +41,7 @@ export function useUserChat(): UserChat {
         content: message,
         sender_id: profile.id,
         receiver_id: receiver.id,
-        is_ai_message: receiver.id === 'assistant',
+        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
         read: false
       };
 
@@ -58,7 +58,6 @@ export function useUserChat(): UserChat {
       setInputMessage('');
       
       if (data && data[0]) {
-        // Update local messages state with the returned message including sender info
         setMessages(prev => [...prev, {
           ...data[0],
           sender: data[0].sender || defaultSender,
