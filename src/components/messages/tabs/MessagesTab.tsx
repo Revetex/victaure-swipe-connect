@@ -1,9 +1,9 @@
+
 import { useState } from "react";
 import { MessagesContent } from "../MessagesContent";
 import { useReceiver } from "@/hooks/useReceiver";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useUserChat } from "@/hooks/useUserChat";
-import { Receiver } from "@/types/messages";
 
 export function MessagesTab() {
   const { receiver } = useReceiver();
@@ -26,11 +26,20 @@ export function MessagesTab() {
 
   const [inputMessage, setInputMessage] = useState("");
 
+  const handleInputChange = (value: string) => {
+    setInputMessage(value);
+    if (receiver?.id === 'assistant') {
+      setAIInputMessage(value);
+    } else {
+      setUserInputMessage(value);
+    }
+  };
+
   const handleSendWrapper = () => {
     if (inputMessage.trim()) {
       if (receiver && receiver.id === 'assistant') {
         handleAISendMessage(inputMessage);
-      } else {
+      } else if (receiver) {
         handleUserSendMessage(inputMessage, receiver);
       }
       setInputMessage("");
@@ -44,8 +53,8 @@ export function MessagesTab() {
         inputMessage={inputMessage}
         isThinking={isThinking}
         onSendMessage={handleSendWrapper}
-        setInputMessage={setInputMessage}
-        onClearChat={clearAIChat}
+        setInputMessage={handleInputChange}
+        onClearChat={receiver?.id === 'assistant' ? clearAIChat : clearUserChat}
         receiver={receiver}
       />
     </div>
