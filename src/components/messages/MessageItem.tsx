@@ -1,6 +1,6 @@
 
 import { Message } from "@/types/messages";
-import { UserAvatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
@@ -38,13 +38,15 @@ export function MessageItem({
       className="flex items-start gap-3 p-3 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors"
       onClick={onMarkAsRead}
     >
-      <UserAvatar
-        user={{
-          name: sender.full_name,
-          image: sender.avatar_url
-        }}
-        className="h-10 w-10"
-      />
+      <Avatar className="h-10 w-10">
+        <AvatarImage 
+          src={sender.avatar_url}
+          alt={sender.full_name}
+        />
+        <AvatarFallback>
+          {sender.full_name.split(' ').map(n => n[0]).join('')}
+        </AvatarFallback>
+      </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <p className="font-medium truncate">{sender.full_name}</p>
