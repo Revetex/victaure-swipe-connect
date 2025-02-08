@@ -33,15 +33,21 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     navigate(`/profile/${profile.id}`);
   };
 
-  const sectionClasses = "px-4 py-3 hover:bg-accent/5 transition-colors rounded-lg cursor-pointer";
   const labelClasses = "text-sm font-medium text-muted-foreground tracking-tight uppercase mb-2";
 
   return (
-    <div className={cn(
-      "h-full flex flex-col bg-background/95 backdrop-blur-sm",
-      className
-    )}>
-      <ScrollArea className="flex-1 h-[calc(100vh-4rem)]">
+    <motion.div 
+      className={cn(
+        "fixed inset-y-0 left-0 w-[280px] sm:w-[350px] bg-background/95 backdrop-blur-sm z-[99998]",
+        "shadow-xl border-r",
+        className
+      )}
+      initial={{ x: -350 }}
+      animate={{ x: 0 }}
+      exit={{ x: -350 }}
+      transition={{ type: "spring", damping: 20, stiffness: 100 }}
+    >
+      <ScrollArea className="h-[calc(100vh-4rem)] mt-16">
         <div className="p-4 space-y-6">
           <div>
             <h3 className={labelClasses}>Recherche</h3>
@@ -86,6 +92,6 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
           </motion.div>
         </div>
       </ScrollArea>
-    </div>
+    </motion.div>
   );
 }

@@ -22,10 +22,6 @@ export function AppHeader({
   isEditing,
 }: AppHeaderProps) {
   const isMobile = useIsMobile();
-  
-  // Hide header if any parent element has z-index 99999 (chat overlay)
-  const overlayElement = document.querySelector('[style*="z-index: 99999"]');
-  if (overlayElement) return null;
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur z-50 border-b h-14">
@@ -49,26 +45,27 @@ export function AppHeader({
           <div className="relative">
             <NotificationsBox />
           </div>
-          {isMobile && (
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className={cn(
-                    "text-primary hover:bg-primary/5",
-                    "transition-all duration-300",
-                    "active:scale-95 touch-none"
-                  )}
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[85vw] sm:w-[380px] p-0 pt-14">
-                <FeedSidebar className="border-none" />
-              </SheetContent>
-            </Sheet>
-          )}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className={cn(
+                  "text-primary hover:bg-primary/5",
+                  "transition-all duration-300",
+                  "active:scale-95 touch-none"
+                )}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent 
+              side="left" 
+              className="w-screen sm:w-[350px] p-0 z-[99998]"
+            >
+              <FeedSidebar className="border-none" />
+            </SheetContent>
+          </Sheet>
         </motion.div>
       </div>
     </header>
