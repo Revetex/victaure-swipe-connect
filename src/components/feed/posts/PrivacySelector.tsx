@@ -8,16 +8,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PostPrivacyLevel } from "./types";
+import { cn } from "@/lib/utils";
 
 interface PrivacySelectorProps {
   value: PostPrivacyLevel;
   onChange: (value: PostPrivacyLevel) => void;
+  className?: string;  // Added className as an optional prop
 }
 
-export function PrivacySelector({ value, onChange }: PrivacySelectorProps) {
+export function PrivacySelector({ value, onChange, className }: PrivacySelectorProps) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[180px] h-9">
+      <SelectTrigger className={cn("w-[180px] h-9", className)}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -37,3 +39,4 @@ export function PrivacySelector({ value, onChange }: PrivacySelectorProps) {
     </Select>
   );
 }
+
