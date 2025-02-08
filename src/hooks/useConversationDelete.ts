@@ -53,17 +53,31 @@ export const useConversationDelete = () => {
 
         toast.success("Conversation définitivement supprimée");
       } else {
-        // Marquer la conversation comme supprimée pour l'utilisateur actuel
-        const { error: insertError } = await supabase
+        // Check if the current user has already deleted this conversation
+        const { data: userDeletion, error: userDeletionError } = await supabase
           .from('deleted_conversations')
-          .insert({
-            user_id: user.id,
-            conversation_partner_id: receiver.id
-          });
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('conversation_partner_id', receiver.id)
+          .maybeSingle();
 
-        if (insertError) throw insertError;
+        if (userDeletionError) throw userDeletionError;
 
-        toast.success("Conversation supprimée de votre liste");
+        // Si l'utilisateur n'a pas déjà supprimé la conversation
+        if (!userDeletion) {
+          const { error: insertError } = await supabase
+            .from('deleted_conversations')
+            .insert({
+              user_id: user.id,
+              conversation_partner_id: receiver.id
+            });
+
+          if (insertError) throw insertError;
+
+          toast.success("Conversation supprimée de votre liste");
+        } else {
+          toast.info("Cette conversation est déjà supprimée");
+        }
       }
 
       // Rafraîchir la liste des conversations
