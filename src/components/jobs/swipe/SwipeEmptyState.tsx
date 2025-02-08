@@ -15,9 +15,13 @@ export function SwipeEmptyState({ onRefresh }: SwipeEmptyStateProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="rounded-full bg-muted p-4">
+      <motion.div 
+        className="rounded-full bg-muted p-4"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
         <RefreshCw className="w-6 h-6 text-muted-foreground" />
-      </div>
+      </motion.div>
       <h3 className="text-lg font-semibold">Aucune offre disponible</h3>
       <p className="text-sm text-muted-foreground max-w-sm">
         Il n'y a plus d'offres correspondant à vos critères pour le moment.
@@ -27,6 +31,9 @@ export function SwipeEmptyState({ onRefresh }: SwipeEmptyStateProps) {
         variant="outline"
         onClick={onRefresh}
         className="mt-4"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        as={motion.button}
       >
         <RefreshCw className="w-4 h-4 mr-2" />
         Actualiser
