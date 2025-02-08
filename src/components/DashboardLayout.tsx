@@ -4,12 +4,7 @@ import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { motion } from "framer-motion";
 import { DashboardLoading } from "./dashboard/layout/DashboardLoading";
 import { Feed } from "@/components/Feed";
-import { Messages } from "@/components/messages/Messages";
-import { Marketplace } from "@/components/Marketplace";
-import { VCard } from "@/components/VCard";
 import { MainLayout } from "./layout/MainLayout";
-
-const AIAssistant = React.lazy(() => import("./dashboard/AIAssistant"));
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -37,6 +32,7 @@ export function DashboardLayout() {
         initial="initial"
         animate="animate"
         exit="exit"
+        className="min-h-screen"
       >
         <MainLayout>
           <Suspense fallback={<DashboardLoading />}>

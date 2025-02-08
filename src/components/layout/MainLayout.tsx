@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
@@ -71,12 +71,14 @@ export function MainLayout({
       onError={handleError}
       onReset={() => window.location.reload()}
     >
-      <div className="min-h-screen flex bg-background">
-        {!isMobile && <Sidebar />}
+      <div className="flex min-h-screen bg-background">
+        {!isMobile && (
+          <Sidebar />
+        )}
 
-        <motion.main 
+        <motion.div 
           className={cn(
-            "flex-1 min-h-screen flex flex-col",
+            "flex-1 flex flex-col min-h-screen relative",
             !isMobile && "md:pl-[280px] lg:pl-[320px]"
           )}
           variants={layoutVariants}
@@ -86,33 +88,35 @@ export function MainLayout({
         >
           {!isMessagesPage && (
             <header 
-              className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-40"
+              className={cn(
+                "h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+                "sticky top-0 z-40 w-full"
+              )}
               role="banner"
             >
-              <div className="container h-full mx-auto px-4 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  {isMobile && <MobileNavigation />}
-                  <DashboardHeader 
-                    title={title}
-                    showFriendsList={showFriendsList}
-                    onToggleFriendsList={onToggleFriendsList}
-                    isEditing={isEditing}
-                    onToolReturn={onToolReturn}
-                  />
+              <div className="container h-full">
+                <div className="flex items-center justify-between h-full px-4">
+                  <div className="flex items-center gap-4">
+                    {isMobile && <MobileNavigation />}
+                    <DashboardHeader 
+                      title={title}
+                      showFriendsList={showFriendsList}
+                      onToggleFriendsList={onToggleFriendsList}
+                      isEditing={isEditing}
+                      onToolReturn={onToolReturn}
+                    />
+                  </div>
                 </div>
               </div>
             </header>
           )}
 
-          <motion.div 
-            className={cn(
-              "flex-1",
-              !isMessagesPage && "pt-16"
-            )}
-            variants={layoutVariants}
-          >
+          <main className={cn(
+            "flex-1",
+            !isMessagesPage && "pt-4"
+          )}>
             {children}
-          </motion.div>
+          </main>
 
           {showFriendsList && (
             <DashboardFriendsList 
@@ -124,7 +128,8 @@ export function MainLayout({
           {!isFriendsPage && (
             <nav 
               className={cn(
-                "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-40",
+                "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+                "sticky bottom-0 w-full z-40",
                 !isMobile && "md:ml-[280px] lg:ml-[320px]"
               )}
               style={{ 
@@ -133,16 +138,18 @@ export function MainLayout({
               role="navigation"
               aria-label="Bottom navigation"
             >
-              <div className="container mx-auto px-4 h-full">
-                <DashboardNavigation 
-                  currentPage={currentPage} 
-                  onPageChange={handlePageChange}
-                  isEditing={isEditing}
-                />
+              <div className="container h-full">
+                <div className="px-4 h-full">
+                  <DashboardNavigation 
+                    currentPage={currentPage} 
+                    onPageChange={handlePageChange}
+                    isEditing={isEditing}
+                  />
+                </div>
               </div>
             </nav>
           )}
-        </motion.main>
+        </motion.div>
       </div>
     </ErrorBoundary>
   );
