@@ -1,4 +1,5 @@
 
+
 @tailwind base;
 
 @layer base {
@@ -69,3 +70,4 @@
     to { opacity: 1; transform: translateY(0); }
   }
 }
+

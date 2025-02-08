@@ -35,6 +35,16 @@
           "value": "X-Requested-With, Content-Type, Authorization"
         }
       ]
+    },
+    {
+      "source": "/lovable-uploads/(.*)\\.mp4$",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "video/mp4"
+        }
+      ]
     }
   ]
 }
+

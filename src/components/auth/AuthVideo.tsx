@@ -76,6 +76,7 @@ export const AuthVideo = () => {
             controls={isPlaying}
             muted
             loop
+            aria-label="Présentation vidéo de Victaure"
           >
             <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
             Votre navigateur ne supporte pas la lecture de vidéos.
@@ -91,12 +92,15 @@ export const AuthVideo = () => {
             <button
               className="p-4 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110"
               onClick={togglePlay}
+              aria-label={isPlaying ? "Mettre en pause la vidéo" : "Lancer la vidéo"}
+              title={isPlaying ? "Mettre en pause la vidéo" : "Lancer la vidéo"}
             >
-              <Play className="w-8 h-8 text-white" />
+              <Play className="w-8 h-8 text-white" aria-hidden="true" />
             </button>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
+
