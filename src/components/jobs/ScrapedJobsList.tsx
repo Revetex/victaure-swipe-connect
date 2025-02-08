@@ -1,6 +1,7 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Building2, MapPin, ExternalLink, Calendar, Search } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -8,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
 import { Input } from "@/components/ui/input";
-import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
+import { Search } from "lucide-react";
 import { useState } from "react";
 
 interface ScrapedJobsListProps {
@@ -31,14 +32,10 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
           )
         `);
 
-      // Recherche textuelle
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);
-      }
-
-      // Si on a une chaîne de recherche globale, on l'utilise aussi
-      if (queryString) {
-        query = query.or(`title.ilike.%${queryString}%,description.ilike.%${queryString}%,company.ilike.%${queryString}%,location.ilike.%${queryString}%`);
+      // Recherche textuelle combinée
+      const searchQuery = searchTerm || queryString;
+      if (searchQuery) {
+        query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,company.ilike.%${searchQuery}%,location.ilike.%${searchQuery}%`);
       }
 
       query = query.order('posted_at', { ascending: false });
@@ -69,7 +66,6 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
         }
       }
 
-      console.log(`Found ${data?.length || 0} scraped jobs`);
       return data as (ScrapedJob & { job_transcriptions: { ai_transcription: string }[] })[] || [];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -93,27 +89,19 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
       >
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#9b87f5] to-[#6E59A5]">
-            Offres externes ({jobs.length})
+            Offres d'emploi ({jobs.length})
           </h2>
         </div>
 
-        {/* Search Section */}
-        <div className="bg-background/60 backdrop-blur-sm rounded-lg p-6 border border-border/50 space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Rechercher dans les offres..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-          
-          <div className="pl-32">
-            <GoogleSearchBox />
-          </div>
+        {/* Barre de recherche simplifiée */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Rechercher dans les offres..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
         
         {jobs.length === 0 ? (
@@ -181,11 +169,6 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
           </div>
         )}
       </motion.div>
-
-      {/* Google Search Results */}
-      <div className="mt-8 bg-background/60 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden">
-        <div className="gcse-searchresults-only"></div>
-      </div>
     </div>
   );
 }
