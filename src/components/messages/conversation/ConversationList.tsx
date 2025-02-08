@@ -59,7 +59,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   );
 
   return (
-    <div className="flex flex-col h-full pt-16">
+    <div className="fixed inset-0 z-[99999] bg-background flex flex-col">
       <div className="sticky top-16 z-50 bg-background/95 backdrop-blur border-b">
         <SearchBar
           searchQuery={searchQuery}
