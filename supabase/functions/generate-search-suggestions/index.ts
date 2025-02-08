@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -33,18 +34,28 @@ serve(async (req) => {
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) throw new Error('Missing Hugging Face API key');
 
-    // Generate base context for the model
+    // Générer le contexte basé sur le profil
     const baseContext = `
-      Génère 5 suggestions de recherche différentes en français pour un professionnel de la construction.
-      Context: L'utilisateur est ${profile.role} et cherche des opportunités dans son domaine.
-      Les suggestions doivent être:
-      - Pertinentes pour le secteur de la construction
-      - Spécifiques et détaillées
-      - En français
-      Format: Une suggestion par ligne
+      En tant qu'assistant pour la recherche d'emploi, génère une suggestion de recherche utile et pertinente.
+      
+      Contexte de l'utilisateur:
+      - Rôle: ${profile.role}
+      - Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
+      - Industrie: ${profile.industry || 'Non spécifiée'}
+      - Ville: ${profile.city || 'Non spécifié'}
+      - Province: ${profile.state || 'Non spécifiée'}
+      
+      Les suggestions doivent:
+      - Être en français
+      - Être pertinentes pour le secteur de la construction
+      - Inclure le lieu si spécifié dans le profil
+      - Utiliser les compétences de l'utilisateur
+      - Être spécifiques et ciblées
+      
+      Format souhaité: Une suggestion de recherche d'emploi complète
     `;
 
-    // Call Hugging Face API
+    // Appel à l'API Hugging Face
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -56,31 +67,53 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: baseContext,
           parameters: {
-            max_new_tokens: 200,
+            max_new_tokens: 100,
             temperature: 0.8,
             top_p: 0.95,
-            repetition_penalty: 1.2
+            return_full_text: false
           }
         }),
       }
     );
 
     if (!response.ok) {
-      throw new Error('Failed to generate suggestions');
+      const errorText = await response.text();
+      console.error('Hugging Face API Error:', errorText);
+      throw new Error('Failed to generate suggestion');
     }
 
-    const result = await response.json();
-    const suggestions = result[0].generated_text
-      .split('\n')
-      .filter((line: string) => line.trim())
-      .slice(0, 5);
-
-    if (!suggestions.length) {
-      throw new Error("Aucune suggestion générée");
+    const data = await response.json();
+    
+    let suggestion = '';
+    if (data && Array.isArray(data) && data[0]?.generated_text) {
+      // Nettoyer et formater la suggestion
+      suggestion = data[0].generated_text
+        .split('\n')
+        .filter(line => line.trim())
+        .map(line => line.replace(/^[0-9.-\s]+/, '').trim())
+        .find(line => line.length > 0) || '';
     }
+
+    // Stocker la suggestion dans l'historique
+    await supabaseAdmin
+      .from('ai_learning_data')
+      .insert({
+        user_id: userId,
+        question: 'job_search_suggestion',
+        response: suggestion,
+        context: {
+          profile: {
+            role: profile.role,
+            skills: profile.skills,
+            location: profile.city,
+            industry: profile.industry
+          }
+        },
+        tags: ['job-search', 'suggestion']
+      });
 
     return new Response(
-      JSON.stringify({ suggestion: suggestions[0] }),
+      JSON.stringify({ suggestion }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
