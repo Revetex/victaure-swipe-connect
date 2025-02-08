@@ -47,7 +47,17 @@ export function HeroTrustSignals() {
               loop
               muted
               playsInline
+              id="trustVideo"
               className="w-full h-full object-cover rounded-xl"
+              onClick={(e) => {
+                const video = e.currentTarget;
+                if (video.paused) {
+                  video.muted = false;
+                  video.play();
+                } else {
+                  video.pause();
+                }
+              }}
             >
               <source src="/lovable-uploads/victaurepub.mp4" type="video/mp4" />
               Votre navigateur ne supporte pas la lecture de vidéos.

@@ -35,6 +35,7 @@ export const AuthVideo = () => {
     e.stopPropagation();
     if (videoRef.current) {
       if (videoRef.current.paused) {
+        videoRef.current.muted = false; // Unmute when playing
         videoRef.current.play()
           .then(() => {
             setIsPlaying(true);
