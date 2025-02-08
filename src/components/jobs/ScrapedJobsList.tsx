@@ -48,9 +48,9 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Liste des offres d'emploi">
-            {convertedJobs.map((job, index) => (
+            {convertedJobs.map((job) => (
               <div key={job.id} role="listitem">
-                <JobCard job={job} index={index} />
+                <JobCard job={job} />
               </div>
             ))}
           </div>
@@ -59,4 +59,3 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     </div>
   );
 }
-
