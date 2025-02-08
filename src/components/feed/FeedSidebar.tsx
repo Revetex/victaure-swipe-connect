@@ -14,7 +14,7 @@ import { ToolsList } from "./sidebar/ToolsList";
 import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { UserProfile } from "@/types/profile";
 import { Home, MessageSquare, BriefcaseIcon, Newspaper, Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
 interface FeedSidebarProps {
@@ -88,6 +88,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+              <SheetTitle>Menu</SheetTitle>
               <div className="py-4 space-y-6">
                 <nav className="space-y-2">
                   {menuItems.map((item) => (
@@ -127,3 +128,4 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     </motion.div>
   );
 }
+
