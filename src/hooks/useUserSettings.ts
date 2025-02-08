@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Json } from '@/integrations/supabase/types';
 
 interface UserSettings {
   theme: string;
@@ -57,8 +58,17 @@ export const useUserSettings = () => {
 
       if (error) throw error;
       
+      // Parse JSON fields and return default navigation preferences if none exist
+      if (data) {
+        return {
+          menu_order: (data.menu_order as Json[] || []).map(String),
+          hidden_items: (data.hidden_items as Json[] || []).map(String),
+          custom_labels: (data.custom_labels as Record<string, string>) || {}
+        };
+      }
+      
       // Return default navigation preferences if none exist
-      return data || {
+      return {
         menu_order: [],
         hidden_items: [],
         custom_labels: {}
@@ -93,7 +103,12 @@ export const useUserSettings = () => {
 
       const { error } = await supabase
         .from('navigation_preferences')
-        .upsert({ id: user.id, ...newPrefs });
+        .upsert({ 
+          id: user.id, 
+          menu_order: JSON.stringify(newPrefs.menu_order || []),
+          hidden_items: JSON.stringify(newPrefs.hidden_items || []),
+          custom_labels: JSON.stringify(newPrefs.custom_labels || {})
+        });
 
       if (error) throw error;
     },
