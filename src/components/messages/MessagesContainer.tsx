@@ -9,6 +9,7 @@ import { useUserChat } from "@/hooks/useUserChat";
 import { useAIChat } from "@/hooks/useAIChat";
 import { toast } from "sonner";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
+import { useMessagesStore } from "@/store/messagesStore";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
@@ -29,6 +30,7 @@ export function MessagesContainer() {
   } = useAIChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { handleDeleteConversation } = useConversationDelete();
+  const messages = useMessagesStore((state) => state.messages);
 
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
