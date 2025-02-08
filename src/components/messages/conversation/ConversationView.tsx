@@ -60,12 +60,12 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="relative flex flex-col h-[calc(100vh-6rem)] max-w-4xl mx-auto bg-background">
+    <section className="relative flex flex-col h-[calc(100vh-6rem)] min-h-0 w-full bg-background">
       <ScrollArea 
         className="flex-1 px-4 pb-32"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-4 max-w-3xl mx-auto">
+        <div className="space-y-4 py-4 mx-auto">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
