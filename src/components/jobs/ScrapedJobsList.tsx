@@ -1,19 +1,12 @@
 
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { JobCard } from "./JobCard";
 import { useJobsData } from "@/hooks/useJobsData";
 import type { ScrapedJobsListProps } from "@/types/jobs/types";
+import { JobCard } from "./JobCard";
 
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
-  const navigate = useNavigate();
   const { data: jobs = [], isLoading } = useJobsData(queryString);
-
-  const handleCreateJob = () => {
-    navigate('/jobs/create');
-  };
 
   if (isLoading) {
     return (
