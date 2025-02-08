@@ -38,7 +38,7 @@ export function ConversationItem({ user, lastMessage, onSelect }: ConversationIt
         </Avatar>
         <div className="flex-1">
           <div className="flex justify-between items-center">
-            <h3 className="font-medium text-base">{user.full_name}</h3>
+            <h3 className="font-medium text-base">{user.full_name || 'Utilisateur'}</h3>
             <span className="text-xs text-muted-foreground">
               {format(new Date(lastMessage.created_at), 'PP', { locale: fr })}
             </span>

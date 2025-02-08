@@ -30,7 +30,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
 
     // Ensure we have valid user data
     if (!otherUser || !otherUserId) {
-      console.log("Missing user data for message:", message);
+      console.error("Missing user data for message:", message);
       return acc;
     }
 
@@ -40,7 +40,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
       acc.push({
         user: {
           id: otherUserId,
-          full_name: otherUser.full_name,
+          full_name: otherUser.full_name || 'Utilisateur',
           avatar_url: otherUser.avatar_url || '',
           online_status: otherUser.online_status || false,
           last_seen: otherUser.last_seen || new Date().toISOString()
