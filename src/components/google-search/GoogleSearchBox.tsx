@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -16,6 +17,8 @@ export function GoogleSearchBox() {
 
     const searchDiv = document.createElement('div');
     searchDiv.className = 'gcse-search';
+    searchDiv.setAttribute('data-as_sitesearch', 'jobs');
+    searchDiv.setAttribute('data-gname', 'jobs-search');
     searchContainerRef.current.innerHTML = '';
     searchContainerRef.current.appendChild(searchDiv);
 

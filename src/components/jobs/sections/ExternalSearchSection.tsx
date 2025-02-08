@@ -36,6 +36,7 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
   };
 
   useEffect(() => {
+    // Cleanup
     return () => {
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
@@ -43,6 +44,7 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
     };
   }, []);
 
+  // Utilisez l'attribut loading="lazy" pour les iframes de recherche Google
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-background via-background/95 to-background/90">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -87,7 +89,7 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
               [&_.gsc-results-wrapper-overlay]:!backdrop-blur-md 
               [&_.gsc-results-wrapper-overlay]:!supports-[backdrop-filter]:bg-background/60"
             >
-              <div className="gcse-searchresults-only"></div>
+              <div className="gcse-searchresults-only" data-queryParameterName="q"></div>
             </div>
           </motion.div>
         </div>
@@ -95,4 +97,3 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
     </main>
   );
 }
-
