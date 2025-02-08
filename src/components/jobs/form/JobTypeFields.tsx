@@ -1,13 +1,15 @@
+
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useFormContext } from "react-hook-form";
+import { provinces } from "@/hooks/data/provinces";
 
 const experienceLevels = [
   "Entry Level",
-  "Junior",
-  "Mid-Level",
-  "Senior",
+  "Junior (1-3 years)",
+  "Intermediate (3-5 years)",
+  "Senior (5+ years)",
   "Lead",
   "Expert"
 ];
@@ -18,12 +20,14 @@ const contractTypes = {
     "Part-time",
     "Contract",
     "Temporary",
-    "Internship"
+    "Internship",
+    "Seasonal"
   ],
   individual: [
     "One-time",
     "Fixed-duration",
-    "Project-based"
+    "Project-based",
+    "Consulting"
   ]
 };
 
@@ -43,7 +47,16 @@ const paymentSchedules = {
 const remoteTypes = [
   "On-site",
   "Remote",
-  "Hybrid"
+  "Hybrid",
+  "Flexible"
+];
+
+const languageRequirements = [
+  "English Only",
+  "French Only",
+  "Bilingual (English/French)",
+  "Either English or French",
+  "Multilingual"
 ];
 
 export function JobTypeFields() {
@@ -65,6 +78,54 @@ export function JobTypeFields() {
                 <SelectContent>
                   <SelectItem value="company">Mission d'entreprise</SelectItem>
                   <SelectItem value="individual">Mission de particulier</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        name="province"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Province</FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez une province" />
+                </SelectTrigger>
+                <SelectContent>
+                  {provinces.map((province) => (
+                    <SelectItem key={province.name} value={province.name}>
+                      {province.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        name="language_requirements"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Exigences linguistiques</FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "English Only"}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez les exigences linguistiques" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languageRequirements.map((lang) => (
+                    <SelectItem key={lang} value={lang}>
+                      {lang}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </FormControl>
