@@ -42,32 +42,14 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-5rem)] w-full max-w-3xl mx-auto px-4"
+      className="h-[calc(100vh-5rem)]"
       onScroll={handleScroll}
     >
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="sticky top-0 z-[55] bg-background/95 backdrop-blur-sm py-3"
-      >
-        <CreatePost onPostCreated={handlePostCreated} />
-      </motion.div>
-      
-      <div className="py-3">
-        <Suspense 
-          fallback={
-            <div className="flex items-center justify-center py-6">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          }
-        >
-          <PostList 
-            onPostDeleted={handlePostDeleted}
-            onPostUpdated={handlePostUpdated}
-          />
-        </Suspense>
-      </div>
+      <CreatePost onPostCreated={handlePostCreated} />
+      <PostList 
+        onPostDeleted={handlePostDeleted}
+        onPostUpdated={handlePostUpdated}
+      />
 
       <AnimatePresence>
         {showScrollTop && (
@@ -77,11 +59,11 @@ export function Feed() {
             exit={{ opacity: 0, y: 10 }}
             onClick={scrollToTop}
             className={cn(
-              "fixed right-4 bg-primary/90 hover:bg-primary text-primary-foreground",
+              "fixed bg-primary/90 hover:bg-primary text-primary-foreground",
               "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
               "hover:scale-105 active:scale-95",
               "min-h-[44px] min-w-[44px]",
-              isMobile ? "bottom-24" : "bottom-8"
+              isMobile ? "bottom-24 right-4" : "bottom-8 right-4"
             )}
             aria-label="Retourner en haut"
           >
