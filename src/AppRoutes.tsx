@@ -16,7 +16,6 @@ import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { Feed } from "@/components/Feed";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { Settings } from "@/components/Settings";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -49,10 +48,9 @@ export function AppRoutes() {
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route path="/profile/:id" element={<PublicProfile />} />
       
-      {/* Routes protégées */}
+      {/* Protected Routes */}
       <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route path="/feed" element={<Feed />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/calculator" element={<CalculatorPage />} />
@@ -73,4 +71,3 @@ export function AppRoutes() {
     </Routes>
   );
 }
-
