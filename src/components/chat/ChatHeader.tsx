@@ -32,7 +32,7 @@ export function ChatHeader({
   className
 }: ChatHeaderProps) {
   return (
-    <div className={`flex-shrink-0 sticky top-0 left-0 right-0 bg-background/95 backdrop-blur z-[999] border-b ${className || ''}`}>
+    <div className={`flex-shrink-0 bg-background/95 backdrop-blur z-[999] border-b ${className || ''}`}>
       <div className="flex items-center gap-4 px-4 h-16">
         <Button
           variant="ghost"
