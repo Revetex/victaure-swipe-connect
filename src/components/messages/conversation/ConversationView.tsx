@@ -60,24 +60,12 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="flex flex-col h-[calc(100vh-12rem)] overflow-hidden relative bg-background">
-      <div className="mt-14 fixed top-0 left-0 right-0 bg-background/95 backdrop-blur z-[49] border-b">
-        <ChatHeader
-          title={receiver.full_name}
-          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
-          avatarUrl={receiver.avatar_url}
-          onBack={onBack}
-          onDelete={onDeleteConversation}
-          isOnline={receiver.online_status}
-          lastSeen={receiver.last_seen}
-        />
-      </div>
-
+    <section className="relative flex flex-col h-[calc(100vh-6rem)] max-w-4xl mx-auto bg-background">
       <ScrollArea 
-        className="flex-1 px-4 mt-16"
+        className="flex-1 px-4 pb-32"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 max-w-3xl mx-auto">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -117,7 +105,7 @@ export function ConversationView({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="absolute bottom-24 right-4 z-10"
+          className="absolute bottom-32 right-4 z-10"
         >
           <Button
             size="icon"
@@ -130,8 +118,17 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <footer className="flex-shrink-0 fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur border-t z-[48]">
-        <div className="p-2">
+      <div className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t">
+        <ChatHeader
+          title={receiver.full_name}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
+          avatarUrl={receiver.avatar_url}
+          onBack={onBack}
+          onDelete={onDeleteConversation}
+          isOnline={receiver.online_status}
+          lastSeen={receiver.last_seen}
+        />
+        <div className="p-4">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
@@ -142,7 +139,7 @@ export function ConversationView({
             placeholder="Écrivez votre message..."
           />
         </div>
-      </footer>
+      </div>
     </section>
   );
 }
