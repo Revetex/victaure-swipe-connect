@@ -25,7 +25,7 @@ export function JobCard({ job, index }: JobCardProps) {
             {job.logo_url && (
               <img 
                 src={job.logo_url} 
-                alt={job.company}
+                alt={`Logo de ${job.company}`}
                 className="w-8 h-8 rounded-full object-cover"
               />
             )}
@@ -39,11 +39,11 @@ export function JobCard({ job, index }: JobCardProps) {
               {job.title}
             </h3>
             <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-              <Building2 className="h-4 w-4" />
+              <Building2 className="h-4 w-4" aria-hidden="true" />
               <span>{job.company}</span>
             </div>
             <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" />
+              <MapPin className="h-4 w-4" aria-hidden="true" />
               <span>{job.location}</span>
             </div>
             <div className="mt-2 text-sm text-muted-foreground">
@@ -66,8 +66,10 @@ export function JobCard({ job, index }: JobCardProps) {
             variant="default"
             className="w-full flex items-center justify-center gap-2"
             onClick={() => window.open(job.url, '_blank')}
+            title={`Voir l'offre pour ${job.title} chez ${job.company}`}
+            aria-label={`Voir l'offre pour ${job.title} chez ${job.company}`}
           >
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
             Voir l'offre
           </Button>
         </div>

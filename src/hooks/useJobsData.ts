@@ -51,7 +51,9 @@ export const useJobsData = (queryString: string = "") => {
             posted_at: job.created_at,
             source: 'Victaure' as const,
             description: job.description,
-            transcription: (job.job_transcriptions?.[0] as JobTranscription | undefined)?.ai_transcription,
+            transcription: job.job_transcriptions?.[0] ? 
+              (job.job_transcriptions[0] as unknown as JobTranscription).ai_transcription : 
+              undefined,
             logo_url: job.employer?.avatar_url
           })),
           ...scrapedJobs.map(job => ({
@@ -63,7 +65,9 @@ export const useJobsData = (queryString: string = "") => {
             posted_at: job.posted_at,
             source: 'Externe' as const,
             description: job.description,
-            transcription: (job.job_transcriptions?.[0] as JobTranscription | undefined)?.ai_transcription
+            transcription: job.job_transcriptions?.[0] ? 
+              (job.job_transcriptions[0] as unknown as JobTranscription).ai_transcription : 
+              undefined
           }))
         ];
 
