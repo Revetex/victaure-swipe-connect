@@ -60,7 +60,7 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="relative flex flex-col h-[calc(100vh-8rem)] w-full bg-background">
+    <section className="relative flex flex-col h-[calc(100vh-8rem-4rem)] min-h-0 w-full bg-background mt-16">
       <ChatHeader
         title={receiver.full_name}
         subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -70,12 +70,11 @@ export function ConversationView({
         isOnline={receiver.online_status}
         lastSeen={receiver.last_seen}
       />
-      
       <ScrollArea 
-        className="flex-1 px-4 overflow-y-auto flex flex-col justify-end"
+        className="flex-1 px-4 pb-32"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-6 max-w-4xl mx-auto w-full min-h-full flex flex-col justify-end">
+        <div className="space-y-4 py-4 mx-auto">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -115,7 +114,7 @@ export function ConversationView({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="absolute bottom-24 right-8 z-10"
+          className="absolute bottom-32 right-4 z-10"
         >
           <Button
             size="icon"
@@ -128,8 +127,8 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t">
-        <div className="p-4 max-w-4xl mx-auto">
+      <div className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t">
+        <div className="p-4">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
