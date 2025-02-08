@@ -762,6 +762,13 @@ export type Database = {
             foreignKeyName: "message_deliveries_message_id_fkey"
             columns: ["message_id"]
             isOneToOne: false
+            referencedRelation: "latest_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_deliveries_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
             referencedRelation: "messages"
             referencedColumns: ["id"]
           },
@@ -790,6 +797,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "message_status_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "latest_messages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "message_status_message_id_fkey"
             columns: ["message_id"]
@@ -1442,7 +1456,50 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      latest_messages: {
+        Row: {
+          content: string | null
+          conversation_id: string | null
+          created_at: string | null
+          deleted_at: string | null
+          deleted_by: Json | null
+          edited_at: string | null
+          id: string | null
+          is_ai_message: boolean | null
+          is_deleted: boolean | null
+          message_type: string | null
+          metadata: Json | null
+          reaction: string | null
+          read: boolean | null
+          receiver_id: string | null
+          sender_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       change_user_password: {
