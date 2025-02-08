@@ -44,7 +44,8 @@ export function useAIChat(): AIChat {
       timestamp: new Date().toISOString(),
       message_type: sender.id === 'assistant' ? 'ai' : 'user',
       status: 'sent',
-      thinking: false
+      thinking: false,
+      metadata: {}
     };
 
     setMessages(prev => [...prev, newMessage]);

@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { Message, MessageSender } from '@/types/messages';
 import { useProfile } from './useProfile';
@@ -41,7 +42,8 @@ export function useChat() {
       timestamp: new Date().toISOString(),
       message_type: sender.id === 'assistant' ? 'ai' : 'user',
       status: 'sent',
-      thinking: false
+      thinking: false,
+      metadata: {}
     };
 
     setState(prev => ({
