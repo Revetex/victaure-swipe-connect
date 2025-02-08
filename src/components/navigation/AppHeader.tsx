@@ -55,6 +55,8 @@ export function AppHeader({
                   "transition-all duration-300",
                   "active:scale-95 touch-none"
                 )}
+                title="Ouvrir le menu"
+                aria-label="Ouvrir le menu de navigation"
               >
                 <Menu className="h-5 w-5" />
               </Button>
@@ -71,3 +73,4 @@ export function AppHeader({
     </header>
   );
 }
+
