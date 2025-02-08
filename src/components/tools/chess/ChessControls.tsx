@@ -1,6 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RefreshCw, Crown } from "lucide-react";
+import { RefreshCw, Crown, Brain } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChessControlsProps {
@@ -24,7 +25,7 @@ export function ChessControls({
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 p-4 bg-muted/50 rounded-xl shadow-md"
+      className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-muted/50 rounded-xl shadow-md"
     >
       <div className="flex items-center gap-4 w-full sm:w-auto">
         <Select value={difficulty} onValueChange={onDifficultyChange}>
@@ -49,7 +50,7 @@ export function ChessControls({
       </div>
 
       <motion.div 
-        className="flex items-center gap-2 text-sm sm:text-base font-medium"
+        className="flex items-center gap-3 text-sm sm:text-base font-medium"
         animate={{ opacity: 1 }}
         initial={{ opacity: 0 }}
       >
@@ -63,7 +64,10 @@ export function ChessControls({
         ) : (
           <div className="flex items-center gap-2">
             {isThinking ? (
-              <span className="text-muted-foreground">AI is thinking...</span>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Brain className="h-5 w-5 animate-pulse" />
+                <span>AI is thinking...</span>
+              </div>
             ) : (
               <span className="font-semibold">
                 {isWhiteTurn ? "White" : "Black"}'s turn
