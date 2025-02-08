@@ -35,6 +35,22 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     >
       <ScrollArea className="h-full">
         <div className="p-4 space-y-6">
+          {/* Connections */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
+              Connexions
+            </h3>
+            <ConnectionsSection />
+          </div>
+
+          {/* Tools */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
+              Outils
+            </h3>
+            <ToolsList onToolClick={handleToolClick} />
+          </div>
+
           {/* Settings */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
@@ -48,22 +64,6 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
               <BlockedUsersSection />
               <LogoutSection />
             </div>
-          </div>
-
-          {/* Tools */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
-              Outils
-            </h3>
-            <ToolsList onToolClick={handleToolClick} />
-          </div>
-
-          {/* Connections */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
-              Connexions
-            </h3>
-            <ConnectionsSection />
           </div>
         </div>
       </ScrollArea>
