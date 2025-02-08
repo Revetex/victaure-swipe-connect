@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -33,8 +33,8 @@ export function MainLayout({
   const isFriendsPage = location.pathname.includes('/friends');
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="fixed top-0 left-0 right-0 z-[60] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+    <div className="min-h-screen bg-background">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-4">
             {isMobile ? (
@@ -69,22 +69,18 @@ export function MainLayout({
         </AnimatePresence>
       </header>
 
-      <div className="flex flex-1 pt-16">
+      <div className="flex pt-16 h-[calc(100vh-4rem)]">
         {!isMobile && (
-          <aside className="w-[280px] lg:w-[320px] hidden md:block border-r bg-card/50 backdrop-blur-sm fixed left-0 h-[calc(100vh-4rem)] top-16 z-30">
+          <aside className="w-[280px] lg:w-[320px] hidden md:block border-r bg-card/50">
             <Navigation />
           </aside>
         )}
         
         <main 
           className={cn(
-            "flex-1 relative",
+            "flex-1 h-full overflow-hidden",
             !isMobile && "md:ml-[280px] lg:ml-[320px]"
           )}
-          style={{ 
-            minHeight: '100vh',
-            paddingBottom: !isFriendsPage ? '4rem' : '0'
-          }}
         >
           {children}
         </main>
@@ -92,7 +88,7 @@ export function MainLayout({
 
       {!isFriendsPage && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border/50 z-40 shadow-lg h-16"
+          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border/50 z-40 shadow-lg h-16 md:ml-[280px] lg:ml-[320px]"
           style={{ 
             paddingBottom: 'env(safe-area-inset-bottom)'
           }}
