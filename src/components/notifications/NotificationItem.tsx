@@ -8,6 +8,7 @@ import { CVNotification } from "./types/CVNotification";
 import { CVUploadNotification } from "./types/CVUploadNotification";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 interface NotificationItemProps {
   id: string;
@@ -26,6 +27,7 @@ export function NotificationItem({
   read,
   onDelete,
 }: NotificationItemProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
   const isFriendRequest = title.toLowerCase().includes("demande d'ami");
   const isCVRequest = title.toLowerCase().includes("demande de cv");
   const isCVAccepted = title.toLowerCase().includes("accès au cv accordé");
@@ -43,6 +45,7 @@ export function NotificationItem({
 
   const handleDelete = async () => {
     try {
+      setIsDeleting(true);
       await onDelete(id);
     } catch (error) {
       console.error("Error deleting notification:", error);
@@ -64,6 +67,7 @@ export function NotificationItem({
       className={cn(
         "p-4 rounded-lg relative group transition-all duration-200",
         "hover:shadow-md dark:hover:shadow-none",
+        isDeleting && "opacity-50 pointer-events-none",
         read
           ? "bg-muted/50 dark:bg-muted/25"
           : "bg-primary/10 border-l-2 border-primary",
@@ -77,6 +81,7 @@ export function NotificationItem({
             size="icon"
             onClick={markAsRead}
             className="h-8 w-8 hover:text-primary focus:opacity-100"
+            disabled={isDeleting}
           >
             <span className="sr-only">Marquer comme lu</span>
             <Check className="h-4 w-4" />
@@ -87,6 +92,7 @@ export function NotificationItem({
           size="icon"
           onClick={handleDelete}
           className="h-8 w-8 hover:text-destructive focus:opacity-100"
+          disabled={isDeleting}
         >
           <span className="sr-only">Supprimer la notification</span>
           <X className="h-4 w-4" />
@@ -115,28 +121,32 @@ export function NotificationItem({
         </div>
       </div>
 
-      {isFriendRequest && (
-        <FriendRequestNotification
-          id={id}
-          message={message}
-          onDelete={onDelete}
-        />
-      )}
+      {!isDeleting && (
+        <>
+          {isFriendRequest && (
+            <FriendRequestNotification
+              id={id}
+              message={message}
+              onDelete={onDelete}
+            />
+          )}
 
-      {isCVRequest && (
-        <CVNotification
-          id={id}
-          message={message}
-          onDelete={onDelete}
-        />
-      )}
+          {isCVRequest && (
+            <CVNotification
+              id={id}
+              message={message}
+              onDelete={onDelete}
+            />
+          )}
 
-      {isCVAccepted && (
-        <CVUploadNotification
-          id={id}
-          message={message}
-          onDelete={onDelete}
-        />
+          {isCVAccepted && (
+            <CVUploadNotification
+              id={id}
+              message={message}
+              onDelete={onDelete}
+            />
+          )}
+        </>
       )}
     </motion.div>
   );
