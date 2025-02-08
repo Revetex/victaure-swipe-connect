@@ -1,61 +1,70 @@
 
-import { useGoogleSearchStyles } from "@/components/google-search/GoogleSearchStyles";
-import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
-import { AISearchSuggestions } from "@/components/google-search/AISearchSuggestions";
+import { JobFilters } from "../JobFilterUtils";
+import { JobFiltersPanel } from "../JobFiltersPanel";
+import { ScrapedJobsList } from "../ScrapedJobsList";
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { JobFilters as JobFiltersComponent } from "../JobFilters";
+import { useEffect, useState } from "react";
 
-export function ExternalSearchSection() {
-  useGoogleSearchStyles();
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+interface ExternalSearchSectionProps {
+  filters: JobFilters;
+  onFilterChange: (key: keyof JobFilters, value: any) => void;
+}
 
-  const handleSuggestionClick = (suggestion: string) => {
-    // Clear any existing timeout
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+export function ExternalSearchSection({ 
+  filters,
+  onFilterChange 
+}: ExternalSearchSectionProps) {
+  const [queryString, setQueryString] = useState<string>("");
 
-    // Find the Google search input
-    const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
-    if (searchInput) {
-      // Set the value and dispatch input event
-      searchInput.value = suggestion;
-      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-      
-      // Wait a short moment for the Google Search to initialize
-      searchTimeoutRef.current = setTimeout(() => {
-        // Find and click the search button
-        const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
-        if (searchButton) {
-          searchButton.click();
-        }
-      }, 300);
-    }
-  };
-
-  // Cleanup timeout on unmount
+  // Effet pour construire la requête de recherche basée sur les filtres
   useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, []);
+    const parts = [];
+
+    if (filters.searchTerm) {
+      parts.push(filters.searchTerm);
+    }
+
+    if (filters.category && filters.category !== "all") {
+      parts.push(filters.category);
+    }
+
+    if (filters.location) {
+      parts.push(`${filters.location}`);
+    }
+
+    if (filters.experienceLevel && filters.experienceLevel !== "all") {
+      parts.push(filters.experienceLevel);
+    }
+
+    if (filters.remoteType && filters.remoteType !== "all") {
+      parts.push(filters.remoteType === "remote" ? "télétravail" : filters.remoteType);
+    }
+
+    setQueryString(parts.join(" "));
+
+  }, [filters]);
 
   return (
-    <div className="w-full space-y-4">
-      <div className="relative">
-        <div className="absolute top-0 left-0 z-10">
-          <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
-        </div>
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="w-full relative [&_.gsc-input-box]:!bg-transparent [&_.gsc-input]:!bg-transparent [&_.gsc-search-button]:!bg-primary-foreground"
-        >
-          <GoogleSearchBox />
-        </motion.div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-7xl mx-auto space-y-8"
+    >
+      <div className="flex flex-col lg:flex-row gap-6">
+        <aside className="w-full lg:w-80 shrink-0">
+          <JobFiltersPanel 
+            filters={filters}
+            onFilterChange={onFilterChange}
+          />
+        </aside>
+
+        <main className="flex-1">
+          <ScrapedJobsList 
+            queryString={queryString}
+          />
+        </main>
       </div>
-    </div>
+    </motion.div>
   );
 }

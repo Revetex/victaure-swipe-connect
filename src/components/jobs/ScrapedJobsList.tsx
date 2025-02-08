@@ -9,15 +9,26 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
 
-export function ScrapedJobsList() {
+interface ScrapedJobsListProps {
+  queryString?: string;
+}
+
+export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const { data: jobs = [], isLoading } = useQuery({
-    queryKey: ["scraped-jobs"],
+    queryKey: ["scraped-jobs", queryString],
     queryFn: async () => {
-      console.log("Fetching scraped jobs...");
-      const { data, error } = await supabase
+      console.log("Fetching scraped jobs with query:", queryString);
+      let query = supabase
         .from('scraped_jobs')
         .select('*')
         .order('posted_at', { ascending: false });
+
+      // Si on a une chaîne de recherche, on l'utilise pour filtrer
+      if (queryString) {
+        query = query.or(`title.ilike.%${queryString}%,description.ilike.%${queryString}%,company.ilike.%${queryString}%,location.ilike.%${queryString}%`);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Error fetching scraped jobs:", error);
@@ -40,7 +51,7 @@ export function ScrapedJobsList() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="space-y-6">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
