@@ -7,18 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-
-interface ScrapedJob {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  description?: string;
-  url?: string;
-  posted_at: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { ScrapedJob } from "@/types/database/scrapedJobs";
 
 export function ScrapedJobsList() {
   const { data: jobs = [], isLoading } = useQuery({
@@ -36,7 +25,7 @@ export function ScrapedJobsList() {
       }
 
       console.log(`Found ${data?.length || 0} scraped jobs`);
-      return data || [];
+      return data as ScrapedJob[] || [];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
