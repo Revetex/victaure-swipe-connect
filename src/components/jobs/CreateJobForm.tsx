@@ -1,3 +1,4 @@
+
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { JobDetailsFields } from "./form/JobDetailsFields";
 import { jobFormSchema, defaultValues } from "./form/jobFormSchema";
 import { useJobFormSubmit } from "./form/useJobFormSubmit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect } from "react";
 
 interface CreateJobFormProps {
   onSuccess?: () => void;
@@ -23,6 +25,20 @@ export function CreateJobForm({ onSuccess }: CreateJobFormProps) {
   });
 
   const { handleSubmit, isSubmitting } = useJobFormSubmit(onSuccess);
+
+  useEffect(() => {
+    // Récupérer les données importées du localStorage
+    const importedData = localStorage.getItem('import_job_data');
+    if (importedData) {
+      const jobData = JSON.parse(importedData);
+      // Remplir le formulaire avec les données importées
+      Object.entries(jobData).forEach(([key, value]) => {
+        form.setValue(key as any, value);
+      });
+      // Nettoyer le localStorage
+      localStorage.removeItem('import_job_data');
+    }
+  }, [form]);
 
   return (
     <Card>

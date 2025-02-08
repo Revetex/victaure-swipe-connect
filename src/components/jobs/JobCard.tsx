@@ -1,11 +1,13 @@
 
 import { Card } from "@/components/ui/card";
-import { Building2, MapPin, ExternalLink } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Import } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import type { UnifiedJob } from "@/types/jobs/types";
+import { toast } from "sonner";
 
 interface JobCardProps {
   job: UnifiedJob;
@@ -13,6 +15,33 @@ interface JobCardProps {
 }
 
 export function JobCard({ job, index }: JobCardProps) {
+  const navigate = useNavigate();
+
+  const handleImportJob = () => {
+    // Préparer les données pour le formulaire de création
+    const jobData = {
+      title: job.title,
+      company_name: job.company,
+      location: job.location,
+      description: job.description || job.transcription || "",
+      mission_type: "company",
+      category: "Technology", // Par défaut, peut être amélioré avec une IA de classification
+      contract_type: "full-time", // Par défaut
+      experience_level: "mid-level", // Par défaut
+      budget: 0, // À définir par l'utilisateur
+      required_skills: [], // À extraire du texte avec une IA
+      remote_type: "on-site", // Par défaut
+    };
+
+    // Stocker les données dans le localStorage pour les récupérer dans le formulaire
+    localStorage.setItem('import_job_data', JSON.stringify(jobData));
+    
+    // Rediriger vers le formulaire de création
+    navigate('/jobs/create');
+    
+    toast.success("Les données de l'offre ont été importées");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -61,7 +90,19 @@ export function JobCard({ job, index }: JobCardProps) {
           )}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 space-y-2">
+          {job.source === 'Externe' && (
+            <Button 
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+              onClick={handleImportJob}
+              title="Importer cette offre sur Victaure"
+            >
+              <Import className="h-4 w-4" />
+              Importer l'offre
+            </Button>
+          )}
+          
           <Button 
             variant="default"
             className="w-full flex items-center justify-center gap-2"
