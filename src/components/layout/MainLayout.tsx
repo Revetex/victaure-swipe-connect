@@ -44,7 +44,7 @@ export function MainLayout({
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-screen sm:w-[350px] p-0">
+                <SheetContent side="left" className="p-0 w-[280px]">
                   <Navigation />
                 </SheetContent>
               </Sheet>
@@ -69,9 +69,9 @@ export function MainLayout({
         </AnimatePresence>
       </header>
 
-      <div className="flex pt-16 h-[calc(100vh-4rem)]">
+      <div className="flex pt-16 h-[calc(100vh-4rem)] relative">
         {!isMobile && (
-          <aside className="w-[280px] lg:w-[320px] hidden md:block border-r bg-card/50">
+          <aside className="w-[280px] lg:w-[320px] hidden md:block border-r bg-card/50 fixed top-16 bottom-0 left-0 overflow-y-auto">
             <Navigation />
           </aside>
         )}
@@ -88,7 +88,10 @@ export function MainLayout({
 
       {!isFriendsPage && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border/50 z-40 shadow-lg h-16 md:ml-[280px] lg:ml-[320px]"
+          className={cn(
+            "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border/50 z-40 shadow-lg h-16",
+            !isMobile && "md:ml-[280px] lg:ml-[320px]"
+          )}
           style={{ 
             paddingBottom: 'env(safe-area-inset-bottom)'
           }}
