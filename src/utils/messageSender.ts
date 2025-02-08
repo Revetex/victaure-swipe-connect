@@ -1,12 +1,12 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { Message, Receiver } from '@/types/messages';
-import { Profile } from '@/types/profile';
+import { UserProfile } from '@/types/profile';
 
 export const sendMessage = async (
   message: string,
   receiver: Receiver,
-  profile: Profile
+  profile: UserProfile
 ): Promise<Message | null> => {
   const newMessage = {
     content: message,

@@ -1,9 +1,9 @@
 
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Profile } from '@/types/profile';
+import { UserProfile } from '@/types/profile';
 
-export const usePresenceTracking = (profile: Profile | null) => {
+export const usePresenceTracking = (profile: UserProfile | null) => {
   useEffect(() => {
     if (!profile) return;
 

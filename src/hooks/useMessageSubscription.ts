@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/messages';
 import { useMessagesStore } from '@/store/messagesStore';
-import { Profile } from '@/types/profile';
+import { UserProfile } from '@/types/profile';
 
-export const useMessageSubscription = (profile: Profile | null) => {
+export const useMessageSubscription = (profile: UserProfile | null) => {
   const { addMessage, updateMessage, deleteMessage } = useMessagesStore();
 
   useEffect(() => {
