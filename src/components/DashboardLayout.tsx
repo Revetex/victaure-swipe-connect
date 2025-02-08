@@ -2,7 +2,6 @@
 import React, { useState, useEffect, memo, useCallback } from "react";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { AppHeader } from "./navigation/AppHeader";
 import { BottomNavigation } from "./navigation/BottomNavigation";
 import { useViewport } from "@/hooks/useViewport";
@@ -14,6 +13,7 @@ import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AIAssistant } from "./dashboard/AIAssistant";
+import { Outlet } from "react-router-dom";
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -47,8 +47,6 @@ const itemVariants = {
   exit: { opacity: 0, y: -20 }
 };
 
-const MemoizedDashboardContent = memo(DashboardContent);
-
 export const DashboardLayout: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
@@ -75,21 +73,9 @@ export const DashboardLayout: React.FC = () => {
     setShowAIAssistant(prev => !prev);
   }, []);
 
-  const handleEditStateChange = useCallback((state: boolean) => {
-    setIsEditing(state);
-  }, []);
-
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
-
-  useEffect(() => {
-    const startTime = performance.now();
-    return () => {
-      const endTime = performance.now();
-      console.log(`DashboardLayout render time: ${endTime - startTime}ms`);
-    };
-  }, []);
 
   return (
     <DashboardAuthCheck>
@@ -133,13 +119,7 @@ export const DashboardLayout: React.FC = () => {
 
           <DashboardMain>
             <motion.div variants={itemVariants} className="relative z-10">
-              <MemoizedDashboardContent
-                currentPage={currentPage}
-                viewportHeight={viewportHeight}
-                isEditing={isEditing}
-                onEditStateChange={handleEditStateChange}
-                onRequestChat={() => setShowAIAssistant(true)}
-              />
+              <Outlet />
             </motion.div>
           </DashboardMain>
 
@@ -153,3 +133,4 @@ export const DashboardLayout: React.FC = () => {
     </DashboardAuthCheck>
   );
 };
+

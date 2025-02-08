@@ -2,8 +2,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Dashboard from "@/pages/Dashboard";
-import Settings from "@/pages/Settings";
 import { TermsPage } from "@/components/legal/TermsPage";
 import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
@@ -17,6 +15,8 @@ import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { Feed } from "@/components/Feed";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import { Settings } from "@/components/Settings";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -48,70 +48,18 @@ export function AppRoutes() {
       <Route path="/legal/cookies" element={<CookiesPage />} />
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route path="/profile/:id" element={<PublicProfile />} />
-      <Route
-        path="/feed"
-        element={
-          <ProtectedRoute>
-            <Feed />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/dashboard/*"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/notes"
-        element={
-          <ProtectedRoute>
-            <NotesPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/tasks"
-        element={
-          <ProtectedRoute>
-            <TasksPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/calculator"
-        element={
-          <ProtectedRoute>
-            <CalculatorPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/translator"
-        element={
-          <ProtectedRoute>
-            <TranslatorPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/chess"
-        element={
-          <ProtectedRoute>
-            <ChessPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        }
-      />
+      
+      {/* Routes protégées */}
+      <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+        <Route path="/feed" element={<Feed />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/notes" element={<NotesPage />} />
+        <Route path="/tasks" element={<TasksPage />} />
+        <Route path="/calculator" element={<CalculatorPage />} />
+        <Route path="/translator" element={<TranslatorPage />} />
+        <Route path="/chess" element={<ChessPage />} />
+      </Route>
+
       <Route 
         path="*" 
         element={
@@ -125,3 +73,4 @@ export function AppRoutes() {
     </Routes>
   );
 }
+

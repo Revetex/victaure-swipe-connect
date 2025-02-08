@@ -28,7 +28,7 @@ export function useRealtimeChat() {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      setMessages(data);
+      setMessages(data as ChatMessage[]);
     } catch (error) {
       console.error('Error loading messages:', error);
       toast.error("Erreur lors du chargement des messages");
@@ -77,7 +77,7 @@ export function useRealtimeChat() {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as ChatMessage;
     } catch (error) {
       console.error('Error adding message:', error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
@@ -87,3 +87,4 @@ export function useRealtimeChat() {
 
   return { messages, isLoading, addMessage, setMessages };
 }
+
