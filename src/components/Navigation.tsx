@@ -22,32 +22,26 @@ export function Navigation({ onNavigate, className }: NavigationProps) {
     return null;
   }
 
-  const handleNavigate = (path: string) => {
-    onNavigate(path);
-  };
-
   return (
     <div className={cn("h-full flex flex-col bg-background", className)}>
-      {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4 bg-background">
         <motion.div 
           className="flex items-center gap-3 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          onClick={() => handleNavigate("/")}
+          onClick={() => onNavigate("/")}
         >
-          <Logo size="sm" />
+          <Logo size="sm" onClick={() => onNavigate("/")} />
         </motion.div>
       </div>
 
-      {/* Navigation Content */}
       <ScrollArea className="flex-1 px-2 py-4">
         <nav className="space-y-6">
           <div className="space-y-2">
             <Button 
               variant="ghost"
               className="w-full justify-start"
-              onClick={() => handleNavigate("/messages")}
+              onClick={() => onNavigate("/messages")}
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               <span>Messages</span>
@@ -55,7 +49,7 @@ export function Navigation({ onNavigate, className }: NavigationProps) {
             <Button 
               variant="ghost"
               className="w-full justify-start"
-              onClick={() => handleNavigate("/settings")}
+              onClick={() => onNavigate("/settings")}
             >
               <Settings className="h-4 w-4 mr-2" />
               <span>Paramètres</span>
@@ -65,7 +59,6 @@ export function Navigation({ onNavigate, className }: NavigationProps) {
         </nav>
       </ScrollArea>
 
-      {/* Footer Actions */}
       <div className="h-16 border-t bg-background flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <NotificationsBox />

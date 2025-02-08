@@ -72,7 +72,7 @@ export function MainLayout({
       onReset={() => window.location.reload()}
     >
       <div className="flex min-h-screen bg-background">
-        {!isMobile && <Sidebar />}
+        {!isMobile && <Sidebar onNavigate={handleNavigate} />}
 
         <motion.div 
           className={cn(
