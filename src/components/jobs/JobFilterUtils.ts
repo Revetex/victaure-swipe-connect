@@ -22,6 +22,9 @@ export const defaultFilters: JobFilters = {
   deadlineBefore: null,
   search: "",
   categories: [],
+  contractType: "all",
+  missionType: "company",
+  paymentSchedule: "monthly",
 };
 
 export class JobFilterUtils {
@@ -74,4 +77,3 @@ export class JobFilterUtils {
     );
   }
 }
-

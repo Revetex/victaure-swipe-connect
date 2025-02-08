@@ -1,5 +1,6 @@
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { JobFilters } from "../JobFilterUtils";
+import { JobFilters } from "@/types/filters";
 
 interface WorkTypeFiltersProps {
   filters: JobFilters;

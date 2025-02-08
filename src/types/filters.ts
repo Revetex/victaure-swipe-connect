@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const filterSchema = z.object({
@@ -17,6 +18,9 @@ export const filterSchema = z.object({
   deadlineBefore: z.string().nullable().default(null),
   search: z.string().default(""),
   categories: z.array(z.string()).default([]),
+  contractType: z.string().default("all"),
+  missionType: z.string().default("company"),
+  paymentSchedule: z.string().default("monthly"),
 });
 
 export type JobFilters = z.infer<typeof filterSchema>;
@@ -38,4 +42,7 @@ export const defaultFilters: JobFilters = {
   deadlineBefore: null,
   search: "",
   categories: [],
+  contractType: "all",
+  missionType: "company",
+  paymentSchedule: "monthly",
 };
