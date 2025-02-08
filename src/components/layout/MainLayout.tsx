@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -72,10 +72,8 @@ export function MainLayout({
       onReset={() => window.location.reload()}
     >
       <div className="flex min-h-screen bg-background">
-        {!isMobile && (
-          <Sidebar />
-        )}
-
+        {!isMobile && <Sidebar />}
+        
         <motion.div 
           className={cn(
             "flex-1 flex flex-col min-h-screen relative",
@@ -96,16 +94,13 @@ export function MainLayout({
             >
               <div className="container h-full">
                 <div className="flex items-center justify-between h-full px-4">
-                  <div className="flex items-center gap-4">
-                    {isMobile && <MobileNavigation />}
-                    <DashboardHeader 
-                      title={title}
-                      showFriendsList={showFriendsList}
-                      onToggleFriendsList={onToggleFriendsList}
-                      isEditing={isEditing}
-                      onToolReturn={onToolReturn}
-                    />
-                  </div>
+                  <DashboardHeader 
+                    title={title}
+                    showFriendsList={showFriendsList}
+                    onToggleFriendsList={onToggleFriendsList}
+                    isEditing={isEditing}
+                    onToolReturn={onToolReturn}
+                  />
                 </div>
               </div>
             </header>
