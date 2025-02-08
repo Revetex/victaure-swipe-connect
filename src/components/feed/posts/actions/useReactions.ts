@@ -97,7 +97,8 @@ export const useReactions = ({
           await createNotification(
             postAuthorId,
             'Nouveau j\'aime',
-            `${userEmail} a aimé votre publication`
+            `${userEmail} a aimé votre publication`,
+            'like'
           );
         }
       } else {
@@ -106,7 +107,8 @@ export const useReactions = ({
           await createNotification(
             postAuthorId,
             'Nouveau je n\'aime pas',
-            `${userEmail} n'a pas aimé votre publication`
+            `${userEmail} n'a pas aimé votre publication`,
+            'like'
           );
         }
       }

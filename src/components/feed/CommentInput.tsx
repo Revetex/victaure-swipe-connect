@@ -53,7 +53,8 @@ export const CommentInput = ({
           .insert({
             user_id: postAuthorId,
             title: 'Nouveau commentaire',
-            message: `${userEmail} a commenté votre publication`
+            message: `${userEmail} a commenté votre publication`,
+            type: 'comment'
           });
       }
 

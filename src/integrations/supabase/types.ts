@@ -1049,6 +1049,7 @@ export type Database = {
           read: boolean | null
           read_at: string | null
           title: string
+          type: string
           updated_at: string | null
           user_id: string
         }
@@ -1059,6 +1060,7 @@ export type Database = {
           read?: boolean | null
           read_at?: string | null
           title: string
+          type?: string
           updated_at?: string | null
           user_id: string
         }
@@ -1069,6 +1071,7 @@ export type Database = {
           read?: boolean | null
           read_at?: string | null
           title?: string
+          type?: string
           updated_at?: string | null
           user_id?: string
         }

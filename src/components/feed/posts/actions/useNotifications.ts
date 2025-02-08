@@ -2,7 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const useNotifications = () => {
-  const createNotification = async (userId: string, title: string, message: string) => {
+  const createNotification = async (userId: string, title: string, message: string, type: 'general' | 'like' | 'comment' | 'friend_request' | 'chess' | 'mention' | 'job' = 'general') => {
     try {
       const { error } = await supabase
         .from('notifications')
@@ -10,6 +10,7 @@ export const useNotifications = () => {
           user_id: userId,
           title,
           message,
+          type
         });
 
       if (error) throw error;
