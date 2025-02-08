@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useJobsData } from "@/hooks/useJobsData";
 import type { ScrapedJobsListProps } from "@/types/jobs/types";
 import { JobCard } from "./JobCard";
+import type { Job } from "@/types/job";
 
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const { data: jobs = [], isLoading } = useJobsData(queryString);
@@ -16,6 +17,24 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     );
   }
 
+  // Convertir les UnifiedJob en Job
+  const convertedJobs: Job[] = jobs.map(job => ({
+    id: job.id,
+    title: job.title,
+    description: job.description || '',
+    budget: 0, // Valeur par défaut
+    location: job.location,
+    employer_id: '', // Valeur par défaut
+    status: 'open', // Valeur par défaut
+    category: '', // Valeur par défaut
+    contract_type: '',
+    experience_level: '',
+    created_at: job.posted_at,
+    company: job.company,
+    source: job.source === 'Victaure' ? 'internal' : 'external',
+    url: job.url
+  }));
+
   return (
     <div className="space-y-6">
       <motion.div 
@@ -23,13 +42,13 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col space-y-6"
       >
-        {jobs.length === 0 ? (
+        {convertedJobs.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground" role="status">
             Aucune offre disponible
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Liste des offres d'emploi">
-            {jobs.map((job, index) => (
+            {convertedJobs.map((job, index) => (
               <div key={job.id} role="listitem">
                 <JobCard job={job} index={index} />
               </div>
@@ -40,3 +59,4 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     </div>
   );
 }
+
