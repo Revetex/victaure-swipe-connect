@@ -44,7 +44,6 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
     };
   }, []);
 
-  // Utilisez l'attribut loading="lazy" pour les iframes de recherche Google
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-background via-background/95 to-background/90">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -73,7 +72,7 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
             transition={{ duration: 0.3, delay: 0.1 }}
             className="bg-card/50 backdrop-blur-sm rounded-xl shadow-lg border border-border/50 overflow-hidden"
           >
-            <div className="p-6">
+            <div>
               <ScrapedJobsList queryString={filters.searchTerm} />
             </div>
           </motion.div>
