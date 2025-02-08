@@ -27,17 +27,19 @@ export function SwipeEmptyState({ onRefresh }: SwipeEmptyStateProps) {
         Il n'y a plus d'offres correspondant à vos critères pour le moment.
         Réessayez plus tard ou modifiez vos filtres.
       </p>
-      <Button 
-        variant="outline"
-        onClick={onRefresh}
-        className="mt-4"
+      <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        as={motion.button}
       >
-        <RefreshCw className="w-4 h-4 mr-2" />
-        Actualiser
-      </Button>
+        <Button 
+          variant="outline"
+          onClick={onRefresh}
+          className="mt-4"
+        >
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Actualiser
+        </Button>
+      </motion.div>
     </motion.div>
   );
 }
