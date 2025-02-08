@@ -5,7 +5,6 @@ import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
 import { Card } from "../ui/card";
 import { useMessages } from "@/hooks/useMessages";
-import { useUserChat } from "@/hooks/useUserChat";
 import { useAIChat } from "@/hooks/useAIChat";
 import { toast } from "sonner";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
@@ -71,7 +70,7 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] flex flex-col bg-background relative">
+    <Card className="h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] flex flex-col bg-background">
       {showConversation && receiver ? (
         <ConversationView
           receiver={receiver}

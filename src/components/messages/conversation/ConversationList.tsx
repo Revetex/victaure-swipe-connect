@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Message, Receiver } from "@/types/messages";
-import { useProfile } from "@/hooks/useProfile";
 import { SearchBar } from "./SearchBar";
 import { AssistantButton } from "./AssistantButton";
 import { ConversationItem } from "./ConversationItem";
 import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
+import { useProfile } from "@/hooks/useProfile";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -42,7 +42,6 @@ export function ConversationList({
 
     // Ensure we have valid user data
     if (!otherUser || !otherUserId) {
-      console.log("Missing user data for message:", message);
       return acc;
     }
 
@@ -80,57 +79,55 @@ export function ConversationList({
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="sticky top-0 z-[100] bg-background pt-4">
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSelectFriend={(friendId) => onSelectConversation({
-            id: friendId,
-            full_name: '',
-            avatar_url: '',
-            online_status: false,
-            last_seen: new Date().toISOString()
-          })}
-        />
-      </div>
+    <div className="flex flex-col h-full">
+      <SearchBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onSelectFriend={(friendId) => onSelectConversation({
+          id: friendId,
+          full_name: '',
+          avatar_url: '',
+          online_status: false,
+          last_seen: new Date().toISOString()
+        })}
+      />
 
-      <ScrollArea className="flex-1 px-4">
-        <div className="space-y-4 py-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-muted/20 rounded-lg p-2"
+      <ScrollArea className="flex-1 px-4 pt-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-muted/20 rounded-lg p-2 mb-6"
+        >
+          <AssistantButton
+            chatMessages={chatMessages}
+            onSelect={() => onSelectConversation({
+              id: 'assistant',
+              full_name: 'M. Victaure',
+              avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+              online_status: true,
+              last_seen: new Date().toISOString()
+            })}
+          />
+        </motion.div>
+
+        {sortedConversations.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="relative my-6"
           >
-            <AssistantButton
-              chatMessages={chatMessages}
-              onSelect={() => onSelectConversation({
-                id: 'assistant',
-                full_name: 'M. Victaure',
-                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                online_status: true,
-                last_seen: new Date().toISOString()
-              })}
-            />
+            <Separator className="absolute inset-0 my-3" />
+            <div className="relative flex justify-center">
+              <span className="bg-background px-2 text-xs text-muted-foreground uppercase">
+                Conversations privées
+              </span>
+            </div>
           </motion.div>
+        )}
 
-          {sortedConversations.length > 0 && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="relative my-6"
-            >
-              <Separator className="absolute inset-0 my-3" />
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Conversations privées
-                </span>
-              </div>
-            </motion.div>
-          )}
-
+        <div className="space-y-2">
           {sortedConversations.map((conv, index) => (
             <motion.div
               key={conv.user.id}
@@ -145,34 +142,34 @@ export function ConversationList({
               />
             </motion.div>
           ))}
-
-          {filteredConversations.length === 0 && searchQuery && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-8"
-            >
-              <p className="text-sm text-muted-foreground">
-                Aucune conversation trouvée
-              </p>
-            </motion.div>
-          )}
-
-          {filteredConversations.length === 0 && !searchQuery && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-8"
-            >
-              <p className="text-sm text-muted-foreground">
-                Aucune conversation pour le moment
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Commencez une nouvelle conversation en cliquant sur le bouton +
-              </p>
-            </motion.div>
-          )}
         </div>
+
+        {filteredConversations.length === 0 && searchQuery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-8"
+          >
+            <p className="text-sm text-muted-foreground">
+              Aucune conversation trouvée
+            </p>
+          </motion.div>
+        )}
+
+        {filteredConversations.length === 0 && !searchQuery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-8"
+          >
+            <p className="text-sm text-muted-foreground">
+              Aucune conversation pour le moment
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Commencez une nouvelle conversation en cliquant sur le bouton +
+            </p>
+          </motion.div>
+        )}
       </ScrollArea>
     </div>
   );
