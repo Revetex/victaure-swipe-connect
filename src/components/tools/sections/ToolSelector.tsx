@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Calculator, Languages, ListTodo, Plus, Sword, X } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Tool {
   id: string;
@@ -35,6 +37,7 @@ export function ToolSelector({
   buttonClassName 
 }: ToolSelectorProps) {
   const [openTool, setOpenTool] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const handleToolClick = (toolId: string) => {
     onToolChange(toolId);

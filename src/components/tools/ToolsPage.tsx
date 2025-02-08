@@ -25,10 +25,6 @@ export function ToolsPage() {
   const { viewportHeight } = useViewport();
 
   useEffect(() => {
-    loadUserPreferences();
-  }, []);
-
-  useEffect(() => {
     // Ajoute une petite animation lors du chargement de l'outil
     const timer = setTimeout(() => setShowContent(true), 100);
     return () => clearTimeout(timer);
