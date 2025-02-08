@@ -8,10 +8,6 @@ import { cn } from "@/lib/utils";
 import { ChevronUp } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Suspense, useRef, useState } from "react";
-import { FeedSidebar } from "./feed/FeedSidebar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -49,8 +45,8 @@ export function Feed() {
       animate={{ opacity: 1 }}
       className="w-full min-h-screen bg-background"
     >
-      <div className="w-full">
-        <main className="w-full max-w-3xl mx-auto px-4">
+      <div className="w-full flex-1">
+        <div className="w-full max-w-3xl mx-auto px-4">
           <ScrollArea 
             ref={scrollRef} 
             className="h-[calc(100vh-5rem)]"
@@ -103,7 +99,7 @@ export function Feed() {
               </motion.button>
             )}
           </AnimatePresence>
-        </main>
+        </div>
       </div>
     </motion.div>
   );
