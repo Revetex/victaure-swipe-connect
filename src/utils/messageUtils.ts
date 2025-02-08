@@ -23,7 +23,8 @@ export const formatChatMessages = (messages: ChatMessage[]): Message[] => {
       last_seen: new Date().toISOString()
     } : msg.sender,
     message_type: 'user',
-    status: 'sent'
+    status: 'sent',
+    metadata: {}
   }));
 };
 

@@ -84,7 +84,7 @@ export function useMessages() {
 
       return messages.map(msg => ({
         ...msg,
-        timestamp: msg.created_at,
+        timestamp: msg.created_at, // Use created_at as timestamp if timestamp is not available
         status: msg.read ? 'read' : 'delivered',
         message_type: (msg.message_type || 'user') as Message['message_type'],
         metadata: (msg.metadata || {}) as Record<string, any>
