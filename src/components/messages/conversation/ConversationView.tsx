@@ -60,19 +60,21 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="flex flex-col h-[calc(100vh-4rem)]">
-      <ChatHeader
-        title={receiver.full_name}
-        subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
-        avatarUrl={receiver.avatar_url}
-        onBack={onBack}
-        onDelete={onDeleteConversation}
-        isOnline={receiver.online_status}
-        lastSeen={receiver.last_seen}
-      />
+    <section className="flex flex-col h-[calc(100vh-5rem)] relative z-50">
+      <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <ChatHeader
+          title={receiver.full_name}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
+          avatarUrl={receiver.avatar_url}
+          onBack={onBack}
+          onDelete={onDeleteConversation}
+          isOnline={receiver.online_status}
+          lastSeen={receiver.last_seen}
+        />
+      </header>
 
       <ScrollArea 
-        className="flex-1 px-4 mb-auto"
+        className="flex-1 px-4 mb-auto relative"
         onScrollCapture={handleScroll}
       >
         <div className="space-y-4 py-4">
@@ -128,7 +130,7 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <footer className="sticky bottom-0 w-full bg-background/95 backdrop-blur border-t mt-auto">
+      <footer className="sticky bottom-0 w-full bg-background/95 backdrop-blur border-t mt-auto z-50">
         <div className="p-4">
           <ChatInput
             value={inputMessage}
@@ -144,3 +146,4 @@ export function ConversationView({
     </section>
   );
 }
+
