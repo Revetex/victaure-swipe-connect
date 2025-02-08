@@ -42,10 +42,13 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-8rem)] w-full"
+      className={cn(
+        "w-full",
+        isMobile ? "h-[calc(100dvh-8rem)]" : "h-[calc(100vh-8rem)]"
+      )}
       onScroll={handleScroll}
     >
-      <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
+      <div className="max-w-3xl mx-auto px-2 sm:px-4 py-4 pb-24 space-y-4">
         <CreatePost onPostCreated={handlePostCreated} />
         <PostList 
           onPostDeleted={handlePostDeleted}

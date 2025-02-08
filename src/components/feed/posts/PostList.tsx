@@ -107,7 +107,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <AnimatePresence mode="popLayout">
         {posts.map((post) => (
           <motion.div
