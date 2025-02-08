@@ -39,7 +39,10 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
               variant="ghost"
               size="icon"
               onClick={() => setShowSettings(prev => !prev)}
-              className="hover:bg-accent/10"
+              className={cn(
+                "hover:bg-accent/10",
+                showSettings && "bg-accent/10"
+              )}
             >
               <Settings2 className="h-4 w-4" />
             </Button>
@@ -54,11 +57,17 @@ export function DashboardFriendsList({ show, onClose }: DashboardFriendsListProp
           </div>
           
           <ScrollArea className="h-[calc(100%-3rem)] pr-4">
-            {showSettings ? (
-              <Settings />
-            ) : (
-              <FriendsContent />
-            )}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              {showSettings ? (
+                <Settings />
+              ) : (
+                <FriendsContent />
+              )}
+            </motion.div>
           </ScrollArea>
         </div>
       </div>
