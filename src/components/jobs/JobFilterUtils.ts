@@ -1,126 +1,73 @@
-import { z } from "zod";
-import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
-import { Database } from "@/integrations/supabase/types";
-import { supabase } from "@/integrations/supabase/client";
+
 import { Job } from "@/types/job";
+import { JobFilters } from "@/types/filters";
 
-export const filterSchema = z.object({
-  category: z.string().default("all"),
-  subcategory: z.string().default("all"),
-  duration: z.string().default("all"),
-  location: z.string().default(""),
-  skills: z.array(z.string()).default([]),
-  experienceLevel: z.string().default("all"),
-  province: z.string().default("all"),
-  remoteType: z.enum(["all", "on-site", "remote", "hybrid"]).default("all"),
-  minBudget: z.number().optional(),
-  maxBudget: z.number().optional(),
-  searchTerm: z.string().default(""),
-  createdAfter: z.string().optional(),
-  createdBefore: z.string().optional(),
-  deadlineBefore: z.string().optional(),
-  missionType: z.enum(["all", "company", "individual"]).default("all"),
-  contractType: z.enum(["all", "full-time", "part-time", "contract", "internship", "one-time", "fixed-duration", "project-based"]).default("all"),
-  paymentSchedule: z.enum(["all", "weekly", "biweekly", "monthly", "quarterly", "completion"]).default("all"),
-});
+export class JobFilterUtils {
+  static applyFilters(jobs: Job[], filters: JobFilters): Job[] {
+    return jobs.filter(job => {
+      // Filtre par recherche textuelle
+      if (filters.searchTerm && !this.matchesSearchTerm(job, filters.searchTerm)) {
+        return false;
+      }
 
-export type JobFilters = z.infer<typeof filterSchema>;
+      // Filtre par catégorie
+      if (filters.category !== "all" && job.category !== filters.category) {
+        return false;
+      }
 
-export const defaultFilters: JobFilters = {
-  category: "all",
-  subcategory: "all",
-  duration: "all",
-  location: "",
-  skills: [],
-  experienceLevel: "all",
-  province: "all",
-  remoteType: "all",
-  searchTerm: "",
-  missionType: "all",
-  contractType: "all",
-  paymentSchedule: "all",
-};
+      // Filtre par type de contrat
+      if (filters.duration !== "all" && job.contract_type !== filters.duration) {
+        return false;
+      }
 
-export const applyFilters = async (
-  query: PostgrestFilterBuilder<any, any, any>,
-  filters: JobFilters
-): Promise<PostgrestFilterBuilder<any, any, any>> => {
-  if (filters.category !== "all") {
-    const { data: categoryData } = await supabase
-      .from('job_categories')
-      .select('name')
-      .eq('id', filters.category)
-      .single();
-    
-    if (categoryData) {
-      query = query.eq("category", categoryData.name);
-    }
+      // Filtre par niveau d'expérience
+      if (filters.experienceLevel !== "all" && job.experience_level !== filters.experienceLevel) {
+        return false;
+      }
+
+      // Filtre par localisation
+      if (filters.location && !job.location.toLowerCase().includes(filters.location.toLowerCase())) {
+        return false;
+      }
+
+      // Filtre par budget
+      if (filters.minBudget && job.budget < filters.minBudget) {
+        return false;
+      }
+      if (filters.maxBudget && job.budget > filters.maxBudget) {
+        return false;
+      }
+
+      return true;
+    });
   }
 
-  // If a subcategory is selected, get its name from the database
-  if (filters.subcategory !== "all") {
-    const { data: subcategoryData } = await supabase
-      .from('job_subcategories')
-      .select('name')
-      .eq('id', filters.subcategory)
-      .single();
-    
-    if (subcategoryData) {
-      query = query.eq("subcategory", subcategoryData.name);
-    }
+  private static matchesSearchTerm(job: Job, searchTerm: string): boolean {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      job.title.toLowerCase().includes(searchLower) ||
+      job.description.toLowerCase().includes(searchLower) ||
+      job.company?.toLowerCase().includes(searchLower) ||
+      job.location.toLowerCase().includes(searchLower)
+    );
   }
 
-  if (filters.experienceLevel !== "all") {
-    query = query.eq("experience_level", filters.experienceLevel);
-  }
-
-  if (filters.remoteType !== "all") {
-    query = query.eq("remote_type", filters.remoteType);
-  }
-
-  if (filters.missionType !== "all") {
-    query = query.eq("mission_type", filters.missionType);
-  }
-
-  if (filters.contractType !== "all") {
-    query = query.eq("contract_type", filters.contractType);
-  }
-
-  if (filters.paymentSchedule !== "all") {
-    query = query.eq("payment_schedule", filters.paymentSchedule);
-  }
-
-  if (filters.location) {
-    query = query.ilike("location", `%${filters.location}%`);
-  }
-
-  if (filters.minBudget) {
-    query = query.gte("budget", filters.minBudget);
-  }
-
-  if (filters.maxBudget) {
-    query = query.lte("budget", filters.maxBudget);
-  }
-
-  if (filters.searchTerm) {
-    query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
-  }
-
-  if (filters.createdAfter) {
-    query = query.gte("created_at", filters.createdAfter);
-  }
-
-  if (filters.createdBefore) {
-    query = query.lte("created_at", filters.createdBefore);
-  }
-
-  if (filters.deadlineBefore) {
-    query = query.lte("application_deadline", filters.deadlineBefore);
-  }
-
-  if (filters.skills && filters.skills.length > 0) {
-    query = query.contains("required_skills", filters.skills);
-  }
-
-  return query;
-};
+  static readonly defaultFilters: JobFilters = {
+    category: "all",
+    subcategory: "all",
+    duration: "all",
+    experienceLevel: "all",
+    location: "",
+    province: "all",
+    remoteType: "all",
+    minBudget: 300,
+    maxBudget: 1000,
+    skills: [],
+    searchTerm: "",
+    createdAfter: null,
+    createdBefore: null,
+    deadlineBefore: null,
+    search: "",
+    categories: [],
+  };
+}
