@@ -72,9 +72,9 @@ export function MessagesContainer() {
     );
   }
 
-  return (
-    <Card className="w-full h-screen max-h-screen overflow-hidden flex flex-col bg-background">
-      {showConversation && receiver ? (
+  if (showConversation && receiver) {
+    return (
+      <div className="fixed inset-0 z-[99999] bg-background">
         <ConversationView
           receiver={receiver}
           messages={receiver.id === 'assistant' ? aiMessages : userMessages}
@@ -88,13 +88,17 @@ export function MessagesContainer() {
           onDeleteConversation={() => handleDeleteConversation(receiver)}
           messagesEndRef={messagesEndRef}
         />
-      ) : (
-        <ConversationList
-          messages={userMessages}
-          chatMessages={aiMessages}
-          onSelectConversation={handleSelectConversation}
-        />
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <Card className="h-[calc(100vh-8rem)] overflow-hidden flex flex-col bg-background">
+      <ConversationList
+        messages={userMessages}
+        chatMessages={aiMessages}
+        onSelectConversation={handleSelectConversation}
+      />
     </Card>
   );
 }

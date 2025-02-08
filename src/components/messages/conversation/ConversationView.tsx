@@ -60,7 +60,7 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-background flex flex-col">
+    <div className="flex flex-col h-screen bg-background">
       <ChatHeader
         title={receiver.full_name}
         subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -69,70 +69,67 @@ export function ConversationView({
         onDelete={onDeleteConversation}
         isOnline={receiver.online_status}
         lastSeen={receiver.last_seen}
-        className="sticky top-16 z-50 bg-background"
       />
       
-      <div className="relative flex-1 overflow-hidden">
-        <ScrollArea 
-          className="h-[calc(100vh-16rem)]"
-          onScrollCapture={handleScroll}
-        >
-          <div className="space-y-4 py-4 max-w-3xl mx-auto px-4">
-            <AnimatePresence initial={false}>
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                >
-                  <ChatMessage
-                    content={message.content}
-                    sender={message.sender_id === profile?.id ? "user" : "assistant"}
-                    timestamp={message.created_at}
-                    isRead={message.read}
-                    status={message.status}
-                    reaction={message.reaction}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            
-            {isThinking && (
+      <ScrollArea 
+        className="flex-1 px-4"
+        onScrollCapture={handleScroll}
+      >
+        <div className="space-y-4 py-4 max-w-3xl mx-auto">
+          <AnimatePresence initial={false}>
+            {messages.map((message) => (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                key={message.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
               >
-                <ChatThinking />
+                <ChatMessage
+                  content={message.content}
+                  sender={message.sender_id === profile?.id ? "user" : "assistant"}
+                  timestamp={message.created_at}
+                  isRead={message.read}
+                  status={message.status}
+                  reaction={message.reaction}
+                />
               </motion.div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
-
-        {showScrollButton && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-4 right-4 z-10"
-          >
-            <Button
-              size="icon"
-              variant="secondary"
-              onClick={scrollToBottom}
-              className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
+            ))}
+          </AnimatePresence>
+          
+          {isThinking && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        )}
-      </div>
+              <ChatThinking />
+            </motion.div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+      </ScrollArea>
 
-      <div className="sticky bottom-16 left-0 right-0 bg-background/95 backdrop-blur border-t">
-        <div className="p-4 max-w-3xl mx-auto">
+      {showScrollButton && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          className="absolute bottom-24 right-4 z-10"
+        >
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={scrollToBottom}
+            className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </motion.div>
+      )}
+
+      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t p-4">
+        <div className="max-w-3xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
