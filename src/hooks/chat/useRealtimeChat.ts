@@ -28,8 +28,7 @@ export function useRealtimeChat() {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-
-      setMessages(data as ChatMessage[]);
+      setMessages(data);
     } catch (error) {
       console.error('Error loading messages:', error);
       toast.error("Erreur lors du chargement des messages");
@@ -39,29 +38,19 @@ export function useRealtimeChat() {
   };
 
   const subscribeToMessages = () => {
-    const channel = supabase
+    return supabase
       .channel('ai_chat_messages')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'ai_chat_messages'
-        },
-        () => loadMessages()
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'ai_chat_messages' },
+        loadMessages
       )
       .subscribe();
-
-    return channel;
   };
 
   useEffect(() => {
     loadMessages();
     const channel = subscribeToMessages();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const addMessage = async (content: string, sender: 'user' | 'assistant') => {
@@ -72,7 +61,7 @@ export function useRealtimeChat() {
         return null;
       }
 
-      const message = {
+      const message: ChatMessage = {
         id: crypto.randomUUID(),
         content,
         sender,
@@ -88,8 +77,7 @@ export function useRealtimeChat() {
         .single();
 
       if (error) throw error;
-
-      return data as ChatMessage;
+      return data;
     } catch (error) {
       console.error('Error adding message:', error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
@@ -97,10 +85,5 @@ export function useRealtimeChat() {
     }
   };
 
-  return {
-    messages,
-    isLoading,
-    addMessage,
-    setMessages
-  };
+  return { messages, isLoading, addMessage, setMessages };
 }
