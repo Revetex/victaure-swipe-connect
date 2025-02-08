@@ -6,6 +6,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { SearchBar } from "./SearchBar";
 import { AssistantButton } from "./AssistantButton";
 import { ConversationItem } from "./ConversationItem";
+import { MainNav } from "@/components/dashboard/navigation/MainNav";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -59,9 +60,32 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   );
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-background flex flex-col">
+    <div className="flex flex-col h-full bg-background">
+      {/* Fixed Header */}
+      <div className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="border-b">
+          <div className="flex h-16 items-center px-4">
+            <h1 className="text-xl font-semibold">Messages</h1>
+          </div>
+        </div>
+        <div className="border-b p-4">
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onSelectFriend={(friendId) => onSelectConversation({
+              id: friendId,
+              full_name: '',
+              avatar_url: '',
+              online_status: false,
+              last_seen: new Date().toISOString()
+            })}
+          />
+        </div>
+      </div>
+
+      {/* Scrollable Content */}
       <ScrollArea className="flex-1">
-        <div className="h-full p-4 space-y-4">
+        <div className="p-4 space-y-4">
           <AssistantButton
             chatMessages={chatMessages}
             onSelect={() => onSelectConversation({
@@ -116,18 +140,9 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
         </div>
       </ScrollArea>
 
-      <div className="sticky bottom-0 z-50 bg-background/95 backdrop-blur border-t">
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSelectFriend={(friendId) => onSelectConversation({
-            id: friendId,
-            full_name: '',
-            avatar_url: '',
-            online_status: false,
-            last_seen: new Date().toISOString()
-          })}
-        />
+      {/* Fixed Footer Navigation */}
+      <div className="sticky bottom-0 z-50 bg-background border-t">
+        <MainNav className="py-2" />
       </div>
     </div>
   );

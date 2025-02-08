@@ -93,12 +93,12 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="h-[calc(100vh-8rem)] overflow-hidden flex flex-col bg-background">
+    <div className="h-screen">
       <ConversationList
         messages={userMessages}
         chatMessages={aiMessages}
         onSelectConversation={handleSelectConversation}
       />
-    </Card>
+    </div>
   );
 }

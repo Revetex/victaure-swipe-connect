@@ -1672,6 +1672,7 @@ export type Database = {
         | "customer_service"
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
+      message_delivery_status: "pending" | "delivered" | "read"
       mission_type: "company" | "individual"
     }
     CompositeTypes: {
