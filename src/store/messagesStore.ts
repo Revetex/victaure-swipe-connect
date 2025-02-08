@@ -1,7 +1,6 @@
 
 import { create } from 'zustand';
 import { Message } from '@/types/messages';
-import { createStore } from 'zustand/vanilla';
 
 interface MessagesState {
   messages: Message[];
@@ -11,7 +10,7 @@ interface MessagesState {
   deleteMessage: (messageId: string) => void;
 }
 
-const store = createStore<MessagesState>((set) => ({
+export const useMessagesStore = create<MessagesState>((set) => ({
   messages: [],
   setMessages: (messages) => set({ messages }),
   addMessage: (message) => set((state) => ({ 
@@ -25,8 +24,4 @@ const store = createStore<MessagesState>((set) => ({
   deleteMessage: (messageId) => set((state) => ({
     messages: state.messages.filter(msg => msg.id !== messageId)
   })),
-}));
-
-export const useMessagesStore = create<MessagesState>()((...args) => ({
-  ...store((...args))
 }));
