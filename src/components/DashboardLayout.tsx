@@ -1,10 +1,9 @@
-
 import React, { useState, useCallback } from "react";
 import { useViewport } from "@/hooks/useViewport";
 import { useLocation } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, MessageSquare, Store, Users, PenTool, Settings, Sword } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Store, Users, PenTool, Settings, Sword, ListTodo, Calculator, Bell } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
@@ -22,7 +21,10 @@ const navigationItems = [
   { id: 4, name: "Social", icon: Users },
   { id: 5, name: "Notes", icon: PenTool },
   { id: 6, name: "Échecs", icon: Sword },
-  { id: 7, name: "Paramètres", icon: Settings },
+  { id: 7, name: "Tâches", icon: ListTodo },
+  { id: 8, name: "Calculatrice", icon: Calculator },
+  { id: 9, name: "Notifications", icon: Bell },
+  { id: 10, name: "Paramètres", icon: Settings },
 ];
 
 export function DashboardLayout() {

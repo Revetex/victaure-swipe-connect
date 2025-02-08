@@ -11,6 +11,9 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@/components/ui/loader";
+import { NotificationsTab } from "@/components/notifications/NotificationsTab";
+import { CalculatorPage } from "@/components/tools/CalculatorPage";
+import { TasksPage } from "@/components/tools/TasksPage";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -27,7 +30,7 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {
-  const { session } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (currentPage === 5) {
@@ -57,7 +60,7 @@ export function DashboardContent({
 
   const renderContent = () => {
     // Check authentication
-    if (!session) {
+    if (!user) {
       return (
         <div className="flex items-center justify-center min-h-[50vh]">
           <Loader className="w-8 h-8" />
@@ -106,6 +109,12 @@ export function DashboardContent({
           case 6:
             return <ChessPage />;
           case 7:
+            return <TasksPage />;
+          case 8:
+            return <CalculatorPage />;
+          case 9:
+            return <NotificationsTab />;
+          case 10:
             return <Settings />;
           default:
             return null;
