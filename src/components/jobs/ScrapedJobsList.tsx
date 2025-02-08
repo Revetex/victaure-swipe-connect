@@ -1,20 +1,15 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Building2, MapPin, ExternalLink, Calendar, Search, Bot } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Calendar, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
-import { AISearchSuggestions } from "@/components/google-search/AISearchSuggestions";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Select } from "@/components/ui/select";
 
 interface ScrapedJobsListProps {
   queryString?: string;
@@ -22,10 +17,9 @@ interface ScrapedJobsListProps {
 
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "false">("all");
 
   const { data: jobs = [], isLoading } = useQuery({
-    queryKey: ["scraped-jobs", queryString, searchTerm, statusFilter],
+    queryKey: ["scraped-jobs", queryString, searchTerm],
     queryFn: async () => {
       console.log("Fetching scraped jobs with query:", queryString);
       let query = supabase
@@ -37,14 +31,9 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
           )
         `);
 
-      // Filtrage par status
-      if (statusFilter !== "all") {
-        query = query.eq('status', statusFilter === "false" ? "false_posting" : "active");
-      }
-
       // Recherche textuelle
       if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%,false_posting_reason.ilike.%${searchTerm}%`);
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);
       }
 
       // Si on a une chaîne de recherche globale, on l'utilise aussi
@@ -108,7 +97,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
           </h2>
         </div>
 
-        {/* Search and Filter Section */}
+        {/* Search Section */}
         <div className="bg-background/60 backdrop-blur-sm rounded-lg p-6 border border-border/50 space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
@@ -120,15 +109,6 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
                 className="pl-10"
               />
             </div>
-            <select
-              className="px-4 py-2 rounded-lg border border-border bg-background/50"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "false")}
-            >
-              <option value="all">Toutes les offres</option>
-              <option value="active">Offres actives</option>
-              <option value="false">Fausses annonces</option>
-            </select>
           </div>
           
           <div className="pl-32">
@@ -158,12 +138,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
                 <Card className="h-full flex flex-col justify-between hover:shadow-lg transition-all duration-300 backdrop-blur-sm bg-background/50 border-border/50">
                   <div className="p-6 space-y-4">
                     <div>
-                      <div className="flex justify-between items-start gap-2">
-                        <h3 className="font-semibold text-lg line-clamp-2 font-montserrat">{job.title}</h3>
-                        <Badge variant={job.status === "false_posting" ? "destructive" : "default"}>
-                          {job.status === "false_posting" ? "Fausse annonce" : "Active"}
-                        </Badge>
-                      </div>
+                      <h3 className="font-semibold text-lg line-clamp-2 font-montserrat">{job.title}</h3>
                       <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
                         <Building2 className="h-4 w-4 text-[#9b87f5]" />
                         <span className="font-medium">{job.company}</span>
@@ -181,13 +156,6 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
                           })}
                         </span>
                       </div>
-                      {job.status === "false_posting" && job.false_posting_reason && (
-                        <div className="mt-4 p-3 bg-destructive/10 rounded-lg">
-                          <p className="text-sm text-destructive">
-                            <strong>Raison:</strong> {job.false_posting_reason}
-                          </p>
-                        </div>
-                      )}
                       {job.job_transcriptions?.[0]?.ai_transcription && (
                         <div className="mt-4 text-sm text-muted-foreground">
                           <p className="line-clamp-3">{job.job_transcriptions[0].ai_transcription}</p>
