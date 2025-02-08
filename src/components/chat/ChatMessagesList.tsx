@@ -21,10 +21,10 @@ export function ChatMessagesList({
 }: ChatMessagesListProps) {
   return (
     <ScrollArea 
-      className="flex-1 p-4"
+      className="flex-1 px-4"
       onScrollCapture={onScroll}
     >
-      <div className="space-y-4">
+      <div className="space-y-4 py-4 max-w-3xl mx-auto">
         {messages.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
