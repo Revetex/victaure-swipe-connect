@@ -1408,9 +1408,11 @@ export type Database = {
           company: string
           created_at: string | null
           description: string | null
+          false_posting_reason: string | null
           id: string
           location: string
           posted_at: string | null
+          status: string | null
           title: string
           updated_at: string | null
           url: string
@@ -1419,9 +1421,11 @@ export type Database = {
           company: string
           created_at?: string | null
           description?: string | null
+          false_posting_reason?: string | null
           id?: string
           location: string
           posted_at?: string | null
+          status?: string | null
           title: string
           updated_at?: string | null
           url: string
@@ -1430,9 +1434,11 @@ export type Database = {
           company?: string
           created_at?: string | null
           description?: string | null
+          false_posting_reason?: string | null
           id?: string
           location?: string
           posted_at?: string | null
+          status?: string | null
           title?: string
           updated_at?: string | null
           url?: string
