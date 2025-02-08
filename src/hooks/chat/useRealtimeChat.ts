@@ -9,6 +9,7 @@ export interface ChatMessage {
   sender: 'user' | 'assistant';
   user_id: string;
   created_at: string;
+  updated_at: string;
 }
 
 export function useRealtimeChat() {
@@ -34,7 +35,8 @@ export function useRealtimeChat() {
         content: msg.content,
         sender: msg.sender as 'user' | 'assistant',
         user_id: msg.user_id,
-        created_at: msg.created_at
+        created_at: msg.created_at,
+        updated_at: msg.updated_at
       }));
 
       setMessages(typedMessages);
@@ -52,7 +54,7 @@ export function useRealtimeChat() {
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*', // Listen to all changes
           schema: 'public',
           table: 'ai_chat_messages'
         },
@@ -83,20 +85,20 @@ export function useRealtimeChat() {
       }
 
       const message = {
-        id: crypto.randomUUID(),
         content,
         sender,
-        user_id: user.id,
-        created_at: new Date().toISOString()
+        user_id: user.id
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('ai_chat_messages')
-        .insert(message);
+        .insert(message)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      return message;
+      return data as ChatMessage;
     } catch (error) {
       console.error('Error adding message:', error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
