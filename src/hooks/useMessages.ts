@@ -86,7 +86,8 @@ export function useMessages() {
         ...msg,
         timestamp: msg.created_at,
         status: msg.read ? 'read' : 'delivered',
-        message_type: msg.message_type as "user" | "ai" | "system" || 'user'
+        message_type: msg.message_type as "user" | "ai" | "system" || 'user',
+        metadata: msg.metadata as Record<string, any> || {}
       })) as Message[];
     },
     enabled: true
@@ -107,7 +108,8 @@ export function useMessages() {
         read: false,
         status: 'sent',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        metadata: {}
       };
 
       const { data, error } = await supabase
@@ -133,7 +135,8 @@ export function useMessages() {
           ...data,
           timestamp: data.created_at,
           status: 'sent',
-          message_type: messageType
+          message_type: messageType,
+          metadata: data.metadata as Record<string, any> || {}
         });
       }
 
