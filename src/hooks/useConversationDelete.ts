@@ -18,14 +18,17 @@ export const useConversationDelete = () => {
       const { data: existingDeletion, error: fetchError } = await supabase
         .from('deleted_conversations')
         .select('*')
-        .eq('user_id', receiver.id)
-        .eq('conversation_partner_id', user.id)
-        .maybeSingle(); // Changed from .single() to .maybeSingle()
+        .or(`user_id.eq.${receiver.id},conversation_partner_id.eq.${receiver.id}`)
+        .maybeSingle();
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        console.error('Error checking existing deletion:', fetchError);
+        throw fetchError;
+      }
 
+      // Si l'autre utilisateur a déjà supprimé la conversation
       if (existingDeletion) {
-        // L'autre utilisateur a déjà supprimé la conversation, supprimer définitivement
+        // Supprimer définitivement les messages
         if (receiver.id === 'assistant') {
           const { error: aiMessagesError } = await supabase
             .from('messages')
@@ -43,7 +46,7 @@ export const useConversationDelete = () => {
           if (messagesError) throw messagesError;
         }
 
-        // Supprimer les entrées de deleted_conversations
+        // Supprimer toutes les entrées de deleted_conversations liées à cette conversation
         const { error: deleteError } = await supabase
           .from('deleted_conversations')
           .delete()
@@ -53,30 +56,24 @@ export const useConversationDelete = () => {
 
         toast.success("Conversation définitivement supprimée");
       } else {
-        // Check if the current user has already deleted this conversation
-        const { data: userDeletion, error: userDeletionError } = await supabase
+        // Tenter d'insérer une nouvelle entrée de suppression
+        const { error: insertError } = await supabase
           .from('deleted_conversations')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('conversation_partner_id', receiver.id)
-          .maybeSingle();
+          .upsert({
+            user_id: user.id,
+            conversation_partner_id: receiver.id
+          }, {
+            onConflict: 'user_id,conversation_partner_id'
+          });
 
-        if (userDeletionError) throw userDeletionError;
-
-        // Si l'utilisateur n'a pas déjà supprimé la conversation
-        if (!userDeletion) {
-          const { error: insertError } = await supabase
-            .from('deleted_conversations')
-            .insert({
-              user_id: user.id,
-              conversation_partner_id: receiver.id
-            });
-
-          if (insertError) throw insertError;
-
-          toast.success("Conversation supprimée de votre liste");
+        if (insertError) {
+          if (insertError.code === '23505') { // Conflict error code
+            toast.info("Cette conversation est déjà supprimée");
+          } else {
+            throw insertError;
+          }
         } else {
-          toast.info("Cette conversation est déjà supprimée");
+          toast.success("Conversation supprimée de votre liste");
         }
       }
 
