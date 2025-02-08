@@ -60,7 +60,7 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full fixed inset-0 bg-background">
       <ChatHeader
         title={receiver.full_name}
         subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -69,9 +69,11 @@ export function ConversationView({
         onDelete={onDeleteConversation}
         isOnline={receiver.online_status}
         lastSeen={receiver.last_seen}
+        className="relative z-10"
       />
+      
       <ScrollArea 
-        className="flex-1 px-4 pb-32"
+        className="flex-1 px-4"
         onScrollCapture={handleScroll}
       >
         <div className="space-y-4 py-4 mx-auto">

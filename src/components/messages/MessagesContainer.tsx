@@ -64,14 +64,14 @@ export function MessagesContainer() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-8rem)] bg-background">
+      <div className="flex items-center justify-center h-screen bg-background">
         <div className="text-muted-foreground">Chargement des messages...</div>
       </div>
     );
   }
 
   return (
-    <Card className="h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] overflow-hidden flex flex-col bg-background relative mt-16 mb-16">
+    <Card className="w-full h-screen max-h-screen overflow-hidden flex flex-col bg-background">
       {showConversation && receiver ? (
         <ConversationView
           receiver={receiver}
