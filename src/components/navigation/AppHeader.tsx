@@ -24,8 +24,8 @@ export function AppHeader({
   const isMobile = useIsMobile();
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur z-50 border-b h-14">
-      <div className="flex items-center justify-between h-full px-4 max-w-[2000px] mx-auto">
+    <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur z-30 border-b h-14">
+      <div className="flex items-center justify-between h-full px-4 max-w-[2000px] mx-auto relative z-20">
         <motion.div 
           className="flex items-center gap-4"
           initial={{ x: -20, opacity: 0 }}
