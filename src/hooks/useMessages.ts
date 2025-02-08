@@ -1,26 +1,53 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Message, Receiver } from "@/types/messages";
 import { useReceiver } from "./useReceiver";
+import { useEffect } from "react";
+import { useMessagesStore } from "@/store/messagesStore";
 
 export function useMessages() {
   const queryClient = useQueryClient();
   const { receiver } = useReceiver();
+  const { addMessage, updateMessage, deleteMessage } = useMessagesStore();
+
+  // Subscribe to real-time message updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('messages_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newMessage = payload.new as Message;
+            addMessage(newMessage);
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedMessage = payload.new as Message;
+            updateMessage(updatedMessage);
+          } else if (payload.eventType === 'DELETE') {
+            const deletedMessage = payload.old as Message;
+            deleteMessage(deletedMessage.id);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [addMessage, updateMessage, deleteMessage]);
 
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ["messages", receiver?.id],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
-
-      // Récupérer les conversations supprimées
-      const { data: deletedConversations } = await supabase
-        .from('deleted_conversations')
-        .select('conversation_partner_id')
-        .eq('user_id', user.id);
-
-      const deletedPartnerIds = deletedConversations?.map(d => d.conversation_partner_id) || [];
 
       let query = supabase
         .from("messages")
@@ -36,22 +63,14 @@ export function useMessages() {
         `);
 
       if (receiver?.id === 'assistant') {
-        // Pour les messages de l'assistant
         query = query
           .eq('receiver_id', user.id)
           .eq('message_type', 'ai');
       } else if (receiver) {
-        // Pour les messages entre utilisateurs
-        query = query
-          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
-          .eq('message_type', 'user');
-      } else {
-        // Quand aucun destinataire n'est sélectionné, filtrer les conversations supprimées
-        query = query
-          .or(`and(sender_id.eq.${user.id},receiver_id.neq.${user.id}),and(receiver_id.eq.${user.id},sender_id.neq.${user.id})`)
-          .eq('message_type', 'user')
-          .not('sender_id', 'in', `(${deletedPartnerIds.join(',')})`)
-          .not('receiver_id', 'in', `(${deletedPartnerIds.join(',')})`);
+        query = query.or(
+          `and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),` +
+          `and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`
+        ).eq('message_type', 'user');
       }
 
       const { data: messages, error } = await query
@@ -73,6 +92,64 @@ export function useMessages() {
     enabled: true
   });
 
+  const handleSendMessage = async (content: string, receiver: Receiver) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const newMessage = {
+        content,
+        sender_id: user.id,
+        receiver_id: receiver.id,
+        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
+        read: false,
+        status: 'sent',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from("messages")
+        .insert(newMessage)
+        .select(`
+          *,
+          sender:profiles!messages_sender_id_fkey(
+            id,
+            full_name,
+            avatar_url,
+            online_status,
+            last_seen
+          )
+        `)
+        .single();
+
+      if (error) throw error;
+
+      // Add message to local store
+      if (data) {
+        addMessage({
+          ...data,
+          timestamp: data.created_at,
+          status: 'sent',
+          message_type: data.message_type || 'user'
+        });
+      }
+
+      // Create notification for receiver
+      await supabase.from('notifications').insert({
+        user_id: receiver.id,
+        title: 'Nouveau message',
+        message: `${user.user_metadata.full_name || 'Quelqu\'un'} vous a envoyé un message`,
+        type: 'message'
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["messages", receiver.id] });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message");
+    }
+  };
+
   const markAsRead = useMutation({
     mutationFn: async (messageId: string) => {
       const { error } = await supabase
@@ -91,57 +168,10 @@ export function useMessages() {
     }
   });
 
-  const deleteMessage = useMutation({
-    mutationFn: async (messageId: string) => {
-      const { error } = await supabase
-        .from("messages")
-        .delete()
-        .eq("id", messageId);
-
-      if (error) {
-        console.error("Error deleting message:", error);
-        toast.error("Erreur lors de la suppression du message");
-        throw error;
-      }
-      toast.success("Message supprimé avec succès");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages", receiver?.id] });
-    }
-  });
-
-  const handleSendMessage = async (content: string, receiver: Receiver) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
-
-      const newMessage = {
-        content,
-        sender_id: user.id,
-        receiver_id: receiver.id,
-        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
-        read: false
-      };
-
-      const { error } = await supabase
-        .from("messages")
-        .insert(newMessage);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ["messages", receiver.id] });
-    } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Erreur lors de l'envoi du message");
-      throw error;
-    }
-  };
-
   return {
     messages,
     isLoading,
     markAsRead,
-    deleteMessage,
     handleSendMessage
   };
 }

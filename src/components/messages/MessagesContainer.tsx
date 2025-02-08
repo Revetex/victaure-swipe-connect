@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -8,6 +8,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { useAIChat } from "@/hooks/useAIChat";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { motion, AnimatePresence } from "framer-motion";
+import { useMessageReadStatus } from "@/hooks/useMessageReadStatus";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
@@ -15,7 +16,8 @@ export function MessagesContainer() {
   const { 
     messages: userMessages, 
     isLoading: isLoadingMessages,
-    handleSendMessage: handleUserSendMessage 
+    handleSendMessage: handleUserSendMessage,
+    markAsRead
   } = useMessages();
   const { 
     messages: aiMessages, 
@@ -28,6 +30,9 @@ export function MessagesContainer() {
   } = useAIChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { handleDeleteConversation } = useConversationDelete();
+
+  // Use the hook to automatically mark messages as read
+  useMessageReadStatus(showConversation, receiver);
 
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
@@ -53,6 +58,13 @@ export function MessagesContainer() {
     
     setInputMessage('');
   };
+
+  // Auto-scroll to latest messages
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [userMessages, aiMessages]);
 
   if (isLoadingMessages) {
     return (
