@@ -40,13 +40,20 @@ export default function PublicProfile() {
           return;
         }
 
-        // Transform certifications to match the UserProfile interface
+        // Transform data to match the UserProfile interface
         const transformedData = {
           ...data,
           certifications: data.certifications?.map((cert: any) => ({
             ...cert,
             institution: cert.issuer, // Map issuer to institution
             year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : ''
+          })),
+          experiences: data.experiences?.map((exp: any) => ({
+            ...exp,
+            created_at: exp.created_at ? new Date(exp.created_at) : null,
+            updated_at: exp.updated_at ? new Date(exp.updated_at) : null,
+            start_date: exp.start_date || null,
+            end_date: exp.end_date || null
           }))
         };
 
