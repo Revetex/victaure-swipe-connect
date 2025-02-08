@@ -99,13 +99,9 @@ export function DashboardLayout() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className={cn(
-          "min-h-screen bg-background relative overflow-hidden",
-          "transition-colors duration-200"
-        )}
+        className="min-h-screen bg-background relative overflow-hidden"
       >
-        <span className="fixed inset-x-0 top-0 h-full bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
-        <span className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none z-0" />
         
         <DashboardContainer>
           <motion.header variants={itemVariants}>
@@ -149,9 +145,7 @@ export function DashboardLayout() {
           </DashboardMain>
 
           <nav 
-            className={cn(
-              "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
-            )}
+            className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
             style={{ 
               height: '4rem',
               paddingBottom: 'env(safe-area-inset-bottom)'

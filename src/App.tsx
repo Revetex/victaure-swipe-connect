@@ -13,7 +13,7 @@ function App() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative z-[-1]"
+          className="min-h-screen bg-background"
         >
           <AppRoutes />
         </motion.div>
@@ -23,3 +23,4 @@ function App() {
 }
 
 export default App;
+
