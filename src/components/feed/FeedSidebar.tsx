@@ -16,6 +16,7 @@ import { UserProfile } from "@/types/profile";
 import { Home, MessageSquare, BriefcaseIcon, Newspaper, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FeedSidebarProps {
   className?: string;
@@ -40,8 +41,6 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     { icon: BriefcaseIcon, label: "Emplois", path: "/jobs" },
     { icon: Newspaper, label: "Actualités", path: "/news" },
   ];
-
-  const labelClasses = "text-sm font-medium text-muted-foreground tracking-tight uppercase mb-2";
 
   return (
     <motion.div 
@@ -87,40 +86,52 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] sm:w-[350px]">
-              <SheetTitle>Menu</SheetTitle>
-              <div className="py-4 space-y-6">
-                <nav className="space-y-2">
-                  {menuItems.map((item) => (
-                    <Button
-                      key={item.path}
-                      variant="ghost"
-                      className="w-full justify-start"
-                      onClick={() => navigate(item.path)}
-                    >
-                      <item.icon className="h-4 w-4 mr-2" />
-                      {item.label}
-                    </Button>
-                  ))}
-                </nav>
+            <SheetContent side="right" className="w-[280px] sm:w-[350px] p-0">
+              <SheetTitle className="p-6 border-b">Menu principal</SheetTitle>
+              <ScrollArea className="h-[calc(100vh-4rem)]">
+                <div className="p-6 space-y-6">
+                  {/* Navigation mobile */}
+                  <nav className="space-y-2">
+                    {menuItems.map((item) => (
+                      <Button
+                        key={item.path}
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => navigate(item.path)}
+                      >
+                        <item.icon className="h-4 w-4 mr-2" />
+                        {item.label}
+                      </Button>
+                    ))}
+                  </nav>
 
-                <div>
-                  <h3 className={labelClasses}>Outils</h3>
-                  <ToolsList onToolClick={handleToolClick} />
-                </div>
+                  {/* Outils */}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase mb-2">
+                      Outils
+                    </h3>
+                    <ToolsList onToolClick={handleToolClick} />
+                  </div>
 
-                <div className="space-y-4 pt-4">
-                  <h3 className={labelClasses}>Paramètres</h3>
-                  <div className="space-y-2">
-                    <AppearanceSection />
-                    <NotificationsSection />
-                    <PrivacySection />
-                    <SecuritySection />
-                    <BlockedUsersSection />
-                    <LogoutSection />
+                  {/* Connexions */}
+                  <ConnectionsSection />
+
+                  {/* Paramètres */}
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase mb-2">
+                      Paramètres
+                    </h3>
+                    <div className="space-y-2">
+                      <AppearanceSection />
+                      <NotificationsSection />
+                      <PrivacySection />
+                      <SecuritySection />
+                      <BlockedUsersSection />
+                      <LogoutSection />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
         </div>
@@ -128,4 +139,3 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     </motion.div>
   );
 }
-
