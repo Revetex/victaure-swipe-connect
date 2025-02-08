@@ -805,6 +805,7 @@ export type Database = {
           conversation_id: string | null
           created_at: string | null
           deleted_at: string | null
+          deleted_by: Json | null
           edited_at: string | null
           id: string
           is_ai_message: boolean | null
@@ -823,6 +824,7 @@ export type Database = {
           conversation_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
+          deleted_by?: Json | null
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
@@ -841,6 +843,7 @@ export type Database = {
           conversation_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
+          deleted_by?: Json | null
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
