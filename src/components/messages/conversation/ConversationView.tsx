@@ -80,7 +80,7 @@ export function ConversationView({
       />
 
       <ScrollArea 
-        className="flex-1 px-4 pb-20"
+        className="flex-1 px-4 pb-28"
         onScrollCapture={handleScroll}
       >
         <div className="space-y-4 py-4 max-w-3xl mx-auto">
@@ -149,7 +149,7 @@ export function ConversationView({
         )}
       </AnimatePresence>
 
-      <div className="sticky bottom-0 z-50 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
+      <div className="fixed bottom-16 left-0 right-0 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
@@ -157,7 +157,7 @@ export function ConversationView({
           isThinking={isThinking}
           isListening={isListening}
           onVoiceInput={onVoiceInput}
-          placeholder={`Écrivez votre message à ${receiver.full_name}...`}
+          placeholder={`Écrivez votre message...`}
         />
       </div>
     </div>

@@ -26,12 +26,11 @@ export function ChatHeader({
   avatarUrl,
   onBack,
   onDelete,
-  isThinking,
   isOnline,
   lastSeen
 }: ChatHeaderProps) {
   return (
-    <div className="h-16 flex items-center gap-4 p-4 border-b bg-background">
+    <div className="flex items-center gap-4 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <Button
         variant="ghost"
         size="icon"
@@ -79,4 +78,3 @@ export function ChatHeader({
     </div>
   );
 }
-
