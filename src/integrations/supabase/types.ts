@@ -762,6 +762,13 @@ export type Database = {
             foreignKeyName: "message_deliveries_message_id_fkey"
             columns: ["message_id"]
             isOneToOne: false
+            referencedRelation: "latest_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_deliveries_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
             referencedRelation: "messages"
             referencedColumns: ["id"]
           },
@@ -794,6 +801,13 @@ export type Database = {
             foreignKeyName: "message_status_message_id_fkey"
             columns: ["message_id"]
             isOneToOne: false
+            referencedRelation: "latest_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_status_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
             referencedRelation: "messages"
             referencedColumns: ["id"]
           },
@@ -805,6 +819,7 @@ export type Database = {
           conversation_id: string | null
           created_at: string | null
           deleted_at: string | null
+          deleted_by: Json | null
           edited_at: string | null
           id: string
           is_ai_message: boolean | null
@@ -823,6 +838,7 @@ export type Database = {
           conversation_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
+          deleted_by?: Json | null
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
@@ -841,6 +857,7 @@ export type Database = {
           conversation_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
+          deleted_by?: Json | null
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
@@ -877,6 +894,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      navigation_preferences: {
+        Row: {
+          created_at: string
+          custom_labels: Json | null
+          hidden_items: Json | null
+          id: string
+          menu_order: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_labels?: Json | null
+          hidden_items?: Json | null
+          id: string
+          menu_order?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_labels?: Json | null
+          hidden_items?: Json | null
+          id?: string
+          menu_order?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       notes: {
         Row: {
@@ -1174,11 +1218,42 @@ export type Database = {
           },
         ]
       }
+      profile_settings: {
+        Row: {
+          created_at: string
+          id: string
+          language: string | null
+          notifications_enabled: boolean | null
+          privacy_enabled: boolean | null
+          theme: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          privacy_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          privacy_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           auto_update_enabled: boolean | null
           avatar_url: string | null
           bio: string | null
+          chess_elo: number | null
           city: string | null
           company_name: string | null
           company_size: string | null
@@ -1218,6 +1293,7 @@ export type Database = {
           auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
+          chess_elo?: number | null
           city?: string | null
           company_name?: string | null
           company_size?: string | null
@@ -1257,6 +1333,7 @@ export type Database = {
           auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
+          chess_elo?: number | null
           city?: string | null
           company_name?: string | null
           company_size?: string | null
@@ -1354,6 +1431,47 @@ export type Database = {
         }
         Relationships: []
       }
+      task_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          scheduled_for: string
+          task_id: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          scheduled_for: string
+          task_id: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          scheduled_for?: string
+          task_id?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       todos: {
         Row: {
           all_day: boolean | null
@@ -1439,7 +1557,50 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      latest_messages: {
+        Row: {
+          content: string | null
+          conversation_id: string | null
+          created_at: string | null
+          deleted_at: string | null
+          deleted_by: Json | null
+          edited_at: string | null
+          id: string | null
+          is_ai_message: boolean | null
+          is_deleted: boolean | null
+          message_type: string | null
+          metadata: Json | null
+          reaction: string | null
+          read: boolean | null
+          receiver_id: string | null
+          sender_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       change_user_password: {
@@ -1568,6 +1729,7 @@ export type Database = {
         | "customer_service"
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
+      message_delivery_status: "pending" | "delivered" | "read"
       mission_type: "company" | "individual"
     }
     CompositeTypes: {

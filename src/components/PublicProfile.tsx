@@ -41,21 +41,56 @@ export default function PublicProfile() {
           return;
         }
 
-        const transformedData: UserProfile = {
+        // Map certifications and ensure all required fields are present
+        const certifications: Certification[] = (data.certifications || []).map(cert => ({
+          id: cert.id,
+          profile_id: cert.profile_id,
+          title: cert.title,
+          institution: cert.issuer,
+          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : "",
+          created_at: cert.created_at,
+          updated_at: cert.updated_at,
+          credential_url: cert.credential_url || null,
+          issue_date: cert.issue_date || null,
+          expiry_date: cert.expiry_date || null,
+          issuer: cert.issuer,
+          description: cert.description || null
+        }));
+
+        // Map experiences with proper null handling
+        const experiences: Experience[] = (data.experiences || []).map(exp => ({
+          id: exp.id,
+          company: exp.company,
+          position: exp.position,
+          start_date: exp.start_date || null,
+          end_date: exp.end_date || null,
+          description: exp.description || null,
+          created_at: exp.created_at ? new Date(exp.created_at) : null,
+          updated_at: exp.updated_at ? new Date(exp.updated_at) : null
+        }));
+
+        const transformedProfile: UserProfile = {
           ...data,
-          certifications: data.certifications?.map((cert: any) => ({
-            ...cert,
-            institution: cert.issuer,
-            year: new Date(cert.issue_date).getFullYear().toString()
-          })) as Certification[],
-          experiences: data.experiences?.map((exp: any) => ({
-            ...exp,
-            created_at: new Date(exp.created_at),
-            updated_at: new Date(exp.updated_at)
-          })) as Experience[]
+          certifications,
+          experiences,
+          education: data.education || [],
+          website: data.website || null,
+          company_name: data.company_name || null,
+          company_size: data.company_size || null,
+          industry: data.industry || null,
+          style_id: data.style_id || undefined,
+          custom_font: data.custom_font || null,
+          custom_background: data.custom_background || null,
+          custom_text_color: data.custom_text_color || null,
+          sections_order: data.sections_order || null,
+          privacy_enabled: data.privacy_enabled || false,
+          online_status: data.online_status || false,
+          last_seen: data.last_seen || undefined,
+          created_at: data.created_at || undefined,
+          auto_update_enabled: data.auto_update_enabled || false
         };
 
-        setProfile(transformedData);
+        setProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
@@ -108,4 +143,3 @@ export default function PublicProfile() {
     </div>
   );
 }
-
