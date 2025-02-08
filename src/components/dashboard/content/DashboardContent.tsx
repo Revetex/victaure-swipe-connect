@@ -138,7 +138,7 @@ export function DashboardContent({
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div
+      <motion.main
         key={currentPage}
         variants={pageVariants}
         initial="initial"
@@ -147,7 +147,7 @@ export function DashboardContent({
         className="w-full"
       >
         {renderContent()}
-      </motion.div>
+      </motion.main>
     </AnimatePresence>
   );
 }

@@ -31,7 +31,7 @@ export function MessageItem({
   onMarkAsRead
 }: MessageItemProps) {
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
@@ -47,15 +47,15 @@ export function MessageItem({
           {sender.full_name.split(' ').map(n => n[0]).join('')}
         </AvatarFallback>
       </Avatar>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <p className="font-medium truncate">{sender.full_name}</p>
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
+      <section className="flex-1 min-w-0">
+        <header className="flex items-center justify-between gap-2">
+          <h3 className="font-medium truncate">{sender.full_name}</h3>
+          <time className="text-xs text-muted-foreground whitespace-nowrap">
             {formatDistanceToNow(new Date(created_at), { locale: fr, addSuffix: true })}
-          </span>
-        </div>
+          </time>
+        </header>
         <p className="text-sm text-muted-foreground truncate">{content}</p>
-      </div>
-    </motion.div>
+      </section>
+    </motion.article>
   );
 }

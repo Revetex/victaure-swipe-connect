@@ -83,17 +83,9 @@ export function DashboardLayout() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
-  useEffect(() => {
-    const startTime = performance.now();
-    return () => {
-      const endTime = performance.now();
-      console.log(`DashboardLayout render time: ${endTime - startTime}ms`);
-    };
-  }, []);
-
   return (
     <DashboardAuthCheck>
-      <motion.div 
+      <motion.main 
         variants={containerVariants}
         initial="initial"
         animate="animate"
@@ -103,18 +95,18 @@ export function DashboardLayout() {
           "transition-colors duration-200"
         )}
       >
-        <div className="fixed inset-x-0 top-0 h-full bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
+        <span className="fixed inset-x-0 top-0 h-full bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
+        <span className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
         
         <DashboardContainer>
-          <motion.div variants={itemVariants}>
+          <motion.header variants={itemVariants}>
             <AppHeader
               title={getPageTitle(currentPage)}
               showFriendsList={showFriendsList}
               onToggleFriendsList={toggleFriendsList}
               isEditing={isEditing}
             />
-          </motion.div>
+          </motion.header>
           
           <AnimatePresence mode="wait">
             {showFriendsList && (
@@ -132,7 +124,7 @@ export function DashboardLayout() {
           </AnimatePresence>
 
           <DashboardMain>
-            <motion.div variants={itemVariants} className="relative z-10">
+            <motion.section variants={itemVariants} className="relative z-10">
               <MemoizedDashboardContent
                 currentPage={currentPage}
                 viewportHeight={viewportHeight}
@@ -140,7 +132,7 @@ export function DashboardLayout() {
                 onEditStateChange={handleEditStateChange}
                 onRequestChat={() => setShowAIAssistant(true)}
               />
-            </motion.div>
+            </motion.section>
           </DashboardMain>
 
           <nav 
@@ -162,7 +154,7 @@ export function DashboardLayout() {
           </nav>
 
         </DashboardContainer>
-      </motion.div>
+      </motion.main>
     </DashboardAuthCheck>
   );
 }
