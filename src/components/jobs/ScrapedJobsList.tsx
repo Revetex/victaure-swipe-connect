@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Building2, MapPin, ExternalLink, Calendar, Search } from "lucide-react";
@@ -10,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
 import { Input } from "@/components/ui/input";
 import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
+import { useState } from "react";
 
 interface ScrapedJobsListProps {
   queryString?: string;
