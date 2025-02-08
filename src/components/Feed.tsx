@@ -15,15 +15,7 @@ export function Feed() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const isMobile = useIsMobile();
 
-  const handlePostCreated = () => {
-    queryClient.invalidateQueries({ queryKey: ["posts"] });
-  };
-
-  const handlePostDeleted = () => {
-    queryClient.invalidateQueries({ queryKey: ["posts"] });
-  };
-
-  const handlePostUpdated = () => {
+  const invalidatePosts = () => {
     queryClient.invalidateQueries({ queryKey: ["posts"] });
   };
 
@@ -47,10 +39,10 @@ export function Feed() {
         onScroll={handleScroll}
       >
         <section className="max-w-3xl mx-auto px-4 py-4 space-y-4">
-          <CreatePost onPostCreated={handlePostCreated} />
+          <CreatePost onPostCreated={invalidatePosts} />
           <PostList 
-            onPostDeleted={handlePostDeleted}
-            onPostUpdated={handlePostUpdated}
+            onPostDeleted={invalidatePosts}
+            onPostUpdated={invalidatePosts}
           />
         </section>
       </ScrollArea>
