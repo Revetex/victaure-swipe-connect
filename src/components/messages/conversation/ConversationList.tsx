@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Message, Receiver } from "@/types/messages";
@@ -58,8 +59,8 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   );
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b">
+    <div className="flex flex-col h-full pt-16">
+      <div className="sticky top-16 z-50 bg-background/95 backdrop-blur border-b">
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
