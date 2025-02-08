@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "./feed/FeedSidebar";
 import { useState } from "react";
 import { ProfilePreview } from "./ProfilePreview";
+import { UserProfile } from "@/types/profile";
 
 export function Navigation() {
   const { isLoading, user } = useAuth();
@@ -19,6 +20,23 @@ export function Navigation() {
   if (isLoading || !user) {
     return null;
   }
+
+  // Convert User to UserProfile type
+  const userProfile: UserProfile = {
+    id: user.id,
+    email: user.email || '',
+    full_name: user.user_metadata?.full_name || null,
+    avatar_url: user.user_metadata?.avatar_url || null,
+    role: 'professional',
+    bio: null,
+    phone: null,
+    city: null,
+    state: null,
+    country: 'Canada',
+    skills: [],
+    latitude: null,
+    longitude: null
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -66,9 +84,9 @@ export function Navigation() {
       </div>
 
       {/* Profile Preview */}
-      {user && (
+      {userProfile && (
         <ProfilePreview
-          profile={user}
+          profile={userProfile}
           isOpen={showProfilePreview}
           onClose={() => setShowProfilePreview(false)}
         />
@@ -76,4 +94,3 @@ export function Navigation() {
     </div>
   );
 }
-

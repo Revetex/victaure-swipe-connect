@@ -86,7 +86,7 @@ export function useMessages() {
         ...msg,
         timestamp: msg.created_at,
         status: msg.read ? 'read' : 'delivered',
-        message_type: msg.message_type || 'user'
+        message_type: msg.message_type as "user" | "ai" | "system" || 'user'
       })) as Message[];
     },
     enabled: true
@@ -97,11 +97,13 @@ export function useMessages() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
+      const messageType = receiver.id === 'assistant' ? 'ai' as const : 'user' as const;
+
       const newMessage = {
         content,
         sender_id: user.id,
         receiver_id: receiver.id,
-        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
+        message_type: messageType,
         read: false,
         status: 'sent',
         created_at: new Date().toISOString(),
@@ -131,7 +133,7 @@ export function useMessages() {
           ...data,
           timestamp: data.created_at,
           status: 'sent',
-          message_type: data.message_type || 'user'
+          message_type: messageType
         });
       }
 
