@@ -17,16 +17,16 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     );
   }
 
-  // Convertir les UnifiedJob en Job
+  // Convertir les UnifiedJob en Job avec tous les champs requis
   const convertedJobs: Job[] = jobs.map(job => ({
     id: job.id,
     title: job.title,
     description: job.description || '',
-    budget: 0, // Valeur par défaut
+    budget: 0,
     location: job.location,
-    employer_id: '', // Valeur par défaut
-    status: 'open', // Valeur par défaut
-    category: '', // Valeur par défaut
+    employer_id: '',
+    status: 'open',
+    category: '',
     contract_type: '',
     experience_level: '',
     created_at: job.posted_at,
@@ -59,3 +59,4 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     </div>
   );
 }
+
