@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback, Suspense } from "react";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
-import { DashboardContent } from "@/components/dashboard/content/DashboardContent";
 import { AppHeader } from "./navigation/AppHeader";
 import { DashboardNavigation } from "./layout/DashboardNavigation";
 import { useViewport } from "@/hooks/useViewport";
@@ -13,7 +12,11 @@ import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { AIAssistant } from "./dashboard/AIAssistant";
+import { Loader2 } from "lucide-react";
+
+// Lazy load components
+const DashboardContent = React.lazy(() => import("./dashboard/content/DashboardContent"));
+const AIAssistant = React.lazy(() => import("./dashboard/AIAssistant"));
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -46,6 +49,13 @@ const itemVariants = {
   },
   exit: { opacity: 0, y: -20 }
 };
+
+// Fallback component for Suspense
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-[200px]">
+    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+  </div>
+);
 
 const MemoizedDashboardContent = memo(DashboardContent);
 
@@ -119,19 +129,23 @@ export function DashboardLayout() {
 
           <AnimatePresence mode="wait">
             {showAIAssistant && (
-              <AIAssistant onClose={() => setShowAIAssistant(false)} />
+              <Suspense fallback={<LoadingFallback />}>
+                <AIAssistant onClose={() => setShowAIAssistant(false)} />
+              </Suspense>
             )}
           </AnimatePresence>
 
           <DashboardMain>
             <motion.section variants={itemVariants} className="relative z-10">
-              <MemoizedDashboardContent
-                currentPage={currentPage}
-                viewportHeight={viewportHeight}
-                isEditing={isEditing}
-                onEditStateChange={handleEditStateChange}
-                onRequestChat={() => setShowAIAssistant(true)}
-              />
+              <Suspense fallback={<LoadingFallback />}>
+                <MemoizedDashboardContent
+                  currentPage={currentPage}
+                  viewportHeight={viewportHeight}
+                  isEditing={isEditing}
+                  onEditStateChange={handleEditStateChange}
+                  onRequestChat={() => setShowAIAssistant(true)}
+                />
+              </Suspense>
             </motion.section>
           </DashboardMain>
 
