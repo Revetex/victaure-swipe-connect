@@ -1,4 +1,5 @@
-import React, { useState, useEffect, memo, useCallback, Suspense } from "react";
+
+import React, { useState, useCallback, Suspense } from "react";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
 import { AppHeader } from "./navigation/AppHeader";
@@ -9,8 +10,6 @@ import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
-import { useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
 // Lazy load components
@@ -56,7 +55,7 @@ const LoadingFallback = () => (
   </div>
 );
 
-const MemoizedDashboardContent = memo(DashboardContent);
+const MemoizedDashboardContent = React.memo(DashboardContent);
 
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,7 +63,6 @@ export function DashboardLayout() {
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const { viewportHeight } = useViewport();
-  const location = useLocation();
 
   const handlePageChange = useCallback((page: number) => {
     try {
@@ -88,10 +86,6 @@ export function DashboardLayout() {
     setIsEditing(state);
   }, []);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
-
   return (
     <DashboardAuthCheck>
       <motion.main 
@@ -99,9 +93,9 @@ export function DashboardLayout() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="min-h-screen bg-background relative overflow-hidden"
+        className="min-h-screen bg-background relative"
       >
-        <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
         
         <DashboardContainer>
           <motion.header variants={itemVariants}>
@@ -131,7 +125,7 @@ export function DashboardLayout() {
           </AnimatePresence>
 
           <DashboardMain>
-            <motion.section variants={itemVariants} className="relative z-10">
+            <motion.section variants={itemVariants}>
               <Suspense fallback={<LoadingFallback />}>
                 <MemoizedDashboardContent
                   currentPage={currentPage}
@@ -145,7 +139,7 @@ export function DashboardLayout() {
           </DashboardMain>
 
           <nav 
-            className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
+            className="fixed bottom-0 left-0 right-0 bg-background border-t border-border/50 z-40 shadow-lg"
             style={{ 
               height: '4rem',
               paddingBottom: 'env(safe-area-inset-bottom)'

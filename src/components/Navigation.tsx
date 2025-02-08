@@ -6,7 +6,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "./feed/FeedSidebar";
 
@@ -18,9 +17,9 @@ export function Navigation() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-background">
       {/* Logo Section */}
-      <div className="h-16 border-b flex items-center px-4">
+      <div className="h-16 border-b flex items-center px-4 bg-background">
         <motion.div 
           className="flex items-center gap-3 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
@@ -31,19 +30,19 @@ export function Navigation() {
       </div>
 
       {/* Navigation Content */}
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 p-4 bg-background">
         <nav className="space-y-6">
           <div className="space-y-2">
             <Link 
               to="/dashboard/messages" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
             >
               <MessageSquare className="h-4 w-4" />
               <span>Messages</span>
             </Link>
             <Link 
               to="/settings" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
             >
               <Settings className="h-4 w-4" />
               <span>Paramètres</span>
@@ -54,7 +53,7 @@ export function Navigation() {
       </ScrollArea>
 
       {/* Footer Actions */}
-      <div className="h-16 border-t bg-background/50 backdrop-blur flex items-center justify-between px-4">
+      <div className="h-16 border-t bg-background flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <NotificationsBox />
           <ThemeToggle />
