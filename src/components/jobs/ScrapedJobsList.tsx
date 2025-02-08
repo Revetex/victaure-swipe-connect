@@ -11,6 +11,7 @@ import type { ScrapedJob } from "@/types/database/scrapedJobs";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface ScrapedJobsListProps {
   queryString?: string;
@@ -19,7 +20,7 @@ interface ScrapedJobsListProps {
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: jobs = [], isLoading } = useQuery({
+  const { data: jobs = [], isLoading, error } = useQuery({
     queryKey: ["scraped-jobs", queryString, searchTerm],
     queryFn: async () => {
       console.log("Fetching scraped jobs with query:", queryString);
@@ -60,6 +61,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
 
           if (transcriptionError) {
             console.error("Error transcribing job:", transcriptionError);
+            toast.error("Erreur lors de la transcription de l'offre");
           }
         } catch (error) {
           console.error("Error in transcription process:", error);
@@ -76,6 +78,14 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
       <div className="flex items-center justify-center p-8 backdrop-blur-sm bg-background/50 rounded-lg">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <span className="ml-2 font-medium text-muted-foreground">Chargement des offres...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-8 backdrop-blur-sm bg-background/50 rounded-lg text-center">
+        <p className="text-red-500">Une erreur est survenue lors du chargement des offres</p>
       </div>
     );
   }
