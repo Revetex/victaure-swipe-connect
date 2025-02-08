@@ -20,20 +20,24 @@ serve(async (req) => {
       throw new Error('Job ID and content are required')
     }
 
-    console.log('Initializing transcriber pipeline...')
-    const transcriber = await pipeline(
+    console.log('Initializing summarizer pipeline...')
+    const summarizer = await pipeline(
       "summarization",
-      "sshleifer/distilbart-cnn-12-6"
+      "facebook/bart-large-cnn",
+      {
+        revision: "main",
+        quantized: true // Use quantized model for better performance
+      }
     )
 
-    console.log('Generating transcription...')
-    const transcription = await transcriber(jobContent, {
+    console.log('Generating summary...')
+    const summary = await summarizer(jobContent, {
       max_length: 130,
       min_length: 30,
       do_sample: false
     })
 
-    console.log('Transcription generated:', transcription)
+    console.log('Summary generated:', summary)
 
     // Initialize Supabase client
     const supabaseAdmin = createClient(
@@ -41,18 +45,21 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Store the transcription
+    // Store the summary
     const { error: insertError } = await supabaseAdmin
       .from('job_transcriptions')
       .insert({
         job_id: jobId,
-        ai_transcription: transcription[0].summary_text
+        ai_transcription: summary[0].summary_text
       })
 
-    if (insertError) throw insertError
+    if (insertError) {
+      console.error('Error inserting summary:', insertError)
+      throw insertError
+    }
 
     return new Response(
-      JSON.stringify({ transcription: transcription[0].summary_text }),
+      JSON.stringify({ transcription: summary[0].summary_text }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
