@@ -47,10 +47,8 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
   }, []);
 
   return (
-    <main className="min-h-screen bg-background relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90" />
-      <div className="relative z-10 flex flex-col lg:flex-row gap-8 p-8">
-        {/* Sidebar avec filtres */}
+    <main className="min-h-screen bg-background">
+      <div className="flex flex-col lg:flex-row gap-8 p-8">
         <aside className="w-full lg:w-80">
           <div className="sticky top-4 space-y-4">
             <JobCreationDialog 
@@ -67,9 +65,7 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
           </div>
         </aside>
 
-        {/* Zone principale de contenu */}
         <div className="flex-1 space-y-8">
-          {/* Search Section */}
           <div className="relative max-w-4xl mx-auto">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -86,29 +82,25 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
             </motion.div>
           </div>
 
-          {/* Results Section */}
           <div className="space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.1 }}
-              className="bg-card/50 backdrop-blur-sm rounded-xl shadow-lg border border-border/50 overflow-hidden"
+              className="bg-card rounded-xl shadow-lg overflow-hidden"
             >
-              <div>
-                <ScrapedJobsList queryString={filters.searchTerm} />
-              </div>
+              <ScrapedJobsList queryString={filters.searchTerm} />
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="max-w-4xl mx-auto rounded-xl overflow-hidden"
+              className="max-w-4xl mx-auto"
             >
-              <div className="bg-card/50 backdrop-blur-sm border border-border/50 shadow-lg p-6 rounded-xl
+              <div className="bg-card rounded-xl p-6 
                 [&_.gsc-results-wrapper-overlay]:!bg-background 
-                [&_.gsc-results-wrapper-overlay]:!backdrop-blur-md 
-                [&_.gsc-results-wrapper-overlay]:!supports-[backdrop-filter]:bg-background/60"
+                [&_.gsc-results-wrapper-overlay]:!backdrop-blur-md"
               >
                 <div className="gcse-searchresults-only" data-queryParameterName="q"></div>
               </div>
