@@ -531,6 +531,38 @@ export type Database = {
           },
         ]
       }
+      job_transcriptions: {
+        Row: {
+          ai_transcription: string | null
+          created_at: string
+          id: string
+          job_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_transcription?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_transcription?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_transcriptions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "scraped_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           application_deadline: string | null

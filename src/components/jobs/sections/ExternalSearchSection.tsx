@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from "react";
 import { JobFilters } from "../JobFilterUtils";
 import { JobFiltersPanel } from "../JobFiltersPanel";
 import { ScrapedJobsList } from "../ScrapedJobsList";
@@ -6,13 +7,15 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import { useSwipeMatch } from "@/hooks/useSwipeMatch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AnimatedJobCard } from "../AnimatedJobCard";
 import { SwipeControls } from "../swipe/SwipeControls";
 import { SwipeEmptyState } from "../swipe/SwipeEmptyState";
+import { useGoogleSearchStyles } from "@/components/google-search/GoogleSearchStyles";
+import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
+import { AISearchSuggestions } from "@/components/google-search/AISearchSuggestions";
 
 interface ExternalSearchSectionProps {
   filters: JobFilters;
@@ -23,6 +26,7 @@ export function ExternalSearchSection({
   filters,
   onFilterChange 
 }: ExternalSearchSectionProps) {
+  useGoogleSearchStyles();
   const navigate = useNavigate();
   const [queryString, setQueryString] = useState<string>("");
   const [showSwipe, setShowSwipe] = useState(false);
@@ -137,55 +141,85 @@ export function ExternalSearchSection({
         </aside>
 
         <main className="flex-1">
-          {showSwipe ? (
-            <div className="relative w-full max-w-lg mx-auto aspect-[3/4]">
-              {loading ? (
-                <div className="flex items-center justify-center h-96">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#9b87f5]"></div>
-                </div>
-              ) : jobs.length === 0 ? (
-                <SwipeEmptyState onRefresh={() => fetchJobs()} />
-              ) : (
-                <>
-                  <div className="relative w-full">
-                    {jobs.map((job, index) => {
-                      if (index < currentIndex) return null;
-                      
-                      const isTop = index === currentIndex;
-                      const isDraggable = isTop && !isAnimating;
-                      
-                      return (
-                        <AnimatedJobCard
-                          key={job.id}
-                          job={job}
-                          x={isTop ? x : undefined}
-                          rotate={isTop ? rotate : undefined}
-                          opacity={isTop ? opacity : undefined}
-                          scale={isTop ? scale : undefined}
-                          onDragStart={isDraggable ? handleDragStart : undefined}
-                          onDragEnd={isDraggable ? handleDragEnd : undefined}
-                          isDragging={isDragging}
-                        />
-                      );
-                    })}
-                  </div>
-
-                  <SwipeControls
-                    onSwipe={handleButtonSwipe}
-                    isAnimating={isAnimating}
-                    className="mt-8"
-                  />
-                </>
-              )}
+          <div className="space-y-8">
+            {/* Google Search Integration */}
+            <div className="relative bg-background/60 backdrop-blur-sm rounded-lg p-6 border border-border/50">
+              <div className="absolute top-2 left-2 z-10">
+                <AISearchSuggestions onSuggestionClick={(suggestion) => {
+                  const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
+                  if (searchInput) {
+                    searchInput.value = suggestion;
+                    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    
+                    setTimeout(() => {
+                      const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
+                      if (searchButton) {
+                        searchButton.click();
+                      }
+                    }, 300);
+                  }
+                }} />
+              </div>
+              <div className="pl-32">
+                <GoogleSearchBox />
+              </div>
             </div>
-          ) : (
-            <ScrapedJobsList 
-              queryString={queryString}
-            />
-          )}
+
+            {/* Job Listings */}
+            {showSwipe ? (
+              <div className="relative w-full max-w-lg mx-auto aspect-[3/4]">
+                {loading ? (
+                  <div className="flex items-center justify-center h-96">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#9b87f5]"></div>
+                  </div>
+                ) : jobs.length === 0 ? (
+                  <SwipeEmptyState onRefresh={() => fetchJobs()} />
+                ) : (
+                  <>
+                    <div className="relative w-full">
+                      {jobs.map((job, index) => {
+                        if (index < currentIndex) return null;
+                        
+                        const isTop = index === currentIndex;
+                        const isDraggable = isTop && !isAnimating;
+                        
+                        return (
+                          <AnimatedJobCard
+                            key={job.id}
+                            job={job}
+                            x={isTop ? x : undefined}
+                            rotate={isTop ? rotate : undefined}
+                            opacity={isTop ? opacity : undefined}
+                            scale={isTop ? scale : undefined}
+                            onDragStart={isDraggable ? handleDragStart : undefined}
+                            onDragEnd={isDraggable ? handleDragEnd : undefined}
+                            isDragging={isDragging}
+                          />
+                        );
+                      })}
+                    </div>
+
+                    <SwipeControls
+                      onSwipe={handleButtonSwipe}
+                      isAnimating={isAnimating}
+                      className="mt-8"
+                    />
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="mt-8">
+                <ScrapedJobsList queryString={queryString} />
+              </div>
+            )}
+          </div>
         </main>
+      </div>
+
+      {/* Google Search Results */}
+      <div className="mt-8 bg-background/60 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden">
+        <div className="gcse-searchresults-only"></div>
       </div>
     </motion.div>
   );
 }
-

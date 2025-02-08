@@ -20,7 +20,12 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
       console.log("Fetching scraped jobs with query:", queryString);
       let query = supabase
         .from('scraped_jobs')
-        .select('*')
+        .select(`
+          *,
+          job_transcriptions (
+            ai_transcription
+          )
+        `)
         .order('posted_at', { ascending: false });
 
       // Si on a une chaîne de recherche, on l'utilise pour filtrer
@@ -35,8 +40,27 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
         throw error;
       }
 
+      // Pour chaque emploi sans transcription, générer une nouvelle
+      const jobsWithoutTranscription = data.filter(job => !job.job_transcriptions?.[0]);
+      
+      for (const job of jobsWithoutTranscription) {
+        try {
+          const jobContent = `${job.title} - ${job.company} - ${job.description || ''}`;
+          
+          const { error: transcriptionError } = await supabase.functions.invoke('transcribe-job', {
+            body: { jobId: job.id, jobContent }
+          });
+
+          if (transcriptionError) {
+            console.error("Error transcribing job:", transcriptionError);
+          }
+        } catch (error) {
+          console.error("Error in transcription process:", error);
+        }
+      }
+
       console.log(`Found ${data?.length || 0} scraped jobs`);
-      return data as ScrapedJob[] || [];
+      return data as (ScrapedJob & { job_transcriptions: { ai_transcription: string }[] })[] || [];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -103,6 +127,11 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
                           })}
                         </span>
                       </div>
+                      {job.job_transcriptions?.[0]?.ai_transcription && (
+                        <div className="mt-4 text-sm text-muted-foreground">
+                          <p className="line-clamp-3">{job.job_transcriptions[0].ai_transcription}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
