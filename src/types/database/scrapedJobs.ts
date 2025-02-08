@@ -9,4 +9,7 @@ export interface ScrapedJob {
   posted_at: string;
   created_at: string;
   updated_at: string;
+  job_transcriptions?: {
+    ai_transcription: string;
+  }[];
 }
