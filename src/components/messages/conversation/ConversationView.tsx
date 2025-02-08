@@ -60,7 +60,16 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="relative flex flex-col h-[calc(100vh-8rem)] min-h-0 w-full bg-background">
+    <section className="relative flex flex-col h-full min-h-0 w-full bg-background">
+      <ChatHeader
+        title={receiver.full_name}
+        subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
+        avatarUrl={receiver.avatar_url}
+        onBack={onBack}
+        onDelete={onDeleteConversation}
+        isOnline={receiver.online_status}
+        lastSeen={receiver.last_seen}
+      />
       <ScrollArea 
         className="flex-1 px-4 pb-32"
         onScrollCapture={handleScroll}
@@ -119,15 +128,6 @@ export function ConversationView({
       )}
 
       <div className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t">
-        <ChatHeader
-          title={receiver.full_name}
-          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
-          avatarUrl={receiver.avatar_url}
-          onBack={onBack}
-          onDelete={onDeleteConversation}
-          isOnline={receiver.online_status}
-          lastSeen={receiver.last_seen}
-        />
         <div className="p-4">
           <ChatInput
             value={inputMessage}
