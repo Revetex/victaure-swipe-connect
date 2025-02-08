@@ -16,6 +16,19 @@ interface ScrapedJobsListProps {
   queryString?: string;
 }
 
+interface UnifiedJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  url: string;
+  posted_at: string;
+  source: 'Victaure' | 'Externe';
+  description?: string;
+  transcription?: string;
+  logo_url?: string;
+}
+
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const navigate = useNavigate();
 
@@ -55,7 +68,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
         if (scrapedError) throw scrapedError;
 
         // Formater de manière uniforme
-        const formattedJobs = [
+        const formattedJobs: UnifiedJob[] = [
           ...victaureJobs.map(job => ({
             id: job.id,
             title: job.title,
@@ -63,7 +76,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
             location: job.location,
             url: `/jobs/${job.id}`,
             posted_at: job.created_at,
-            source: 'Victaure',
+            source: 'Victaure' as const,
             description: job.description,
             transcription: job.job_transcriptions?.[0]?.ai_transcription,
             logo_url: job.employer?.avatar_url
@@ -75,7 +88,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
             location: job.location,
             url: job.url,
             posted_at: job.posted_at,
-            source: 'Externe',
+            source: 'Externe' as const,
             description: job.description,
             transcription: job.job_transcriptions?.[0]?.ai_transcription
           }))
