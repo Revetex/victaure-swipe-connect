@@ -30,7 +30,7 @@ export function ChatHeader({
   lastSeen
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center gap-4 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="sticky top-0 z-30 flex items-center gap-4 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <Button
         variant="ghost"
         size="icon"
@@ -67,7 +67,7 @@ export function ChatHeader({
               <MoreVertical className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur border-border">
             <DropdownMenuItem onClick={onDelete} className="text-destructive">
               <Trash2 className="h-4 w-4 mr-2" />
               Supprimer la conversation
