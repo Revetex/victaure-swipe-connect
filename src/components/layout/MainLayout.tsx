@@ -1,6 +1,5 @@
 
 import { ReactNode } from "react";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
@@ -9,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
 import { LayoutErrorBoundary } from "./LayoutErrorBoundary";
 import { Sidebar } from "./Sidebar";
-import { toast } from "sonner";
 import { DashboardNavigation } from "./DashboardNavigation";
 import { useNavigation } from "@/hooks/useNavigation";
 
@@ -42,11 +40,9 @@ const layoutVariants = {
 
 export function MainLayout({ 
   children, 
-  title = "", 
   isEditing = false,
   showFriendsList = false,
   onToggleFriendsList = () => {},
-  onToolReturn = () => {}
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
@@ -54,15 +50,12 @@ export function MainLayout({
   const isMessagesPage = location.pathname.includes('/messages');
   const { currentPage, handlePageChange } = useNavigation();
 
-  const handleError = (error: Error) => {
-    console.error('Layout Error:', error);
-    toast.error("Une erreur est survenue dans la mise en page");
-  };
-
   return (
     <ErrorBoundary
       FallbackComponent={LayoutErrorBoundary}
-      onError={handleError}
+      onError={(error) => {
+        console.error('Layout Error:', error);
+      }}
       onReset={() => window.location.reload()}
     >
       <div className="flex min-h-screen bg-background">
@@ -78,22 +71,7 @@ export function MainLayout({
           animate="animate"
           exit="exit"
         >
-          {!isMessagesPage && (
-            <header className="sticky top-0 z-40 w-full h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <DashboardHeader 
-                title={title}
-                showFriendsList={showFriendsList}
-                onToggleFriendsList={onToggleFriendsList}
-                isEditing={isEditing}
-                onToolReturn={onToolReturn}
-              />
-            </header>
-          )}
-
-          <main className={cn(
-            "flex-1",
-            !isMessagesPage && "pt-4"
-          )}>
+          <main className="flex-1">
             {children}
           </main>
 

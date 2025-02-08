@@ -1,9 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
-import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { motion } from "framer-motion";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { FeedSidebar } from "../feed/FeedSidebar";
 import { Suspense } from "react";
@@ -18,50 +16,31 @@ export interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({
-  title = "",
   showFriendsList = false,
   onToggleFriendsList = () => {},
   isEditing = false
 }: DashboardHeaderProps) {
   return (
-    <div className="flex items-center justify-between h-full px-4">
-      <motion.div 
-        className="flex items-center gap-6"
-        initial={{ x: -20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="md:hidden"
-              aria-label="Menu"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-[280px] sm:w-[350px]">
-            <Suspense fallback={null}>
-              <FeedSidebar />
-            </Suspense>
-          </SheetContent>
-        </Sheet>
-        <Logo size="lg" />
-        {title && (
-          <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">
-            {title}
-          </h1>
-        )}
-      </motion.div>
-      
-      <motion.div 
-        className="flex items-center gap-4"
-        initial={{ x: 20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
+    <div className="flex items-center justify-between h-16 px-4 border-b">
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="md:hidden"
+            aria-label="Menu"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="p-0 w-[280px] sm:w-[350px]">
+          <Suspense fallback={null}>
+            <FeedSidebar />
+          </Suspense>
+        </SheetContent>
+      </Sheet>
+
+      <div className="flex items-center gap-4">
         <NotificationsBox />
         {!isEditing && (
           <Button
@@ -78,7 +57,7 @@ export function DashboardHeader({
             <span>Amis</span>
           </Button>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }
