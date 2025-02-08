@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.15.1"
+import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@2.15.1"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
@@ -21,18 +21,17 @@ serve(async (req) => {
     }
 
     console.log('Initializing summarizer pipeline...')
-    // Configuration spécifique pour Deno
     let summarizer;
     try {
-      summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6', {
-        quantized: false, // Désactiver la quantification
+      summarizer = await pipeline('summarization', 'facebook/bart-large-cnn', {
+        quantized: false,
         progress_callback: (progress) => {
           console.log(`Loading model: ${Math.round(progress.progress * 100)}%`);
         }
       });
     } catch (e) {
-      console.error('Error initializing pipeline:', e);
-      throw new Error('Failed to initialize summarization model');
+      console.error('Detailed pipeline error:', e);
+      throw new Error(`Failed to initialize summarization model: ${e.message}`);
     }
 
     console.log('Generating summary for job:', jobId)
@@ -40,7 +39,8 @@ serve(async (req) => {
       max_length: 130,
       min_length: 30,
       do_sample: false,
-      truncation: true
+      truncation: true,
+      cache_dir: '/tmp'  // Specify a temporary cache directory
     })
 
     console.log('Summary generated:', summary)
@@ -81,4 +81,3 @@ serve(async (req) => {
     )
   }
 })
-
