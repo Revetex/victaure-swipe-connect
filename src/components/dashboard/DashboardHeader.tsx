@@ -5,9 +5,9 @@ import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { FeedSidebar } from "../feed/FeedSidebar";
-import { Suspense } from "react";
+import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
+import { Suspense } from "react";
 
 export interface DashboardHeaderProps {
   title: string;
@@ -15,13 +15,15 @@ export interface DashboardHeaderProps {
   onToggleFriendsList: () => void;
   isEditing: boolean;
   onToolReturn?: () => void;
+  onNavigate: (path: string) => void;
 }
 
 export function DashboardHeader({
   title,
   showFriendsList,
   onToggleFriendsList,
-  isEditing
+  isEditing,
+  onNavigate
 }: DashboardHeaderProps) {
   return (
     <div className="flex items-center justify-between w-full">
@@ -39,11 +41,11 @@ export function DashboardHeader({
           </SheetTrigger>
           <SheetContent side="left" className="w-[280px] sm:w-[350px] p-0">
             <Suspense fallback={null}>
-              <FeedSidebar />
+              <Navigation onNavigate={onNavigate} />
             </Suspense>
           </SheetContent>
         </Sheet>
-        <Logo size="lg" />
+        <Logo size="lg" onClick={() => onNavigate("/")} className="cursor-pointer" />
         <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">
           {title}
         </h1>

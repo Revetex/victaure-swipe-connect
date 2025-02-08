@@ -5,48 +5,61 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "./feed/FeedSidebar";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
 
-export function Navigation() {
+interface NavigationProps {
+  onNavigate: (path: string) => void;
+  className?: string;
+}
+
+export function Navigation({ onNavigate, className }: NavigationProps) {
   const { isLoading } = useAuth();
 
   if (isLoading) {
     return null;
   }
 
+  const handleNavigate = (path: string) => {
+    onNavigate(path);
+  };
+
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className={cn("h-full flex flex-col bg-background", className)}>
       {/* Logo Section */}
       <div className="h-16 border-b flex items-center px-4 bg-background">
         <motion.div 
           className="flex items-center gap-3 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          onClick={() => handleNavigate("/")}
         >
           <Logo size="sm" />
         </motion.div>
       </div>
 
       {/* Navigation Content */}
-      <ScrollArea className="flex-1 p-4 bg-background">
+      <ScrollArea className="flex-1 px-2 py-4">
         <nav className="space-y-6">
           <div className="space-y-2">
-            <Link 
-              to="/dashboard/messages" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
+            <Button 
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => handleNavigate("/messages")}
             >
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="h-4 w-4 mr-2" />
               <span>Messages</span>
-            </Link>
-            <Link 
-              to="/settings" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
+            </Button>
+            <Button 
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => handleNavigate("/settings")}
             >
-              <Settings className="h-4 w-4" />
+              <Settings className="h-4 w-4 mr-2" />
               <span>Paramètres</span>
-            </Link>
+            </Button>
           </div>
           <FeedSidebar />
         </nav>

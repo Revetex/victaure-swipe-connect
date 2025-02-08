@@ -4,15 +4,12 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
 import { LayoutErrorBoundary } from "./LayoutErrorBoundary";
 import { Sidebar } from "./Sidebar";
-import { MobileNavigation } from "./MobileNavigation";
 import { toast } from "sonner";
-import { DashboardNavigation } from "./DashboardNavigation";
-import { useNavigation } from "@/hooks/useNavigation";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -56,13 +53,17 @@ export function MainLayout({
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
+  const navigate = useNavigate();
   const isFriendsPage = location.pathname.includes('/friends');
   const isMessagesPage = location.pathname.includes('/messages');
-  const { currentPage, handlePageChange } = useNavigation();
 
   const handleError = (error: Error) => {
     console.error('Layout Error:', error);
     toast.error("Une erreur est survenue dans la mise en page");
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -73,7 +74,7 @@ export function MainLayout({
     >
       <div className="flex min-h-screen bg-background">
         {!isMobile && (
-          <Sidebar />
+          <Sidebar onNavigate={handleNavigate} />
         )}
 
         <motion.div 
@@ -96,16 +97,14 @@ export function MainLayout({
             >
               <div className="container h-full">
                 <div className="flex items-center justify-between h-full px-4">
-                  <div className="flex items-center gap-4">
-                    {isMobile && <MobileNavigation />}
-                    <DashboardHeader 
-                      title={title}
-                      showFriendsList={showFriendsList}
-                      onToggleFriendsList={onToggleFriendsList}
-                      isEditing={isEditing}
-                      onToolReturn={onToolReturn}
-                    />
-                  </div>
+                  <DashboardHeader 
+                    title={title}
+                    showFriendsList={showFriendsList}
+                    onToggleFriendsList={onToggleFriendsList}
+                    isEditing={isEditing}
+                    onToolReturn={onToolReturn}
+                    onNavigate={handleNavigate}
+                  />
                 </div>
               </div>
             </header>
@@ -123,31 +122,6 @@ export function MainLayout({
               show={showFriendsList} 
               onClose={onToggleFriendsList}
             />
-          )}
-
-          {!isFriendsPage && (
-            <nav 
-              className={cn(
-                "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-                "sticky bottom-0 w-full z-40",
-                !isMobile && "md:ml-[280px] lg:ml-[320px]"
-              )}
-              style={{ 
-                paddingBottom: 'env(safe-area-inset-bottom)'
-              }}
-              role="navigation"
-              aria-label="Bottom navigation"
-            >
-              <div className="container h-full">
-                <div className="px-4 h-full">
-                  <DashboardNavigation 
-                    currentPage={currentPage} 
-                    onPageChange={handlePageChange}
-                    isEditing={isEditing}
-                  />
-                </div>
-              </div>
-            </nav>
           )}
         </motion.div>
       </div>
