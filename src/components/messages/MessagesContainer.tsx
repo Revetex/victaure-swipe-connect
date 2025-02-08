@@ -30,8 +30,6 @@ export function MessagesContainer() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { handleDeleteConversation } = useConversationDelete();
 
-  console.log("Messages Container - User Messages:", userMessages);
-
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
     setShowConversation(true);
@@ -66,14 +64,14 @@ export function MessagesContainer() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-background">
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)] bg-background">
         <div className="text-muted-foreground">Chargement des messages...</div>
       </div>
     );
   }
 
   return (
-    <Card className="h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] flex flex-col bg-background relative">
+    <Card className="h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background relative mt-16 mb-16">
       {showConversation && receiver ? (
         <ConversationView
           receiver={receiver}
