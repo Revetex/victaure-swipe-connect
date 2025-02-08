@@ -5,12 +5,12 @@ import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsLis
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
-import { memo } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { LayoutErrorBoundary } from "./LayoutErrorBoundary";
+import { Sidebar } from "./Sidebar";
+import { MobileNavigation } from "./MobileNavigation";
+import { toast } from "sonner";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -20,9 +20,6 @@ interface MainLayoutProps {
   onToggleFriendsList?: () => void;
   onToolReturn?: () => void;
 }
-
-// Memoized Navigation component to prevent unnecessary re-renders
-const MemoizedNavigation = memo(Navigation);
 
 // Animation variants for layout transitions
 const layoutVariants = {
@@ -60,107 +57,89 @@ export function MainLayout({
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
 
-  // Sidebar component for better organization
-  const Sidebar = () => (
-    <aside 
-      className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur z-50"
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <MemoizedNavigation />
-    </aside>
-  );
-
-  // Mobile navigation component
-  const MobileNav = () => (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="p-0 w-[280px]">
-        <MemoizedNavigation />
-      </SheetContent>
-    </Sheet>
-  );
+  const handleError = (error: Error) => {
+    console.error('Layout Error:', error);
+    toast.error("Une erreur est survenue dans la mise en page");
+  };
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Desktop Sidebar */}
-      {!isMobile && <Sidebar />}
+    <ErrorBoundary
+      FallbackComponent={LayoutErrorBoundary}
+      onError={handleError}
+      onReset={() => window.location.reload()}
+    >
+      <div className="min-h-screen flex bg-background">
+        {/* Desktop Sidebar */}
+        {!isMobile && <Sidebar />}
 
-      {/* Main Content Area */}
-      <motion.main 
-        className={cn(
-          "flex-1 min-h-screen flex flex-col",
-          !isMobile && "md:pl-[280px] lg:pl-[320px]"
-        )}
-        variants={layoutVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
-        {/* Header */}
-        <header 
-          className="h-16 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40"
-          role="banner"
-        >
-          <div className="container h-full mx-auto px-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {isMobile && <MobileNav />}
-              <DashboardHeader 
-                title={title}
-                showFriendsList={showFriendsList}
-                onToggleFriendsList={onToggleFriendsList}
-                isEditing={isEditing}
-                onToolReturn={onToolReturn}
-              />
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content with padding-top to account for fixed header */}
-        <motion.div 
-          className="flex-1 pt-16"
-          variants={layoutVariants}
-        >
-          {children}
-        </motion.div>
-
-        {/* Friends List Overlay */}
-        <AnimatePresence mode="wait">
-          {showFriendsList && (
-            <DashboardFriendsList 
-              show={showFriendsList} 
-              onClose={onToggleFriendsList}
-            />
+        {/* Main Content Area */}
+        <motion.main 
+          className={cn(
+            "flex-1 min-h-screen flex flex-col",
+            !isMobile && "md:pl-[280px] lg:pl-[320px]"
           )}
-        </AnimatePresence>
-
-        {/* Bottom Navigation */}
-        {!isFriendsPage && (
-          <nav 
-            className={cn(
-              "h-16 border-t bg-background/95 backdrop-blur sticky bottom-0 z-40",
-              !isMobile && "md:ml-[280px] lg:ml-[320px]"
-            )}
-            style={{ 
-              paddingBottom: 'env(safe-area-inset-bottom)'
-            }}
-            role="navigation"
-            aria-label="Bottom navigation"
+          variants={layoutVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          {/* Header */}
+          <header 
+            className="h-16 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40"
+            role="banner"
           >
-            <div className="container mx-auto px-4 h-full">
-              {/* Navigation content */}
+            <div className="container h-full mx-auto px-4 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                {isMobile && <MobileNavigation />}
+                <DashboardHeader 
+                  title={title}
+                  showFriendsList={showFriendsList}
+                  onToggleFriendsList={onToggleFriendsList}
+                  isEditing={isEditing}
+                  onToolReturn={onToolReturn}
+                />
+              </div>
             </div>
-          </nav>
-        )}
-      </motion.main>
-    </div>
+          </header>
+
+          {/* Main Content with padding-top to account for fixed header */}
+          <motion.div 
+            className="flex-1 pt-16"
+            variants={layoutVariants}
+          >
+            {children}
+          </motion.div>
+
+          {/* Friends List Overlay */}
+          <AnimatePresence mode="wait">
+            {showFriendsList && (
+              <DashboardFriendsList 
+                show={showFriendsList} 
+                onClose={onToggleFriendsList}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Bottom Navigation */}
+          {!isFriendsPage && (
+            <nav 
+              className={cn(
+                "h-16 border-t bg-background/95 backdrop-blur sticky bottom-0 z-40",
+                !isMobile && "md:ml-[280px] lg:ml-[320px]"
+              )}
+              style={{ 
+                paddingBottom: 'env(safe-area-inset-bottom)'
+              }}
+              role="navigation"
+              aria-label="Bottom navigation"
+            >
+              <div className="container mx-auto px-4 h-full">
+                {/* Navigation content */}
+              </div>
+            </nav>
+          )}
+        </motion.main>
+      </div>
+    </ErrorBoundary>
   );
 }
