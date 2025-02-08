@@ -66,7 +66,7 @@ export function ConversationView({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-120px)]">
+    <div className="flex flex-col h-[calc(100vh-7rem)]">
       <ChatHeader
         title={receiver.full_name}
         subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -78,7 +78,7 @@ export function ConversationView({
       />
 
       <ScrollArea 
-        className="flex-1 px-4 py-2"
+        className="flex-1 px-4"
         onScrollCapture={handleScroll}
       >
         {messages.length === 0 ? (
@@ -90,7 +90,7 @@ export function ConversationView({
             Commencez une conversation
           </motion.div>
         ) : (
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 py-4">
             <AnimatePresence initial={false}>
               {messages.map((message) => (
                 <motion.div
@@ -131,7 +131,7 @@ export function ConversationView({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="fixed bottom-24 right-4 z-30"
+          className="fixed bottom-28 right-4 z-30"
         >
           <Button
             size="icon"
@@ -158,3 +158,4 @@ export function ConversationView({
     </div>
   );
 }
+
