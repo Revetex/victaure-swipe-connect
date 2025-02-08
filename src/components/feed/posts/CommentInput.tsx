@@ -76,6 +76,8 @@ export function CommentInput({
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       <Textarea
+        id={`comment-input-${postId}`}
+        name={`comment-${postId}`}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Ajouter un commentaire..."
