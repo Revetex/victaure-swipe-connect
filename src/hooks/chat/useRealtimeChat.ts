@@ -29,17 +29,7 @@ export function useRealtimeChat() {
 
       if (error) throw error;
 
-      // Convert the raw data to match ChatMessage type
-      const typedMessages: ChatMessage[] = data.map(msg => ({
-        id: msg.id,
-        content: msg.content,
-        sender: msg.sender as 'user' | 'assistant',
-        user_id: msg.user_id,
-        created_at: msg.created_at,
-        updated_at: msg.updated_at
-      }));
-
-      setMessages(typedMessages);
+      setMessages(data as ChatMessage[]);
     } catch (error) {
       console.error('Error loading messages:', error);
       toast.error("Erreur lors du chargement des messages");
@@ -54,13 +44,11 @@ export function useRealtimeChat() {
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all changes
+          event: '*',
           schema: 'public',
           table: 'ai_chat_messages'
         },
-        () => {
-          loadMessages();
-        }
+        () => loadMessages()
       )
       .subscribe();
 
@@ -85,7 +73,7 @@ export function useRealtimeChat() {
       }
 
       const message = {
-        id: crypto.randomUUID(), // Generate UUID for new message
+        id: crypto.randomUUID(),
         content,
         sender,
         user_id: user.id,
