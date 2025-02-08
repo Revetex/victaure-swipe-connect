@@ -13,6 +13,7 @@ function App() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
+          className="relative z-0"
         >
           <AppRoutes />
         </motion.div>
