@@ -72,62 +72,64 @@ export function ConversationView({
         className="sticky top-16 z-50 bg-background"
       />
       
-      <ScrollArea 
-        className="flex-1 w-full"
-        onScrollCapture={handleScroll}
-      >
-        <div className="space-y-4 py-4 max-w-3xl mx-auto px-4">
-          <AnimatePresence initial={false}>
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <ChatMessage
-                  content={message.content}
-                  sender={message.sender_id === profile?.id ? "user" : "assistant"}
-                  timestamp={message.created_at}
-                  isRead={message.read}
-                  status={message.status}
-                  reaction={message.reaction}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          
-          {isThinking && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <ChatThinking />
-            </motion.div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
-
-      {showScrollButton && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          className="fixed bottom-32 right-4 z-10"
+      <div className="relative flex-1 overflow-hidden">
+        <ScrollArea 
+          className="h-[calc(100vh-16rem)]"
+          onScrollCapture={handleScroll}
         >
-          <Button
-            size="icon"
-            variant="secondary"
-            onClick={scrollToBottom}
-            className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
+          <div className="space-y-4 py-4 max-w-3xl mx-auto px-4">
+            <AnimatePresence initial={false}>
+              {messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <ChatMessage
+                    content={message.content}
+                    sender={message.sender_id === profile?.id ? "user" : "assistant"}
+                    timestamp={message.created_at}
+                    isRead={message.read}
+                    status={message.status}
+                    reaction={message.reaction}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {isThinking && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <ChatThinking />
+              </motion.div>
+            )}
+            
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+
+        {showScrollButton && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute bottom-4 right-4 z-10"
           >
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </motion.div>
-      )}
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={scrollToBottom}
+              className="rounded-full shadow-lg hover:shadow-xl transition-shadow"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </motion.div>
+        )}
+      </div>
 
       <div className="sticky bottom-16 left-0 right-0 bg-background/95 backdrop-blur border-t">
         <div className="p-4 max-w-3xl mx-auto">
