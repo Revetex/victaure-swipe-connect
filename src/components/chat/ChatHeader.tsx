@@ -30,7 +30,7 @@ export function ChatHeader({
   lastSeen
 }: ChatHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background">
+    <header className="sticky top-0 z-[999999] w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center gap-4 px-4">
         <Button
           variant="ghost"
