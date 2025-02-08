@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Building2, MapPin, ExternalLink, Calendar } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Calendar, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface ScrapedJobsListProps {
   queryString?: string;
@@ -19,6 +21,7 @@ interface ScrapedJobsListProps {
 
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   const { data: jobs = [], isLoading, error } = useQuery({
     queryKey: ["scraped-jobs", queryString, searchTerm],
@@ -73,6 +76,10 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  const handleCreateJob = () => {
+    navigate('/jobs/create');
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8 backdrop-blur-sm bg-background/50 rounded-lg">
@@ -97,13 +104,21 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col space-y-6"
       >
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-background/95 p-6 rounded-lg border shadow-sm">
           <h2 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#9b87f5] to-[#6E59A5]">
             Offres d'emploi ({jobs.length})
           </h2>
+          
+          <Button
+            onClick={handleCreateJob}
+            className="w-full sm:w-auto bg-gradient-to-r from-[#9b87f5] to-[#6E59A5] hover:opacity-90 text-white"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Publier une offre
+          </Button>
         </div>
 
-        {/* Barre de recherche simplifiée */}
+        {/* Barre de recherche */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
