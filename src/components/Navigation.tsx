@@ -9,11 +9,14 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "./feed/FeedSidebar";
+import { useState } from "react";
+import { ProfilePreview } from "./ProfilePreview";
 
 export function Navigation() {
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return null;
   }
 
@@ -25,6 +28,7 @@ export function Navigation() {
           className="flex items-center gap-3 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          onClick={() => setShowProfilePreview(true)}
         >
           <Logo size="sm" />
         </motion.div>
@@ -60,6 +64,16 @@ export function Navigation() {
           <ThemeToggle />
         </div>
       </div>
+
+      {/* Profile Preview */}
+      {user && (
+        <ProfilePreview
+          profile={user}
+          isOpen={showProfilePreview}
+          onClose={() => setShowProfilePreview(false)}
+        />
+      )}
     </div>
   );
 }
+
