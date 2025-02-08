@@ -92,4 +92,3 @@ describe('FilePreview', () => {
     expect(removeButton).toHaveClass('group-hover:opacity-100'); // Checking hover state class
   });
 });
-
