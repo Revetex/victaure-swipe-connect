@@ -34,7 +34,7 @@ export function MessagesContainer() {
     try {
       setReceiver(selectedReceiver);
       setShowConversation(true);
-      setInputMessage(''); // Reset input when changing conversation
+      setInputMessage('');
     } catch (error) {
       console.error("Erreur lors de la sélection de la conversation:", error);
       toast.error("Impossible de charger la conversation");
@@ -45,7 +45,7 @@ export function MessagesContainer() {
     try {
       setShowConversation(false);
       setReceiver(null);
-      setInputMessage(''); // Reset input when going back
+      setInputMessage('');
     } catch (error) {
       console.error("Erreur lors du retour à la liste:", error);
       toast.error("Impossible de revenir à la liste des conversations");
@@ -70,7 +70,7 @@ export function MessagesContainer() {
         handleUserSendMessage(inputMessage, receiver);
       }
       
-      setInputMessage(''); // Clear input after sending
+      setInputMessage('');
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
       toast.error("Impossible d'envoyer le message");
@@ -86,7 +86,7 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="min-h-[calc(100vh-8rem)] h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background relative mt-16">
+    <Card className="min-h-[calc(100vh-8rem)] h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background relative">
       {showConversation && receiver ? (
         <div className="flex-1 h-full overflow-hidden">
           <ConversationView

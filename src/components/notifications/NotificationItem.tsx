@@ -34,10 +34,18 @@ export function NotificationItem({
 
   const markAsRead = async () => {
     try {
-      await supabase
+      const { error } = await supabase
         .from('notifications')
-        .update({ read: true })
+        .update({ 
+          read: true,
+          read_at: new Date().toISOString()
+        })
         .eq('id', id);
+
+      if (error) throw error;
+
+      // Delete the notification after marking as read
+      await onDelete(id);
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
