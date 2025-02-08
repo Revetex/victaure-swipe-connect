@@ -78,7 +78,7 @@ const pageVariants = {
   }
 };
 
-export function DashboardContent({
+function DashboardContent({
   currentPage,
   viewportHeight,
   isEditing,
@@ -151,3 +151,5 @@ export function DashboardContent({
     </AnimatePresence>
   );
 }
+
+export default DashboardContent;

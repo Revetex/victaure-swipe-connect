@@ -12,7 +12,7 @@ export interface AIAssistantProps {
   conversations?: any[];
 }
 
-export function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
+function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -46,3 +46,5 @@ export function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
     </Card>
   );
 }
+
+export default AIAssistant;
