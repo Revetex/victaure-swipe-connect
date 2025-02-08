@@ -46,6 +46,16 @@ export function MessagesTab() {
     }
   };
 
+  const handleClearChat = () => {
+    if (receiver) {
+      if (receiver.id === 'assistant') {
+        clearAIChat();
+      } else {
+        clearUserChat(receiver.id);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       <MessagesContent
@@ -54,9 +64,10 @@ export function MessagesTab() {
         isThinking={isThinking}
         onSendMessage={handleSendWrapper}
         setInputMessage={handleInputChange}
-        onClearChat={receiver?.id === 'assistant' ? clearAIChat : clearUserChat}
+        onClearChat={handleClearChat}
         receiver={receiver}
       />
     </div>
   );
 }
+
