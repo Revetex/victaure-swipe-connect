@@ -2,7 +2,7 @@
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { UserProfile, Certification, Experience } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 import { toast } from "sonner";
 import { generateVCardData } from "@/utils/profileActions";
 import { PublicProfileHeader } from "./public-profile/PublicProfileHeader";
@@ -40,21 +40,7 @@ export default function PublicProfile() {
           return;
         }
 
-        const transformedData: UserProfile = {
-          ...data,
-          certifications: data.certifications?.map((cert: any) => ({
-            ...cert,
-            institution: cert.issuer,
-            year: new Date(cert.issue_date).getFullYear().toString()
-          })) as Certification[],
-          experiences: data.experiences?.map((exp: any) => ({
-            ...exp,
-            created_at: new Date(exp.created_at),
-            updated_at: new Date(exp.updated_at)
-          })) as Experience[]
-        };
-
-        setProfile(transformedData);
+        setProfile(data);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
@@ -84,7 +70,6 @@ export default function PublicProfile() {
   };
 
   const handleDownloadBusinessCard = async () => {
-    // Logic for downloading the business card PDF
     toast.success("Carte professionnelle téléchargée");
   };
 
