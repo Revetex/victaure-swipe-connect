@@ -35,25 +35,24 @@ serve(async (req) => {
     if (!apiKey) throw new Error('Missing Hugging Face API key');
 
     // Générer le contexte basé sur le profil
-    const baseContext = `
-      En tant qu'assistant pour la recherche d'emploi, génère une suggestion de recherche utile et pertinente.
+    const baseContext = `<Instruction>En tant qu'assistant pour la recherche d'emploi, génère une suggestion de recherche utile et pertinente.
       
-      Contexte de l'utilisateur:
-      - Rôle: ${profile.role}
-      - Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
-      - Industrie: ${profile.industry || 'Non spécifiée'}
-      - Ville: ${profile.city || 'Non spécifié'}
-      - Province: ${profile.state || 'Non spécifiée'}
-      
-      Les suggestions doivent:
-      - Être en français
-      - Être pertinentes pour le secteur de la construction
-      - Inclure le lieu si spécifié dans le profil
-      - Utiliser les compétences de l'utilisateur
-      - Être spécifiques et ciblées
-      
-      Format souhaité: Une suggestion de recherche d'emploi complète
-    `;
+Tu dois générer UNE SEULE suggestion d'emploi basée sur ce profil:
+- Rôle actuel: ${profile.role}
+- Compétences: ${profile.skills?.join(', ') || 'Non spécifiées'}
+- Industrie: ${profile.industry || 'Non spécifiée'}
+- Ville: ${profile.city || 'Non spécifié'}
+- Province: ${profile.state || 'Non spécifiée'}
+
+Format:
+- Une seule ligne
+- En français
+- Pertinente pour le secteur de la construction
+- Inclut le lieu si spécifié dans le profil
+- Utilise les compétences appropriées
+- Spécifique et ciblée
+
+Réponse en une ligne directe sans explication.</Instruction>`;
 
     // Appel à l'API Hugging Face
     const response = await fetch(
@@ -86,31 +85,32 @@ serve(async (req) => {
     
     let suggestion = '';
     if (data && Array.isArray(data) && data[0]?.generated_text) {
-      // Nettoyer et formater la suggestion
+      // Nettoyer et formater la suggestion - prendre seulement la première ligne non vide
       suggestion = data[0].generated_text
         .split('\n')
-        .filter(line => line.trim())
-        .map(line => line.replace(/^[0-9.-\s]+/, '').trim())
-        .find(line => line.length > 0) || '';
+        .map(line => line.trim())
+        .filter(line => line.length > 0)[0] || '';
     }
 
     // Stocker la suggestion dans l'historique
-    await supabaseAdmin
-      .from('ai_learning_data')
-      .insert({
-        user_id: userId,
-        question: 'job_search_suggestion',
-        response: suggestion,
-        context: {
-          profile: {
-            role: profile.role,
-            skills: profile.skills,
-            location: profile.city,
-            industry: profile.industry
-          }
-        },
-        tags: ['job-search', 'suggestion']
-      });
+    if (suggestion) {
+      await supabaseAdmin
+        .from('ai_learning_data')
+        .insert({
+          user_id: userId,
+          question: 'job_search_suggestion',
+          response: suggestion,
+          context: {
+            profile: {
+              role: profile.role,
+              skills: profile.skills,
+              location: profile.city,
+              industry: profile.industry
+            }
+          },
+          tags: ['job-search', 'suggestion']
+        });
+    }
 
     return new Response(
       JSON.stringify({ suggestion }),
@@ -128,3 +128,4 @@ serve(async (req) => {
     );
   }
 });
+
