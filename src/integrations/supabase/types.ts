@@ -555,6 +555,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_job_transcriptions_job"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "job_transcriptions_job_id_fkey"
             columns: ["job_id"]
             isOneToOne: false
