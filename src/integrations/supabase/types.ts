@@ -240,6 +240,42 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          is_deleted: boolean | null
+          last_message: string | null
+          last_message_time: string | null
+          metadata: Json | null
+          participant1_id: string
+          participant2_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          last_message?: string | null
+          last_message_time?: string | null
+          metadata?: Json | null
+          participant1_id: string
+          participant2_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          last_message?: string | null
+          last_message_time?: string | null
+          metadata?: Json | null
+          participant1_id?: string
+          participant2_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       deleted_conversations: {
         Row: {
           conversation_partner_id: string
@@ -766,11 +802,13 @@ export type Database = {
       messages: {
         Row: {
           content: string
+          conversation_id: string | null
           created_at: string | null
           deleted_at: string | null
           edited_at: string | null
           id: string
           is_ai_message: boolean | null
+          is_deleted: boolean | null
           message_type: string | null
           metadata: Json | null
           reaction: string | null
@@ -782,11 +820,13 @@ export type Database = {
         }
         Insert: {
           content: string
+          conversation_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          is_deleted?: boolean | null
           message_type?: string | null
           metadata?: Json | null
           reaction?: string | null
@@ -798,11 +838,13 @@ export type Database = {
         }
         Update: {
           content?: string
+          conversation_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          is_deleted?: boolean | null
           message_type?: string | null
           metadata?: Json | null
           reaction?: string | null
@@ -813,6 +855,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "messages_receiver_id_fkey"
             columns: ["receiver_id"]
