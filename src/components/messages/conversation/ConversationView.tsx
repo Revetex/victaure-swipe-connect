@@ -73,7 +73,7 @@ export function ConversationView({
       />
       
       <ScrollArea 
-        className="flex-1 px-4"
+        className="flex-1 w-full"
         onScrollCapture={handleScroll}
       >
         <div className="space-y-4 py-4 mx-auto">
