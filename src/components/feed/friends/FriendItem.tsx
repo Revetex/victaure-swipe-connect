@@ -101,6 +101,7 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
               e.stopPropagation();
               onMessage(friend.id);
             }}
+            aria-label={`Envoyer un message à ${friend.full_name}`}
           >
             <MessageCircle className="h-4 w-4" />
           </Button>
@@ -109,6 +110,7 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
             size="icon"
             className="h-8 w-8"
             onClick={handleRemoveFriend}
+            aria-label={`Retirer ${friend.full_name} des connexions`}
           >
             <UserMinus className="h-4 w-4" />
           </Button>
@@ -117,6 +119,7 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
             size="icon"
             className="h-8 w-8"
             onClick={handleBlockUser}
+            aria-label={`Bloquer ${friend.full_name}`}
           >
             <UserX className="h-4 w-4" />
           </Button>

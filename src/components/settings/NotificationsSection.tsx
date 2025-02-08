@@ -22,6 +22,7 @@ export function NotificationsSection() {
           onCheckedChange={(checked) => {
             toast.success(`Notifications ${checked ? "activées" : "désactivées"}`);
           }}
+          aria-label="Activer ou désactiver les notifications"
         />
       </div>
     </Button>

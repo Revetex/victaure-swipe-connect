@@ -67,6 +67,7 @@ export function PrivacySection() {
         <Switch 
           checked={privacyEnabled}
           onCheckedChange={handlePrivacyToggle}
+          aria-label="Activer ou désactiver le mode privé"
         />
       </div>
     </Button>

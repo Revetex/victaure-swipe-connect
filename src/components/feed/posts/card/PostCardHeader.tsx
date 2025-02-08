@@ -51,6 +51,7 @@ export function PostCardHeader({
                   "text-primary hover:text-primary/90 hover:bg-primary/10",
                   "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
+                aria-label="Sauvegarder les modifications"
               >
                 <Save className="h-4 w-4" />
               </Button>
@@ -62,6 +63,7 @@ export function PostCardHeader({
                   "text-muted-foreground hover:text-foreground",
                   "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
+                aria-label="Annuler les modifications"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -76,6 +78,7 @@ export function PostCardHeader({
                   "text-primary hover:text-primary/90 hover:bg-primary/10",
                   "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
+                aria-label="Modifier la publication"
               >
                 <Edit2 className="h-4 w-4" />
               </Button>
@@ -87,6 +90,7 @@ export function PostCardHeader({
                   "text-destructive hover:text-destructive/90 hover:bg-destructive/10",
                   "min-h-[44px] min-w-[44px] touch-manipulation"
                 )}
+                aria-label="Supprimer la publication"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
