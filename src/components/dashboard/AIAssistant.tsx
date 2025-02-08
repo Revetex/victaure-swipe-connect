@@ -16,7 +16,7 @@ export function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
   const isMobile = useIsMobile();
 
   return (
-    <Card className={`w-full h-full flex flex-col ${isMobile ? 'rounded-none' : 'rounded-lg'}`}>
+    <Card className="fixed inset-0 z-[99999] flex flex-col bg-background/95 backdrop-blur-sm">
       {/* Header - Fixed */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b safe-top">
         <div className="p-3 sm:p-4">
