@@ -5,11 +5,10 @@ import { useJobsData } from "@/hooks/useJobsData";
 import type { ScrapedJobsListProps } from "@/types/jobs/types";
 import { JobCard } from "./JobCard";
 import type { Job } from "@/types/job";
-import { JobFilterUtils } from "./JobFilterUtils";
+import { JobFilterUtils, defaultFilters } from "./JobFilterUtils";
 import { useState } from "react";
 import { FilterSection } from "./filters/FilterSection";
 import { JobFiltersPanel } from "./JobFiltersPanel";
-import { defaultFilters } from "./JobFilterUtils";
 import { cn } from "@/lib/utils";
 
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
@@ -114,3 +113,4 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
     </div>
   );
 }
+

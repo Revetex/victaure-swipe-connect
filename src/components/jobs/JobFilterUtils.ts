@@ -1,6 +1,28 @@
 
 import { Job } from "@/types/job";
-import { JobFilters } from "@/types/filters";
+import { filterSchema } from "@/types/filters";
+import type { JobFilters } from "@/types/filters";
+
+export { JobFilters };
+
+export const defaultFilters: JobFilters = {
+  category: "all",
+  subcategory: "all",
+  duration: "all",
+  experienceLevel: "all",
+  location: "",
+  province: "all",
+  remoteType: "all",
+  minBudget: 300,
+  maxBudget: 1000,
+  skills: [],
+  searchTerm: "",
+  createdAfter: null,
+  createdBefore: null,
+  deadlineBefore: null,
+  search: "",
+  categories: [],
+};
 
 export class JobFilterUtils {
   static applyFilters(jobs: Job[], filters: JobFilters): Job[] {
@@ -51,23 +73,5 @@ export class JobFilterUtils {
       job.location.toLowerCase().includes(searchLower)
     );
   }
-
-  static readonly defaultFilters: JobFilters = {
-    category: "all",
-    subcategory: "all",
-    duration: "all",
-    experienceLevel: "all",
-    location: "",
-    province: "all",
-    remoteType: "all",
-    minBudget: 300,
-    maxBudget: 1000,
-    skills: [],
-    searchTerm: "",
-    createdAfter: null,
-    createdBefore: null,
-    deadlineBefore: null,
-    search: "",
-    categories: [],
-  };
 }
+

@@ -1,46 +1,17 @@
 
 import { useState } from "react";
-import { JobFilters } from "@/components/jobs/JobFilterUtils";
+import type { JobFilters } from "@/types/filters";
+import { defaultFilters } from "@/components/jobs/JobFilterUtils";
 
 export function useJobFilters() {
-  const [filters, setFilters] = useState<JobFilters>({
-    category: "all",
-    subcategory: "all",
-    duration: "all",
-    experienceLevel: "all",
-    location: "",
-    province: "all",
-    remoteType: "all",
-    minBudget: 300,
-    maxBudget: 1000,
-    skills: [],
-    searchTerm: "",
-    createdAfter: null,
-    createdBefore: null,
-    deadlineBefore: null,
-  });
+  const [filters, setFilters] = useState<JobFilters>(defaultFilters);
 
   const updateFilter = (key: keyof JobFilters, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const resetFilters = () => {
-    setFilters({
-      category: "all",
-      subcategory: "all",
-      duration: "all",
-      experienceLevel: "all",
-      location: "",
-      province: "all",
-      remoteType: "all",
-      minBudget: 300,
-      maxBudget: 1000,
-      skills: [],
-      searchTerm: "",
-      createdAfter: null,
-      createdBefore: null,
-      deadlineBefore: null,
-    });
+    setFilters(defaultFilters);
   };
 
   return {
@@ -49,3 +20,4 @@ export function useJobFilters() {
     resetFilters
   };
 }
+
