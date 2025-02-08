@@ -34,30 +34,36 @@ export default function PublicProfile() {
           .maybeSingle();
 
         if (error) throw error;
-
         if (!data) {
           setProfile(null);
           return;
         }
 
-        // Transform data to match the UserProfile interface
-        const transformedData = {
+        // Transform dates for experiences
+        const transformedExperiences = data.experiences?.map(exp => ({
+          ...exp,
+          created_at: exp.created_at ? new Date(exp.created_at) : null,
+          updated_at: exp.updated_at ? new Date(exp.updated_at) : null,
+          start_date: exp.start_date ? new Date(exp.start_date) : null,
+          end_date: exp.end_date ? new Date(exp.end_date) : null
+        }));
+
+        // Transform certifications
+        const transformedCertifications = data.certifications?.map(cert => ({
+          ...cert,
+          institution: cert.issuer,
+          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : ''
+        }));
+
+        // Build the complete profile object
+        const transformedProfile: UserProfile = {
           ...data,
-          certifications: data.certifications?.map((cert: any) => ({
-            ...cert,
-            institution: cert.issuer, // Map issuer to institution
-            year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : ''
-          })),
-          experiences: data.experiences?.map((exp: any) => ({
-            ...exp,
-            created_at: exp.created_at ? new Date(exp.created_at) : null,
-            updated_at: exp.updated_at ? new Date(exp.updated_at) : null,
-            start_date: exp.start_date || null,
-            end_date: exp.end_date || null
-          }))
+          experiences: transformedExperiences || [],
+          certifications: transformedCertifications || [],
+          education: data.education || []
         };
 
-        setProfile(transformedData as UserProfile);
+        setProfile(transformedProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
