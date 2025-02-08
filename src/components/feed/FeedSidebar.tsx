@@ -11,7 +11,6 @@ import { LogoutSection } from "@/components/settings/LogoutSection";
 import { ConnectionsSection } from "@/components/feed/friends/ConnectionsSection";
 import { motion } from "framer-motion";
 import { ToolsList } from "./sidebar/ToolsList";
-import { UserProfile } from "@/types/profile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FeedSidebarProps {
@@ -28,21 +27,17 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   };
 
   return (
-    <motion.div 
+    <div 
       className={cn(
-        "fixed top-16 left-0 w-[280px] h-[calc(100vh-4rem)] bg-background/95 backdrop-blur-sm border-r z-[99997]",
+        "w-full h-full bg-background",
         className
       )}
-      initial={{ x: -280 }}
-      animate={{ x: 0 }}
-      exit={{ x: -280 }}
-      transition={{ type: "spring", damping: 20, stiffness: 100 }}
     >
-      <ScrollArea className="h-full p-4">
-        <div className="space-y-6">
+      <ScrollArea className="h-full">
+        <div className="p-4 space-y-6">
           {/* Settings */}
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase">
+            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
               Paramètres
             </h3>
             <div className="space-y-1">
@@ -57,16 +52,21 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
 
           {/* Tools */}
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase">
+            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
               Outils
             </h3>
             <ToolsList onToolClick={handleToolClick} />
           </div>
 
           {/* Connections */}
-          <ConnectionsSection />
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
+              Connexions
+            </h3>
+            <ConnectionsSection />
+          </div>
         </div>
       </ScrollArea>
-    </motion.div>
+    </div>
   );
 }
