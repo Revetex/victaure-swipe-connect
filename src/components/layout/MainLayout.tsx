@@ -32,39 +32,8 @@ export function MainLayout({
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: {
-        duration: 0.3,
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    },
-    exit: { opacity: 0 }
-  };
-
-  const contentVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        delay: 0.2,
-        duration: 0.3
-      }
-    }
-  };
-
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      className="min-h-screen bg-background flex flex-col"
-    >
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="fixed top-0 left-0 right-0 z-[60] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-4">
@@ -107,8 +76,7 @@ export function MainLayout({
           </aside>
         )}
         
-        <motion.main 
-          variants={contentVariants}
+        <main 
           className={cn(
             "flex-1 relative",
             !isMobile && "md:ml-[280px] lg:ml-[320px]"
@@ -119,7 +87,7 @@ export function MainLayout({
           }}
         >
           {children}
-        </motion.main>
+        </main>
       </div>
 
       {!isFriendsPage && (
@@ -134,6 +102,6 @@ export function MainLayout({
           </div>
         </nav>
       )}
-    </motion.div>
+    </div>
   );
 }
