@@ -20,21 +20,30 @@ serve(async (req) => {
       throw new Error('Job ID and content are required')
     }
 
-    console.log('Initializing summarizer pipeline...')
+    console.log(`Starting summarization for job ${jobId}...`)
+    console.log('Content length:', jobContent.length)
+
     let summarizer;
     try {
+      console.log('Initializing pipeline with model: Xenova/distilbart-cnn-12-6')
       summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-12-6', {
+        revision: 'main',
         quantized: false,
         progress_callback: (progress) => {
-          console.log(`Loading model: ${Math.round(progress.progress * 100)}%`);
+          console.log(`Loading model: ${Math.round(progress.progress * 100)}%`)
         }
-      });
+      })
     } catch (e) {
-      console.error('Detailed pipeline error:', e);
-      throw new Error(`Failed to initialize summarization model: ${e.message}`);
+      console.error('Pipeline initialization error:', e)
+      console.error('Stack trace:', e.stack)
+      throw new Error(`Failed to initialize summarization model: ${e.message}`)
     }
 
-    console.log('Generating summary for job:', jobId)
+    if (!summarizer) {
+      throw new Error('Summarizer failed to initialize')
+    }
+
+    console.log('Generating summary...')
     const summary = await summarizer(jobContent, {
       max_length: 130,
       min_length: 30,
@@ -42,7 +51,11 @@ serve(async (req) => {
       truncation: true,
     })
 
-    console.log('Summary generated:', summary)
+    if (!summary || !summary[0]?.summary_text) {
+      throw new Error('Failed to generate summary')
+    }
+
+    console.log('Summary generated successfully')
 
     // Initialize Supabase client
     const supabaseAdmin = createClient(
@@ -66,16 +79,28 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ transcription: summary[0].summary_text }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     )
 
   } catch (error) {
     console.error('Error:', error)
+    console.error('Stack trace:', error.stack)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: error.stack
+      }),
       { 
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        }
       }
     )
   }
