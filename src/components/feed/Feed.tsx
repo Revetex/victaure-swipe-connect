@@ -7,7 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ChevronUp } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Suspense, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export function Feed() {
   const queryClient = useQueryClient();
@@ -42,14 +42,16 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-5rem)]"
+      className="h-[calc(100vh-4rem)]"
       onScroll={handleScroll}
     >
-      <CreatePost onPostCreated={handlePostCreated} />
-      <PostList 
-        onPostDeleted={handlePostDeleted}
-        onPostUpdated={handlePostUpdated}
-      />
+      <div className="max-w-3xl mx-auto px-4">
+        <CreatePost onPostCreated={handlePostCreated} />
+        <PostList 
+          onPostDeleted={handlePostDeleted}
+          onPostUpdated={handlePostUpdated}
+        />
+      </div>
 
       <AnimatePresence>
         {showScrollTop && (
@@ -62,7 +64,7 @@ export function Feed() {
               "fixed bg-primary/90 hover:bg-primary text-primary-foreground",
               "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
               "hover:scale-105 active:scale-95",
-              "min-h-[44px] min-w-[44px]",
+              "min-h-[44px] min-w-[44px] z-20",
               isMobile ? "bottom-24 right-4" : "bottom-8 right-4"
             )}
             aria-label="Retourner en haut"
