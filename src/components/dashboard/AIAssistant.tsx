@@ -15,9 +15,10 @@ import { useProfile } from "@/hooks/useProfile";
 
 interface AIAssistantProps {
   onClose: () => void;
+  conversations?: any[]; // Adding the conversations prop as optional
 }
 
-export function AIAssistant({ onClose }: AIAssistantProps) {
+export function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
