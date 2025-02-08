@@ -71,10 +71,10 @@ export function ConversationView({
         lastSeen={receiver.last_seen}
       />
       <ScrollArea 
-        className="flex-1 px-4 pb-32"
+        className="flex-1 px-4 pb-4 pt-2 overflow-hidden"
         onScrollCapture={handleScroll}
       >
-        <div className="space-y-4 py-4 mx-auto">
+        <div className="space-y-4 max-w-4xl mx-auto w-full">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
               <motion.div
@@ -114,7 +114,7 @@ export function ConversationView({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="absolute bottom-32 right-4 z-10"
+          className="absolute bottom-24 right-8 z-10"
         >
           <Button
             size="icon"
@@ -128,7 +128,7 @@ export function ConversationView({
       )}
 
       <div className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t">
-        <div className="p-4">
+        <div className="p-4 max-w-4xl mx-auto">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
