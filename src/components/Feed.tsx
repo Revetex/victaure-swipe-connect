@@ -40,7 +40,7 @@ export function Feed() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] bg-background/95 backdrop-blur relative pt-16">
+    <div className="min-h-[calc(100vh-8rem)] bg-background relative">
       <ScrollArea 
         ref={scrollRef} 
         className="h-[calc(100vh-8rem)] w-full max-w-3xl mx-auto px-4"
