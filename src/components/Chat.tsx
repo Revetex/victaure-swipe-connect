@@ -21,23 +21,22 @@ export function Chat() {
   return (
     <AnimatePresence>
       {(showWelcome || showChat) && (
-        <>
-          {/* Overlay that blocks navigation */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm isolate"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 999999 // Augmenté pour être sûr d'être au dessus de tout
-            }}
-          >
-            <div className="h-full w-full flex items-center justify-center p-8">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm isolate"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999999
+          }}
+        >
+          <div className="h-full w-full flex items-center justify-center p-8">
+            <AnimatePresence mode="wait">
               {showWelcome && (
                 <MrVictaureWelcome 
                   onDismiss={() => setShowWelcome(false)}
@@ -46,13 +45,18 @@ export function Chat() {
               )}
               
               {showChat && (
-                <div className="w-full h-full max-w-4xl mx-auto pb-8">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="w-full h-full max-w-4xl mx-auto pb-8"
+                >
                   <AIAssistant onClose={handleCloseChat} />
-                </div>
+                </motion.div>
               )}
-            </div>
-          </motion.div>
-        </>
+            </AnimatePresence>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
