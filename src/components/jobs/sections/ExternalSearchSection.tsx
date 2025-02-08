@@ -47,8 +47,9 @@ export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearc
   }, []);
 
   return (
-    <main className="min-h-screen w-full bg-gradient-to-br from-background via-background/95 to-background/90">
-      <div className="flex flex-col lg:flex-row gap-8 p-8">
+    <main className="min-h-screen bg-background relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90" />
+      <div className="relative z-10 flex flex-col lg:flex-row gap-8 p-8">
         {/* Sidebar avec filtres */}
         <aside className="w-full lg:w-80">
           <div className="sticky top-4 space-y-4">
