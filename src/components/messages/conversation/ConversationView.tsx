@@ -130,7 +130,7 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <footer className="flex-shrink-0 bg-background/95 backdrop-blur border-t z-[48]">
+      <footer className="flex-shrink-0 fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur border-t z-[48]">
         <div className="p-2">
           <ChatInput
             value={inputMessage}
@@ -146,3 +146,4 @@ export function ConversationView({
     </section>
   );
 }
+
