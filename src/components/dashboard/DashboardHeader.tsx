@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { FeedSidebar } from "../feed/FeedSidebar";
 import { Suspense } from "react";
+import { cn } from "@/lib/utils";
 
 export interface DashboardHeaderProps {
   title: string;
@@ -75,3 +76,4 @@ export function DashboardHeader({
     </div>
   );
 }
+
