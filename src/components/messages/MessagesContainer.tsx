@@ -31,62 +31,47 @@ export function MessagesContainer() {
   const { handleDeleteConversation } = useConversationDelete();
 
   const handleSelectConversation = (selectedReceiver: any) => {
-    try {
-      setReceiver(selectedReceiver);
-      setShowConversation(true);
-      setInputMessage('');
-    } catch (error) {
-      console.error("Erreur lors de la sélection de la conversation:", error);
-      toast.error("Impossible de charger la conversation");
-    }
+    setReceiver(selectedReceiver);
+    setShowConversation(true);
+    setInputMessage('');
   };
 
   const handleBack = () => {
-    try {
-      setShowConversation(false);
-      setReceiver(null);
-      setInputMessage('');
-    } catch (error) {
-      console.error("Erreur lors du retour à la liste:", error);
-      toast.error("Impossible de revenir à la liste des conversations");
-    }
+    setShowConversation(false);
+    setReceiver(null);
+    setInputMessage('');
   };
 
   const handleSendMessage = () => {
-    try {
-      if (!receiver) {
-        toast.error("Aucun destinataire sélectionné");
-        return;
-      }
-
-      if (!inputMessage.trim()) {
-        toast.error("Le message ne peut pas être vide");
-        return;
-      }
-
-      if (receiver.id === 'assistant') {
-        handleAISendMessage(inputMessage);
-      } else {
-        handleUserSendMessage(inputMessage, receiver);
-      }
-      
-      setInputMessage('');
-    } catch (error) {
-      console.error("Erreur lors de l'envoi du message:", error);
-      toast.error("Impossible d'envoyer le message");
+    if (!receiver) {
+      toast.error("Aucun destinataire sélectionné");
+      return;
     }
+
+    if (!inputMessage.trim()) {
+      toast.error("Le message ne peut pas être vide");
+      return;
+    }
+
+    if (receiver.id === 'assistant') {
+      handleAISendMessage(inputMessage);
+    } else {
+      handleUserSendMessage(inputMessage, receiver);
+    }
+    
+    setInputMessage('');
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-8rem)] bg-background pt-16">
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-background">
         <div className="text-muted-foreground">Chargement des messages...</div>
       </div>
     );
   }
 
   return (
-    <Card className="min-h-[calc(100vh-8rem)] h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background relative">
+    <Card className="h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] flex flex-col bg-background relative">
       {showConversation && receiver ? (
         <ConversationView
           receiver={receiver}

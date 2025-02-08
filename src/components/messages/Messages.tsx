@@ -1,6 +1,6 @@
 
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { MessagesContainer } from "./messages/MessagesContainer";
+import { MessagesContainer } from "./MessagesContainer";
 
 const queryClient = new QueryClient();
 
