@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 
@@ -27,9 +28,9 @@ export function DashboardMain({ children }: DashboardMainProps) {
   return (
     <motion.main 
       variants={mainVariants}
-      className="flex-1 container mx-auto px-4 relative z-0"
+      className="flex-1 w-full px-4 sm:px-6 lg:px-8 overflow-x-hidden"
     >
-      <div className="max-w-7xl mx-auto py-4">
+      <div className="w-full max-w-7xl mx-auto py-4 sm:py-6">
         {children}
       </div>
     </motion.main>
