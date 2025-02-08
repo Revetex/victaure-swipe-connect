@@ -21,13 +21,26 @@ serve(async (req) => {
     }
 
     console.log('Initializing summarizer pipeline...')
-    const summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6')
+    // Configuration spécifique pour Deno
+    let summarizer;
+    try {
+      summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6', {
+        quantized: false, // Désactiver la quantification
+        progress_callback: (progress) => {
+          console.log(`Loading model: ${Math.round(progress.progress * 100)}%`);
+        }
+      });
+    } catch (e) {
+      console.error('Error initializing pipeline:', e);
+      throw new Error('Failed to initialize summarization model');
+    }
 
     console.log('Generating summary for job:', jobId)
     const summary = await summarizer(jobContent, {
       max_length: 130,
       min_length: 30,
-      do_sample: false
+      do_sample: false,
+      truncation: true
     })
 
     console.log('Summary generated:', summary)
@@ -45,6 +58,7 @@ serve(async (req) => {
         job_id: jobId,
         ai_transcription: summary[0].summary_text
       })
+      .select()
 
     if (insertError) {
       console.error('Error inserting summary:', insertError)
@@ -67,3 +81,4 @@ serve(async (req) => {
     )
   }
 })
+
