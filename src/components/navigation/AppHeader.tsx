@@ -61,7 +61,7 @@ export function AppHeader({
             </SheetTrigger>
             <SheetContent 
               side="left" 
-              className="w-screen sm:w-[350px] p-0 z-[99998]"
+              className="w-[90vw] sm:w-[400px] md:w-[450px] p-0 z-[99998] overflow-hidden"
             >
               <FeedSidebar className="border-none" />
             </SheetContent>
