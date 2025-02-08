@@ -2,17 +2,21 @@
 import { Lock } from "lucide-react";
 import { SettingsSection } from "./SettingsSection";
 import { PasswordChangeSection } from "./PasswordChangeSection";
+import { motion } from "framer-motion";
 
 export function SecuritySection() {
   return (
     <SettingsSection title="Sécurité">
-      <div className="space-y-3 p-3 rounded-lg bg-muted/30">
-        <div className="flex items-center gap-2 text-foreground/80">
-          <Lock className="h-4 w-4" />
-          <h3 className="text-sm font-medium">Mot de passe</h3>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="w-full space-y-1"
+      >
+        <div className="p-2 rounded-lg transition-colors hover:bg-accent">
+          <PasswordChangeSection />
         </div>
-        <PasswordChangeSection />
-      </div>
+      </motion.div>
     </SettingsSection>
   );
 }

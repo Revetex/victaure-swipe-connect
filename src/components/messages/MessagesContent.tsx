@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface MessagesContentProps {
   messages: Message[];
@@ -47,8 +48,8 @@ export function MessagesContent({
           table: 'messages',
           filter: `receiver_id=eq.${receiver.id}`
         },
-        () => {
-          console.log('New message received');
+        (payload) => {
+          console.log('New message received:', payload);
           if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
           }
@@ -71,27 +72,15 @@ export function MessagesContent({
     try {
       if (!receiver) return;
 
-      if (receiver.id === 'assistant') {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("User not authenticated");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
 
-        const { error } = await supabase
-          .from('ai_chat_messages')
-          .delete()
-          .eq('user_id', user.id);
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
-        if (error) throw error;
-      } else {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("User not authenticated");
-
-        const { error } = await supabase
-          .from('messages')
-          .delete()
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
-
-        if (error) throw error;
-      }
+      if (error) throw error;
 
       onClearChat();
       onBack?.();
@@ -106,20 +95,37 @@ export function MessagesContent({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <ConversationView
-        receiver={receiver}
-        messages={messages}
-        inputMessage={inputMessage}
-        isListening={isListening}
-        isThinking={isThinking}
-        onInputChange={setInputMessage}
-        onSendMessage={() => onSendMessage(inputMessage)}
-        onVoiceInput={onVoiceInput}
-        onBack={onBack || (() => {})}
-        onDeleteConversation={handleDelete}
-        messagesEndRef={messagesEndRef}
-      />
-    </div>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col h-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="conversation"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1"
+        >
+          <ConversationView
+            receiver={receiver}
+            messages={messages}
+            inputMessage={inputMessage}
+            isListening={isListening}
+            isThinking={isThinking}
+            onInputChange={setInputMessage}
+            onSendMessage={() => onSendMessage(inputMessage)}
+            onVoiceInput={onVoiceInput}
+            onBack={onBack || (() => {})}
+            onDeleteConversation={handleDelete}
+            messagesEndRef={messagesEndRef}
+          />
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
   );
 }

@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
@@ -33,18 +34,19 @@ export function DashboardNavigation({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: id * 0.1 }}
               className={cn(
-                "p-3 rounded-xl transition-all duration-300",
+                "w-16 h-16 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-1",
                 "hover:bg-primary/10 active:scale-95",
                 "focus:outline-none focus:ring-2 focus:ring-primary/20",
-                "touch-manipulation min-h-[44px] min-w-[44px]",
+                "touch-manipulation",
                 currentPage === id
-                  ? "bg-primary text-primary-foreground shadow-lg"
+                  ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-primary"
               )}
               title={name}
               aria-label={name}
             >
               <Icon className="h-5 w-5" />
+              <span className="text-xs font-medium">{name}</span>
             </motion.button>
           ))}
         </div>

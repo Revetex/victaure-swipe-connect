@@ -34,46 +34,13 @@ export const useReactions = ({
     }
 
     try {
-      // First, check if the user has already reacted
-      const { data: existingReaction } = await supabase
-        .from('post_reactions')
-        .select('*')
-        .eq('post_id', postId)
-        .eq('user_id', currentUserId)
-        .maybeSingle();
+      const { error } = await supabase.rpc('handle_post_reaction', {
+        p_post_id: postId,
+        p_user_id: currentUserId,
+        p_reaction_type: type
+      });
 
-      let action: 'insert' | 'delete' | 'update' = 'insert';
-      
-      if (existingReaction) {
-        if (existingReaction.reaction_type === type) {
-          action = 'delete';
-        } else {
-          action = 'update';
-        }
-      }
-
-      // Perform the appropriate action
-      if (action === 'delete') {
-        await supabase
-          .from('post_reactions')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', currentUserId);
-      } else if (action === 'update') {
-        await supabase
-          .from('post_reactions')
-          .update({ reaction_type: type })
-          .eq('post_id', postId)
-          .eq('user_id', currentUserId);
-      } else {
-        await supabase
-          .from('post_reactions')
-          .insert({
-            post_id: postId,
-            user_id: currentUserId,
-            reaction_type: type
-          });
-      }
+      if (error) throw error;
 
       // Update the likes/dislikes count in the posts table
       const { data: reactions } = await supabase
@@ -95,7 +62,7 @@ export const useReactions = ({
       // Call the appropriate callback
       if (type === 'like') {
         onLike();
-        if (action !== 'delete' && postAuthorId !== currentUserId) {
+        if (postAuthorId !== currentUserId) {
           await createNotification(
             postAuthorId,
             'Nouveau j\'aime',
@@ -104,7 +71,7 @@ export const useReactions = ({
         }
       } else {
         onDislike();
-        if (action !== 'delete' && postAuthorId !== currentUserId) {
+        if (postAuthorId !== currentUserId) {
           await createNotification(
             postAuthorId,
             'Nouveau je n\'aime pas',
@@ -114,10 +81,8 @@ export const useReactions = ({
       }
 
       toast({
-        title: action === 'delete' ? "Réaction supprimée" : "Réaction ajoutée",
-        description: action === 'delete' ? 
-          "Votre réaction a été supprimée" : 
-          `Vous avez ${type === 'like' ? 'aimé' : 'pas aimé'} cette publication`,
+        title: "Réaction ajoutée",
+        description: `Vous avez ${type === 'like' ? 'aimé' : 'pas aimé'} cette publication`,
       });
 
     } catch (error) {

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -27,17 +28,14 @@ export function useAuth() {
       setState(prev => ({ ...prev, isLoading: true }));
       toast.loading("Déconnexion en cours...");
       
-      // First clear all local storage
       clearStorages();
       
-      // Then sign out from Supabase
       const { error: signOutError } = await supabase.auth.signOut({
         scope: 'global'
       });
       
       if (signOutError) throw signOutError;
       
-      // Update local state
       setState({
         isLoading: false,
         isAuthenticated: false,
@@ -45,7 +43,6 @@ export function useAuth() {
         user: null
       });
 
-      // Show success toast and redirect
       toast.dismiss();
       toast.success("Déconnexion réussie");
       navigate('/auth');

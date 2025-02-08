@@ -1,14 +1,15 @@
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
-import { Messages } from "@/components/messages/Messages";
+import { Messages } from "@/components/Messages";
 import { Marketplace } from "@/components/Marketplace";
-import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
 import { Feed } from "@/components/Feed";
-import { useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { useUserSettings } from "@/hooks/useUserSettings";
+import { useEffect, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
+import { ErrorBoundary } from "react-error-boundary";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -18,14 +19,64 @@ interface DashboardContentProps {
   onRequestChat: () => void;
 }
 
-const menuPages = {
-  PROFILE: 1,
-  MESSAGES: 2,
-  MARKETPLACE: 3,
-  FEED: 4,
-  NOTES: 5,
-  SETTINGS: 6,
-} as const;
+function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+  return (
+    <Alert variant="destructive" className="m-4">
+      <AlertTitle>Une erreur est survenue</AlertTitle>
+      <AlertDescription className="mt-2">
+        <p className="mb-4">{error.message}</p>
+        <button
+          onClick={resetErrorBoundary}
+          className="bg-destructive/10 text-destructive px-4 py-2 rounded-md hover:bg-destructive/20 transition-colors"
+        >
+          Réessayer
+        </button>
+      </AlertDescription>
+    </Alert>
+  );
+}
+
+const LoadingSkeleton = () => (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.2 }}
+    className="space-y-4 p-4"
+  >
+    <Skeleton className="h-12 w-full" />
+    <Skeleton className="h-32 w-full" />
+    <Skeleton className="h-8 w-3/4" />
+    <Skeleton className="h-8 w-1/2" />
+  </motion.div>
+);
+
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    x: 20,
+    scale: 0.95
+  },
+  animate: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+      mass: 0.8
+    }
+  },
+  exit: {
+    opacity: 0,
+    x: -20,
+    scale: 0.95,
+    transition: {
+      duration: 0.2
+    }
+  }
+};
 
 export function DashboardContent({
   currentPage,
@@ -34,100 +85,69 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {
-  const { navPreferences } = useUserSettings();
-  
-  useEffect(() => {
-    if (currentPage === menuPages.NOTES) {
-      onEditStateChange(true);
-    }
-  }, [currentPage, onEditStateChange]);
+  const { toast } = useToast();
 
   const renderContent = () => {
-    // Check if hidden_items is defined and is an array before using includes
-    const isPageHidden = navPreferences?.hidden_items && 
-      Array.isArray(navPreferences.hidden_items) && 
-      navPreferences.hidden_items.includes(currentPage.toString());
-
-    // If page is hidden in user preferences, return null
-    if (isPageHidden) {
+    try {
+      switch (currentPage) {
+        case 1:
+          return (
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<LoadingSkeleton />}>
+                <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+              </Suspense>
+            </ErrorBoundary>
+          );
+        case 2:
+          return (
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<LoadingSkeleton />}>
+                <Messages />
+              </Suspense>
+            </ErrorBoundary>
+          );
+        case 3:
+          return (
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<LoadingSkeleton />}>
+                <Marketplace />
+              </Suspense>
+            </ErrorBoundary>
+          );
+        case 4:
+          return (
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<LoadingSkeleton />}>
+                <Feed />
+              </Suspense>
+            </ErrorBoundary>
+          );
+        default:
+          return null;
+      }
+    } catch (error) {
+      console.error("Content rendering error:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur de chargement",
+        description: "Une erreur est survenue lors du chargement du contenu."
+      });
       return null;
-    }
-
-    switch (currentPage) {
-      case menuPages.PROFILE:
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full"
-          >
-            <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
-          </motion.div>
-        );
-      case menuPages.MESSAGES:
-        return (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full"
-          >
-            <Messages />
-          </motion.div>
-        );
-      case menuPages.MARKETPLACE:
-        return (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="w-full"
-          >
-            <Marketplace />
-          </motion.div>
-        );
-      case menuPages.FEED:
-        return (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="w-full"
-          >
-            <Feed />
-          </motion.div>
-        );
-      case menuPages.NOTES:
-        return (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={cn("h-full", isEditing && "bg-background/95 backdrop-blur-sm")}
-          >
-            <NotesMap />
-          </motion.div>
-        );
-      case menuPages.SETTINGS:
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full"
-          >
-            <Settings />
-          </motion.div>
-        );
-      default:
-        return null;
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="w-full"
-    >
-      {renderContent()}
-    </motion.div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={currentPage}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="w-full"
+      >
+        {renderContent()}
+      </motion.div>
+    </AnimatePresence>
   );
 }

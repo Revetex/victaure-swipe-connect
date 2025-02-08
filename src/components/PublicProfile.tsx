@@ -1,8 +1,7 @@
-
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, Certification, Experience } from "@/types/profile";
 import { toast } from "sonner";
 import { generateVCardData } from "@/utils/profileActions";
 import { PublicProfileHeader } from "./public-profile/PublicProfileHeader";
@@ -18,10 +17,6 @@ export default function PublicProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        if (!id) {
-          throw new Error("No profile ID provided");
-        }
-
         const { data, error } = await supabase
           .from('profiles')
           .select(`
@@ -31,39 +26,25 @@ export default function PublicProfile() {
             certifications (*)
           `)
           .eq('id', id)
-          .maybeSingle();
+          .single();
 
         if (error) throw error;
-        if (!data) {
-          setProfile(null);
-          return;
-        }
 
-        // Transform dates for experiences
-        const transformedExperiences = data.experiences?.map(exp => ({
-          ...exp,
-          created_at: exp.created_at ? new Date(exp.created_at) : null,
-          updated_at: exp.updated_at ? new Date(exp.updated_at) : null,
-          start_date: exp.start_date ? new Date(exp.start_date) : null,
-          end_date: exp.end_date ? new Date(exp.end_date) : null
-        }));
-
-        // Transform certifications
-        const transformedCertifications = data.certifications?.map(cert => ({
-          ...cert,
-          institution: cert.issuer,
-          year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : ''
-        }));
-
-        // Build the complete profile object
-        const transformedProfile: UserProfile = {
+        const transformedData: UserProfile = {
           ...data,
-          experiences: transformedExperiences || [],
-          certifications: transformedCertifications || [],
-          education: data.education || []
+          certifications: data.certifications?.map((cert: any) => ({
+            ...cert,
+            institution: cert.issuer,
+            year: new Date(cert.issue_date).getFullYear().toString()
+          })) as Certification[],
+          experiences: data.experiences?.map((exp: any) => ({
+            ...exp,
+            created_at: new Date(exp.created_at),
+            updated_at: new Date(exp.updated_at)
+          })) as Experience[]
         };
 
-        setProfile(transformedProfile);
+        setProfile(transformedData);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
@@ -93,6 +74,7 @@ export default function PublicProfile() {
   };
 
   const handleDownloadBusinessCard = async () => {
+    // Logic for downloading the business card PDF
     toast.success("Carte professionnelle téléchargée");
   };
 

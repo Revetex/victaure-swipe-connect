@@ -57,15 +57,17 @@ export function Feed() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full flex bg-background/95 backdrop-blur-sm min-h-screen relative"
+      className="w-full flex bg-background/95 backdrop-blur-sm min-h-screen"
     >
       {!isMobile && (
         <Suspense fallback={null}>
-          <FeedSidebar />
+          <div className="w-[280px] flex-shrink-0">
+            <FeedSidebar />
+          </div>
         </Suspense>
       )}
       
-      <div className="flex-1 relative">
+      <div className="flex-1 pl-4">
         <ScrollArea 
           ref={scrollRef} 
           className={cn(
@@ -87,7 +89,7 @@ export function Feed() {
                 isMobile && "border-b"
               )}
               style={{
-                position: '-webkit-sticky', // Pour le support iOS
+                position: '-webkit-sticky',
                 top: 0
               }}
             >

@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -5,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { UserX } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SettingsSection } from "./SettingsSection";
+import { useState } from "react";
 
 export function BlockedUsersSection() {
+  const [isExpanded, setIsExpanded] = useState(false);
   const { data: blockedUsers, refetch } = useQuery({
     queryKey: ["blocked-users"],
     queryFn: async () => {
@@ -50,39 +54,56 @@ export function BlockedUsersSection() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <UserX className="h-4 w-4" />
-        <h3 className="text-sm font-medium">Utilisateurs bloqués</h3>
-      </div>
+    <SettingsSection title="Utilisateurs bloqués">
+      <div className="w-full">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full justify-start gap-2 h-8 px-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <UserX className="h-4 w-4" />
+          <span className="flex-1 text-left">Utilisateurs bloqués</span>
+          <span className="text-xs text-muted-foreground">
+            {blockedUsers?.length || 0}
+          </span>
+        </Button>
 
-      <ScrollArea className="h-[200px]">
-        <div className="space-y-2">
-          {blockedUsers?.map((item) => (
-            <div key={item.blocked.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={item.blocked.avatar_url || ''} />
-                  <AvatarFallback>{item.blocked.full_name?.[0]}</AvatarFallback>
-                </Avatar>
-                <span className="text-sm">{item.blocked.full_name}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
-              >
-                Débloquer
-              </Button>
+        {isExpanded && (
+          <ScrollArea className="h-[180px] w-full mt-2 rounded-md border border-border/50 bg-muted/30">
+            <div className="p-2 space-y-1">
+              {blockedUsers?.map((item) => (
+                <div 
+                  key={item.blocked.id} 
+                  className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50"
+                >
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={item.blocked.avatar_url || ''} />
+                      <AvatarFallback>{item.blocked.full_name?.[0]}</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm text-muted-foreground">{item.blocked.full_name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleUnblock(item.blocked.id, item.blocked.full_name)}
+                    className="h-7 px-2 text-xs"
+                  >
+                    Débloquer
+                  </Button>
+                </div>
+              ))}
+              {(!blockedUsers || blockedUsers.length === 0) && (
+                <p className="text-center text-sm text-muted-foreground py-4">
+                  Aucun utilisateur bloqué
+                </p>
+              )}
             </div>
-          ))}
-          {(!blockedUsers || blockedUsers.length === 0) && (
-            <p className="text-center text-sm text-muted-foreground py-4">
-              Aucun utilisateur bloqué
-            </p>
-          )}
-        </div>
-      </ScrollArea>
-    </div>
+          </ScrollArea>
+        )}
+      </div>
+    </SettingsSection>
   );
 }
+

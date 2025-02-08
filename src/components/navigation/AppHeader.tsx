@@ -1,9 +1,13 @@
+
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
-import { Menu, ArrowLeft } from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { FeedSidebar } from "@/components/feed/FeedSidebar";
 
 export interface AppHeaderProps {
   title: string;
@@ -15,32 +19,24 @@ export interface AppHeaderProps {
 
 export function AppHeader({
   title,
-  showFriendsList,
-  onToggleFriendsList,
   isEditing,
-  onToolReturn
 }: AppHeaderProps) {
+  const isMobile = useIsMobile();
+  
+  // Hide header if any parent element has z-index 99999 (chat overlay)
+  const overlayElement = document.querySelector('[style*="z-index: 99999"]');
+  if (overlayElement) return null;
+
   return (
-    <div className="sticky top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-      <div className="flex items-center justify-between p-4 max-w-[2000px] mx-auto">
+    <div className="sticky top-0 left-0 right-0 w-full border-b bg-background z-50">
+      <div className="flex items-center justify-between px-4 h-16 max-w-[2000px] mx-auto">
         <motion.div 
           className="flex items-center gap-6"
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          {onToolReturn ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToolReturn}
-              className="mr-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          ) : (
-            <Logo size="lg" />
-          )}
+          <Logo size="lg" />
           <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
         </motion.div>
         
@@ -51,21 +47,25 @@ export function AppHeader({
           transition={{ duration: 0.3 }}
         >
           <NotificationsBox />
-          {!isEditing && (
-            <Button
-              variant="outline"
-              onClick={onToggleFriendsList}
-              className={cn(
-                "flex items-center gap-2 text-sm sm:text-base",
-                "transition-all duration-300",
-                "hover:bg-primary/10 hover:text-primary",
-                showFriendsList ? 'bg-primary/5 text-primary' : ''
-              )}
-              size="sm"
-            >
-              <Menu className="h-4 w-4" />
-              <span className="hidden sm:inline">Amis</span>
-            </Button>
+          {isMobile && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className={cn(
+                    "text-primary hover:bg-primary/5",
+                    "transition-all duration-300",
+                    "active:scale-95 touch-none"
+                  )}
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[85vw] sm:w-[380px] p-0">
+                <FeedSidebar className="border-none" />
+              </SheetContent>
+            </Sheet>
           )}
         </motion.div>
       </div>

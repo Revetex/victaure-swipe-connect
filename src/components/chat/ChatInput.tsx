@@ -28,7 +28,7 @@ export function ChatInput({
   disabled = false
 }: ChatInputProps) {
   return (
-    <div className={`relative flex items-end gap-2 ${className}`}>
+    <div className={`relative flex items-end gap-2 ${className} z-[100]`}>
       <div className="relative flex-1">
         <Textarea
           value={value}

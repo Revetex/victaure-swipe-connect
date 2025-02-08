@@ -1,23 +1,22 @@
 
 import { Bell } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { SettingsSection } from "./SettingsSection";
 
 export function NotificationsSection() {
   return (
-    <SettingsSection title="Notifications">
-      <div className={cn(
-        "flex items-center justify-between p-3 rounded-lg bg-muted/30",
-        "hover:bg-muted/50 dark:hover:bg-muted/40 transition-colors",
-        "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
-      )}>
-        <Label className="text-sm cursor-pointer flex items-center gap-2 text-foreground/80">
+    <Button
+      variant="ghost"
+      size="sm"
+      className="w-full justify-between px-2 h-9"
+      asChild
+    >
+      <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <Bell className="h-4 w-4" />
-          Notifications
-        </Label>
+          <span className="text-sm">Notifications</span>
+        </div>
         <Switch 
           defaultChecked 
           onCheckedChange={(checked) => {
@@ -25,6 +24,6 @@ export function NotificationsSection() {
           }}
         />
       </div>
-    </SettingsSection>
+    </Button>
   );
 }

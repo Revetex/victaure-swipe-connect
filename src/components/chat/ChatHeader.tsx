@@ -1,3 +1,4 @@
+
 import { ArrowLeft, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
@@ -26,7 +27,7 @@ export function ChatHeader({
   isThinking
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center gap-4 p-4 border-b">
+    <div className="h-16 flex items-center gap-4 p-4 border-b bg-background">
       <Button
         variant="ghost"
         size="icon"

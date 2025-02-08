@@ -9,7 +9,6 @@ export interface ChatMessage {
   sender: 'user' | 'assistant';
   user_id: string;
   created_at: string;
-  updated_at: string;
 }
 
 export function useRealtimeChat() {
@@ -28,7 +27,16 @@ export function useRealtimeChat() {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      setMessages(data as ChatMessage[]);
+
+      const typedMessages: ChatMessage[] = data.map(msg => ({
+        id: msg.id,
+        content: msg.content,
+        sender: msg.sender as 'user' | 'assistant',
+        user_id: msg.user_id,
+        created_at: msg.created_at
+      }));
+
+      setMessages(typedMessages);
     } catch (error) {
       console.error('Error loading messages:', error);
       toast.error("Erreur lors du chargement des messages");
@@ -38,19 +46,32 @@ export function useRealtimeChat() {
   };
 
   const subscribeToMessages = () => {
-    return supabase
+    const channel = supabase
       .channel('ai_chat_messages')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'ai_chat_messages' },
-        loadMessages
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ai_chat_messages'
+        },
+        (payload) => {
+          console.log('New message received:', payload);
+          loadMessages();
+        }
       )
       .subscribe();
+
+    return channel;
   };
 
   useEffect(() => {
     loadMessages();
     const channel = subscribeToMessages();
-    return () => { supabase.removeChannel(channel); };
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const addMessage = async (content: string, sender: 'user' | 'assistant') => {
@@ -61,13 +82,11 @@ export function useRealtimeChat() {
         return null;
       }
 
-      const message: ChatMessage = {
+      const message = {
         id: crypto.randomUUID(),
         content,
         sender,
         user_id: user.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
       };
 
       const { data, error } = await supabase
@@ -77,7 +96,8 @@ export function useRealtimeChat() {
         .single();
 
       if (error) throw error;
-      return data as ChatMessage;
+
+      return data;
     } catch (error) {
       console.error('Error adding message:', error);
       toast.error("Une erreur est survenue lors de l'envoi du message");
@@ -85,6 +105,10 @@ export function useRealtimeChat() {
     }
   };
 
-  return { messages, isLoading, addMessage, setMessages };
+  return {
+    messages,
+    isLoading,
+    addMessage,
+    setMessages
+  };
 }
-
