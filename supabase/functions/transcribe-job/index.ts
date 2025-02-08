@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { pipeline } from "@huggingface/transformers"
+import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.15.1"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
@@ -21,16 +21,9 @@ serve(async (req) => {
     }
 
     console.log('Initializing summarizer pipeline...')
-    const summarizer = await pipeline(
-      "summarization",
-      "facebook/bart-large-cnn",
-      {
-        revision: "main",
-        quantized: true // Use quantized model for better performance
-      }
-    )
+    const summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6')
 
-    console.log('Generating summary...')
+    console.log('Generating summary for job:', jobId)
     const summary = await summarizer(jobContent, {
       max_length: 130,
       min_length: 30,
