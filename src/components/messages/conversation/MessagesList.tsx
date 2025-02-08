@@ -95,10 +95,13 @@ export function MessagesList({
               sender={typeof message.sender === 'string' ? {
                 id: message.sender_id,
                 full_name: message.sender,
-                avatar_url: ''
+                avatar_url: '',
+                online_status: false,
+                last_seen: new Date().toISOString()
               } : message.sender}
               created_at={message.created_at}
               read={message.read}
+              status={message.status}
               onMarkAsRead={handleMarkAsRead}
             />
           ))}
@@ -113,3 +116,4 @@ export function MessagesList({
     </div>
   );
 }
+
