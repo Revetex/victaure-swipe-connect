@@ -1,4 +1,3 @@
-
 import { Message, Receiver } from "@/types/messages"; 
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { ChatInput } from "@/components/chat/ChatInput";
@@ -131,7 +130,7 @@ export function ConversationView({
       )}
 
       <footer className="flex-shrink-0 bg-background/95 backdrop-blur border-t z-[48]">
-        <div className="p-4">
+        <div className="p-2">
           <ChatInput
             value={inputMessage}
             onChange={onInputChange}
@@ -146,4 +145,3 @@ export function ConversationView({
     </section>
   );
 }
-
