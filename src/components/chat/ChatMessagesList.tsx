@@ -48,6 +48,8 @@ export function ChatMessagesList({
                 content={message.content}
                 sender={message.sender_id === 'assistant' ? 'assistant' : 'user'}
                 timestamp={message.created_at}
+                status={message.status}
+                reaction={message.reaction}
               />
             </motion.div>
           ))}

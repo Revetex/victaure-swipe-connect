@@ -102,7 +102,7 @@ export function MainLayout({
 
       <div className="flex flex-1 pt-16">
         {!isMobile && (
-          <aside className="w-[280px] lg:w-[320px] hidden md:block border-r bg-card/50 backdrop-blur-sm fixed left-0 h-[calc(100vh-4rem)] top-16">
+          <aside className="w-[280px] lg:w-[320px] hidden md:block border-r bg-card/50 backdrop-blur-sm fixed left-0 h-[calc(100vh-4rem)] top-16 z-30">
             <Navigation />
           </aside>
         )}
@@ -110,7 +110,7 @@ export function MainLayout({
         <motion.main 
           variants={contentVariants}
           className={cn(
-            "flex-1",
+            "flex-1 relative",
             !isMobile && "md:ml-[280px] lg:ml-[320px]"
           )}
           style={{ 

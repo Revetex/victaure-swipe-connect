@@ -18,7 +18,6 @@ export function ChatInterface() {
   const { profile } = useProfile();
   const { messages, handleSendMessage: sendMessage } = useUserChat();
 
-  // Scroll automatique aux nouveaux messages
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -94,7 +93,7 @@ export function ChatInterface() {
         )}
       </AnimatePresence>
 
-      <div className="p-4 border-t">
+      <div className="p-4 border-t bg-background/95 backdrop-blur-sm sticky bottom-0 z-50">
         <ChatInput
           value={input}
           onChange={setInput}

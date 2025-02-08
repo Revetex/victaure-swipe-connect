@@ -98,6 +98,8 @@ export function ConversationView({
                   sender={message.sender_id === receiver.id ? "assistant" : "user"}
                   timestamp={message.created_at}
                   isRead={message.read}
+                  status={message.status}
+                  reaction={message.reaction}
                 />
               </motion.div>
             ))}
