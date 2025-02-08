@@ -36,6 +36,8 @@ export function ChatHeader({
         size="icon"
         onClick={onBack}
         className="shrink-0"
+        title="Retour"
+        aria-label="Retour à la liste des conversations"
       >
         <ArrowLeft className="h-5 w-5" />
       </Button>
@@ -63,7 +65,12 @@ export function ChatHeader({
       {onDelete && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              title="Options de conversation"
+              aria-label="Ouvrir les options de conversation"
+            >
               <MoreVertical className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>

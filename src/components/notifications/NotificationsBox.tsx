@@ -19,6 +19,8 @@ export function NotificationsBox() {
         size="icon"
         className="relative hover:bg-muted/50"
         onClick={() => setIsOpen(!isOpen)}
+        title="Notifications"
+        aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} non lues)` : ''}`}
       >
         <Bell className="h-5 w-5" />
         <AnimatePresence>
