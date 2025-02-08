@@ -40,36 +40,18 @@ export function Feed() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] bg-background relative">
-      <ScrollArea 
-        ref={scrollRef} 
-        className="h-[calc(100vh-8rem)] w-full max-w-3xl mx-auto px-4"
-        onScroll={handleScroll}
-      >
-        <div className="py-4">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm py-3"
-          >
-            <CreatePost onPostCreated={handlePostCreated} />
-          </motion.div>
-          
-          <Suspense 
-            fallback={
-              <div className="flex items-center justify-center py-6">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            }
-          >
-            <PostList 
-              onPostDeleted={handlePostDeleted}
-              onPostUpdated={handlePostUpdated}
-            />
-          </Suspense>
-        </div>
-      </ScrollArea>
+    <ScrollArea 
+      ref={scrollRef} 
+      className="h-[calc(100vh-8rem)] w-full"
+      onScroll={handleScroll}
+    >
+      <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
+        <CreatePost onPostCreated={handlePostCreated} />
+        <PostList 
+          onPostDeleted={handlePostDeleted}
+          onPostUpdated={handlePostUpdated}
+        />
+      </div>
 
       <AnimatePresence>
         {showScrollTop && (
@@ -83,7 +65,7 @@ export function Feed() {
               "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
               "hover:scale-105 active:scale-95",
               "min-h-[44px] min-w-[44px] z-20",
-              isMobile ? "bottom-24 right-4" : "bottom-20 right-4"
+              isMobile ? "bottom-24 right-4" : "bottom-8 right-4"
             )}
             aria-label="Retourner en haut"
           >
@@ -91,6 +73,6 @@ export function Feed() {
           </motion.button>
         )}
       </AnimatePresence>
-    </div>
+    </ScrollArea>
   );
 }
