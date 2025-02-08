@@ -59,7 +59,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-full">
       <SearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
