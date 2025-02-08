@@ -30,6 +30,8 @@ export function MessagesContainer() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { handleDeleteConversation } = useConversationDelete();
 
+  console.log("Messages Container - User Messages:", userMessages);
+
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
     setShowConversation(true);

@@ -30,7 +30,7 @@ export function ChatHeader({
   lastSeen
 }: ChatHeaderProps) {
   return (
-    <div className="flex items-center gap-4 px-4 h-16 relative">
+    <div className="flex items-center gap-4 px-4 h-16">
       <Button
         variant="ghost"
         size="icon"
@@ -67,7 +67,7 @@ export function ChatHeader({
               <MoreVertical className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-[9999]">
+          <DropdownMenuContent align="end" className="z-[999]">
             <DropdownMenuItem 
               onClick={onDelete} 
               className="text-destructive"

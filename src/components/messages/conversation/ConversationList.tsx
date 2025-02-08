@@ -17,7 +17,6 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  // Modifié pour mieux gérer les conversations
   const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
     if (!profile || !message) return acc;
     
@@ -55,15 +54,12 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     return acc;
   }, []);
 
-  console.log("Conversations processed:", conversations);
-  console.log("Original messages:", messages);
-
   const filteredConversations = conversations.filter(conv => 
     conv.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] mt-8">
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
       <SearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
