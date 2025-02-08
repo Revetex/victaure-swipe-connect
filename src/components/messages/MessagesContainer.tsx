@@ -79,7 +79,7 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="h-[calc(100vh-8rem)] flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative mt-16 mb-16">
+    <Card className="min-h-[calc(100vh-8rem)] h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative mt-16">
       {showConversation && receiver ? (
         <div className="flex-1 h-full">
           <ConversationView
