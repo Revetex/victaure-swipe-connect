@@ -150,18 +150,12 @@ export function DashboardContent({
         initial="initial"
         animate="animate"
         exit="exit"
-        className="w-full h-full backdrop-blur-sm bg-background/80 rounded-lg shadow-lg border border-border/50"
+        className="h-full w-full"
       >
         {content}
       </motion.div>
     );
   };
 
-  return (
-    <div className="relative min-h-screen w-full">
-      <div className="w-full px-4 sm:px-6 lg:px-8 space-y-6">
-        {renderContent()}
-      </div>
-    </div>
-  );
+  return renderContent();
 }
