@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -145,8 +146,14 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
             )}
           </AnimatePresence>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex gap-2 items-center">
+          <div className={cn(
+            "flex gap-4",
+            isMobile ? "flex-col" : "flex-row justify-between items-center"
+          )}>
+            <div className={cn(
+              "flex gap-2",
+              isMobile ? "flex-col w-full" : "items-center"
+            )}>
               <input
                 type="file"
                 id="file-upload"
@@ -159,7 +166,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
                 variant="outline" 
                 size="default"
                 className={cn(
-                  "transition-colors flex-1 sm:flex-none",
+                  "transition-colors w-full sm:w-auto",
                   attachments.length > 0 && "border-primary/50 text-primary"
                 )}
                 onClick={() => document.getElementById('file-upload')?.click()}
@@ -180,6 +187,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
               <PrivacySelector
                 value={privacy}
                 onChange={value => setPrivacy(value)}
+                className={cn(isMobile && "w-full")}
               />
             </div>
 
@@ -187,7 +195,8 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
               onClick={handleCreatePost} 
               disabled={isUploading || (!newPost.trim() && attachments.length === 0)}
               className={cn(
-                "transition-all w-full sm:w-auto",
+                "transition-all",
+                isMobile ? "w-full" : "w-auto",
                 (newPost.trim() || attachments.length > 0) && "bg-primary hover:bg-primary/90"
               )}
             >
