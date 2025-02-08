@@ -32,10 +32,23 @@ serve(async (req) => {
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) throw new Error('Missing Hugging Face API key');
 
-    const prompt = `<Instruction>Génère une suggestion de recherche d'emploi dans la construction:
-- Utilise ce profil: ${profile.role || 'professionnel'} à ${profile.city || 'Québec'}
+    // Get previous suggestions to avoid duplicates
+    const { data: previousSuggestions } = await supabaseAdmin
+      .from('ai_learning_data')
+      .select('response')
+      .eq('user_id', userId)
+      .eq('question', 'job_search_suggestion')
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    const previousTerms = previousSuggestions?.map(s => s.response) || [];
+
+    const prompt = `<Instruction>Génère une suggestion de recherche d'emploi dans la construction (3 mots maximum):
+- Profile: ${profile.role || 'professionnel'} à ${profile.city || 'Québec'}
 - Compétences: ${profile.skills?.join(', ') || 'construction'}
-- Format: une seule ligne en français
+- Format: une seule ligne de 3 mots maximum en français
+- La suggestion doit être différente de: ${previousTerms.join(', ')}
+- NE PAS inclure de ponctuation ou guillemets
 </Instruction>`;
 
     const response = await fetch(
@@ -49,7 +62,7 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: prompt,
           parameters: {
-            max_new_tokens: 50,
+            max_new_tokens: 20,
             temperature: 1.0,
             return_full_text: false
           }
@@ -62,9 +75,15 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const suggestion = data[0]?.generated_text?.trim() || '';
+    let suggestion = data[0]?.generated_text?.trim() || '';
+    
+    // Ensure max 3 words
+    suggestion = suggestion.split(' ').slice(0, 3).join(' ');
+    
+    // Remove any punctuation
+    suggestion = suggestion.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
 
-    // Sauvegarder la suggestion
+    // Save the suggestion
     await supabaseAdmin
       .from('ai_learning_data')
       .insert({
