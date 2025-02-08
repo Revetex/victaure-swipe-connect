@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const jobFormSchema = z.object({
@@ -28,6 +29,8 @@ export const jobFormSchema = z.object({
   benefits: z.array(z.string()).optional(),
   responsibilities: z.array(z.string()).optional(),
   qualifications: z.array(z.string()).optional(),
+  province: z.string().min(1, "La province est requise"),
+  language_requirements: z.string().min(1, "Les exigences linguistiques sont requises"),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
@@ -60,4 +63,6 @@ export const defaultValues: JobFormValues = {
   company_description: "",
   latitude: 0,
   longitude: 0,
+  province: "",
+  language_requirements: "English Only",
 };
