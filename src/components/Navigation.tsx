@@ -2,8 +2,6 @@
 import { MessageSquare, Settings } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
-import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "./feed/FeedSidebar";
@@ -16,28 +14,19 @@ interface NavigationProps {
 }
 
 export function Navigation({ onNavigate, className }: NavigationProps) {
-  const { isLoading } = useAuth();
-
-  if (isLoading) {
-    return null;
-  }
-
   return (
     <div className={cn("h-full flex flex-col bg-background", className)}>
-      <div className="h-16 border-b flex items-center px-4 bg-background">
-        <motion.div 
-          className="flex items-center gap-3 group cursor-pointer"
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          onClick={() => onNavigate("/")}
-        >
-          <Logo size="sm" onClick={() => onNavigate("/")} />
-        </motion.div>
+      <div className="h-16 border-b flex items-center px-4">
+        <Logo 
+          size="sm" 
+          onClick={() => onNavigate("/")} 
+          className="cursor-pointer" 
+        />
       </div>
 
-      <ScrollArea className="flex-1 px-2 py-4">
+      <ScrollArea className="flex-1 p-4">
         <nav className="space-y-6">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Button 
               variant="ghost"
               className="w-full justify-start"
@@ -59,7 +48,7 @@ export function Navigation({ onNavigate, className }: NavigationProps) {
         </nav>
       </ScrollArea>
 
-      <div className="h-16 border-t bg-background flex items-center justify-between px-4">
+      <div className="h-16 border-t flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <NotificationsBox />
           <ThemeToggle />

@@ -21,22 +21,15 @@ interface MainLayoutProps {
 }
 
 const layoutVariants = {
-  initial: { 
-    opacity: 0,
-    y: 20 
-  },
+  initial: { opacity: 0 },
   animate: { 
     opacity: 1,
-    y: 0,
     transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 30
+      duration: 0.2
     }
   },
   exit: { 
     opacity: 0,
-    y: -20,
     transition: {
       duration: 0.2
     }
@@ -61,10 +54,6 @@ export function MainLayout({
     toast.error("Une erreur est survenue dans la mise en page");
   };
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
-  };
-
   return (
     <ErrorBoundary
       FallbackComponent={LayoutErrorBoundary}
@@ -72,7 +61,7 @@ export function MainLayout({
       onReset={() => window.location.reload()}
     >
       <div className="flex min-h-screen bg-background">
-        {!isMobile && <Sidebar onNavigate={handleNavigate} />}
+        {!isMobile && <Sidebar onNavigate={navigate} />}
 
         <motion.div 
           className={cn(
@@ -85,31 +74,23 @@ export function MainLayout({
           exit="exit"
         >
           {!isMessagesPage && (
-            <header 
-              className={cn(
-                "h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-                "sticky top-0 z-40 w-full"
-              )}
-              role="banner"
-            >
-              <div className="container h-full">
-                <div className="flex items-center justify-between h-full px-4">
-                  <DashboardHeader 
-                    title={title}
-                    showFriendsList={showFriendsList}
-                    onToggleFriendsList={onToggleFriendsList}
-                    isEditing={isEditing}
-                    onToolReturn={onToolReturn}
-                    onNavigate={handleNavigate}
-                  />
-                </div>
+            <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="container h-16">
+                <DashboardHeader 
+                  title={title}
+                  showFriendsList={showFriendsList}
+                  onToggleFriendsList={onToggleFriendsList}
+                  isEditing={isEditing}
+                  onToolReturn={onToolReturn}
+                  onNavigate={navigate}
+                />
               </div>
             </header>
           )}
 
           <main className={cn(
             "flex-1",
-            !isMessagesPage && "pt-4"
+            !isMessagesPage && "container py-4"
           )}>
             {children}
           </main>
