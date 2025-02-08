@@ -29,6 +29,10 @@ interface UnifiedJob {
   logo_url?: string;
 }
 
+interface JobTranscription {
+  ai_transcription: string;
+}
+
 export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const navigate = useNavigate();
 
@@ -78,7 +82,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
             posted_at: job.created_at,
             source: 'Victaure' as const,
             description: job.description,
-            transcription: job.job_transcriptions?.[0]?.ai_transcription,
+            transcription: (job.job_transcriptions?.[0] as JobTranscription | undefined)?.ai_transcription,
             logo_url: job.employer?.avatar_url
           })),
           ...scrapedJobs.map(job => ({
@@ -90,7 +94,7 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
             posted_at: job.posted_at,
             source: 'Externe' as const,
             description: job.description,
-            transcription: job.job_transcriptions?.[0]?.ai_transcription
+            transcription: (job.job_transcriptions?.[0] as JobTranscription | undefined)?.ai_transcription
           }))
         ];
 
