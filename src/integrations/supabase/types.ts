@@ -1196,6 +1196,7 @@ export type Database = {
           auto_update_enabled: boolean | null
           avatar_url: string | null
           bio: string | null
+          chess_elo: number | null
           city: string | null
           company_name: string | null
           company_size: string | null
@@ -1235,6 +1236,7 @@ export type Database = {
           auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
+          chess_elo?: number | null
           city?: string | null
           company_name?: string | null
           company_size?: string | null
@@ -1274,6 +1276,7 @@ export type Database = {
           auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
+          chess_elo?: number | null
           city?: string | null
           company_name?: string | null
           company_size?: string | null
@@ -1370,6 +1373,47 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      task_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          scheduled_for: string
+          task_id: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          scheduled_for: string
+          task_id: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          scheduled_for?: string
+          task_id?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       todos: {
         Row: {
