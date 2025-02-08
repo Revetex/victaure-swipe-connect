@@ -48,51 +48,53 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       exit={{ x: -350 }}
       transition={{ type: "spring", damping: 20, stiffness: 100 }}
     >
-      <ScrollArea className="flex-grow">
-        <div className="p-4 space-y-6 pb-[calc(4rem+env(safe-area-inset-bottom))]">
-          <div>
-            <h3 className={labelClasses}>Recherche</h3>
-            <ProfileSearch 
-              onSelect={handleProfileSelect}
-              placeholder="Rechercher des profils..."
-              className="w-full"
-            />
-          </div>
+      <div className="h-full overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-6 pb-[calc(4rem+env(safe-area-inset-bottom))]">
+            <div>
+              <h3 className={labelClasses}>Recherche</h3>
+              <ProfileSearch 
+                onSelect={handleProfileSelect}
+                placeholder="Rechercher des profils..."
+                className="w-full"
+              />
+            </div>
 
-          <div>
-            <h3 className={labelClasses}>Outils</h3>
-            <ToolsList onToolClick={handleToolClick} />
-          </div>
-
-          <Separator />
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
-          >
-            <div className="space-y-3">
-              <h3 className={labelClasses}>Connexions</h3>
-              <ConnectionsSection />
+            <div>
+              <h3 className={labelClasses}>Outils</h3>
+              <ToolsList onToolClick={handleToolClick} />
             </div>
 
             <Separator />
 
-            <div className="space-y-4">
-              <h3 className={labelClasses}>Paramètres</h3>
-              <div className="space-y-2">
-                <AppearanceSection />
-                <NotificationsSection />
-                <PrivacySection />
-                <SecuritySection />
-                <BlockedUsersSection />
-                <Separator className="my-2" />
-                <LogoutSection />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="space-y-3">
+                <h3 className={labelClasses}>Connexions</h3>
+                <ConnectionsSection />
               </div>
-            </div>
-          </motion.div>
-        </div>
-      </ScrollArea>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <h3 className={labelClasses}>Paramètres</h3>
+                <div className="space-y-2">
+                  <AppearanceSection />
+                  <NotificationsSection />
+                  <PrivacySection />
+                  <SecuritySection />
+                  <BlockedUsersSection />
+                  <Separator className="my-2" />
+                  <LogoutSection />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </ScrollArea>
+      </div>
     </motion.div>
   );
 }
