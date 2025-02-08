@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
@@ -17,6 +18,10 @@ export default function PublicProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        if (!id) {
+          throw new Error("No profile ID provided");
+        }
+
         const { data, error } = await supabase
           .from('profiles')
           .select(`
@@ -25,10 +30,15 @@ export default function PublicProfile() {
             education (*),
             certifications (*)
           `)
-          .eq('id', id)
-          .single();
+          .eq('id', id)  // Using the actual id from params
+          .maybeSingle();
 
         if (error) throw error;
+
+        if (!data) {
+          setProfile(null);
+          return;
+        }
 
         const transformedData: UserProfile = {
           ...data,
@@ -97,3 +107,4 @@ export default function PublicProfile() {
     </div>
   );
 }
+
