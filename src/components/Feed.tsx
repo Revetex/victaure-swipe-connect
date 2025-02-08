@@ -47,38 +47,16 @@ export function Feed() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full min-h-screen bg-background relative"
+      className="w-full min-h-screen bg-background"
     >
-      <div className="flex relative">
-        {!isMobile ? (
-          <aside className="w-[280px] lg:w-[350px] hidden md:block sticky top-16 h-[calc(100vh-4rem)]">
-            <FeedSidebar />
-          </aside>
-        ) : (
-          <div className="fixed top-4 right-4 z-50">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-screen sm:w-[350px] p-0">
-                <FeedSidebar />
-              </SheetContent>
-            </Sheet>
-          </div>
-        )}
-
-        <main className={cn(
-          "flex-1 transition-all duration-300",
-          !isMobile && "md:ml-[280px] lg:ml-[350px]"
-        )}>
+      <div className="w-full">
+        <main className="w-full max-w-3xl mx-auto px-4">
           <ScrollArea 
             ref={scrollRef} 
-            className="h-[calc(100vh-4rem)]"
+            className="h-[calc(100vh-5rem)]"
             onScroll={handleScroll}
           >
-            <div className="max-w-3xl mx-auto px-4 py-4">
+            <div className="py-4">
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
