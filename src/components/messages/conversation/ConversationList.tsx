@@ -17,8 +17,9 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  const conversations = messages.reduce((acc: any[], message: Message) => {
-    if (!profile) return acc;
+  // Modifié pour mieux gérer les conversations
+  const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
+    if (!profile || !message) return acc;
     
     // Skip self-messages
     if (message.sender_id === message.receiver_id) {
@@ -28,29 +29,41 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
     const otherUserId = message.sender_id === profile.id ? message.receiver_id : message.sender_id;
     const otherUser = message.sender_id === profile.id ? message.receiver : message.sender;
 
-    // Skip if we don't have valid user information
-    if (!otherUser || !otherUserId || !otherUser.id) {
+    // Ensure we have valid user data
+    if (!otherUser || !otherUserId) {
+      console.log("Missing user data for message:", message);
       return acc;
     }
+
+    const existingConv = acc.find(conv => conv.user.id === otherUserId);
     
-    const existingConv = acc.find((conv: any) => conv.user?.id === otherUserId);
     if (!existingConv) {
       acc.push({
-        user: otherUser,
+        user: {
+          id: otherUserId,
+          full_name: otherUser.full_name,
+          avatar_url: otherUser.avatar_url || '',
+          online_status: otherUser.online_status || false,
+          last_seen: otherUser.last_seen || new Date().toISOString()
+        },
         lastMessage: message
       });
     } else if (new Date(message.created_at) > new Date(existingConv.lastMessage.created_at)) {
       existingConv.lastMessage = message;
     }
+    
     return acc;
   }, []);
+
+  console.log("Conversations processed:", conversations);
+  console.log("Original messages:", messages);
 
   const filteredConversations = conversations.filter(conv => 
     conv.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] mt-16">
+    <div className="flex flex-col h-[calc(100vh-8rem)] mt-8">
       <SearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -63,7 +76,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
         })}
       />
 
-      <ScrollArea className="flex-1 relative">
+      <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
           <AssistantButton
             chatMessages={chatMessages}
