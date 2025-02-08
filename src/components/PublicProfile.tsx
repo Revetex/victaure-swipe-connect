@@ -30,7 +30,7 @@ export default function PublicProfile() {
             education (*),
             certifications (*)
           `)
-          .eq('id', id)  // Using the actual id from params
+          .eq('id', id)
           .maybeSingle();
 
         if (error) throw error;
@@ -107,4 +107,3 @@ export default function PublicProfile() {
     </div>
   );
 }
-

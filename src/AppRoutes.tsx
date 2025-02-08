@@ -22,32 +22,21 @@ export function AppRoutes() {
 
   return (
     <Routes>
+      {/* Public Routes */}
       <Route 
         path="/" 
-        element={
-          isAuthenticated ? (
-            <Navigate to="/feed" replace />
-          ) : (
-            <Index />
-          )
-        } 
+        element={isAuthenticated ? <Navigate to="/feed" replace /> : <Index />} 
       />
       <Route 
         path="/auth" 
-        element={
-          isAuthenticated ? (
-            <Navigate to="/feed" replace />
-          ) : (
-            <Auth />
-          )
-        } 
+        element={isAuthenticated ? <Navigate to="/feed" replace /> : <Auth />} 
       />
       <Route path="/legal/terms" element={<TermsPage />} />
       <Route path="/legal/privacy" element={<PrivacyPage />} />
       <Route path="/legal/cookies" element={<CookiesPage />} />
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route path="/profile/:id" element={<PublicProfile />} />
-      
+
       {/* Protected Routes */}
       <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route path="/feed" element={<Feed />} />
@@ -58,15 +47,10 @@ export function AppRoutes() {
         <Route path="/chess" element={<ChessPage />} />
       </Route>
 
+      {/* Fallback Route */}
       <Route 
         path="*" 
-        element={
-          isAuthenticated ? (
-            <Navigate to="/feed" replace />
-          ) : (
-            <Navigate to="/auth" replace />
-          )
-        } 
+        element={isAuthenticated ? <Navigate to="/feed" replace /> : <Navigate to="/auth" replace />} 
       />
     </Routes>
   );
