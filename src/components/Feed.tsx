@@ -40,10 +40,10 @@ export function Feed() {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-[calc(100vh-8rem)] bg-background/95 backdrop-blur relative pt-16 pb-16">
       <ScrollArea 
         ref={scrollRef} 
-        className="h-[calc(100vh-5rem)] w-full max-w-3xl mx-auto px-4"
+        className="h-[calc(100vh-8rem)] w-full max-w-3xl mx-auto px-4"
         onScroll={handleScroll}
       >
         <div className="py-4">
@@ -79,11 +79,11 @@ export function Feed() {
             exit={{ opacity: 0, y: 10 }}
             onClick={scrollToTop}
             className={cn(
-              "fixed right-4 bg-primary/90 hover:bg-primary text-primary-foreground",
+              "fixed bg-primary/90 hover:bg-primary text-primary-foreground",
               "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
               "hover:scale-105 active:scale-95",
               "min-h-[44px] min-w-[44px] z-20",
-              isMobile ? "bottom-24" : "bottom-8"
+              isMobile ? "bottom-24 right-4" : "bottom-20 right-4"
             )}
             aria-label="Retourner en haut"
           >
