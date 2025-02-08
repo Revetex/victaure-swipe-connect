@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
+import { Calculator, Languages, ListTodo, Plus, Sword } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ToolsListProps {
@@ -13,63 +13,72 @@ const tools = [
     name: "Notes",
     icon: Plus,
     description: "Gérez vos notes",
-    gradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20"
+    gradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20",
+    shortcut: "⌘N"
   },
   {
     name: "Tâches",
     icon: ListTodo,
     description: "Gérez vos tâches",
-    gradient: "from-blue-500/20 via-indigo-500/20 to-violet-500/20"
+    gradient: "from-blue-500/20 via-indigo-500/20 to-violet-500/20",
+    shortcut: "⌘T"
   },
   {
     name: "Calculatrice",
     icon: Calculator,
     description: "Calculatrice et convertisseur",
-    gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20"
+    gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20",
+    shortcut: "⌘C"
   },
   {
     name: "Traducteur",
     icon: Languages,
     description: "Traduisez du texte",
-    gradient: "from-emerald-500/20 via-teal-500/20 to-cyan-500/20"
-  },
-  {
-    name: "Convertisseur",
-    icon: Ruler,
-    description: "Convertissez des unités",
-    gradient: "from-orange-500/20 via-amber-500/20 to-yellow-500/20"
+    gradient: "from-emerald-500/20 via-teal-500/20 to-cyan-500/20",
+    shortcut: "⌘L"
   },
   {
     name: "Échecs",
     icon: Sword,
     description: "Jouez aux échecs",
-    gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20"
+    gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20",
+    shortcut: "⌘E"
   }
 ];
 
 export function ToolsList({ onToolClick }: ToolsListProps) {
   return (
-    <>
+    <div className="flex flex-col gap-1.5">
       {tools.map((tool) => {
         const Icon = tool.icon;
         return (
-          <Button
+          <motion.div
             key={tool.name}
-            variant="ghost"
-            onClick={() => onToolClick(tool.name)}
-            className={cn(
-              "h-10 py-1 px-2 flex items-center justify-start gap-2",
-              "bg-gradient-to-br hover:shadow-md transition-all duration-200",
-              "group relative w-full text-sm",
-              tool.gradient
-            )}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <Icon className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-            <span className="font-medium truncate">{tool.name}</span>
-          </Button>
+            <Button
+              variant="ghost"
+              onClick={() => onToolClick(tool.name)}
+              className={cn(
+                "w-full h-10 py-1 px-2 flex items-center justify-between gap-2",
+                "bg-gradient-to-br hover:shadow-md transition-all duration-200",
+                "group relative text-sm",
+                tool.gradient
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <Icon className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                <span className="font-medium">{tool.name}</span>
+              </div>
+              <span className="text-xs text-muted-foreground font-mono">
+                {tool.shortcut}
+              </span>
+            </Button>
+          </motion.div>
         );
       })}
-    </>
+    </div>
   );
 }
 
