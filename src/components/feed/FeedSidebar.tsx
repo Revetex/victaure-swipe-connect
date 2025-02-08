@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { AppearanceSection } from "@/components/settings/AppearanceSection";
 import { NotificationsSection } from "@/components/settings/NotificationsSection";
 import { PrivacySection } from "@/components/settings/PrivacySection";
@@ -15,6 +13,9 @@ import { motion } from "framer-motion";
 import { ToolsList } from "./sidebar/ToolsList";
 import { ProfileSearch } from "@/components/feed/ProfileSearch";
 import { UserProfile } from "@/types/profile";
+import { Home, MessageSquare, BriefcaseIcon, Newspaper, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 interface FeedSidebarProps {
   className?: string;
@@ -33,67 +34,95 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     navigate(`/profile/${profile.id}`);
   };
 
+  const menuItems = [
+    { icon: Home, label: "Accueil", path: "/" },
+    { icon: MessageSquare, label: "Messages", path: "/messages" },
+    { icon: BriefcaseIcon, label: "Emplois", path: "/jobs" },
+    { icon: Newspaper, label: "Actualités", path: "/news" },
+  ];
+
   const labelClasses = "text-sm font-medium text-muted-foreground tracking-tight uppercase mb-2";
 
   return (
     <motion.div 
       className={cn(
-        "fixed inset-y-0 left-0 w-[280px] sm:w-[350px]",
-        "bg-background/95 backdrop-blur-sm shadow-xl border-r",
-        "z-[99998] flex flex-col h-[100dvh]",
+        "fixed top-0 left-0 right-0 h-16 bg-background/95 backdrop-blur-sm shadow-sm border-b z-[99998]",
         className
       )}
-      initial={{ x: -350 }}
-      animate={{ x: 0 }}
-      exit={{ x: -350 }}
+      initial={{ y: -64 }}
+      animate={{ y: 0 }}
+      exit={{ y: -64 }}
       transition={{ type: "spring", damping: 20, stiffness: 100 }}
     >
-      <div className="h-full overflow-hidden">
-        <ScrollArea className="h-full">
-          <div className="p-4 space-y-6 pb-[calc(4rem+env(safe-area-inset-bottom))]">
-            <div>
-              <h3 className={labelClasses}>Recherche</h3>
-              <ProfileSearch 
-                onSelect={handleProfileSelect}
-                placeholder="Rechercher des profils..."
-                className="w-full"
-              />
-            </div>
+      <div className="container mx-auto h-full px-4">
+        <div className="flex items-center justify-between h-full">
+          {/* Navigation principale */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {menuItems.map((item) => (
+              <Button
+                key={item.path}
+                variant="ghost"
+                className="flex items-center space-x-2"
+                onClick={() => navigate(item.path)}
+              >
+                <item.icon className="h-4 w-4" />
+                <span>{item.label}</span>
+              </Button>
+            ))}
+          </nav>
 
-            <div>
-              <h3 className={labelClasses}>Outils</h3>
-              <ToolsList onToolClick={handleToolClick} />
-            </div>
+          {/* Recherche */}
+          <div className="flex-1 max-w-md mx-4">
+            <ProfileSearch 
+              onSelect={handleProfileSelect}
+              placeholder="Rechercher des profils..."
+              className="w-full"
+            />
+          </div>
 
-            <Separator />
+          {/* Menu mobile */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+              <div className="py-4 space-y-6">
+                <nav className="space-y-2">
+                  {menuItems.map((item) => (
+                    <Button
+                      key={item.path}
+                      variant="ghost"
+                      className="w-full justify-start"
+                      onClick={() => navigate(item.path)}
+                    >
+                      <item.icon className="h-4 w-4 mr-2" />
+                      {item.label}
+                    </Button>
+                  ))}
+                </nav>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              <div className="space-y-3">
-                <h3 className={labelClasses}>Connexions</h3>
-                <ConnectionsSection />
-              </div>
+                <div>
+                  <h3 className={labelClasses}>Outils</h3>
+                  <ToolsList onToolClick={handleToolClick} />
+                </div>
 
-              <Separator />
-
-              <div className="space-y-4">
-                <h3 className={labelClasses}>Paramètres</h3>
-                <div className="space-y-2">
-                  <AppearanceSection />
-                  <NotificationsSection />
-                  <PrivacySection />
-                  <SecuritySection />
-                  <BlockedUsersSection />
-                  <Separator className="my-2" />
-                  <LogoutSection />
+                <div className="space-y-4 pt-4">
+                  <h3 className={labelClasses}>Paramètres</h3>
+                  <div className="space-y-2">
+                    <AppearanceSection />
+                    <NotificationsSection />
+                    <PrivacySection />
+                    <SecuritySection />
+                    <BlockedUsersSection />
+                    <LogoutSection />
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          </div>
-        </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </motion.div>
   );
