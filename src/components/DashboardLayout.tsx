@@ -4,7 +4,7 @@ import { useViewport } from "@/hooks/useViewport";
 import { useLocation } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, MessageSquare, Store, Users, PenTool, Settings } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Store, Users, PenTool, Settings, Sword } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
@@ -21,7 +21,8 @@ const navigationItems = [
   { id: 3, name: "Marketplace", icon: Store },
   { id: 4, name: "Social", icon: Users },
   { id: 5, name: "Notes", icon: PenTool },
-  { id: 6, name: "Paramètres", icon: Settings },
+  { id: 6, name: "Échecs", icon: Sword },
+  { id: 7, name: "Paramètres", icon: Settings },
 ];
 
 export function DashboardLayout() {

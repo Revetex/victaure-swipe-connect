@@ -6,6 +6,7 @@ import { Marketplace } from "@/components/Marketplace";
 import { Settings } from "@/components/Settings";
 import { NotesMap } from "@/components/notes/NotesMap";
 import { Feed } from "@/components/feed/Feed";
+import { ChessPage } from "@/components/tools/ChessPage";
 import { useEffect } from "react";
 
 interface DashboardContentProps {
@@ -49,6 +50,8 @@ export function DashboardContent({
         case 5:
           return <NotesMap />;
         case 6:
+          return <ChessPage />;
+        case 7:
           return <Settings />;
         default:
           return null;
