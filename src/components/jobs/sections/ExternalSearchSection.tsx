@@ -5,8 +5,14 @@ import { AISearchSuggestions } from "@/components/google-search/AISearchSuggesti
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { ScrapedJobsList } from "@/components/jobs/ScrapedJobsList";
+import { JobFilters } from "@/components/jobs/JobFilterUtils";
 
-export function ExternalSearchSection() {
+interface ExternalSearchSectionProps {
+  filters: JobFilters;
+  onFilterChange: (key: keyof JobFilters, value: any) => void;
+}
+
+export function ExternalSearchSection({ filters, onFilterChange }: ExternalSearchSectionProps) {
   useGoogleSearchStyles();
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -66,7 +72,7 @@ export function ExternalSearchSection() {
             className="bg-card/50 backdrop-blur-sm rounded-xl shadow-lg border border-border/50 overflow-hidden"
           >
             <div className="p-6">
-              <ScrapedJobsList />
+              <ScrapedJobsList queryString={filters.searchTerm} />
             </div>
           </motion.div>
 
@@ -89,3 +95,4 @@ export function ExternalSearchSection() {
     </main>
   );
 }
+
