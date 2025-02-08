@@ -13,6 +13,9 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "./Logo";
+import { ProfilePreview } from "./ProfilePreview";
+import { TranslatorPage } from "./tools/TranslatorPage";
+import { Dialog, DialogContent } from "./ui/dialog";
 
 const navigationItems = [
   { id: 1, name: "Tableau de bord", icon: LayoutDashboard },
@@ -30,6 +33,8 @@ const navigationItems = [
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
+  const [showProfilePreview, setShowProfilePreview] = useState(false);
+  const [showTranslator, setShowTranslator] = useState(false);
   const { viewportHeight } = useViewport();
   const location = useLocation();
   const { profile } = useProfile();
@@ -44,6 +49,18 @@ export function DashboardLayout() {
   const handleEditStateChange = useCallback((state: boolean) => {
     setIsEditing(state);
   }, []);
+
+  const handleProfileClick = () => {
+    if (showTranslator) {
+      setShowTranslator(false);
+    }
+    setShowProfilePreview(true);
+  };
+
+  const handleProfileClose = () => {
+    setShowProfilePreview(false);
+    setShowTranslator(true);
+  };
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -76,7 +93,12 @@ export function DashboardLayout() {
         <>
           <Separator />
           <div className="p-4">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted/50">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleProfileClick}
+              className="flex items-center gap-3 px-4 py-3 rounded-lg bg-background/80 backdrop-blur border border-border/50 shadow-sm hover:shadow-md transition-all cursor-pointer"
+            >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 {profile.avatar_url ? (
                   <img
@@ -94,8 +116,24 @@ export function DashboardLayout() {
                   {profile.role}
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
+        </>
+      )}
+
+      {profile && (
+        <>
+          <ProfilePreview
+            profile={profile}
+            isOpen={showProfilePreview}
+            onClose={handleProfileClose}
+          />
+
+          <Dialog open={showTranslator} onOpenChange={setShowTranslator}>
+            <DialogContent className="max-w-4xl h-[80vh]">
+              <TranslatorPage />
+            </DialogContent>
+          </Dialog>
         </>
       )}
     </div>
@@ -104,12 +142,10 @@ export function DashboardLayout() {
   return (
     <DashboardAuthCheck>
       <div className="min-h-screen bg-background">
-        {/* Desktop Sidebar */}
         <aside className="fixed left-0 top-0 bottom-0 w-72 border-r hidden lg:block">
           <SidebarContent />
         </aside>
 
-        {/* Mobile Header */}
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
           <div className="container flex h-16 items-center">
             <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
@@ -128,7 +164,6 @@ export function DashboardLayout() {
           </div>
         </header>
 
-        {/* Main Content */}
         <main className="lg:pl-72">
           <AnimatePresence mode="wait">
             <motion.div
