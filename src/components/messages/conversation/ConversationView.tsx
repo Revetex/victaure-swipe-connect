@@ -66,8 +66,8 @@ export function ConversationView({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] relative bg-background">
-      <div className="sticky top-0 z-30 w-full bg-background/95 backdrop-blur">
+    <div className="flex flex-col h-full relative">
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur">
         <ChatHeader
           title={receiver.full_name}
           subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -80,54 +80,52 @@ export function ConversationView({
       </div>
 
       <ScrollArea 
-        className="flex-1 px-4 overflow-y-auto"
+        className="flex-1 px-4"
         onScrollCapture={handleScroll}
       >
-        <div className="min-h-full pb-4">
-          {messages.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center text-muted-foreground p-4"
-            >
-              Commencez une conversation
-            </motion.div>
-          ) : (
-            <div className="space-y-4 py-4">
-              <AnimatePresence initial={false}>
-                {messages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                  >
-                    <ChatMessage
-                      content={message.content}
-                      sender={message.sender_id === profile?.id ? "user" : "assistant"}
-                      timestamp={message.created_at}
-                      isRead={message.read}
-                      status={message.status}
-                      reaction={message.reaction}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              
-              {isThinking && (
+        {messages.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-muted-foreground p-4"
+          >
+            Commencez une conversation
+          </motion.div>
+        ) : (
+          <div className="space-y-4 py-4">
+            <AnimatePresence initial={false}>
+              {messages.map((message) => (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  key={message.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
                 >
-                  <ChatThinking />
+                  <ChatMessage
+                    content={message.content}
+                    sender={message.sender_id === profile?.id ? "user" : "assistant"}
+                    timestamp={message.created_at}
+                    isRead={message.read}
+                    status={message.status}
+                    reaction={message.reaction}
+                  />
                 </motion.div>
-              )}
-              
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
+              ))}
+            </AnimatePresence>
+            
+            {isThinking && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <ChatThinking />
+              </motion.div>
+            )}
+            
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </ScrollArea>
 
       {showScrollButton && (
@@ -148,7 +146,7 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <div className="sticky bottom-0 left-0 right-0 z-20 bg-background/95 backdrop-blur p-4 border-t">
+      <div className="sticky bottom-0 z-20 bg-background/95 backdrop-blur p-4">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}

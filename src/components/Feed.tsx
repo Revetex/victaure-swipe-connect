@@ -40,11 +40,7 @@ export function Feed() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="w-full min-h-screen bg-background relative"
-    >
+    <div className="min-h-screen bg-background relative">
       <ScrollArea 
         ref={scrollRef} 
         className="h-[calc(100vh-5rem)] w-full max-w-3xl mx-auto px-4"
@@ -95,6 +91,6 @@ export function Feed() {
           </motion.button>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

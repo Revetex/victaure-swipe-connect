@@ -72,16 +72,16 @@ export function MessagesContainer() {
 
   if (isLoading) {
     return (
-      <Card className="h-screen flex items-center justify-center bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex items-center justify-center h-screen bg-background/95 backdrop-blur">
         <div className="text-muted-foreground">Chargement des messages...</div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="h-screen overflow-hidden flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <Card className="h-[calc(100vh-4rem)] flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative">
       {showConversation && receiver ? (
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 h-full">
           <ConversationView
             receiver={receiver}
             messages={receiver.id === 'assistant' ? aiMessages : userMessages}
