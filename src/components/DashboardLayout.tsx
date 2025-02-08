@@ -2,7 +2,7 @@
 import React, { Suspense } from "react";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { motion } from "framer-motion";
-import { LoadingFallback } from "./dashboard/layout/DashboardLoading";
+import { DashboardLoading } from "./dashboard/layout/DashboardLoading";
 import { Feed } from "@/components/Feed";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
@@ -39,7 +39,7 @@ export function DashboardLayout() {
         exit="exit"
       >
         <MainLayout>
-          <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={<DashboardLoading />}>
             <Feed />
           </Suspense>
         </MainLayout>
