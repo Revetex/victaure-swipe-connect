@@ -34,6 +34,7 @@ export function MessagesContainer() {
     try {
       setReceiver(selectedReceiver);
       setShowConversation(true);
+      setInputMessage(''); // Reset input when changing conversation
     } catch (error) {
       console.error("Erreur lors de la sélection de la conversation:", error);
       toast.error("Impossible de charger la conversation");
@@ -44,6 +45,7 @@ export function MessagesContainer() {
     try {
       setShowConversation(false);
       setReceiver(null);
+      setInputMessage(''); // Reset input when going back
     } catch (error) {
       console.error("Erreur lors du retour à la liste:", error);
       toast.error("Impossible de revenir à la liste des conversations");
@@ -57,18 +59,18 @@ export function MessagesContainer() {
         return;
       }
 
-      if (receiver.id === 'assistant') {
-        if (inputMessage.trim()) {
-          handleAISendMessage(inputMessage);
-        }
-      } else {
-        if (!inputMessage.trim()) {
-          toast.error("Le message ne peut pas être vide");
-          return;
-        }
-        handleUserSendMessage(inputMessage, receiver);
-        setInputMessage('');
+      if (!inputMessage.trim()) {
+        toast.error("Le message ne peut pas être vide");
+        return;
       }
+
+      if (receiver.id === 'assistant') {
+        handleAISendMessage(inputMessage);
+      } else {
+        handleUserSendMessage(inputMessage, receiver);
+      }
+      
+      setInputMessage(''); // Clear input after sending
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
       toast.error("Impossible d'envoyer le message");
@@ -77,16 +79,16 @@ export function MessagesContainer() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-8rem)] bg-background/95 backdrop-blur pt-16">
+      <div className="flex items-center justify-center h-[calc(100vh-8rem)] bg-background pt-16">
         <div className="text-muted-foreground">Chargement des messages...</div>
       </div>
     );
   }
 
   return (
-    <Card className="min-h-[calc(100vh-8rem)] h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative mt-16">
+    <Card className="min-h-[calc(100vh-8rem)] h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background relative mt-16">
       {showConversation && receiver ? (
-        <div className="flex-1 h-full">
+        <div className="flex-1 h-full overflow-hidden">
           <ConversationView
             receiver={receiver}
             messages={receiver.id === 'assistant' ? aiMessages : userMessages}
