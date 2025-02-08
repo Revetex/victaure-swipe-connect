@@ -1,7 +1,7 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import '@testing-library/jest-dom';  // Add this import to fix missing matcher methods
+import '@testing-library/jest-dom';  // This import needs to be before any test code
 import FilePreview from '../FilePreview';
 import { PostAttachment } from '../types';
 
