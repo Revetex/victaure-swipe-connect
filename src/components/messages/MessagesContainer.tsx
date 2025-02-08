@@ -75,7 +75,7 @@ export function MessagesContainer() {
 
   if (showConversation && receiver) {
     return (
-      <div className="h-full bg-background">
+      <div className="flex flex-col h-screen bg-background">
         <ConversationView
           receiver={receiver}
           messages={receiver.id === 'assistant' ? aiMessages : userMessages}

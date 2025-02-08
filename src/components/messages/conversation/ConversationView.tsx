@@ -60,7 +60,7 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <>
       <ChatHeader
         title={receiver.full_name}
         subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -141,6 +141,6 @@ export function ConversationView({
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }
