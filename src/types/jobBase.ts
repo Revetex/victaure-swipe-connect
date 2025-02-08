@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   title: string;
@@ -28,7 +29,7 @@ export interface Job {
   company?: string;
   salary?: string;
   skills?: string[];
-  source?: 'Victaure' | 'Externe';
+  source?: "internal" | "external";
   url?: string;
   employer?: {
     full_name?: string;

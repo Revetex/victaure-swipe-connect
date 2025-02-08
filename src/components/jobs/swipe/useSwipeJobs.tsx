@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
@@ -51,9 +52,6 @@ export function useSwipeJobs(filters: JobFilters) {
 
       console.log("Filters applied to query");
 
-      // Always fetch at least 50 most recent jobs
-      query = query.limit(50);
-
       const { data: jobsData, error: jobsError } = await query;
 
       console.log("Query executed, results:", { jobsData, jobsError });
@@ -63,56 +61,20 @@ export function useSwipeJobs(filters: JobFilters) {
         throw jobsError;
       }
 
-      // If no jobs found with filters, fetch recent jobs
       if (!jobsData || jobsData.length === 0) {
         console.log("No jobs found with filters, fetching recent jobs");
-        
-        const { data: recentJobs, error: recentError } = await supabase
-          .from('jobs')
-          .select(`
-            *,
-            employer:profiles(
-              full_name,
-              company_name,
-              avatar_url
-            )
-          `)
-          .eq('status', 'open')
-          .order('created_at', { ascending: false })
-          .limit(50);
-
-        console.log("Recent jobs query executed, results:", { recentJobs, recentError });
-
-        if (recentError) {
-          console.error("Error fetching recent jobs:", recentError);
-          throw recentError;
-        }
-        
-        if (recentJobs && recentJobs.length > 0) {
-          console.log("Found recent jobs, formatting data");
-          const formattedJobs = recentJobs.map(job => ({
-            ...job,
-            company: job.employer?.company_name || "Entreprise",
-            salary: `${job.budget} CAD`,
-            skills: job.required_skills || [],
-            status: job.status as Job['status'],
-          }));
-          console.log("Formatted recent jobs:", formattedJobs);
-          setJobs(formattedJobs);
-        } else {
-          console.log("No recent jobs found either");
-          setJobs([]);
-        }
+        setJobs([]);
       } else {
         console.log("Found jobs with filters, formatting data");
-        // Format jobs with virtual fields
         const formattedJobs = jobsData.map(job => ({
           ...job,
           company: job.employer?.company_name || "Entreprise",
           salary: `${job.budget} CAD`,
           skills: job.required_skills || [],
           status: job.status as Job['status'],
-        }));
+          source: job.source || "internal"
+        })) as Job[];
+
         console.log("Formatted jobs:", formattedJobs);
         setJobs(formattedJobs);
       }
