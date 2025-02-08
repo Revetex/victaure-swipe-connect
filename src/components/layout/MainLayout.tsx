@@ -54,7 +54,6 @@ export function MainLayout({
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const isFriendsPage = location.pathname.includes('/friends');
   const isMessagesPage = location.pathname.includes('/messages');
 
   const handleError = (error: Error) => {

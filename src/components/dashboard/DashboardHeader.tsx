@@ -1,13 +1,11 @@
 
-import { Button } from "@/components/ui/button";
-import { Menu as MenuIcon } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { motion } from "framer-motion";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
-import { Suspense } from "react";
+import { MobileNavigation } from "../layout/MobileNavigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export interface DashboardHeaderProps {
   title: string;
@@ -25,6 +23,8 @@ export function DashboardHeader({
   isEditing,
   onNavigate
 }: DashboardHeaderProps) {
+  const isMobile = useIsMobile();
+
   return (
     <div className="flex items-center justify-between w-full">
       <motion.div 
@@ -33,19 +33,12 @@ export function DashboardHeader({
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MenuIcon className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[280px] sm:w-[350px] p-0">
-            <Suspense fallback={null}>
-              <Navigation onNavigate={onNavigate} />
-            </Suspense>
-          </SheetContent>
-        </Sheet>
-        <Logo size="lg" onClick={() => onNavigate("/")} className="cursor-pointer" />
+        {isMobile && <MobileNavigation />}
+        <Logo 
+          size="lg" 
+          onClick={() => onNavigate("/")} 
+          className="cursor-pointer" 
+        />
         <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">
           {title}
         </h1>
@@ -59,20 +52,18 @@ export function DashboardHeader({
       >
         <NotificationsBox />
         {!isEditing && (
-          <Button
-            variant="outline"
+          <button
             onClick={onToggleFriendsList}
             className={cn(
               "flex items-center gap-2 text-sm sm:text-base",
-              "transition-all duration-300",
+              "transition-all duration-300 px-3 py-2 rounded-lg",
               "hover:bg-primary/10 hover:text-primary",
               showFriendsList && "bg-primary/5 text-primary"
             )}
-            size="sm"
           >
-            <MenuIcon className="h-4 w-4" />
+            <Menu className="h-4 w-4" />
             <span className="hidden sm:inline">Amis</span>
-          </Button>
+          </button>
         )}
       </motion.div>
     </div>
