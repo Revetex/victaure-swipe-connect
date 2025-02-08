@@ -11,9 +11,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { getPageTitle } from "@/config/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Feed } from "@/components/Feed";
+import { Messages } from "@/components/messages/Messages";
+import { Marketplace } from "@/components/Marketplace";
+import { VCard } from "@/components/VCard";
 
-// Lazy load components
-const DashboardContent = React.lazy(() => import("./dashboard/content/DashboardContent"));
 const AIAssistant = React.lazy(() => import("./dashboard/AIAssistant"));
 
 const containerVariants = {
@@ -55,8 +57,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-const MemoizedDashboardContent = React.memo(DashboardContent);
-
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
@@ -85,6 +85,21 @@ export function DashboardLayout() {
   const handleEditStateChange = useCallback((state: boolean) => {
     setIsEditing(state);
   }, []);
+
+  const renderContent = () => {
+    switch (currentPage) {
+      case 1:
+        return <VCard onEditStateChange={handleEditStateChange} onRequestChat={toggleAIAssistant} />;
+      case 2:
+        return <Messages />;
+      case 3:
+        return <Marketplace />;
+      case 4:
+        return <Feed />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <DashboardAuthCheck>
@@ -127,13 +142,7 @@ export function DashboardLayout() {
           <DashboardMain>
             <motion.section variants={itemVariants}>
               <Suspense fallback={<LoadingFallback />}>
-                <MemoizedDashboardContent
-                  currentPage={currentPage}
-                  viewportHeight={viewportHeight}
-                  isEditing={isEditing}
-                  onEditStateChange={handleEditStateChange}
-                  onRequestChat={() => setShowAIAssistant(true)}
-                />
+                {renderContent()}
               </Suspense>
             </motion.section>
           </DashboardMain>
