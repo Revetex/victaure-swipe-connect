@@ -29,34 +29,41 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   return (
     <div 
       className={cn(
-        "w-full h-full bg-background",
+        "w-full h-full bg-background/80 backdrop-blur-sm border-r border-border/50",
+        "relative overflow-hidden",
         className
       )}
     >
+      <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/50 to-background/10 pointer-events-none" />
+      
       <ScrollArea className="h-full">
         <div className="p-4 space-y-6">
-          {/* Connections */}
+          {/* Connexions */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
               Connexions
             </h3>
-            <ConnectionsSection />
+            <div className="bg-card/50 rounded-lg p-2">
+              <ConnectionsSection />
+            </div>
           </div>
 
-          {/* Tools */}
+          {/* Outils */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
               Outils
             </h3>
-            <ToolsList onToolClick={handleToolClick} />
+            <div className="bg-card/50 rounded-lg p-2">
+              <ToolsList onToolClick={handleToolClick} />
+            </div>
           </div>
 
-          {/* Settings */}
+          {/* Paramètres */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
               Paramètres
             </h3>
-            <div className="space-y-1">
+            <div className="bg-card/50 rounded-lg p-2 space-y-1">
               <AppearanceSection />
               <NotificationsSection />
               <PrivacySection />
