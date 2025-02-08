@@ -85,9 +85,12 @@ export function useRealtimeChat() {
       }
 
       const message = {
+        id: crypto.randomUUID(), // Generate UUID for new message
         content,
         sender,
-        user_id: user.id
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
 
       const { data, error } = await supabase
