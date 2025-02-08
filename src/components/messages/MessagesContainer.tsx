@@ -6,15 +6,19 @@ import { useReceiver } from "@/hooks/useReceiver";
 import { useMessages } from "@/hooks/useMessages";
 import { useUserChat } from "@/hooks/useUserChat";
 import { useAIChat } from "@/hooks/useAIChat";
-import { toast } from "sonner";
+import { useProfile } from "@/hooks/useProfile";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { useMessagesStore } from "@/store/messagesStore";
 import { useNavigation } from "@/hooks/useNavigation";
+import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
+import { ProfileInfo } from "@/components/profile/ProfileInfo";
+import { toast } from "sonner";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
   const [showConversation, setShowConversation] = useState(false);
   const { currentPage, handlePageChange } = useNavigation();
+  const { profile } = useProfile();
   const { 
     messages: userMessages, 
     isLoading, 
@@ -65,7 +69,7 @@ export function MessagesContainer() {
     setInputMessage('');
   };
 
-  if (isLoading) {
+  if (isLoading || !profile) {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
         <div className="text-muted-foreground">Chargement des messages...</div>
@@ -75,7 +79,7 @@ export function MessagesContainer() {
 
   if (showConversation && receiver) {
     return (
-      <div className="flex flex-col h-screen bg-background">
+      <div className="flex flex-col h-[calc(100dvh-4rem)] bg-background">
         <ConversationView
           receiver={receiver}
           messages={receiver.id === 'assistant' ? aiMessages : userMessages}
@@ -94,7 +98,13 @@ export function MessagesContainer() {
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-[calc(100dvh-4rem)]">
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center gap-4 px-4 py-4">
+          <ProfileAvatar profile={profile} />
+          <ProfileInfo profile={profile} />
+        </div>
+      </div>
       <ConversationList
         messages={userMessages}
         chatMessages={aiMessages}
