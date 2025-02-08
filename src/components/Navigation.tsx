@@ -4,8 +4,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FeedSidebar } from "./feed/FeedSidebar";
-import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 
 interface NavigationProps {
@@ -25,26 +23,23 @@ export function Navigation({ onNavigate, className }: NavigationProps) {
       </div>
 
       <ScrollArea className="flex-1 p-4">
-        <nav className="space-y-6">
-          <div className="space-y-1">
-            <Button 
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => onNavigate("/messages")}
-            >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              <span>Messages</span>
-            </Button>
-            <Button 
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => onNavigate("/settings")}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              <span>Paramètres</span>
-            </Button>
-          </div>
-          <FeedSidebar />
+        <nav className="space-y-4">
+          <Button 
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => onNavigate("/messages")}
+          >
+            <MessageSquare className="h-4 w-4 mr-2" />
+            <span>Messages</span>
+          </Button>
+          <Button 
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => onNavigate("/settings")}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            <span>Paramètres</span>
+          </Button>
         </nav>
       </ScrollArea>
 

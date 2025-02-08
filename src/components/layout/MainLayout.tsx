@@ -10,6 +10,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { LayoutErrorBoundary } from "./LayoutErrorBoundary";
 import { Sidebar } from "./Sidebar";
 import { toast } from "sonner";
+import { FeedSidebar } from "../feed/FeedSidebar";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -48,6 +49,7 @@ export function MainLayout({
   const location = useLocation();
   const navigate = useNavigate();
   const isMessagesPage = location.pathname.includes('/messages');
+  const isDashboard = location.pathname === '/dashboard';
 
   const handleError = (error: Error) => {
     console.error('Layout Error:', error);
@@ -88,12 +90,20 @@ export function MainLayout({
             </header>
           )}
 
-          <main className={cn(
-            "flex-1",
-            !isMessagesPage && "container py-4"
-          )}>
-            {children}
-          </main>
+          <div className="flex-1 flex">
+            {isDashboard && !isMobile && (
+              <aside className="w-[280px] lg:w-[320px] border-r hidden md:block">
+                <FeedSidebar />
+              </aside>
+            )}
+            
+            <main className={cn(
+              "flex-1",
+              !isMessagesPage && "container py-4"
+            )}>
+              {children}
+            </main>
+          </div>
 
           {showFriendsList && (
             <DashboardFriendsList 
