@@ -38,8 +38,8 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   return (
     <motion.div 
       className={cn(
-        "fixed inset-y-0 left-0 w-[280px] sm:w-[350px] bg-background/95 backdrop-blur-sm z-[99998]",
-        "shadow-xl border-r",
+        "fixed inset-y-0 left-0 w-[280px] sm:w-[350px] bg-background/95 backdrop-blur-sm",
+        "shadow-xl border-r z-[99998] overflow-hidden",
         className
       )}
       initial={{ x: -350 }}
@@ -47,8 +47,8 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       exit={{ x: -350 }}
       transition={{ type: "spring", damping: 20, stiffness: 100 }}
     >
-      <ScrollArea className="h-[calc(100vh-4rem)] mt-16">
-        <div className="p-4 space-y-6">
+      <ScrollArea className="h-[100dvh] w-full">
+        <div className="p-4 space-y-6 pb-32">
           <div>
             <h3 className={labelClasses}>Recherche</h3>
             <ProfileSearch 
@@ -58,7 +58,7 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             />
           </div>
 
-          <div className="w-full">
+          <div>
             <h3 className={labelClasses}>Outils</h3>
             <ToolsList onToolClick={handleToolClick} />
           </div>
