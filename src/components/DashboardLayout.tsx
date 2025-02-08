@@ -2,7 +2,7 @@
 import React, { useState, useEffect, memo, useCallback } from "react";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { DashboardContent } from "@/components/dashboard/content/DashboardContent";
 import { AppHeader } from "./navigation/AppHeader";
 import { DashboardNavigation } from "./layout/DashboardNavigation";
 import { useViewport } from "@/hooks/useViewport";
