@@ -5,6 +5,7 @@ import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 interface NavigationProps {
   onNavigate: (path: string) => void;
@@ -52,3 +53,4 @@ export function Navigation({ onNavigate, className }: NavigationProps) {
     </div>
   );
 }
+
