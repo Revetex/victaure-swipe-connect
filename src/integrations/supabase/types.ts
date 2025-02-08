@@ -1541,7 +1541,7 @@ export type Database = {
       }
       mark_messages_as_read: {
         Args: {
-          p_conversation_id: string
+          conversation_partner_id: string
         }
         Returns: undefined
       }

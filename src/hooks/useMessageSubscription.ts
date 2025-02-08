@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/messages';
 import { useMessagesStore } from '@/store/messagesStore';
 import { UserProfile } from '@/types/profile';
+import { toast } from 'sonner';
 
 export const useMessageSubscription = (profile: UserProfile | null) => {
   const { addMessage, updateMessage, deleteMessage } = useMessagesStore();
@@ -38,6 +39,13 @@ export const useMessageSubscription = (profile: UserProfile | null) => {
               ...newMessage,
               status: 'delivered'
             });
+
+            // Notification pour les nouveaux messages
+            if (newMessage.sender_id !== profile.id) {
+              toast(`Nouveau message de ${newMessage.sender?.full_name || 'Quelqu\'un'}`, {
+                description: newMessage.content.substring(0, 50) + (newMessage.content.length > 50 ? '...' : '')
+              });
+            }
           } else if (payload.eventType === 'UPDATE') {
             const updatedMessage = payload.new as Message;
             updateMessage(updatedMessage);

@@ -28,7 +28,11 @@ export function useUserChat(): UserChat {
   usePresenceTracking(profile);
 
   const handleSendMessage = useCallback(async (message: string, receiver: Receiver) => {
-    if (!message.trim()) return;
+    if (!message.trim()) {
+      toast.error("Le message ne peut pas être vide");
+      return;
+    }
+    
     if (!profile) {
       toast.error("Vous devez être connecté pour envoyer des messages");
       return;
@@ -56,7 +60,7 @@ export function useUserChat(): UserChat {
       const { error } = await supabase
         .from('messages')
         .delete()
-        .or(`sender_id.eq.${profile.id},receiver_id.eq.${profile.id}`);
+        .or(`and(sender_id.eq.${profile.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${profile.id})`);
 
       if (error) throw error;
 

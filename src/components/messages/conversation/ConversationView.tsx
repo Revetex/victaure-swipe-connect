@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useProfile } from "@/hooks/useProfile";
 
 export interface ConversationViewProps {
   messages: Message[];
-  receiver: Receiver;
+  receiver: Receiver | null;
   inputMessage: string;
   isThinking?: boolean;
   isListening?: boolean;
@@ -38,6 +39,7 @@ export function ConversationView({
   messagesEndRef
 }: ConversationViewProps) {
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const { profile } = useProfile();
 
   const handleScroll = (event: any) => {
     const target = event.target as HTMLDivElement;
@@ -50,8 +52,20 @@ export function ConversationView({
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
   }, [messages]);
+
+  if (!receiver) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-muted-foreground">
+          Sélectionnez une conversation pour commencer
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[100dvh]">
@@ -91,7 +105,7 @@ export function ConversationView({
               >
                 <ChatMessage
                   content={message.content}
-                  sender={message.sender_id === receiver.id ? "assistant" : "user"}
+                  sender={message.sender_id === profile?.id ? "user" : "assistant"}
                   timestamp={message.created_at}
                   isRead={message.read}
                   status={message.status}
