@@ -1,8 +1,10 @@
 
 import { Job } from "@/types/job";
-import { JobFilters, defaultFilters } from "@/types/filters";
+import type { JobFilters } from "@/types/filters";
+import { defaultFilters } from "@/types/filters";
 
-export { JobFilters, defaultFilters };
+export type { JobFilters };
+export { defaultFilters };
 
 export class JobFilterUtils {
   static applyFilters(jobs: Job[], filters: JobFilters): Job[] {
