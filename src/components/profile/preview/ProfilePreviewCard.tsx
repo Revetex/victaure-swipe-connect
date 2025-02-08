@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
@@ -20,19 +21,19 @@ export function ProfilePreviewCard({
   const handleFlip = () => setIsFlipped(!isFlipped);
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
-      <AnimatePresence mode="wait">
+    <div className="relative w-full">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={isFlipped ? "back" : "front"}
           initial={{ opacity: 0, rotateY: isFlipped ? -180 : 0 }}
           animate={{ opacity: 1, rotateY: isFlipped ? 0 : 0 }}
           exit={{ opacity: 0, rotateY: isFlipped ? 0 : 180 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
           style={{ 
             transformStyle: "preserve-3d",
             backfaceVisibility: "hidden",
           }}
-          className="w-full"
+          className="w-full bg-card rounded-lg"
         >
           {!isFlipped ? (
             <ProfilePreviewFront

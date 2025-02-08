@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { Message, Receiver } from '@/types/messages';
+import { Message, Receiver, MessageSender } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -42,16 +42,18 @@ export function useUserChat(): UserChat {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
+      const messageType = receiver.id === 'assistant' ? 'ai' as const : 'user' as const;
+      
       const newMessage = {
         content: message,
-        sender_id: receiver.id === 'assistant' ? user.id : user.id,
+        sender_id: user.id,
         receiver_id: receiver.id === 'assistant' ? user.id : receiver.id,
-        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
+        message_type: messageType,
         read: false,
-        status: 'sent',
+        status: 'sent' as const,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        metadata: {}
+        metadata: {} as Record<string, any>
       };
 
       const { data: savedMessage, error } = await supabase
@@ -69,20 +71,26 @@ export function useUserChat(): UserChat {
       }
 
       if (savedMessage) {
+        const sender: MessageSender = {
+          id: profile.id,
+          full_name: profile.full_name || '',
+          avatar_url: profile.avatar_url || '',
+          online_status: true,
+          last_seen: new Date().toISOString()
+        };
+
         addMessage({
           ...savedMessage,
           timestamp: savedMessage.created_at,
           status: 'sent',
-          message_type: savedMessage.message_type,
+          message_type: messageType,
           metadata: savedMessage.metadata || {},
-          sender: savedMessage.sender || profile
+          sender
         });
         setInputMessage('');
       }
 
-      // Handle AI response if needed
       if (receiver.id === 'assistant') {
-        // Get AI response using edge function
         const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-chat', {
           body: { 
             message,
@@ -96,16 +104,15 @@ export function useUserChat(): UserChat {
 
         if (aiError) throw aiError;
 
-        // Save AI response
         const aiMessage = {
           content: aiResponse.response,
           sender_id: user.id,
           receiver_id: user.id,
-          message_type: 'ai',
+          message_type: 'ai' as const,
           read: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          metadata: {}
+          metadata: {} as Record<string, any>
         };
 
         const { data: savedAiMessage, error: aiSaveError } = await supabase
@@ -117,19 +124,21 @@ export function useUserChat(): UserChat {
         if (aiSaveError) throw aiSaveError;
 
         if (savedAiMessage) {
+          const aiSender: MessageSender = {
+            id: 'assistant',
+            full_name: 'M. Victaure',
+            avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+            online_status: true,
+            last_seen: new Date().toISOString()
+          };
+
           addMessage({
             ...savedAiMessage,
             timestamp: savedAiMessage.created_at,
             status: 'sent',
             message_type: 'ai',
             metadata: savedAiMessage.metadata || {},
-            sender: {
-              id: 'assistant',
-              full_name: 'M. Victaure',
-              avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-              online_status: true,
-              last_seen: new Date().toISOString()
-            }
+            sender: aiSender
           });
         }
       }
