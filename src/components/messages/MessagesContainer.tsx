@@ -57,12 +57,17 @@ export function MessagesContainer() {
         return;
       }
 
-      if (receiver?.id === 'assistant') {
+      if (receiver.id === 'assistant') {
         if (inputMessage.trim()) {
           handleAISendMessage(inputMessage);
         }
       } else {
+        if (!inputMessage.trim()) {
+          toast.error("Le message ne peut pas être vide");
+          return;
+        }
         handleUserSendMessage(inputMessage, receiver);
+        setInputMessage('');
       }
     } catch (error) {
       console.error("Erreur lors de l'envoi du message:", error);
@@ -85,7 +90,7 @@ export function MessagesContainer() {
           <ConversationView
             receiver={receiver}
             messages={receiver.id === 'assistant' ? aiMessages : userMessages}
-            inputMessage={receiver.id === 'assistant' ? inputMessage : ''}
+            inputMessage={inputMessage}
             isThinking={isThinking}
             isListening={isListening}
             onInputChange={setInputMessage}
