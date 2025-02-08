@@ -1,13 +1,12 @@
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tool, ToolsNavigationProps } from "./types";
 import { tools } from "./toolsConfig";
 import { ToolGridItem } from "./ToolGridItem";
-import { ToolDialog } from "./ToolDialog";
 
 export function ToolsNavigation({ 
   activeTool, 
@@ -16,7 +15,7 @@ export function ToolsNavigation({
   onReorderTools,
   isLoading 
 }: ToolsNavigationProps) {
-  const [openTool, setOpenTool] = useState<Tool | null>(null);
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   const orderedTools = toolsOrder
@@ -25,15 +24,8 @@ export function ToolsNavigation({
 
   const handleToolClick = (toolId: Tool) => {
     if (isLoading) return;
-    setOpenTool(toolId);
     onToolChange(toolId);
   };
-
-  const handleClose = () => {
-    setOpenTool(null);
-  };
-
-  const activeTool_ = tools.find(tool => tool.id === openTool);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -60,34 +52,26 @@ export function ToolsNavigation({
   }
 
   return (
-    <>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className={cn(
-          "grid gap-4",
-          isMobile ? "grid-cols-2" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-        )}
-      >
-        {orderedTools.map((tool) => {
-          if (!tool) return null;
-          return (
-            <ToolGridItem
-              key={tool.id}
-              tool={tool}
-              isActive={activeTool === tool.id}
-              onClick={handleToolClick}
-            />
-          );
-        })}
-      </motion.div>
-
-      <ToolDialog
-        openTool={openTool}
-        onClose={handleClose}
-        activeTool={activeTool_}
-      />
-    </>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className={cn(
+        "grid gap-4 w-full px-4",
+        isMobile ? "grid-cols-2" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+      )}
+    >
+      {orderedTools.map((tool) => {
+        if (!tool) return null;
+        return (
+          <ToolGridItem
+            key={tool.id}
+            tool={tool}
+            isActive={activeTool === tool.id}
+            onClick={handleToolClick}
+          />
+        );
+      })}
+    </motion.div>
   );
 }
