@@ -1,13 +1,17 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Building2, MapPin, ExternalLink, Calendar } from "lucide-react";
+import { Building2, MapPin, ExternalLink, Calendar, Search, Bot } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
+import { AISearchSuggestions } from "@/components/google-search/AISearchSuggestions";
 
 interface ScrapedJobsListProps {
   queryString?: string;
@@ -86,6 +90,28 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
             Offres externes ({jobs.length})
           </h2>
         </div>
+
+        {/* Search and AI Section */}
+        <div className="relative bg-background/60 backdrop-blur-sm rounded-lg p-6 border border-border/50">
+          <div className="absolute top-2 left-2 z-10">
+            <AISearchSuggestions onSuggestionClick={(suggestion) => {
+              const searchInput = document.querySelector('.gsc-input-box input') as HTMLInputElement;
+              if (searchInput) {
+                searchInput.value = suggestion;
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                setTimeout(() => {
+                  const searchButton = document.querySelector('.gsc-search-button-v2') as HTMLButtonElement;
+                  if (searchButton) {
+                    searchButton.click();
+                  }
+                }, 300);
+              }
+            }} />
+          </div>
+          <div className="pl-32">
+            <GoogleSearchBox />
+          </div>
+        </div>
         
         {jobs.length === 0 ? (
           <motion.div 
@@ -152,6 +178,11 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
           </div>
         )}
       </motion.div>
+
+      {/* Google Search Results */}
+      <div className="mt-8 bg-background/60 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden">
+        <div className="gcse-searchresults-only"></div>
+      </div>
     </div>
   );
 }
