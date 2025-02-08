@@ -592,6 +592,7 @@ export type Database = {
           images: string[] | null
           industry: string | null
           is_urgent: boolean | null
+          language_requirements: string | null
           languages: string[] | null
           latitude: number | null
           location: string
@@ -599,6 +600,7 @@ export type Database = {
           mission_type: string
           payment_schedule: string | null
           preferred_skills: string[] | null
+          province: string | null
           qualifications: string[] | null
           remote_type: string | null
           required_skills: string[] | null
@@ -636,6 +638,7 @@ export type Database = {
           images?: string[] | null
           industry?: string | null
           is_urgent?: boolean | null
+          language_requirements?: string | null
           languages?: string[] | null
           latitude?: number | null
           location: string
@@ -643,6 +646,7 @@ export type Database = {
           mission_type?: string
           payment_schedule?: string | null
           preferred_skills?: string[] | null
+          province?: string | null
           qualifications?: string[] | null
           remote_type?: string | null
           required_skills?: string[] | null
@@ -680,6 +684,7 @@ export type Database = {
           images?: string[] | null
           industry?: string | null
           is_urgent?: boolean | null
+          language_requirements?: string | null
           languages?: string[] | null
           latitude?: number | null
           location?: string
@@ -687,6 +692,7 @@ export type Database = {
           mission_type?: string
           payment_schedule?: string | null
           preferred_skills?: string[] | null
+          province?: string | null
           qualifications?: string[] | null
           remote_type?: string | null
           required_skills?: string[] | null
