@@ -1,3 +1,4 @@
+
 import { JobFilters } from "./JobFilterUtils";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
@@ -20,47 +21,45 @@ export function JobFiltersPanel({
 
   if (isMobile) {
     return (
-      <div className="sticky top-0 z-50 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60 border-b border-white/10">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="lg" className="w-full bg-white/5 hover:bg-white/10 text-white border-white/10">
-              <Filter className="w-4 h-4 mr-2" />
-              Filtres
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-full sm:max-w-lg bg-gray-900/95 border-white/10">
-            <SheetHeader>
-              <SheetTitle className="text-white">Filtres</SheetTitle>
-              <SheetDescription className="text-gray-400">
-                Affinez votre recherche avec les filtres ci-dessous
-              </SheetDescription>
-            </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
-              <JobFiltersComponent
-                filters={filters}
-                onFilterChange={onFilterChange}
-              />
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
-      </div>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="lg" className="w-full bg-background/60 hover:bg-background/80 border-border/50">
+            <Filter className="h-4 w-4 mr-2" />
+            Filtres
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-full sm:max-w-lg">
+          <SheetHeader>
+            <SheetTitle>Filtres</SheetTitle>
+            <SheetDescription className="text-muted-foreground">
+              Affinez votre recherche avec les filtres ci-dessous
+            </SheetDescription>
+          </SheetHeader>
+          <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
+            <JobFiltersComponent
+              filters={filters}
+              onFilterChange={onFilterChange}
+            />
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
     );
   }
 
   return (
-    <motion.div 
+    <motion.aside 
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="bg-gray-900/95 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-hidden"
+      className="sticky top-4 w-full max-w-xs bg-background/60 backdrop-blur-sm rounded-lg border border-border/50 shadow-sm"
     >
       <ScrollArea className="h-[calc(100vh-8rem)]">
-        <div className="p-4">
+        <div className="space-y-4 p-4">
           <JobFiltersComponent
             filters={filters}
             onFilterChange={onFilterChange}
           />
         </div>
       </ScrollArea>
-    </motion.div>
+    </motion.aside>
   );
 }
