@@ -47,7 +47,7 @@ export function MainLayout({
         !isMobile && "md:pl-[280px] lg:pl-[320px]"
       )}>
         {/* Header */}
-        <header className="h-16 border-b bg-background/95 backdrop-blur sticky top-0 z-40">
+        <header className="h-16 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40">
           <div className="container h-full mx-auto px-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               {isMobile && (
@@ -73,8 +73,8 @@ export function MainLayout({
           </div>
         </header>
 
-        {/* Main Content */}
-        <div className="flex-1">
+        {/* Main Content with padding-top to account for fixed header */}
+        <div className="flex-1 pt-16">
           {children}
         </div>
 
