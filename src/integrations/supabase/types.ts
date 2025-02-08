@@ -931,6 +931,7 @@ export type Database = {
           id: string
           message: string
           read: boolean | null
+          read_at: string | null
           title: string
           updated_at: string | null
           user_id: string
@@ -940,6 +941,7 @@ export type Database = {
           id?: string
           message: string
           read?: boolean | null
+          read_at?: string | null
           title: string
           updated_at?: string | null
           user_id: string
@@ -949,6 +951,7 @@ export type Database = {
           id?: string
           message?: string
           read?: boolean | null
+          read_at?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
