@@ -1,3 +1,4 @@
+
 import { Building2, MapPin, Calendar, Clock, Briefcase } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,8 +35,8 @@ export function JobCard({ job }: JobCardProps) {
               <span className="truncate">{job.company}</span>
             </div>
           </div>
-          <Badge variant={job.source === 'Victaure' ? 'default' : 'secondary'} className="shrink-0">
-            {job.source || 'Victaure'}
+          <Badge variant={job.source === 'internal' ? 'default' : 'secondary'} className="shrink-0">
+            {job.source || 'internal'}
           </Badge>
         </div>
 
