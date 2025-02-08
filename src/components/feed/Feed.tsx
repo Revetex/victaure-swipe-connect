@@ -42,33 +42,31 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-[calc(100vh-5rem)] w-full relative"
+      className="h-[calc(100vh-5rem)] w-full max-w-3xl mx-auto px-4"
       onScroll={handleScroll}
     >
-      <div className="max-w-3xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="sticky top-0 z-[55] bg-background/95 backdrop-blur-sm py-3"
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="sticky top-0 z-[55] bg-background/95 backdrop-blur-sm py-3"
+      >
+        <CreatePost onPostCreated={handlePostCreated} />
+      </motion.div>
+      
+      <div className="py-3">
+        <Suspense 
+          fallback={
+            <div className="flex items-center justify-center py-6">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          }
         >
-          <CreatePost onPostCreated={handlePostCreated} />
-        </motion.div>
-        
-        <div className="py-3">
-          <Suspense 
-            fallback={
-              <div className="flex items-center justify-center py-6">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            }
-          >
-            <PostList 
-              onPostDeleted={handlePostDeleted}
-              onPostUpdated={handlePostUpdated}
-            />
-          </Suspense>
-        </div>
+          <PostList 
+            onPostDeleted={handlePostDeleted}
+            onPostUpdated={handlePostUpdated}
+          />
+        </Suspense>
       </div>
 
       <AnimatePresence>
