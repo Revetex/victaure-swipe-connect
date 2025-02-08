@@ -24,7 +24,7 @@ export function DashboardHeader({
   isEditing = false
 }: DashboardHeaderProps) {
   return (
-    <div className="flex items-center justify-between w-full px-4">
+    <div className="flex items-center justify-between h-full px-4">
       <motion.div 
         className="flex items-center gap-6"
         initial={{ x: -20, opacity: 0 }}
@@ -42,7 +42,7 @@ export function DashboardHeader({
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[280px] sm:w-[350px] p-0">
+          <SheetContent side="left" className="p-0 w-[280px] sm:w-[350px]">
             <Suspense fallback={null}>
               <FeedSidebar />
             </Suspense>
@@ -57,7 +57,7 @@ export function DashboardHeader({
       </motion.div>
       
       <motion.div 
-        className="flex items-center gap-2 sm:gap-4"
+        className="flex items-center gap-4"
         initial={{ x: 20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -68,15 +68,14 @@ export function DashboardHeader({
             variant="outline"
             onClick={onToggleFriendsList}
             className={cn(
-              "flex items-center gap-2 text-sm sm:text-base",
+              "hidden md:flex items-center gap-2",
               "transition-all duration-300",
               "hover:bg-primary/10 hover:text-primary",
               showFriendsList && "bg-primary/5 text-primary"
             )}
-            size="sm"
           >
             <Menu className="h-4 w-4" />
-            <span className="hidden sm:inline">Amis</span>
+            <span>Amis</span>
           </Button>
         )}
       </motion.div>

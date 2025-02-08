@@ -23,10 +23,7 @@ interface MainLayoutProps {
 }
 
 const layoutVariants = {
-  initial: { 
-    opacity: 0,
-    y: 20 
-  },
+  initial: { opacity: 0, y: 20 },
   animate: { 
     opacity: 1,
     y: 0,
@@ -39,9 +36,7 @@ const layoutVariants = {
   exit: { 
     opacity: 0,
     y: -20,
-    transition: {
-      duration: 0.2
-    }
+    transition: { duration: 0.2 }
   }
 };
 
@@ -84,21 +79,14 @@ export function MainLayout({
           exit="exit"
         >
           {!isMessagesPage && (
-            <header 
-              className={cn(
-                "sticky top-0 z-40 w-full",
-                "h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-              )}
-            >
-              <div className="container h-full">
-                <DashboardHeader 
-                  title={title}
-                  showFriendsList={showFriendsList}
-                  onToggleFriendsList={onToggleFriendsList}
-                  isEditing={isEditing}
-                  onToolReturn={onToolReturn}
-                />
-              </div>
+            <header className="sticky top-0 z-40 w-full h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <DashboardHeader 
+                title={title}
+                showFriendsList={showFriendsList}
+                onToggleFriendsList={onToggleFriendsList}
+                isEditing={isEditing}
+                onToolReturn={onToolReturn}
+              />
             </header>
           )}
 
@@ -116,24 +104,13 @@ export function MainLayout({
             />
           )}
 
-          {!isFriendsPage && (
-            <nav 
-              className={cn(
-                "fixed bottom-0 left-0 right-0 z-40",
-                "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-                !isMobile && "md:ml-[280px] lg:ml-[320px]"
-              )}
-              style={{ 
-                paddingBottom: 'env(safe-area-inset-bottom)'
-              }}
-            >
-              <div className="container h-full">
-                <DashboardNavigation 
-                  currentPage={currentPage} 
-                  onPageChange={handlePageChange}
-                  isEditing={isEditing}
-                />
-              </div>
+          {!isFriendsPage && isMobile && (
+            <nav className="fixed bottom-0 left-0 right-0 z-40 h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <DashboardNavigation 
+                currentPage={currentPage} 
+                onPageChange={handlePageChange}
+                isEditing={isEditing}
+              />
             </nav>
           )}
         </motion.div>
