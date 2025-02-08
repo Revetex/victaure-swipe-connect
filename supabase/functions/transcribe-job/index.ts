@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { pipeline } from "npm:@huggingface/transformers@3.2.3"
+import { HfInference } from "https://esm.sh/@huggingface/inference@2.3.2"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
@@ -23,35 +23,22 @@ serve(async (req) => {
     console.log(`Starting summarization for job ${jobId}...`)
     console.log('Content length:', jobContent.length)
 
-    let summarizer;
-    try {
-      console.log('Initializing pipeline with model: Xenova/distilbart-cnn-12-6')
-      summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-12-6', {
-        revision: 'main',
-        quantized: false,
-        progress_callback: (progress) => {
-          console.log(`Loading model: ${Math.round(progress.progress * 100)}%`)
-        }
-      })
-    } catch (e) {
-      console.error('Pipeline initialization error:', e)
-      console.error('Stack trace:', e.stack)
-      throw new Error(`Failed to initialize summarization model: ${e.message}`)
-    }
+    // Initialize HuggingFace Inference API client
+    const hf = new HfInference(Deno.env.get('HUGGING_FACE_API_KEY'))
 
-    if (!summarizer) {
-      throw new Error('Summarizer failed to initialize')
-    }
-
-    console.log('Generating summary...')
-    const summary = await summarizer(jobContent, {
-      max_length: 130,
-      min_length: 30,
-      do_sample: false,
-      truncation: true,
+    // Generate summary using the Inference API
+    console.log('Generating summary using Hugging Face Inference API...')
+    const response = await hf.summarization({
+      model: 'facebook/bart-large-cnn',
+      inputs: jobContent,
+      parameters: {
+        max_length: 130,
+        min_length: 30,
+        do_sample: false
+      }
     })
 
-    if (!summary || !summary[0]?.summary_text) {
+    if (!response || !response.summary_text) {
       throw new Error('Failed to generate summary')
     }
 
@@ -68,7 +55,7 @@ serve(async (req) => {
       .from('job_transcriptions')
       .insert({
         job_id: jobId,
-        ai_transcription: summary[0].summary_text
+        ai_transcription: response.summary_text
       })
       .select()
 
@@ -78,7 +65,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ transcription: summary[0].summary_text }),
+      JSON.stringify({ transcription: response.summary_text }),
       { 
         headers: { 
           ...corsHeaders, 
