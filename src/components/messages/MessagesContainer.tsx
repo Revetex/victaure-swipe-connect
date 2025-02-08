@@ -88,21 +88,19 @@ export function MessagesContainer() {
   return (
     <Card className="min-h-[calc(100vh-8rem)] h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] flex flex-col bg-background relative">
       {showConversation && receiver ? (
-        <div className="flex-1 h-full overflow-hidden">
-          <ConversationView
-            receiver={receiver}
-            messages={receiver.id === 'assistant' ? aiMessages : userMessages}
-            inputMessage={inputMessage}
-            isThinking={isThinking}
-            isListening={isListening}
-            onInputChange={setInputMessage}
-            onSendMessage={handleSendMessage}
-            onVoiceInput={handleVoiceInput}
-            onBack={handleBack}
-            onDeleteConversation={() => handleDeleteConversation(receiver)}
-            messagesEndRef={messagesEndRef}
-          />
-        </div>
+        <ConversationView
+          receiver={receiver}
+          messages={receiver.id === 'assistant' ? aiMessages : userMessages}
+          inputMessage={inputMessage}
+          isThinking={isThinking}
+          isListening={isListening}
+          onInputChange={setInputMessage}
+          onSendMessage={handleSendMessage}
+          onVoiceInput={handleVoiceInput}
+          onBack={handleBack}
+          onDeleteConversation={() => handleDeleteConversation(receiver)}
+          messagesEndRef={messagesEndRef}
+        />
       ) : (
         <ConversationList
           messages={userMessages}
