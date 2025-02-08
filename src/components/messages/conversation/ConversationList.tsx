@@ -6,19 +6,25 @@ import { useProfile } from "@/hooks/useProfile";
 import { SearchBar } from "./SearchBar";
 import { AssistantButton } from "./AssistantButton";
 import { ConversationItem } from "./ConversationItem";
-import { useNavigation } from "@/hooks/useNavigation";
 import { DashboardNavigation } from "@/components/dashboard/navigation/DashboardNavigation";
 
 export interface ConversationListProps {
   messages: Message[];
   chatMessages: Message[];
   onSelectConversation: (receiver: Receiver) => void;
+  currentPage: number;
+  onPageChange: (page: number) => void;
 }
 
-export function ConversationList({ messages, chatMessages, onSelectConversation }: ConversationListProps) {
+export function ConversationList({ 
+  messages, 
+  chatMessages, 
+  onSelectConversation,
+  currentPage,
+  onPageChange
+}: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
-  const { currentPage, handlePageChange } = useNavigation();
   
   const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
     if (!profile || !message) return acc;
@@ -142,11 +148,11 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
         </div>
       </ScrollArea>
 
-      {/* Fixed Footer Navigation */}
+      {/* Bottom Navigation */}
       <div className="sticky bottom-0 z-50 bg-background border-t">
         <DashboardNavigation
           currentPage={currentPage}
-          onPageChange={handlePageChange}
+          onPageChange={onPageChange}
           isEditing={false}
         />
       </div>

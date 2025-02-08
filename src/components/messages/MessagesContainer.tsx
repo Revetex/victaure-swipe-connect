@@ -3,17 +3,18 @@ import { useState, useRef } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
-import { Card } from "../ui/card";
 import { useMessages } from "@/hooks/useMessages";
 import { useUserChat } from "@/hooks/useUserChat";
 import { useAIChat } from "@/hooks/useAIChat";
 import { toast } from "sonner";
 import { useConversationDelete } from "@/hooks/useConversationDelete";
 import { useMessagesStore } from "@/store/messagesStore";
+import { useNavigation } from "@/hooks/useNavigation";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
   const [showConversation, setShowConversation] = useState(false);
+  const { currentPage, handlePageChange } = useNavigation();
   const { 
     messages: userMessages, 
     isLoading, 
@@ -74,7 +75,7 @@ export function MessagesContainer() {
 
   if (showConversation && receiver) {
     return (
-      <div className="fixed inset-0 bg-background">
+      <div className="h-full bg-background">
         <ConversationView
           receiver={receiver}
           messages={receiver.id === 'assistant' ? aiMessages : userMessages}
@@ -98,6 +99,8 @@ export function MessagesContainer() {
         messages={userMessages}
         chatMessages={aiMessages}
         onSelectConversation={handleSelectConversation}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
       />
     </div>
   );
