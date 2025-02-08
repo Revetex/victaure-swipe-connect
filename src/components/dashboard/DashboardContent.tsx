@@ -43,8 +43,13 @@ export function DashboardContent({
   }, [currentPage, onEditStateChange]);
 
   const renderContent = () => {
+    // Check if hidden_items is defined and is an array before using includes
+    const isPageHidden = navPreferences?.hidden_items && 
+      Array.isArray(navPreferences.hidden_items) && 
+      navPreferences.hidden_items.includes(currentPage.toString());
+
     // If page is hidden in user preferences, return null
-    if (navPreferences?.hidden_items?.includes(currentPage.toString())) {
+    if (isPageHidden) {
       return null;
     }
 
