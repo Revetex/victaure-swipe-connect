@@ -14,6 +14,9 @@ import { Loader } from "@/components/ui/loader";
 import { NotificationsTab } from "@/components/notifications/NotificationsTab";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TasksPage } from "@/components/tools/TasksPage";
+import { FriendsPage } from "@/components/friends/FriendsPage";
+import { FriendRequestsPage } from "@/components/friends/FriendRequestsPage";
+import { ProfileSearchPage } from "@/components/friends/ProfileSearchPage";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -115,6 +118,12 @@ export function DashboardContent({
             return <NotificationsTab />;
           case 10:
             return <Settings />;
+          case 11:
+            return <FriendsPage />;
+          case 12:
+            return <FriendRequestsPage />;
+          case 13:
+            return <ProfileSearchPage />;
           default:
             return null;
         }
