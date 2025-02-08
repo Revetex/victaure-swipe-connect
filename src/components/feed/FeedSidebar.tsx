@@ -38,9 +38,9 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
   return (
     <motion.div 
       className={cn(
-        "fixed inset-y-0 left-0 w-[280px] sm:w-[350px] h-full",
+        "fixed inset-y-0 left-0 w-[280px] sm:w-[350px]",
         "bg-background/95 backdrop-blur-sm shadow-xl border-r",
-        "z-[99998] flex flex-col",
+        "z-[99998] flex flex-col h-[100dvh]",
         className
       )}
       initial={{ x: -350 }}
@@ -48,8 +48,8 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       exit={{ x: -350 }}
       transition={{ type: "spring", damping: 20, stiffness: 100 }}
     >
-      <ScrollArea className="flex-1 w-full">
-        <div className="p-4 space-y-6 pb-32">
+      <ScrollArea className="flex-grow">
+        <div className="p-4 space-y-6 pb-[calc(4rem+env(safe-area-inset-bottom))]">
           <div>
             <h3 className={labelClasses}>Recherche</h3>
             <ProfileSearch 
