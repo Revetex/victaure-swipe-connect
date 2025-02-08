@@ -22,9 +22,11 @@ export function ConversationList({
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  // Group messages by conversation (sender/receiver pair)
+  // Group messages by conversation (sender/receiver pair) - only for user messages
   const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
-    if (!profile || !message) return acc;
+    if (!profile || !message || message.sender_id === 'assistant' || message.receiver_id === 'assistant') {
+      return acc;
+    }
     
     // Skip self-messages
     if (message.sender_id === message.receiver_id) {
@@ -74,6 +76,9 @@ export function ConversationList({
     new Date(b.lastMessage.created_at).getTime() - new Date(a.lastMessage.created_at).getTime()
   );
 
+  // Get last AI message if exists
+  const lastAIMessage = chatMessages[chatMessages.length - 1];
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
       <SearchBar
@@ -94,6 +99,7 @@ export function ConversationList({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            className="bg-muted/20 rounded-lg p-2"
           >
             <AssistantButton
               chatMessages={chatMessages}
