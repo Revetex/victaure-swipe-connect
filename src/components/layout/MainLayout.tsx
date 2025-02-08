@@ -7,9 +7,10 @@ import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
 import { LayoutErrorBoundary } from "./LayoutErrorBoundary";
-import { Sidebar } from "./Sidebar";
-import { DashboardNavigation } from "./DashboardNavigation";
-import { useNavigation } from "@/hooks/useNavigation";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu, ArrowUp, ArrowDown } from "lucide-react";
+import { useState } from "react";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -46,9 +47,7 @@ export function MainLayout({
 }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
-  const isFriendsPage = location.pathname.includes('/friends');
-  const isMessagesPage = location.pathname.includes('/messages');
-  const { currentPage, handlePageChange } = useNavigation();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <ErrorBoundary
@@ -58,12 +57,50 @@ export function MainLayout({
       }}
       onReset={() => window.location.reload()}
     >
-      <div className="flex min-h-screen bg-background">
-        {!isMobile && <Sidebar />}
-        
+      <div className="flex min-h-screen bg-background flex-col">
+        {/* Header with Navigation */}
+        <header className="h-16 border-b bg-background flex items-center justify-between px-4 fixed top-0 left-0 right-0 z-50">
+          <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="top" className="p-0">
+              <nav className="flex flex-col p-4 space-y-4">
+                <Button variant="ghost" onClick={() => setIsDrawerOpen(false)}>
+                  <ArrowUp className="h-5 w-5 mr-2" />
+                  Haut
+                </Button>
+                <Button variant="ghost" onClick={() => setIsDrawerOpen(false)}>
+                  <ArrowDown className="h-5 w-5 mr-2" />
+                  Bas
+                </Button>
+              </nav>
+            </SheetContent>
+          </Sheet>
+
+          <div className="flex items-center gap-4">
+            {!isEditing && (
+              <Button
+                variant="outline"
+                onClick={onToggleFriendsList}
+                className={cn(
+                  "hidden md:flex items-center gap-2",
+                  showFriendsList && "bg-primary/5 text-primary"
+                )}
+              >
+                <Menu className="h-4 w-4" />
+                <span>Amis</span>
+              </Button>
+            )}
+          </div>
+        </header>
+
+        {/* Main Content */}
         <motion.div 
           className={cn(
-            "flex-1 flex flex-col min-h-screen relative",
+            "flex-1 flex flex-col min-h-screen relative mt-16",
             !isMobile && "md:pl-[280px] lg:pl-[320px]"
           )}
           variants={layoutVariants}
@@ -81,17 +118,19 @@ export function MainLayout({
               onClose={onToggleFriendsList}
             />
           )}
-
-          {!isFriendsPage && isMobile && (
-            <nav className="fixed bottom-0 left-0 right-0 z-40 h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <DashboardNavigation 
-                currentPage={currentPage} 
-                onPageChange={handlePageChange}
-                isEditing={isEditing}
-              />
-            </nav>
-          )}
         </motion.div>
+
+        {/* Footer with Navigation */}
+        <footer className="h-16 border-t bg-background flex items-center justify-between px-4 fixed bottom-0 left-0 right-0 z-50">
+          <nav className="flex items-center justify-around w-full">
+            <Button variant="ghost" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <ArrowUp className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
+              <ArrowDown className="h-5 w-5" />
+            </Button>
+          </nav>
+        </footer>
       </div>
     </ErrorBoundary>
   );
