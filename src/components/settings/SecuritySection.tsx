@@ -1,3 +1,4 @@
+
 import { Lock } from "lucide-react";
 import { SettingsSection } from "./SettingsSection";
 import { PasswordChangeSection } from "./PasswordChangeSection";
