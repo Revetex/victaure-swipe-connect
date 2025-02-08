@@ -12,7 +12,10 @@ export interface MessageTypes {
         read: boolean | null;
         created_at: string | null;
         updated_at: string | null;
-        is_ai_message: boolean | null;
+        message_type: 'user' | 'ai' | 'system';
+        status: 'sent' | 'delivered' | 'read';
+        metadata: Json | null;
+        reaction: string | null;
       };
       Insert: {
         id: string;
@@ -22,7 +25,10 @@ export interface MessageTypes {
         read?: boolean | null;
         created_at?: string | null;
         updated_at?: string | null;
-        is_ai_message?: boolean | null;
+        message_type?: 'user' | 'ai' | 'system';
+        status?: 'sent' | 'delivered' | 'read';
+        metadata?: Json | null;
+        reaction?: string | null;
       };
       Update: {
         id?: string;
@@ -32,7 +38,39 @@ export interface MessageTypes {
         read?: boolean | null;
         created_at?: string | null;
         updated_at?: string | null;
-        is_ai_message?: boolean | null;
+        message_type?: 'user' | 'ai' | 'system';
+        status?: 'sent' | 'delivered' | 'read';
+        metadata?: Json | null;
+        reaction?: string | null;
+      };
+    };
+    message_deliveries: {
+      Row: {
+        id: string;
+        message_id: string;
+        recipient_id: string;
+        status: 'pending' | 'delivered' | 'read';
+        delivered_at: string | null;
+        read_at: string | null;
+        created_at: string | null;
+      };
+      Insert: {
+        id?: string;
+        message_id: string;
+        recipient_id: string;
+        status?: 'pending' | 'delivered' | 'read';
+        delivered_at?: string | null;
+        read_at?: string | null;
+        created_at?: string | null;
+      };
+      Update: {
+        id?: string;
+        message_id?: string;
+        recipient_id?: string;
+        status?: 'pending' | 'delivered' | 'read';
+        delivered_at?: string | null;
+        read_at?: string | null;
+        created_at?: string | null;
       };
     };
   };
