@@ -9,12 +9,18 @@ export const navigationItems = [
   { id: 5, icon: Settings, name: "Paramètres", description: "Configurer votre compte" }
 ] as const;
 
-export const getPageTitle = (currentPage: number): string => {
+export const getPageTitle = (currentPage: number, customLabels?: Record<string, string>): string => {
   const item = navigationItems.find(item => item.id === currentPage);
-  return item?.name || "Tableau de bord";
+  if (!item) return "Tableau de bord";
+  
+  return customLabels?.[item.id.toString()] || item.name;
 };
 
 export const getPageDescription = (currentPage: number): string => {
   const item = navigationItems.find(item => item.id === currentPage);
   return item?.description || "";
+};
+
+export const getDefaultNavigationOrder = (): number[] => {
+  return navigationItems.map(item => item.id);
 };

@@ -895,6 +895,33 @@ export type Database = {
           },
         ]
       }
+      navigation_preferences: {
+        Row: {
+          created_at: string
+          custom_labels: Json | null
+          hidden_items: Json | null
+          id: string
+          menu_order: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_labels?: Json | null
+          hidden_items?: Json | null
+          id: string
+          menu_order?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_labels?: Json | null
+          hidden_items?: Json | null
+          id?: string
+          menu_order?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           category: string | null
@@ -1190,6 +1217,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profile_settings: {
+        Row: {
+          created_at: string
+          id: string
+          language: string | null
+          notifications_enabled: boolean | null
+          privacy_enabled: boolean | null
+          theme: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          privacy_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string | null
+          notifications_enabled?: boolean | null
+          privacy_enabled?: boolean | null
+          theme?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

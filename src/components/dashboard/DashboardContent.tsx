@@ -8,6 +8,7 @@ import { NotesMap } from "@/components/notes/NotesMap";
 import { Feed } from "@/components/Feed";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useUserSettings } from "@/hooks/useUserSettings";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -33,6 +34,8 @@ export function DashboardContent({
   onEditStateChange,
   onRequestChat
 }: DashboardContentProps) {
+  const { navPreferences } = useUserSettings();
+  
   useEffect(() => {
     if (currentPage === menuPages.NOTES) {
       onEditStateChange(true);
@@ -40,6 +43,11 @@ export function DashboardContent({
   }, [currentPage, onEditStateChange]);
 
   const renderContent = () => {
+    // If page is hidden in user preferences, return null
+    if (navPreferences?.hidden_items?.includes(currentPage.toString())) {
+      return null;
+    }
+
     switch (currentPage) {
       case menuPages.PROFILE:
         return (
