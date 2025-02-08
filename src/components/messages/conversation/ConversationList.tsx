@@ -60,20 +60,6 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
 
   return (
     <div className="fixed inset-0 z-[99999] bg-background flex flex-col">
-      <div className="sticky top-16 z-50 bg-background/95 backdrop-blur border-b">
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSelectFriend={(friendId) => onSelectConversation({
-            id: friendId,
-            full_name: '',
-            avatar_url: '',
-            online_status: false,
-            last_seen: new Date().toISOString()
-          })}
-        />
-      </div>
-
       <ScrollArea className="flex-1">
         <div className="h-full p-4 space-y-4">
           <AssistantButton
@@ -129,6 +115,20 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
           )}
         </div>
       </ScrollArea>
+
+      <div className="sticky bottom-0 z-50 bg-background/95 backdrop-blur border-t">
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onSelectFriend={(friendId) => onSelectConversation({
+            id: friendId,
+            full_name: '',
+            avatar_url: '',
+            online_status: false,
+            last_seen: new Date().toISOString()
+          })}
+        />
+      </div>
     </div>
   );
 }
