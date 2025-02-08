@@ -6,6 +6,8 @@ import { SearchBar } from "./SearchBar";
 import { ConversationItem } from "./ConversationItem";
 import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
+import { Bot } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -24,10 +26,6 @@ export function ConversationList({
   // Group messages by conversation (sender/receiver pair)
   const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
     if (!profile || !message) {
-      return acc;
-    }
-    
-    if (message.sender_id === message.receiver_id) {
       return acc;
     }
 
@@ -82,6 +80,37 @@ export function ConversationList({
 
       <ScrollArea className="flex-1 pt-4">
         <div className="px-4 space-y-4">
+          {/* AI Assistant - M. Victaure */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              variant="outline"
+              className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10"
+              onClick={() => onSelectConversation({
+                id: 'assistant',
+                full_name: 'M. Victaure',
+                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                online_status: true,
+                last_seen: new Date().toISOString()
+              })}
+            >
+              <Bot className="h-5 w-5 text-primary" />
+              <div className="flex-1 text-left">
+                <h3 className="font-medium">M. Victaure</h3>
+                <p className="text-sm text-muted-foreground">Assistant virtuel</p>
+              </div>
+              {chatMessages.length > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
+                </span>
+              )}
+            </Button>
+          </motion.div>
+
+          {/* User Conversations */}
           {sortedConversations.length > 0 ? (
             <div className="space-y-2">
               {sortedConversations.map((conv, index) => (
