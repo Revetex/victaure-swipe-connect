@@ -29,10 +29,17 @@ export const useUserSettings = () => {
         .from('profile_settings')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as UserSettings;
+      
+      // Return default settings if none exist
+      return data || {
+        theme: 'system',
+        language: 'fr',
+        notifications_enabled: true,
+        privacy_enabled: false
+      };
     }
   });
 
@@ -46,10 +53,16 @@ export const useUserSettings = () => {
         .from('navigation_preferences')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as NavigationPreferences;
+      
+      // Return default navigation preferences if none exist
+      return data || {
+        menu_order: [],
+        hidden_items: [],
+        custom_labels: {}
+      };
     }
   });
 
