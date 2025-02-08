@@ -60,8 +60,8 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="flex flex-col h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] overflow-hidden relative bg-background">
-      <header className="flex-shrink-0 bg-background/95 backdrop-blur z-[60] border-b relative">
+    <section className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden relative bg-background">
+      <header className="flex-shrink-0 bg-background/95 backdrop-blur z-[999] border-b relative">
         <ChatHeader
           title={receiver.full_name}
           subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}

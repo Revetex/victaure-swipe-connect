@@ -67,7 +67,7 @@ export function ChatHeader({
               <MoreVertical className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-[70]">
+          <DropdownMenuContent align="end" className="z-[9999]">
             <DropdownMenuItem 
               onClick={onDelete} 
               className="text-destructive"

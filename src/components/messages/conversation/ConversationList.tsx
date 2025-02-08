@@ -63,7 +63,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
         })}
       />
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 relative">
         <div className="p-4 space-y-4">
           <AssistantButton
             chatMessages={chatMessages}
