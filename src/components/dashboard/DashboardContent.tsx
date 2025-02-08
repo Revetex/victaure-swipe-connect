@@ -59,7 +59,6 @@ export function DashboardContent({
   }, []);
 
   const renderContent = () => {
-    // Check authentication
     if (!user) {
       return (
         <div className="flex items-center justify-center min-h-[50vh]">
@@ -142,7 +141,7 @@ export function DashboardContent({
         initial="initial"
         animate="animate"
         exit="exit"
-        className="w-full backdrop-blur-sm bg-background/80 rounded-lg shadow-lg border border-border/50"
+        className="w-full h-full backdrop-blur-sm bg-background/80 rounded-lg shadow-lg border border-border/50"
       >
         {content}
       </motion.div>
@@ -150,8 +149,8 @@ export function DashboardContent({
   };
 
   return (
-    <div className="relative min-h-screen">
-      <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-4">
+    <div className="relative min-h-screen w-full">
+      <div className="max-w-[95%] xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {renderContent()}
       </div>
     </div>
