@@ -22,6 +22,7 @@ export interface Message {
   message_type: 'user' | 'ai';
   status: 'sent' | 'delivered' | 'read';
   metadata?: Record<string, any>;
+  reaction?: string;
 }
 
 export interface Receiver {

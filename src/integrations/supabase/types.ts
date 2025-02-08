@@ -701,6 +701,7 @@ export type Database = {
           message_id: string
           read_at: string | null
           recipient_id: string
+          status: string | null
         }
         Insert: {
           created_at?: string | null
@@ -709,6 +710,7 @@ export type Database = {
           message_id: string
           read_at?: string | null
           recipient_id: string
+          status?: string | null
         }
         Update: {
           created_at?: string | null
@@ -717,6 +719,7 @@ export type Database = {
           message_id?: string
           read_at?: string | null
           recipient_id?: string
+          status?: string | null
         }
         Relationships: [
           {
@@ -770,9 +773,11 @@ export type Database = {
           is_ai_message: boolean | null
           message_type: string | null
           metadata: Json | null
+          reaction: string | null
           read: boolean | null
           receiver_id: string
           sender_id: string
+          status: string | null
           updated_at: string | null
         }
         Insert: {
@@ -784,9 +789,11 @@ export type Database = {
           is_ai_message?: boolean | null
           message_type?: string | null
           metadata?: Json | null
+          reaction?: string | null
           read?: boolean | null
           receiver_id: string
           sender_id: string
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -798,9 +805,11 @@ export type Database = {
           is_ai_message?: boolean | null
           message_type?: string | null
           metadata?: Json | null
+          reaction?: string | null
           read?: boolean | null
           receiver_id?: string
           sender_id?: string
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: [

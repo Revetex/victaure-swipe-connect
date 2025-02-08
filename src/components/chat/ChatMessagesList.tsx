@@ -31,7 +31,7 @@ export function ChatMessagesList({
             animate={{ opacity: 1 }}
             className="text-center text-muted-foreground p-4"
           >
-            Aucun message pour le moment. Commencez une conversation avec M. Victaure !
+            Aucun message pour le moment. Commencez une conversation !
           </motion.div>
         )}
         
