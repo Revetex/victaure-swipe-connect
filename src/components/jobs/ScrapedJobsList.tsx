@@ -43,49 +43,59 @@ export function ScrapedJobsList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center p-8 backdrop-blur-sm bg-background/50 rounded-lg">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-muted-foreground">Chargement des offres...</span>
+        <span className="ml-2 font-medium text-muted-foreground">Chargement des offres...</span>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col space-y-4">
+    <div className="container mx-auto px-4 py-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col space-y-6"
+      >
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Offres externes ({jobs.length})</h2>
+          <h2 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-[#9b87f5] to-[#6E59A5]">
+            Offres externes ({jobs.length})
+          </h2>
         </div>
         
         {jobs.length === 0 ? (
-          <div className="bg-muted/50 rounded-lg p-6 text-center">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="bg-muted/50 backdrop-blur-sm rounded-lg p-8 text-center"
+          >
             <p className="text-lg font-medium text-muted-foreground">
               Aucune offre disponible pour le moment
             </p>
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {jobs.map((job) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {jobs.map((job, index) => (
               <motion.div
                 key={job.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Card className="p-4 h-full flex flex-col justify-between hover:shadow-lg transition-shadow">
-                  <div className="space-y-4">
+                <Card className="h-full flex flex-col justify-between hover:shadow-lg transition-all duration-300 backdrop-blur-sm bg-background/50 border-border/50">
+                  <div className="p-6 space-y-4">
                     <div>
-                      <h3 className="font-semibold line-clamp-2">{job.title}</h3>
-                      <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                        <Building2 className="h-4 w-4" />
-                        <span>{job.company}</span>
+                      <h3 className="font-semibold text-lg line-clamp-2 font-montserrat">{job.title}</h3>
+                      <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                        <Building2 className="h-4 w-4 text-[#9b87f5]" />
+                        <span className="font-medium">{job.company}</span>
                       </div>
-                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
+                      <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                        <MapPin className="h-4 w-4 text-[#9b87f5]" />
                         <span>{job.location}</span>
                       </div>
-                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
+                      <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4 text-[#9b87f5]" />
                         <span>
                           {formatDistanceToNow(new Date(job.posted_at), {
                             addSuffix: true,
@@ -96,12 +106,12 @@ export function ScrapedJobsList() {
                     </div>
                   </div>
 
-                  <div className="mt-4">
+                  <div className="p-6 pt-0">
                     <a
                       href={job.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-primary hover:text-primary/90 bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                      className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white bg-[#9b87f5] hover:bg-[#8A76F3] rounded-lg transition-colors duration-200"
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Voir l'offre
@@ -112,7 +122,7 @@ export function ScrapedJobsList() {
             ))}
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

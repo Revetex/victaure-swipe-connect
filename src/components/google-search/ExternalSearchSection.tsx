@@ -38,7 +38,7 @@ export function ExternalSearchSection() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="relative">
         <div className="absolute top-2 left-2 z-10">
           <AISearchSuggestions onSuggestionClick={handleSuggestionClick} />
@@ -56,18 +56,19 @@ export function ExternalSearchSection() {
       </div>
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="bg-gradient-to-br from-background via-background/95 to-background/90 backdrop-blur-sm rounded-xl shadow-xl border border-border/50 overflow-hidden"
       >
         <ScrapedJobsList />
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="max-w-4xl mx-auto [&_.gsc-results-wrapper-overlay]:!bg-background [&_.gsc-results-wrapper-overlay]:!backdrop-blur-md [&_.gsc-results-wrapper-overlay]:!supports-[backdrop-filter]:bg-background/60"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="max-w-4xl mx-auto rounded-xl overflow-hidden bg-gradient-to-br from-background via-background/95 to-background/90 backdrop-blur-sm border border-border/50 shadow-xl [&_.gsc-results-wrapper-overlay]:!bg-background [&_.gsc-results-wrapper-overlay]:!backdrop-blur-md [&_.gsc-results-wrapper-overlay]:!supports-[backdrop-filter]:bg-background/60"
       >
         <div className="gcse-searchresults-only"></div>
       </motion.div>
