@@ -52,11 +52,9 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
             />
           </div>
 
-          <div>
+          <div className="w-full">
             <h3 className={labelClasses}>Outils</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <ToolsList onToolClick={handleToolClick} />
-            </div>
+            <ToolsList onToolClick={handleToolClick} />
           </div>
 
           <Separator />
