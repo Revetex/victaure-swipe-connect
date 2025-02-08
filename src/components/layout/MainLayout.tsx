@@ -23,7 +23,6 @@ interface MainLayoutProps {
   onToolReturn?: () => void;
 }
 
-// Animation variants for layout transitions
 const layoutVariants = {
   initial: { 
     opacity: 0,
@@ -87,7 +86,7 @@ export function MainLayout({
         >
           {!isMessagesPage && (
             <header 
-              className="h-16 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40"
+              className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-40"
               role="banner"
             >
               <div className="container h-full mx-auto px-4 flex items-center justify-between">
@@ -125,7 +124,7 @@ export function MainLayout({
           {!isFriendsPage && (
             <nav 
               className={cn(
-                "h-16 border-t bg-background/95 backdrop-blur sticky bottom-0 z-40",
+                "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed bottom-0 left-0 right-0 z-40",
                 !isMobile && "md:ml-[280px] lg:ml-[320px]"
               )}
               style={{ 
