@@ -42,16 +42,14 @@ export function Feed() {
   return (
     <ScrollArea 
       ref={scrollRef} 
-      className="h-full w-full"
+      className="h-full relative"
       onScroll={handleScroll}
     >
-      <div className="max-w-3xl mx-auto px-4 py-4">
-        <CreatePost onPostCreated={handlePostCreated} />
-        <PostList 
-          onPostDeleted={handlePostDeleted}
-          onPostUpdated={handlePostUpdated}
-        />
-      </div>
+      <CreatePost onPostCreated={handlePostCreated} />
+      <PostList 
+        onPostDeleted={handlePostDeleted}
+        onPostUpdated={handlePostUpdated}
+      />
 
       <AnimatePresence>
         {showScrollTop && (
