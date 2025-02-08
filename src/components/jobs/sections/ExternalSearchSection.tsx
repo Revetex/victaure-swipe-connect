@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSwipeMatch } from "@/hooks/useSwipeMatch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -67,7 +67,6 @@ export function ExternalSearchSection({
     fetchJobs,
   } = useSwipeMatch(filters, handleMatchSuccess);
 
-  // Effet pour construire la requête de recherche basée sur les filtres
   useEffect(() => {
     const parts = [];
 
@@ -103,7 +102,7 @@ export function ExternalSearchSection({
       <div className="flex items-center justify-between gap-4 px-4">
         <Button
           variant="outline"
-          className="lg:hidden"
+          className="lg:hidden bg-background/60 hover:bg-background/80 border-border/50"
           onClick={() => setShowFilters(!showFilters)}
         >
           {showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
@@ -113,7 +112,7 @@ export function ExternalSearchSection({
           <Button
             variant="outline"
             onClick={() => setShowSwipe(!showSwipe)}
-            className="gap-2"
+            className="gap-2 bg-background/60 hover:bg-background/80 border-border/50"
           >
             {showSwipe ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
             {showSwipe ? 'Voir la liste' : 'Mode Swipe'}
@@ -121,7 +120,7 @@ export function ExternalSearchSection({
 
           <Button
             onClick={() => navigate('/jobs/create')}
-            className="gap-2"
+            className="gap-2 bg-[#9b87f5] hover:bg-[#8A76F3] text-white"
           >
             <PlusCircle className="h-4 w-4" />
             <span className="hidden sm:inline">Créer une annonce</span>
@@ -142,7 +141,7 @@ export function ExternalSearchSection({
             <div className="relative w-full max-w-lg mx-auto aspect-[3/4]">
               {loading ? (
                 <div className="flex items-center justify-center h-96">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#9b87f5]"></div>
                 </div>
               ) : jobs.length === 0 ? (
                 <SwipeEmptyState onRefresh={() => fetchJobs()} />
@@ -189,3 +188,4 @@ export function ExternalSearchSection({
     </motion.div>
   );
 }
+

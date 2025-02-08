@@ -15,7 +15,7 @@ export function Marketplace() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 font-montserrat mb-2">
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#9b87f5] to-pink-600 font-montserrat mb-2">
             Marketplace des Talents
           </h1>
           <p className="text-gray-400 font-inter">
@@ -31,3 +31,4 @@ export function Marketplace() {
     </div>
   );
 }
+
