@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@2.15.1"
+import { pipeline } from "npm:@huggingface/transformers@2.15.1"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
@@ -23,7 +23,7 @@ serve(async (req) => {
     console.log('Initializing summarizer pipeline...')
     let summarizer;
     try {
-      summarizer = await pipeline('summarization', 'facebook/bart-large-cnn', {
+      summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-12-6', {
         quantized: false,
         progress_callback: (progress) => {
           console.log(`Loading model: ${Math.round(progress.progress * 100)}%`);
@@ -40,7 +40,6 @@ serve(async (req) => {
       min_length: 30,
       do_sample: false,
       truncation: true,
-      cache_dir: '/tmp'  // Specify a temporary cache directory
     })
 
     console.log('Summary generated:', summary)
