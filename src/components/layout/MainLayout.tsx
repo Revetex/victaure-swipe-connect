@@ -1,3 +1,4 @@
+
 import React, { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
@@ -11,6 +12,7 @@ import { Sidebar } from "./Sidebar";
 import { MobileNavigation } from "./MobileNavigation";
 import { toast } from "sonner";
 import { DashboardNavigation } from "./DashboardNavigation";
+import { useNavigation } from "@/hooks/useNavigation";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -57,6 +59,7 @@ export function MainLayout({
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
   const isMessagesPage = location.pathname.includes('/messages');
+  const { currentPage, handlePageChange } = useNavigation();
 
   const handleError = (error: Error) => {
     console.error('Layout Error:', error);
@@ -132,7 +135,11 @@ export function MainLayout({
               aria-label="Bottom navigation"
             >
               <div className="container mx-auto px-4 h-full">
-                <DashboardNavigation />
+                <DashboardNavigation 
+                  currentPage={currentPage} 
+                  onPageChange={handlePageChange}
+                  isEditing={isEditing}
+                />
               </div>
             </nav>
           )}
