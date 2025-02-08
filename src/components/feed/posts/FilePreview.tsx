@@ -8,7 +8,8 @@ interface FilePreviewProps {
   onRemove: (index: number) => void;
 }
 
-export function FilePreview({ files, onRemove }: FilePreviewProps) {
+// Changed to default export for lazy loading
+export default function FilePreview({ files, onRemove }: FilePreviewProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: -10 }}

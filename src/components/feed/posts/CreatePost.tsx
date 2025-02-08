@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +11,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { CreatePostProps, PostAttachment, PostPrivacyLevel } from "./types";
-import { FilePreview } from "./FilePreview";
 import { PrivacySelector } from "./PrivacySelector";
+
+// Lazy load FilePreview component
+const FilePreview = lazy(() => import("./FilePreview"));
 
 export function CreatePost({ onPostCreated }: CreatePostProps) {
   const [newPost, setNewPost] = useState("");
@@ -139,10 +141,16 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           
           <AnimatePresence>
             {attachments.length > 0 && (
-              <FilePreview 
-                files={attachments}
-                onRemove={removeFile}
-              />
+              <Suspense fallback={
+                <div className="flex items-center justify-center p-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                </div>
+              }>
+                <FilePreview 
+                  files={attachments}
+                  onRemove={removeFile}
+                />
+              </Suspense>
             )}
           </AnimatePresence>
 
