@@ -15,9 +15,7 @@ import { TasksPage } from "@/components/tools/TasksPage";
 import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
-import { ToolsPage } from "@/components/tools/ToolsPage";
 import { Feed } from "@/components/Feed";
-import { FriendListContainer } from "@/components/feed/friends/FriendListContainer";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -62,22 +60,6 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/friends"
-        element={
-          <ProtectedRoute>
-            <FriendListContainer />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/tools"
-        element={
-          <ProtectedRoute>
-            <ToolsPage />
           </ProtectedRoute>
         }
       />

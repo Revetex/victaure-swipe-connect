@@ -33,13 +33,9 @@ export function MessagesList({
     return senderName.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  const handleMarkAsRead = (messageId: string) => {
-    // This will be handled by the parent component
-  };
-
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b p-4 flex items-center justify-between gap-4">
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
+      <div className="border-b p-4 flex items-center justify-between gap-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -95,11 +91,14 @@ export function MessagesList({
               sender={typeof message.sender === 'string' ? {
                 id: message.sender_id,
                 full_name: message.sender,
-                avatar_url: ''
+                avatar_url: '',
+                online_status: false,
+                last_seen: new Date().toISOString()
               } : message.sender}
               created_at={message.created_at}
               read={message.read}
-              onMarkAsRead={handleMarkAsRead}
+              status={message.status}
+              onMarkAsRead={() => {}}
             />
           ))}
 

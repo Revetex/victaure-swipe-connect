@@ -4,7 +4,7 @@ import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardMain } from "./dashboard/layout/DashboardMain";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { AppHeader } from "./navigation/AppHeader";
-import { BottomNavigation } from "./navigation/BottomNavigation";
+import { DashboardNavigation } from "./layout/DashboardNavigation";
 import { useViewport } from "@/hooks/useViewport";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
@@ -49,7 +49,7 @@ const itemVariants = {
 
 const MemoizedDashboardContent = memo(DashboardContent);
 
-export const DashboardLayout: React.FC = () => {
+export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -83,17 +83,9 @@ export const DashboardLayout: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
 
-  useEffect(() => {
-    const startTime = performance.now();
-    return () => {
-      const endTime = performance.now();
-      console.log(`DashboardLayout render time: ${endTime - startTime}ms`);
-    };
-  }, []);
-
   return (
     <DashboardAuthCheck>
-      <motion.div 
+      <motion.main 
         variants={containerVariants}
         initial="initial"
         animate="animate"
@@ -103,18 +95,18 @@ export const DashboardLayout: React.FC = () => {
           "transition-colors duration-200"
         )}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
+        <span className="fixed inset-x-0 top-0 h-full bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
+        <span className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
         
         <DashboardContainer>
-          <motion.div variants={itemVariants}>
+          <motion.header variants={itemVariants}>
             <AppHeader
               title={getPageTitle(currentPage)}
               showFriendsList={showFriendsList}
               onToggleFriendsList={toggleFriendsList}
               isEditing={isEditing}
             />
-          </motion.div>
+          </motion.header>
           
           <AnimatePresence mode="wait">
             {showFriendsList && (
@@ -132,7 +124,7 @@ export const DashboardLayout: React.FC = () => {
           </AnimatePresence>
 
           <DashboardMain>
-            <motion.div variants={itemVariants} className="relative z-10">
+            <motion.section variants={itemVariants} className="relative z-10">
               <MemoizedDashboardContent
                 currentPage={currentPage}
                 viewportHeight={viewportHeight}
@@ -140,16 +132,29 @@ export const DashboardLayout: React.FC = () => {
                 onEditStateChange={handleEditStateChange}
                 onRequestChat={() => setShowAIAssistant(true)}
               />
-            </motion.div>
+            </motion.section>
           </DashboardMain>
 
-          <BottomNavigation
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            isEditing={isEditing}
-          />
+          <nav 
+            className={cn(
+              "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
+            )}
+            style={{ 
+              height: '4rem',
+              paddingBottom: 'env(safe-area-inset-bottom)'
+            }}
+          >
+            <div className="container mx-auto px-4 h-full flex items-center">
+              <DashboardNavigation 
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                isEditing={isEditing}
+              />
+            </div>
+          </nav>
+
         </DashboardContainer>
-      </motion.div>
+      </motion.main>
     </DashboardAuthCheck>
   );
-};
+}

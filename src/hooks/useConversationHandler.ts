@@ -20,22 +20,66 @@ export const useConversationHandler = () => {
         return;
       }
 
-      // Si c'est M. Victaure, autoriser la conversation
+      // Check if this is Mr. Victaure, allow conversation with special handling
       if (selectedReceiver.id === 'assistant') {
         setReceiver(selectedReceiver);
         setShowConversation(true);
+
+        // Get or create AI conversation thread
+        const { data: existingMessages, error: msgError } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('receiver_id', user.id)
+          .eq('is_ai_message', true)
+          .limit(1);
+
+        if (msgError) {
+          console.error("Error fetching AI messages:", msgError);
+          return;
+        }
+
+        if (!existingMessages || existingMessages.length === 0) {
+          // Create initial welcome message if no conversation exists
+          const { error: welcomeError } = await supabase
+            .from('messages')
+            .insert({
+              content: "Bonjour ! Je suis M. Victaure, votre assistant personnel. Comment puis-je vous aider aujourd'hui ?",
+              sender_id: 'assistant',
+              receiver_id: user.id,
+              is_ai_message: true
+            });
+
+          if (welcomeError) {
+            console.error("Error creating welcome message:", welcomeError);
+            return;
+          }
+        }
         return;
       }
 
-      // Pour les autres utilisateurs, empêcher uniquement la conversation avec soi-même
+      // For other users, prevent conversation with yourself
       if (selectedReceiver.id === user.id) {
         toast.error("Vous ne pouvez pas démarrer une conversation avec vous-même");
         return;
       }
 
-      // Autoriser la conversation avec d'autres utilisateurs
+      // Check if they are friends
+      const { data: friendRequest, error: friendError } = await supabase
+        .from('friend_requests')
+        .select('*')
+        .eq('status', 'accepted')
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${selectedReceiver.id}),and(sender_id.eq.${selectedReceiver.id},receiver_id.eq.${user.id})`)
+        .single();
+
+      if (friendError || !friendRequest) {
+        toast.error("Vous devez être amis pour démarrer une conversation");
+        return;
+      }
+
+      // Set the receiver and show conversation
       setReceiver(selectedReceiver);
       setShowConversation(true);
+
     } catch (error) {
       console.error('Error selecting conversation:', error);
       toast.error("Une erreur est survenue lors de la sélection de la conversation");

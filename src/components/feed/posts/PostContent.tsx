@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { EyeOff, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Comment } from "@/types/posts";
+import { PostImageGrid } from "./PostImageGrid";
 
 interface PostContentProps {
   content: string;
@@ -48,16 +49,7 @@ export function PostContent({
       <div className="text-sm text-gray-600 dark:text-gray-300">{content}</div>
       
       {images && images.length > 0 && (
-        <div className="grid grid-cols-2 gap-2">
-          {images.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={`Post image ${index + 1}`}
-              className="rounded-lg object-cover w-full h-48"
-            />
-          ))}
-        </div>
+        <PostImageGrid images={images} />
       )}
 
       <div className="flex items-center space-x-4">

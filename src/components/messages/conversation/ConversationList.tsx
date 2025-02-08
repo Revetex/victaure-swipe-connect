@@ -1,17 +1,11 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
-import { Search, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Message, Receiver } from "@/types/messages";
-import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
-import { filterMessages } from "@/utils/messageUtils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { FriendSelector } from "./FriendSelector";
+import { SearchBar } from "./SearchBar";
+import { AssistantButton } from "./AssistantButton";
+import { ConversationItem } from "./ConversationItem";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -23,97 +17,73 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  // Filter out self-conversations and group remaining messages by sender/receiver
-  const conversations = messages.reduce((acc: any[], message: Message) => {
-    if (!profile) return acc;
+  const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
+    if (!profile || !message) return acc;
     
-    // Skip self-conversations
+    // Skip self-messages
     if (message.sender_id === message.receiver_id) {
       return acc;
     }
 
-    const otherUser = message.sender_id === profile.id 
-      ? { id: message.receiver_id, full_name: message.sender?.full_name || 'Unknown' }
-      : message.sender;
+    const otherUserId = message.sender_id === profile.id ? message.receiver_id : message.sender_id;
+    const otherUser = message.sender_id === profile.id ? message.receiver : message.sender;
+
+    // Ensure we have valid user data
+    if (!otherUser || !otherUserId) {
+      console.log("Missing user data for message:", message);
+      return acc;
+    }
+
+    const existingConv = acc.find(conv => conv.user.id === otherUserId);
     
-    if (!otherUser) return acc;
-    
-    const existingConv = acc.find(conv => conv.user.id === otherUser.id);
     if (!existingConv) {
       acc.push({
-        user: otherUser,
+        user: {
+          id: otherUserId,
+          full_name: otherUser.full_name,
+          avatar_url: otherUser.avatar_url || '',
+          online_status: otherUser.online_status || false,
+          last_seen: otherUser.last_seen || new Date().toISOString()
+        },
         lastMessage: message
       });
     } else if (new Date(message.created_at) > new Date(existingConv.lastMessage.created_at)) {
       existingConv.lastMessage = message;
     }
+    
     return acc;
   }, []);
 
   const filteredConversations = conversations.filter(conv => 
-    conv.user.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+    conv.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b p-4 flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Rechercher une conversation..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <FriendSelector onSelectFriend={(friendId) => onSelectConversation({
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
+      <SearchBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onSelectFriend={(friendId) => onSelectConversation({
           id: friendId,
           full_name: '',
           avatar_url: '',
           online_status: false,
           last_seen: new Date().toISOString()
-        })}>
-          <Button variant="outline" size="icon" className="shrink-0">
-            <Plus className="h-4 w-4" />
-          </Button>
-        </FriendSelector>
-      </div>
+        })}
+      />
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          {/* M. Victaure - Assistant */}
-          <div className="mb-6">
-            <Button
-              variant="ghost"
-              className="w-full flex items-center gap-2 h-auto p-4 bg-primary/5 hover:bg-primary/10 transition-all duration-200"
-              onClick={() => onSelectConversation({
-                id: 'assistant',
-                full_name: 'M. Victaure',
-                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-                online_status: true,
-                last_seen: new Date().toISOString()
-              })}
-            >
-              <Avatar className="h-12 w-12 ring-2 ring-primary/20">
-                <AvatarImage 
-                  src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" 
-                  alt="M. Victaure" 
-                />
-                <AvatarFallback>MV</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 text-left">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-medium text-lg text-primary">M. Victaure</h3>
-                  {chatMessages.length > 0 && (
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(chatMessages[chatMessages.length - 1].created_at).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">Assistant virtuel</p>
-              </div>
-            </Button>
-          </div>
+          <AssistantButton
+            chatMessages={chatMessages}
+            onSelect={() => onSelectConversation({
+              id: 'assistant',
+              full_name: 'M. Victaure',
+              avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+              online_status: true,
+              last_seen: new Date().toISOString()
+            })}
+          />
 
           {filteredConversations.length > 0 && (
             <div className="relative my-6">
@@ -128,38 +98,13 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
             </div>
           )}
 
-          {/* Autres conversations */}
           {filteredConversations.map((conv) => (
-            <motion.div
+            <ConversationItem
               key={conv.user.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Button
-                variant="ghost"
-                className="w-full flex items-center gap-2 h-auto p-4 hover:bg-muted/50 transition-all duration-200"
-                onClick={() => onSelectConversation(conv.user)}
-              >
-                <Avatar className="h-12 w-12 ring-2 ring-muted">
-                  <AvatarImage src={conv.user.avatar_url || undefined} alt={conv.user.full_name || ''} />
-                  <AvatarFallback>
-                    {conv.user.full_name?.slice(0, 2).toUpperCase() || '??'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-medium text-base">{conv.user.full_name}</h3>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(conv.lastMessage.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground truncate mt-1">
-                    {conv.lastMessage.content}
-                  </p>
-                </div>
-              </Button>
-            </motion.div>
+              user={conv.user}
+              lastMessage={conv.lastMessage}
+              onSelect={() => onSelectConversation(conv.user)}
+            />
           ))}
 
           {filteredConversations.length === 0 && searchQuery && (

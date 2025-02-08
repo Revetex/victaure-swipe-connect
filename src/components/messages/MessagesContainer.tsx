@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
@@ -7,39 +7,73 @@ import { Card } from "../ui/card";
 import { useMessages } from "@/hooks/useMessages";
 import { useUserChat } from "@/hooks/useUserChat";
 import { useAIChat } from "@/hooks/useAIChat";
-import { useRef } from "react";
+import { toast } from "sonner";
+import { useConversationDelete } from "@/hooks/useConversationDelete";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
   const [showConversation, setShowConversation] = useState(false);
-  const { messages: userMessages } = useMessages();
-  const { messages: aiMessages, inputMessage, isThinking, isListening, handleSendMessage: handleAISendMessage, handleVoiceInput, setInputMessage } = useAIChat();
+  const { 
+    messages: userMessages, 
+    isLoading, 
+    handleSendMessage: handleUserSendMessage 
+  } = useMessages();
+  const { 
+    messages: aiMessages, 
+    inputMessage, 
+    isThinking, 
+    isListening, 
+    handleSendMessage: handleAISendMessage, 
+    handleVoiceInput, 
+    setInputMessage 
+  } = useAIChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { handleDeleteConversation } = useConversationDelete();
+
+  console.log("Messages Container - User Messages:", userMessages);
 
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
     setShowConversation(true);
+    setInputMessage('');
   };
 
   const handleBack = () => {
     setShowConversation(false);
     setReceiver(null);
+    setInputMessage('');
   };
 
-  const handleDeleteConversation = async () => {
-    // Implement delete conversation logic here
-    handleBack();
-  };
-
-  // Wrapper function to match the expected signature
   const handleSendMessage = () => {
-    if (inputMessage.trim()) {
-      handleAISendMessage(inputMessage);
+    if (!receiver) {
+      toast.error("Aucun destinataire sélectionné");
+      return;
     }
+
+    if (!inputMessage.trim()) {
+      toast.error("Le message ne peut pas être vide");
+      return;
+    }
+
+    if (receiver.id === 'assistant') {
+      handleAISendMessage(inputMessage);
+    } else {
+      handleUserSendMessage(inputMessage, receiver);
+    }
+    
+    setInputMessage('');
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-background">
+        <div className="text-muted-foreground">Chargement des messages...</div>
+      </div>
+    );
+  }
 
   return (
-    <Card className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <Card className="h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] flex flex-col bg-background relative">
       {showConversation && receiver ? (
         <ConversationView
           receiver={receiver}
@@ -51,7 +85,7 @@ export function MessagesContainer() {
           onSendMessage={handleSendMessage}
           onVoiceInput={handleVoiceInput}
           onBack={handleBack}
-          onDeleteConversation={handleDeleteConversation}
+          onDeleteConversation={() => handleDeleteConversation(receiver)}
           messagesEndRef={messagesEndRef}
         />
       ) : (

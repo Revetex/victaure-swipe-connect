@@ -12,14 +12,39 @@ interface ChatMessageProps {
   sender: "user" | "assistant";
   timestamp?: string;
   isRead?: boolean;
+  reaction?: string;
+  status?: 'sent' | 'delivered' | 'read';
 }
 
-export function ChatMessage({ content, sender, timestamp, isRead }: ChatMessageProps) {
+export function ChatMessage({ 
+  content, 
+  sender, 
+  timestamp, 
+  isRead,
+  reaction,
+  status = 'sent'
+}: ChatMessageProps) {
   const { profile } = useProfile();
   const isAssistant = sender === "assistant";
 
+  const renderMessageStatus = () => {
+    if (isAssistant) return null;
+    
+    switch (status) {
+      case 'read':
+        return <CheckCheck className="h-3 w-3 text-primary" />;
+      case 'delivered':
+        return <Check className="h-3 w-3 text-muted-foreground" />;
+      default:
+        return <Check className="h-3 w-3 text-muted-foreground/50" />;
+    }
+  };
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       className={cn(
         "flex w-full gap-3 px-4 py-3 rounded-lg",
         isAssistant ? "bg-muted/30" : "bg-background"
@@ -57,13 +82,7 @@ export function ChatMessage({ content, sender, timestamp, isRead }: ChatMessageP
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
               <span>{format(new Date(timestamp), "HH:mm", { locale: fr })}</span>
-              {!isAssistant && (
-                isRead ? (
-                  <CheckCheck className="h-3 w-3 text-primary" />
-                ) : (
-                  <Check className="h-3 w-3" />
-                )
-              )}
+              {renderMessageStatus()}
             </div>
           )}
         </div>
@@ -78,7 +97,17 @@ export function ChatMessage({ content, sender, timestamp, isRead }: ChatMessageP
             {content}
           </p>
         </div>
+
+        {reaction && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="mt-1 text-sm text-muted-foreground"
+          >
+            {reaction}
+          </motion.div>
+        )}
       </div>
-    </div>
+    </motion.div>
   );
 }

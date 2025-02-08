@@ -28,7 +28,11 @@ export function ReactionButton({
       <Button
         variant={isActive ? 'default' : 'ghost'}
         size="sm"
-        onClick={onClick}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClick();
+        }}
         className={cn(
           "flex gap-2 items-center transition-all duration-150 min-w-[80px] justify-center",
           isActive && activeClassName

@@ -1,18 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Message } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
+import { useReceiver } from "./useReceiver";
 
 export function useMessages() {
   const queryClient = useQueryClient();
+  const { receiver } = useReceiver();
 
   const { data: messages = [], isLoading } = useQuery({
-    queryKey: ["messages"],
+    queryKey: ["messages", receiver?.id],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const { data: messages, error } = await supabase
+      // Récupérer les conversations supprimées
+      const { data: deletedConversations } = await supabase
+        .from('deleted_conversations')
+        .select('conversation_partner_id')
+        .eq('user_id', user.id);
+
+      const deletedPartnerIds = deletedConversations?.map(d => d.conversation_partner_id) || [];
+
+      let query = supabase
         .from("messages")
         .select(`
           *,
@@ -23,9 +33,29 @@ export function useMessages() {
             online_status,
             last_seen
           )
-        `)
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order("created_at", { ascending: false });
+        `);
+
+      if (receiver?.id === 'assistant') {
+        // Pour les messages de l'assistant
+        query = query
+          .eq('receiver_id', user.id)
+          .eq('message_type', 'ai');
+      } else if (receiver) {
+        // Pour les messages entre utilisateurs
+        query = query
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiver.id}),and(sender_id.eq.${receiver.id},receiver_id.eq.${user.id})`)
+          .eq('message_type', 'user');
+      } else {
+        // Quand aucun destinataire n'est sélectionné, filtrer les conversations supprimées
+        query = query
+          .or(`and(sender_id.eq.${user.id},receiver_id.neq.${user.id}),and(receiver_id.eq.${user.id},sender_id.neq.${user.id})`)
+          .eq('message_type', 'user')
+          .not('sender_id', 'in', `(${deletedPartnerIds.join(',')})`)
+          .not('receiver_id', 'in', `(${deletedPartnerIds.join(',')})`);
+      }
+
+      const { data: messages, error } = await query
+        .order("created_at", { ascending: true });
 
       if (error) {
         console.error("Error fetching messages:", error);
@@ -35,9 +65,12 @@ export function useMessages() {
 
       return messages.map(msg => ({
         ...msg,
-        timestamp: msg.created_at
+        timestamp: msg.created_at,
+        status: msg.read ? 'read' : 'delivered',
+        message_type: msg.message_type || 'user'
       })) as Message[];
-    }
+    },
+    enabled: true
   });
 
   const markAsRead = useMutation({
@@ -54,7 +87,7 @@ export function useMessages() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      queryClient.invalidateQueries({ queryKey: ["messages", receiver?.id] });
     }
   });
 
@@ -73,14 +106,42 @@ export function useMessages() {
       toast.success("Message supprimé avec succès");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      queryClient.invalidateQueries({ queryKey: ["messages", receiver?.id] });
     }
   });
+
+  const handleSendMessage = async (content: string, receiver: Receiver) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const newMessage = {
+        content,
+        sender_id: user.id,
+        receiver_id: receiver.id,
+        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
+        read: false
+      };
+
+      const { error } = await supabase
+        .from("messages")
+        .insert(newMessage);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["messages", receiver.id] });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Erreur lors de l'envoi du message");
+      throw error;
+    }
+  };
 
   return {
     messages,
     isLoading,
     markAsRead,
-    deleteMessage
+    deleteMessage,
+    handleSendMessage
   };
 }

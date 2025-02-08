@@ -237,4 +237,9 @@
   .safe-top {
     padding-top: env(safe-area-inset-top);
   }
+
+  .content-height {
+    height: calc(100vh - theme('spacing.32')); /* 8rem (4rem header + 4rem footer) */
+    overflow-y: auto;
+  }
 }

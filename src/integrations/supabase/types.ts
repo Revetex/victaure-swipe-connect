@@ -240,6 +240,78 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          is_deleted: boolean | null
+          last_message: string | null
+          last_message_time: string | null
+          metadata: Json | null
+          participant1_id: string
+          participant2_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          last_message?: string | null
+          last_message_time?: string | null
+          metadata?: Json | null
+          participant1_id: string
+          participant2_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          last_message?: string | null
+          last_message_time?: string | null
+          metadata?: Json | null
+          participant1_id?: string
+          participant2_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      deleted_conversations: {
+        Row: {
+          conversation_partner_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          conversation_partner_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          conversation_partner_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deleted_conversations_conversation_partner_id_fkey"
+            columns: ["conversation_partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deleted_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       education: {
         Row: {
           created_at: string | null
@@ -657,6 +729,44 @@ export type Database = {
           },
         ]
       }
+      message_deliveries: {
+        Row: {
+          created_at: string | null
+          delivered_at: string | null
+          id: string
+          message_id: string
+          read_at: string | null
+          recipient_id: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          message_id: string
+          read_at?: string | null
+          recipient_id: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          message_id?: string
+          read_at?: string | null
+          recipient_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_deliveries_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_status: {
         Row: {
           created_at: string
@@ -692,35 +802,66 @@ export type Database = {
       messages: {
         Row: {
           content: string
+          conversation_id: string | null
           created_at: string | null
+          deleted_at: string | null
+          edited_at: string | null
           id: string
           is_ai_message: boolean | null
+          is_deleted: boolean | null
+          message_type: string | null
+          metadata: Json | null
+          reaction: string | null
           read: boolean | null
           receiver_id: string
           sender_id: string
+          status: string | null
           updated_at: string | null
         }
         Insert: {
           content: string
+          conversation_id?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          is_deleted?: boolean | null
+          message_type?: string | null
+          metadata?: Json | null
+          reaction?: string | null
           read?: boolean | null
           receiver_id: string
           sender_id: string
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
           content?: string
+          conversation_id?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
+          is_deleted?: boolean | null
+          message_type?: string | null
+          metadata?: Json | null
+          reaction?: string | null
           read?: boolean | null
           receiver_id?: string
           sender_id?: string
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "messages_receiver_id_fkey"
             columns: ["receiver_id"]
@@ -790,6 +931,7 @@ export type Database = {
           id: string
           message: string
           read: boolean | null
+          read_at: string | null
           title: string
           updated_at: string | null
           user_id: string
@@ -799,6 +941,7 @@ export type Database = {
           id?: string
           message: string
           read?: boolean | null
+          read_at?: string | null
           title: string
           updated_at?: string | null
           user_id: string
@@ -808,6 +951,7 @@ export type Database = {
           id?: string
           message?: string
           read?: boolean | null
+          read_at?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
@@ -1060,6 +1204,7 @@ export type Database = {
           push_notifications_enabled: boolean | null
           push_token: string | null
           role: string
+          search_enabled: boolean | null
           sections_order: string[] | null
           skills: string[] | null
           state: string | null
@@ -1098,6 +1243,7 @@ export type Database = {
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role: string
+          search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
@@ -1136,6 +1282,7 @@ export type Database = {
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role?: string
+          search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
@@ -1394,6 +1541,12 @@ export type Database = {
           "": unknown
         }
         Returns: number
+      }
+      mark_messages_as_read: {
+        Args: {
+          conversation_partner_id: string
+        }
+        Returns: undefined
       }
       sec_to_gc: {
         Args: {
