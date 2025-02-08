@@ -86,8 +86,8 @@ export function useMessages() {
         ...msg,
         timestamp: msg.created_at,
         status: msg.read ? 'read' : 'delivered',
-        message_type: msg.message_type as "user" | "ai" | "system" || 'user',
-        metadata: msg.metadata as Record<string, any> || {}
+        message_type: (msg.message_type || 'user') as Message['message_type'],
+        metadata: (msg.metadata || {}) as Record<string, any>
       })) as Message[];
     },
     enabled: true
@@ -99,6 +99,7 @@ export function useMessages() {
       if (!user) throw new Error("User not authenticated");
 
       const messageType = receiver.id === 'assistant' ? 'ai' as const : 'user' as const;
+      const now = new Date().toISOString();
 
       const newMessage = {
         content,
@@ -107,9 +108,9 @@ export function useMessages() {
         message_type: messageType,
         read: false,
         status: 'sent',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        metadata: {}
+        created_at: now,
+        updated_at: now,
+        metadata: {} as Record<string, any>
       };
 
       const { data, error } = await supabase
@@ -129,18 +130,17 @@ export function useMessages() {
 
       if (error) throw error;
 
-      // Add message to local store
       if (data) {
-        addMessage({
+        const formattedMessage: Message = {
           ...data,
           timestamp: data.created_at,
           status: 'sent',
           message_type: messageType,
-          metadata: data.metadata as Record<string, any> || {}
-        });
+          metadata: (data.metadata || {}) as Record<string, any>
+        };
+        addMessage(formattedMessage);
       }
 
-      // Create notification for receiver
       await supabase.from('notifications').insert({
         user_id: receiver.id,
         title: 'Nouveau message',
