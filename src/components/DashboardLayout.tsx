@@ -1,160 +1,151 @@
 
-import React, { useState, useEffect, memo, useCallback } from "react";
-import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
-import { DashboardMain } from "./dashboard/layout/DashboardMain";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { AppHeader } from "./navigation/AppHeader";
-import { DashboardNavigation } from "./layout/DashboardNavigation";
+import React, { useState, useCallback } from "react";
 import { useViewport } from "@/hooks/useViewport";
-import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
-import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
-import { AnimatePresence, motion } from "framer-motion";
-import { getPageTitle } from "@/config/navigation";
-import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
+import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
-import { AIAssistant } from "./dashboard/AIAssistant";
+import { LayoutDashboard, MessageSquare, Store, Users, PenTool, Settings } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
+import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
+import { DashboardContent } from "./dashboard/DashboardContent";
+import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Logo } from "./Logo";
 
-const containerVariants = {
-  initial: { opacity: 0 },
-  animate: { 
-    opacity: 1,
-    transition: {
-      duration: 0.4,
-      when: "beforeChildren",
-      staggerChildren: 0.1
-    }
-  },
-  exit: { 
-    opacity: 0,
-    transition: {
-      duration: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15
-    }
-  },
-  exit: { opacity: 0, y: -20 }
-};
-
-const MemoizedDashboardContent = memo(DashboardContent);
+const navigationItems = [
+  { id: 1, name: "Tableau de bord", icon: LayoutDashboard },
+  { id: 2, name: "Messages", icon: MessageSquare },
+  { id: 3, name: "Marketplace", icon: Store },
+  { id: 4, name: "Social", icon: Users },
+  { id: 5, name: "Notes", icon: PenTool },
+  { id: 6, name: "Paramètres", icon: Settings },
+];
 
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
-  const [showFriendsList, setShowFriendsList] = useState(false);
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const { viewportHeight } = useViewport();
   const location = useLocation();
+  const { profile } = useProfile();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handlePageChange = useCallback((page: number) => {
-    try {
-      setCurrentPage(page);
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error changing page:", error);
-      toast.error("Une erreur est survenue lors du changement de page");
-    }
-  }, []);
-
-  const toggleFriendsList = useCallback(() => {
-    setShowFriendsList(prev => !prev);
-  }, []);
-
-  const toggleAIAssistant = useCallback(() => {
-    setShowAIAssistant(prev => !prev);
+    setCurrentPage(page);
+    setIsEditing(false);
+    setShowMobileMenu(false);
   }, []);
 
   const handleEditStateChange = useCallback((state: boolean) => {
     setIsEditing(state);
   }, []);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      <div className="p-6">
+        <Logo />
+      </div>
+      <Separator />
+      <div className="flex-1 py-6">
+        <nav className="space-y-2 px-4">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Button
+                key={item.id}
+                variant={currentPage === item.id ? "default" : "ghost"}
+                className={cn(
+                  "w-full justify-start gap-4 h-12",
+                  currentPage === item.id && "bg-primary/10 hover:bg-primary/20"
+                )}
+                onClick={() => handlePageChange(item.id)}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{item.name}</span>
+              </Button>
+            );
+          })}
+        </nav>
+      </div>
+      {profile && (
+        <>
+          <Separator />
+          <div className="p-4">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted/50">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                {profile.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.full_name}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <Users className="h-5 w-5 text-primary" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{profile.full_name}</p>
+                <p className="text-sm text-muted-foreground truncate">
+                  {profile.role}
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
 
   return (
     <DashboardAuthCheck>
-      <motion.main 
-        variants={containerVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className={cn(
-          "min-h-screen bg-background relative overflow-hidden",
-          "transition-colors duration-200"
-        )}
-      >
-        <span className="fixed inset-x-0 top-0 h-full bg-gradient-to-br from-background via-background/90 to-background/50 z-0 opacity-50" />
-        <span className="absolute inset-0 bg-grid-pattern opacity-[0.01] z-0" />
-        
-        <DashboardContainer>
-          <motion.header variants={itemVariants}>
-            <AppHeader
-              title={getPageTitle(currentPage)}
-              showFriendsList={showFriendsList}
-              onToggleFriendsList={toggleFriendsList}
-              isEditing={isEditing}
-            />
-          </motion.header>
-          
-          <AnimatePresence mode="wait">
-            {showFriendsList && (
-              <DashboardFriendsList 
-                show={showFriendsList} 
-                onClose={() => setShowFriendsList(false)}
-              />
-            )}
-          </AnimatePresence>
+      <div className="min-h-screen bg-background">
+        {/* Desktop Sidebar */}
+        <aside className="fixed left-0 top-0 bottom-0 w-72 border-r hidden lg:block">
+          <SidebarContent />
+        </aside>
 
-          <AnimatePresence mode="wait">
-            {showAIAssistant && (
-              <AIAssistant onClose={() => setShowAIAssistant(false)} />
-            )}
-          </AnimatePresence>
+        {/* Mobile Header */}
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
+          <div className="container flex h-16 items-center">
+            <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="lg:hidden">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72 p-0">
+                <SidebarContent />
+              </SheetContent>
+            </Sheet>
+            <div className="flex-1 flex justify-center">
+              <Logo />
+            </div>
+          </div>
+        </header>
 
-          <DashboardMain>
-            <motion.section variants={itemVariants} className="relative z-10">
-              <MemoizedDashboardContent
+        {/* Main Content */}
+        <main className="lg:pl-72">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="container py-6 space-y-8"
+            >
+              <DashboardContent
                 currentPage={currentPage}
                 viewportHeight={viewportHeight}
                 isEditing={isEditing}
                 onEditStateChange={handleEditStateChange}
-                onRequestChat={() => setShowAIAssistant(true)}
+                onRequestChat={() => handlePageChange(2)}
               />
-            </motion.section>
-          </DashboardMain>
-
-          <nav 
-            className={cn(
-              "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-40 shadow-lg"
-            )}
-            style={{ 
-              height: '4rem',
-              paddingBottom: 'env(safe-area-inset-bottom)'
-            }}
-          >
-            <div className="container mx-auto px-4 h-full flex items-center">
-              <DashboardNavigation 
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-                isEditing={isEditing}
-              />
-            </div>
-          </nav>
-
-        </DashboardContainer>
-      </motion.main>
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
     </DashboardAuthCheck>
   );
 }

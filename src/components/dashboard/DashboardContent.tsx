@@ -30,37 +30,50 @@ export function DashboardContent({
   }, [currentPage, onEditStateChange]);
 
   const renderContent = () => {
-    switch (currentPage) {
-      case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
-      case 2:
-        return <Messages />;
-      case 3:
-        return <Marketplace />;
-      case 4:
-        return <Feed />;
-      case 5:
-        return (
-          <div className="h-full">
-            <NotesMap />
-          </div>
-        );
-      case 6:
-        return <Settings />;
-      default:
-        return null;
-    }
+    const variants = {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      exit: { opacity: 0, y: -20 }
+    };
+
+    const content = (() => {
+      switch (currentPage) {
+        case 1:
+          return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        case 2:
+          return <Messages />;
+        case 3:
+          return <Marketplace />;
+        case 4:
+          return <Feed />;
+        case 5:
+          return <NotesMap />;
+        case 6:
+          return <Settings />;
+        default:
+          return null;
+      }
+    })();
+
+    return (
+      <motion.div
+        variants={variants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={{ duration: 0.3 }}
+        className="w-full"
+      >
+        {content}
+      </motion.div>
+    );
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="w-full"
-    >
-      {renderContent()}
-    </motion.div>
+    <div className="relative">
+      <div className="max-w-6xl mx-auto">
+        {renderContent()}
+      </div>
+    </div>
   );
 }
