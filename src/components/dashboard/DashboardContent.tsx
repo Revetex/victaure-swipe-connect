@@ -7,6 +7,7 @@ import { Settings } from "@/components/Settings";
 import { NotesMap } from "@/components/notes/NotesMap";
 import { Feed } from "@/components/Feed";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface DashboardContentProps {
   currentPage: number;
@@ -16,6 +17,15 @@ interface DashboardContentProps {
   onRequestChat: () => void;
 }
 
+const menuPages = {
+  PROFILE: 1,
+  MESSAGES: 2,
+  MARKETPLACE: 3,
+  FEED: 4,
+  NOTES: 5,
+  SETTINGS: 6,
+} as const;
+
 export function DashboardContent({
   currentPage,
   viewportHeight,
@@ -24,29 +34,73 @@ export function DashboardContent({
   onRequestChat
 }: DashboardContentProps) {
   useEffect(() => {
-    if (currentPage === 5) {
+    if (currentPage === menuPages.NOTES) {
       onEditStateChange(true);
     }
   }, [currentPage, onEditStateChange]);
 
   const renderContent = () => {
     switch (currentPage) {
-      case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
-      case 2:
-        return <Messages />;
-      case 3:
-        return <Marketplace />;
-      case 4:
-        return <Feed />;
-      case 5:
+      case menuPages.PROFILE:
         return (
-          <div className="h-full">
-            <NotesMap />
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full"
+          >
+            <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />
+          </motion.div>
         );
-      case 6:
-        return <Settings />;
+      case menuPages.MESSAGES:
+        return (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full"
+          >
+            <Messages />
+          </motion.div>
+        );
+      case menuPages.MARKETPLACE:
+        return (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-full"
+          >
+            <Marketplace />
+          </motion.div>
+        );
+      case menuPages.FEED:
+        return (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-full"
+          >
+            <Feed />
+          </motion.div>
+        );
+      case menuPages.NOTES:
+        return (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={cn("h-full", isEditing && "bg-background/95 backdrop-blur-sm")}
+          >
+            <NotesMap />
+          </motion.div>
+        );
+      case menuPages.SETTINGS:
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full"
+          >
+            <Settings />
+          </motion.div>
+        );
       default:
         return null;
     }
