@@ -40,7 +40,17 @@ export default function PublicProfile() {
           return;
         }
 
-        setProfile(data);
+        // Transform certifications to match the UserProfile interface
+        const transformedData = {
+          ...data,
+          certifications: data.certifications?.map((cert: any) => ({
+            ...cert,
+            institution: cert.issuer, // Map issuer to institution
+            year: cert.issue_date ? new Date(cert.issue_date).getFullYear().toString() : ''
+          }))
+        };
+
+        setProfile(transformedData as UserProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
