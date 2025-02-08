@@ -33,7 +33,7 @@ export function ChatHeader({
 }: ChatHeaderProps) {
   return (
     <div className={`flex-shrink-0 bg-background/95 backdrop-blur z-[999] border-b ${className || ''}`}>
-      <div className="flex items-center gap-4 px-4 h-16">
+      <div className="flex items-center gap-4 px-4 h-16 max-w-3xl mx-auto">
         <Button
           variant="ghost"
           size="icon"
@@ -59,7 +59,7 @@ export function ChatHeader({
         </div>
 
         <div className="flex-1 min-w-0">
-          <h2 className="font-medium truncate">{title}</h2>
+          <h2 className="font-medium text-base truncate">{title}</h2>
           {subtitle && (
             <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
           )}
@@ -73,6 +73,7 @@ export function ChatHeader({
                 size="icon"
                 title="Options de conversation"
                 aria-label="Ouvrir les options de conversation"
+                className="shrink-0"
               >
                 <MoreVertical className="h-5 w-5" />
               </Button>
