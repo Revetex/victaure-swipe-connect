@@ -31,7 +31,6 @@ export function MessagesContainer() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { handleDeleteConversation } = useConversationDelete();
 
-  // Use the hook to automatically mark messages as read
   useMessageReadStatus(showConversation, receiver);
 
   const handleSelectConversation = (selectedReceiver: any) => {
@@ -59,7 +58,6 @@ export function MessagesContainer() {
     setInputMessage('');
   };
 
-  // Auto-scroll to latest messages
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -81,7 +79,7 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="h-[calc(100vh-12rem)] max-h-[calc(100vh-12rem)] flex flex-col overflow-hidden">
+    <Card className="h-[calc(100vh-6rem)] sm:h-[calc(100vh-12rem)] max-h-[calc(100vh-6rem)] sm:max-h-[calc(100vh-12rem)] flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {showConversation && receiver ? (
           <motion.div
