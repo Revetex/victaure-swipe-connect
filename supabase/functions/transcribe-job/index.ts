@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { pipeline } from "https://esm.sh/@huggingface/transformers"
+import { pipeline } from "@huggingface/transformers"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
@@ -20,18 +20,20 @@ serve(async (req) => {
       throw new Error('Job ID and content are required')
     }
 
-    // Initialize Hugging Face pipeline
+    console.log('Initializing transcriber pipeline...')
     const transcriber = await pipeline(
-      "text2text-generation",
-      "facebook/mbart-large-50-many-to-many-mmt"
+      "summarization",
+      "sshleifer/distilbart-cnn-12-6"
     )
 
-    // Generate transcription
+    console.log('Generating transcription...')
     const transcription = await transcriber(jobContent, {
-      src_lang: "fr_XX",
-      tgt_lang: "fr_XX",
-      max_length: 1000
+      max_length: 130,
+      min_length: 30,
+      do_sample: false
     })
+
+    console.log('Transcription generated:', transcription)
 
     // Initialize Supabase client
     const supabaseAdmin = createClient(
@@ -44,13 +46,13 @@ serve(async (req) => {
       .from('job_transcriptions')
       .insert({
         job_id: jobId,
-        ai_transcription: transcription[0].generated_text
+        ai_transcription: transcription[0].summary_text
       })
 
     if (insertError) throw insertError
 
     return new Response(
-      JSON.stringify({ transcription: transcription[0].generated_text }),
+      JSON.stringify({ transcription: transcription[0].summary_text }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
