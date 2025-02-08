@@ -101,7 +101,7 @@ export function useMessages() {
       const messageType = receiver.id === 'assistant' ? 'ai' as const : 'user' as const;
       const now = new Date().toISOString();
 
-      const newMessage = {
+      const newMessage: Omit<Message, 'id' | 'sender'> = {
         content,
         sender_id: user.id,
         receiver_id: receiver.id,
@@ -110,7 +110,8 @@ export function useMessages() {
         status: 'sent',
         created_at: now,
         updated_at: now,
-        metadata: {} as Record<string, any>
+        timestamp: now,
+        metadata: {}
       };
 
       const { data, error } = await supabase

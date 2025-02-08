@@ -21,7 +21,7 @@ export interface Message {
   thinking?: boolean;
   message_type: 'user' | 'ai' | 'system';
   status: 'sent' | 'delivered' | 'read';
-  metadata?: Record<string, any>;
+  metadata: Record<string, any>;
   reaction?: string;
 }
 
