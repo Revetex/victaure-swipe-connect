@@ -4,6 +4,7 @@ import { GoogleSearchBox } from "@/components/google-search/GoogleSearchBox";
 import { AISearchSuggestions } from "@/components/google-search/AISearchSuggestions";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { ScrapedJobsList } from "@/components/jobs/ScrapedJobsList";
 
 export function ExternalSearchSection() {
   useGoogleSearchStyles();
@@ -53,6 +54,14 @@ export function ExternalSearchSection() {
           </div>
         </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <ScrapedJobsList />
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0 }}
