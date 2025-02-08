@@ -16,7 +16,7 @@ export interface AIAssistantProps {
   conversations?: any[];
 }
 
-function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
+export default function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
   const isMobile = useIsMobile();
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
@@ -110,5 +110,3 @@ function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
     </Card>
   );
 }
-
-export default AIAssistant;

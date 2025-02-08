@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { AIAssistant } from "./dashboard/AIAssistant";
+import AIAssistant from "./dashboard/AIAssistant";
 import { MrVictaureWelcome } from "./dashboard/MrVictaureWelcome";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
