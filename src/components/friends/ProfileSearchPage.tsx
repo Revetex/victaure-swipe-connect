@@ -46,7 +46,7 @@ export function ProfileSearchPage() {
 
   return (
     <ScrollArea className="h-[calc(100vh-8rem)]">
-      <div className="container mx-auto max-w-4xl p-4">
+      <div className="w-full p-4">
         <h1 className="text-2xl font-bold mb-6">Rechercher des profils</h1>
         <ProfileSearch 
           onSelect={handleProfileSelect}
