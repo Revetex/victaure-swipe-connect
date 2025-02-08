@@ -1,16 +1,12 @@
 
-import { Message } from "@/types/messages";
+import { Message, Receiver } from "@/types/messages";
 import { MessageItem } from "../MessageItem";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProfile } from "@/hooks/useProfile";
 import { Bot } from "lucide-react";
 import { FriendSelector } from "./FriendSelector";
 import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { Search } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 interface MessagesListProps {
   messages: Message[];
@@ -24,29 +20,11 @@ export function MessagesList({
   onSelectConversation
 }: MessagesListProps) {
   const { profile } = useProfile();
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredMessages = messages.filter(message => {
-    const senderName = typeof message.sender === 'string' 
-      ? message.sender 
-      : message.sender.full_name;
-    return senderName.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
+  
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
       <div className="border-b p-4 flex items-center justify-between gap-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Rechercher une conversation..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
+        <div className="text-lg font-semibold">Messages</div>
         <FriendSelector onSelectFriend={(friendId) => onSelectConversation("user", { id: friendId })} />
       </div>
 
@@ -72,39 +50,36 @@ export function MessagesList({
             </Button>
           </div>
 
-          {/* Séparateur entre l'assistant et les conversations privées */}
-          {filteredMessages.length > 0 && (
-            <div className="relative my-6">
-              <Separator className="my-4" />
-              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
-                Conversations privées
-              </span>
-            </div>
-          )}
-
           {/* Liste des conversations privées */}
-          {filteredMessages.map((message) => (
-            <MessageItem
+          {messages.map((message) => (
+            <motion.div
               key={message.id}
-              id={message.id}
-              content={message.content}
-              sender={typeof message.sender === 'string' ? {
-                id: message.sender_id,
-                full_name: message.sender,
-                avatar_url: '',
-                online_status: false,
-                last_seen: new Date().toISOString()
-              } : message.sender}
-              created_at={message.created_at}
-              read={message.read}
-              status={message.status}
-              onMarkAsRead={() => {}}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <MessageItem
+                key={message.id}
+                id={message.id}
+                content={message.content}
+                sender={typeof message.sender === 'string' ? {
+                  id: message.sender_id,
+                  full_name: message.sender,
+                  avatar_url: '',
+                  online_status: false,
+                  last_seen: new Date().toISOString()
+                } : message.sender}
+                created_at={message.created_at}
+                read={message.read}
+                status={message.status}
+                onMarkAsRead={() => {}}
+              />
+            </motion.div>
           ))}
 
-          {filteredMessages.length === 0 && searchQuery && (
+          {messages.length === 0 && (
             <p className="text-center text-sm text-muted-foreground py-4">
-              Aucune conversation trouvée
+              Aucune conversation
             </p>
           )}
         </div>

@@ -15,7 +15,7 @@ export function MessagesContainer() {
   const [showConversation, setShowConversation] = useState(false);
   const { 
     messages: userMessages, 
-    isLoading, 
+    isLoading: isLoadingMessages,
     handleSendMessage: handleUserSendMessage 
   } = useMessages();
   const { 
@@ -29,8 +29,6 @@ export function MessagesContainer() {
   } = useAIChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { handleDeleteConversation } = useConversationDelete();
-
-  console.log("Messages Container - User Messages:", userMessages);
 
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
@@ -64,7 +62,7 @@ export function MessagesContainer() {
     setInputMessage('');
   };
 
-  if (isLoading) {
+  if (isLoadingMessages) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-background">
         <div className="text-muted-foreground">Chargement des messages...</div>

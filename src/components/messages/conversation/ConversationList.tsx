@@ -7,6 +7,7 @@ import { SearchBar } from "./SearchBar";
 import { AssistantButton } from "./AssistantButton";
 import { ConversationItem } from "./ConversationItem";
 import { motion } from "framer-motion";
+import { Separator } from "@/components/ui/separator";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -78,9 +79,6 @@ export function ConversationList({
     new Date(b.lastMessage.created_at).getTime() - new Date(a.lastMessage.created_at).getTime()
   );
 
-  // Get last AI message if exists
-  const lastAIMessage = chatMessages[chatMessages.length - 1];
-
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <div className="sticky top-0 z-[100] bg-background pt-4">
@@ -124,9 +122,7 @@ export function ConversationList({
               transition={{ delay: 0.2 }}
               className="relative my-6"
             >
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t" />
-              </div>
+              <Separator className="absolute inset-0 my-3" />
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
                   Conversations privées
