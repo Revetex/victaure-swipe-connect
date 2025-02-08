@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { JobFilters } from "./jobs/JobFilterUtils";
+import { useJobFilters } from "@/hooks/useJobFilters";
 import { useSwipeMatch } from "@/hooks/useSwipeMatch";
 import { SwipeControls } from "./jobs/swipe/SwipeControls";
 import { SwipeEmptyState } from "./jobs/swipe/SwipeEmptyState";
@@ -7,24 +8,14 @@ import { AnimatedJobCard } from "./jobs/AnimatedJobCard";
 import { JobFiltersPanel } from "./jobs/JobFiltersPanel";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button";
+import { PlusCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function SwipeJob() {
-  const [filters, setFilters] = useState<JobFilters>({
-    category: "all",
-    subcategory: "all",
-    duration: "all",
-    experienceLevel: "all",
-    location: "",
-    province: "all",
-    remoteType: "all",
-    minBudget: 300,
-    maxBudget: 1000,
-    skills: [],
-    searchTerm: "",
-    createdAfter: null,
-    createdBefore: null,
-    deadlineBefore: null,
-  });
+  const navigate = useNavigate();
+  const { filters, updateFilter } = useJobFilters();
+  const [showFilters, setShowFilters] = useState(false);
 
   const handleMatchSuccess = async (jobId: string) => {
     try {
@@ -63,27 +54,46 @@ export function SwipeJob() {
     handleDragStart,
     handleDragEnd,
     handleButtonSwipe,
+    fetchJobs,
+    setCurrentIndex,
   } = useSwipeMatch(filters, handleMatchSuccess);
 
   return (
-    <div className="relative min-h-screen flex flex-col lg:flex-row gap-6 p-4">
-      <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)]">
+    <div className="relative min-h-[600px] flex flex-col lg:flex-row gap-6">
+      <aside className={`lg:w-80 shrink-0 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] transition-all ${showFilters ? 'block' : 'hidden lg:block'}`}>
         <JobFiltersPanel 
           filters={filters} 
-          onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
+          onFilterChange={updateFilter}
         />
       </aside>
 
       <main className="flex-1 flex flex-col items-center justify-start min-h-[600px] pt-4">
+        <div className="w-full flex justify-between items-center mb-6">
+          <Button 
+            variant="outline" 
+            className="lg:hidden"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            {showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
+          </Button>
+          <Button
+            onClick={() => navigate('/jobs/create')}
+            className="ml-auto"
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Créer une annonce
+          </Button>
+        </div>
+
         {loading ? (
           <div className="flex items-center justify-center h-96">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : jobs.length === 0 ? (
-          <SwipeEmptyState onRefresh={() => setFilters(prev => ({ ...prev }))} />
+          <SwipeEmptyState onRefresh={() => fetchJobs()} />
         ) : (
           <>
-            <div className="relative w-full max-w-lg aspect-[3/4] mx-auto">
+            <div className="relative w-full max-w-lg mx-auto aspect-[3/4]">
               {jobs.map((job, index) => {
                 if (index < currentIndex) return null;
                 
@@ -94,12 +104,12 @@ export function SwipeJob() {
                   <AnimatedJobCard
                     key={job.id}
                     job={job}
-                    x={x}
-                    rotate={rotate}
-                    opacity={opacity}
-                    scale={scale}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
+                    x={isTop ? x : 0}
+                    rotate={isTop ? rotate : 0}
+                    opacity={isTop ? opacity : 1}
+                    scale={isTop ? scale : 1}
+                    onDragStart={isDraggable ? handleDragStart : undefined}
+                    onDragEnd={isDraggable ? handleDragEnd : undefined}
                     isDragging={isDragging}
                   />
                 );
