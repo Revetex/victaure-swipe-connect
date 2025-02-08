@@ -20,7 +20,6 @@ export function useUserChat(): UserChat {
   const [isLoading, setIsLoading] = useState(false);
   const { profile } = useProfile();
 
-  // Configuration du canal en temps réel
   useEffect(() => {
     if (!profile) return;
 
@@ -34,10 +33,24 @@ export function useUserChat(): UserChat {
           table: 'messages',
           filter: `receiver_id=eq.${profile.id}`
         },
-        (payload) => {
+        async (payload) => {
           if (payload.eventType === 'INSERT') {
             const newMessage = payload.new as Message;
-            setMessages(prev => [...prev, newMessage]);
+            
+            // Marquer automatiquement comme "delivered"
+            const { error: updateError } = await supabase
+              .from('messages')
+              .update({ status: 'delivered' })
+              .eq('id', newMessage.id);
+
+            if (updateError) {
+              console.error('Error updating message status:', updateError);
+            }
+
+            setMessages(prev => [...prev, {
+              ...newMessage,
+              status: 'delivered'
+            }]);
           } else if (payload.eventType === 'UPDATE') {
             const updatedMessage = payload.new as Message;
             setMessages(prev => 
@@ -53,6 +66,37 @@ export function useUserChat(): UserChat {
 
     return () => {
       supabase.removeChannel(channel);
+    };
+  }, [profile]);
+
+  // Surveiller l'état en ligne des utilisateurs
+  useEffect(() => {
+    if (!profile) return;
+
+    const presenceChannel = supabase.channel('online_users');
+    
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        console.log('Users online:', state);
+      })
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('User joined:', key, newPresences);
+      })
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        console.log('User left:', key, leftPresences);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel.track({
+            user_id: profile.id,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(presenceChannel);
     };
   }, [profile]);
 

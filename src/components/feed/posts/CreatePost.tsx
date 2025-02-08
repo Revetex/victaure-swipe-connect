@@ -42,6 +42,11 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
   };
 
   const handleCreatePost = async () => {
+    if (!profile) {
+      toast.error("Vous devez être connecté pour publier");
+      return;
+    }
+
     if (!newPost.trim() && attachments.length === 0) {
       toast.error("Veuillez ajouter du contenu ou une image");
       return;
@@ -72,7 +77,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
         .from("posts")
         .insert([{
           content: newPost,
-          user_id: profile?.id,
+          user_id: profile.id,
           privacy_level: privacy,
           images: uploadedFiles
         }]);
@@ -95,12 +100,13 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
   return (
     <Card className={cn(
       "shadow-lg border-primary/10 transition-all duration-200",
-      isExpanded ? "p-4" : "p-2"
+      isExpanded ? "p-4" : "p-2",
+      "mx-auto max-w-3xl w-full"
     )}>
       {!isExpanded ? (
         <Button
           variant="ghost"
-          className="w-full justify-start text-muted-foreground h-9 px-2"
+          className="w-full justify-start text-muted-foreground h-auto py-3 px-4"
           onClick={() => setIsExpanded(true)}
         >
           Partagez quelque chose...
@@ -128,7 +134,7 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
             value={newPost}
             onChange={(e) => setNewPost(e.target.value)}
             placeholder="Partagez quelque chose..."
-            className="min-h-[100px] resize-none focus:ring-primary/20"
+            className="min-h-[120px] resize-none focus:ring-primary/20"
           />
           
           <AnimatePresence>
@@ -140,8 +146,14 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
             )}
           </AnimatePresence>
 
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex gap-2 items-center">
+          <div className={cn(
+            "flex justify-between items-center gap-4",
+            isMobile && "flex-col"
+          )}>
+            <div className={cn(
+              "flex gap-2 items-center",
+              isMobile && "w-full justify-between"
+            )}>
               <input
                 type="file"
                 id="file-upload"
@@ -152,17 +164,24 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
               />
               <Button 
                 variant="outline" 
-                size="icon" 
+                size={isMobile ? "default" : "icon"}
                 className={cn(
-                  "h-9 w-9 transition-colors",
-                  attachments.length > 0 && "border-primary/50 text-primary"
+                  "transition-colors",
+                  attachments.length > 0 && "border-primary/50 text-primary",
+                  isMobile && "flex-1"
                 )}
                 onClick={() => document.getElementById('file-upload')?.click()}
               >
                 {attachments.length > 0 ? (
-                  <ImagePlus className="h-4 w-4" />
+                  <>
+                    <ImagePlus className="h-4 w-4 mr-2" />
+                    {isMobile && "Ajouter une image"}
+                  </>
                 ) : (
-                  <Image className="h-4 w-4" />
+                  <>
+                    <Image className="h-4 w-4 mr-2" />
+                    {isMobile && "Ajouter une image"}
+                  </>
                 )}
               </Button>
               
@@ -175,9 +194,10 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
             <Button 
               onClick={handleCreatePost} 
               disabled={isUploading || (!newPost.trim() && attachments.length === 0)}
-              size="sm"
+              size={isMobile ? "lg" : "sm"}
               className={cn(
-                "h-9 px-4 transition-all",
+                "transition-all",
+                isMobile && "w-full",
                 (newPost.trim() || attachments.length > 0) && "bg-primary hover:bg-primary/90"
               )}
             >
