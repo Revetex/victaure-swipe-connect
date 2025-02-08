@@ -60,7 +60,7 @@ export function ConversationView({
   if (!receiver) return null;
 
   return (
-    <section className="relative flex flex-col h-[calc(100vh-6rem)] min-h-0 w-full bg-background">
+    <section className="relative flex flex-col h-[calc(100vh-8rem)] min-h-0 w-full bg-background">
       <ScrollArea 
         className="flex-1 px-4 pb-32"
         onScrollCapture={handleScroll}
