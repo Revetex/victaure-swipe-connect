@@ -36,18 +36,18 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col space-y-6"
+        className="flex flex-col space-y-4"
       >
         {convertedJobs.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground" role="status">
             Aucune offre disponible
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Liste des offres d'emploi">
+          <div className="space-y-4" role="list" aria-label="Liste des offres d'emploi">
             {convertedJobs.map((job) => (
               <div key={job.id} role="listitem">
                 <JobCard job={job} />
