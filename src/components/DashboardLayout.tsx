@@ -50,7 +50,6 @@ const itemVariants = {
   exit: { opacity: 0, y: -20 }
 };
 
-// Fallback component for Suspense
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-[200px]">
     <Loader2 className="w-8 h-8 animate-spin text-primary" />
