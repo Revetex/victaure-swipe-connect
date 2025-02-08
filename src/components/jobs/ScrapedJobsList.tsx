@@ -30,21 +30,6 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col space-y-6"
       >
-        <div className="flex justify-between items-center p-4 bg-card rounded-lg">
-          <h2 className="text-2xl font-semibold">
-            Offres d'emploi ({jobs.length})
-          </h2>
-          
-          <Button
-            onClick={handleCreateJob}
-            className="bg-primary hover:bg-primary/90"
-            title="Publier une nouvelle offre d'emploi"
-            aria-label="Publier une nouvelle offre d'emploi"
-          >
-            Publier une offre
-          </Button>
-        </div>
-        
         {jobs.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground" role="status">
             Aucune offre disponible
