@@ -1,4 +1,3 @@
-
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -13,19 +12,41 @@ export const usePostOperations = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('handle_post_reaction', {
-        p_post_id: postId,
-        p_user_id: userId,
-        p_reaction_type: type
-      });
+      const { data: existingReaction } = await supabase
+        .from('post_reactions')
+        .select('*')
+        .eq('post_id', postId)
+        .eq('user_id', userId)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existingReaction) {
+        if (existingReaction.reaction_type === type) {
+          await supabase
+            .from('post_reactions')
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', userId);
+        } else {
+          await supabase
+            .from('post_reactions')
+            .update({ reaction_type: type })
+            .eq('post_id', postId)
+            .eq('user_id', userId);
+        }
+      } else {
+        await supabase
+          .from('post_reactions')
+          .insert({
+            post_id: postId,
+            user_id: userId,
+            reaction_type: type
+          });
+      }
 
-      // Invalidate queries to refresh the posts data
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     } catch (error) {
       console.error('Error handling reaction:', error);
-      toast("Une erreur est survenue lors de la réaction");
+      toast("Une erreur est survenue");
     }
   };
 

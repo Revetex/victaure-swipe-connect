@@ -1,85 +1,46 @@
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { ConversationList } from "./conversation/ConversationList";
 import { ConversationView } from "./conversation/ConversationView";
 import { useReceiver } from "@/hooks/useReceiver";
+import { Card } from "../ui/card";
 import { useMessages } from "@/hooks/useMessages";
 import { useUserChat } from "@/hooks/useUserChat";
 import { useAIChat } from "@/hooks/useAIChat";
-import { useProfile } from "@/hooks/useProfile";
-import { useConversationDelete } from "@/hooks/useConversationDelete";
-import { useMessagesStore } from "@/store/messagesStore";
-import { useNavigation } from "@/hooks/useNavigation";
-import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
-import { ProfileInfo } from "@/components/profile/ProfileInfo";
-import { toast } from "sonner";
+import { useRef } from "react";
 
 export function MessagesContainer() {
   const { receiver, setReceiver } = useReceiver();
   const [showConversation, setShowConversation] = useState(false);
-  const { currentPage, handlePageChange } = useNavigation();
-  const { profile } = useProfile();
-  const { 
-    messages: userMessages, 
-    isLoading, 
-    handleSendMessage: handleUserSendMessage 
-  } = useMessages();
-  const { 
-    messages: aiMessages, 
-    inputMessage, 
-    isThinking, 
-    isListening, 
-    handleSendMessage: handleAISendMessage, 
-    handleVoiceInput, 
-    setInputMessage 
-  } = useAIChat();
+  const { messages: userMessages } = useMessages();
+  const { messages: aiMessages, inputMessage, isThinking, isListening, handleSendMessage: handleAISendMessage, handleVoiceInput, setInputMessage } = useAIChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { handleDeleteConversation } = useConversationDelete();
-  const messages = useMessagesStore((state) => state.messages);
 
   const handleSelectConversation = (selectedReceiver: any) => {
     setReceiver(selectedReceiver);
     setShowConversation(true);
-    setInputMessage('');
   };
 
   const handleBack = () => {
     setShowConversation(false);
     setReceiver(null);
-    setInputMessage('');
   };
 
+  const handleDeleteConversation = async () => {
+    // Implement delete conversation logic here
+    handleBack();
+  };
+
+  // Wrapper function to match the expected signature
   const handleSendMessage = () => {
-    if (!receiver) {
-      toast.error("Aucun destinataire sélectionné");
-      return;
-    }
-
-    if (!inputMessage.trim()) {
-      toast.error("Le message ne peut pas être vide");
-      return;
-    }
-
-    if (receiver.id === 'assistant') {
+    if (inputMessage.trim()) {
       handleAISendMessage(inputMessage);
-    } else {
-      handleUserSendMessage(inputMessage, receiver);
     }
-    
-    setInputMessage('');
   };
 
-  if (isLoading || !profile) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-background">
-        <div className="text-muted-foreground">Chargement des messages...</div>
-      </div>
-    );
-  }
-
-  if (showConversation && receiver) {
-    return (
-      <div className="flex flex-col h-[calc(100dvh-4rem)] bg-background">
+  return (
+    <Card className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {showConversation && receiver ? (
         <ConversationView
           receiver={receiver}
           messages={receiver.id === 'assistant' ? aiMessages : userMessages}
@@ -90,28 +51,16 @@ export function MessagesContainer() {
           onSendMessage={handleSendMessage}
           onVoiceInput={handleVoiceInput}
           onBack={handleBack}
-          onDeleteConversation={() => handleDeleteConversation(receiver)}
+          onDeleteConversation={handleDeleteConversation}
           messagesEndRef={messagesEndRef}
         />
-      </div>
-    );
-  }
-
-  return (
-    <div className="h-[calc(100dvh-4rem)]">
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-4 px-4 py-4">
-          <ProfileAvatar profile={profile} />
-          <ProfileInfo profile={profile} />
-        </div>
-      </div>
-      <ConversationList
-        messages={userMessages}
-        chatMessages={aiMessages}
-        onSelectConversation={handleSelectConversation}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
-    </div>
+      ) : (
+        <ConversationList
+          messages={userMessages}
+          chatMessages={aiMessages}
+          onSelectConversation={handleSelectConversation}
+        />
+      )}
+    </Card>
   );
 }

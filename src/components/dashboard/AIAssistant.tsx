@@ -1,112 +1,163 @@
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { AIAssistantInput } from "./ai/AIAssistantInput";
+import { useNavigate } from "react-router-dom";
+import { AIAssistantHeader } from "./ai/AIAssistantHeader";
 import { AIAssistantStatus } from "./ai/AIAssistantStatus";
+import { AIAssistantInput } from "./ai/AIAssistantInput";
 import { AIMessageList } from "./ai/AIMessageList";
-import { aiAgentService } from "@/services/aiAgentService";
+import { ArrowDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useProfile } from "@/hooks/useProfile";
 
-export interface AIAssistantProps {
+interface AIAssistantProps {
   onClose: () => void;
-  conversations?: any[];
 }
 
-export default function AIAssistant({ onClose, conversations = [] }: AIAssistantProps) {
-  const isMobile = useIsMobile();
-  const [messages, setMessages] = useState<any[]>([]);
+export function AIAssistant({ onClose }: AIAssistantProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [messages, setMessages] = useState<Array<{ type: string; content: any }>>([]);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const { profile } = useProfile();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const handleAction = useCallback((action: string, data?: any) => {
+    switch (action) {
+      case 'navigate_to_jobs':
+        navigate('/jobs');
+        break;
+      case 'navigate_to_profile':
+        navigate('/profile');
+        break;
+      case 'create_job':
+        navigate('/jobs/create');
+        break;
+      default:
+        console.log('Action non reconnue:', action);
+    }
+  }, [navigate]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: "smooth",
+        block: "end"
+      });
+    }
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    setShowScrollButton(!isNearBottom);
+  }, []);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessage = {
-      type: 'user',
-      content: { message: input }
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-
     try {
-      const response = await aiAgentService.handleMessage(input);
+      setIsLoading(true);
+      setIsThinking(true);
       
-      const assistantMessage = {
-        type: 'assistant',
-        content: response
-      };
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Vous devez être connecté pour utiliser l'assistant");
+        return;
+      }
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages(prev => [...prev, { type: 'user', content: input }]);
+      setIsTyping(true);
+      
+      const { data, error } = await supabase.functions.invoke('ai-career-assistant', {
+        body: { 
+          message: input,
+          userId: user.id,
+          context: {
+            previousMessages: messages.slice(-5),
+            userProfile: profile,
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      setMessages(prev => [...prev, { 
+        type: 'assistant', 
+        content: {
+          message: data.message,
+          suggestedJobs: data.suggestedJobs || []
+        }
+      }]);
+
+      setInput("");
+      scrollToBottom();
+      
     } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error("Une erreur est survenue lors de l'envoi du message");
+      console.error('Error:', error);
+      toast.error("Une erreur est survenue lors de la communication avec l'assistant");
     } finally {
       setIsLoading(false);
+      setIsThinking(false);
+      setIsTyping(false);
     }
-  };
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    // Add any scroll handling logic here if needed
-  };
+  }, [input, isLoading, messages, profile, scrollToBottom]);
 
   return (
-    <Card className="fixed inset-0 z-[99999] flex flex-col bg-background/95 backdrop-blur-sm">
-      {/* Header - Fixed */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b safe-top">
-        <div className="p-3 sm:p-4">
-          <h2 className="text-lg sm:text-xl font-semibold">AI Assistant</h2>
-        </div>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6 lg:p-8"
+    >
+      <Card className="max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-gray-200 dark:border-gray-800 shadow-lg">
+        <AIAssistantHeader onClose={onClose} />
 
-      {/* Messages area - Scrollable */}
-      <ScrollArea 
-        className="flex-1 px-3 sm:px-4"
-        style={{
-          height: isMobile ? 'calc(100vh - 8rem)' : 'auto',
-          touchAction: 'pan-y'
-        }}
-      >
-        <div className="py-3 sm:py-4 space-y-3 sm:space-y-4">
-          <AIMessageList 
-            messages={messages}
-            onScroll={handleScroll}
-            messagesEndRef={messagesEndRef}
-          />
-        </div>
-      </ScrollArea>
+        <AIMessageList 
+          messages={messages}
+          onScroll={handleScroll}
+          messagesEndRef={messagesEndRef}
+        />
 
-      {/* Status indicator */}
-      <AnimatePresence>
-        {isLoading && (
-          <AIAssistantStatus isThinking={true} />
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {showScrollButton && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="fixed bottom-24 right-4"
+            >
+              <Button
+                size="icon"
+                className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
+                onClick={scrollToBottom}
+              >
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Input area - Fixed */}
-      <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-sm border-t safe-bottom">
+        <AIAssistantStatus 
+          isThinking={isThinking}
+          isTyping={isTyping}
+          isListening={false}
+        />
+
         <AIAssistantInput
           input={input}
           isLoading={isLoading}
           onInputChange={setInput}
           onSubmit={handleSubmit}
         />
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   );
 }

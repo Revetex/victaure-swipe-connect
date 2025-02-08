@@ -42,33 +42,30 @@ export type Database = {
           created_at: string | null
           feedback_score: number | null
           id: string
-          metadata: Json | null
           question: string
           response: string
           tags: string[] | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           context?: Json | null
           created_at?: string | null
           feedback_score?: number | null
           id?: string
-          metadata?: Json | null
           question: string
           response: string
           tags?: string[] | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           context?: Json | null
           created_at?: string | null
           feedback_score?: number | null
           id?: string
-          metadata?: Json | null
           question?: string
           response?: string
           tags?: string[] | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -234,78 +231,6 @@ export type Database = {
           {
             foreignKeyName: "chess_games_winner_id_fkey"
             columns: ["winner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      conversations: {
-        Row: {
-          created_at: string
-          id: string
-          is_deleted: boolean | null
-          last_message: string | null
-          last_message_time: string | null
-          metadata: Json | null
-          participant1_id: string
-          participant2_id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_deleted?: boolean | null
-          last_message?: string | null
-          last_message_time?: string | null
-          metadata?: Json | null
-          participant1_id: string
-          participant2_id: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_deleted?: boolean | null
-          last_message?: string | null
-          last_message_time?: string | null
-          metadata?: Json | null
-          participant1_id?: string
-          participant2_id?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      deleted_conversations: {
-        Row: {
-          conversation_partner_id: string
-          created_at: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          conversation_partner_id: string
-          created_at?: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          conversation_partner_id?: string
-          created_at?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "deleted_conversations_conversation_partner_id_fkey"
-            columns: ["conversation_partner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "deleted_conversations_user_id_fkey"
-            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -729,51 +654,6 @@ export type Database = {
           },
         ]
       }
-      message_deliveries: {
-        Row: {
-          created_at: string | null
-          delivered_at: string | null
-          id: string
-          message_id: string
-          read_at: string | null
-          recipient_id: string
-          status: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          delivered_at?: string | null
-          id?: string
-          message_id: string
-          read_at?: string | null
-          recipient_id: string
-          status?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          delivered_at?: string | null
-          id?: string
-          message_id?: string
-          read_at?: string | null
-          recipient_id?: string
-          status?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "message_deliveries_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "latest_messages"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "message_deliveries_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       message_status: {
         Row: {
           created_at: string
@@ -801,13 +681,6 @@ export type Database = {
             foreignKeyName: "message_status_message_id_fkey"
             columns: ["message_id"]
             isOneToOne: false
-            referencedRelation: "latest_messages"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "message_status_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
             referencedRelation: "messages"
             referencedColumns: ["id"]
           },
@@ -816,69 +689,35 @@ export type Database = {
       messages: {
         Row: {
           content: string
-          conversation_id: string | null
           created_at: string | null
-          deleted_at: string | null
-          deleted_by: Json | null
-          edited_at: string | null
           id: string
           is_ai_message: boolean | null
-          is_deleted: boolean | null
-          message_type: string | null
-          metadata: Json | null
-          reaction: string | null
           read: boolean | null
           receiver_id: string
           sender_id: string
-          status: string | null
           updated_at: string | null
         }
         Insert: {
           content: string
-          conversation_id?: string | null
           created_at?: string | null
-          deleted_at?: string | null
-          deleted_by?: Json | null
-          edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
-          is_deleted?: boolean | null
-          message_type?: string | null
-          metadata?: Json | null
-          reaction?: string | null
           read?: boolean | null
           receiver_id: string
           sender_id: string
-          status?: string | null
           updated_at?: string | null
         }
         Update: {
           content?: string
-          conversation_id?: string | null
           created_at?: string | null
-          deleted_at?: string | null
-          deleted_by?: Json | null
-          edited_at?: string | null
           id?: string
           is_ai_message?: boolean | null
-          is_deleted?: boolean | null
-          message_type?: string | null
-          metadata?: Json | null
-          reaction?: string | null
           read?: boolean | null
           receiver_id?: string
           sender_id?: string
-          status?: string | null
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "messages_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "messages_receiver_id_fkey"
             columns: ["receiver_id"]
@@ -948,7 +787,6 @@ export type Database = {
           id: string
           message: string
           read: boolean | null
-          read_at: string | null
           title: string
           updated_at: string | null
           user_id: string
@@ -958,7 +796,6 @@ export type Database = {
           id?: string
           message: string
           read?: boolean | null
-          read_at?: string | null
           title: string
           updated_at?: string | null
           user_id: string
@@ -968,7 +805,6 @@ export type Database = {
           id?: string
           message?: string
           read?: boolean | null
-          read_at?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
@@ -1196,7 +1032,6 @@ export type Database = {
           auto_update_enabled: boolean | null
           avatar_url: string | null
           bio: string | null
-          chess_elo: number | null
           city: string | null
           company_name: string | null
           company_size: string | null
@@ -1222,7 +1057,6 @@ export type Database = {
           push_notifications_enabled: boolean | null
           push_token: string | null
           role: string
-          search_enabled: boolean | null
           sections_order: string[] | null
           skills: string[] | null
           state: string | null
@@ -1236,7 +1070,6 @@ export type Database = {
           auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
-          chess_elo?: number | null
           city?: string | null
           company_name?: string | null
           company_size?: string | null
@@ -1262,7 +1095,6 @@ export type Database = {
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role: string
-          search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
@@ -1276,7 +1108,6 @@ export type Database = {
           auto_update_enabled?: boolean | null
           avatar_url?: string | null
           bio?: string | null
-          chess_elo?: number | null
           city?: string | null
           company_name?: string | null
           company_size?: string | null
@@ -1302,7 +1133,6 @@ export type Database = {
           push_notifications_enabled?: boolean | null
           push_token?: string | null
           role?: string
-          search_enabled?: boolean | null
           sections_order?: string[] | null
           skills?: string[] | null
           state?: string | null
@@ -1373,47 +1203,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      task_notifications: {
-        Row: {
-          created_at: string | null
-          id: string
-          message: string
-          read: boolean | null
-          scheduled_for: string
-          task_id: string
-          title: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          message: string
-          read?: boolean | null
-          scheduled_for: string
-          task_id: string
-          title: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          message?: string
-          read?: boolean | null
-          scheduled_for?: string
-          task_id?: string
-          title?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "task_notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       todos: {
         Row: {
@@ -1500,50 +1289,7 @@ export type Database = {
       }
     }
     Views: {
-      latest_messages: {
-        Row: {
-          content: string | null
-          conversation_id: string | null
-          created_at: string | null
-          deleted_at: string | null
-          deleted_by: Json | null
-          edited_at: string | null
-          id: string | null
-          is_ai_message: boolean | null
-          is_deleted: boolean | null
-          message_type: string | null
-          metadata: Json | null
-          reaction: string | null
-          read: boolean | null
-          receiver_id: string | null
-          sender_id: string | null
-          status: string | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "messages_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_receiver_id_fkey"
-            columns: ["receiver_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       change_user_password: {
@@ -1626,14 +1372,6 @@ export type Database = {
           secret: string
         }[]
       }
-      handle_post_reaction: {
-        Args: {
-          p_post_id: string
-          p_user_id: string
-          p_reaction_type: string
-        }
-        Returns: undefined
-      }
       latitude: {
         Args: {
           "": unknown
@@ -1645,12 +1383,6 @@ export type Database = {
           "": unknown
         }
         Returns: number
-      }
-      mark_messages_as_read: {
-        Args: {
-          conversation_partner_id: string
-        }
-        Returns: undefined
       }
       sec_to_gc: {
         Args: {
@@ -1672,7 +1404,6 @@ export type Database = {
         | "customer_service"
         | "other"
       job_source: "linkedin" | "indeed" | "direct"
-      message_delivery_status: "pending" | "delivered" | "read"
       mission_type: "company" | "individual"
     }
     CompositeTypes: {

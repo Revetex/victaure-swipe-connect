@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { UserPlus } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
@@ -92,9 +90,6 @@ export function FriendSelector({ onSelectFriend, children }: FriendSelectorProps
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Nouvelle conversation</DialogTitle>
-          <DialogDescription>
-            Sélectionnez un ami pour démarrer une conversation
-          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <Input

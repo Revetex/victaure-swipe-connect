@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -15,11 +14,13 @@ serve(async (req) => {
   try {
     const { userId } = await req.json();
     
+    // Create Supabase client
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    // Get user profile
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('*')
@@ -32,24 +33,18 @@ serve(async (req) => {
     const apiKey = Deno.env.get('HUGGING_FACE_API_KEY');
     if (!apiKey) throw new Error('Missing Hugging Face API key');
 
+    // Generate base context for the model
     const baseContext = `
-      Tu es un expert du domaine de la construction au Québec. Génère 5 suggestions de recherche différentes en français pour un professionnel de la construction.
-      
-      Contexte sur l'utilisateur:
-      - Rôle: ${profile.role || 'Professionnel de la construction'}
-      - Expérience: ${profile.experience_level || 'Non spécifié'}
-      - Localisation: ${profile.city || 'Québec'}
-      
+      Génère 5 suggestions de recherche différentes en français pour un professionnel de la construction.
+      Context: L'utilisateur est ${profile.role} et cherche des opportunités dans son domaine.
       Les suggestions doivent être:
-      - Très spécifiques au secteur de la construction
-      - Pertinentes pour le marché québécois
-      - Diversifiées (emploi, formation, équipement, réglementation, etc.)
+      - Pertinentes pour le secteur de la construction
+      - Spécifiques et détaillées
       - En français
-      - Sous forme de requêtes de recherche complètes
-      
-      Format: Une suggestion par ligne, sans numérotation.
+      Format: Une suggestion par ligne
     `;
 
+    // Call Hugging Face API
     const response = await fetch(
       'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1',
       {
@@ -61,7 +56,7 @@ serve(async (req) => {
         body: JSON.stringify({
           inputs: baseContext,
           parameters: {
-            max_new_tokens: 400,
+            max_new_tokens: 200,
             temperature: 0.8,
             top_p: 0.95,
             repetition_penalty: 1.2
@@ -77,28 +72,15 @@ serve(async (req) => {
     const result = await response.json();
     const suggestions = result[0].generated_text
       .split('\n')
-      .map((line: string) => line.trim())
-      .filter((line: string) => line && !line.includes('Assistant:') && !line.includes('System:'))
+      .filter((line: string) => line.trim())
       .slice(0, 5);
 
     if (!suggestions.length) {
       throw new Error("Aucune suggestion générée");
     }
 
-    // Store the suggestions in learning data for future improvement
-    await supabaseAdmin
-      .from('ai_learning_data')
-      .insert({
-        user_id: userId,
-        context: {
-          profile,
-          type: 'search_suggestions',
-          suggestions
-        }
-      });
-
     return new Response(
-      JSON.stringify({ suggestions }),
+      JSON.stringify({ suggestion: suggestions[0] }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

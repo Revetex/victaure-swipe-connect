@@ -1,11 +1,9 @@
-
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { SettingsSection } from "./SettingsSection";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function LogoutSection() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -25,26 +23,24 @@ export function LogoutSection() {
   };
 
   return (
-    <SettingsSection title="Déconnexion">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        whileHover={{ scale: 1.02 }}
-      >
-        <Button 
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          className="w-full justify-start gap-2 px-2 h-9 bg-destructive/5 text-destructive hover:text-destructive-foreground hover:bg-destructive/10 transition-all duration-300"
-        >
-          <LogOut className="h-4 w-4" />
-          <span className="text-sm font-medium">
-            {isLoggingOut ? "Déconnexion en cours..." : "Déconnexion"}
-          </span>
-        </Button>
-      </motion.div>
-    </SettingsSection>
+    <Button 
+      variant="destructive" 
+      onClick={handleLogout}
+      disabled={isLoggingOut}
+      className={cn(
+        "w-full flex items-center justify-center gap-2 h-9",
+        "bg-destructive/80 hover:bg-destructive",
+        "text-destructive-foreground font-medium text-sm",
+        "transition-all duration-200",
+        "shadow-sm hover:shadow",
+        "rounded-lg",
+        "border border-destructive/20",
+        "focus:ring-2 focus:ring-destructive/30 focus:ring-offset-1",
+        isLoggingOut && "opacity-70 cursor-not-allowed"
+      )}
+    >
+      <span>{isLoggingOut ? "Déconnexion en cours..." : "Déconnexion"}</span>
+      <LogOut className="h-4 w-4" />
+    </Button>
   );
 }

@@ -1,11 +1,8 @@
-
-import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Menu as MenuIcon } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { cn } from "@/lib/utils";
-import { MobileNavigation } from "../layout/MobileNavigation";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Button } from "../ui/button";
+import { motion } from "framer-motion";
 
 export interface DashboardHeaderProps {
   title: string;
@@ -13,50 +10,51 @@ export interface DashboardHeaderProps {
   onToggleFriendsList: () => void;
   isEditing: boolean;
   onToolReturn?: () => void;
-  onNavigate: (path: string) => void;
 }
 
 export function DashboardHeader({
   title,
   showFriendsList,
   onToggleFriendsList,
-  isEditing,
-  onNavigate
+  isEditing
 }: DashboardHeaderProps) {
-  const isMobile = useIsMobile();
-
   return (
-    <div className="flex items-center justify-between w-full h-full px-4">
-      <div className="flex items-center gap-4">
-        {isMobile && <MobileNavigation />}
-        <Logo 
-          size="sm" 
-          onClick={() => onNavigate("/")} 
-          className="cursor-pointer" 
-        />
-        {title && (
-          <h1 className="text-lg font-medium text-foreground/80">
-            {title}
-          </h1>
-        )}
-      </div>
-      
-      <div className="flex items-center gap-4">
-        <NotificationsBox />
-        {!isEditing && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleFriendsList}
-            className={cn(
-              "gap-2",
-              showFriendsList && "bg-primary/5 text-primary"
-            )}
-          >
-            <Menu className="h-4 w-4" />
-            <span className="hidden sm:inline">Amis</span>
-          </Button>
-        )}
+    <div className="sticky top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
+      <div className="flex items-center justify-between p-4 max-w-[2000px] mx-auto">
+        <motion.div 
+          className="flex items-center gap-6"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Logo size="lg" />
+          <h1 className="font-montserrat text-base sm:text-lg md:text-xl text-foreground/80">{title}</h1>
+        </motion.div>
+        
+        <motion.div 
+          className="flex items-center gap-2 sm:gap-4"
+          initial={{ x: 20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <NotificationsBox />
+          {!isEditing && (
+            <Button
+              variant="outline"
+              onClick={onToggleFriendsList}
+              className={`
+                flex items-center gap-2 text-sm sm:text-base
+                transition-all duration-300
+                hover:bg-primary/10 hover:text-primary
+                ${showFriendsList ? 'bg-primary/5 text-primary' : ''}
+              `}
+              size="sm"
+            >
+              <MenuIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">Amis</span>
+            </Button>
+          )}
+        </motion.div>
       </div>
     </div>
   );

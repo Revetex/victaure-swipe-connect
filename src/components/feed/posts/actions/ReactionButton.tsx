@@ -28,13 +28,9 @@ export function ReactionButton({
       <Button
         variant={isActive ? 'default' : 'ghost'}
         size="sm"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onClick();
-        }}
+        onClick={onClick}
         className={cn(
-          "flex gap-2 items-center transition-all duration-150 min-w-[80px] justify-center",
+          "flex gap-2 items-center transition-all duration-150",
           isActive && activeClassName
         )}
       >
@@ -42,7 +38,7 @@ export function ReactionButton({
           "h-4 w-4 transition-transform",
           isActive && "scale-110"
         )} />
-        <span className="font-medium text-sm">{count}</span>
+        <span className="font-medium">{count}</span>
       </Button>
     </motion.div>
   );

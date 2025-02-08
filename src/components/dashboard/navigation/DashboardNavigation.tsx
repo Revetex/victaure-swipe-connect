@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
@@ -38,7 +37,6 @@ export function DashboardNavigation({
           aria-label={name}
         >
           <Icon className="h-5 w-5" />
-          <span className="text-xs font-medium mt-1">{name}</span>
         </motion.button>
       ))}
     </div>

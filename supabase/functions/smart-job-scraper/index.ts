@@ -22,7 +22,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting enhanced job scraping process...');
+    console.log('Starting smart job scraping process...');
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -31,13 +31,11 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const hf = new HfInference(hfApiKey);
 
-    // Sources d'emplois diversifiées
+    // Sources d'emplois à scraper
     const jobSources = [
-      'https://ca.indeed.com/jobs?l=Quebec',
-      'https://www.linkedin.com/jobs/search?keywords=&location=Quebec',
-      'https://www.jobillico.com/search?skwd=&wloc=Quebec',
-      'https://www.jobboom.com/fr/region-quebec',
-      'https://emplois.ca.indeed.com/emplois?l=Montr%C3%A9al%2C+QC'
+      'https://ca.indeed.com/jobs?l=Trois-Rivieres%2C+QC&radius=50',
+      'https://www.linkedin.com/jobs/search?keywords=&location=Trois-Rivieres%2C%20Quebec%2C%20Canada',
+      'https://www.jobillico.com/search?skwd=&wloc=Trois-Rivi%C3%A8res'
     ];
 
     const scrapedJobs: JobData[] = [];
@@ -58,19 +56,20 @@ serve(async (req) => {
 
         const html = await response.text();
 
-        // Utiliser un modèle LayoutLM plus avancé pour l'extraction
+        // Utiliser le modèle LayoutLM pour extraire les informations structurées
         const extractedData = await hf.textExtraction({
           model: 'microsoft/layoutlm-base-uncased',
           inputs: html,
         });
 
-        // Classification plus précise avec BERT multilingue
+        // Utiliser le modèle BERT pour classifier la pertinence
         const relevanceCheck = await hf.textClassification({
           model: 'bert-base-multilingual-uncased',
           inputs: extractedData.text,
         });
 
         if (relevanceCheck.label === 'RELEVANT') {
+          // Utiliser le modèle T5 pour extraire les informations spécifiques
           const jobInfo = await hf.summarization({
             model: 't5-base',
             inputs: extractedData.text,
@@ -80,6 +79,7 @@ serve(async (req) => {
             }
           });
 
+          // Analyser le texte pour extraire les informations structurées
           const jobData = parseJobInfo(jobInfo.summary);
           if (jobData) {
             scrapedJobs.push(jobData);
@@ -90,7 +90,7 @@ serve(async (req) => {
       }
     }
 
-    // Filtrer les emplois récents et pertinents
+    // Filtrer les emplois plus vieux que 30 jours
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -98,7 +98,7 @@ serve(async (req) => {
       new Date(job.posted_at) >= thirtyDaysAgo
     );
 
-    // Sauvegarder dans Supabase avec plus de métadonnées
+    // Sauvegarder dans Supabase
     if (recentJobs.length > 0) {
       const { error } = await supabase
         .from('scraped_jobs')
@@ -106,10 +106,7 @@ serve(async (req) => {
           recentJobs.map(job => ({
             ...job,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            source_url: job.url,
-            is_processed: true,
-            relevance_score: calculateRelevanceScore(job)
+            updated_at: new Date().toISOString()
           })),
           { onConflict: 'url' }
         );
@@ -142,19 +139,6 @@ serve(async (req) => {
     );
   }
 });
-
-function calculateRelevanceScore(job: JobData): number {
-  let score = 0;
-  
-  // Critères de pertinence
-  if (job.title) score += 2;
-  if (job.company) score += 2;
-  if (job.location) score += 1;
-  if (job.description && job.description.length > 100) score += 2;
-  if (job.posted_at) score += 1;
-  
-  return Math.min(10, score);
-}
 
 function parseJobInfo(text: string): JobData | null {
   try {

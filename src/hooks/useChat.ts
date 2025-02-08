@@ -29,6 +29,7 @@ export function useChat() {
   };
 
   const addMessage = useCallback((content: string, sender: MessageSender = defaultSender) => {
+    console.log("Adding message:", { content, sender });
     const newMessage: Message = {
       id: crypto.randomUUID(),
       content,
@@ -38,10 +39,7 @@ export function useChat() {
       updated_at: new Date().toISOString(),
       read: false,
       sender,
-      timestamp: new Date().toISOString(),
-      message_type: sender.id === 'assistant' ? 'ai' : 'user',
-      status: 'sent',
-      thinking: false
+      timestamp: new Date().toISOString()
     };
 
     setState(prev => ({
@@ -152,9 +150,9 @@ export function useChat() {
     inputMessage: state.inputMessage,
     isListening: state.isListening,
     isThinking: state.isThinking,
-    setInputMessage: (message: string) => setState(prev => ({ ...prev, inputMessage: message })),
-    handleSendMessage: handleSendMessage,
-    handleVoiceInput: handleVoiceInput,
-    clearChat: clearChat
+    setInputMessage,
+    handleSendMessage,
+    handleVoiceInput,
+    clearChat
   };
 }

@@ -1,4 +1,3 @@
-
 export const SearchBarStyles = `
   .gsc-control-cse {
     padding: 0 !important;

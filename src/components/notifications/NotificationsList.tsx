@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bell } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { NotificationItem } from "./NotificationItem";
-import { useState, useCallback } from "react";
 
 interface NotificationsListProps {
   notifications: any[];
@@ -13,21 +12,6 @@ interface NotificationsListProps {
 }
 
 export function NotificationsList({ notifications, onDelete }: NotificationsListProps) {
-  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
-
-  const handleDelete = useCallback(async (id: string) => {
-    setDeletingIds(prev => new Set([...prev, id]));
-    try {
-      await onDelete(id);
-    } finally {
-      setDeletingIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(id);
-        return newSet;
-      });
-    }
-  }, [onDelete]);
-
   const groupNotificationsByDate = (notifications: any[]) => {
     return notifications.reduce((groups: any, notification) => {
       const date = format(new Date(notification.created_at), 'EEEE d MMMM', { locale: fr });
@@ -69,24 +53,22 @@ export function NotificationsList({ notifications, onDelete }: NotificationsList
                 <h3 className="text-sm font-medium text-muted-foreground first-letter:uppercase">
                   {date}
                 </h3>
-                <AnimatePresence mode="popLayout">
-                  {groupedNotifications.map((notification: any) => (
-                    <motion.div
-                      key={notification.id}
-                      variants={{
-                        hidden: { opacity: 0, x: -20 },
-                        visible: { opacity: 1, x: 0 }
-                      }}
-                      exit={{ opacity: 0, x: -20 }}
-                      layout
-                    >
-                      <NotificationItem
-                        {...notification}
-                        onDelete={handleDelete}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                {groupedNotifications.map((notification: any) => (
+                  <motion.div
+                    key={notification.id}
+                    variants={{
+                      hidden: { opacity: 0, x: -20 },
+                      visible: { opacity: 1, x: 0 }
+                    }}
+                    exit={{ opacity: 0, x: -20 }}
+                    layout
+                  >
+                    <NotificationItem
+                      {...notification}
+                      onDelete={onDelete}
+                    />
+                  </motion.div>
+                ))}
               </motion.div>
             ))
           ) : (

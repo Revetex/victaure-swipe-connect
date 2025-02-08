@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +18,6 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [debouncedSearch] = useDebounce(search, 300);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(null);
-  const [isFocused, setIsFocused] = useState(false);
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["profiles", debouncedSearch],
@@ -62,9 +60,6 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
           placeholder={placeholder}
           value={search}
           onValueChange={setSearch}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          readOnly={!isFocused}
         />
         <CommandList>
           {debouncedSearch && (

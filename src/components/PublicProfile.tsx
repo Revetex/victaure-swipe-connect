@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
@@ -11,17 +10,12 @@ import { PublicProfileLoader } from "./public-profile/PublicProfileLoader";
 import { PublicProfileError } from "./public-profile/PublicProfileError";
 
 export default function PublicProfile() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!id) {
-        setLoading(false);
-        return;
-      }
-
       try {
         const { data, error } = await supabase
           .from('profiles')
@@ -32,14 +26,9 @@ export default function PublicProfile() {
             certifications (*)
           `)
           .eq('id', id)
-          .maybeSingle();
+          .single();
 
         if (error) throw error;
-
-        if (!data) {
-          setProfile(null);
-          return;
-        }
 
         const transformedData: UserProfile = {
           ...data,
@@ -108,4 +97,3 @@ export default function PublicProfile() {
     </div>
   );
 }
-

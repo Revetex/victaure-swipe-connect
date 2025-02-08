@@ -1,77 +1,55 @@
 
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tool, ToolsNavigationProps } from "./types";
-import { tools } from "./toolsConfig";
-import { ToolGridItem } from "./ToolGridItem";
+import { Calculator, Languages, ListTodo, Plus, Ruler, Sword } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export function ToolsNavigation({ 
-  activeTool, 
-  onToolChange, 
-  toolsOrder,
-  onReorderTools,
-  isLoading 
-}: ToolsNavigationProps) {
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
+type Tool = "notes" | "tasks" | "calculator" | "translator" | "chess" | "converter";
 
-  const orderedTools = toolsOrder
-    .map(toolId => tools.find(t => t.id === toolId))
-    .filter(Boolean) as typeof tools;
+interface ToolsNavigationProps {
+  activeTool: Tool;
+  onToolChange: (tool: Tool) => void;
+  toolsOrder: Tool[];
+}
 
-  const handleToolClick = (toolId: Tool) => {
-    if (isLoading) return;
-    onToolChange(toolId);
-  };
+const tools = [
+  { id: "notes", icon: Plus, label: "Notes" },
+  { id: "tasks", icon: ListTodo, label: "Tâches" },
+  { id: "calculator", icon: Calculator, label: "Calculatrice" },
+  { id: "translator", icon: Languages, label: "Traducteur" },
+  { id: "converter", icon: Ruler, label: "Convertisseur" },
+  { id: "chess", icon: Sword, label: "Échecs" }
+];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1,
-        when: "beforeChildren"
-      }
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className={cn(
-        "grid gap-4",
-        isMobile ? "grid-cols-2" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-      )}>
-        {[...Array(6)].map((_, i) => (
-          <Skeleton key={i} className="w-full h-28" />
-        ))}
-      </div>
-    );
-  }
+export function ToolsNavigation({ activeTool, onToolChange, toolsOrder }: ToolsNavigationProps) {
+  const orderedTools = toolsOrder.map(toolId => 
+    tools.find(t => t.id === toolId)
+  ).filter(Boolean);
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className={cn(
-        "grid gap-4 w-full px-4",
-        isMobile ? "grid-cols-2" : "grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-      )}
-    >
-      {orderedTools.map((tool) => {
+    <div className="flex-1 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      {orderedTools.map((tool, index) => {
         if (!tool) return null;
+        const Icon = tool.icon;
+        
         return (
-          <ToolGridItem
+          <motion.div
             key={tool.id}
-            tool={tool}
-            isActive={activeTool === tool.id}
-            onClick={handleToolClick}
-          />
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Button 
+              variant={activeTool === tool.id ? "default" : "outline"}
+              size="sm"
+              onClick={() => onToolChange(tool.id as Tool)}
+              className="whitespace-nowrap min-w-[120px] transition-all duration-300 hover:scale-105"
+            >
+              <Icon className="h-4 w-4 mr-2" />
+              {tool.label}
+            </Button>
+          </motion.div>
         );
       })}
-    </motion.div>
+    </div>
   );
 }

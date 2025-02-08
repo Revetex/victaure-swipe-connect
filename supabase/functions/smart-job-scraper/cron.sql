@@ -1,12 +1,11 @@
-
--- Activer les extensions nécessaires
+-- Activer l'extension pg_cron si ce n'est pas déjà fait
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 CREATE EXTENSION IF NOT EXISTS pg_net;
 
--- Programmer l'exécution du scraper toutes les 4 heures
+-- Programmer l'exécution du scraper toutes les 6 heures
 SELECT cron.schedule(
-  'scrape-jobs-every-4-hours',
-  '0 */4 * * *',
+  'scrape-jobs-every-6-hours',
+  '0 */6 * * *',
   $$
   SELECT net.http_post(
     url := 'https://mfjllillnpleasclqabb.supabase.co/functions/v1/smart-job-scraper',
@@ -22,7 +21,6 @@ SELECT cron.schedule(
   '0 0 * * *',
   $$
   DELETE FROM scraped_jobs
-  WHERE posted_at < NOW() - INTERVAL '30 days'
-  OR relevance_score < 5;
+  WHERE posted_at < NOW() - INTERVAL '30 days';
   $$
 );

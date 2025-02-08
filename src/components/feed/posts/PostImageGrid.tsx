@@ -1,8 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { ImageViewer } from "./ImageViewer";
 import { useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface PostImageGridProps {
   images: string[];
@@ -10,13 +8,8 @@ interface PostImageGridProps {
 
 export const PostImageGrid = ({ images }: PostImageGridProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
   if (!images || images.length === 0) return null;
-
-  const handleImageLoad = (index: number) => {
-    setLoadedImages(prev => new Set([...prev, index]));
-  };
 
   return (
     <>
@@ -35,21 +28,12 @@ export const PostImageGrid = ({ images }: PostImageGridProps) => {
                 </div>
               </a>
             ) : (
-              <div className="relative w-full h-48">
-                {!loadedImages.has(index) && (
-                  <Skeleton className="absolute inset-0 rounded" />
-                )}
-                <img
-                  src={image}
-                  alt={`Image ${index + 1}`}
-                  className={`w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity border border-border ${
-                    loadedImages.has(index) ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  onClick={() => setSelectedImageIndex(index)}
-                  onLoad={() => handleImageLoad(index)}
-                  loading="lazy"
-                />
-              </div>
+              <img
+                src={image}
+                alt={`Attachment ${index + 1}`}
+                className="w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity border border-border"
+                onClick={() => setSelectedImageIndex(index)}
+              />
             )}
           </div>
         ))}

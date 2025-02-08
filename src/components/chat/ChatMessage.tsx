@@ -10,59 +10,81 @@ import { fr } from "date-fns/locale";
 interface ChatMessageProps {
   content: string;
   sender: "user" | "assistant";
+  avatar_url?: string;
   timestamp?: string;
   isRead?: boolean;
-  reaction?: string;
-  status?: 'sent' | 'delivered' | 'read';
 }
 
-export function ChatMessage({ 
-  content, 
-  sender, 
-  timestamp, 
-  isRead,
-  reaction,
-  status = 'sent'
-}: ChatMessageProps) {
+export function ChatMessage({ content, sender, avatar_url, timestamp, isRead }: ChatMessageProps) {
   const { profile } = useProfile();
   const isAssistant = sender === "assistant";
 
-  const renderMessageStatus = () => {
-    if (isAssistant) return null;
-    
-    switch (status) {
-      case 'read':
-        return <CheckCheck className="h-3 w-3 text-primary" />;
-      case 'delivered':
-        return <Check className="h-3 w-3 text-muted-foreground" />;
-      default:
-        return <Check className="h-3 w-3 text-muted-foreground/50" />;
+  const messageVariants = {
+    initial: { 
+      opacity: 0, 
+      x: isAssistant ? -20 : 20,
+      y: 10 
+    },
+    animate: { 
+      opacity: 1, 
+      x: 0,
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    },
+    hover: {
+      scale: 1.01,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
+  const messageContentVariants = {
+    initial: { scale: 0.95 },
+    animate: { 
+      scale: 1,
+      transition: {
+        duration: 0.2,
+        delay: 0.1
+      }
     }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      initial="initial"
+      animate="animate"
+      whileHover="hover"
+      variants={messageVariants}
       className={cn(
-        "flex w-full gap-3 px-4 py-3 rounded-lg",
-        isAssistant ? "bg-muted/30" : "bg-background"
+        "flex w-full gap-4 p-4",
+        isAssistant 
+          ? "bg-muted/30 hover:bg-muted/50 transition-colors" 
+          : "bg-background hover:bg-muted/10 transition-colors"
       )}
     >
       <Avatar className={cn(
-        "h-8 w-8 ring-2 flex-shrink-0",
-        isAssistant ? "ring-primary/20" : "ring-muted"
+        "h-10 w-10 ring-2 transition-shadow",
+        isAssistant 
+          ? "ring-primary/20 hover:ring-primary/30" 
+          : "ring-muted hover:ring-muted/80"
       )}>
         {isAssistant ? (
-          <div className="h-full w-full rounded-full bg-primary/10 flex items-center justify-center">
-            <Bot className="h-5 w-5 text-primary" />
-          </div>
+          <motion.div 
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            className="h-full w-full rounded-full bg-primary/10 flex items-center justify-center"
+          >
+            <Bot className="h-6 w-6 text-primary" />
+          </motion.div>
         ) : (
           <AvatarImage
             src={profile?.avatar_url || "/user-icon.svg"}
             alt="Your avatar"
-            className="object-cover"
+            className="h-full w-full object-cover"
           />
         )}
         <AvatarFallback>
@@ -70,43 +92,49 @@ export function ChatMessage({
         </AvatarFallback>
       </Avatar>
 
-      <div className="flex-1 min-w-0 space-y-1">
+      <div className="flex-1 space-y-2">
         <div className="flex items-center justify-between">
-          <span className={cn(
+          <p className={cn(
             "text-sm font-medium",
             isAssistant ? "text-primary" : "text-foreground"
           )}>
             {isAssistant ? "M. Victaure" : "Vous"}
-          </span>
+          </p>
           {timestamp && (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="flex items-center gap-2 text-xs text-muted-foreground"
+            >
               <Clock className="h-3 w-3" />
-              <span>{format(new Date(timestamp), "HH:mm", { locale: fr })}</span>
-              {renderMessageStatus()}
-            </div>
+              {format(new Date(timestamp), 'HH:mm', { locale: fr })}
+              {!isAssistant && (
+                <div className="flex items-center">
+                  {isRead ? (
+                    <CheckCheck className="h-3 w-3 text-primary" />
+                  ) : (
+                    <Check className="h-3 w-3 text-muted-foreground" />
+                  )}
+                </div>
+              )}
+            </motion.div>
           )}
         </div>
 
-        <div className={cn(
-          "rounded-xl p-3",
-          isAssistant 
-            ? "bg-muted/50 text-foreground" 
-            : "bg-primary text-primary-foreground"
-        )}>
-          <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+        <motion.div
+          variants={messageContentVariants}
+          className={cn(
+            "rounded-xl p-4 shadow-sm transition-all duration-200",
+            isAssistant 
+              ? "bg-card hover:shadow-md border-primary/10 rounded-tl-none" 
+              : "bg-primary text-primary-foreground hover:bg-primary/90 rounded-tr-none"
+          )}
+        >
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
             {content}
           </p>
-        </div>
-
-        {reaction && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="mt-1 text-sm text-muted-foreground"
-          >
-            {reaction}
-          </motion.div>
-        )}
+        </motion.div>
       </div>
     </motion.div>
   );

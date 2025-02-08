@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -28,14 +27,17 @@ export function useAuth() {
       setState(prev => ({ ...prev, isLoading: true }));
       toast.loading("Déconnexion en cours...");
       
+      // First clear all local storage
       clearStorages();
       
+      // Then sign out from Supabase
       const { error: signOutError } = await supabase.auth.signOut({
         scope: 'global'
       });
       
       if (signOutError) throw signOutError;
       
+      // Update local state
       setState({
         isLoading: false,
         isAuthenticated: false,
@@ -43,6 +45,7 @@ export function useAuth() {
         user: null
       });
 
+      // Show success toast and redirect
       toast.dismiss();
       toast.success("Déconnexion réussie");
       navigate('/auth');
@@ -85,45 +88,23 @@ export function useAuth() {
           return;
         }
 
-        // Verify user data with retry logic
-        const verifyUser = async (attempt = 0): Promise<void> => {
-          try {
-            const { data: { user }, error: userError } = await supabase.auth.getUser();
-            
-            if (userError || !user) {
-              if (attempt < 3) {
-                console.log(`Retrying user verification (${attempt + 1}/3)...`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                return verifyUser(attempt + 1);
-              }
-              throw userError || new Error("User not found");
-            }
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.error('User error:', userError);
+          throw userError;
+        }
 
-            if (mounted) {
-              setState({
-                isLoading: false,
-                isAuthenticated: true,
-                error: null,
-                user
-              });
-            }
-          } catch (error) {
-            console.error("User verification error:", error);
-            toast.error("Erreur de vérification utilisateur");
-            await supabase.auth.signOut();
-            setState({
-              isLoading: false,
-              isAuthenticated: false,
-              error: error instanceof Error ? error : new Error('Authentication failed'),
-              user: null
-            });
-          }
-        };
-
-        await verifyUser();
-
+        if (mounted && user) {
+          setState({
+            isLoading: false,
+            isAuthenticated: true,
+            error: null,
+            user
+          });
+        }
       } catch (error) {
-        console.error("Auth initialization error:", error);
+        console.error('Auth initialization error:', error);
         if (mounted) {
           setState({
             isLoading: false,
@@ -137,42 +118,32 @@ export function useAuth() {
       }
     };
 
-    // Set up auth state change listener
+    initializeAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event);
       
-      if (event === 'SIGNED_OUT' || !session) {
-        setState({
-          isLoading: false,
-          isAuthenticated: false,
-          error: null,
-          user: null
-        });
-      } else if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_IN' && session) {
         setState({
           isLoading: false,
           isAuthenticated: true,
           error: null,
           user: session.user
         });
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed successfully");
-        setState(prev => ({
-          ...prev,
-          isAuthenticated: true
-        }));
+        navigate('/dashboard');
+      } else if (event === 'SIGNED_OUT') {
+        setState({
+          isLoading: false,
+          isAuthenticated: false,
+          error: null,
+          user: null
+        });
+        navigate('/auth');
       }
     });
 
-    // Initial auth check
-    initializeAuth();
-
-    // Periodic auth check every 5 minutes
-    const authCheckInterval = setInterval(initializeAuth, 300000);
-
     return () => {
       mounted = false;
-      clearInterval(authCheckInterval);
       subscription.unsubscribe();
     };
   }, [navigate]);

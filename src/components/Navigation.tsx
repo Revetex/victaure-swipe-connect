@@ -1,56 +1,81 @@
-
-import { MessageSquare, Settings } from "lucide-react";
+import { Menu, MessageSquare, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
+import { useAuth } from "@/hooks/useAuth";
+import { motion } from "framer-motion";
 import { NotificationsBox } from "@/components/notifications/NotificationsBox";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-interface NavigationProps {
-  onNavigate: (path: string) => void;
-  className?: string;
-}
+export function Navigation() {
+  const isMobile = useIsMobile();
+  const { signOut, isLoading } = useAuth();
 
-export function Navigation({ onNavigate, className }: NavigationProps) {
+  if (isLoading) {
+    return null;
+  }
+
+  const NavLinks = () => (
+    <nav className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-6`}>
+      <Link 
+        to="/dashboard/messages" 
+        className="text-foreground/80 hover:text-primary transition-colors relative group flex items-center gap-2"
+      >
+        <MessageSquare className="h-4 w-4" />
+        <span className="relative z-10">Messages</span>
+        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </Link>
+      <Link 
+        to="/settings" 
+        className="text-foreground/80 hover:text-primary transition-colors relative group flex items-center gap-2"
+      >
+        <Settings className="h-4 w-4" />
+        <span className="relative z-10">Paramètres</span>
+        <span className="absolute inset-0 bg-primary/5 scale-x-0 group-hover:scale-x-100 transition-transform origin-left rounded" />
+      </Link>
+      <div className={`flex ${isMobile ? 'justify-between mt-4' : ''} items-center gap-4`}>
+        <NotificationsBox />
+        <ThemeToggle />
+      </div>
+    </nav>
+  );
+
   return (
-    <div className={cn("h-full flex flex-col bg-background", className)}>
-      <div className="h-16 border-b flex items-center px-4">
-        <Logo 
-          size="sm" 
-          onClick={() => onNavigate("/")} 
-          className="cursor-pointer" 
-        />
+    <motion.header 
+      initial={{ y: 100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border/40 z-50"
+    >
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <motion.div 
+          className="flex items-center gap-3 group cursor-pointer"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <Logo size={isMobile ? "sm" : "md"} />
+        </motion.div>
+        
+        {isMobile ? (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-[80vw] sm:w-[380px] bg-background/95 border-border">
+              <div className="flex flex-col gap-6 mt-8">
+                <NavLinks />
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <NavLinks />
+        )}
       </div>
-
-      <ScrollArea className="flex-1 p-4">
-        <nav className="space-y-4">
-          <Button 
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => onNavigate("/messages")}
-          >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            <span>Messages</span>
-          </Button>
-          <Button 
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => onNavigate("/settings")}
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            <span>Paramètres</span>
-          </Button>
-        </nav>
-      </ScrollArea>
-
-      <div className="h-16 border-t flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <NotificationsBox />
-          <ThemeToggle />
-        </div>
-      </div>
-    </div>
+    </motion.header>
   );
 }
-

@@ -1,6 +1,5 @@
-
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { MessagesContainer } from "./MessagesContainer";
+import { MessagesWrapper } from "./MessagesWrapper";
 
 const queryClient = new QueryClient();
 
@@ -8,7 +7,7 @@ export function Messages() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="h-full">
-        <MessagesContainer />
+        <MessagesWrapper />
       </div>
     </QueryClientProvider>
   );

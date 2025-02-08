@@ -1,13 +1,8 @@
-
 import { useState, useCallback } from 'react';
-import { Message, Receiver } from '@/types/messages';
+import { Message, MessageSender, Receiver } from '@/types/messages';
 import { useProfile } from './useProfile';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { useMessagesStore } from '@/store/messagesStore';
-import { useMessageSubscription } from './useMessageSubscription';
-import { usePresenceTracking } from './usePresenceTracking';
-import { sendMessage } from '@/utils/messageSender';
 
 interface UserChat {
   messages: Message[];
@@ -19,58 +14,81 @@ interface UserChat {
 }
 
 export function useUserChat(): UserChat {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { profile } = useProfile();
-  const { messages, setMessages, addMessage } = useMessagesStore();
 
-  useMessageSubscription(profile);
-  usePresenceTracking(profile);
+  const defaultSender: MessageSender = {
+    id: profile?.id || '',
+    full_name: profile?.full_name || 'User',
+    avatar_url: profile?.avatar_url || '',
+    online_status: true,
+    last_seen: new Date().toISOString()
+  };
+
+  const addMessage = useCallback((content: string, receiver: Receiver, sender: MessageSender = defaultSender) => {
+    console.log("Adding user message:", { content, receiver, sender });
+    const newMessage: Message = {
+      id: crypto.randomUUID(),
+      content,
+      sender_id: sender.id,
+      receiver_id: receiver.id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      read: false,
+      sender,
+      timestamp: new Date().toISOString()
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+    return newMessage;
+  }, [defaultSender]);
 
   const handleSendMessage = useCallback(async (message: string, receiver: Receiver) => {
-    if (!message.trim()) {
-      toast.error("Le message ne peut pas être vide");
-      return;
-    }
-    
-    if (!profile) {
-      toast.error("Vous devez être connecté pour envoyer des messages");
-      return;
-    }
+    if (!message.trim()) return;
     
     setIsLoading(true);
     try {
-      const newMessage = await sendMessage(message, receiver, profile);
-      if (newMessage) {
-        addMessage(newMessage);
-        setInputMessage('');
-      }
+      const newMessage = addMessage(message, receiver);
+      setInputMessage('');
+
+      const { error } = await supabase
+        .from('messages')
+        .insert({
+          id: newMessage.id,
+          sender_id: defaultSender.id,
+          receiver_id: receiver.id,
+          content: message,
+        });
+
+      if (error) throw error;
+
     } catch (error) {
-      console.error('Erreur envoi message:', error);
+      console.error('Error sending message:', error);
       toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
     }
-  }, [profile, addMessage, setInputMessage]);
+  }, [addMessage, defaultSender]);
 
   const clearChat = useCallback(async (receiverId: string) => {
-    if (!profile) return;
-    
     try {
       const { error } = await supabase
         .from('messages')
         .delete()
-        .or(`and(sender_id.eq.${profile.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${profile.id})`);
+        .or(`sender_id.eq.${defaultSender.id},receiver_id.eq.${defaultSender.id}`)
+        .or(`sender_id.eq.${receiverId},receiver_id.eq.${receiverId}`);
 
       if (error) throw error;
 
       setMessages([]);
-      toast.success("Conversation effacée");
+      toast.success("Conversation effacée avec succès");
     } catch (error) {
-      console.error('Erreur effacement conversation:', error);
-      toast.error("Erreur lors de l'effacement");
+      console.error('Error clearing chat:', error);
+      toast.error("Erreur lors de l'effacement de la conversation");
     }
-  }, [profile, setMessages]);
+  }, [defaultSender.id]);
 
   return {
     messages,

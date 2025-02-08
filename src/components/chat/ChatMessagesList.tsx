@@ -4,10 +4,10 @@ import { AIAssistantStatus } from "../dashboard/ai/AIAssistantStatus";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRef } from "react";
-import { Message } from "@/types/messages";
+import { ChatMessage as ChatMessageType } from "@/hooks/chat/useRealtimeChat";
 
 interface ChatMessagesListProps {
-  messages: Message[];
+  messages: ChatMessageType[];
   isThinking: boolean;
   onScroll: (event: any) => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
@@ -21,17 +21,17 @@ export function ChatMessagesList({
 }: ChatMessagesListProps) {
   return (
     <ScrollArea 
-      className="flex-1 px-4"
+      className="flex-1 p-4"
       onScrollCapture={onScroll}
     >
-      <div className="space-y-4 py-4 max-w-3xl mx-auto">
+      <div className="space-y-4">
         {messages.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center text-muted-foreground p-4"
           >
-            Aucun message pour le moment. Commencez une conversation !
+            Aucun message pour le moment. Commencez une conversation avec M. Victaure !
           </motion.div>
         )}
         
@@ -46,10 +46,8 @@ export function ChatMessagesList({
             >
               <ChatMessage
                 content={message.content}
-                sender={message.sender_id === 'assistant' ? 'assistant' : 'user'}
+                sender={message.sender}
                 timestamp={message.created_at}
-                status={message.status}
-                reaction={message.reaction}
               />
             </motion.div>
           ))}

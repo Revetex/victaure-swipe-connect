@@ -1,6 +1,5 @@
-
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, MoreVertical, Trash2 } from "lucide-react";
 import { Receiver } from "@/types/messages";
 
 interface ConversationHeaderProps {
