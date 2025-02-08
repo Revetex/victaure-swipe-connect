@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -146,14 +145,8 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
             )}
           </AnimatePresence>
 
-          <div className={cn(
-            "flex justify-between items-center gap-4",
-            isMobile && "flex-col"
-          )}>
-            <div className={cn(
-              "flex gap-2 items-center",
-              isMobile && "w-full justify-between"
-            )}>
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
+            <div className="flex gap-2 items-center">
               <input
                 type="file"
                 id="file-upload"
@@ -164,23 +157,22 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
               />
               <Button 
                 variant="outline" 
-                size={isMobile ? "default" : "icon"}
+                size="default"
                 className={cn(
-                  "transition-colors",
-                  attachments.length > 0 && "border-primary/50 text-primary",
-                  isMobile && "flex-1"
+                  "transition-colors flex-1 sm:flex-none",
+                  attachments.length > 0 && "border-primary/50 text-primary"
                 )}
                 onClick={() => document.getElementById('file-upload')?.click()}
               >
                 {attachments.length > 0 ? (
                   <>
                     <ImagePlus className="h-4 w-4 mr-2" />
-                    {isMobile && "Ajouter une image"}
+                    Ajouter une image
                   </>
                 ) : (
                   <>
                     <Image className="h-4 w-4 mr-2" />
-                    {isMobile && "Ajouter une image"}
+                    Ajouter une image
                   </>
                 )}
               </Button>
@@ -194,10 +186,8 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
             <Button 
               onClick={handleCreatePost} 
               disabled={isUploading || (!newPost.trim() && attachments.length === 0)}
-              size={isMobile ? "lg" : "sm"}
               className={cn(
-                "transition-all",
-                isMobile && "w-full",
+                "transition-all w-full sm:w-auto",
                 (newPost.trim() || attachments.length > 0) && "bg-primary hover:bg-primary/90"
               )}
             >
