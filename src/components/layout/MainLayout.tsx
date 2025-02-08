@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { ErrorBoundary } from "react-error-boundary";
 import { LayoutErrorBoundary } from "./LayoutErrorBoundary";
 import { Sidebar } from "./Sidebar";
-import { MobileNavigation } from "./MobileNavigation";
 import { toast } from "sonner";
 import { DashboardNavigation } from "./DashboardNavigation";
 import { useNavigation } from "@/hooks/useNavigation";
@@ -87,21 +86,18 @@ export function MainLayout({
           {!isMessagesPage && (
             <header 
               className={cn(
-                "h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-                "sticky top-0 z-40 w-full"
+                "sticky top-0 z-40 w-full",
+                "h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
               )}
-              role="banner"
             >
               <div className="container h-full">
-                <div className="flex items-center justify-between h-full px-4">
-                  <DashboardHeader 
-                    title={title}
-                    showFriendsList={showFriendsList}
-                    onToggleFriendsList={onToggleFriendsList}
-                    isEditing={isEditing}
-                    onToolReturn={onToolReturn}
-                  />
-                </div>
+                <DashboardHeader 
+                  title={title}
+                  showFriendsList={showFriendsList}
+                  onToggleFriendsList={onToggleFriendsList}
+                  isEditing={isEditing}
+                  onToolReturn={onToolReturn}
+                />
               </div>
             </header>
           )}
@@ -123,24 +119,20 @@ export function MainLayout({
           {!isFriendsPage && (
             <nav 
               className={cn(
+                "fixed bottom-0 left-0 right-0 z-40",
                 "h-16 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-                "sticky bottom-0 w-full z-40",
                 !isMobile && "md:ml-[280px] lg:ml-[320px]"
               )}
               style={{ 
                 paddingBottom: 'env(safe-area-inset-bottom)'
               }}
-              role="navigation"
-              aria-label="Bottom navigation"
             >
               <div className="container h-full">
-                <div className="px-4 h-full">
-                  <DashboardNavigation 
-                    currentPage={currentPage} 
-                    onPageChange={handlePageChange}
-                    isEditing={isEditing}
-                  />
-                </div>
+                <DashboardNavigation 
+                  currentPage={currentPage} 
+                  onPageChange={handlePageChange}
+                  isEditing={isEditing}
+                />
               </div>
             </nav>
           )}

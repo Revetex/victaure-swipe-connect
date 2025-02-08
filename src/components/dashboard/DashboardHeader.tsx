@@ -24,7 +24,7 @@ export function DashboardHeader({
   isEditing = false
 }: DashboardHeaderProps) {
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex items-center justify-between w-full px-4">
       <motion.div 
         className="flex items-center gap-6"
         initial={{ x: -20, opacity: 0 }}
@@ -33,7 +33,12 @@ export function DashboardHeader({
       >
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="md:hidden"
+              aria-label="Menu"
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
