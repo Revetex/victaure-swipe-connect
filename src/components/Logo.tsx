@@ -1,9 +1,11 @@
+
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+  onClick?: () => void;
 }
 
 const textSizes = {
@@ -13,7 +15,7 @@ const textSizes = {
   xl: "text-4xl"
 };
 
-export function Logo({ size = "md", className }: LogoProps) {
+export function Logo({ size = "md", className, onClick }: LogoProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -25,6 +27,7 @@ export function Logo({ size = "md", className }: LogoProps) {
         mass: 1
       }}
       className={cn("select-none", className)}
+      onClick={onClick}
     >
       <motion.div 
         className={cn(

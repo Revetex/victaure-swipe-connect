@@ -4,10 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { memo } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MemoizedNavigation = memo(Navigation);
 
 export function MobileNavigation() {
+  const navigate = useNavigate();
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -24,7 +31,7 @@ export function MobileNavigation() {
         side="left" 
         className="p-0 w-[280px]"
       >
-        <MemoizedNavigation />
+        <MemoizedNavigation onNavigate={handleNavigate} />
       </SheetContent>
     </Sheet>
   );
