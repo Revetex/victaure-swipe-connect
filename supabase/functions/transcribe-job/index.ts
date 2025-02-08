@@ -1,6 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { pipeline } from "npm:@huggingface/transformers@2.15.1"
+import { pipeline } from "npm:@huggingface/transformers@3.2.3"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
 const corsHeaders = {
