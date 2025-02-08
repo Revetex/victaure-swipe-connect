@@ -6,7 +6,8 @@ import { useProfile } from "@/hooks/useProfile";
 import { SearchBar } from "./SearchBar";
 import { AssistantButton } from "./AssistantButton";
 import { ConversationItem } from "./ConversationItem";
-import { MainNav } from "@/components/dashboard/navigation/MainNav";
+import { useNavigation } from "@/hooks/useNavigation";
+import { DashboardNavigation } from "@/components/dashboard/navigation/DashboardNavigation";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -17,6 +18,7 @@ export interface ConversationListProps {
 export function ConversationList({ messages, chatMessages, onSelectConversation }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
+  const { currentPage, handlePageChange } = useNavigation();
   
   const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
     if (!profile || !message) return acc;
@@ -142,7 +144,11 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
 
       {/* Fixed Footer Navigation */}
       <div className="sticky bottom-0 z-50 bg-background border-t">
-        <MainNav className="py-2" />
+        <DashboardNavigation
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          isEditing={false}
+        />
       </div>
     </div>
   );
