@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useMessagesStore } from '@/store/messagesStore';
 import { useMessageSubscription } from './useMessageSubscription';
 import { usePresenceTracking } from './usePresenceTracking';
-import { sendMessage } from '@/utils/messageSender';
 
 interface UserChat {
   messages: Message[];
@@ -40,18 +39,108 @@ export function useUserChat(): UserChat {
     
     setIsLoading(true);
     try {
-      const newMessage = await sendMessage(message, receiver, profile);
-      if (newMessage) {
-        addMessage(newMessage);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const newMessage = {
+        content: message,
+        sender_id: receiver.id === 'assistant' ? user.id : user.id,
+        receiver_id: receiver.id === 'assistant' ? user.id : receiver.id,
+        message_type: receiver.id === 'assistant' ? 'ai' : 'user',
+        read: false,
+        status: 'sent',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        metadata: {}
+      };
+
+      const { data: savedMessage, error } = await supabase
+        .from('messages')
+        .insert(newMessage)
+        .select(`
+          *,
+          sender:profiles!messages_sender_id_fkey(*)
+        `)
+        .single();
+
+      if (error) {
+        console.error('Error saving message:', error);
+        throw error;
+      }
+
+      if (savedMessage) {
+        addMessage({
+          ...savedMessage,
+          timestamp: savedMessage.created_at,
+          status: 'sent',
+          message_type: savedMessage.message_type,
+          metadata: savedMessage.metadata || {},
+          sender: savedMessage.sender || profile
+        });
         setInputMessage('');
       }
+
+      // Handle AI response if needed
+      if (receiver.id === 'assistant') {
+        // Get AI response using edge function
+        const { data: aiResponse, error: aiError } = await supabase.functions.invoke('ai-chat', {
+          body: { 
+            message,
+            userId: user.id,
+            context: {
+              previousMessages: messages.slice(-5),
+              userProfile: profile,
+            }
+          }
+        });
+
+        if (aiError) throw aiError;
+
+        // Save AI response
+        const aiMessage = {
+          content: aiResponse.response,
+          sender_id: user.id,
+          receiver_id: user.id,
+          message_type: 'ai',
+          read: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          metadata: {}
+        };
+
+        const { data: savedAiMessage, error: aiSaveError } = await supabase
+          .from('messages')
+          .insert(aiMessage)
+          .select('*')
+          .single();
+
+        if (aiSaveError) throw aiSaveError;
+
+        if (savedAiMessage) {
+          addMessage({
+            ...savedAiMessage,
+            timestamp: savedAiMessage.created_at,
+            status: 'sent',
+            message_type: 'ai',
+            metadata: savedAiMessage.metadata || {},
+            sender: {
+              id: 'assistant',
+              full_name: 'M. Victaure',
+              avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+              online_status: true,
+              last_seen: new Date().toISOString()
+            }
+          });
+        }
+      }
+
     } catch (error) {
       console.error('Erreur envoi message:', error);
       toast.error("Erreur lors de l'envoi du message");
     } finally {
       setIsLoading(false);
     }
-  }, [profile, addMessage, setInputMessage]);
+  }, [profile, messages, addMessage]);
 
   const clearChat = useCallback(async (receiverId: string) => {
     if (!profile) return;
