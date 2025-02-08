@@ -22,14 +22,16 @@ export function ConversationList({
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
-  // Group messages by conversation (sender/receiver pair) - only for user messages
+  // Group messages by conversation (sender/receiver pair)
   const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
-    if (!profile || !message || message.sender_id === 'assistant' || message.receiver_id === 'assistant') {
+    if (!profile || !message) {
       return acc;
     }
     
-    // Skip self-messages
-    if (message.sender_id === message.receiver_id) {
+    // Skip self-messages and AI messages
+    if (message.sender_id === message.receiver_id || 
+        message.sender_id === 'assistant' || 
+        message.receiver_id === 'assistant') {
       return acc;
     }
 
@@ -80,21 +82,23 @@ export function ConversationList({
   const lastAIMessage = chatMessages[chatMessages.length - 1];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <SearchBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSelectFriend={(friendId) => onSelectConversation({
-          id: friendId,
-          full_name: '',
-          avatar_url: '',
-          online_status: false,
-          last_seen: new Date().toISOString()
-        })}
-      />
+    <div className="flex flex-col h-[calc(100vh-8rem)]">
+      <div className="sticky top-0 z-[100] bg-background pt-4">
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onSelectFriend={(friendId) => onSelectConversation({
+            id: friendId,
+            full_name: '',
+            avatar_url: '',
+            online_status: false,
+            last_seen: new Date().toISOString()
+          })}
+        />
+      </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+      <ScrollArea className="flex-1 px-4">
+        <div className="space-y-4 py-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
