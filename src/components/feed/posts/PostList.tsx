@@ -1,3 +1,4 @@
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -106,7 +107,7 @@ export function PostList({ onPostDeleted, onPostUpdated }: PostListProps) {
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       <AnimatePresence mode="popLayout">
         {posts.map((post) => (
           <motion.div

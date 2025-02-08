@@ -66,8 +66,8 @@ export function ConversationView({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] relative">
-      <div className="w-full bg-background/95 backdrop-blur border-b">
+    <div className="flex flex-col h-[calc(100vh-4rem)] relative bg-background">
+      <div className="sticky top-0 z-30 w-full bg-background/95 backdrop-blur">
         <ChatHeader
           title={receiver.full_name}
           subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
@@ -148,7 +148,7 @@ export function ConversationView({
         </motion.div>
       )}
 
-      <div className="fixed bottom-16 left-0 right-0 bg-background/95 backdrop-blur p-4 border-t z-50">
+      <div className="sticky bottom-0 left-0 right-0 z-20 bg-background/95 backdrop-blur p-4 border-t">
         <ChatInput
           value={inputMessage}
           onChange={onInputChange}
@@ -162,4 +162,3 @@ export function ConversationView({
     </div>
   );
 }
-

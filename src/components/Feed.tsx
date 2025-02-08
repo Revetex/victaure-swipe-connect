@@ -55,7 +55,7 @@ export function Feed() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="sticky top-0 z-[55] bg-background/95 backdrop-blur-sm py-3"
+            className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm py-3"
           >
             <CreatePost onPostCreated={handlePostCreated} />
           </motion.div>
@@ -86,7 +86,7 @@ export function Feed() {
               "fixed right-4 bg-primary/90 hover:bg-primary text-primary-foreground",
               "rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200",
               "hover:scale-105 active:scale-95",
-              "min-h-[44px] min-w-[44px]",
+              "min-h-[44px] min-w-[44px] z-20",
               isMobile ? "bottom-24" : "bottom-8"
             )}
             aria-label="Retourner en haut"
