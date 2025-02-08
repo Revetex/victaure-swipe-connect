@@ -7,7 +7,7 @@ export const filterSchema = z.object({
   duration: z.string().default("all"),
   experienceLevel: z.string().default("all"),
   location: z.string().default(""),
-  province: z.string().default(""),
+  province: z.string().default("all"),
   remoteType: z.string().default("all"),
   minBudget: z.number().default(300),
   maxBudget: z.number().default(1000),
@@ -25,13 +25,14 @@ export const filterSchema = z.object({
 
 export type JobFilters = z.infer<typeof filterSchema>;
 
+// Export the default filters that will be used throughout the application
 export const defaultFilters: JobFilters = {
   category: "all",
   subcategory: "all",
   duration: "all",
   experienceLevel: "all",
   location: "",
-  province: "",
+  province: "all",
   remoteType: "all",
   minBudget: 300,
   maxBudget: 1000,
