@@ -66,64 +66,68 @@ export function ConversationView({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-7rem)]">
-      <ChatHeader
-        title={receiver.full_name}
-        subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
-        avatarUrl={receiver.avatar_url}
-        onBack={onBack}
-        onDelete={onDeleteConversation}
-        isOnline={receiver.online_status}
-        lastSeen={receiver.last_seen}
-      />
+    <div className="flex flex-col h-[calc(100vh-10rem)] relative">
+      <div className="sticky top-0 z-10">
+        <ChatHeader
+          title={receiver.full_name}
+          subtitle={receiver.id === 'assistant' ? "Assistant virtuel" : receiver.online_status ? "En ligne" : "Hors ligne"}
+          avatarUrl={receiver.avatar_url}
+          onBack={onBack}
+          onDelete={onDeleteConversation}
+          isOnline={receiver.online_status}
+          lastSeen={receiver.last_seen}
+        />
+      </div>
 
       <ScrollArea 
         className="flex-1 px-4"
         onScrollCapture={handleScroll}
       >
-        {messages.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center text-muted-foreground p-4"
-          >
-            Commencez une conversation
-          </motion.div>
-        ) : (
-          <div className="space-y-4 py-4">
-            <AnimatePresence initial={false}>
-              {messages.map((message) => (
+        <div className="min-h-full">
+          {messages.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-muted-foreground p-4"
+            >
+              Commencez une conversation
+            </motion.div>
+          ) : (
+            <div className="space-y-4 py-4">
+              <AnimatePresence initial={false}>
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <ChatMessage
+                      content={message.content}
+                      sender={message.sender_id === profile?.id ? "user" : "assistant"}
+                      timestamp={message.created_at}
+                      isRead={message.read}
+                      status={message.status}
+                      reaction={message.reaction}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              
+              {isThinking && (
                 <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                 >
-                  <ChatMessage
-                    content={message.content}
-                    sender={message.sender_id === profile?.id ? "user" : "assistant"}
-                    timestamp={message.created_at}
-                    isRead={message.read}
-                    status={message.status}
-                    reaction={message.reaction}
-                  />
+                  <ChatThinking />
                 </motion.div>
-              ))}
-            </AnimatePresence>
-            
-            {isThinking && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <ChatThinking />
-              </motion.div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-        )}
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
       </ScrollArea>
 
       {showScrollButton && (
@@ -131,7 +135,7 @@ export function ConversationView({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
-          className="fixed bottom-28 right-4 z-30"
+          className="absolute bottom-20 right-4"
         >
           <Button
             size="icon"
@@ -158,4 +162,3 @@ export function ConversationView({
     </div>
   );
 }
-
