@@ -6,6 +6,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { SearchBar } from "./SearchBar";
 import { AssistantButton } from "./AssistantButton";
 import { ConversationItem } from "./ConversationItem";
+import { motion } from "framer-motion";
 
 export interface ConversationListProps {
   messages: Message[];
@@ -13,10 +14,15 @@ export interface ConversationListProps {
   onSelectConversation: (receiver: Receiver) => void;
 }
 
-export function ConversationList({ messages, chatMessages, onSelectConversation }: ConversationListProps) {
+export function ConversationList({ 
+  messages, 
+  chatMessages, 
+  onSelectConversation 
+}: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { profile } = useProfile();
   
+  // Group messages by conversation (sender/receiver pair)
   const conversations = messages.reduce((acc: { user: Receiver; lastMessage: Message }[], message: Message) => {
     if (!profile || !message) return acc;
     
@@ -25,6 +31,7 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
       return acc;
     }
 
+    // Determine the other user in the conversation
     const otherUserId = message.sender_id === profile.id ? message.receiver_id : message.sender_id;
     const otherUser = message.sender_id === profile.id ? message.receiver : message.sender;
 
@@ -34,9 +41,11 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
       return acc;
     }
 
+    // Check if conversation already exists in accumulator
     const existingConv = acc.find(conv => conv.user.id === otherUserId);
     
     if (!existingConv) {
+      // Add new conversation with this message
       acc.push({
         user: {
           id: otherUserId,
@@ -48,14 +57,21 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
         lastMessage: message
       });
     } else if (new Date(message.created_at) > new Date(existingConv.lastMessage.created_at)) {
+      // Update last message if this one is more recent
       existingConv.lastMessage = message;
     }
     
     return acc;
   }, []);
 
+  // Filter conversations based on search query
   const filteredConversations = conversations.filter(conv => 
     conv.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort conversations by last message date (most recent first)
+  const sortedConversations = [...filteredConversations].sort((a, b) => 
+    new Date(b.lastMessage.created_at).getTime() - new Date(a.lastMessage.created_at).getTime()
   );
 
   return (
@@ -74,19 +90,30 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          <AssistantButton
-            chatMessages={chatMessages}
-            onSelect={() => onSelectConversation({
-              id: 'assistant',
-              full_name: 'M. Victaure',
-              avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
-              online_status: true,
-              last_seen: new Date().toISOString()
-            })}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <AssistantButton
+              chatMessages={chatMessages}
+              onSelect={() => onSelectConversation({
+                id: 'assistant',
+                full_name: 'M. Victaure',
+                avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+                online_status: true,
+                last_seen: new Date().toISOString()
+              })}
+            />
+          </motion.div>
 
-          {filteredConversations.length > 0 && (
-            <div className="relative my-6">
+          {sortedConversations.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="relative my-6"
+            >
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t" />
               </div>
@@ -95,35 +122,49 @@ export function ConversationList({ messages, chatMessages, onSelectConversation 
                   Conversations privées
                 </span>
               </div>
-            </div>
+            </motion.div>
           )}
 
-          {filteredConversations.map((conv) => (
-            <ConversationItem
+          {sortedConversations.map((conv, index) => (
+            <motion.div
               key={conv.user.id}
-              user={conv.user}
-              lastMessage={conv.lastMessage}
-              onSelect={() => onSelectConversation(conv.user)}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <ConversationItem
+                user={conv.user}
+                lastMessage={conv.lastMessage}
+                onSelect={() => onSelectConversation(conv.user)}
+              />
+            </motion.div>
           ))}
 
           {filteredConversations.length === 0 && searchQuery && (
-            <div className="text-center py-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-8"
+            >
               <p className="text-sm text-muted-foreground">
                 Aucune conversation trouvée
               </p>
-            </div>
+            </motion.div>
           )}
 
           {filteredConversations.length === 0 && !searchQuery && (
-            <div className="text-center py-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-8"
+            >
               <p className="text-sm text-muted-foreground">
                 Aucune conversation pour le moment
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Commencez une nouvelle conversation en cliquant sur le bouton +
               </p>
-            </div>
+            </motion.div>
           )}
         </div>
       </ScrollArea>
