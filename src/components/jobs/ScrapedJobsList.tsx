@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import type { ScrapedJob } from "@/types/database/scrapedJobs";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface ScrapedJobsListProps {
   queryString?: string;
@@ -21,57 +22,88 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ["all-jobs", queryString],
     queryFn: async () => {
-      // Récupérer les emplois externes
-      const { data: scrapedJobs = [] } = await supabase
-        .from('scraped_jobs')
-        .select('*')
-        .order('posted_at', { ascending: false });
+      try {
+        // Récupérer tous les emplois Victaure avec leurs transcriptions
+        const { data: victaureJobs = [], error: victaureError } = await supabase
+          .from('jobs')
+          .select(`
+            *,
+            employer:profiles(
+              company_name,
+              avatar_url
+            ),
+            job_transcriptions(
+              ai_transcription
+            )
+          `)
+          .eq('status', 'open')
+          .order('created_at', { ascending: false });
 
-      // Récupérer les emplois Victaure
-      const { data: victaureJobs = [] } = await supabase
-        .from('jobs')
-        .select(`
-          *,
-          employer:profiles(
-            company_name,
-            avatar_url
-          )
-        `)
-        .eq('status', 'open')
-        .order('created_at', { ascending: false });
+        if (victaureError) throw victaureError;
 
-      // Formater tous les emplois de manière uniforme
-      const formattedJobs = [
-        ...scrapedJobs.map(job => ({
-          id: job.id,
-          title: job.title,
-          company: job.company,
-          location: job.location,
-          url: job.url,
-          posted_at: job.posted_at,
-          source: 'Externe'
-        })),
-        ...victaureJobs.map(job => ({
-          id: job.id,
-          title: job.title,
-          company: job.employer?.company_name || 'Entreprise',
-          location: job.location,
-          url: `/jobs/${job.id}`,
-          posted_at: job.created_at,
-          source: 'Victaure'
-        }))
-      ];
+        // Récupérer tous les emplois externes avec leurs transcriptions
+        const { data: scrapedJobs = [], error: scrapedError } = await supabase
+          .from('scraped_jobs')
+          .select(`
+            *,
+            job_transcriptions(
+              ai_transcription
+            )
+          `)
+          .order('posted_at', { ascending: false });
 
-      // Filtrer si une recherche est présente
-      if (queryString) {
-        return formattedJobs.filter(job => 
-          job.title.toLowerCase().includes(queryString.toLowerCase()) ||
-          job.company.toLowerCase().includes(queryString.toLowerCase()) ||
-          job.location.toLowerCase().includes(queryString.toLowerCase())
-        );
+        if (scrapedError) throw scrapedError;
+
+        // Formater de manière uniforme
+        const formattedJobs = [
+          ...victaureJobs.map(job => ({
+            id: job.id,
+            title: job.title,
+            company: job.employer?.company_name || job.company_name || 'Entreprise',
+            location: job.location,
+            url: `/jobs/${job.id}`,
+            posted_at: job.created_at,
+            source: 'Victaure',
+            description: job.description,
+            transcription: job.job_transcriptions?.[0]?.ai_transcription,
+            logo_url: job.employer?.avatar_url
+          })),
+          ...scrapedJobs.map(job => ({
+            id: job.id,
+            title: job.title,
+            company: job.company,
+            location: job.location,
+            url: job.url,
+            posted_at: job.posted_at,
+            source: 'Externe',
+            description: job.description,
+            transcription: job.job_transcriptions?.[0]?.ai_transcription
+          }))
+        ];
+
+        // Filtrer si une recherche est présente
+        if (queryString) {
+          const searchTerms = queryString.toLowerCase().split(' ');
+          return formattedJobs.filter(job => {
+            const searchableText = `
+              ${job.title} 
+              ${job.company} 
+              ${job.location} 
+              ${job.description || ''} 
+              ${job.transcription || ''}
+            `.toLowerCase();
+            
+            return searchTerms.every(term => searchableText.includes(term));
+          });
+        }
+
+        return formattedJobs;
+
+      } catch (error) {
+        console.error('Erreur lors de la récupération des emplois:', error);
+        toast.error('Erreur lors de la récupération des emplois');
+        return [];
       }
-
-      return formattedJobs;
     }
   });
 
@@ -122,6 +154,19 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
               >
                 <Card className="p-6 h-full flex flex-col justify-between hover:shadow-lg transition-all">
                   <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      {job.logo_url && (
+                        <img 
+                          src={job.logo_url} 
+                          alt={job.company}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      )}
+                      <span className="text-sm px-2 py-1 rounded-full bg-primary/10 text-primary">
+                        {job.source}
+                      </span>
+                    </div>
+
                     <div>
                       <h3 className="font-semibold text-lg line-clamp-2">
                         {job.title}
@@ -141,6 +186,12 @@ export function ScrapedJobsList({ queryString = "" }: ScrapedJobsListProps) {
                         })}
                       </div>
                     </div>
+
+                    {job.transcription && (
+                      <div className="mt-4 text-sm text-muted-foreground line-clamp-3">
+                        {job.transcription}
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-4">
