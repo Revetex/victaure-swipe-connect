@@ -1,3 +1,4 @@
+
 export function useDashboardAnimations() {
   const containerVariants = {
     hidden: { opacity: 0 },
