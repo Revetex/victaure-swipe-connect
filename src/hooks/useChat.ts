@@ -30,20 +30,27 @@ export function useChat() {
   };
 
   const addMessage = useCallback((content: string, sender: MessageSender = defaultSender) => {
+    const isAI = sender.id === 'assistant';
     const newMessage: Message = {
       id: crypto.randomUUID(),
       content,
-      sender_id: sender.id === 'assistant' ? profile?.id || '' : sender.id,
-      receiver_id: sender.id === 'assistant' ? profile?.id || '' : 'assistant',
+      sender_id: profile?.id || '',
+      receiver_id: profile?.id || '',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       read: false,
       sender,
       timestamp: new Date().toISOString(),
-      message_type: sender.id === 'assistant' ? 'ai' : 'user',
+      message_type: isAI ? 'ai' : 'user',
       status: 'sent',
       thinking: false,
-      metadata: {}
+      metadata: {
+        isAssistant: isAI,
+        assistantInfo: isAI ? {
+          name: 'M. Victaure',
+          avatar: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+        } : null
+      }
     };
 
     setState(prev => ({
@@ -78,7 +85,8 @@ export function useChat() {
           receiver_id: user.id,
           content: message,
           message_type: 'user',
-          is_ai_message: false
+          is_ai_message: false,
+          metadata: {}
         });
 
       if (saveError) throw saveError;
@@ -115,7 +123,14 @@ export function useChat() {
           receiver_id: user.id,
           content: data.response,
           message_type: 'ai',
-          is_ai_message: true
+          is_ai_message: true,
+          metadata: {
+            isAssistant: true,
+            assistantInfo: {
+              name: 'M. Victaure',
+              avatar: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
+            }
+          }
         });
 
       if (saveAssistantError) throw saveAssistantError;
