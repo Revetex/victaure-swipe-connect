@@ -2,10 +2,11 @@
 import { UserProfile } from "@/types/profile";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Undo2, MessageCircle, ExternalLink } from "lucide-react";
+import { MessageCircle, ExternalLink } from "lucide-react";
 import { ProfilePreviewCard } from "./ProfilePreviewCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useReceiver } from "@/hooks/useReceiver";
 
 interface ProfilePreviewDialogProps {
   profile: UserProfile;
@@ -21,6 +22,18 @@ export function ProfilePreviewDialog({
   onRequestChat,
 }: ProfilePreviewDialogProps) {
   const navigate = useNavigate();
+  const { setReceiver, setShowConversation } = useReceiver();
+
+  const handleChat = () => {
+    setReceiver({
+      id: profile.id,
+      full_name: profile.full_name || '',
+      avatar_url: profile.avatar_url || '',
+      online_status: profile.online_status || false
+    });
+    setShowConversation(true);
+    onClose();
+  };
 
   const handleViewFullProfile = () => {
     navigate(`/profile/${profile.id}`);
@@ -39,21 +52,19 @@ export function ProfilePreviewDialog({
           >
             <ProfilePreviewCard
               profile={profile}
-              onRequestChat={onRequestChat}
+              onRequestChat={handleChat}
               onClose={onClose}
             />
             
             <div className="mt-4 flex flex-col gap-2">
-              {onRequestChat && (
-                <Button 
-                  onClick={onRequestChat}
-                  className="w-full flex items-center gap-2"
-                  variant="default"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Envoyer un message
-                </Button>
-              )}
+              <Button 
+                onClick={handleChat}
+                className="w-full flex items-center gap-2"
+                variant="default"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Envoyer un message
+              </Button>
               
               <Button 
                 onClick={handleViewFullProfile}
