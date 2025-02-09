@@ -12,6 +12,8 @@ export interface Message {
   sender_id: string;
   receiver_id: string;
   read: boolean;
+  error?: string;
+  status?: 'sent' | 'delivered' | 'read' | 'error';
 }
 
 export interface ChatState {
@@ -20,6 +22,8 @@ export interface ChatState {
   inputMessage: string;
   isListening: boolean;
   isThinking: boolean;
+  error?: string;
+  lastMessageTimestamp?: string;
 }
 
 export interface ChatActions {
@@ -29,5 +33,7 @@ export interface ChatActions {
   handleVoiceInput: () => void;
   clearChat: () => Promise<void>;
   restoreChat: () => Promise<void>;
+  retryMessage?: (messageId: string) => Promise<void>;
+  markMessageAsRead?: (messageId: string) => Promise<void>;
 }
 
