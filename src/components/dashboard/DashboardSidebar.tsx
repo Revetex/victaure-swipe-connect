@@ -2,9 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Logo } from "@/components/Logo";
-import { Users, Bell, Newspaper, Briefcase, MessageSquare } from "lucide-react";
+import { Newspaper, MessageSquare, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { navigationItems } from "@/config/navigation";
 import { motion } from "framer-motion";
 
 interface DashboardSidebarProps {
@@ -22,11 +21,6 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   return (
     <div className="flex flex-col h-full">
-      <div className="p-6">
-        <Logo />
-      </div>
-      <Separator />
-
       {profile && (
         <>
           <div className="p-4">
@@ -44,7 +38,11 @@ export function DashboardSidebar({
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <Users className="h-5 w-5 text-primary" />
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-lg font-semibold text-primary">
+                      {profile.full_name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -58,20 +56,6 @@ export function DashboardSidebar({
           <Separator />
         </>
       )}
-
-      {/* Bell Icon Header */}
-      <div className="p-4">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-4 h-12"
-          onClick={() => onPageChange(0)}
-        >
-          <Bell className="h-5 w-5" />
-          <span>Notifications</span>
-        </Button>
-      </div>
-      
-      <Separator />
 
       <div className="flex-1 py-6">
         <nav className="space-y-2 px-4">
@@ -110,24 +94,6 @@ export function DashboardSidebar({
             <Briefcase className="h-5 w-5" />
             <span>Missions</span>
           </Button>
-
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.id}
-                variant={currentPage === item.id ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start gap-4 h-12",
-                  currentPage === item.id && "bg-primary/10 hover:bg-primary/20"
-                )}
-                onClick={() => onPageChange(item.id)}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.name}</span>
-              </Button>
-            );
-          })}
         </nav>
       </div>
     </div>
