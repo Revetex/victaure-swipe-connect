@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { SettingsLayout } from "./settings/SettingsLayout";
 import { DashboardNavigation } from "./layout/DashboardNavigation";
+import { NotificationsBox } from "./notifications/NotificationsBox";
 
 const sectionVariants = {
   initial: { opacity: 0, y: 20 },
@@ -64,6 +65,9 @@ export function Settings() {
       {/* Header */}
       <header className="h-12 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4">
         <h1 className="font-semibold">Paramètres</h1>
+        <div className="flex items-center gap-2">
+          <NotificationsBox />
+        </div>
       </header>
 
       <AnimatePresence mode="wait">
@@ -90,7 +94,7 @@ export function Settings() {
             },
             exit: { opacity: 0 }
           }}
-          className="container mx-auto px-4 py-6 space-y-8 max-w-2xl"
+          className="container mx-auto px-4 py-6 space-y-4 max-w-xl"
         >
           {settingsSections.map(({ id, Component }, index) => (
             <motion.div
@@ -100,6 +104,7 @@ export function Settings() {
               animate="animate"
               exit="exit"
               transition={{ delay: index * 0.1 }}
+              className="bg-card/50 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
             >
               <Component />
             </motion.div>
@@ -121,4 +126,3 @@ export function Settings() {
     </SettingsLayout>
   );
 }
-
