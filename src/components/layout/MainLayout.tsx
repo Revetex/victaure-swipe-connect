@@ -8,7 +8,6 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
-import { AppHeader } from "@/components/navigation/AppHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 
 interface MainLayoutProps {
@@ -46,30 +45,21 @@ export function MainLayout({
         "flex-1 min-h-screen flex flex-col",
         !isMobile && "md:pl-[280px] lg:pl-[320px]"
       )}>
-        {/* Main Header */}
+        {/* Mobile Menu */}
         <header className="h-12 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            {isMobile && (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-80">
-                  <Navigation />
-                </SheetContent>
-              </Sheet>
-            )}
-            <h1 className="font-semibold">VICTAURE technologies inc.</h1>
-          </div>
-          <AppHeader 
-            title={title}
-            showFriendsList={showFriendsList}
-            onToggleFriendsList={onToggleFriendsList}
-            isEditing={isEditing}
-            onToolReturn={onToolReturn}
-          />
+          {isMobile && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-80">
+                <Navigation />
+              </SheetContent>
+            </Sheet>
+          )}
+          <h1 className="font-semibold">{title}</h1>
         </header>
 
         {/* Main Content */}
