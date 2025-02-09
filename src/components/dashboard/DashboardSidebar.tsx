@@ -36,7 +36,7 @@ export function DashboardSidebar({
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={onProfileClick}
+              onClick={() => onPageChange(4)}
               className="flex items-center gap-3 px-4 py-3 rounded-lg bg-background/80 backdrop-blur border border-border/50 shadow-sm hover:shadow-md transition-all cursor-pointer"
             >
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">

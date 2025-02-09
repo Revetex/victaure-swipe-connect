@@ -1,3 +1,4 @@
+
 import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
@@ -31,20 +32,20 @@ export function DashboardContent({
   const renderContent = () => {
     switch (currentPage) {
       case 1:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        return <Feed />;
       case 2:
         return <Messages />;
       case 3:
         return <Marketplace />;
       case 4:
-        return <Feed />;
+        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
       case 5:
         return (
           <div className="h-full">
             <NotesMap />
           </div>
         );
-      case 6:
+      case 10:
         return <Settings />;
       default:
         return null;
