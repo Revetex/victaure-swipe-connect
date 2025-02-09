@@ -12,6 +12,7 @@ import { DateFilters } from "./filters/DateFilters";
 import { WorkTypeFilters } from "./filters/WorkTypeFilters";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -28,6 +29,7 @@ export function JobFilters({
     Object.keys(defaultFilters).forEach((key) => {
       onFilterChange(key as keyof JobFiltersType, defaultFilters[key as keyof JobFiltersType]);
     });
+    toast.success("Filtres réinitialisés");
   };
 
   return (
@@ -53,22 +55,22 @@ export function JobFilters({
       </div>
 
       <SearchFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator />
+      <Separator className="bg-border/50" />
       
       <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
-      <Separator />
+      <Separator className="bg-border/50" />
       
       <LocationFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator />
+      <Separator className="bg-border/50" />
       
       <ExperienceFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator />
+      <Separator className="bg-border/50" />
       
       <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator />
+      <Separator className="bg-border/50" />
       
       <DateFilters filters={filters} onFilterChange={onFilterChange} />
-      <Separator />
+      <Separator className="bg-border/50" />
       
       <WorkTypeFilters filters={filters} onFilterChange={onFilterChange} />
     </motion.div>
