@@ -29,7 +29,8 @@ export function ProfilePreviewDialog({
       id: profile.id,
       full_name: profile.full_name || '',
       avatar_url: profile.avatar_url || '',
-      online_status: profile.online_status || false
+      online_status: profile.online_status || false,
+      last_seen: profile.last_seen || new Date().toISOString()
     });
     setShowConversation(true);
     onClose();

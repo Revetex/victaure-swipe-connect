@@ -72,7 +72,8 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
       id: friend.id,
       full_name: friend.full_name || '',
       avatar_url: friend.avatar_url || '',
-      online_status: friend.online_status || false
+      online_status: friend.online_status || false,
+      last_seen: friend.last_seen || new Date().toISOString()
     });
     setShowConversation(true);
   };
@@ -137,7 +138,7 @@ export function FriendItem({ friend, onMessage }: FriendItemProps) {
         profile={friend}
         isOpen={showProfile}
         onClose={() => setShowProfile(false)}
-        onRequestChat={handleMessageClick}
+        onRequestChat={() => handleMessageClick({ stopPropagation: () => {} } as React.MouseEvent)}
       />
     </>
   );
