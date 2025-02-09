@@ -1,7 +1,7 @@
 
 import { UserProfile } from "@/types/profile";
 import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Calendar, MapPin, Briefcase, Phone, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -23,12 +23,35 @@ export function ProfilePreviewBack({ profile, onFlip, onRequestChat }: ProfilePr
         <img
           src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png"
           alt="Logo"
-          className="w-24 h-24 mx-auto object-contain"
-          style={{ opacity: 0.8 }}
+          className="w-20 h-20 mx-auto object-contain opacity-80"
         />
-        <div className="text-sm text-gray-300 space-y-2">
-          <p>Membre depuis {formatDate(profile.created_at)}</p>
-          <p>{profile.role === 'professional' ? 'Professionnel' : 'Employeur'}</p>
+        <div className="text-sm text-gray-300 space-y-3">
+          <div className="flex items-center justify-center gap-2">
+            <Calendar className="w-4 h-4" />
+            <p>Membre depuis {formatDate(profile.created_at)}</p>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Briefcase className="w-4 h-4" />
+            <p>{profile.role === 'professional' ? 'Professionnel' : 'Employeur'}</p>
+          </div>
+          {profile.city && profile.country && (
+            <div className="flex items-center justify-center gap-2">
+              <MapPin className="w-4 h-4" />
+              <p>{profile.city}, {profile.country}</p>
+            </div>
+          )}
+          {profile.phone && (
+            <div className="flex items-center justify-center gap-2">
+              <Phone className="w-4 h-4" />
+              <p>{profile.phone}</p>
+            </div>
+          )}
+          {profile.email && (
+            <div className="flex items-center justify-center gap-2">
+              <Mail className="w-4 h-4" />
+              <p>{profile.email}</p>
+            </div>
+          )}
         </div>
       </div>
 
