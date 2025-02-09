@@ -1733,6 +1733,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_old_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cube:
         | {
             Args: {
