@@ -28,9 +28,10 @@ export function useTodoList() {
           .from('todos')
           .insert({
             text: todo.text,
-            due_date: todo.dueDate,
+            due_date: selectedDate?.toISOString().split('T')[0], // Convert to YYYY-MM-DD
             due_time: todo.dueTime,
-            all_day: todo.allDay
+            all_day: todo.allDay,
+            user_id: (await supabase.auth.getUser()).data.user?.id
           })
           .select()
           .single();
