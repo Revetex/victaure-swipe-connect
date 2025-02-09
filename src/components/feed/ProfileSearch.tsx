@@ -48,23 +48,22 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
   const handleProfileClick = (profile: UserProfile) => {
     setSelectedProfile(profile);
     onSelect(profile);
+    setSearch(""); // Clear search after selection
   };
 
   const handleProfilePreviewClose = () => {
     setSelectedProfile(null);
-    setSearch("");
   };
 
   return (
     <div className={`relative ${className}`}>
-      <Command className="rounded-lg border shadow-md">
+      <Command className="rounded-lg border shadow-md bg-background">
         <CommandInput
           placeholder={placeholder}
           value={search}
           onValueChange={setSearch}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          readOnly={!isFocused}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
         />
         <CommandList>
           {debouncedSearch && (
@@ -90,7 +89,16 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
                     hoveredId === profile.id ? "bg-accent" : ""
                   }`}
                 >
-                  {profile.full_name || profile.email}
+                  <div className="flex items-center gap-2">
+                    {profile.avatar_url && (
+                      <img 
+                        src={profile.avatar_url} 
+                        alt={profile.full_name || ""} 
+                        className="w-6 h-6 rounded-full"
+                      />
+                    )}
+                    <span>{profile.full_name || profile.email}</span>
+                  </div>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -99,11 +107,13 @@ export function ProfileSearch({ onSelect, placeholder = "Search...", className }
       </Command>
 
       {selectedProfile && (
-        <ProfilePreview 
-          profile={selectedProfile} 
-          onClose={handleProfilePreviewClose}
-          isOpen={!!selectedProfile}
-        />
+        <div className="fixed inset-0 z-50">
+          <ProfilePreview 
+            profile={selectedProfile} 
+            onClose={handleProfilePreviewClose}
+            isOpen={!!selectedProfile}
+          />
+        </div>
       )}
     </div>
   );
