@@ -1,8 +1,6 @@
 
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useReactions } from "./actions/useReactions";
 import { ReactionButton } from "./actions/ReactionButton";
 
 interface PostActionsProps {
@@ -34,61 +32,14 @@ export function PostActions({
   onDislike,
   onToggleComments,
 }: PostActionsProps) {
-  const { toast } = useToast();
-
-  const handleReaction = async (type: 'like' | 'dislike') => {
-    if (!currentUserId) {
-      toast({
-        title: "Erreur",
-        description: "Vous devez être connecté pour réagir",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const { error } = await supabase.rpc('handle_post_reaction', {
-        p_post_id: postId,
-        p_user_id: currentUserId,
-        p_reaction_type: type
-      });
-
-      if (error) throw error;
-
-      if (type === 'like') {
-        onLike();
-        if (postAuthorId !== currentUserId) {
-          await supabase
-            .from('notifications')
-            .insert({
-              user_id: postAuthorId,
-              title: "Nouveau j'aime",
-              message: `${userEmail} a aimé votre publication`,
-              type: 'like'
-            });
-        }
-      } else {
-        onDislike();
-        if (postAuthorId !== currentUserId) {
-          await supabase
-            .from('notifications')
-            .insert({
-              user_id: postAuthorId,
-              title: "Nouveau je n'aime pas",
-              message: `${userEmail} n'a pas aimé votre publication`,
-              type: 'dislike'
-            });
-        }
-      }
-    } catch (error) {
-      console.error('Error handling reaction:', error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la réaction",
-        variant: "destructive"
-      });
-    }
-  };
+  const { handleReaction } = useReactions({
+    postId,
+    postAuthorId,
+    currentUserId,
+    userEmail,
+    onLike,
+    onDislike
+  });
 
   return (
     <div className="flex gap-2 items-center py-2">
