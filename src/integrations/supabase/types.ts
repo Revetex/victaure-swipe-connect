@@ -1664,6 +1664,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_message: string | null
+          last_message_time: string | null
+          participant1_id: string
+          participant1_last_read: string | null
+          participant2_id: string
+          participant2_last_read: string | null
+          status: Database["public"]["Enums"]["conversation_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_message?: string | null
+          last_message_time?: string | null
+          participant1_id: string
+          participant1_last_read?: string | null
+          participant2_id: string
+          participant2_last_read?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_message?: string | null
+          last_message_time?: string | null
+          participant1_id?: string
+          participant1_last_read?: string | null
+          participant2_id?: string
+          participant2_last_read?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_conversations_participant1_id_fkey"
+            columns: ["participant1_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_conversations_participant2_id_fkey"
+            columns: ["participant2_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       latest_messages: {
@@ -1843,6 +1897,12 @@ export type Database = {
         }
         Returns: undefined
       }
+      mark_user_messages_as_read: {
+        Args: {
+          conversation_id: string
+        }
+        Returns: undefined
+      }
       sec_to_gc: {
         Args: {
           "": number
@@ -1851,6 +1911,7 @@ export type Database = {
       }
     }
     Enums: {
+      conversation_status: "active" | "archived" | "blocked"
       job_category:
         | "technology"
         | "design"
