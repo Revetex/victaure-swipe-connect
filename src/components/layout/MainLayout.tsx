@@ -10,7 +10,6 @@ import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/navigation/AppHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
-import { Logo } from "@/components/Logo";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -74,7 +73,7 @@ export function MainLayout({
         </header>
 
         {/* Main Content */}
-        <div className="flex-1 pt-12">
+        <div className="flex-1 pt-12 h-[calc(100vh-3rem)]">
           {children}
         </div>
 
@@ -87,23 +86,6 @@ export function MainLayout({
             />
           )}
         </AnimatePresence>
-
-        {/* Bottom Navigation */}
-        {!isFriendsPage && (
-          <nav 
-            className={cn(
-              "h-16 border-t bg-background/95 backdrop-blur sticky bottom-0 z-40",
-              !isMobile && "md:ml-[280px] lg:ml-[320px]"
-            )}
-            style={{ 
-              paddingBottom: 'env(safe-area-inset-bottom)'
-            }}
-          >
-            <div className="container mx-auto px-4 h-full">
-              {/* Navigation content */}
-            </div>
-          </nav>
-        )}
       </main>
     </div>
   );
