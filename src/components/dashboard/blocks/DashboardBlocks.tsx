@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardBlock } from "./DashboardBlock";
 import { 
-  User, Users, Image, Star, ThumbsUp, Share2, MessageSquare, Eye
+  User, Users, Image, Star, ThumbsUp, Share2, MessageSquare, Eye,
+  Bell, Newspaper, Briefcase // Added new icons
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,30 @@ export function DashboardBlocks() {
       color: "bg-blue-500/10",
       textColor: "text-blue-500",
       route: "/profile"
+    },
+    {
+      icon: Bell,
+      title: "Notifications",
+      description: "Centre de notifications",
+      color: "bg-red-500/10",
+      textColor: "text-red-500",
+      route: "/notifications"
+    },
+    {
+      icon: Newspaper,
+      title: "Actualités",
+      description: "Fil d'actualités",
+      color: "bg-emerald-500/10",
+      textColor: "text-emerald-500",
+      route: "/feed"
+    },
+    {
+      icon: Briefcase,
+      title: "Missions",
+      description: "Missions disponibles",
+      color: "bg-violet-500/10",
+      textColor: "text-violet-500",
+      route: "/jobs"
     },
     {
       icon: Eye,

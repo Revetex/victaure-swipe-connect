@@ -14,29 +14,29 @@ export function useTodoList() {
 
   const addTodo = async () => {
     if (newTodo.trim()) {
-      const todo = {
-        id: Date.now().toString(),
-        text: newTodo,
-        completed: false,
-        dueDate: selectedDate,
-        dueTime: allDay ? undefined : selectedTime,
-        allDay,
-      };
-
       try {
         const { data, error } = await supabase
           .from('todos')
           .insert({
-            text: todo.text,
+            text: newTodo,
             due_date: selectedDate?.toISOString().split('T')[0], // Convert to YYYY-MM-DD
-            due_time: todo.dueTime,
-            all_day: todo.allDay,
+            due_time: allDay ? null : selectedTime,
+            all_day: allDay,
             user_id: (await supabase.auth.getUser()).data.user?.id
           })
           .select()
           .single();
 
         if (error) throw error;
+
+        const todo: Todo = {
+          id: data.id,
+          text: data.text,
+          completed: false,
+          dueDate: selectedDate,
+          dueTime: data.due_time,
+          allDay: data.all_day,
+        };
 
         setTodos([...todos, todo]);
         setNewTodo("");

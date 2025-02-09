@@ -54,8 +54,9 @@ export function Feed() {
     >
       <main className="max-w-3xl mx-auto px-4 py-4 space-y-4">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsList className="grid w-full grid-cols-4 mb-4">
             <TabsTrigger value="feed">Actualités</TabsTrigger>
+            <TabsTrigger value="friends">Amis</TabsTrigger>
             <TabsTrigger value="requests">Demandes</TabsTrigger>
             <TabsTrigger value="search">Rechercher</TabsTrigger>
           </TabsList>
@@ -66,6 +67,17 @@ export function Feed() {
               onPostDeleted={handlePostDeleted}
               onPostUpdated={handlePostUpdated}
             />
+          </TabsContent>
+
+          <TabsContent value="friends">
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold">Mes amis</h2>
+              <ProfileSearch 
+                onSelect={handleProfileSelect}
+                placeholder="Rechercher un ami..."
+                className="w-full"
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="requests">
