@@ -47,7 +47,7 @@ export function MainLayout({
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen h-screen flex bg-background overflow-hidden">
       {/* Desktop Sidebar Navigation */}
       {!isMobile && (
         <div className="w-[280px] lg:w-[320px] shrink-0">
@@ -60,10 +60,10 @@ export function MainLayout({
       {/* Main Content Area */}
       <main 
         ref={mainRef}
-        className="flex-1 min-h-screen flex flex-col relative"
+        className="flex-1 flex flex-col h-screen overflow-hidden"
       >
         {/* Main Header */}
-        <header className="h-12 border-b bg-background/95 backdrop-blur sticky top-0 z-40 flex items-center justify-between px-4">
+        <header className="h-12 min-h-[48px] border-b bg-background/95 backdrop-blur sticky top-0 z-40 flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
             {isMobile && (
               <Sheet>
@@ -89,7 +89,7 @@ export function MainLayout({
         </header>
 
         {/* Main Content */}
-        <div className="flex-1">
+        <div className="flex-1 overflow-auto">
           {children}
         </div>
 
