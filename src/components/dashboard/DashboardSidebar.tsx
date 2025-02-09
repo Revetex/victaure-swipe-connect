@@ -2,10 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Logo } from "@/components/Logo";
-import { Users, Bell, Newspaper, Briefcase, MessageSquare } from "lucide-react";
+import { Users, Bell, Newspaper, Briefcase, MessageSquare, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { navigationItems } from "@/config/navigation";
 import { motion } from "framer-motion";
+import { ToolsSection } from "@/components/navigation/ToolsSection";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -22,7 +22,7 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   return (
     <div className="flex flex-col h-full">
-      <div className="p-6">
+      <div className="p-6 flex items-center justify-between">
         <Logo />
       </div>
       <Separator />
@@ -58,20 +58,6 @@ export function DashboardSidebar({
           <Separator />
         </>
       )}
-
-      {/* Bell Icon Header */}
-      <div className="p-4">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-4 h-12"
-          onClick={() => onPageChange(0)}
-        >
-          <Bell className="h-5 w-5" />
-          <span>Notifications</span>
-        </Button>
-      </div>
-      
-      <Separator />
 
       <div className="flex-1 py-6">
         <nav className="space-y-2 px-4">
@@ -111,23 +97,26 @@ export function DashboardSidebar({
             <span>Missions</span>
           </Button>
 
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.id}
-                variant={currentPage === item.id ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start gap-4 h-12",
-                  currentPage === item.id && "bg-primary/10 hover:bg-primary/20"
-                )}
-                onClick={() => onPageChange(item.id)}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.name}</span>
-              </Button>
-            );
-          })}
+          <Separator />
+          
+          <ToolsSection 
+            openTools={true}
+            setOpenTools={() => {}}
+          />
+
+          <Separator />
+
+          <Button
+            variant={currentPage === 10 ? "default" : "ghost"}
+            className={cn(
+              "w-full justify-start gap-4 h-12",
+              currentPage === 10 && "bg-primary/10 hover:bg-primary/20"
+            )}
+            onClick={() => onPageChange(10)}
+          >
+            <Settings2 className="h-5 w-5" />
+            <span>Paramètres</span>
+          </Button>
         </nav>
       </div>
     </div>
