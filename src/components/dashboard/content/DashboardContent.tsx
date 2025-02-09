@@ -1,9 +1,10 @@
+
 import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
 import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
-import { Settings } from "@/components/settings/SettingsContainer";
+import { Settings } from "@/components/Settings";
 import { NotesMap } from "@/components/notes/NotesMap";
 import { useEffect } from "react";
 

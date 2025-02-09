@@ -1,7 +1,7 @@
-
 import { useProfile } from "@/hooks/useProfile";
 import { DashboardAuth } from "./dashboard/core/DashboardAuth";
-import { DashboardBlocks } from "./dashboard/blocks/DashboardBlocks";
+import { DashboardLayout } from "./DashboardLayout";
+import { VCardCreationForm } from "./VCardCreationForm";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useEffect, memo } from "react";
@@ -9,8 +9,31 @@ import { DashboardLoading } from "./dashboard/core/DashboardLoading";
 import { ErrorBoundary } from "react-error-boundary";
 import { DashboardErrorBoundary } from "./dashboard/layout/DashboardErrorBoundary";
 
+const pageVariants = {
+  initial: { 
+    opacity: 0,
+    scale: 0.95
+  },
+  animate: { 
+    opacity: 1,
+    scale: 1,
+    transition: { 
+      duration: 0.4,
+      type: "spring",
+      stiffness: 100,
+      damping: 15
+    }
+  },
+  exit: { 
+    opacity: 0,
+    scale: 0.95,
+    transition: { duration: 0.2 }
+  }
+};
+
 // Memoize the content components to prevent unnecessary re-renders
-const MemoizedDashboardBlocks = memo(DashboardBlocks);
+const MemoizedDashboardLayout = memo(DashboardLayout);
+const MemoizedVCardCreationForm = memo(VCardCreationForm);
 const MemoizedDashboardLoading = memo(DashboardLoading);
 
 export function Dashboard() {
@@ -47,16 +70,17 @@ export function Dashboard() {
           ) : (
             <motion.div
               key={profile ? 'dashboard' : 'auth'}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               className="relative z-10"
+              layoutId="dashboard-content"
             >
               {!profile ? (
-                <DashboardAuth />
+                <MemoizedVCardCreationForm />
               ) : (
-                <MemoizedDashboardBlocks />
+                <MemoizedDashboardLayout />
               )}
             </motion.div>
           )}

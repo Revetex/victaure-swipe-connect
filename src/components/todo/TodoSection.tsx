@@ -1,4 +1,3 @@
-
 import { Todo } from "@/types/todo";
 import { TodoInput } from "./TodoInput";
 import { TodoList } from "./TodoList";
@@ -64,7 +63,7 @@ export function TodoSection({
           user_id: user.id,
           title: 'Rappel de tâche (1 heure)',
           message: `Rappel: "${todoText}" est prévu dans 1 heure`,
-          scheduled_for: oneHourBefore.toISOString(),
+          created_at: oneHourBefore.toISOString(),
         });
       }
     }
@@ -76,7 +75,7 @@ export function TodoSection({
         user_id: user.id,
         title: 'Rappel de tâche (1 jour)',
         message: `Rappel: "${todoText}" est prévu demain${dueTime ? ` à ${dueTime}` : ''}`,
-        scheduled_for: oneDayBefore.toISOString(),
+        created_at: oneDayBefore.toISOString(),
       });
     }
   };

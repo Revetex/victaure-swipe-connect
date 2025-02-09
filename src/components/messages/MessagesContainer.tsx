@@ -79,7 +79,7 @@ export function MessagesContainer() {
   }
 
   return (
-    <Card className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-8rem)] max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-8rem)] flex flex-col overflow-hidden">
+    <Card className="h-[calc(100vh-6rem)] sm:h-[calc(100vh-12rem)] max-h-[calc(100vh-6rem)] sm:max-h-[calc(100vh-12rem)] flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {showConversation && receiver ? (
           <motion.div
@@ -122,4 +122,3 @@ export function MessagesContainer() {
     </Card>
   );
 }
-

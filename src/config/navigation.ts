@@ -1,29 +1,32 @@
 
-import { Calculator, Languages, ListTodo, StickyNote, Sword, Settings2 } from "lucide-react";
+import { UserCircle, MessageSquare, BriefcaseIcon, Newspaper, Users, UserPlus, UserSearch } from "lucide-react";
 
 export const navigationItems = [
-  { id: 5, icon: Calculator, name: "Calculatrice" },
-  { id: 6, icon: Languages, name: "Traducteur" },
-  { id: 7, icon: StickyNote, name: "Notes" },
-  { id: 8, icon: ListTodo, name: "Tâches" },
-  { id: 9, icon: Sword, name: "Échecs" },
-  { id: 10, icon: Settings2, name: "Paramètres" }
+  { id: 1, icon: UserCircle, name: "Profil" },
+  { id: 2, icon: MessageSquare, name: "Messages" },
+  { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+  { id: 4, icon: Newspaper, name: "Actualités" },
+  { id: 11, icon: Users, name: "Amis" },
+  { id: 12, icon: UserPlus, name: "Demandes" },
+  { id: 13, icon: UserSearch, name: "Rechercher" }
 ] as const;
 
 export const getPageTitle = (currentPage: number): string => {
   switch (currentPage) {
-    case 5:
-      return "Calculatrice";
-    case 6:
-      return "Traducteur";
-    case 7:
-      return "Notes";
-    case 8:
-      return "Tâches";
-    case 9:
-      return "Échecs";
-    case 10:
-      return "Paramètres";
+    case 1:
+      return "Tableau de bord";
+    case 2:
+      return "Messages";
+    case 3:
+      return "Marketplace";
+    case 4:
+      return "Fil d'actualité";
+    case 11:
+      return "Mes amis";
+    case 12:
+      return "Demandes d'amis";
+    case 13:
+      return "Rechercher des profils";
     default:
       return "Tableau de bord";
   }

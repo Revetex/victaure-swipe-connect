@@ -27,22 +27,22 @@ export function ChessPage() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-5xl mx-auto rounded-lg border bg-gradient-to-br from-background/95 to-background/50 backdrop-blur p-6 shadow-lg"
+        className="max-w-5xl mx-auto rounded-xl border border-white/10 bg-[#221F26]/40 backdrop-blur p-8 shadow-2xl"
       >
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Sword className="h-5 w-5 text-primary" />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-white/5">
+              <Sword className="h-6 w-6 text-yellow-400" />
             </div>
-            <h2 className="text-lg font-semibold">Échecs vs IA</h2>
+            <h1 className="text-2xl font-bold">Chess vs AI</h1>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Brain className="h-4 w-4" />
-            <span>Intelligence Artificielle</span>
+            <span>Powered by AI</span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_auto] gap-6">
+        <div className="grid lg:grid-cols-[1fr_auto] gap-8">
           <div className="space-y-6">
             <ChessControls
               isThinking={isThinking}
@@ -53,23 +53,23 @@ export function ChessPage() {
               onReset={resetGame}
             />
             
-            <div className="relative rounded-lg overflow-hidden border bg-background/50">
+            <div className="relative">
               {gameOver && (
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm"
+                  className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm rounded-xl"
                 >
-                  <div className="text-center p-6 rounded-xl bg-background/90 border shadow-lg">
+                  <div className="text-center p-8 rounded-xl bg-[#1A1F2C]/90 border border-white/10 shadow-2xl">
                     <Crown className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
-                    <h3 className="text-2xl font-semibold mb-4">
-                      {isWhiteTurn ? "Les noirs gagnent !" : "Les blancs gagnent !"}
-                    </h3>
+                    <h2 className="text-2xl font-bold mb-2">
+                      {isWhiteTurn ? "Black Wins!" : "White Wins!"}
+                    </h2>
                     <button
                       onClick={resetGame}
-                      className="px-6 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+                      className="mt-4 px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
                     >
-                      Nouvelle partie
+                      Play Again
                     </button>
                   </div>
                 </motion.div>
@@ -88,30 +88,22 @@ export function ChessPage() {
           </div>
 
           <div className="lg:w-72 space-y-6">
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="p-4 rounded-lg bg-background/50 border"
-            >
-              <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
-                <Crown className="h-4 w-4 text-yellow-400" />
-                Historique des coups
-              </h3>
+            <div className="p-6 rounded-xl bg-[#1A1F2C]/40 border border-white/5">
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Crown className="h-5 w-5 text-yellow-400" />
+                Move History
+              </h2>
               <ChessMoveHistory moveHistory={moveHistory} />
-            </motion.div>
+            </div>
 
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="p-4 rounded-lg bg-background/50 border"
-            >
-              <h3 className="text-sm font-medium mb-4">Amis en ligne</h3>
+            <div className="p-6 rounded-xl bg-[#1A1F2C]/40 border border-white/5">
+              <h2 className="text-lg font-semibold mb-4">Friends Online</h2>
               <ChessFriendsList />
-            </motion.div>
+            </div>
           </div>
         </div>
       </motion.div>
     </div>
   );
 }
+

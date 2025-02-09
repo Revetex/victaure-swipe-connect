@@ -1,9 +1,8 @@
-
 import { motion } from "framer-motion";
 import { FriendsContent } from "@/components/feed/friends/FriendsContent";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 
 interface DashboardFriendsListProps {

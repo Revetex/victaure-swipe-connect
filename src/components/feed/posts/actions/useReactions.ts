@@ -34,7 +34,6 @@ export const useReactions = ({
     }
 
     try {
-      // Vérifier si une réaction existe déjà
       const { data: existingReaction } = await supabase
         .from('post_reactions')
         .select('reaction_type')
@@ -42,67 +41,38 @@ export const useReactions = ({
         .eq('user_id', currentUserId)
         .maybeSingle();
 
-      // Si la même réaction existe, on la supprime
-      if (existingReaction) {
-        if (existingReaction.reaction_type === type) {
-          const { error } = await supabase
-            .from('post_reactions')
-            .delete()
-            .eq('post_id', postId)
-            .eq('user_id', currentUserId);
-
-          if (error) throw error;
-
-          // Mettre à jour le compteur
-          const { data: reactions } = await supabase
-            .from('post_reactions')
-            .select('reaction_type')
-            .eq('post_id', postId);
-
-          const newLikes = reactions?.filter(r => r.reaction_type === 'like').length || 0;
-          const newDislikes = reactions?.filter(r => r.reaction_type === 'dislike').length || 0;
-
-          await supabase
-            .from('posts')
-            .update({
-              likes: newLikes,
-              dislikes: newDislikes
-            })
-            .eq('id', postId);
-
-          if (type === 'like') {
-            onLike();
-          } else {
-            onDislike();
-          }
-
-          toast({
-            title: "Réaction supprimée",
-            description: `Vous avez retiré votre ${type === 'like' ? 'j\'aime' : 'je n\'aime pas'}`,
-          });
-
-          return;
-        }
-        // Si une réaction différente existe, on la met à jour
+      if (existingReaction && existingReaction.reaction_type === type) {
+        // Si la même réaction existe déjà, on la supprime
         const { error } = await supabase
           .from('post_reactions')
-          .update({ reaction_type: type })
+          .delete()
           .eq('post_id', postId)
           .eq('user_id', currentUserId);
 
         if (error) throw error;
-      } else {
-        // Si aucune réaction n'existe, on en crée une nouvelle
-        const { error } = await supabase
-          .from('post_reactions')
-          .insert({
-            post_id: postId,
-            user_id: currentUserId,
-            reaction_type: type
-          });
 
-        if (error) throw error;
+        // Mettre à jour les compteurs
+        if (type === 'like') {
+          onLike();
+        } else {
+          onDislike();
+        }
+
+        toast({
+          title: "Réaction supprimée",
+          description: `Vous avez retiré votre ${type === 'like' ? 'j\'aime' : 'je n\'aime pas'}`,
+        });
+
+        return;
       }
+
+      const { error } = await supabase.rpc('handle_post_reaction', {
+        p_post_id: postId,
+        p_user_id: currentUserId,
+        p_reaction_type: type
+      });
+
+      if (error) throw error;
 
       // Mettre à jour les compteurs
       const { data: reactions } = await supabase

@@ -10,12 +10,12 @@ export interface MessageSender {
 export interface Message {
   id: string;
   content: string;
-  sender_id: string | null;
+  sender_id: string;
   receiver_id: string;
   created_at: string;
   updated_at: string;
   read: boolean;
-  sender?: MessageSender;
+  sender: MessageSender;
   receiver?: MessageSender;
   timestamp: string;
   thinking?: boolean;

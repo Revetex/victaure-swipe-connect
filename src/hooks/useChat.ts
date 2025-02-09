@@ -30,27 +30,20 @@ export function useChat() {
   };
 
   const addMessage = useCallback((content: string, sender: MessageSender = defaultSender) => {
-    const isAI = sender.id === 'assistant';
     const newMessage: Message = {
       id: crypto.randomUUID(),
       content,
-      sender_id: profile?.id || '',
-      receiver_id: profile?.id || '',
+      sender_id: sender.id,
+      receiver_id: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       read: false,
       sender,
       timestamp: new Date().toISOString(),
-      message_type: isAI ? 'ai' : 'user',
+      message_type: sender.id === 'assistant' ? 'ai' : 'user',
       status: 'sent',
       thinking: false,
-      metadata: {
-        isAssistant: isAI,
-        assistantInfo: isAI ? {
-          name: 'M. Victaure',
-          avatar: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
-        } : null
-      }
+      metadata: {}
     };
 
     setState(prev => ({
@@ -59,7 +52,7 @@ export function useChat() {
     }));
 
     return newMessage;
-  }, [defaultSender, profile?.id]);
+  }, [defaultSender]);
 
   const setInputMessage = useCallback((message: string) => {
     setState(prev => ({ ...prev, inputMessage: message }));
@@ -78,20 +71,18 @@ export function useChat() {
 
       // Save user message to database
       const { error: saveError } = await supabase
-        .from('messages')
+        .from('ai_chat_messages')
         .insert({
           id: userMessage.id,
-          sender_id: user.id,
-          receiver_id: user.id,
+          user_id: user.id,
           content: message,
-          message_type: 'user',
-          is_ai_message: false,
-          metadata: {}
+          sender: 'user'
         });
 
       if (saveError) throw saveError;
 
       console.log("Getting AI response...");
+      // Get AI response from our edge function
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message,
@@ -116,21 +107,12 @@ export function useChat() {
 
       // Save assistant message to database
       const { error: saveAssistantError } = await supabase
-        .from('messages')
+        .from('ai_chat_messages')
         .insert({
           id: assistantMessage.id,
-          sender_id: user.id,
-          receiver_id: user.id,
+          user_id: user.id,
           content: data.response,
-          message_type: 'ai',
-          is_ai_message: true,
-          metadata: {
-            isAssistant: true,
-            assistantInfo: {
-              name: 'M. Victaure',
-              avatar: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png'
-            }
-          }
+          sender: 'assistant'
         });
 
       if (saveAssistantError) throw saveAssistantError;
@@ -153,10 +135,9 @@ export function useChat() {
       if (!user) throw new Error('User not authenticated');
 
       const { error } = await supabase
-        .from('messages')
+        .from('ai_chat_messages')
         .delete()
-        .eq('sender_id', user.id)
-        .eq('receiver_id', user.id);
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
