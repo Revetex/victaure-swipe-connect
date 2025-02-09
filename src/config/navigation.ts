@@ -4,7 +4,7 @@ import { UserCircle, MessageSquare, BriefcaseIcon, Newspaper, Users, UserPlus, U
 export const navigationItems = [
   { id: 1, icon: UserCircle, name: "Profil" },
   { id: 2, icon: MessageSquare, name: "Messages" },
-  { id: 3, icon: BriefcaseIcon, name: "Emplois" },
+  { id: 3, icon: BriefcaseIcon, name: "Missions" },
   { id: 4, icon: Newspaper, name: "Actualités" },
   { id: 11, icon: Users, name: "Amis" },
   { id: 12, icon: UserPlus, name: "Demandes" },
