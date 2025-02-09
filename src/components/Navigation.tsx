@@ -116,9 +116,9 @@ export function Navigation() {
   return (
     <div className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Logo Section */}
-      <div className="h-16 border-b flex items-center justify-between px-4">
+      <div className="h-12 border-b flex items-center justify-between px-3">
         <motion.div 
-          className="flex items-center gap-3 group cursor-pointer"
+          className="flex items-center gap-2 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
           onClick={() => setShowProfilePreview(true)}
@@ -132,30 +132,30 @@ export function Navigation() {
           className="hover:bg-accent/50"
           title={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
         >
-          <Maximize2 className="h-5 w-5" />
+          <Maximize2 className="h-4 w-4" />
         </Button>
       </div>
 
       {/* Navigation Content */}
-      <ScrollArea className="flex-1 px-2 py-4">
-        <nav className="space-y-4">
+      <ScrollArea className="flex-1 px-2 py-2">
+        <nav className="space-y-2">
           {navigationSections.map((section) => (
             <Collapsible
               key={section.title}
               open={openSections.includes(section.title.toLowerCase())}
               onOpenChange={() => toggleSection(section.title.toLowerCase())}
-              className="space-y-2"
+              className="space-y-1"
             >
               <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full flex items-center justify-between px-2 py-1"
+                  className="w-full flex items-center justify-between px-2 py-1 h-8 text-sm"
                 >
-                  <span className="text-sm font-medium">{section.title}</span>
+                  <span className="font-medium">{section.title}</span>
                   {openSections.includes(section.title.toLowerCase()) ? (
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="h-3 w-3" />
                   ) : (
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-3 w-3" />
                   )}
                 </Button>
               </CollapsibleTrigger>
@@ -165,13 +165,13 @@ export function Navigation() {
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
-                      "text-muted-foreground hover:text-foreground",
+                      "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all duration-200",
+                      "text-muted-foreground hover:text-foreground text-sm",
                       "hover:bg-[#9b87f5]/10 active:scale-[0.98]",
                       "group relative"
                     )}
                   >
-                    <item.icon className="h-5 w-5 transition-colors duration-200" />
+                    <item.icon className="h-4 w-4 transition-colors duration-200" />
                     <span className="font-medium">{item.label}</span>
                   </Link>
                 ))}
@@ -180,13 +180,13 @@ export function Navigation() {
           ))}
         </nav>
 
-        <div className="mt-6">
+        <div className="mt-4">
           <FeedSidebar />
         </div>
       </ScrollArea>
 
       {/* Footer Actions */}
-      <div className="h-16 border-t bg-background/50 backdrop-blur flex items-center justify-between px-4">
+      <div className="h-12 border-t bg-background/50 backdrop-blur flex items-center justify-between px-3">
         <div className="flex items-center gap-2">
           <NotificationsBox />
           <ThemeToggle />
@@ -204,3 +204,4 @@ export function Navigation() {
     </div>
   );
 }
+
