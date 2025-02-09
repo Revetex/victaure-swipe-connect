@@ -12,6 +12,8 @@ import { ProfilePreview } from "./ProfilePreview";
 import { TranslatorPage } from "./tools/TranslatorPage";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { Navigation } from "./Navigation";
+import { Button } from "./ui/button";
+import { DashboardContent } from "./dashboard/DashboardContent";
 
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,4 +109,3 @@ export function DashboardLayout() {
     </div>
   );
 }
-
