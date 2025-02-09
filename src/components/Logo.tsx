@@ -1,7 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Shield } from "lucide-react";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -39,7 +39,7 @@ export function Logo({ size = "md", className, showSparkle = true }: LogoProps) 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-gray-700 to-gray-600 dark:from-gray-200 dark:to-gray-300 bg-clip-text text-transparent">
           VICTAURE
         </span>
         {showSparkle && (
@@ -55,7 +55,7 @@ export function Logo({ size = "md", className, showSparkle = true }: LogoProps) 
               repeatType: "reverse"
             }}
           >
-            <Sparkles className="h-4 w-4 text-primary" />
+            <Shield className="h-4 w-4 text-emerald-500" />
           </motion.div>
         )}
       </motion.div>
