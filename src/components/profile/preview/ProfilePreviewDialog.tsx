@@ -1,9 +1,11 @@
 
 import { UserProfile } from "@/types/profile";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Undo2, MessageCircle, ExternalLink } from "lucide-react";
 import { ProfilePreviewCard } from "./ProfilePreviewCard";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ProfilePreviewDialogProps {
   profile: UserProfile;
@@ -18,36 +20,53 @@ export function ProfilePreviewDialog({
   onClose,
   onRequestChat,
 }: ProfilePreviewDialogProps) {
+  const navigate = useNavigate();
+
+  const handleViewFullProfile = () => {
+    navigate(`/profile/${profile.id}`);
+    onClose();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <AnimatePresence>
-        {isOpen && (
-          <DialogContent 
-            className="max-w-md p-6 overflow-hidden bg-transparent border-none shadow-xl"
-            aria-describedby="profile-preview-description"
+      <DialogContent className="max-w-md p-6 overflow-hidden bg-transparent border-none shadow-xl">
+        <div className="relative">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", duration: 0.5 }}
           >
-            <DialogTitle className="sr-only">
-              Profil de {profile.full_name || "Utilisateur"}
-            </DialogTitle>
-            <DialogDescription id="profile-preview-description" className="sr-only">
-              Carte de visite professionnelle de {profile.full_name || "Utilisateur"}
-            </DialogDescription>
+            <ProfilePreviewCard
+              profile={profile}
+              onRequestChat={onRequestChat}
+              onClose={onClose}
+            />
             
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ type: "spring", duration: 0.5 }}
-            >
-              <ProfilePreviewCard
-                profile={profile}
-                onRequestChat={onRequestChat}
-                onClose={onClose}
-              />
-            </motion.div>
-          </DialogContent>
-        )}
-      </AnimatePresence>
+            <div className="mt-4 flex flex-col gap-2">
+              {onRequestChat && (
+                <Button 
+                  onClick={onRequestChat}
+                  className="w-full flex items-center gap-2"
+                  variant="default"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Envoyer un message
+                </Button>
+              )}
+              
+              <Button 
+                onClick={handleViewFullProfile}
+                className="w-full flex items-center gap-2"
+                variant="outline"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Voir le profil complet
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </DialogContent>
     </Dialog>
   );
 }
