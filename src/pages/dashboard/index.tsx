@@ -2,17 +2,20 @@
 import { Feed } from "@/components/feed/Feed";
 import { useProfile } from "@/hooks/useProfile";
 import { VCardCreationForm } from "@/components/VCardCreationForm";
+import { MainLayout } from "@/components/layout/MainLayout";
 
 export default function DashboardPage() {
   const { profile } = useProfile();
 
-  if (!profile?.full_name) {
-    return (
-      <div className="container py-6">
-        <VCardCreationForm />
-      </div>
-    );
-  }
-
-  return <Feed />;
+  return (
+    <MainLayout>
+      {!profile?.full_name ? (
+        <div className="container py-6">
+          <VCardCreationForm />
+        </div>
+      ) : (
+        <Feed />
+      )}
+    </MainLayout>
+  );
 }

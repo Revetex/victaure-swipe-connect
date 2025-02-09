@@ -72,6 +72,30 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_sessions: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_seen_at: string | null
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_seen_at?: string | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_seen_at?: string | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       blocked_users: {
         Row: {
           blocked_id: string
@@ -273,6 +297,24 @@ export type Database = {
           participant1_id?: string
           participant2_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      dashboard_friends_list_components: {
+        Row: {
+          component_name: string
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          component_name: string
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          component_name?: string
+          created_at?: string | null
+          id?: string
         }
         Relationships: []
       }
@@ -877,7 +919,7 @@ export type Database = {
           reaction: string | null
           read: boolean | null
           receiver_id: string
-          sender_id: string
+          sender_id: string | null
           status: string | null
           timestamp: string | null
           updated_at: string | null
@@ -897,7 +939,7 @@ export type Database = {
           reaction?: string | null
           read?: boolean | null
           receiver_id: string
-          sender_id: string
+          sender_id?: string | null
           status?: string | null
           timestamp?: string | null
           updated_at?: string | null
@@ -917,7 +959,7 @@ export type Database = {
           reaction?: string | null
           read?: boolean | null
           receiver_id?: string
-          sender_id?: string
+          sender_id?: string | null
           status?: string | null
           timestamp?: string | null
           updated_at?: string | null
@@ -1173,6 +1215,7 @@ export type Database = {
           content: string
           created_at: string | null
           id: string
+          parent_id: string | null
           post_id: string | null
           updated_at: string | null
           user_id: string | null
@@ -1181,6 +1224,7 @@ export type Database = {
           content: string
           created_at?: string | null
           id?: string
+          parent_id?: string | null
           post_id?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -1189,11 +1233,19 @@ export type Database = {
           content?: string
           created_at?: string | null
           id?: string
+          parent_id?: string | null
           post_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "post_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "post_comments_post_id_fkey"
             columns: ["post_id"]
@@ -1342,6 +1394,7 @@ export type Database = {
           full_name: string | null
           id: string
           industry: string | null
+          last_activity: string | null
           last_seen: string | null
           last_used_tool: string | null
           latitude: number | null
@@ -1382,6 +1435,7 @@ export type Database = {
           full_name?: string | null
           id: string
           industry?: string | null
+          last_activity?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
@@ -1422,6 +1476,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           industry?: string | null
+          last_activity?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
@@ -1630,6 +1685,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_message: string | null
+          last_message_time: string | null
+          participant1_id: string
+          participant1_last_read: string | null
+          participant2_id: string
+          participant2_last_read: string | null
+          status: Database["public"]["Enums"]["conversation_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_message?: string | null
+          last_message_time?: string | null
+          participant1_id: string
+          participant1_last_read?: string | null
+          participant2_id: string
+          participant2_last_read?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_message?: string | null
+          last_message_time?: string | null
+          participant1_id?: string
+          participant1_last_read?: string | null
+          participant2_id?: string
+          participant2_last_read?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_conversations_participant1_id_fkey"
+            columns: ["participant1_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_conversations_participant2_id_fkey"
+            columns: ["participant2_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       latest_messages: {
@@ -1698,6 +1807,10 @@ export type Database = {
           new_password: string
         }
         Returns: boolean
+      }
+      cleanup_old_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       cube:
         | {
@@ -1792,9 +1905,22 @@ export type Database = {
         }
         Returns: number
       }
+      mark_conversation_deleted: {
+        Args: {
+          p_user_id: string
+          p_conversation_partner_id: string
+        }
+        Returns: undefined
+      }
       mark_messages_as_read: {
         Args: {
           conversation_partner_id: string
+        }
+        Returns: undefined
+      }
+      mark_user_messages_as_read: {
+        Args: {
+          conversation_id: string
         }
         Returns: undefined
       }
@@ -1806,6 +1932,7 @@ export type Database = {
       }
     }
     Enums: {
+      conversation_status: "active" | "archived" | "blocked"
       job_category:
         | "technology"
         | "design"

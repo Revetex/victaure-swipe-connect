@@ -84,10 +84,17 @@ export function useMessages() {
 
       return messages.map(msg => ({
         ...msg,
-        timestamp: msg.created_at, // Use created_at as timestamp if timestamp is not available
+        timestamp: msg.created_at,
         status: msg.read ? 'read' : 'delivered',
         message_type: (msg.message_type || 'user') as Message['message_type'],
-        metadata: (msg.metadata || {}) as Record<string, any>
+        metadata: (msg.metadata || {}) as Record<string, any>,
+        sender: msg.message_type === 'ai' ? {
+          id: 'assistant',
+          full_name: 'M. Victaure',
+          avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+          online_status: true,
+          last_seen: new Date().toISOString()
+        } : msg.sender
       })) as Message[];
     },
     enabled: true
@@ -101,22 +108,20 @@ export function useMessages() {
       const messageType = receiver.id === 'assistant' ? 'ai' as const : 'user' as const;
       const now = new Date().toISOString();
 
-      const newMessage: Omit<Message, 'id' | 'sender'> = {
+      const messageData = {
         content,
-        sender_id: user.id,
-        receiver_id: receiver.id,
+        sender_id: messageType === 'ai' ? null : user.id,
+        receiver_id: receiver.id === 'assistant' ? user.id : receiver.id,
         message_type: messageType,
         read: false,
-        status: 'sent',
         created_at: now,
         updated_at: now,
-        timestamp: now,
         metadata: {}
       };
 
       const { data, error } = await supabase
         .from("messages")
-        .insert(newMessage)
+        .insert(messageData)
         .select(`
           *,
           sender:profiles!messages_sender_id_fkey(
@@ -137,7 +142,14 @@ export function useMessages() {
           timestamp: data.created_at,
           status: 'sent',
           message_type: messageType,
-          metadata: (data.metadata || {}) as Record<string, any>
+          metadata: (data.metadata || {}) as Record<string, any>,
+          sender: messageType === 'ai' ? {
+            id: 'assistant',
+            full_name: 'M. Victaure',
+            avatar_url: '/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png',
+            online_status: true,
+            last_seen: new Date().toISOString()
+          } : data.sender
         };
         addMessage(formattedMessage);
       }

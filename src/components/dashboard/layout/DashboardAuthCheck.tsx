@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,28 +16,62 @@ export function DashboardAuthCheck({ children }: DashboardAuthCheckProps) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          throw sessionError;
+        }
+
         if (!session) {
+          console.log("No session found, redirecting to auth");
           toast.error("Veuillez vous connecter pour accéder au tableau de bord");
           navigate("/auth");
           return;
         }
+
+        // Log session for debugging
+        console.log("Active session found:", session.user.id);
+
+        // Record session activity with unique constraint handling
+        const { error: updateError } = await supabase
+          .from('auth_sessions')
+          .upsert({
+            id: crypto.randomUUID(), // Generate unique ID for new sessions
+            user_id: session.user.id,
+            last_seen_at: new Date().toISOString(),
+            metadata: { lastRoute: 'dashboard' }
+          }, {
+            onConflict: 'user_id',
+            ignoreDuplicates: false
+          });
+
+        if (updateError) {
+          console.error("Error updating session activity:", updateError);
+          // Continue execution as this is not critical
+        }
+
         setIsLoading(false);
       } catch (error) {
         console.error("Auth check error:", error);
         toast.error("Erreur lors de la vérification de l'authentification");
-        setIsLoading(false);
+        navigate("/auth");
       }
     };
 
+    // Initial auth check
     checkAuth();
 
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
+      
       if (!session) {
         navigate("/auth");
       }
     });
 
+    // Cleanup subscription
     return () => {
       subscription.unsubscribe();
     };

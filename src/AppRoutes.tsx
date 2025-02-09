@@ -1,7 +1,7 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Dashboard from "@/pages/Dashboard";
 import { TermsPage } from "@/components/legal/TermsPage";
 import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
@@ -15,12 +15,16 @@ import { CalculatorPage } from "@/components/tools/CalculatorPage";
 import { TranslatorPage } from "@/components/tools/TranslatorPage";
 import { ChessPage } from "@/components/tools/ChessPage";
 import { Feed } from "@/components/feed/Feed";
+import { Settings } from "@/components/Settings";
+import { Messages } from "@/components/messages/Messages";
+import DashboardPage from "@/pages/dashboard";
 
 export function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
+      {/* Page d'accueil */}
       <Route 
         path="/" 
         element={
@@ -31,6 +35,17 @@ export function AppRoutes() {
           )
         } 
       />
+
+      {/* Profil public */}
+      <Route path="/profile/:id" element={<PublicProfile />} />
+      
+      {/* Pages légales */}
+      <Route path="/legal/terms" element={<TermsPage />} />
+      <Route path="/legal/privacy" element={<PrivacyPage />} />
+      <Route path="/legal/cookies" element={<CookiesPage />} />
+      <Route path="/legal/mentions" element={<LegalNoticePage />} />
+
+      {/* Authentification */}
       <Route 
         path="/auth" 
         element={
@@ -41,11 +56,24 @@ export function AppRoutes() {
           )
         } 
       />
-      <Route path="/legal/terms" element={<TermsPage />} />
-      <Route path="/legal/privacy" element={<PrivacyPage />} />
-      <Route path="/legal/cookies" element={<CookiesPage />} />
-      <Route path="/legal/mentions" element={<LegalNoticePage />} />
-      <Route path="/profile/:id" element={<PublicProfile />} />
+      
+      {/* Routes protégées */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/messages"
+        element={
+          <ProtectedRoute>
+            <Messages />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/feed"
         element={
@@ -55,15 +83,17 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard"
+        path="/settings"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <Settings />
           </ProtectedRoute>
         }
       />
+      
+      {/* Routes des outils */}
       <Route
-        path="/notes"
+        path="/tools"
         element={
           <ProtectedRoute>
             <NotesPage />
@@ -71,7 +101,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/tasks"
+        path="/tools/tasks"
         element={
           <ProtectedRoute>
             <TasksPage />
@@ -79,7 +109,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/calculator"
+        path="/tools/calculator"
         element={
           <ProtectedRoute>
             <CalculatorPage />
@@ -87,7 +117,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/translator"
+        path="/tools/translator"
         element={
           <ProtectedRoute>
             <TranslatorPage />
@@ -95,13 +125,15 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/chess"
+        path="/tools/chess"
         element={
           <ProtectedRoute>
             <ChessPage />
           </ProtectedRoute>
         }
       />
+      
+      {/* Redirection par défaut */}
       <Route 
         path="*" 
         element={

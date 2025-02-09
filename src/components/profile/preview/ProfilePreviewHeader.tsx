@@ -1,17 +1,13 @@
+
 import { UserProfile } from "@/types/profile";
-import { Button } from "@/components/ui/button";
-import { UserCircle, MessageCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { useConnectionStatus } from "./hooks/useConnectionStatus";
 
 interface ProfilePreviewHeaderProps {
   profile: UserProfile;
-  onRequestChat?: () => void;
 }
 
-export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewHeaderProps) {
-  const { isFriend } = useConnectionStatus(profile.id);
-
+export function ProfilePreviewHeader({ profile }: ProfilePreviewHeaderProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -39,25 +35,14 @@ export function ProfilePreviewHeader({ profile, onRequestChat }: ProfilePreviewH
             {profile.full_name || "Utilisateur"}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {profile.role === "professional" ? "Professionnel" : "Employeur"}
+            {profile.role}
           </p>
-          {isFriend && profile.city && (
+          {profile.city && (
             <p className="text-sm text-muted-foreground mt-1">
               {[profile.city, profile.country].filter(Boolean).join(", ")}
             </p>
           )}
         </div>
-
-        {isFriend && onRequestChat && (
-          <Button
-            onClick={onRequestChat}
-            variant="secondary"
-            size="icon"
-            className="rounded-full hover:scale-105 transition-transform"
-          >
-            <MessageCircle className="w-4 h-4" />
-          </Button>
-        )}
       </div>
     </motion.div>
   );
