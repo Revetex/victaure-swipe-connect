@@ -1,11 +1,7 @@
 
-import { UserCircle, MessageSquare, BriefcaseIcon, Newspaper, Calculator, Languages, ListTodo, StickyNote, Sword, Settings2 } from "lucide-react";
+import { Calculator, Languages, ListTodo, StickyNote, Sword, Settings2 } from "lucide-react";
 
 export const navigationItems = [
-  { id: 1, icon: UserCircle, name: "Profil" },
-  { id: 2, icon: MessageSquare, name: "Messages" },
-  { id: 3, icon: BriefcaseIcon, name: "Missions" },
-  { id: 4, icon: Newspaper, name: "Actualités" },
   { id: 5, icon: Calculator, name: "Calculatrice" },
   { id: 6, icon: Languages, name: "Traducteur" },
   { id: 7, icon: StickyNote, name: "Notes" },
@@ -16,14 +12,6 @@ export const navigationItems = [
 
 export const getPageTitle = (currentPage: number): string => {
   switch (currentPage) {
-    case 1:
-      return "Tableau de bord";
-    case 2:
-      return "Messages";
-    case 3:
-      return "Marketplace";
-    case 4:
-      return "Fil d'actualité";
     case 5:
       return "Calculatrice";
     case 6:
