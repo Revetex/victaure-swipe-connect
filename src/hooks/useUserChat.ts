@@ -118,7 +118,10 @@ export function useUserChat(): UserChat {
           read: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          metadata: {} as Record<string, any>
+          metadata: {
+            timestamp: new Date().toISOString(),
+            messageType: 'ai'
+          }
         };
 
         const { data: savedAiMessage, error: aiSaveError } = await supabase
@@ -143,7 +146,10 @@ export function useUserChat(): UserChat {
             timestamp: savedAiMessage.created_at,
             status: 'sent',
             message_type: 'ai',
-            metadata: savedAiMessage.metadata || {},
+            metadata: {
+              timestamp: savedAiMessage.created_at,
+              messageType: 'ai'
+            },
             sender: aiSender
           });
         }
