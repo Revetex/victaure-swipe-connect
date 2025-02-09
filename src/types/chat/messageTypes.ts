@@ -1,3 +1,4 @@
+
 import { MessageSender } from "../messages";
 
 export interface Message {
@@ -29,3 +30,4 @@ export interface ChatActions {
   clearChat: () => Promise<void>;
   restoreChat: () => Promise<void>;
 }
+
