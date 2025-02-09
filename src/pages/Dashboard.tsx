@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,8 +34,12 @@ export default function Dashboard() {
         return;
       }
 
-      console.log("Profile check:", profile);
-      setHasProfile(!!profile && !!profile.full_name);
+      if (!profile || !profile.full_name) {
+        setHasProfile(false);
+      } else {
+        setHasProfile(true);
+        navigate("/feed");
+      }
     };
 
     checkAuth();

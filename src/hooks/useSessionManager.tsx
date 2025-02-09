@@ -33,7 +33,7 @@ export const useSessionManager = () => {
 
           if (user) {
             setSession(storedSession);
-            navigate("/dashboard");
+            navigate("/feed");
           }
         }
       } catch (error) {
@@ -60,7 +60,7 @@ export const useSessionManager = () => {
       } else if (event === 'SIGNED_IN' && currentSession) {
         setSession(currentSession);
         toast.success("Connexion réussie");
-        navigate("/dashboard");
+        navigate("/feed");
       } else if (event === 'TOKEN_REFRESHED' && currentSession) {
         setSession(currentSession);
       } else if (event === 'USER_UPDATED' && currentSession) {
