@@ -1,5 +1,5 @@
 
-import { MessageSquare, Settings, ListTodo, Calculator, Languages, Sword } from "lucide-react";
+import { MessageSquare, Settings, ListTodo, Calculator, Languages, Sword, Users, UserPlus } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -63,6 +63,16 @@ export function Navigation() {
       icon: Sword, 
       label: 'Échecs', 
       to: '/dashboard/tools?tool=chess'
+    },
+    {
+      icon: Users,
+      label: 'Mes Connections',
+      to: '/dashboard/connections'
+    },
+    {
+      icon: UserPlus,
+      label: 'Demandes en attente',
+      to: '/dashboard/requests'
     },
     { 
       icon: Settings, 
