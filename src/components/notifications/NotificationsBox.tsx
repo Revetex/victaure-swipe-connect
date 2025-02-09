@@ -17,12 +17,12 @@ export function NotificationsBox() {
       <Button
         variant="ghost"
         size="icon"
-        className="relative hover:bg-primary/10"
+        className="relative hover:bg-muted/50"
         onClick={() => setIsOpen(!isOpen)}
         title="Notifications"
         aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} non lues)` : ''}`}
       >
-        <Bell className="h-5 w-5 text-primary" />
+        <Bell className="h-5 w-5" />
         <AnimatePresence>
           {unreadCount > 0 && (
             <motion.span
