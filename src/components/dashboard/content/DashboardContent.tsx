@@ -57,4 +57,3 @@ export function DashboardContent({
     </motion.div>
   );
 }
-
