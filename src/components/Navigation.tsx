@@ -1,5 +1,5 @@
 
-import { MessageSquare, Settings, ListTodo, Calculator, Languages, Sword, Users, UserPlus } from "lucide-react";
+import { MessageSquare, Settings, ListTodo, Calculator, Languages, Sword, Users, UserPlus, Maximize2 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,13 +9,25 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "./feed/FeedSidebar";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ProfilePreview } from "./ProfilePreview";
 import { UserProfile } from "@/types/profile";
+import { Button } from "./ui/button";
 
 export function Navigation() {
   const { isLoading, user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  }, []);
 
   if (isLoading || !user) {
     return null;
@@ -84,7 +96,7 @@ export function Navigation() {
   return (
     <div className="h-full flex flex-col">
       {/* Logo Section */}
-      <div className="h-16 border-b flex items-center px-4">
+      <div className="h-16 border-b flex items-center justify-between px-4">
         <motion.div 
           className="flex items-center gap-3 group cursor-pointer"
           whileHover={{ scale: 1.02 }}
@@ -93,6 +105,15 @@ export function Navigation() {
         >
           <Logo size="sm" />
         </motion.div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleFullscreen}
+          className="hover:bg-accent/50"
+          title={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+        >
+          <Maximize2 className="h-5 w-5" />
+        </Button>
       </div>
 
       {/* Navigation Content */}
