@@ -1,5 +1,16 @@
 
-import { MessageSquare, Settings, ListTodo, Calculator, Languages, Sword, Users, UserPlus, Maximize2 } from "lucide-react";
+import { 
+  MessageSquare, 
+  Settings, 
+  ListTodo, 
+  Calculator, 
+  Languages, 
+  Sword, 
+  Users, 
+  UserPlus, 
+  Maximize2, 
+  LayoutDashboard 
+} from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -33,7 +44,6 @@ export function Navigation() {
     return null;
   }
 
-  // Convert User to UserProfile type
   const userProfile: UserProfile = {
     id: user.id,
     email: user.email || '',
@@ -51,6 +61,11 @@ export function Navigation() {
   };
 
   const navigationItems = [
+    { 
+      icon: LayoutDashboard, 
+      label: 'Tableau de bord', 
+      to: '/dashboard'
+    },
     { 
       icon: MessageSquare, 
       label: 'Messages', 
@@ -94,7 +109,7 @@ export function Navigation() {
   ];
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       {/* Logo Section */}
       <div className="h-16 border-b flex items-center justify-between px-4">
         <motion.div 
@@ -117,26 +132,28 @@ export function Navigation() {
       </div>
 
       {/* Navigation Content */}
-      <ScrollArea className="flex-1 p-4">
-        <nav className="space-y-6">
-          <div className="space-y-2">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200",
-                  "text-muted-foreground hover:text-foreground",
-                  "hover:bg-accent/50 active:scale-[0.98]"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            ))}
-          </div>
-          <FeedSidebar />
+      <ScrollArea className="flex-1 px-2 py-4">
+        <nav className="space-y-1">
+          {navigationItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
+                "text-muted-foreground hover:text-foreground",
+                "hover:bg-[#9b87f5]/10 active:scale-[0.98]",
+                "group relative"
+              )}
+            >
+              <item.icon className="h-5 w-5 transition-colors duration-200" />
+              <span className="font-medium">{item.label}</span>
+            </Link>
+          ))}
         </nav>
+
+        <div className="mt-6">
+          <FeedSidebar />
+        </div>
       </ScrollArea>
 
       {/* Footer Actions */}
