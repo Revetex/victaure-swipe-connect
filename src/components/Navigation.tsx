@@ -1,5 +1,5 @@
 
-import { MessageSquare, Settings } from "lucide-react";
+import { MessageSquare, Settings, ListTodo, Calculator, Languages, Sword } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/useAuth";
@@ -38,6 +38,39 @@ export function Navigation() {
     longitude: null
   };
 
+  const navigationItems = [
+    { 
+      icon: MessageSquare, 
+      label: 'Messages', 
+      to: '/dashboard/messages'
+    },
+    { 
+      icon: ListTodo, 
+      label: 'Notes & Tâches', 
+      to: '/dashboard/tools'
+    },
+    { 
+      icon: Calculator, 
+      label: 'Calculatrice', 
+      to: '/dashboard/tools?tool=calculator'
+    },
+    { 
+      icon: Languages, 
+      label: 'Traducteur', 
+      to: '/dashboard/tools?tool=translator'
+    },
+    { 
+      icon: Sword, 
+      label: 'Échecs', 
+      to: '/dashboard/tools?tool=chess'
+    },
+    { 
+      icon: Settings, 
+      label: 'Paramètres', 
+      to: '/settings'
+    }
+  ];
+
   return (
     <div className="h-full flex flex-col">
       {/* Logo Section */}
@@ -56,20 +89,20 @@ export function Navigation() {
       <ScrollArea className="flex-1 p-4">
         <nav className="space-y-6">
           <div className="space-y-2">
-            <Link 
-              to="/dashboard/messages" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span>Messages</span>
-            </Link>
-            <Link 
-              to="/settings" 
-              className="flex items-center gap-2 px-2 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Settings className="h-4 w-4" />
-              <span>Paramètres</span>
-            </Link>
+            {navigationItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200",
+                  "text-muted-foreground hover:text-foreground",
+                  "hover:bg-accent/50 active:scale-[0.98]"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </Link>
+            ))}
           </div>
           <FeedSidebar />
         </nav>
