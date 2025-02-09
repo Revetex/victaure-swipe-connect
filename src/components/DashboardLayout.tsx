@@ -13,7 +13,7 @@ import { TranslatorPage } from "./tools/TranslatorPage";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DashboardSidebar } from "./dashboard/DashboardSidebar";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
-import { Users } from "lucide-react"; // Added this import
+import { Users } from "lucide-react";
 
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,7 +44,6 @@ export function DashboardLayout() {
 
   const handleProfileClose = () => {
     setShowProfilePreview(false);
-    setShowTranslator(true);
   };
 
   return (
