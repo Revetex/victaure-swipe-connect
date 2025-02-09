@@ -35,20 +35,6 @@ export function MainLayout({
 
   return (
     <div className="min-h-screen flex bg-background">
-      {/* Mobile Navigation */}
-      {isMobile && (
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="fixed left-4 top-3 z-50">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-80">
-            <Navigation />
-          </SheetContent>
-        </Sheet>
-      )}
-
       {/* Desktop Sidebar Navigation */}
       {!isMobile && (
         <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur z-50">
@@ -78,15 +64,13 @@ export function MainLayout({
             )}
             <h1 className="font-semibold">VICTAURE technologies inc.</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <AppHeader 
-              title={title}
-              showFriendsList={showFriendsList}
-              onToggleFriendsList={onToggleFriendsList}
-              isEditing={isEditing}
-              onToolReturn={onToolReturn}
-            />
-          </div>
+          <AppHeader 
+            title={title}
+            showFriendsList={showFriendsList}
+            onToggleFriendsList={onToggleFriendsList}
+            isEditing={isEditing}
+            onToolReturn={onToolReturn}
+          />
         </header>
 
         {/* Main Content */}
