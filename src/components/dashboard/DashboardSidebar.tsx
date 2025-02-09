@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Logo } from "@/components/Logo";
-import { Users } from "lucide-react";
+import { Users, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
 import { motion } from "framer-motion";
@@ -26,6 +26,21 @@ export function DashboardSidebar({
         <Logo />
       </div>
       <Separator />
+
+      {/* Bell Icon Header */}
+      <div className="p-4">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-4 h-12"
+          onClick={() => onPageChange(0)}
+        >
+          <Bell className="h-5 w-5" />
+          <span>Notifications</span>
+        </Button>
+      </div>
+      
+      <Separator />
+
       <div className="flex-1 py-6">
         <nav className="space-y-2 px-4">
           {navigationItems.map((item) => {
@@ -47,6 +62,7 @@ export function DashboardSidebar({
           })}
         </nav>
       </div>
+
       {profile && (
         <>
           <Separator />
@@ -81,3 +97,4 @@ export function DashboardSidebar({
     </div>
   );
 }
+
