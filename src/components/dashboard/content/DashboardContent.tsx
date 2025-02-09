@@ -1,4 +1,3 @@
-
 import { motion, AnimatePresence } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
@@ -29,38 +28,74 @@ export function DashboardContent({
     }
   }, [currentPage, onEditStateChange]);
 
-  const renderContent = () => {
-    switch (currentPage) {
-      case 1:
-        return <Feed />;
-      case 2:
-        return <Messages />;
-      case 3:
-        return <Marketplace />;
-      case 4:
-        return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
-      case 5:
-        return (
-          <div className="h-full">
-            <NotesMap />
-          </div>
-        );
-      case 10:
-        return <Settings />;
-      default:
-        return null;
+  const variants = {
+    initial: { 
+      opacity: 0,
+      y: 20,
+      filter: "blur(10px)",
+    },
+    animate: { 
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    },
+    exit: { 
+      opacity: 0,
+      y: -20,
+      filter: "blur(10px)",
+      transition: {
+        duration: 0.3
+      }
     }
   };
 
+  const renderContent = () => {
+    const content = (() => {
+      switch (currentPage) {
+        case 1:
+          return <Feed />;
+        case 2:
+          return <Messages />;
+        case 3:
+          return <Marketplace />;
+        case 4:
+          return <VCard onEditStateChange={onEditStateChange} onRequestChat={onRequestChat} />;
+        case 5:
+          return (
+            <div className="h-full">
+              <NotesMap />
+            </div>
+          );
+        case 10:
+          return <Settings />;
+        default:
+          return null;
+      }
+    })();
+
+    return (
+      <motion.div
+        key={currentPage}
+        variants={variants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="w-full h-full"
+      >
+        {content}
+      </motion.div>
+    );
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="w-full"
-    >
-      {renderContent()}
-    </motion.div>
+    <div className="w-full h-full">
+      <AnimatePresence mode="wait">
+        {renderContent()}
+      </AnimatePresence>
+    </div>
   );
 }
