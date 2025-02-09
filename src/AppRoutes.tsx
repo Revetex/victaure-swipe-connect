@@ -49,11 +49,13 @@ export function AppRoutes() {
       <Route path="/legal/cookies" element={<CookiesPage />} />
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route path="/profile/:id" element={<PublicProfile />} />
+      
+      {/* Protected Routes */}
       <Route
-        path="/feed"
+        path="/dashboard"
         element={
           <ProtectedRoute>
-            <Feed />
+            <Dashboard />
           </ProtectedRoute>
         }
       />
@@ -66,6 +68,14 @@ export function AppRoutes() {
         }
       />
       <Route
+        path="/feed"
+        element={
+          <ProtectedRoute>
+            <Feed />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/settings"
         element={
           <ProtectedRoute>
@@ -73,16 +83,10 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      
+      {/* Tools Routes */}
       <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/notes"
+        path="/tools"
         element={
           <ProtectedRoute>
             <NotesPage />
@@ -90,7 +94,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/tasks"
+        path="/tools/tasks"
         element={
           <ProtectedRoute>
             <TasksPage />
@@ -98,7 +102,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/calculator"
+        path="/tools/calculator"
         element={
           <ProtectedRoute>
             <CalculatorPage />
@@ -106,7 +110,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/translator"
+        path="/tools/translator"
         element={
           <ProtectedRoute>
             <TranslatorPage />
@@ -114,13 +118,14 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/chess"
+        path="/tools/chess"
         element={
           <ProtectedRoute>
             <ChessPage />
           </ProtectedRoute>
         }
       />
+      
       <Route 
         path="*" 
         element={

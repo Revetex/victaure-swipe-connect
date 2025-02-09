@@ -1,13 +1,12 @@
 
-import { Newspaper, UserCircle, MessageSquare, BriefcaseIcon, Users, Settings } from "lucide-react";
+import { Newspaper, UserCircle, MessageSquare, Settings, Wrench } from "lucide-react";
 
 export const navigationItems = [
-  { id: 4, icon: Newspaper, name: "Actualités" },
-  { id: 1, icon: UserCircle, name: "Profil" },
-  { id: 2, icon: MessageSquare, name: "Messages" },
-  { id: 3, icon: BriefcaseIcon, name: "Missions" },
-  { id: 11, icon: Users, name: "Amis" },
-  { id: 5, icon: Settings, name: "Paramètres" }
+  { id: 1, icon: UserCircle, name: "Profil", path: "/dashboard" },
+  { id: 2, icon: MessageSquare, name: "Messages", path: "/messages" },
+  { id: 3, icon: Newspaper, name: "Actualités", path: "/feed" },
+  { id: 4, icon: Wrench, name: "Outils", path: "/tools" },
+  { id: 5, icon: Settings, name: "Paramètres", path: "/settings" }
 ] as const;
 
 export const getPageTitle = (currentPage: number): string => {
@@ -17,14 +16,12 @@ export const getPageTitle = (currentPage: number): string => {
     case 2:
       return "Messages";
     case 3:
-      return "Marketplace";
-    case 4:
       return "Fil d'actualité";
+    case 4:
+      return "Outils";
     case 5:
       return "Paramètres";
-    case 11:
-      return "Mes amis";
     default:
-      return "Fil d'actualité";
+      return "Tableau de bord";
   }
 };

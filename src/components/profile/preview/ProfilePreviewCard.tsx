@@ -4,6 +4,7 @@ import { UserProfile } from "@/types/profile";
 import { ProfilePreviewFront } from "./ProfilePreviewFront";
 import { ProfilePreviewBack } from "./ProfilePreviewBack";
 import { motion, AnimatePresence } from "framer-motion";
+import { Shield } from "lucide-react";
 
 interface ProfilePreviewCardProps {
   profile: UserProfile;
@@ -21,7 +22,14 @@ export function ProfilePreviewCard({
   const handleFlip = () => setIsFlipped(!isFlipped);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full max-w-md mx-auto">
+      <div className="absolute -top-2 right-2 z-20">
+        <div className="flex items-center gap-2 text-xs bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-full">
+          <Shield className="w-3 h-3" />
+          <span>Profil vérifié</span>
+        </div>
+      </div>
+
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={isFlipped ? "back" : "front"}
@@ -33,7 +41,7 @@ export function ProfilePreviewCard({
             transformStyle: "preserve-3d",
             backfaceVisibility: "hidden",
           }}
-          className="w-full bg-card rounded-lg"
+          className="w-full"
         >
           {!isFlipped ? (
             <ProfilePreviewFront
