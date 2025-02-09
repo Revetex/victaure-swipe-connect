@@ -1,18 +1,14 @@
 
-import { Maximize2 } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { Logo } from "@/components/Logo";
+import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { motion } from "framer-motion";
-import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "./feed/FeedSidebar";
-import { useState, useCallback } from "react";
 import { ProfilePreview } from "./ProfilePreview";
 import { UserProfile } from "@/types/profile";
-import { Button } from "./ui/button";
 import { NavigationSection } from "./navigation/NavigationSection";
 import { navigationSections } from "./navigation/navigationConfig";
+import { NavigationHeader } from "./navigation/NavigationHeader";
+import { NavigationFooter } from "./navigation/NavigationFooter";
 
 export function Navigation() {
   const { isLoading, user } = useAuth();
@@ -60,28 +56,12 @@ export function Navigation() {
 
   return (
     <div className="h-full flex flex-col bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Logo Section */}
-      <div className="h-12 border-b flex items-center justify-between px-3">
-        <motion.div 
-          className="flex items-center gap-2 group cursor-pointer"
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          onClick={() => setShowProfilePreview(true)}
-        >
-          <Logo size="sm" />
-        </motion.div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleFullscreen}
-          className="hover:bg-accent/50"
-          title={isFullscreen ? "Quitter le plein écran" : "Plein écran"}
-        >
-          <Maximize2 className="h-4 w-4" />
-        </Button>
-      </div>
+      <NavigationHeader 
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+        onShowProfile={() => setShowProfilePreview(true)}
+      />
 
-      {/* Navigation Content */}
       <ScrollArea className="flex-1 px-2 py-2">
         <nav className="space-y-2">
           {navigationSections.map((section) => (
@@ -99,15 +79,8 @@ export function Navigation() {
         </div>
       </ScrollArea>
 
-      {/* Footer Actions */}
-      <div className="h-12 border-t bg-background/50 backdrop-blur flex items-center justify-between px-3">
-        <div className="flex items-center gap-2">
-          <NotificationsBox />
-          <ThemeToggle />
-        </div>
-      </div>
+      <NavigationFooter />
 
-      {/* Profile Preview */}
       {userProfile && (
         <ProfilePreview
           profile={userProfile}
