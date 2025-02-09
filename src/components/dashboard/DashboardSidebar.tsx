@@ -6,6 +6,7 @@ import { Users, Bell, Newspaper, Briefcase, MessageSquare, Settings2 } from "luc
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ToolsSection } from "@/components/navigation/ToolsSection";
+import { useState } from "react";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -20,6 +21,8 @@ export function DashboardSidebar({
   onPageChange,
   onProfileClick 
 }: DashboardSidebarProps) {
+  const [openTools, setOpenTools] = useState(true);
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-6 flex items-center justify-between">
@@ -100,8 +103,8 @@ export function DashboardSidebar({
           <Separator />
           
           <ToolsSection 
-            openTools={true}
-            setOpenTools={() => {}}
+            openTools={openTools}
+            setOpenTools={setOpenTools}
           />
 
           <Separator />
