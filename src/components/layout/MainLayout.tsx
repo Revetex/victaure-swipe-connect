@@ -10,6 +10,7 @@ import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/navigation/AppHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
+import { useEffect, useRef } from "react";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -31,6 +32,20 @@ export function MainLayout({
   const isMobile = useIsMobile();
   const location = useLocation();
   const isFriendsPage = location.pathname.includes('/friends');
+  const mainRef = useRef<HTMLDivElement>(null);
+
+  // Cleanup resize observers when component unmounts
+  useEffect(() => {
+    return () => {
+      if (mainRef.current) {
+        const observers = Array.from(mainRef.current.querySelectorAll('.scroll-area'))
+          .map(el => el['_reszieObserver'])
+          .filter(Boolean);
+        
+        observers.forEach(observer => observer.disconnect());
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -42,10 +57,13 @@ export function MainLayout({
       )}
 
       {/* Main Content Area */}
-      <main className={cn(
-        "flex-1 min-h-screen flex flex-col",
-        !isMobile && "md:pl-[280px] lg:pl-[320px]"
-      )}>
+      <main 
+        ref={mainRef}
+        className={cn(
+          "flex-1 min-h-screen flex flex-col",
+          !isMobile && "md:pl-[280px] lg:pl-[320px]"
+        )}
+      >
         {/* Main Header */}
         <header className="h-12 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
@@ -90,3 +108,4 @@ export function MainLayout({
     </div>
   );
 }
+
