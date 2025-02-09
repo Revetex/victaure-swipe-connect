@@ -5,7 +5,6 @@ import { TasksPage } from "../TasksPage";
 import { CalculatorPage } from "../CalculatorPage";
 import { TranslatorPage } from "../TranslatorPage";
 import { ChessPage } from "../ChessPage";
-import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 import { ToolInfo } from "./types";
 
 export const tools: ToolInfo[] = [
@@ -16,7 +15,7 @@ export const tools: ToolInfo[] = [
     description: "Créer et gérer vos notes",
     component: ({ onLoad }) => {
       onLoad?.();
-      return <TasksPage />;
+      return <NotesPage />;
     },
     gradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20"
   },
@@ -27,7 +26,7 @@ export const tools: ToolInfo[] = [
     description: "Gérer votre liste de tâches",
     component: ({ onLoad }) => {
       onLoad?.();
-      return <CalculatorPage />;
+      return <TasksPage />;
     },
     gradient: "from-blue-500/20 via-indigo-500/20 to-violet-500/20"
   },
@@ -38,7 +37,7 @@ export const tools: ToolInfo[] = [
     description: "Effectuer des calculs",
     component: ({ onLoad }) => {
       onLoad?.();
-      return <NotesPage />;
+      return <CalculatorPage />;
     },
     gradient: "from-green-500/20 via-emerald-500/20 to-teal-500/20"
   },
@@ -49,7 +48,7 @@ export const tools: ToolInfo[] = [
     description: "Traduire du texte",
     component: ({ onLoad }) => {
       onLoad?.();
-      return <ChessPage />;
+      return <TranslatorPage />;
     },
     gradient: "from-purple-500/20 via-fuchsia-500/20 to-pink-500/20"
   },
@@ -76,9 +75,8 @@ export const tools: ToolInfo[] = [
     description: "Jouer aux échecs",
     component: ({ onLoad }) => {
       onLoad?.();
-      return <NotificationsBox />;
+      return <ChessPage />;
     },
     gradient: "from-red-500/20 via-rose-500/20 to-pink-500/20"
   }
 ];
-

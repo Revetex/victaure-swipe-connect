@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -109,17 +110,17 @@ export function TranslatorPage() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto rounded-lg border p-6 shadow-lg bg-gradient-to-br from-background/95 to-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        className="max-w-4xl mx-auto bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg border p-6 shadow-lg"
       >
-        <div className="flex items-center gap-2 mb-8">
-          <Languages className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Traducteur</h1>
+        <div className="flex items-center gap-2 mb-6">
+          <Languages className="h-6 w-6" />
+          <h1 className="text-2xl font-bold">Translator</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-4">
             <Select value={sourceLang} onValueChange={setSourceLang}>
-              <SelectTrigger className="bg-background/50 border-primary/20 hover:border-primary/40 transition-colors">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -135,13 +136,13 @@ export function TranslatorPage() {
               <Textarea
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
-                placeholder="Entrez le texte à traduire..."
-                className="h-48 resize-none pr-10 bg-background/50 border-primary/20 hover:border-primary/40 transition-colors"
+                placeholder="Enter text to translate..."
+                className="h-40 resize-none pr-10"
               />
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-2 top-2 hover:bg-primary/10"
+                className="absolute right-2 top-2"
                 onClick={() => speakText(sourceText, sourceLang)}
               >
                 <Volume2 className="h-4 w-4" />
@@ -152,7 +153,7 @@ export function TranslatorPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <Select value={targetLang} onValueChange={setTargetLang}>
-                <SelectTrigger className="bg-background/50 border-primary/20 hover:border-primary/40 transition-colors">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -168,7 +169,7 @@ export function TranslatorPage() {
                 variant="outline"
                 size="icon"
                 onClick={swapLanguages}
-                className="flex-shrink-0 hover:bg-primary/10"
+                className="flex-shrink-0"
               >
                 <ArrowLeftRight className="h-4 w-4" />
               </Button>
@@ -178,14 +179,13 @@ export function TranslatorPage() {
               <Textarea
                 value={translatedText}
                 readOnly
-                placeholder="Traduction..."
-                className="h-48 resize-none bg-background/50 border-primary/20"
+                placeholder="Translation..."
+                className="h-40 resize-none bg-muted pr-10"
               />
               <div className="absolute right-2 top-2 flex flex-col gap-2">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:bg-primary/10"
                   onClick={() => speakText(translatedText, targetLang)}
                 >
                   <Volume2 className="h-4 w-4" />
@@ -193,7 +193,6 @@ export function TranslatorPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:bg-primary/10"
                   onClick={() => copyToClipboard(translatedText)}
                 >
                   <Copy className="h-4 w-4" />
@@ -203,13 +202,9 @@ export function TranslatorPage() {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-end">
-          <Button 
-            onClick={handleTranslate} 
-            disabled={isLoading}
-            className="bg-primary/90 hover:bg-primary"
-          >
-            {isLoading ? "Traduction en cours..." : "Traduire"}
+        <div className="mt-6 flex justify-end">
+          <Button onClick={handleTranslate} disabled={isLoading}>
+            {isLoading ? "Translating..." : "Translate"}
           </Button>
         </div>
       </motion.div>

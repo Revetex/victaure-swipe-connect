@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,5 +72,5 @@ export default function Dashboard() {
     );
   }
 
-  return <DashboardLayout defaultPage={1} />; // Set default page to 1 (Actualités)
+  return <DashboardLayout />;
 }

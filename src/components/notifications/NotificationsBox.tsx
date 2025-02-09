@@ -53,17 +53,15 @@ export function NotificationsBox() {
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ duration: 0.2 }}
               className={cn(
-                "fixed right-4 top-16 w-[calc(100vw-2rem)] sm:w-96 rounded-lg border bg-background shadow-lg z-[100]",
+                "fixed right-4 top-16 w-[calc(100vw-2rem)] sm:w-96 rounded-lg border bg-card shadow-lg z-50",
                 "sm:absolute sm:right-0 sm:top-full sm:mt-2",
                 "max-h-[80vh] sm:max-h-[600px] flex flex-col"
               )}
             >
-              <div className="p-4">
-                <NotificationHeader 
-                  unreadCount={unreadCount}
-                  onMarkAllAsRead={handleMarkAllAsRead}
-                />
-              </div>
+              <NotificationHeader 
+                unreadCount={unreadCount}
+                onMarkAllAsRead={handleMarkAllAsRead}
+              />
               
               <NotificationsList 
                 notifications={notifications}

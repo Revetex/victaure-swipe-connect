@@ -1,4 +1,3 @@
-
 import {
   Select,
   SelectContent,
@@ -30,7 +29,6 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .order('name');
       
       if (error) {
-        console.error('Error fetching categories:', error);
         toast.error("Erreur lors du chargement des catégories");
         throw error;
       }
@@ -57,7 +55,6 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         .order('name');
       
       if (error) {
-        console.error('Error fetching subcategories:', error);
         toast.error("Erreur lors du chargement des sous-catégories");
         throw error;
       }
@@ -69,12 +66,10 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
       
       return uniqueSubcategories;
     },
-    // Only fetch subcategories if a specific category is selected
-    enabled: filters.category !== 'all' && filters.category !== null && filters.category !== undefined
+    enabled: filters.category !== 'all'
   });
 
   if (isCategoriesError || isSubcategoriesError) {
-    console.error("Error fetching categories or subcategories");
     toast.error("Une erreur est survenue lors du chargement des catégories");
   }
 
@@ -83,10 +78,9 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
       <div className="space-y-2">
         <Label>Catégorie</Label>
         <Select
-          value={filters.category || 'all'}
+          value={filters.category}
           onValueChange={(value) => {
             onFilterChange("category", value);
-            // Reset subcategory when category changes
             if (value !== filters.category) {
               onFilterChange("subcategory", "all");
             }
@@ -115,11 +109,11 @@ export function CategoryFilters({ filters, onFilterChange }: CategoryFiltersProp
         </Select>
       </div>
 
-      {filters.category && filters.category !== 'all' && (
+      {filters.category !== 'all' && (
         <div className="space-y-2">
           <Label>Sous-catégorie</Label>
           <Select
-            value={filters.subcategory || 'all'}
+            value={filters.subcategory}
             onValueChange={(value) => onFilterChange("subcategory", value)}
           >
             <SelectTrigger>

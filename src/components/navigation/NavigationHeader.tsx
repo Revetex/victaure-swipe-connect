@@ -1,7 +1,6 @@
 
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
-import { NotificationsBox } from "@/components/notifications/NotificationsBox";
 
 interface NavigationHeaderProps {
   onShowProfilePreview: () => void;
@@ -9,7 +8,7 @@ interface NavigationHeaderProps {
 
 export function NavigationHeader({ onShowProfilePreview }: NavigationHeaderProps) {
   return (
-    <div className="h-16 border-b flex items-center justify-between px-4">
+    <div className="h-16 border-b flex items-center px-4">
       <motion.div 
         className="flex items-center gap-3 group cursor-pointer"
         whileHover={{ scale: 1.02 }}
@@ -18,7 +17,6 @@ export function NavigationHeader({ onShowProfilePreview }: NavigationHeaderProps
       >
         <Logo size="sm" />
       </motion.div>
-      <NotificationsBox />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { DashboardContent } from "./dashboard/DashboardContent";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent } from "./ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProfilePreview } from "./ProfilePreview";
 import { TranslatorPage } from "./tools/TranslatorPage";
@@ -15,12 +15,8 @@ import { DashboardSidebar } from "./dashboard/DashboardSidebar";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
 import { Users } from "lucide-react";
 
-interface DashboardLayoutProps {
-  defaultPage?: number;
-}
-
-export function DashboardLayout({ defaultPage = 1 }: DashboardLayoutProps) {
-  const [currentPage, setCurrentPage] = useState(defaultPage);
+export function DashboardLayout() {
+  const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [showTranslator, setShowTranslator] = useState(false);
