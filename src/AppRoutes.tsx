@@ -28,7 +28,7 @@ export function AppRoutes() {
         path="/" 
         element={
           isAuthenticated ? (
-            <Navigate to="/feed" replace />
+            <Navigate to="/dashboard" replace />
           ) : (
             <Index />
           )
@@ -38,7 +38,7 @@ export function AppRoutes() {
         path="/auth" 
         element={
           isAuthenticated ? (
-            <Navigate to="/feed" replace />
+            <Navigate to="/dashboard" replace />
           ) : (
             <Auth />
           )
@@ -125,7 +125,7 @@ export function AppRoutes() {
         path="*" 
         element={
           isAuthenticated ? (
-            <Navigate to="/feed" replace />
+            <Navigate to="/dashboard" replace />
           ) : (
             <Navigate to="/auth" replace />
           )
