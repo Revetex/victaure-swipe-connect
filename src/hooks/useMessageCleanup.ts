@@ -10,7 +10,11 @@ export const useMessageCleanup = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
         
-        // Supprimer les messages
+        // Call our new cleanup function
+        const { error } = await supabase.rpc('cleanup_old_data');
+        if (error) throw error;
+
+        // For immediate cleanup, we'll also delete local messages
         const { error: messagesError } = await supabase
           .from('messages')
           .delete()
@@ -18,7 +22,7 @@ export const useMessageCleanup = () => {
 
         if (messagesError) throw messagesError;
 
-        // Supprimer les notifications
+        // Delete notifications
         const { error: notificationsError } = await supabase
           .from('notifications')
           .delete()
@@ -26,7 +30,7 @@ export const useMessageCleanup = () => {
 
         if (notificationsError) throw notificationsError;
 
-        // Supprimer les statuts de messages
+        // Delete message statuses
         const { error: messageStatusError } = await supabase
           .from('message_status')
           .delete()
@@ -34,7 +38,7 @@ export const useMessageCleanup = () => {
 
         if (messageStatusError) throw messageStatusError;
 
-        // Supprimer les conversations AI
+        // Delete AI chat messages
         const { error: aiMessagesError } = await supabase
           .from('ai_chat_messages')
           .delete()
@@ -52,4 +56,3 @@ export const useMessageCleanup = () => {
     cleanupMessages();
   }, []);
 };
-

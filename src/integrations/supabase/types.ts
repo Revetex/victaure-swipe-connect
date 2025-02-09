@@ -1830,6 +1830,13 @@ export type Database = {
         }
         Returns: number
       }
+      mark_conversation_deleted: {
+        Args: {
+          p_user_id: string
+          p_conversation_partner_id: string
+        }
+        Returns: undefined
+      }
       mark_messages_as_read: {
         Args: {
           conversation_partner_id: string
