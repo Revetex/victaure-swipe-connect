@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from "react";
 import { useViewport } from "@/hooks/useViewport";
 import { useLocation } from "react-router-dom";
@@ -142,10 +143,12 @@ export function DashboardLayout() {
   return (
     <DashboardAuthCheck>
       <div className="min-h-screen bg-background">
+        {/* Sidebar pour les grands écrans */}
         <aside className="fixed left-0 top-0 bottom-0 w-72 border-r hidden lg:block">
           <SidebarContent />
         </aside>
 
+        {/* Header mobile avec menu */}
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
           <div className="container flex h-16 items-center">
             <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
@@ -164,6 +167,7 @@ export function DashboardLayout() {
           </div>
         </header>
 
+        {/* Contenu principal */}
         <main className="lg:pl-72">
           <AnimatePresence mode="wait">
             <motion.div
@@ -183,7 +187,30 @@ export function DashboardLayout() {
             </motion.div>
           </AnimatePresence>
         </main>
+
+        {/* Profile Preview et menu outils flottant pour les petits écrans */}
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 lg:hidden">
+          {profile && (
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleProfileClick}
+              className="bg-background/95 backdrop-blur-lg shadow-lg rounded-full p-3 border border-border/50"
+            >
+              {profile.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.full_name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <Users className="h-10 w-10 text-primary" />
+              )}
+            </motion.div>
+          )}
+        </div>
       </div>
     </DashboardAuthCheck>
   );
 }
+
