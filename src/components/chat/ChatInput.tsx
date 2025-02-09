@@ -37,53 +37,51 @@ export function ChatInput({
   };
 
   return (
-    <div className={`relative flex items-end gap-2 ${className}`}>
-      <div className="relative flex-1">
-        <Textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="min-h-[60px] pr-24 resize-none rounded-xl focus:ring-2 focus:ring-primary/20 bg-background/50"
-          onKeyDown={handleKeyDown}
-          disabled={disabled || isThinking}
-        />
-        <AnimatePresence>
-          <motion.div 
-            className="absolute bottom-2 right-2 flex gap-2"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-          >
-            {onVoiceInput && (
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={onVoiceInput}
-                disabled={isThinking || disabled}
-                className="rounded-full h-8 w-8"
-              >
-                {isListening ? (
-                  <MicOff className="h-4 w-4 text-destructive" />
-                ) : (
-                  <Mic className="h-4 w-4" />
-                )}
-              </Button>
-            )}
+    <section className={`flex items-end gap-2 ${className}`}>
+      <Textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="min-h-[60px] resize-none rounded-xl focus:ring-2 focus:ring-primary/20 bg-background/50 pr-24"
+        onKeyDown={handleKeyDown}
+        disabled={disabled || isThinking}
+      />
+      <AnimatePresence>
+        <motion.nav 
+          className="absolute bottom-2 right-2 flex gap-2"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+        >
+          {onVoiceInput && (
             <Button
               size="icon"
-              onClick={onSend}
-              disabled={!value.trim() || isThinking || disabled}
-              className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
+              variant="ghost"
+              onClick={onVoiceInput}
+              disabled={isThinking || disabled}
+              className="rounded-full h-8 w-8"
             >
-              {isThinking ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+              {isListening ? (
+                <MicOff className="h-4 w-4 text-destructive" />
               ) : (
-                <Send className="h-4 w-4" />
+                <Mic className="h-4 w-4" />
               )}
             </Button>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </div>
+          )}
+          <Button
+            size="icon"
+            onClick={onSend}
+            disabled={!value.trim() || isThinking || disabled}
+            className="rounded-full shadow-sm hover:shadow-md transition-shadow h-8 w-8"
+          >
+            {isThinking ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </Button>
+        </motion.nav>
+      </AnimatePresence>
+    </section>
   );
 }
