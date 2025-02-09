@@ -12,6 +12,7 @@ import { ConnectionsSection } from "@/components/feed/friends/ConnectionsSection
 import { motion } from "framer-motion";
 import { ToolsList } from "./sidebar/ToolsList";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sparkles, Rocket, Star } from "lucide-react";
 
 interface FeedSidebarProps {
   className?: string;
@@ -26,6 +27,24 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
     navigate('/tools');
   };
 
+  const marketingFeatures = [
+    {
+      icon: Sparkles,
+      title: "IA Avancée",
+      description: "Optimisation intelligente de votre profil"
+    },
+    {
+      icon: Rocket,
+      title: "Boost Carrière",
+      description: "Opportunités personnalisées"
+    },
+    {
+      icon: Star,
+      title: "Premium",
+      description: "Fonctionnalités exclusives"
+    }
+  ];
+
   return (
     <div 
       className={cn(
@@ -38,6 +57,27 @@ export function FeedSidebar({ className }: FeedSidebarProps) {
       
       <ScrollArea className="h-full">
         <div className="p-4 space-y-6">
+          {/* Marketing Features */}
+          <div className="space-y-4 mb-8">
+            {marketingFeatures.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-card/50 rounded-lg p-4 hover:bg-card/70 transition-colors"
+              >
+                <div className="flex items-start gap-3">
+                  <feature.icon className="h-5 w-5 text-primary mt-1" />
+                  <div>
+                    <h4 className="font-medium text-sm">{feature.title}</h4>
+                    <p className="text-xs text-muted-foreground">{feature.description}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
           {/* Connexions */}
           <div className="space-y-2">
             <h3 className="text-sm font-medium text-muted-foreground tracking-tight uppercase px-2">
