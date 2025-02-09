@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -152,7 +151,7 @@ export function TranslatorPage() {
 
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <Select value={targetLang} onValueChange={setTargetLang} className="flex-1">
+              <Select value={targetLang} onValueChange={setTargetLang}>
                 <SelectTrigger className="bg-background/50 border-primary/20 hover:border-primary/40 transition-colors">
                   <SelectValue />
                 </SelectTrigger>

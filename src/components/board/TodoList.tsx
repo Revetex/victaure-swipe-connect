@@ -38,14 +38,14 @@ export function TodoList({ todos, onToggleTodo, onDeleteTodo }: TodoListProps) {
               onToggle={onToggleTodo}
               onDelete={onDeleteTodo}
             />
-            {todo.date && (
+            {todo.dueDate && (
               <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                <span>{formatDate(todo.date)}</span>
-                {!todo.allDay && todo.time && (
+                <span>{formatDate(todo.dueDate)}</span>
+                {!todo.allDay && todo.dueTime && (
                   <>
                     <Clock className="h-4 w-4 ml-2" />
-                    <span>{formatTime(todo.time)}</span>
+                    <span>{formatTime(todo.dueTime)}</span>
                   </>
                 )}
               </div>
