@@ -1,6 +1,6 @@
 
 import { UserProfile } from "@/types/profile";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProfilePreviewCard } from "./ProfilePreviewCard";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
@@ -22,7 +22,7 @@ export function ProfilePreviewDialog({
       <DialogContent 
         className="max-w-md p-6 overflow-hidden bg-card border-none shadow-xl"
       >
-        <VisuallyHidden asChild>
+        <VisuallyHidden>
           <DialogTitle>Profil de {profile.full_name || "Utilisateur"}</DialogTitle>
         </VisuallyHidden>
         <ProfilePreviewCard

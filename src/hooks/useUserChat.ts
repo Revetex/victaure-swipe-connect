@@ -53,7 +53,10 @@ export function useUserChat(): UserChat {
         status: 'sent' as const,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        metadata: {} as Record<string, any>
+        metadata: {
+          timestamp: new Date().toISOString(),
+          messageType: messageType
+        }
       };
 
       const { data: savedMessage, error } = await supabase
@@ -84,7 +87,10 @@ export function useUserChat(): UserChat {
           timestamp: savedMessage.created_at,
           status: 'sent',
           message_type: messageType,
-          metadata: savedMessage.metadata || {},
+          metadata: {
+            timestamp: savedMessage.created_at,
+            messageType: messageType
+          },
           sender
         });
         setInputMessage('');
