@@ -1,6 +1,6 @@
 
 import { UserProfile } from "@/types/profile";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ExternalLink } from "lucide-react";
 import { ProfilePreviewCard } from "./ProfilePreviewCard";
@@ -44,6 +44,10 @@ export function ProfilePreviewDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md p-6 overflow-hidden bg-transparent border-none shadow-xl">
+        <DialogTitle className="sr-only">Profil de {profile.full_name}</DialogTitle>
+        <DialogDescription className="sr-only">
+          Aperçu du profil et options d'interaction avec {profile.full_name}
+        </DialogDescription>
         <div className="relative">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

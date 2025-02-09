@@ -2,7 +2,7 @@
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tool, ToolInfo } from "./types";
 import { ToolErrorBoundary } from "../error/ToolErrorBoundary";
@@ -39,12 +39,12 @@ export function ToolDialog({ openTool, onClose, activeTool }: ToolDialogProps) {
             role="toolbar"
             aria-label="Barre d'outils"
           >
-            <h2 
-              id="tool-dialog-title" 
-              className="text-lg font-semibold"
-            >
+            <DialogTitle id="tool-dialog-title" className="text-lg font-semibold">
               {activeTool.label}
-            </h2>
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Interface de l'outil {activeTool.label}
+            </DialogDescription>
             <Button
               variant="ghost"
               size="icon"
