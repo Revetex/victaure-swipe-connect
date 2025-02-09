@@ -1,8 +1,7 @@
 
-import { Bot } from "lucide-react";
+import { Bot, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
 
 interface AssistantMessageProps {
   chatMessages: any[];
@@ -22,7 +21,7 @@ export function AssistantMessage({ chatMessages, onSelectConversation }: Assista
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
       <div className="relative flex gap-4">
         <Avatar className="h-12 w-12 ring-2 ring-primary/10 ring-offset-2 ring-offset-background transition-all duration-200 group-hover:ring-primary/20">
-          <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="Mr. Victaure" />
+          <AvatarImage src="/lovable-uploads/aac4a714-ce15-43fe-a9a6-c6ddffefb6ff.png" alt="M. Victaure" />
           <AvatarFallback className="bg-primary/5">
             <Bot className="h-6 w-6 text-primary" />
           </AvatarFallback>
