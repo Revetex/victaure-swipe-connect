@@ -1,8 +1,7 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Profile } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
 
 interface UserConversation {
   id: string;
@@ -15,8 +14,8 @@ interface UserConversation {
   participant2_last_read: string | null;
   created_at: string;
   updated_at: string;
-  participant1: Profile;
-  participant2: Profile;
+  participant1: UserProfile;
+  participant2: UserProfile;
 }
 
 export function useUserConversations() {
