@@ -2,7 +2,7 @@
 import { 
   MessageSquare, Settings, ListTodo, Calculator, 
   Languages, Sword, Users, UserPlus, ChevronDown,
-  Tool, Bell, Moon, Lock, EyeOff, LogOut
+  Wrench, Bell, Moon, Lock, EyeOff, LogOut
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
@@ -155,7 +155,7 @@ export function Navigation() {
             >
               <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-2 rounded-lg transition-colors hover:bg-accent/50">
                 <div className="flex items-center gap-2">
-                  <Tool className="h-5 w-5 text-muted-foreground" />
+                  <Wrench className="h-5 w-5 text-muted-foreground" />
                   <span className="text-muted-foreground">Outils</span>
                 </div>
                 <ChevronDown
