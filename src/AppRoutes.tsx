@@ -2,7 +2,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
-import Dashboard from "@/pages/Dashboard";
+import Dashboard from "@/pages/dashboard";
 import { TermsPage } from "@/components/legal/TermsPage";
 import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { CookiesPage } from "@/components/legal/CookiesPage";
@@ -24,6 +24,7 @@ export function AppRoutes() {
 
   return (
     <Routes>
+      {/* Routes publiques */}
       <Route 
         path="/" 
         element={
@@ -50,9 +51,9 @@ export function AppRoutes() {
       <Route path="/legal/mentions" element={<LegalNoticePage />} />
       <Route path="/profile/:id" element={<PublicProfile />} />
       
-      {/* Protected Routes */}
+      {/* Routes protégées */}
       <Route
-        path="/dashboard"
+        path="/dashboard/*"
         element={
           <ProtectedRoute>
             <Dashboard />
@@ -84,7 +85,7 @@ export function AppRoutes() {
         }
       />
       
-      {/* Tools Routes */}
+      {/* Routes des outils */}
       <Route
         path="/tools"
         element={
@@ -126,6 +127,7 @@ export function AppRoutes() {
         }
       />
       
+      {/* Redirection par défaut */}
       <Route 
         path="*" 
         element={
