@@ -13,9 +13,15 @@ interface ToolbarContainerProps {
   newNote: string;
   selectedColor: string;
   colors: ColorOption[];
+  selectedDate?: Date;
+  selectedTime?: string;
+  allDay?: boolean;
   onTodoChange: (value: string) => void;
   onNoteChange: (value: string) => void;
   onColorChange: (color: string) => void;
+  onDateChange: (date?: Date) => void;
+  onTimeChange: (time: string) => void;
+  onAllDayChange: (checked: boolean) => void;
   onAddTodo: () => void;
   onAddNote: () => void;
 }
@@ -63,9 +69,15 @@ export function ToolbarContainer({
   newNote,
   selectedColor,
   colors,
+  selectedDate,
+  selectedTime,
+  allDay,
   onTodoChange,
   onNoteChange,
   onColorChange,
+  onDateChange,
+  onTimeChange,
+  onAllDayChange,
   onAddTodo,
   onAddNote
 }: ToolbarContainerProps) {
@@ -83,7 +95,13 @@ export function ToolbarContainer({
           >
             <TodoToolbar
               newTodo={newTodo}
+              selectedDate={selectedDate}
+              selectedTime={selectedTime}
+              allDay={allDay}
               onTodoChange={onTodoChange}
+              onDateChange={onDateChange}
+              onTimeChange={onTimeChange}
+              onAllDayChange={onAllDayChange}
               onAddTodo={onAddTodo}
             />
           </motion.div>
@@ -110,4 +128,3 @@ export function ToolbarContainer({
     </ErrorBoundary>
   );
 }
-
