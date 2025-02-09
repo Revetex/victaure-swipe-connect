@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence } from "framer-motion";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/navigation/AppHeader";
+import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList"; // Added this import
 
 interface MainLayoutProps {
   children: ReactNode;

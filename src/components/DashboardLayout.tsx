@@ -13,6 +13,7 @@ import { TranslatorPage } from "./tools/TranslatorPage";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { DashboardSidebar } from "./dashboard/DashboardSidebar";
 import { DashboardFriendsList } from "./dashboard/DashboardFriendsList";
+import { Users } from "lucide-react"; // Added this import
 
 export function DashboardLayout() {
   const [currentPage, setCurrentPage] = useState(1);
