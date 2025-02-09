@@ -16,9 +16,15 @@ interface UnifiedBoardProps {
   newNote: string;
   selectedColor?: string;
   colors?: ColorOption[];
+  selectedDate?: Date;
+  selectedTime?: string;
+  allDay?: boolean;
   onTodoChange: (value: string) => void;
   onNoteChange: (value: string) => void;
   onColorChange: (color: string) => void;
+  onDateChange: (date?: Date) => void;
+  onTimeChange: (time: string) => void;
+  onAllDayChange: (checked: boolean) => void;
   onAddTodo: () => void;
   onAddNote: () => void;
   onToggleTodo: (id: string) => void;
@@ -33,9 +39,15 @@ export function UnifiedBoard({
   newNote = "",
   selectedColor = "yellow",
   colors = [],
+  selectedDate,
+  selectedTime,
+  allDay,
   onTodoChange,
   onNoteChange,
   onColorChange,
+  onDateChange,
+  onTimeChange,
+  onAllDayChange,
   onAddTodo,
   onAddNote,
   onToggleTodo,
@@ -96,9 +108,15 @@ export function UnifiedBoard({
             newNote={newNote}
             selectedColor={selectedColor}
             colors={colors}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            allDay={allDay}
             onTodoChange={onTodoChange}
             onNoteChange={onNoteChange}
             onColorChange={onColorChange}
+            onDateChange={onDateChange}
+            onTimeChange={onTimeChange}
+            onAllDayChange={onAllDayChange}
             onAddTodo={handleAddTodo}
             onAddNote={handleAddNote}
           />
