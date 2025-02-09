@@ -15,3 +15,4 @@ export interface Profile {
   online_status: boolean;
   last_seen: string;
 }
+
