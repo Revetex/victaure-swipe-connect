@@ -8,8 +8,10 @@ import {
   Sword, 
   Users, 
   UserPlus, 
-  Maximize2, 
-  LayoutDashboard 
+  Maximize2,
+  LayoutDashboard,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
@@ -24,11 +26,30 @@ import { useState, useCallback } from "react";
 import { ProfilePreview } from "./ProfilePreview";
 import { UserProfile } from "@/types/profile";
 import { Button } from "./ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+
+interface NavigationSection {
+  title: string;
+  items: {
+    icon: any;
+    label: string;
+    to: string;
+  }[];
+}
 
 export function Navigation() {
   const { isLoading, user } = useAuth();
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [openSections, setOpenSections] = useState<string[]>(['main', 'tools', 'social']);
+
+  const toggleSection = (section: string) => {
+    setOpenSections(current => 
+      current.includes(section) 
+        ? current.filter(s => s !== section)
+        : [...current, section]
+    );
+  };
 
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -60,51 +81,35 @@ export function Navigation() {
     longitude: null
   };
 
-  const navigationItems = [
-    { 
-      icon: LayoutDashboard, 
-      label: 'Tableau de bord', 
-      to: '/dashboard'
-    },
-    { 
-      icon: MessageSquare, 
-      label: 'Messages', 
-      to: '/dashboard/messages'
-    },
-    { 
-      icon: ListTodo, 
-      label: 'Notes & Tâches', 
-      to: '/dashboard/tools'
-    },
-    { 
-      icon: Calculator, 
-      label: 'Calculatrice', 
-      to: '/dashboard/tools?tool=calculator'
-    },
-    { 
-      icon: Languages, 
-      label: 'Traducteur', 
-      to: '/dashboard/tools?tool=translator'
-    },
-    { 
-      icon: Sword, 
-      label: 'Échecs', 
-      to: '/dashboard/tools?tool=chess'
+  const navigationSections: NavigationSection[] = [
+    {
+      title: 'Principal',
+      items: [
+        { icon: LayoutDashboard, label: 'Tableau de bord', to: '/dashboard' },
+        { icon: MessageSquare, label: 'Messages', to: '/dashboard/messages' },
+      ]
     },
     {
-      icon: Users,
-      label: 'Mes Connections',
-      to: '/dashboard/connections'
+      title: 'Outils',
+      items: [
+        { icon: ListTodo, label: 'Notes & Tâches', to: '/dashboard/tools' },
+        { icon: Calculator, label: 'Calculatrice', to: '/dashboard/tools?tool=calculator' },
+        { icon: Languages, label: 'Traducteur', to: '/dashboard/tools?tool=translator' },
+        { icon: Sword, label: 'Échecs', to: '/dashboard/tools?tool=chess' },
+      ]
     },
     {
-      icon: UserPlus,
-      label: 'Demandes en attente',
-      to: '/dashboard/requests'
+      title: 'Social',
+      items: [
+        { icon: Users, label: 'Mes Connections', to: '/dashboard/connections' },
+        { icon: UserPlus, label: 'Demandes en attente', to: '/dashboard/requests' },
+      ]
     },
-    { 
-      icon: Settings, 
-      label: 'Paramètres', 
-      to: '/settings'
+    {
+      title: 'Paramètres',
+      items: [
+        { icon: Settings, label: 'Paramètres', to: '/settings' },
+      ]
     }
   ];
 
@@ -133,21 +138,45 @@ export function Navigation() {
 
       {/* Navigation Content */}
       <ScrollArea className="flex-1 px-2 py-4">
-        <nav className="space-y-1">
-          {navigationItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
-                "text-muted-foreground hover:text-foreground",
-                "hover:bg-[#9b87f5]/10 active:scale-[0.98]",
-                "group relative"
-              )}
+        <nav className="space-y-4">
+          {navigationSections.map((section) => (
+            <Collapsible
+              key={section.title}
+              open={openSections.includes(section.title.toLowerCase())}
+              onOpenChange={() => toggleSection(section.title.toLowerCase())}
+              className="space-y-2"
             >
-              <item.icon className="h-5 w-5 transition-colors duration-200" />
-              <span className="font-medium">{item.label}</span>
-            </Link>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full flex items-center justify-between px-2 py-1"
+                >
+                  <span className="text-sm font-medium">{section.title}</span>
+                  {openSections.includes(section.title.toLowerCase()) ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-1">
+                {section.items.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
+                      "text-muted-foreground hover:text-foreground",
+                      "hover:bg-[#9b87f5]/10 active:scale-[0.98]",
+                      "group relative"
+                    )}
+                  >
+                    <item.icon className="h-5 w-5 transition-colors duration-200" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
           ))}
         </nav>
 
