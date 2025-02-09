@@ -1,7 +1,4 @@
-
 import { ReactNode } from "react";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
@@ -10,6 +7,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
+import { AppHeader } from "@/components/navigation/AppHeader";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -46,35 +44,17 @@ export function MainLayout({
         "flex-1 min-h-screen flex flex-col",
         !isMobile && "md:pl-[280px] lg:pl-[320px]"
       )}>
-        {/* Header */}
-        <header className="h-16 border-b bg-background/95 backdrop-blur sticky top-0 z-40">
-          <div className="container h-full mx-auto px-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {isMobile && (
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Menu className="h-5 w-5" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="p-0 w-[280px]">
-                    <Navigation />
-                  </SheetContent>
-                </Sheet>
-              )}
-              <DashboardHeader 
-                title={title}
-                showFriendsList={showFriendsList}
-                onToggleFriendsList={onToggleFriendsList}
-                isEditing={isEditing}
-                onToolReturn={onToolReturn}
-              />
-            </div>
-          </div>
-        </header>
+        {/* Main Header */}
+        <AppHeader 
+          title={title}
+          showFriendsList={showFriendsList}
+          onToggleFriendsList={onToggleFriendsList}
+          isEditing={isEditing}
+          onToolReturn={onToolReturn}
+        />
 
         {/* Main Content */}
-        <div className="flex-1">
+        <div className="flex-1 pt-12">
           {children}
         </div>
 

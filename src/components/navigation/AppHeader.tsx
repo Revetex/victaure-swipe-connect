@@ -19,6 +19,8 @@ export interface AppHeaderProps {
 
 export function AppHeader({
   title,
+  showFriendsList,
+  onToggleFriendsList,
   isEditing,
 }: AppHeaderProps) {
   const isMobile = useIsMobile();
@@ -32,6 +34,29 @@ export function AppHeader({
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
+          {isMobile && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className={cn(
+                    "text-primary hover:bg-primary/5",
+                    "transition-all duration-300",
+                    "active:scale-95 touch-none"
+                  )}
+                >
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent 
+                side="left" 
+                className="w-[250px] p-0 z-40"
+              >
+                <FeedSidebar />
+              </SheetContent>
+            </Sheet>
+          )}
           <Logo size="sm" />
           <h1 className="font-montserrat text-sm sm:text-base text-foreground/80">{title}</h1>
         </motion.div>
@@ -45,27 +70,21 @@ export function AppHeader({
           <div className="relative">
             <NotificationsBox />
           </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className={cn(
-                  "text-primary hover:bg-primary/5",
-                  "transition-all duration-300",
-                  "active:scale-95 touch-none"
-                )}
-              >
-                <Menu className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent 
-              side="left" 
-              className="w-[250px] p-0 z-40"
+          {!isEditing && (
+            <Button
+              variant="outline"
+              onClick={onToggleFriendsList}
+              className={cn(
+                "flex items-center gap-2 text-sm",
+                "transition-all duration-300",
+                "hover:bg-primary/10 hover:text-primary",
+                showFriendsList && "bg-primary/5 text-primary"
+              )}
+              size="sm"
             >
-              <FeedSidebar />
-            </SheetContent>
-          </Sheet>
+              {showFriendsList ? "Masquer" : "Amis"}
+            </Button>
+          )}
         </motion.div>
       </div>
     </header>

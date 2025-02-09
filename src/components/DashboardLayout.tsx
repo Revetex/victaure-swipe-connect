@@ -9,14 +9,13 @@ import { Separator } from "@/components/ui/separator";
 import { DashboardContainer } from "./dashboard/layout/DashboardContainer";
 import { DashboardAuthCheck } from "./dashboard/layout/DashboardAuthCheck";
 import { DashboardContent } from "./dashboard/DashboardContent";
-import { Button } from "./ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Menu } from "lucide-react";
+import { Sheet, SheetContent } from "./ui/sheet";
 import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "./Logo";
 import { ProfilePreview } from "./ProfilePreview";
 import { TranslatorPage } from "./tools/TranslatorPage";
 import { Dialog, DialogContent } from "./ui/dialog";
+import { Button } from "./ui/button";
 
 const navigationItems = [
   { id: 1, name: "Tableau de bord", icon: LayoutDashboard },
@@ -148,25 +147,6 @@ export function DashboardLayout() {
           <SidebarContent />
         </aside>
 
-        {/* Header mobile avec menu */}
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
-          <div className="container flex h-16 items-center">
-            <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72 p-0">
-                <SidebarContent />
-              </SheetContent>
-            </Sheet>
-            <div className="flex-1 flex justify-center">
-              <Logo />
-            </div>
-          </div>
-        </header>
-
         {/* Contenu principal */}
         <main className="lg:pl-72">
           <AnimatePresence mode="wait">
@@ -213,4 +193,3 @@ export function DashboardLayout() {
     </DashboardAuthCheck>
   );
 }
-
