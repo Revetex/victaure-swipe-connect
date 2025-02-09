@@ -115,4 +115,3 @@ export function UnifiedBoard({
     </motion.div>
   );
 }
-
