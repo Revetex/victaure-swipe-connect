@@ -25,3 +25,4 @@ export const getPageTitle = (currentPage: number): string => {
       return "Tableau de bord";
   }
 };
+

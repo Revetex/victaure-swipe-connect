@@ -1,11 +1,10 @@
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { VCard } from "@/components/VCard";
 import { Messages } from "@/components/messages/Messages";
-import { Marketplace } from "@/components/Marketplace";
 import { Feed } from "@/components/feed/Feed";
 import { Settings } from "@/components/Settings";
-import { NotesMap } from "@/components/notes/NotesMap";
+import { NotesPage } from "@/components/tools/NotesPage";
 import { useEffect } from "react";
 
 interface DashboardContentProps {
@@ -36,16 +35,10 @@ export function DashboardContent({
       case 2:
         return <Messages />;
       case 3:
-        return <Marketplace />;
-      case 4:
         return <Feed />;
+      case 4:
+        return <NotesPage />;
       case 5:
-        return (
-          <div className="h-full">
-            <NotesMap />
-          </div>
-        );
-      case 6:
         return <Settings />;
       default:
         return null;
@@ -64,3 +57,4 @@ export function DashboardContent({
     </motion.div>
   );
 }
+

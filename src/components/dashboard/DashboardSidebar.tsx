@@ -6,6 +6,7 @@ import { Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/config/navigation";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardSidebarProps {
   currentPage: number;
@@ -20,6 +21,13 @@ export function DashboardSidebar({
   onPageChange,
   onProfileClick 
 }: DashboardSidebarProps) {
+  const navigate = useNavigate();
+
+  const handleNavigation = (itemId: number, path: string) => {
+    onPageChange(itemId);
+    navigate(path);
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-6">
@@ -38,7 +46,7 @@ export function DashboardSidebar({
                   "w-full justify-start gap-4 h-12",
                   currentPage === item.id && "bg-primary/10 hover:bg-primary/20"
                 )}
-                onClick={() => onPageChange(item.id)}
+                onClick={() => handleNavigation(item.id, item.path)}
               >
                 <Icon className="h-5 w-5" />
                 <span>{item.name}</span>
@@ -81,3 +89,4 @@ export function DashboardSidebar({
     </div>
   );
 }
+
