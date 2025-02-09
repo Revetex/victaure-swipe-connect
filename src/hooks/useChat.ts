@@ -33,8 +33,8 @@ export function useChat() {
     const newMessage: Message = {
       id: crypto.randomUUID(),
       content,
-      sender_id: sender.id,
-      receiver_id: 'assistant',
+      sender_id: sender.id === 'assistant' ? profile?.id || '' : sender.id,
+      receiver_id: sender.id === 'assistant' ? profile?.id || '' : 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       read: false,
@@ -52,7 +52,7 @@ export function useChat() {
     }));
 
     return newMessage;
-  }, [defaultSender]);
+  }, [defaultSender, profile?.id]);
 
   const setInputMessage = useCallback((message: string) => {
     setState(prev => ({ ...prev, inputMessage: message }));
@@ -71,18 +71,19 @@ export function useChat() {
 
       // Save user message to database
       const { error: saveError } = await supabase
-        .from('ai_chat_messages')
+        .from('messages')
         .insert({
           id: userMessage.id,
-          user_id: user.id,
+          sender_id: user.id,
+          receiver_id: user.id,
           content: message,
-          sender: 'user'
+          message_type: 'user',
+          is_ai_message: false
         });
 
       if (saveError) throw saveError;
 
       console.log("Getting AI response...");
-      // Get AI response from our edge function
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message,
@@ -107,12 +108,14 @@ export function useChat() {
 
       // Save assistant message to database
       const { error: saveAssistantError } = await supabase
-        .from('ai_chat_messages')
+        .from('messages')
         .insert({
           id: assistantMessage.id,
-          user_id: user.id,
+          sender_id: user.id,
+          receiver_id: user.id,
           content: data.response,
-          sender: 'assistant'
+          message_type: 'ai',
+          is_ai_message: true
         });
 
       if (saveAssistantError) throw saveAssistantError;
@@ -135,9 +138,10 @@ export function useChat() {
       if (!user) throw new Error('User not authenticated');
 
       const { error } = await supabase
-        .from('ai_chat_messages')
+        .from('messages')
         .delete()
-        .eq('user_id', user.id);
+        .eq('sender_id', user.id)
+        .eq('receiver_id', user.id);
 
       if (error) throw error;
 
