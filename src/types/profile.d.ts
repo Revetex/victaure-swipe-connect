@@ -16,3 +16,13 @@ export interface Profile {
   last_seen: string;
 }
 
+export interface UserProfile extends Profile {
+  skills?: string[];
+  certifications?: Certification[];
+  education?: Education[];
+  experiences?: Experience[];
+  website?: string;
+  company_name?: string;
+  company_size?: string;
+  industry?: string;
+}

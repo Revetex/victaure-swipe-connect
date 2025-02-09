@@ -1,3 +1,4 @@
+
 import { Bot } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
@@ -28,7 +29,7 @@ export function AssistantMessage({ chatMessages, onSelectConversation }: Assista
         </Avatar>
         <div className="flex-1 min-w-0 space-y-1">
           <div className="flex justify-between items-center gap-2">
-            <h3 className="font-semibold text-lg">Mr. Victaure</h3>
+            <h3 className="font-semibold text-lg">M. Victaure</h3>
             <span className="text-xs text-muted-foreground bg-primary/5 px-2 py-1 rounded-full">
               Assistant IA
             </span>
