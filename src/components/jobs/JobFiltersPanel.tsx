@@ -35,11 +35,13 @@ export function JobFiltersPanel({
               Affinez votre recherche avec les filtres ci-dessous
             </SheetDescription>
           </SheetHeader>
-          <ScrollArea className="h-[calc(100vh-10rem)] mt-4 pr-4">
-            <JobFiltersComponent
-              filters={filters}
-              onFilterChange={onFilterChange}
-            />
+          <ScrollArea className="h-[calc(100vh-10rem)] mt-4">
+            <div className="pr-4">
+              <JobFiltersComponent
+                filters={filters}
+                onFilterChange={onFilterChange}
+              />
+            </div>
           </ScrollArea>
         </SheetContent>
       </Sheet>
@@ -53,7 +55,7 @@ export function JobFiltersPanel({
       className="sticky top-4 w-full max-w-xs bg-background/60 backdrop-blur-sm rounded-lg border border-border/50 shadow-sm"
     >
       <ScrollArea className="h-[calc(100vh-8rem)]">
-        <div className="space-y-4 p-4">
+        <div className="p-4">
           <JobFiltersComponent
             filters={filters}
             onFilterChange={onFilterChange}
