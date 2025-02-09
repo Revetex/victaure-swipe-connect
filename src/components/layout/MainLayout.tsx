@@ -10,6 +10,7 @@ import { Navigation } from "@/components/Navigation";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/navigation/AppHeader";
 import { DashboardFriendsList } from "@/components/dashboard/DashboardFriendsList";
+import { Logo } from "@/components/Logo";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -61,13 +62,32 @@ export function MainLayout({
         !isMobile && "md:pl-[280px] lg:pl-[320px]"
       )}>
         {/* Main Header */}
-        <AppHeader 
-          title={title}
-          showFriendsList={showFriendsList}
-          onToggleFriendsList={onToggleFriendsList}
-          isEditing={isEditing}
-          onToolReturn={onToolReturn}
-        />
+        <header className="h-12 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4">
+          <div className="flex items-center gap-4">
+            {isMobile && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-80">
+                  <Navigation />
+                </SheetContent>
+              </Sheet>
+            )}
+            <h1 className="font-semibold">VICTAURE technologies inc.</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <AppHeader 
+              title={title}
+              showFriendsList={showFriendsList}
+              onToggleFriendsList={onToggleFriendsList}
+              isEditing={isEditing}
+              onToolReturn={onToolReturn}
+            />
+          </div>
+        </header>
 
         {/* Main Content */}
         <div className="flex-1 pt-12">
