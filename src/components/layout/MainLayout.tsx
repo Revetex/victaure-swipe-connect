@@ -34,7 +34,6 @@ export function MainLayout({
   const isFriendsPage = location.pathname.includes('/friends');
   const mainRef = useRef<HTMLDivElement>(null);
 
-  // Cleanup resize observers when component unmounts
   useEffect(() => {
     return () => {
       if (mainRef.current) {
@@ -51,21 +50,20 @@ export function MainLayout({
     <div className="min-h-screen flex bg-background">
       {/* Desktop Sidebar Navigation */}
       {!isMobile && (
-        <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur z-50">
-          <Navigation />
-        </aside>
+        <div className="w-[280px] lg:w-[320px] shrink-0">
+          <aside className="w-[280px] lg:w-[320px] fixed left-0 top-0 bottom-0 border-r bg-background/95 backdrop-blur">
+            <Navigation />
+          </aside>
+        </div>
       )}
 
       {/* Main Content Area */}
       <main 
         ref={mainRef}
-        className={cn(
-          "flex-1 min-h-screen flex flex-col",
-          !isMobile && "md:pl-[280px] lg:pl-[320px]"
-        )}
+        className="flex-1 min-h-screen flex flex-col relative"
       >
         {/* Main Header */}
-        <header className="h-12 border-b bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4">
+        <header className="h-12 border-b bg-background/95 backdrop-blur sticky top-0 z-40 flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
             {isMobile && (
               <Sheet>
@@ -91,7 +89,7 @@ export function MainLayout({
         </header>
 
         {/* Main Content */}
-        <div className="flex-1 pt-12 h-[calc(100vh-3rem)]">
+        <div className="flex-1">
           {children}
         </div>
 
@@ -108,4 +106,3 @@ export function MainLayout({
     </div>
   );
 }
-
