@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -108,22 +107,20 @@ export function useMessages() {
       const messageType = receiver.id === 'assistant' ? 'ai' as const : 'user' as const;
       const now = new Date().toISOString();
 
-      const newMessage: Partial<Message> = {
+      const messageData = {
         content,
         sender_id: messageType === 'ai' ? null : user.id,
         receiver_id: receiver.id === 'assistant' ? user.id : receiver.id,
         message_type: messageType,
         read: false,
-        status: 'sent',
         created_at: now,
         updated_at: now,
-        timestamp: now,
         metadata: {}
       };
 
       const { data, error } = await supabase
         .from("messages")
-        .insert(newMessage)
+        .insert(messageData)
         .select(`
           *,
           sender:profiles!messages_sender_id_fkey(
