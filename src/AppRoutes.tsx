@@ -24,7 +24,7 @@ export function AppRoutes() {
 
   return (
     <Routes>
-      {/* Routes publiques */}
+      {/* Page d'accueil */}
       <Route 
         path="/" 
         element={
@@ -35,6 +35,17 @@ export function AppRoutes() {
           )
         } 
       />
+
+      {/* Profil public */}
+      <Route path="/profile/:id" element={<PublicProfile />} />
+      
+      {/* Pages légales */}
+      <Route path="/legal/terms" element={<TermsPage />} />
+      <Route path="/legal/privacy" element={<PrivacyPage />} />
+      <Route path="/legal/cookies" element={<CookiesPage />} />
+      <Route path="/legal/mentions" element={<LegalNoticePage />} />
+
+      {/* Authentification */}
       <Route 
         path="/auth" 
         element={
@@ -45,11 +56,6 @@ export function AppRoutes() {
           )
         } 
       />
-      <Route path="/legal/terms" element={<TermsPage />} />
-      <Route path="/legal/privacy" element={<PrivacyPage />} />
-      <Route path="/legal/cookies" element={<CookiesPage />} />
-      <Route path="/legal/mentions" element={<LegalNoticePage />} />
-      <Route path="/profile/:id" element={<PublicProfile />} />
       
       {/* Routes protégées */}
       <Route
