@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { SlidersHorizontal, RefreshCw } from "lucide-react";
+import { SlidersHorizontal, RefreshCw, Search, MapPin, Briefcase, Clock, Calendar } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JobFilters as JobFiltersType, defaultFilters } from "./JobFilterUtils";
 import { SearchFilter } from "./filters/SearchFilter";
@@ -32,13 +32,41 @@ export function JobFilters({
     toast.success("Filtres réinitialisés");
   };
 
+  const filterSections = [
+    {
+      icon: Search,
+      title: "Recherche",
+      component: SearchFilter,
+    },
+    {
+      icon: Briefcase,
+      title: "Catégories",
+      component: CategoryFilters,
+    },
+    {
+      icon: MapPin,
+      title: "Localisation",
+      component: LocationFilter,
+    },
+    {
+      icon: Clock,
+      title: "Expérience",
+      component: ExperienceFilter,
+    },
+    {
+      icon: Calendar,
+      title: "Date",
+      component: DateFilters,
+    },
+  ];
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <div className="flex items-center justify-between pb-4 border-b">
+      <div className="flex items-center justify-between pb-4 border-b border-border/50">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="h-5 w-5 text-primary" />
           <h3 className="font-semibold">Filtres</h3>
@@ -54,25 +82,28 @@ export function JobFilters({
         </Button>
       </div>
 
-      <SearchFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator className="bg-border/50" />
-      
-      <CategoryFilters filters={filters} onFilterChange={onFilterChange} />
-      <Separator className="bg-border/50" />
-      
-      <LocationFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator className="bg-border/50" />
-      
-      <ExperienceFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator className="bg-border/50" />
-      
-      <BudgetFilter filters={filters} onFilterChange={onFilterChange} />
-      <Separator className="bg-border/50" />
-      
-      <DateFilters filters={filters} onFilterChange={onFilterChange} />
-      <Separator className="bg-border/50" />
-      
-      <WorkTypeFilters filters={filters} onFilterChange={onFilterChange} />
+      {filterSections.map((section, index) => (
+        <motion.div
+          key={section.title}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <section.icon className="h-4 w-4 text-primary" />
+              {section.title}
+            </div>
+            <section.component 
+              filters={filters}
+              onFilterChange={onFilterChange}
+            />
+          </div>
+          {index < filterSections.length - 1 && (
+            <Separator className="my-4 bg-border/50" />
+          )}
+        </motion.div>
+      ))}
     </motion.div>
   );
 }
