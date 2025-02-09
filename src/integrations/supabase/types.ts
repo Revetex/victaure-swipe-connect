@@ -1394,6 +1394,7 @@ export type Database = {
           full_name: string | null
           id: string
           industry: string | null
+          last_activity: string | null
           last_seen: string | null
           last_used_tool: string | null
           latitude: number | null
@@ -1434,6 +1435,7 @@ export type Database = {
           full_name?: string | null
           id: string
           industry?: string | null
+          last_activity?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
@@ -1474,6 +1476,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           industry?: string | null
+          last_activity?: string | null
           last_seen?: string | null
           last_used_tool?: string | null
           latitude?: number | null
