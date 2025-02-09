@@ -36,7 +36,7 @@ export function JobFiltersPanel({
             </SheetDescription>
           </SheetHeader>
           <ScrollArea className="h-[calc(100vh-10rem)] mt-4">
-            <div className="pr-4">
+            <div className="px-4">
               <JobFiltersComponent
                 filters={filters}
                 onFilterChange={onFilterChange}
