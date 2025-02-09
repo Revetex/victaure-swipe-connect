@@ -919,7 +919,7 @@ export type Database = {
           reaction: string | null
           read: boolean | null
           receiver_id: string
-          sender_id: string
+          sender_id: string | null
           status: string | null
           timestamp: string | null
           updated_at: string | null
@@ -939,7 +939,7 @@ export type Database = {
           reaction?: string | null
           read?: boolean | null
           receiver_id: string
-          sender_id: string
+          sender_id?: string | null
           status?: string | null
           timestamp?: string | null
           updated_at?: string | null
@@ -959,7 +959,7 @@ export type Database = {
           reaction?: string | null
           read?: boolean | null
           receiver_id?: string
-          sender_id?: string
+          sender_id?: string | null
           status?: string | null
           timestamp?: string | null
           updated_at?: string | null
