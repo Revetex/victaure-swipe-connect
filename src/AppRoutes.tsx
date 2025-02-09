@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
@@ -25,7 +26,7 @@ export function AppRoutes() {
         path="/" 
         element={
           isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/feed" replace />
           ) : (
             <Index />
           )
@@ -35,7 +36,7 @@ export function AppRoutes() {
         path="/auth" 
         element={
           isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/feed" replace />
           ) : (
             <Auth />
           )
@@ -106,7 +107,7 @@ export function AppRoutes() {
         path="*" 
         element={
           isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/feed" replace />
           ) : (
             <Navigate to="/auth" replace />
           )
