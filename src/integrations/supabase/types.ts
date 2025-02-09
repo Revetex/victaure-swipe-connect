@@ -300,6 +300,24 @@ export type Database = {
         }
         Relationships: []
       }
+      dashboard_friends_list_components: {
+        Row: {
+          component_name: string
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          component_name: string
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          component_name?: string
+          created_at?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
       deleted_conversations: {
         Row: {
           conversation_partner_id: string
